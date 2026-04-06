@@ -462,7 +462,9 @@ const Team = () => {
                                      <img 
                                          src={member.image} 
                                          alt={member.name} 
-                                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" 
+                                         className={member.image === LOGO
+                                            ? "w-full h-full object-contain p-10 bg-[#fff9f0] transition-all duration-700 group-hover:scale-105"
+                                            : "w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110"}
                                      />
                                      <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-t from-neutral-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                      <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[8px] text-beeyield-green font-black">
@@ -484,28 +486,28 @@ const Team = () => {
                 </div>
             </section>
 
-            {/* Leadership section */}
+            {/* Story, ESG and Commitment */}
             <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(45,168,79,0.18),_transparent_34%)] opacity-80 pointer-events-none" />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-6xl mx-auto">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-20 p-12 bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-white/10">
                             <div className="space-y-6 max-w-xl">
                                 <div className="flex items-center gap-3">
                                    <div className="h-2 w-2 bg-beeyield-green rounded-full animate-pulse" />
-                                   <span className="text-[10px] font-black text-beeyield-green">Status: Active</span>
+                                   <span className="text-[10px] font-black text-beeyield-green">Story, ESG and commitment aligned</span>
                                 </div>
-                                <h2 className="text-4xl lg:text-5xl font-black italic tracking-tighter leading-none">Meet the <span className="text-beeyield-green">team</span></h2>
+                                <h2 className="text-4xl lg:text-5xl font-black italic tracking-tighter leading-none">The <span className="text-beeyield-green">proof points</span> behind the team</h2>
                                 <p className="text-neutral-400 font-medium leading-relaxed">
-                                    Our leadership team focuses on practical work: healthier hives, reliable data, and clear traceability from hive to jar.
+                                    This section now ties the team page to BeeYield's wider promises: traceability, pollination support, stewardship, and measurable ecosystem restoration.
                                 </p>
                             </div>
                             <div className="grid grid-cols-2 gap-6 w-full md:w-auto">
                                 {[
-                                    { label: "Operations", val: "Active", icon: Activity },
-                                    { label: "Records", val: "Verified", icon: ShieldCheck },
-                                    { label: "Network", val: "Growing", icon: Globe },
-                                    { label: "Support", val: "On", icon: LockIcon }
+                                    { label: "Harvest", val: "50/50", icon: Leaf },
+                                    { label: "Records", val: "Traceable", icon: ShieldCheck },
+                                    { label: "Pollination", val: "25+ acres", icon: Globe },
+                                    { label: "Restoration", val: "2,500+ trees", icon: LockIcon }
                                 ].map((stat, i) => (
                                     <div key={i} className="p-6 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center text-center">
                                        <stat.icon className="w-5 h-5 text-beeyield-green mb-3 opacity-50" />
@@ -516,38 +518,54 @@ const Team = () => {
                             </div>
                         </div>
 
-                        {/* (removed faux system logs) */}
+                        <div className="grid md:grid-cols-3 gap-6">
+                            <Link to="/about" className="rounded-[2rem] border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-all">
+                                <p className="text-sm font-black text-beeyield-green mb-3">About Us</p>
+                                <p className="text-white text-lg font-bold mb-2">Origin in Kibwezi</p>
+                                <p className="text-neutral-400 text-sm">The company overview and growth story now reinforce the leadership narrative.</p>
+                            </Link>
+                            <Link to="/ourstory" className="rounded-[2rem] border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-all">
+                                <p className="text-sm font-black text-beeyield-green mb-3">Our Story</p>
+                                <p className="text-white text-lg font-bold mb-2">Sibling-led mission</p>
+                                <p className="text-neutral-400 text-sm">The fuller family story now connects directly to how the team page is written.</p>
+                            </Link>
+                            <Link to="/esg" className="rounded-[2rem] border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-all">
+                                <p className="text-sm font-black text-beeyield-green mb-3">ESG & Commitment</p>
+                                <p className="text-white text-lg font-bold mb-2">Visible accountability</p>
+                                <p className="text-neutral-400 text-sm">Leadership language now reflects BeeYield's environmental and operational commitments.</p>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Partners & Contact Section */}
+            {/* Contact Section */}
             <section className="py-32 lg:py-48 bg-neutral-50 border-t border-neutral-100 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-beeyield-green/[0.01] -skew-x-12 translate-x-32 pointer-events-none" />
                 <div className="container mx-auto px-4">
                     <div className="grid lg:grid-cols-2 gap-32 items-center">
                         <div>
                             <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-5 py-2 font-black text-[10px] rounded-full">
-                                Strategic Ecosystem
+                                Keep Reading
                             </Badge>
-                            <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-10 italic leading-none">Global <span className="text-beeyield-green">Partners</span></h2>
+                            <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-10 italic leading-none">Continue The <span className="text-beeyield-green">BeeYield Story</span></h2>
                             <p className="text-xl text-neutral-400 font-medium mb-16 leading-relaxed">
-                                BeeYield collaborates with planetary-scale partners to advance beekeeping technology that secures global biodiversity and rural prosperity.
+                                Use these links to move from the team page into the pages that shaped this rewrite: About Us, Our Story, ESG, and Commitment.
                             </p>
                             
                             <div className="grid grid-cols-2 gap-8">
                                 {[
-                                    { label: "Community", icon: Users },
-                                    { label: "Apiology", icon: Activity },
-                                    { label: "Precision IoT", icon: Cpu },
-                                    { label: "Chain Verify", icon: ShieldCheck }
+                                    { label: "About Us", href: "/about", icon: Users },
+                                    { label: "Our Story", href: "/ourstory", icon: Leaf },
+                                    { label: "ESG", href: "/esg", icon: ShieldCheck },
+                                    { label: "Commitment", href: "/commitment", icon: Cpu }
                                 ].map((p, i) => (
-                                    <div key={i} className="flex items-center gap-6 p-8 bg-white rounded-[2rem] border border-neutral-100 shadow-soft group hover:border-beeyield-green/30 transition-all">
+                                    <Link key={i} to={p.href} className="flex items-center gap-6 p-8 bg-white rounded-[2rem] border border-neutral-100 shadow-soft group hover:border-beeyield-green/30 transition-all">
                                         <div className="h-14 w-14 shrink-0 flex items-center justify-center bg-neutral-50 rounded-2xl text-beeyield-green group-hover:bg-beeyield-green group-hover:text-white transition-all">
                                             <p.icon className="h-7 w-7" />
                                         </div>
                                         <span className="font-black text-xs text-neutral-900">{p.label}</span>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -556,16 +574,16 @@ const Team = () => {
                         <div id="contact">
                             <div className="bg-white p-12 lg:p-16 rounded-[3.5rem] border border-neutral-100 shadow-soft relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-48 h-48 bg-beeyield-green/[0.02] rounded-full -translate-x-20 -translate-y-20 border border-beeyield-green/5" />
-                                <h3 className="text-4xl font-black text-neutral-900 italic tracking-tight mb-10 leading-none">Direct Inquiry</h3>
+                                <h3 className="text-4xl font-black text-neutral-900 italic tracking-tight mb-10 leading-none">Contact The Team</h3>
                                 <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
                                             <Label htmlFor="name" className="text-[10px] font-black text-neutral-400 ml-1">Full Name</Label>
-                                            <Input id="name" name="name" placeholder="Director..." value={formData.name} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
+                                            <Input id="name" name="name" placeholder="Your name" value={formData.name} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
                                         </div>
                                         <div className="space-y-3">
                                             <Label htmlFor="email" className="text-[10px] font-black text-neutral-400 ml-1">Email</Label>
-                                            <Input id="email" name="email" type="email" placeholder="authority@domain.com" value={formData.email} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
+                                            <Input id="email" name="email" type="email" placeholder="you@example.com" value={formData.email} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
@@ -574,10 +592,10 @@ const Team = () => {
                                     </div>
                                     <div className="space-y-3">
                                         <Label htmlFor="message" className="text-[10px] font-black text-neutral-400 ml-1">Message</Label>
-                                        <Textarea id="message" name="message" placeholder="Describe the mission brief..." className="min-h-[160px] rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all p-6" value={formData.message} onChange={handleInputChange} required />
+                                        <Textarea id="message" name="message" placeholder="Tell us what you would like to discuss." className="min-h-[160px] rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all p-6" value={formData.message} onChange={handleInputChange} required />
                                     </div>
                                     <Button type="submit" className="w-full h-20 rounded-3xl bg-neutral-900 text-beeyield-green font-black text-xs shadow-2xl shadow-neutral-900/30 hover:scale-[1.02] active:scale-95 transition-all" disabled={loading}>
-                                        {loading ? "Transmitting..." : "Send Secure Message"}
+                                        {loading ? "Sending..." : "Send Message"}
                                     </Button>
                                 </form>
                             </div>

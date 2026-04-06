@@ -1,4 +1,5 @@
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Use environment variable for the API base URL
 const isDev = import.meta.env.DEV;
@@ -25,79 +26,102 @@ function getActiveClient() {
         return supabaseCEBA || supabaseShop;
     }
     // Special handling for beeyield
-    if (path.includes('beeyield')) {
+    if (path.includes('beeyield') || path.includes('/integrations/callback')) {
         return supabaseBeeYield || supabaseShop;
     }
     return supabaseShop;
 }
 
-let cachedSession: any = null;
-let lastSessionFetch = 0;
-let sessionPromise: Promise<any> | null = null;
+type NamedClient = {
+    client: SupabaseClient | null;
+    key: 'shop' | 'beeyield' | 'ceba';
+};
+
+const SESSION_CACHE_TTL = 60000;
+const namedClients: NamedClient[] = [
+    { client: supabaseBeeYield, key: 'beeyield' },
+    { client: supabaseShop, key: 'shop' },
+    { client: supabaseCEBA, key: 'ceba' },
+];
+
+const sessionCache: Partial<Record<NamedClient['key'], any>> = {};
+const sessionCacheTime: Partial<Record<NamedClient['key'], number>> = {};
+const sessionPromises: Partial<Record<NamedClient['key'], Promise<any> | null>> = {};
+
+function getClientKey(client: SupabaseClient | null): NamedClient['key'] | null {
+    return namedClients.find((entry) => entry.client === client)?.key ?? null;
+}
+
+function getClientSearchOrder(activeClient: SupabaseClient | null): NamedClient[] {
+    const activeKey = getClientKey(activeClient);
+    const order = activeKey
+        ? [activeKey, 'beeyield', 'shop', 'ceba']
+        : ['beeyield', 'shop', 'ceba'];
+
+    return Array.from(new Set(order))
+        .map((key) => namedClients.find((entry) => entry.key === key))
+        .filter((entry): entry is NamedClient => Boolean(entry));
+}
+
+async function getSessionForClient(entry: NamedClient): Promise<any | null> {
+    if (!entry.client) return null;
+
+    const now = Date.now();
+    const cached = sessionCache[entry.key];
+    if (cached && (now - (sessionCacheTime[entry.key] || 0) < SESSION_CACHE_TTL)) {
+        return cached;
+    }
+
+    if (sessionPromises[entry.key]) {
+        try {
+            return await sessionPromises[entry.key];
+        } catch {
+            // fall through and retry below
+        }
+    }
+
+    sessionPromises[entry.key] = (async () => {
+        try {
+            const { data: { session } } = await entry.client!.auth.getSession();
+            if (session?.access_token) {
+                sessionCache[entry.key] = session;
+                sessionCacheTime[entry.key] = Date.now();
+                return session;
+            }
+
+            delete sessionCache[entry.key];
+            delete sessionCacheTime[entry.key];
+            return null;
+        } catch (error) {
+            console.error(`Error getting auth session for ${entry.key}:`, error);
+            return null;
+        } finally {
+            sessionPromises[entry.key] = null;
+        }
+    })();
+
+    return sessionPromises[entry.key];
+}
 
 /**
  * Get authentication headers from Supabase session with caching and concurrency protection
  */
 export async function getAuthHeaders(): Promise<Record<string, string>> {
     const activeClient = getActiveClient();
-    if (!activeClient) return {};
+    const clientsToCheck = getClientSearchOrder(activeClient);
 
-    const now = Date.now();
-    // Cache session for 60 seconds to reduce overhead on concurrent requests
-    if (cachedSession && (now - lastSessionFetch < 60000)) {
-        return {
-            'Authorization': `Bearer ${cachedSession.access_token}`
-        };
-    }
-
-    // If a request is already in flight, wait for it
-    if (sessionPromise) {
-        try {
-            const session = await sessionPromise;
-            if (session) return { 'Authorization': `Bearer ${session.access_token}` };
-        } catch (e) {
-            // If promise fails, fall through to create a new one
+    for (const entry of clientsToCheck) {
+        const session = await getSessionForClient(entry);
+        if (session?.access_token) {
+            return { 'Authorization': `Bearer ${session.access_token}` };
         }
     }
 
-    // Create a new session fetch promise
-    sessionPromise = (async () => {
-        try {
-            // 1. Try active client (e.g. BeeYield or CEBA)
-            let { data: { session } } = await activeClient.auth.getSession();
-
-            // 2. Fallback: If no session on active client, and active client is NOT shop, try shop (main) session
-            if (!session && activeClient !== supabaseShop && supabaseShop) {
-                const { data: shopAuth } = await supabaseShop.auth.getSession();
-                if (shopAuth.session) {
-                    session = shopAuth.session;
-                }
-            }
-
-            if (session?.access_token) {
-                cachedSession = session;
-                lastSessionFetch = Date.now();
-                return session;
-            }
-            return null;
-        } catch (error) {
-            console.error('Error getting auth headers:', error);
-            return null;
-        } finally {
-            sessionPromise = null;
+    for (const entry of clientsToCheck) {
+        const cached = sessionCache[entry.key];
+        if (cached?.access_token) {
+            return { 'Authorization': `Bearer ${cached.access_token}` };
         }
-    })();
-
-    const session = await sessionPromise;
-    if (session) {
-        return { 'Authorization': `Bearer ${session.access_token}` };
-    }
-
-    // Fallback to previously cached session if available even if expired, to prevent blocking
-    if (cachedSession) {
-        return {
-            'Authorization': `Bearer ${cachedSession.access_token}`
-        };
     }
 
     return {};

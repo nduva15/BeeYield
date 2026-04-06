@@ -274,6 +274,10 @@ async def upsert_integration_config(
 
     is_active = bool(payload.get("is_active", True))
     store_url = payload.get("store_url")
+    kra_pin = payload.get("kra_pin")
+    branch_code = payload.get("branch_code")
+    device_serial = payload.get("device_serial")
+    access_token = payload.get("access_token")
     config_json = payload.get("config_json")
 
     # Only allow specific columns to be set from client.
@@ -284,6 +288,14 @@ async def upsert_integration_config(
     }
     if store_url is not None:
         data["store_url"] = store_url
+    if kra_pin is not None:
+        data["kra_pin"] = kra_pin
+    if branch_code is not None:
+        data["branch_code"] = branch_code
+    if device_serial is not None:
+        data["device_serial"] = device_serial
+    if access_token is not None:
+        data["access_token"] = access_token
     if config_json is not None:
         data["config_json"] = config_json
 

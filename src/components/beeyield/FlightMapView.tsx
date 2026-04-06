@@ -22,7 +22,6 @@ import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
-import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -97,7 +96,13 @@ const FlightMapView: React.FC = () => {
     const [places, setPlaces] = useState<any[]>([]);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const selectedApiaryId = selectedPlace?.apiary_id || selectedPlace?.linked_apiary_id || selectedPlaceId || '';
-    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(selectedApiaryId || undefined);
+    const { data: weatherSummary } = useApiaryWeatherSummary(selectedApiaryId || undefined);
+    const weather = React.useMemo(() => ({
+        temperature: weatherSummary?.current?.temperature_c ?? null,
+        humidity: weatherSummary?.current?.humidity_pct ?? null,
+        solar_pressure: weatherSummary?.current?.uv_index ?? null,
+        bee_flight_status: (weatherSummary?.current?.temperature_c || 0) > 12 && (weatherSummary?.current?.humidity_pct || 100) < 85 ? 'Enabled' : 'Limited',
+    }), [weatherSummary]);
 
     // Initial Data Fetch
     useEffect(() => {
@@ -264,7 +269,7 @@ const FlightMapView: React.FC = () => {
                                         <Wind className="w-4 h-4" />
                                         <span className="text-[10px] font-black">Density</span>
                                     </div>
-                                    <p className="text-xl font-bold tabular-nums text-white">{weather?.humidity}%</p>
+                                    <p className="text-xl font-bold tabular-nums text-white">{weatherSummary?.current?.humidity_pct != null ? `${Math.round(weatherSummary.current.humidity_pct)}%` : 'N/A'}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 text-yellow-500">

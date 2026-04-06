@@ -979,6 +979,10 @@ export const beeyieldService = {
                 platform: config.platform,
                 is_active: config.is_active,
                 store_url: config.store_url,
+                kra_pin: config.kra_pin,
+                branch_code: config.branch_code,
+                device_serial: config.device_serial,
+                access_token: config.access_token,
                 config_json: config.config_json,
             }, { headers });
             
