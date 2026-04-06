@@ -24,10 +24,10 @@ jobs:
       matrix:
         include:
           - context: .
-            dockerfile: ./Dockerfile
+            file: ./Dockerfile
             image: frontend
           - context: ./backend
-            dockerfile: ./backend/Dockerfile
+            file: ./backend/Dockerfile
             image: backend
 
     steps:
@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
-          dockerfile: ${{ matrix.dockerfile }}
+          file: ${{ matrix.file }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

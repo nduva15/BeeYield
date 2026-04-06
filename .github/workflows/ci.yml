@@ -8,8 +8,9 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  FRONTEND_IMAGE_NAME: nduva15/beeyield-frontend
-  BACKEND_IMAGE_NAME: nduva15/beeyield-backend
+  IMAGE_NAMESPACE: ${{ github.repository_owner }}
+  FRONTEND_IMAGE_NAME: beeyield-frontend
+  BACKEND_IMAGE_NAME: beeyield-backend
 
 jobs:
   frontend-test:
@@ -115,13 +116,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+            type=sha,format=long,prefix=
 
       - name: Build and Push Frontend Image
         uses: docker/build-push-action@v6
@@ -134,9 +135,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            VITE_SUPABASE_URL=https://ezfccfypwmuvbpujkqrg.supabase.co
-            VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
-            VITE_API_URL=https://ezfccfypwmuvbpujkqrg.supabase.co
+            VITE_SUPABASE_URL=${{ vars.VITE_SUPABASE_URL || 'https://ezfccfypwmuvbpujkqrg.supabase.co' }}
+            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            VITE_API_URL=${{ vars.VITE_API_URL || 'https://ezfccfypwmuvbpujkqrg.supabase.co' }}
 
   docker-backend:
     runs-on: ubuntu-latest
@@ -164,13 +165,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.BACKEND_IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+            type=sha,format=long,prefix=
 
       - name: Build and Push Backend Image
         uses: docker/build-push-action@v6
@@ -211,7 +212,7 @@ jobs:
       - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/nduva15/beeyield-${{ matrix.image }}:${{ github.ref_name }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/beeyield-${{ matrix.image }}:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-results.sarif'
         env:

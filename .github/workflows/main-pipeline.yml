@@ -19,8 +19,9 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  FRONTEND_IMAGE: nduva15/beeyield-frontend
-  BACKEND_IMAGE: nduva15/beeyield-backend
+  IMAGE_NAMESPACE: ${{ github.repository_owner }}
+  FRONTEND_IMAGE: beeyield-frontend
+  BACKEND_IMAGE: beeyield-backend
 
 jobs:
   # ============================================================
@@ -243,13 +244,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+            type=sha,format=long,prefix=
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and Push
@@ -263,11 +264,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            VITE_SUPABASE_URL:  https://ezfccfypwmuvbpujkqrg.supabase.co
-            VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
-            VITE_API_URL:  https://ezfccfypwmuvbpujkqrg.supabase.co
-            VITE_STRIPE_PUBLISHABLE_KEY: pk_live_51SozbEE0oxdsQvSR0qD3bfPSuj11tJXNFdSm8g2a7Z4jgsOdhN6s6yQRXmMP1U0KMIw5E0B2SRdF1uEeFJwxtBUD001D5DU4xh
-            VITE_STRIPE_API_URL: https://api.stripe.com/v1
+            VITE_SUPABASE_URL=${{ vars.VITE_SUPABASE_URL || 'https://ezfccfypwmuvbpujkqrg.supabase.co' }}
+            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            VITE_API_URL=${{ vars.VITE_API_URL || 'https://ezfccfypwmuvbpujkqrg.supabase.co' }}
+            VITE_STRIPE_PUBLISHABLE_KEY=${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+            VITE_STRIPE_API_URL=${{ vars.VITE_STRIPE_API_URL || 'https://api.stripe.com/v1' }}
 
       - name: Log in to Container Registry
         uses: docker/login-action@v3
@@ -279,7 +280,7 @@ jobs:
       - name: Scan Frontend Image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.ref_name }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-frontend-image.sarif'
         env:
@@ -321,13 +322,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.BACKEND_IMAGE }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
+            type=sha,format=long,prefix=
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and Push
@@ -351,7 +352,7 @@ jobs:
       - name: Scan Backend Image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.ref_name }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-backend-image.sarif'
         env:
@@ -391,10 +392,10 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/frontend-dev \
-            frontend=${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
+            frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
             -n beeyield-dev
           kubectl set image deployment/backend-dev \
-            backend=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
+            backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
             -n beeyield-dev
           
           kubectl rollout status deployment/frontend-dev -n beeyield-dev
@@ -428,10 +429,10 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/frontend-staging \
-            frontend=${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
+            frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
             -n beeyield-staging
           kubectl set image deployment/backend-staging \
-            backend=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
+            backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
             -n beeyield-staging
           
           kubectl rollout status deployment/frontend-staging -n beeyield-staging
@@ -444,7 +445,7 @@ jobs:
 
       - name: Run Smoke Tests
         run: |
-          curl -f https://staging.beeyield.com/health || exit 1
+          curl -f https://staging.beeyield.com/ || exit 1
           curl -f https://staging.beeyield.com/api/health || exit 1
 
   deploy-production:
@@ -476,10 +477,10 @@ jobs:
         run: |
           # Deploy new version (green)
           kubectl set image deployment/frontend-green \
-            frontend=${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
+            frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
             -n beeyield-prod
           kubectl set image deployment/backend-green \
-            backend=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
+            backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
             -n beeyield-prod
           
           # Wait for green to be ready
@@ -494,7 +495,7 @@ jobs:
       - name: Smoke Tests
         run: |
           # Test green deployment
-          curl -f https://green.beeyield.com/health || exit 1
+          curl -f https://green.beeyield.com/ || exit 1
           curl -f https://green.beeyield.com/api/health || exit 1
 
       - name: Switch Traffic (Blue to Green)
@@ -536,6 +537,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run End-to-End Tests
+        if: ${{ hashFiles('playwright.config.prod.ts') != '' }}
         run: |
           npx playwright test --config=playwright.config.prod.ts
         continue-on-error: true

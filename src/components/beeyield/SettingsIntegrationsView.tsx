@@ -22,6 +22,8 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
     // State for inputs
     const [kraPin, setKraPin] = React.useState('');
     const [branchCode, setBranchCode] = React.useState('00');
+    const [deviceSerial, setDeviceSerial] = React.useState('BY-VSCU-MOCK-2026');
+    const [companyName, setCompanyName] = React.useState('');
 
     const fetchConfigs = React.useCallback(async (force = false) => {
         if (!force && configs.length > 0) {
@@ -35,8 +37,10 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
 
             const etims = data?.find((c: any) => c.platform === 'etims');
             if (etims) {
-                setKraPin(etims.kra_pin || '');
-                setBranchCode(etims.branch_code || '00');
+                setKraPin(etims.kra_pin || etims.config_json?.kra_pin || '');
+                setBranchCode(etims.branch_code || etims.config_json?.branch_code || '00');
+                setDeviceSerial(etims.device_serial || etims.config_json?.device_serial || 'BY-VSCU-MOCK-2026');
+                setCompanyName(etims.company_name || etims.config_json?.company_name || '');
             }
         } catch (e) {
             console.error(e);
@@ -49,8 +53,10 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
         if (initialConfigs && initialConfigs.length > 0) {
             const etims = initialConfigs.find((c: any) => c.platform === 'etims');
             if (etims) {
-                setKraPin(etims.kra_pin || '');
-                setBranchCode(etims.branch_code || '00');
+                setKraPin(etims.kra_pin || etims.config_json?.kra_pin || '');
+                setBranchCode(etims.branch_code || etims.config_json?.branch_code || '00');
+                setDeviceSerial(etims.device_serial || etims.config_json?.device_serial || 'BY-VSCU-MOCK-2026');
+                setCompanyName(etims.company_name || etims.config_json?.company_name || '');
             }
             setConfigs(initialConfigs);
             setLoading(false);
@@ -66,7 +72,14 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
             platform: 'etims',
             is_active: true,
             kra_pin: kraPin,
-            branch_code: branchCode
+            branch_code: branchCode,
+            device_serial: deviceSerial,
+            config_json: {
+                kra_pin: kraPin,
+                branch_code: branchCode,
+                device_serial: deviceSerial,
+                company_name: companyName
+            }
         });
         setLoading(false);
         if (res) {
@@ -147,6 +160,24 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
                                             placeholder="00"
                                             value={branchCode}
                                             onChange={(e) => setBranchCode(e.target.value)}
+                                            className="h-10 bg-gray-50 border-gray-100 text-sm font-bold focus:bg-white transition-colors text-center"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Device Serial</label>
+                                        <Input
+                                            placeholder="BY-VSCU-MOCK-2026"
+                                            value={deviceSerial}
+                                            onChange={(e) => setDeviceSerial(e.target.value.toUpperCase())}
+                                            className="h-10 bg-gray-50 border-gray-100 text-sm font-bold focus:bg-white transition-colors text-center"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Registered Business</label>
+                                        <Input
+                                            placeholder="BeeYield Ltd"
+                                            value={companyName}
+                                            onChange={(e) => setCompanyName(e.target.value)}
                                             className="h-10 bg-gray-50 border-gray-100 text-sm font-bold focus:bg-white transition-colors text-center"
                                         />
                                     </div>

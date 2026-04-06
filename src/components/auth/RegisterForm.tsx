@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User } from "lucide-react";
+import { ensureProfileForUser } from '@/lib/profileSync';
 
 interface RegisterFormProps {
     onSuccess?: () => void;
@@ -77,23 +78,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             if (supabaseInstance) {
                 const { data: { user } } = await supabaseInstance.auth.getUser();
                 if (user) {
-                    const profileTable = variant === 'shop' ? 'shop_profiles' :
-                        variant === 'professional' ? 'beeyield_profiles' :
-                            'profiles';
-
-                    await supabaseInstance
-                        .from(profileTable)
-                        .upsert({
-                            id: user.id,
-                            email: user.email,
-                            first_name: firstName,
-                            last_name: lastName,
-                            full_name: `${firstName} ${lastName}`.trim(),
+                    const { error: profileError } = await ensureProfileForUser(
+                        supabaseInstance,
+                        activeBackend,
+                        user,
+                        {
+                            firstName,
+                            lastName,
                             role: defaultRole,
-                            ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),
-                            ...(activeBackend === 'ceba' ? { role: 'admin' } : {}),
-                            updated_at: new Date().toISOString()
-                        });
+                        },
+                    );
+
+                    if (profileError) {
+                        console.error('Profile sync failed after registration', profileError);
+                    }
                 }
             }
 

@@ -1,18 +1,14 @@
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 
-// Use environment variable for the API base URL
-const isDev = import.meta.env.DEV;
+const RAW_API_URL = import.meta.env.VITE_API_URL || "http://localhost:9091";
+const NORMALIZED_API_URL = RAW_API_URL.endsWith('/api/v1')
+    ? RAW_API_URL.slice(0, -7)
+    : RAW_API_URL.replace(/\/$/, '');
 
-
-// Python Backend (INTELLIGENCE HUB)
-export const AI_API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/v1` : "http://localhost:8000/api/v1";
-
-// Rust/Go Gateway (DATA & SHOP)
-export const DATA_API_URL = "http://localhost:9090/api/v1";
-
-// Default to Python Backend for generic requests
-export const API_BASE_URL = AI_API_URL;
-export const API_V1_URL = AI_API_URL;
+export const API_V1_URL = `${NORMALIZED_API_URL}/api/v1`;
+export const API_BASE_URL = API_V1_URL;
+export const AI_API_URL = API_V1_URL;
+export const DATA_API_URL = API_V1_URL;
 
 /**
  * Get the active Supabase client based on URL path
@@ -107,51 +103,7 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
  * Get the appropriate base URL based on the endpoint
  */
 export function getBaseUrl(endpoint: string): string {
-    // Default to Gateway (Port 9090) for Shop & general Data
-    let baseUrl = DATA_API_URL;
-
-    // List of prefixes that should be routed to the Python Backend (Port 8000)
-    const pythonPrefixes = [
-        "/ai/", "ai/",
-        "/assistant/", "assistant/",
-        "/beeyield/", "beeyield/",
-        "/hub/", "hub/",
-        "/integrations/", "integrations/",
-        "/bee-data",
-        "/search",
-        "/contact/",
-        "/forms/",
-        "/pollination/",
-        "/stats/",
-        "/labels", "/labels/", "labels",
-        "/image/",
-        "/acoustic/",
-        "/iot/", "iot/",
-        "/traceability/", "traceability/",
-        "/analytics/", "analytics/",
-        "/auth/", "auth/",
-        "/settings/", "settings/",
-        "/inspections/", "inspections/",
-        "/notes/", "notes/",
-        "/requests/", "requests/",
-        "/admin/", "admin/",
-        "/shop/", "shop/",
-        "/blog/", "blog/",
-        "/meters/", "meters/",
-        "/measurements/", "measurements/",
-        "/reports/", "/reports", "reports/",
-        "/intelligence/", "intelligence/", "intelligence"
-    ];
-
-    const isPythonBackend = pythonPrefixes.some(prefix =>
-        endpoint.includes(prefix) || endpoint.startsWith(prefix)
-    );
-
-    if (isPythonBackend) {
-        baseUrl = AI_API_URL;
-    }
-
-    return baseUrl;
+    return API_V1_URL;
 }
 
 // Helper function for API calls with error handling

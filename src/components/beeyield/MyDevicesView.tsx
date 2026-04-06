@@ -1,5 +1,6 @@
 import React from 'react';
-import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
+import { useQueryClient } from '@tanstack/react-query';
+import { beeyieldService, IoTDevice, IoTDeviceCreateInput, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
 import {
     Plus, Battery, Signal, Search, Smartphone, RefreshCw, Wifi,
     FileSearch, Settings, ArrowRight, Cpu, Network, ShieldCheck, Download,
@@ -9,14 +10,12 @@ import {
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AddDeviceModal from './AddDeviceModal';
-import { toast } from 'sonner';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Button } from '@/components/ui/button';
 import { glass, GlassStatCard } from './GlassTheme';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Label } from '@/components/ui/label';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { deviceKeys } from '@/hooks/useDevices';
 
 interface MyDevicesViewProps {
     devices: IoTDevice[];
@@ -27,28 +26,30 @@ interface MyDevicesViewProps {
 }
 
 const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, readings, apiaries, hives, onTabChange }) => {
+    const queryClient = useQueryClient();
     const [localDevices, setLocalDevices] = React.useState<IoTDevice[]>(initialDevices);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('all');
-    const { t } = useLanguage();
 
     React.useEffect(() => {
         setLocalDevices(initialDevices);
     }, [initialDevices]);
 
-    const handleAddDevice = async (newDeviceData: any) => {
-        try {
-            const { data, error } = await beeyieldService.createDevice(newDeviceData);
-            if (error) throw error;
-            if (data) {
-                setLocalDevices([data, ...localDevices]);
-                toast.success(`Device ${data.device_code} Added`);
-            }
-        } catch (error) {
-            console.error('Add error:', error);
-            toast.error('Could not add device. Please try again.');
+    const handleAddDevice = async (newDeviceData: IoTDeviceCreateInput) => {
+        const { data, error } = await beeyieldService.createDevice(newDeviceData, { silent: true });
+        if (error || !data) {
+            throw error || new Error('Device creation failed');
         }
+
+        setLocalDevices((currentDevices) => {
+            const nextDevices = [data, ...currentDevices.filter((device) => device.id !== data.id)];
+            localStorage.setItem('beeyield_devices_cache_v1', JSON.stringify(nextDevices));
+            queryClient.setQueryData(deviceKeys.list(), nextDevices);
+            return nextDevices;
+        });
+
+        return data;
     };
 
     const filteredDevices = localDevices.filter(d => {

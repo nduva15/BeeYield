@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiDelete, apiDownload } from './api';
+import { apiGet, apiPost, apiPut, apiDelete, apiDownload } from './api';
 
 export interface LabelDesign {
     id: string;
@@ -59,39 +59,59 @@ export interface LabelDesign {
     certifications: string[];
 }
 
+interface LabelRecord {
+    id?: string;
+    name?: string;
+    design_json?: Partial<LabelDesign>;
+}
+
+const normalizeLabelDesign = (item: LabelRecord | LabelDesign): LabelDesign => {
+    const design = 'design_json' in item && item.design_json ? item.design_json : item;
+    const recordId = 'id' in item ? item.id : design.id;
+    const normalizedId = String(recordId || '').replace(/^"|"$/g, '');
+
+    return {
+        ...(design as LabelDesign),
+        id: normalizedId,
+        name: (design as LabelDesign).name || ('name' in item ? item.name : undefined) || (design as LabelDesign).productName || 'Untitled Label',
+    };
+};
+
 export const labelService = {
     getLabels: async (): Promise<LabelDesign[]> => {
         try {
-            const response: any = await apiGet('/labels');
+            const response: LabelRecord[] | { data?: LabelRecord[] } = await apiGet('/labels');
             const data = Array.isArray(response) ? response : (response.data || []);
-            return data.map((item: any) => ({
-                ...item.design_json,
-                id: (item.id || '').replace(/^"|"$/g, '') // Sanitize ID to prevent double-quotes issues
-            }));
+            return data.map(normalizeLabelDesign);
         } catch (e) {
             // If user is logged out, return empty list (dashboard shows empty tables)
             return [];
         }
     },
 
+    getLabel: async (id: string): Promise<LabelDesign> => {
+        const response: LabelRecord | { data?: LabelRecord } = await apiGet(`/labels/${id}`);
+        const data = 'data' in response && response.data ? response.data : response;
+        return normalizeLabelDesign(data as LabelRecord);
+    },
+
+    createLabel: async (design: LabelDesign): Promise<LabelDesign> => {
+        const response: LabelRecord | { data?: LabelRecord } = await apiPost('/labels', design);
+        const data = 'data' in response && response.data ? response.data : response;
+        return normalizeLabelDesign(data as LabelRecord);
+    },
+
+    updateLabel: async (id: string, design: LabelDesign): Promise<LabelDesign> => {
+        const response: LabelRecord | { data?: LabelRecord } = await apiPut(`/labels/${id}`, design);
+        const data = 'data' in response && response.data ? response.data : response;
+        return normalizeLabelDesign(data as LabelRecord);
+    },
+
     saveLabel: async (design: LabelDesign): Promise<LabelDesign> => {
         try {
-            const response: any = await apiPost('/labels', design);
-            const data = response.data ? response.data : response;
-            
-            // If design_json exists, use it; otherwise treat the whole response as the design
-            if (data.design_json) {
-                return {
-                    ...data.design_json,
-                    id: data.id || design.id
-                };
-            }
-            
-            // Fallback: the response IS the design
-            return {
-                ...design,
-                id: data.id || design.id
-            };
+            return design.id
+                ? await labelService.updateLabel(design.id, design)
+                : await labelService.createLabel(design);
         } catch (error) {
             console.error('[LabelService] Save failed:', error);
             throw error;

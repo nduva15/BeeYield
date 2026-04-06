@@ -216,6 +216,15 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         }
     }, [selectedApiary]);
 
+    React.useEffect(() => {
+        if (!selectedApiary || crops.length === 0) return;
+        const forageType = String(selectedApiary.forage_type || '').trim();
+        const cropNames = crops.map((c: any) => String(c?.crop_name || c?.cropName || '').trim()).filter(Boolean);
+        if (forageType && cropNames.includes(forageType)) {
+            setSelectedCrop(forageType);
+        }
+    }, [crops, selectedApiary]);
+
     const orchardPolygon = React.useMemo(() => {
         const lat = selectedApiary?.latitude ?? -1.285;
         const lng = selectedApiary?.longitude ?? 36.825;
@@ -501,6 +510,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
         [readings, selectedDeviceId]
     );
+
+    const reportCards = React.useMemo(() => [
+        { title: 'Bloom Saturation Flux', icon: Terminal, color: 'text-[#1B9157]', val: `${metrics.pollinationEfficacy}%`, label: 'Live estimate' },
+        { title: 'Fleet Efficiency Audit', icon: Activity, color: 'text-[#1A1A1A]', val: filteredDevices.length.toString(), label: 'Linked nodes' }
+    ], [filteredDevices.length, metrics.pollinationEfficacy]);
 
     const subPageOptions = [
         { id: 'grid', label: 'Nodes', icon: Layers },
@@ -1133,7 +1147,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 {activeSubPage === 'reports' && (
                     <motion.div key="reports" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {[
+                            {false ? [
                                 { title: 'Bloom Saturation Flux', icon: Terminal, color: 'text-[#1B9157]', val: '—%', label: 'Registry' },
                                 { title: 'Fleet Efficiency Audit', icon: Activity, color: 'text-[#1A1A1A]', val: devices.length.toString(), label: 'Active Nodes' }
                             ].map((r, i) => (
@@ -1158,6 +1172,28 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         </button>
                                     </div>
                                 </div>
+                            )) : reportCards.map((r, i) => (
+                                <div key={`report-${i}`} className={cn(glass.card, "p-0 overflow-hidden border-white/40 shadow-sm")}>
+                                    <div className="p-4 border-b border-[#1B9157]/5 flex justify-between items-center bg-white/50">
+                                        <h4 className={glass.sectionTitle}>{r.title}</h4>
+                                        <div className="w-8 h-8 rounded-lg bg-white border border-gray-100 shadow-sm flex items-center justify-center">
+                                            <r.icon className={cn("w-3.5 h-3.5", r.color)} />
+                                        </div>
+                                    </div>
+                                    <div className="p-6 space-y-8">
+                                        <div className="flex justify-between items-end border-b border-[#1B9157]/5 pb-4">
+                                            <span className={glass.microLabel}>Protocol Status</span>
+                                            <div className="flex items-baseline gap-2">
+                                                <span className={cn("text-3xl font-black tracking-tighter", r.color)}>{r.val}</span>
+                                                <span className="text-[9px] font-black text-gray-400">{r.label}</span>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => handleExport(r.title)} className={cn(glass.btnSecondary, "w-full h-10 text-[9px] font-black rounded-xl flex items-center justify-center gap-2 group")}>
+                                            <FileDown className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
+                                            <span>Sync Log</span>
+                                        </button>
+                                    </div>
+                                </div>
                             ))}
                         </div>
 
@@ -1171,11 +1207,14 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                             </div>
                             <div className="p-6 space-y-3 max-h-[400px] overflow-y-auto thin-scrollbar">
                                 {deployments.length === 0 ? (
-                                    <div className="py-20 flex flex-col items-center justify-center gap-4 opacity-20">
+                                    <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
                                         <div className="w-14 h-14 rounded-3xl bg-gray-100 flex items-center justify-center">
                                             <Terminal className="w-7 h-7" />
                                         </div>
-                                        <span className="text-[10px] font-black">Registry Null</span>
+                                        <div className="space-y-1">
+                                            <span className="block text-[10px] font-black text-[#1A1A1A]">No deployment history yet</span>
+                                            <span className="block text-[10px] font-bold text-gray-400">Save a pollination plan to start the registry.</span>
+                                        </div>
                                     </div>
                                 ) : (
                                     deployments.map((d, i) => (

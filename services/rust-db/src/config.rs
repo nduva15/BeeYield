@@ -14,6 +14,16 @@ pub struct Config {
     pub mpesa_shortcode: String,
     pub mpesa_passkey: String,
     pub mpesa_callback_url: String,
+    pub app_url: String,
+    pub quickbooks_client_id: String,
+    pub quickbooks_client_secret: String,
+    pub quickbooks_scopes: String,
+    pub shopify_api_key: String,
+    pub shopify_api_secret: String,
+    pub shopify_scopes: String,
+    pub etims_api_key: String,
+    pub etims_base_url: String,
+    pub etims_vscu_serial: String,
 }
 
 impl Config {
@@ -43,6 +53,20 @@ impl Config {
         let mpesa_shortcode = env::var("MPESA_SHORTCODE").unwrap_or_default();
         let mpesa_passkey = env::var("MPESA_PASSKEY").unwrap_or_default();
         let mpesa_callback_url = env::var("MPESA_CALLBACK_URL").unwrap_or_default();
+        let app_url = env::var("APP_URL").unwrap_or_else(|_| "http://localhost:5173".to_string());
+        let quickbooks_client_id = env::var("QUICKBOOKS_CLIENT_ID").unwrap_or_default();
+        let quickbooks_client_secret = env::var("QUICKBOOKS_CLIENT_SECRET").unwrap_or_default();
+        let quickbooks_scopes = env::var("QUICKBOOKS_SCOPES")
+            .unwrap_or_else(|_| "com.intuit.quickbooks.accounting".to_string());
+        let shopify_api_key = env::var("SHOPIFY_API_KEY").unwrap_or_default();
+        let shopify_api_secret = env::var("SHOPIFY_API_SECRET").unwrap_or_default();
+        let shopify_scopes = env::var("SHOPIFY_SCOPES")
+            .unwrap_or_else(|_| "read_products,read_orders".to_string());
+        let etims_api_key = env::var("ETIMS_API_KEY").unwrap_or_default();
+        let etims_base_url = env::var("ETIMS_BASE_URL")
+            .unwrap_or_else(|_| "https://etims-sandbox.kra.go.ke/api/v1".to_string());
+        let etims_vscu_serial = env::var("ETIMS_VSCU_SERIAL")
+            .unwrap_or_else(|_| "BY-VSCU-MOCK-2026".to_string());
 
         Config {
             supabase_url,
@@ -55,6 +79,16 @@ impl Config {
             mpesa_shortcode,
             mpesa_passkey,
             mpesa_callback_url,
+            app_url,
+            quickbooks_client_id,
+            quickbooks_client_secret,
+            quickbooks_scopes,
+            shopify_api_key,
+            shopify_api_secret,
+            shopify_scopes,
+            etims_api_key,
+            etims_base_url,
+            etims_vscu_serial,
         }
     }
 

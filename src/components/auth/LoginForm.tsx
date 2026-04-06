@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, Shield } from "lucide-react";
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
+import { ensureProfileForUser } from '@/lib/profileSync';
 
 interface LoginFormProps {
     onSuccess?: () => void;
@@ -71,21 +72,18 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 .single();
 
             if (profileError || !profile) {
-                const firstName = loggedInUser.user_metadata?.first_name || '';
-                const lastName = loggedInUser.user_metadata?.last_name || '';
-                const { error: insertError } = await supabaseInstance
-                    .from(profileTable)
-                    .upsert({
-                        id: loggedInUser.id,
-                        email: loggedInUser.email,
-                        first_name: firstName || 'New',
-                        last_name: lastName || 'User',
-                        full_name: `${firstName} ${lastName}`.trim() || 'New User',
-                        role: loggedInUser.user_metadata?.role || 'user',
-                        ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),
-                        ...(activeBackend === 'ceba' ? { role: 'admin' } : {}),
-                        updated_at: new Date().toISOString()
-                    });
+                const { error: insertError } = await ensureProfileForUser(
+                    supabaseInstance,
+                    activeBackend,
+                    loggedInUser,
+                    {
+                        role: activeBackend === 'ceba'
+                            ? 'admin'
+                            : typeof loggedInUser.user_metadata?.role === 'string'
+                                ? loggedInUser.user_metadata.role
+                                : 'user',
+                    },
+                );
 
                 if (insertError) {
                     const isSuperAdmin = [SUPER_ADMIN_EMAIL, 'timothynduva349@gmail.com'].includes(loggedInUser?.email?.toLowerCase() || '');

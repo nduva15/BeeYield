@@ -131,29 +131,12 @@ const BeeYieldDashboard: React.FC = () => {
     const { data: rawReadings, isLoading: readingsLoading } = useSensorReadings(undefined, 24 * 7);
     const { data: alertsData } = useSensorAlerts(false); // Get active alerts for global badge
 
-    const { apiaries, hives, devices, readings } = React.useMemo(() => {
-        const isTimothy = user?.email?.toLowerCase().includes('timothynduva');
-        const baseApiaries = rawApiaries || [];
-        const baseHives = rawHives || [];
-        const baseDevices = rawDevices || [];
-        const baseReadings = rawReadings || [];
-
-        const filteredApiaries = isTimothy
-            ? baseApiaries.filter(a => (a.name || '').toLowerCase() === 'kibwei sanctuary')
-            : baseApiaries;
-
-        const allowedApiaryIds = new Set(filteredApiaries.map(a => a.id));
-        const filteredHives = isTimothy
-            ? baseHives.filter(h => !h.apiary_id || allowedApiaryIds.has(h.apiary_id))
-            : baseHives;
-
-        return {
-            apiaries: filteredApiaries,
-            hives: filteredHives,
-            devices: baseDevices,
-            readings: baseReadings
-        };
-    }, [rawApiaries, rawHives, rawDevices, rawReadings, user]);
+    const { apiaries, hives, devices, readings } = React.useMemo(() => ({
+        apiaries: rawApiaries || [],
+        hives: rawHives || [],
+        devices: rawDevices || [],
+        readings: rawReadings || [],
+    }), [rawApiaries, rawHives, rawDevices, rawReadings]);
 
     const loading = apiariesLoading || hivesLoading || devicesLoading || readingsLoading;
 

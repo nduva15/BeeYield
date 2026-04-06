@@ -10,11 +10,11 @@ class BlockchainRecordBase(BaseModel):
     blockchain_verified: bool = False
 
 class LocationBase(BaseModel):
-    latitude: float
-    longitude: float
-    location_name: str
-    region: str
-    county: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    location_name: Optional[str] = None
+    region: Optional[str] = None
+    county: Optional[str] = None
     ward: Optional[str] = None
 
 # --- Farmer / Beekeeper ---
@@ -29,8 +29,8 @@ class FarmerCreate(FarmerBase, LocationBase):
     pass
 
 class Farmer(FarmerCreate):
-    farmer_id: str
-    registration_date: datetime
+    farmer_id: Optional[str] = None
+    registration_date: Optional[datetime] = None
     certification_status: str = "PENDING"  # PENDING, CERTIFIED, REJECTED
     total_hives: int = 0
 
@@ -47,8 +47,8 @@ class ApiaryCreate(ApiaryBase, LocationBase):
     farmer_id: str
     
 class Apiary(ApiaryCreate):
-    apiary_id: str
-    established_date: date
+    apiary_id: Optional[str] = None
+    established_date: Optional[date] = None
     hive_count: int = 0
 
 # --- Hive ---
@@ -67,7 +67,7 @@ class HiveCreate(HiveBase):
     installation_date: date
 
 class Hive(HiveCreate):
-    hive_id: str
+    hive_id: Optional[str] = None
     status: str = "ACTIVE"
     last_inspection: Optional[date] = None
 
@@ -121,9 +121,13 @@ class TraceJourneyStep(BaseModel):
 class TraceResponse(BaseModel):
     batch_code: str
     product_name: str
+    harvest_date: Optional[str] = None
     verified: bool
     blockchain_verified: bool
     verification_url: str
+    verification_status: Optional[str] = None
+    blockchain_status: Optional[dict[str, Any]] = None
+    completeness: Optional[dict[str, Any]] = None
     
     # Entities
     farmer: Optional[Farmer] = None

@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, Optional
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_upsert, get_supabase
 from app.services import traceability_service
+from app.services.traceability_batch_service import get_all_batch_views
 from app.core import security
 from pydantic import BaseModel
 
@@ -628,24 +629,29 @@ async def create_batch(
 @router.get("/batches", response_model=list[dict[str, Any]])
 async def get_batches_db(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """
-    Get all batches from the DB. Requires admin.
+    Get all batches from the canonical normalized batch view. Requires admin.
     """
-    data = []
     try:
-        data = await db_select("honey_batches", order_by="created_at", ascending=False, token=token)
+        return await get_all_batch_views(token=token, limit=2000)
     except Exception as e:
         print(f"DB Batch Fetch Error: {e}")
+        return []
 
-    if not data or len(data) == 0:
-        from app.blockchain.honey_chain import honey_blockchain
-        blockchain_batches = honey_blockchain.search_by_type(honey_blockchain.BlockType.BATCH_CREATION)
-        if blockchain_batches:
-            data = [b["data"] for b in blockchain_batches]
-            for item in data:
-                if 'quantity_kg' not in item and 'total_quantity_kg' in item:
-                    item['quantity_kg'] = item['total_quantity_kg']
-    
-    return data
+
+@router.get("/account-audit", response_model=dict[str, Any])
+async def audit_account_data(
+    email: Optional[str] = None,
+    user_id: Optional[str] = None,
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token),
+):
+    """
+    Audit the data completeness for a target account.
+    """
+    if not email and not user_id:
+        raise HTTPException(status_code=400, detail="Provide email or user_id")
+
+    return await traceability_service.audit_account(email=email, user_id=user_id, token=token)
 
 @router.put("/batches/{batch_id}", response_model=dict[str, Any])
 async def update_batch_admin(

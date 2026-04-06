@@ -2,25 +2,23 @@ import React from 'react';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Apiary, Hive } from '@/services/beeyieldService';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { Apiary, Hive, IoTDevice, IoTDeviceCreateInput } from '@/services/beeyieldService';
 import { Label } from "@/components/ui/label";
-import { Cpu, Database, Network, ShieldCheck, RefreshCw, X, Info, Zap, Binary, Activity, Command, Shield } from 'lucide-react';
+import { Cpu, Database, Network, ShieldCheck, RefreshCw, X, Info, Zap, Binary } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface AddDeviceModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onAdd: (device: any) => void;
+    onAdd: (device: IoTDeviceCreateInput) => Promise<IoTDevice>;
     apiaries: Apiary[];
     hives: Hive[];
 }
 
 const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onAdd, apiaries, hives }) => {
-    const { t } = useLanguage();
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>("");
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>("");
     const [deviceCode, setDeviceCode] = React.useState("");
@@ -28,15 +26,48 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
     const [deviceType, setDeviceType] = React.useState<'infield' | 'inland' | 'disease'>('inland');
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    const filteredHives = hives?.filter(h => h.apiary_id === selectedApiaryId) || [];
+    const resetForm = React.useCallback(() => {
+        setSelectedApiaryId("");
+        setSelectedHiveId("");
+        setDeviceCode("");
+        setDeviceName("");
+        setDeviceType('inland');
+    }, []);
+
+    const selectedApiary = React.useMemo(
+        () => apiaries.find((apiary) => apiary.id === selectedApiaryId),
+        [apiaries, selectedApiaryId]
+    );
+    const filteredHives = React.useMemo(
+        () => hives?.filter((hive) => hive.apiary_id === selectedApiaryId) || [],
+        [hives, selectedApiaryId]
+    );
+
+    React.useEffect(() => {
+        if (!open) {
+            resetForm();
+        }
+    }, [open, resetForm]);
+
+    React.useEffect(() => {
+        setSelectedHiveId("");
+    }, [selectedApiaryId]);
+
+    const handleOpenChange = (nextOpen: boolean) => {
+        if (!nextOpen && !isSubmitting) {
+            resetForm();
+        }
+        onOpenChange(nextOpen);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!deviceCode?.trim()) {
+        if (!deviceCode.trim()) {
             toast.error("Please enter the device ID");
             return;
         }
+
         if (!selectedApiaryId) {
             toast.error("Please select a location");
             return;
@@ -44,25 +75,24 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
         const toastId = toast.loading("Adding device...");
         setIsSubmitting(true);
+
         try {
-            const locationName = apiaries.find(a => a.id === selectedApiaryId)?.name || '';
-            const newDevice = {
-                device_code: deviceCode.trim(),
-                device_name: (deviceName || `Device ${deviceCode}`).trim(),
+            const normalizedCode = deviceCode.trim();
+            const newDevice: IoTDeviceCreateInput = {
+                device_code: normalizedCode,
+                device_name: (deviceName.trim() || `Device ${normalizedCode}`).trim(),
                 device_type: deviceType,
-                location_name: locationName,
+                location_name: selectedApiary?.location_name || selectedApiary?.name || '',
+                latitude: selectedApiary?.latitude ?? undefined,
+                longitude: selectedApiary?.longitude ?? undefined,
                 apiary_id: selectedApiaryId,
                 linked_apiary_id: selectedApiaryId,
-                hive_id: selectedHiveId || null
+                hive_id: selectedHiveId || undefined,
             };
 
             await onAdd(newDevice);
 
-            // Reset form
-            setDeviceCode("");
-            setDeviceName("");
-            setSelectedApiaryId("");
-            setSelectedHiveId("");
+            resetForm();
             onOpenChange(false);
             toast.success("Device added.", { id: toastId });
         } catch (error) {
@@ -74,7 +104,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-3xl bg-[#FFF9F0]/80 backdrop-blur-3xl border-[#F4D03F]/10 rounded-[4rem] shadow-[0_100px_200px_-50px_rgba(0,0,0,0.5)] p-0 overflow-hidden antialiased outline-none thin-scrollbar">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.98, y: 30 }}
@@ -103,12 +133,12 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                         Add <span className="text-[#F4D03F]">device</span>
                                     </h2>
                                     <p className="text-gray-500 font-black text-[11px] mt-3 italic border-l-2 border-[#F4D03F]/20 pl-8 max-w-sm">
-                                        Link a sensor or gateway to a location (and optionally a hive).
+                                        Link a sensor or gateway to a location and optionally pin it to a hive.
                                     </p>
                                 </div>
                             </div>
                             <button
-                                onClick={() => onOpenChange(false)}
+                                onClick={() => handleOpenChange(false)}
                                 className="w-16 h-16 rounded-[2rem] bg-[#F9F7F2] border border-[#F4D03F]/20 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-500 transition-all duration-700 shadow-2xl group"
                                 aria-label="Close"
                                 title="Close"
@@ -138,7 +168,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
                             <div className="space-y-6">
                                 <Label className={cn(glass.microLabel, 'ml-8 border-l-2 border-blue-500/40 pl-6 opacity-40 font-black text-[10px]')}>Device type</Label>
-                                <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
+                                <Select value={deviceType} onValueChange={(value: 'infield' | 'inland' | 'disease') => setDeviceType(value)}>
                                     <SelectTrigger id="add-device-type" aria-label="Device type" className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
                                             <Zap className="w-6 h-6 text-blue-400" />
@@ -161,11 +191,11 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     <SelectTrigger id="add-device-apiary" aria-label="Location" className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner')}>
                                         <div className="flex items-center gap-6">
                                             <Database className="w-6 h-6 text-[#F4D03F]" />
-                                            <SelectValue placeholder="Select a location…" />
+                                            <SelectValue placeholder="Select a location..." />
                                         </div>
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
-                                        {apiaries.map(apiary => (
+                                        {apiaries.map((apiary) => (
                                             <SelectItem key={apiary.id} value={apiary.id} className="p-5 font-black text-[11px] italic">
                                                 {apiary.name.toUpperCase()}
                                             </SelectItem>
@@ -184,11 +214,11 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                     <SelectTrigger id="add-device-hive" aria-label="Hive" className={cn(glass.select, 'h-20 px-10 rounded-[2.5rem] italic font-black text-xl bg-[#F9F7F2] border-none shadow-inner disabled:opacity-20')}>
                                         <div className="flex items-center gap-6">
                                             <ShieldCheck className="w-6 h-6 text-[#1B9157]" />
-                                            <SelectValue placeholder="Select a hive…" />
+                                            <SelectValue placeholder="Select a hive..." />
                                         </div>
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
-                                        {filteredHives.map(hive => (
+                                        {filteredHives.map((hive) => (
                                             <SelectItem key={hive.id} value={hive.id} className="p-5 font-black text-[11px] italic">
                                                 {hive.hive_code.toUpperCase()}
                                             </SelectItem>
@@ -217,14 +247,14 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         <div className="p-14 bg-gray-400 border-t border-[#F4D03F]/10 flex gap-10 rounded-[3rem] shadow-inner mt-10">
                             <button
                                 type="button"
-                                onClick={() => onOpenChange(false)}
+                                onClick={() => handleOpenChange(false)}
                                 className={cn(glass.btnSecondary, "flex-1 h-22 rounded-[2.5rem] font-black italic text-lg transition-all bg-gray-400")}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                disabled={isSubmitting || !deviceCode?.trim() || !selectedApiaryId}
+                                disabled={isSubmitting || !deviceCode.trim() || !selectedApiaryId}
                                 className={cn(glass.btnPrimary, "flex-[2] h-22 bg-[#FBBE24] text-[#1A1A1A] shadow-[0_45px_100px_-20px_rgba(251,191,36,0.6)] rounded-[2.5rem] px-14 font-black italic text-2xl transition-all flex items-center justify-center gap-6 group/commit pl-20")}
                             >
                                 {isSubmitting ? (
@@ -237,7 +267,6 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         </div>
                     </form>
 
-                    {/* Industrial Logic Banner */}
                     <div className="px-14 pb-14">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
@@ -251,7 +280,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                             <div className="relative z-10 space-y-2">
                                 <p className="text-xl italic font-black text-foreground tracking-tighter">Tip</p>
                                 <p className="text-[13px] italic font-medium opacity-40 leading-relaxed text-foreground max-w-xl">
-                                    Use the ID printed on the device. You can rename it later.
+                                    Use the ID printed on the device. The selected apiary now supplies the linked location details automatically.
                                 </p>
                             </div>
                         </motion.div>

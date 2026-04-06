@@ -184,3 +184,61 @@ pub struct HealthResponse {
     pub supabase_configured: bool,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct IntegrationConfigRequest {
+    pub platform: String,
+    pub is_active: bool,
+    #[serde(default)]
+    pub store_url: Option<String>,
+    #[serde(default)]
+    pub kra_pin: Option<String>,
+    #[serde(default)]
+    pub branch_code: Option<String>,
+    #[serde(default)]
+    pub device_serial: Option<String>,
+    #[serde(default)]
+    pub company_name: Option<String>,
+    #[serde(default)]
+    pub access_token: Option<String>,
+    #[serde(default)]
+    pub config_json: Option<Value>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct OAuthUrlResponse {
+    pub url: String,
+    pub state: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct QuickBooksCompleteRequest {
+    pub code: String,
+    #[serde(default)]
+    pub realm_id: Option<String>,
+    #[serde(default, rename = "realmId")]
+    pub realm_id_legacy: Option<String>,
+    pub state: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ShopifyAuthorizeRequest {
+    pub shop: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ShopifyCompleteRequest {
+    pub query: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct IntegrationSyncResponse {
+    pub success: bool,
+    pub platform: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub message: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metrics: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub config: Option<Value>,
+}
+

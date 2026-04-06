@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, ShieldCheck, Database, ArrowRight, Zap, UserPlus } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
+import { ensureProfileForUser } from '@/lib/profileSync';
 
 interface BeeYieldRegisterFormProps {
     onSuccess?: () => void;
@@ -36,7 +37,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             return;
         }
 
-        const { data: signupData, error } = await signUp(email, password, {
+        const { error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: 'professional',
@@ -47,14 +48,20 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             toast.error("Registration failed", { description: error.message });
         } else {
             const { supabaseBeeYield } = await import('@/lib/supabase');
-            if (supabaseBeeYield && signupData?.user) {
-                await supabaseBeeYield.from('beeyield_profiles').upsert({
-                    id: signupData.user.id,
-                    email: signupData.user.email,
-                    full_name: `${firstName} ${lastName}`.trim(),
-                    is_professional: true,
-                    updated_at: new Date().toISOString()
-                });
+            if (supabaseBeeYield) {
+                const { data: { user } } = await supabaseBeeYield.auth.getUser();
+                if (user) {
+                    const { error: profileError } = await ensureProfileForUser(
+                        supabaseBeeYield,
+                        'beeyield',
+                        user,
+                        { firstName, lastName, role: 'professional' },
+                    );
+
+                    if (profileError) {
+                        console.error('BeeYield profile sync failed after registration', profileError);
+                    }
+                }
             }
 
             toast.success("Account created");

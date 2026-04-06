@@ -32,8 +32,10 @@ impl SupabaseClient {
     fn build_headers(&self, token: Option<&str>, prefer: Option<&str>) -> reqwest::header::HeaderMap {
         let mut headers = reqwest::header::HeaderMap::new();
         let auth_key = self.config.auth_key();
+        let public_key = &self.config.supabase_key;
+        let apikey = if token.is_some() { public_key } else { auth_key };
 
-        headers.insert("apikey", auth_key.parse().unwrap());
+        headers.insert("apikey", apikey.parse().unwrap());
         headers.insert(
             "Authorization",
             format!("Bearer {}", token.unwrap_or(auth_key))
