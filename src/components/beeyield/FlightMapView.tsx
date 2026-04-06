@@ -4,7 +4,7 @@ import { Circle, CircleMarker, MapContainer, Polyline, Popup, TileLayer, useMap 
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
-import { AlertTriangle, Check, CheckCircle2, CloudSun, Loader2, Route } from 'lucide-react';
+import { AlertTriangle, Check, CheckCircle2, CloudSun, Layers3, Loader2, MapPin, Radar, Route } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -12,15 +12,13 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { glass, PageHeader } from './GlassTheme';
+import { GlassStatCard, glass, PageHeader } from './GlassTheme';
 import { useApiaries } from '@/hooks/useApiaries';
 import { cn } from '@/lib/utils';
 import { beeyieldService, PublicFlightMapPayload } from '@/services/beeyieldService';
 
 type HeatPoint = { id: string; name: string; lat: number; lng: number; intensity: number; status: string };
 type RoutePoint = { id: string; name: string; latitude: number; longitude: number; type: string; status?: string };
-
-const card = 'rounded-[28px] border border-[#edd9b4] bg-[#fffaf1] shadow-[0_18px_40px_rgba(157,118,39,0.08)]';
 
 const HeatLayer = ({ points, visible }: { points: HeatPoint[]; visible: boolean }) => {
     const map = useMap();
@@ -369,21 +367,29 @@ const FlightMapView: React.FC = () => {
             label: 'Forage potential',
             value: `~${Math.round(Number(flightArea?.forage?.potential_pct || 0))}%`,
             detail: `Share ${Math.round(Number(flightArea?.forage?.estimated_share_pct || 0))}%`,
+            icon: Radar,
+            color: 'text-[#1B9157]',
         },
         {
             label: 'Effective radius',
             value: formatMeters(effectiveRadiusKm),
             detail: 'High-confidence flight zone',
+            icon: MapPin,
+            color: 'text-[#F4D03F]',
         },
         {
             label: 'Maximum radius',
             value: formatMeters(maxRadiusKm),
             detail: 'Outer operating envelope',
+            icon: Route,
+            color: 'text-[#2563eb]',
         },
         {
             label: 'Live layers',
             value: activeLayerCount,
             detail: showHeatmap ? 'Heatmap active' : 'Map overlays trimmed',
+            icon: Layers3,
+            color: 'text-[#a16207]',
         },
     ];
 
@@ -399,7 +405,7 @@ const FlightMapView: React.FC = () => {
     }
 
     return (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, 'font-sans')}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, 'space-y-5 font-sans md:space-y-6')}>
             <PageHeader
                 icon={Route}
                 label="Flight intelligence"
@@ -416,9 +422,9 @@ const FlightMapView: React.FC = () => {
             />
 
             <section className={cn(glass.section, 'overflow-hidden')}>
-                <div className="border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,249,240,0.98),rgba(249,247,242,0.98))] px-5 py-5 md:px-6">
-                    <div className="grid gap-5 xl:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)]">
-                        <div className="space-y-4">
+                <div className="border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,249,240,0.98),rgba(249,247,242,0.98))] px-4 py-4 md:px-6 md:py-5">
+                    <div className="grid gap-4 xl:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)] xl:gap-5">
+                        <div className="space-y-3 md:space-y-4">
                             <div className="space-y-1">
                                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">{hasPrivateApiaries ? 'My locations' : 'Live location'}</p>
                                 <Select value={selectedApiaryId} onValueChange={handleApiaryChange}>
@@ -469,11 +475,16 @@ const FlightMapView: React.FC = () => {
                         </div>
 
                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                            {topStats.map((stat) => (
-                                <div key={stat.label} className={cn(glass.section, 'bg-white/60 p-4')}>
-                                    <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/45">{stat.label}</p>
-                                    <p className="mt-3 text-2xl font-bold tracking-tight text-[#1A1A1A]">{stat.value}</p>
-                                    <p className="mt-2 text-xs font-semibold text-[#1A1A1A]/55">{stat.detail}</p>
+                            {topStats.map((stat, index) => (
+                                <div key={stat.label} className="min-w-0">
+                                    <GlassStatCard
+                                        label={stat.label}
+                                        value={stat.value}
+                                        icon={stat.icon}
+                                        index={index}
+                                        color={stat.color}
+                                    />
+                                    <p className="mt-2 px-1 text-xs font-semibold text-[#1A1A1A]/55">{stat.detail}</p>
                                 </div>
                             ))}
                             <div className={cn(glass.section, 'bg-white/60 p-4 sm:col-span-2 xl:col-span-4')}>
@@ -503,7 +514,7 @@ const FlightMapView: React.FC = () => {
                 </div>
             </section>
 
-            <section className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_340px]">
+            <section className="grid gap-5 xl:grid-cols-[minmax(0,1.8fr)_340px] xl:gap-6">
                 <div className={cn(glass.section, 'overflow-hidden')}>
                     <div className="flex items-center justify-between border-b border-[#F4D03F]/20 bg-[#F9F7F2] px-5 py-4">
                         <div>
@@ -514,9 +525,9 @@ const FlightMapView: React.FC = () => {
                             {primaryLocationLabel}
                         </div>
                     </div>
-                    <div className="h-[520px] overflow-hidden">
+                    <div className="h-[340px] overflow-hidden sm:h-[420px] lg:h-[520px]">
                         <MapContainer center={mapCenter} zoom={12} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
-                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
+                            <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; OpenStreetMap contributors &copy; CARTO' />
                             <HeatLayer points={heatmapPoints} visible={showHeatmap} />
                             <SetView center={mapCenter} />
                             {showMaximumRange ? <Circle center={mapCenter} radius={Math.round(maxRadiusKm * 1000)} pathOptions={{ color: '#d8931c', fillColor: '#f6c65b', fillOpacity: 0.08, weight: 2 }} /> : null}
@@ -546,7 +557,7 @@ const FlightMapView: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="space-y-5">
+                <div className="space-y-4 md:space-y-5">
                     <div className={cn(glass.section, 'p-5')}>
                         <div className={cn('rounded-xl border px-4 py-3 text-sm font-semibold', flightArea?.weather?.available ? 'border-[#cfe9d4] bg-[#edf8ef] text-[#2f7a3d]' : 'border-[#f1c9c6] bg-[#fff0ef] text-[#c54e3d]')}>
                             {flightArea?.weather?.message || `Weather feed active for ${flightArea?.apiary?.location_name}.`}
@@ -576,12 +587,12 @@ const FlightMapView: React.FC = () => {
                 </div>
             </section>
 
-            <section className={cn(glass.section, 'p-5 md:p-6')}>
+            <section className={cn(glass.section, 'p-4 md:p-6')}>
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <h2 className="text-lg font-bold tracking-tight text-[#1A1A1A]">Economic route planner</h2>
                     <p className="max-w-md text-right text-sm text-[#1A1A1A]/55">{flightArea?.route_planner?.helper_text || 'Choose a start point and hive status to build a simple visit order.'}</p>
                 </div>
-                <div className="mt-6 grid gap-5 xl:grid-cols-2">
+                <div className="mt-5 grid gap-4 xl:grid-cols-2 xl:gap-5">
                     <div className="rounded-xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-5">
                         <div className="text-lg font-semibold text-[#1A1A1A]">Start point</div>
                         <div className="mt-5">
@@ -647,15 +658,15 @@ const FlightMapView: React.FC = () => {
                 </div>
             </section>
 
-            <section className={cn(glass.section, 'p-5 md:p-6')}>
+            <section className={cn(glass.section, 'p-4 md:p-6')}>
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <h2 className="text-lg font-bold tracking-tight text-[#1A1A1A]">All apiaries map</h2>
                     <p className="text-sm text-[#1A1A1A]/55">All locations from &quot;My locations&quot;</p>
                 </div>
-                <div className="mt-6 overflow-hidden rounded-xl border border-[#d9e5f4]">
-                    <div className="h-[360px]">
+                <div className="mt-5 overflow-hidden rounded-xl border border-[#d9e5f4]">
+                    <div className="h-[260px] sm:h-[320px] md:h-[360px]">
                         <MapContainer center={allApiaries.length > 0 ? [Number(allApiaries[0].latitude), Number(allApiaries[0].longitude)] : mapCenter} zoom={6} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
-                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
+                            <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; OpenStreetMap contributors &copy; CARTO' />
                             <FitApiaries points={allApiaries} />
                             {allApiaries.map((apiary: any) => (
                                 <React.Fragment key={apiary.id}>
