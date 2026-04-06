@@ -241,7 +241,7 @@ const IntegrationsView: React.FC = () => {
                             className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs bg-white text-[#1A1A1A]")}
                             onClick={() => handleConnectToggle(p as any)}
                         >
-                            {isConnectedNode ? 'Reconnect' : 'Connect'}
+                            {isConnectedNode ? 'Disconnect' : 'Connect'}
                         </button>
                     </div>
                 </div>

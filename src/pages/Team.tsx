@@ -633,7 +633,7 @@ const Team = () => {
                                       <img 
                                         src={selectedMember.image} 
                                         alt={selectedMember.name} 
-                                        className="w-full h-full object-cover grayscale"
+                                        className={selectedMember.image === LOGO ? "w-full h-full object-contain p-10 bg-[#fff9f0]" : "w-full h-full object-cover grayscale"}
                                       />
                                       <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
                                       <div className="absolute bottom-10 left-10">
@@ -667,18 +667,25 @@ const Team = () => {
                                 </div>
 
                                 <div className="grid grid-cols-2 divide-x divide-neutral-100 border-t border-neutral-100 h-28 shrink-0 bg-neutral-50/50">
+                                   {selectedMember.linkedin ? (
+                                     <a 
+                                       href={selectedMember.linkedin} 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
+                                     >
+                                        <LinkedinIcon className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
+                                        <span className="text-xs font-black text-neutral-400 group-hover:text-neutral-900 transition-colors">LinkedIn Profile</span>
+                                     </a>
+                                   ) : (
+                                     <div className="flex items-center justify-center gap-4 text-neutral-300">
+                                        <Users className="w-6 h-6" />
+                                        <span className="text-xs font-black text-neutral-400">Profile Update Pending</span>
+                                     </div>
+                                   )}
                                    <a 
-                                     href={selectedMember.linkedin} 
-                                     target="_blank" 
-                                     rel="noopener noreferrer"
-                                     className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
-                                   >
-                                      <LinkedinIcon className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
-                                      <span className="text-xs font-black text-neutral-400 group-hover:text-neutral-900 transition-colors">LinkedIn Profile</span>
-                                   </a>
-                                   <a 
-                                     href={`mailto:${selectedMember.email}`} 
-                                     className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
+                                      href={`mailto:${selectedMember.email}`} 
+                                      className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
                                    >
                                       <Mail className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
                                       <span className="text-xs font-black text-neutral-400 group-hover:text-neutral-900 transition-colors">Contact Office</span>

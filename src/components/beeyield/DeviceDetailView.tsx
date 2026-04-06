@@ -11,6 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RefreshCw, ArrowLeft, Cpu, Activity, Battery, MapPin, Hexagon, Signal, Clock, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 interface DeviceDetailViewProps {
   deviceId: string;
@@ -68,6 +70,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
     const hiveId = device?.hive_id;
     return hiveId ? hives.find((h) => h.id === hiveId) || null : null;
   }, [hives, device]);
+  const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(apiary?.id);
 
   React.useEffect(() => {
     if (!device || !editOpen) return;
@@ -243,6 +246,13 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-4 space-y-6">
+          <WeatherTelemetryPanel
+            summary={weatherSummary}
+            isLoading={weatherLoading}
+            title="Linked apiary weather"
+            compact
+          />
+
           <BeeYieldCard className="space-y-4">
             <div className="flex items-center justify-between">
               <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Status</p>

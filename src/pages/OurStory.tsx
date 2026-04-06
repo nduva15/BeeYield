@@ -8,6 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import impactBeekeeping from "@/assets/impact-beekeeping.jpg";
 import Logo from "@/assets/Logo.png";
+import storyHeroHoney from "@/assets/story-hero-honey.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const OurStory = () => {

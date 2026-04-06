@@ -3,6 +3,9 @@ import { Users, Target, ArrowRight, Sprout, Globe, ShieldCheck, Heart, History, 
 import { Link } from "react-router-dom";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
+import impactBeekeeping from "@/assets/impact-beekeeping.jpg";
+import Logo from "@/assets/Logo.png";
+import storyHeroHoney from "@/assets/story-hero-honey.png";
 
 const About = () => {
   return (
@@ -72,8 +75,8 @@ const About = () => {
             <div className="relative border-2 border-[#064e3b] bg-[#facc15]/10 p-4">
               <div className="w-full h-full border-2 border-[#064e3b] overflow-hidden grayscale contrast-125">
                 <img
-                  src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=1000&auto=format&fit=crop"
-                  alt="Hardware"
+                  src={storyHeroHoney}
+                  alt="BeeYield story and technology"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -121,10 +124,13 @@ const About = () => {
 
       {/* Tactical Footer */}
       <section className="bg-[#064e3b] py-24 px-8 overflow-hidden relative">
-        <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fee74a62?auto=format&fit=crop&q=80&w=2600')] bg-cover grayscale" />
+        <div className="absolute inset-0 opacity-20">
+          <img src={impactBeekeeping} alt="BeeYield impact background" className="w-full h-full object-cover grayscale" />
+        </div>
         <div className="relative z-10 max-w-4xl mx-auto text-center border-4 border-white p-12 bg-[#064e3b]/80 backdrop-blur-sm">
+          <img src={Logo} alt="BeeYield logo" className="h-16 w-auto mx-auto mb-8" />
           <Hexagon className="w-12 h-12 text-[#facc15] mx-auto mb-8 fill-current" />
-          <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] tracking-tighter leading-none mb-6">Hive Monitoring</h2>
+          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-none mb-6">Hive Monitoring</h2>
           <p className="text-xs font-black text-[#10b981]">Active since 2020</p>
         </div>
       </section>

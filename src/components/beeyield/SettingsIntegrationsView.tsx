@@ -61,24 +61,42 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
 
     const handleConnectETIMS = async () => {
         if (!kraPin) return toast.error("KRA PIN is required for legal compliance");
+
+        const etimsWindow = window.open('', '_blank');
+        if (etimsWindow) {
+            etimsWindow.opener = null;
+            etimsWindow.document.title = 'Opening eTIMS...';
+            etimsWindow.document.body.innerHTML = '<p style="font-family: sans-serif; padding: 24px;">Opening KRA eTIMS...</p>';
+        }
+
         setLoading(true);
-        const res = await beeyieldService.upsertIntegrationConfig({
-            platform: 'etims',
-            is_active: true,
-            kra_pin: kraPin,
-            branch_code: branchCode
-        });
-        setLoading(false);
-        if (res) {
+        try {
+            const res = await beeyieldService.upsertIntegrationConfig({
+                platform: 'etims',
+                is_active: true,
+                kra_pin: kraPin,
+                branch_code: branchCode
+            });
+
+            if (!res) {
+                throw new Error('Failed to save eTIMS settings');
+            }
+
             toast.success('KRA eTIMS Compliance Hub Activated');
-            // After saving required details, take the user to eTIMS to sign in/sign up.
-            // This is the official entry point for onboarding/credentials management.
-            try {
+            if (etimsWindow) {
+                etimsWindow.location.href = 'https://etims.kra.go.ke/';
+            } else {
                 window.open('https://etims.kra.go.ke/', '_blank', 'noopener,noreferrer');
-            } catch {
-                // ignore (popup blockers)
             }
             fetchConfigs();
+        } catch (error) {
+            console.error(error);
+            if (etimsWindow && !etimsWindow.closed) {
+                etimsWindow.close();
+            }
+            toast.error('Could not open eTIMS sign in');
+        } finally {
+            setLoading(false);
         }
     };
 

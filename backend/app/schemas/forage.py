@@ -47,7 +47,7 @@ class WeatherMetricSource(BaseModel):
     source: str
     provider: Optional[str] = None
     device_id: Optional[str] = None
-    observed_at: Optional[datetime] = None
+    observed_at: Optional[str] = None
 
 
 class WeatherCurrent(BaseModel):
@@ -59,15 +59,15 @@ class WeatherCurrent(BaseModel):
     feels_like_c: Optional[float] = None
     condition: Optional[str] = None
     cloud_cover_pct: Optional[float] = None
-    sunrise_at: Optional[datetime] = None
-    sunset_at: Optional[datetime] = None
+    sunrise_at: Optional[str] = None
+    sunset_at: Optional[str] = None
     uv_index: Optional[float] = None
     aqi: Optional[int] = None
-    last_observed_at: Optional[datetime] = None
+    last_observed_at: Optional[str] = None
 
 
 class WeatherHourlyPoint(BaseModel):
-    time: datetime
+    time: str
     temperature_c: Optional[float] = None
     humidity_pct: Optional[float] = None
     pressure_hpa: Optional[float] = None
@@ -77,11 +77,11 @@ class WeatherHourlyPoint(BaseModel):
 
 
 class WeatherDailySummary(BaseModel):
-    date: datetime
+    date: str
     min_temperature_c: Optional[float] = None
     max_temperature_c: Optional[float] = None
-    sunrise_at: Optional[datetime] = None
-    sunset_at: Optional[datetime] = None
+    sunrise_at: Optional[str] = None
+    sunset_at: Optional[str] = None
     uv_index_max: Optional[float] = None
     max_aqi: Optional[int] = None
     condition: Optional[str] = None
@@ -92,8 +92,8 @@ class WeatherLinkedDeviceMeta(BaseModel):
     device_name: Optional[str] = None
     device_code: Optional[str] = None
     device_type: Optional[str] = None
-    last_ping: Optional[datetime] = None
-    last_reading_at: Optional[datetime] = None
+    last_ping: Optional[str] = None
+    last_reading_at: Optional[str] = None
 
 
 class WeatherSummary(BaseModel):

@@ -16,6 +16,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Label } from '@/components/ui/label';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { deviceKeys } from '@/hooks/useDevices';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 interface MyDevicesViewProps {
     devices: IoTDevice[];
@@ -158,6 +160,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const offlineCount = localDevices.filter((device) =>
         !readings.some((reading) => reading.device_id === device.id && (now.getTime() - new Date(reading.timestamp).getTime() < oneDay * 3))
     ).length;
+    const summaryApiaryId =
+        selectedApiaryId !== 'all'
+            ? selectedApiaryId
+            : filteredDevices.find((device) => device.linked_apiary_id || device.apiary_id)?.linked_apiary_id
+                || filteredDevices.find((device) => device.linked_apiary_id || device.apiary_id)?.apiary_id
+                || apiaries[0]?.id;
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(summaryApiaryId);
 
     return (
         <BeeYieldPageShell className={glass.page}>
@@ -192,6 +201,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                     <GlassStatCard label="Offline" value={offlineCount} icon={Wifi} index={2} color="text-red-500" />
                     <GlassStatCard label="Low battery" value={localDevices.filter((device) => device.battery_level < 20).length} icon={Battery} index={3} color="text-[#F4D03F]" />
                 </div>
+
+                <WeatherTelemetryPanel
+                    summary={weatherSummary}
+                    isLoading={weatherLoading}
+                    title="Devices weather summary"
+                    compact
+                />
 
                 <div className={glass.section}>
                     <div className={glass.sectionHeader}>
