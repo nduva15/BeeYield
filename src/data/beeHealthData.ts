@@ -690,14 +690,15 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         steps: ["Feed syrup", "Add fondant"]
     },
     "Chilled Brood": {
-        signs: "Dead larvae in C-shape; after cold snap.",
-        symptoms: "Population drop; dark larvae.",
-        detection: "Weather correlation.",
-        treatment: "Remove dead brood; feed syrup.",
-        prevention: "Avoid cold inspections.",
-        transmission: "Thermal failure.",
+        causes: "Brood temperature falls below the colony's ability to keep it warm after cold snaps, over-inspection, sudden splits, or weak populations covering too much comb.",
+        signs: "Sunken or dark brood concentrated on outer comb edges; patchy dead brood after cold weather or hive disturbance.",
+        symptoms: "Brood dies before emergence, colony stalls in buildup, and weakened larvae become vulnerable to secondary infection.",
+        detection: "Review recent weather, inspection timing, and colony strength; confirm dead brood is concentrated in poorly covered or exposed areas.",
+        treatment: "Reduce hive space, combine weak units, insulate if needed, and stop opening brood nests during cold or windy periods.",
+        prevention: "Match box size to colony strength; avoid long inspections in cold weather; support weak colonies before major cold swings; keep wind exposure low.",
+        transmission: "Not contagious; triggered by environmental exposure and management stress.",
         riskLevel: "MEDIUM",
-        steps: ["Remove moldy larvae", "Insulate"]
+        steps: ["Consolidate brood area", "Reduce empty space", "Add feed if cluster is light"]
     },
     "Hive Meltdown (Heat)": {
         signs: "Bearding; runny honey; sagging wax.",
@@ -1104,17 +1105,6 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         transmission: "Contaminated nectar, pollen, dust, guttation droplets, and direct spray drift.",
         riskLevel: "CRITICAL",
         steps: ["Collect fresh samples", "Contact grower immediately", "Feed clean syrup", "Relocate if exposure continues"]
-    },
-    "Chilled Brood": {
-        causes: "Brood temperature falls below the colony's ability to keep it warm after cold snaps, over-inspection, sudden splits, or weak populations covering too much comb.",
-        signs: "Sunken or dark brood concentrated on outer comb edges; patchy dead brood after cold weather or hive disturbance.",
-        symptoms: "Brood dies before emergence, colony stalls in buildup, and weakened larvae become vulnerable to secondary infection.",
-        detection: "Review recent weather, inspection timing, and colony strength; confirm dead brood is concentrated in poorly covered or exposed areas.",
-        treatment: "Reduce hive space, combine weak units, insulate if needed, and stop opening brood nests during cold or windy periods.",
-        prevention: "Match box size to colony strength; avoid long inspections in cold weather; support weak colonies before major cold swings; keep wind exposure low.",
-        transmission: "Not contagious; triggered by environmental exposure and management stress.",
-        riskLevel: "MEDIUM",
-        steps: ["Consolidate brood area", "Reduce empty space", "Add feed if cluster is light"]
     },
     "Starvation Stress": {
         causes: "Colonies exhaust honey or pollen reserves during dearth, winter confinement, poor forage, or brood expansion that outpaces incoming nectar and stored feed.",

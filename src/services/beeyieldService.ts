@@ -2,6 +2,7 @@ import { supabaseBeeYield } from '@/lib/supabase';
 import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPatch, apiPost, apiPut } from './api';
 import { beeHealthData, type SymptomDetail } from '@/data/beeHealthData';
 import { beeSpeciesData, type BeeSpeciesDetail } from '@/data/beeSpeciesData';
+import { dashboardPollinationCropDetails } from '@/data/beePollinationData';
 import { toast } from 'sonner';
 
 // Shorthand for the Supabase client used throughout this service
@@ -820,6 +821,49 @@ export interface PollinationAnalytics {
     warning_hives: number;
     critical_hives: number;
     total_revenue: number;
+}
+
+const DASHBOARD_CROP_REQUIREMENTS: CropPollinationRequirement[] = dashboardPollinationCropDetails.map((crop, index) => {
+    const range = crop.optimalHivesPerAcre.match(/(\d+(\.\d+)?)\s*-\s*(\d+(\.\d+)?)/);
+    const recommendedHivesPerAcre = range
+        ? Number(((parseFloat(range[1]) + parseFloat(range[3])) / 2).toFixed(1))
+        : Math.max(0.5, Number((crop.targetFPA / 8).toFixed(1)));
+
+    return {
+        id: `dashboard-crop-${index + 1}`,
+        crop_name: crop.cropName,
+        target_fpa: crop.targetFPA,
+        hives_per_acre_recommended: recommendedHivesPerAcre,
+        target_frames_per_hive: 8,
+        metadata: {
+            bee_dependence: crop.beeDependence,
+            dependency_percent: crop.dependencyPercent,
+            economic_impact: crop.economicImpact,
+        },
+    };
+});
+
+const DASHBOARD_CROP_NAMES = new Set(DASHBOARD_CROP_REQUIREMENTS.map((crop) => crop.crop_name));
+
+function normalizeCropRequirements(data: CropPollinationRequirement[] | null | undefined): CropPollinationRequirement[] {
+    const cropMap = new Map<string, CropPollinationRequirement>();
+
+    for (const crop of DASHBOARD_CROP_REQUIREMENTS) {
+        cropMap.set(crop.crop_name, crop);
+    }
+
+    for (const crop of data || []) {
+        const name = String(crop?.crop_name || '').trim();
+        if (!name || !DASHBOARD_CROP_NAMES.has(name)) continue;
+        cropMap.set(name, {
+            ...cropMap.get(name),
+            ...crop,
+            crop_name: name,
+            target_fpa: Number(crop.target_fpa || cropMap.get(name)?.target_fpa || 0),
+        });
+    }
+
+    return DASHBOARD_CROP_REQUIREMENTS.map((crop) => cropMap.get(crop.crop_name) || crop);
 }
 
 // ========== SETTINGS TYPES ==========
