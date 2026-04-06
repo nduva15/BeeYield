@@ -13,7 +13,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
+import { BeeYieldPageHeader as PageHeader, BeeYieldPageShell, BeeYieldTabBar } from '@/components/beeyield/BeeYieldUI';
 import SettingsIntegrationsView from './SettingsIntegrationsView';
 
 const IntegrationsView: React.FC = () => {
@@ -27,6 +28,12 @@ const IntegrationsView: React.FC = () => {
     const [shopUrl, setShopUrl] = React.useState('');
     const [qboIncomeAccount, setQboIncomeAccount] = React.useState('Sales of Bee Products');
     const [qboExpenseAccount, setQboExpenseAccount] = React.useState('Apiary Operations');
+    const integrationTabs = React.useMemo(() => ([
+        { id: 'ecosystem', label: 'Connections' },
+        { id: 'quickbooks', label: 'QBO' },
+        { id: 'shopify', label: 'Shopify' },
+        { id: 'etims', label: 'eTIMS' },
+    ]), []);
 
     const fetchConfigs = React.useCallback(async (force = false) => {
         if (!force && configs.length > 0 && activeTab === 'ecosystem') return;
@@ -379,40 +386,24 @@ const IntegrationsView: React.FC = () => {
     };
 
     return (
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20 max-w-7xl mx-auto")}
+            className={cn(glass.page, "max-w-7xl mx-auto")}
         >
             <PageHeader
                 icon={Network}
                 label="Integrations"
                 title={<>Connect your <span className="text-[#F4D03F]">tools</span></>}
                 subtitle="Connect BeeYield with bookkeeping and e‑commerce tools."
-                actions={
-                    <div className="flex bg-gray-50 p-1 rounded-lg border border-gray-100 gap-1 shrink-0 shadow-sm">
-                        {[
-                            { id: 'ecosystem', label: 'Connections', icon: LayoutGrid },
-                            { id: 'quickbooks', label: 'QBO', icon: Calculator },
-                            { id: 'shopify', label: 'Shopify', icon: ShoppingBag },
-                            { id: 'etims', label: 'eTIMS', icon: ShieldCheck }
-                        ].map(t => (
-                            <button
-                                key={t.id}
-                                onClick={() => setActiveTab(t.id as any)}
-                                className={cn(
-                                    "flex items-center gap-1.5 px-3 h-8 rounded-md text-[10px] font-bold tracking-wider transition-all",
-                                    activeTab === t.id
-                                        ? "bg-white text-[#1A1A1A] shadow-sm border border-gray-200"
-                                        : "text-gray-500 hover:text-[#1A1A1A]"
-                                )}
-                            >
-                                <t.icon className={cn("w-3 h-3", activeTab === t.id ? "text-[#F4D03F]" : "text-gray-400")} />
-                                {t.label}
-                            </button>
-                        ))}
-                    </div>
-                }
+            />
+
+            <BeeYieldTabBar
+                tabs={integrationTabs}
+                activeTab={activeTab}
+                onChange={(tab) => setActiveTab(tab as typeof activeTab)}
+                className="w-full max-w-full overflow-x-auto"
             />
 
             <div className="min-h-[400px]">
@@ -479,6 +470,7 @@ const IntegrationsView: React.FC = () => {
                 </p>
             </div>
         </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

@@ -1,8 +1,6 @@
+import React, { useMemo, useState } from 'react';
 import { 
   ClipboardList, 
-  ArrowRight, 
-  Calendar as CalendarIcon, 
-  List, 
   Plus, 
   CheckCircle2, 
   Clock, 
@@ -11,22 +9,22 @@ import {
   ChevronLeft,
   Filter,
   Search,
-  LayoutGrid,
   Download,
-  MoreVertical,
+  Trash2,
   Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
   glass, 
-  PageHeader, 
   GlassModal 
 } from './GlassTheme';
 import { 
-  BeeYieldBadge
+  BeeYieldBadge,
+  BeeYieldPageHeader,
+  BeeYieldPageShell,
 } from '@/components/beeyield/BeeYieldUI';
-import { useTasks, useUpdateTask, useCreateTask } from '@/hooks/useTasks';
+import { useTasks, useUpdateTask, useCreateTask, useDeleteTask } from '@/hooks/useTasks';
 import { useApiaries } from '@/hooks/useHives';
 import { useHives } from '@/hooks/useHives';
 import { 
@@ -72,6 +70,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
   const { data: hives = [] } = useHives();
   const updateTask = useUpdateTask();
   const createTask = useCreateTask();
+  const deleteTask = useDeleteTask();
 
   const [newTaskForm, setNewTaskForm] = useState<Partial<Task>>({
     status: 'pending',
@@ -164,6 +163,18 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
     });
   };
 
+  const handleDeleteTask = () => {
+    if (!editingTask) return;
+    if (!window.confirm(`Delete task "${editingTask.title}"?`)) return;
+
+    deleteTask.mutate(editingTask.id, {
+      onSuccess: () => {
+        setIsTaskModalOpen(false);
+        setEditingTask(null);
+      },
+    });
+  };
+
   const renderTaskCard = (task: Task) => (
     <div 
       key={task.id}
@@ -223,16 +234,18 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className={cn(glass.page, "pb-24")}
-    >
-      <PageHeader
+    <BeeYieldPageShell className="pb-24">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className={glass.page}
+      >
+      <BeeYieldPageHeader
         icon={ClipboardList}
         label="Operational Control"
         title={<>My <span className="text-[#F4D03F]">Tasks</span></>}
         subtitle="Manage your apiary work plan and schedules."
+        onBack={() => onTabChange?.('home')}
         actions={
           <div className="flex gap-2">
             <button
@@ -618,6 +631,16 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
           </div>
 
           <div className="flex gap-3">
+            {editingTask && (
+              <button
+                onClick={handleDeleteTask}
+                disabled={deleteTask.isPending}
+                className={cn(glass.btnSecondary, "h-12 px-4 text-red-600 border-red-200 hover:bg-red-500 hover:text-white")}
+              >
+                <Trash2 className={cn("w-4 h-4", deleteTask.isPending && "animate-pulse")} />
+                Delete
+              </button>
+            )}
             <button 
               onClick={() => setIsTaskModalOpen(false)}
               className={cn(glass.btnSecondary, "flex-1 h-12")}
@@ -647,7 +670,8 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
       >
         <Plus className="w-6 h-6" />
       </button>
-    </motion.div>
+      </motion.div>
+    </BeeYieldPageShell>
   );
 };
 

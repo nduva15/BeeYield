@@ -1,8 +1,14 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { beeyieldService, Hive, HiveCreateInput, SensorReading, Apiary, ApiaryCreateInput } from '@/services/beeyieldService';
+import { beeyieldService, Hive, HiveCreateInput } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+export {
+    apiaryKeys,
+    useApiaries,
+    useCreateApiary,
+    useUpdateApiary,
+    useDeleteApiary,
+} from '@/hooks/useApiaries';
 
 export const hiveKeys = {
     all: ['hives'] as const,
@@ -125,79 +131,5 @@ export function useDeleteHive() {
             toast.success('Hive deleted');
         },
         onError: () => toast.error('Failed to delete hive'),
-    });
-}
-
-export const apiaryKeys = {
-    all: ['apiaries'] as const,
-    lists: () => [...apiaryKeys.all, 'list'] as const,
-};
-
-// Fetch apiaries
-export function useApiaries() {
-    const { user, beeyieldUser } = useAuth();
-    const userId = beeyieldUser?.id || user?.id;
-
-    return useQuery({
-        queryKey: [...apiaryKeys.lists(), userId],
-        queryFn: async () => {
-            const data = await beeyieldService.getApiaries();
-            return data;
-        },
-        staleTime: 1000 * 60, // 1 minute
-    });
-}
-
-export function useCreateApiary() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async (input: ApiaryCreateInput) => {
-            const { data, error } = await beeyieldService.createApiary(input);
-            if (error) throw error;
-            return data as Apiary;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
-        },
-        onError: () => {
-            // Error handling done in service
-        }
-    });
-}
-
-export function useUpdateApiary() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async ({ id, data }: { id: string; data: Partial<ApiaryCreateInput> }) => {
-            const { data: updated, error } = await beeyieldService.updateApiary(id, data);
-            if (error) throw error;
-            return updated as Apiary;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
-        },
-        onError: () => {
-            // Error handling done in service
-        }
-    });
-}
-
-export function useDeleteApiary() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async (id: string) => {
-            const { error } = await beeyieldService.deleteApiary(id);
-            if (error) throw error;
-            return id;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
-        },
-        onError: () => {
-            // Error handling done in service
-        }
     });
 }

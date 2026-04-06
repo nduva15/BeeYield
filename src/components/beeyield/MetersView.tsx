@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { meterService, Meter, MeterEvent, Building } from '@/services/meterService';
+import { Meter } from '@/services/meterService';
 import MetersAlarms from './MetersAlarms';
 import MetersPayments from './MetersPayments';
 import MetersSettings from './MetersSettings';
@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { glass } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldTabBar } from '@/components/beeyield/BeeYieldUI';
+import { useMetersDashboard } from '@/hooks/useMeters';
 
 interface MetersViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -31,41 +32,26 @@ interface MetersViewProps {
 }
 
 const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'meters-dashboard' }) => {
-    const [meters, setMeters] = React.useState<Meter[]>([]);
-    const [events, setEvents] = React.useState<MeterEvent[]>([]);
-    const [buildings, setBuildings] = React.useState<Building[]>([]);
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState<string | null>(null);
     const [usageFilter, setUsageFilter] = React.useState<'Water' | 'Heat' | 'Energy'>('Water');
     const [aiMessage, setAiMessage] = React.useState('');
     const [chatMessages, setChatMessages] = React.useState([
         { role: 'assistant', content: 'Checking system status... How can I help you today?' },
     ]);
+    const {
+        meters,
+        events,
+        buildings,
+        isLoading: loading,
+        error,
+        refetch,
+    } = useMetersDashboard(activeSubTab === 'meters-dashboard');
 
     React.useEffect(() => {
-        const loadDashboardData = async () => {
-            if (activeSubTab !== 'meters-dashboard') return;
-            setLoading(true);
-            setError(null);
-            try {
-                const [mData, eData, bData] = await Promise.all([
-                    meterService.getMeters(),
-                    meterService.getEvents(),
-                    meterService.getBuildings()
-                ]);
-                setMeters(mData);
-                setEvents(eData);
-                setBuildings(bData);
-            } catch (error) {
-                console.error('Failed to load meter dashboard', error);
-                setError('Live telemetry is temporarily unavailable. Retry to fetch the latest backend data.');
-                toast.error('Failed to load dashboard data');
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadDashboardData();
-    }, [activeSubTab]);
+        if (error) {
+            console.error('Failed to load meter dashboard', error);
+            toast.error('Failed to load dashboard data');
+        }
+    }, [error]);
 
     const getUsageByMedium = (medium: string) => {
         const mediumMeters = meters.filter(m => m.meter_type === medium);
@@ -122,6 +108,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         toast.info('Opening BeeYield AI…');
         onTabChange('assistant', `Meters: ${msg}`);
     };
+
+    const errorMessage = error ? 'Live telemetry is temporarily unavailable. Retry to fetch the latest backend data.' : null;
 
     if (activeSubTab === 'meters-alarms') return <MetersAlarms />;
     if (activeSubTab === 'meters-payments') return <MetersPayments onTabChange={onTabChange} />;
@@ -184,17 +172,19 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 className="w-full max-w-full overflow-x-auto"
             />
 
-            {error && (
+            {errorMessage && (
                 <div className={cn(glass.card, "p-4 border border-red-200 bg-red-50/60")}>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                         <div>
                             <div className="text-[10px] font-black text-red-600">Live data issue</div>
-                            <div className="text-sm font-semibold text-slate-700 mt-1">{error}</div>
+                            <div className="text-sm font-semibold text-slate-700 mt-1">{errorMessage}</div>
                         </div>
                         <Button
                             variant="outline"
                             className="h-10 rounded-xl text-[10px] font-black"
-                            onClick={() => onTabChange('meters-dashboard')}
+                            onClick={() => {
+                                void refetch();
+                            }}
                         >
                             Retry
                         </Button>

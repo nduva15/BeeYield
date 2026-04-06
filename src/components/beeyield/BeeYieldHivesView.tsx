@@ -18,7 +18,7 @@ import { useHarvests } from '@/hooks/useHarvests';
 import HiveFormModal from './HiveFormModal';
 import FlipCardHive from './FlipCardHive';
 import HiveDetailView from './HiveDetailView';
-import { BeeYieldPageHeader } from './BeeYieldUI';
+import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import { glass, GlassStatCard } from './GlassTheme';
 
 interface BeeYieldHivesViewProps {
@@ -271,6 +271,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     }
 
     return (
+        <BeeYieldPageShell>
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -623,6 +624,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(244, 208, 63, 0.2); }
             `}</style>
         </motion.div>
+        </BeeYieldPageShell>
     );
 };
 

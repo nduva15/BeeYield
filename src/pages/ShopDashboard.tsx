@@ -35,7 +35,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { getUserOrders, getProducts, Product, saveStripePaymentMethod } from '@/services/shopService';
+import { getUserOrders, getProducts, Product, waitForVaultedPaymentMethod } from '@/services/shopService';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -821,15 +821,18 @@ const ShopDashboard = () => {
                                             
                                             <StripeCardForm
                                                 mode="save"
-                                                buttonText="Link Card Securely"
-                                                onSuccess={async (pm) => {
+                                                buttonText="Verify & Vault"
+                                                onSuccess={async (result) => {
                                                     try {
-                                                        await saveStripePaymentMethod(pm.id, pm);
+                                                        if (result.paymentMethodId) {
+                                                            await waitForVaultedPaymentMethod(result.paymentMethodId);
+                                                        }
                                                         await loadUserData();
                                                         setIsPaymentModalOpen(false);
                                                         toast.success('Card linked successfully!');
                                                     } catch (error) {
-                                                        toast.error('Failed to save card.');
+                                                        toast.error('Card verified, but vault sync is still pending.');
+                                                        await loadUserData();
                                                     }
                                                 }}
                                                 onError={(error) => toast.error('Security verification failed.')}
@@ -1468,11 +1471,13 @@ const ShopDashboard = () => {
                                                                 <div className="p-8 bg-white rounded-3xl shadow-premium border border-[#F4D03F]/10">
                                                                     <StripeCardForm
                                                                         mode="save"
-                                                                        buttonText="Verify & Pay"
-                                                                        onSuccess={async (pm) => {
-                                                                            await saveStripePaymentMethod(pm.id, pm);
-                                                                            loadUserData();
-                                                                            setSelectedPaymentMethodId(pm.id);
+                                                                        buttonText="Verify & Vault"
+                                                                        onSuccess={async (result) => {
+                                                                            if (result.paymentMethodId) {
+                                                                                const vaultedMethod = await waitForVaultedPaymentMethod(result.paymentMethodId);
+                                                                                setSelectedPaymentMethodId(vaultedMethod?.id ?? null);
+                                                                            }
+                                                                            await loadUserData();
                                                                         }}
                                                                     />
                                                                 </div>

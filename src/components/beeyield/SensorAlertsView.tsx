@@ -1,15 +1,12 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
-    Bell, Clock, Activity, Loader2, AlertTriangle, CheckCircle2, ShieldAlert, RefreshCw, Layers, X
+    Bell, Loader2, AlertTriangle, CheckCircle2, ShieldAlert, RefreshCw
 } from 'lucide-react';
-import beeyieldService, { SensorAlert, Hive, Apiary } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
-import { glass, PageHeader } from './GlassTheme';
+import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useSensorAlerts, useResolveAlert } from '@/hooks/useSensorAlerts';
 
@@ -50,12 +47,13 @@ const SensorAlertsView: React.FC = () => {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, "p-4 lg:p-6 space-y-6 pb-20")}
-        >
-            <PageHeader
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={glass.page}
+            >
+            <BeeYieldPageHeader
                 icon={ShieldAlert}
                 label="System Alerts"
                 title={<>Alert <span className="text-[#1B9157]">Feed</span></>}
@@ -149,6 +147,14 @@ const SensorAlertsView: React.FC = () => {
                                                      <div className="w-1 h-1 rounded-full bg-gray-400" />
                                                      <span className="text-[10px] font-bold text-gray-400 tracking-tighter sm:tracking-normal">{getHiveName(alert.hive_id)}</span>
                                                 </div>
+                                                {alert.apiary_id && (
+                                                    <div className="flex items-center gap-1.5 bg-white border border-gray-100 px-2 py-0.5 rounded-md">
+                                                        <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
+                                                        <span className="text-[10px] font-bold text-gray-500 tracking-tighter sm:tracking-normal">
+                                                            {getApiaryName(alert.apiary_id)}
+                                                        </span>
+                                                    </div>
+                                                )}
                                                 <span className="text-[10px] font-medium text-gray-300">{new Date(alert.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
                                             </div>
                                         </div>
@@ -236,7 +242,8 @@ const SensorAlertsView: React.FC = () => {
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
             `}</style>
-        </motion.div>
+            </motion.div>
+        </BeeYieldPageShell>
     );
 };
 
