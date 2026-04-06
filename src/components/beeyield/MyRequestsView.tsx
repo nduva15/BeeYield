@@ -14,7 +14,7 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
-import { useCreateRequest, useDeleteRequest, useRequestDetail, useRequests, useUpdateRequest } from '@/hooks/useRequests';
+import { useAddRequestComment, useCreateRequest, useDeleteRequest, useRequestComments, useRequestDetail, useRequests, useUpdateRequest } from '@/hooks/useRequests';
 import { RequestCreateInput, SupportRequest } from '@/services/beeyieldService';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -85,12 +85,15 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     const [editingRequest, setEditingRequest] = React.useState<SupportRequest | null>(null);
     const [selectedRequestId, setSelectedRequestId] = React.useState<string>('');
     const [requestToDelete, setRequestToDelete] = React.useState<SupportRequest | null>(null);
+    const [commentDraft, setCommentDraft] = React.useState('');
     const [form, setForm] = React.useState(emptyForm);
 
     const selectedApiaryId = form.apiary_id || editingRequest?.apiary_id || '';
     const { data: hives = [] } = useHives(selectedApiaryId || undefined);
     const requestDetail = useRequestDetail(selectedRequestId);
     const selectedRequest = requestDetail.data || requests.find((request) => request.id === selectedRequestId) || null;
+    const requestComments = useRequestComments(selectedRequest?.id || null);
+    const addRequestComment = useAddRequestComment();
 
     const stats = React.useMemo(() => {
         const normalized = requests.map((request) => normalizeStatus(request.status));
@@ -206,6 +209,16 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
             setSelectedRequestId('');
         }
         setRequestToDelete(null);
+    };
+
+    const handleAddComment = async () => {
+        if (!selectedRequest || !commentDraft.trim()) return;
+        const response = await addRequestComment.mutateAsync({
+            requestId: selectedRequest.id,
+            message: commentDraft.trim(),
+        });
+        if (response.error) return;
+        setCommentDraft('');
     };
 
     return (
@@ -365,6 +378,41 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                     <div className="text-[10px] font-bold text-gray-400">Linked entities</div>
                                     <div className="text-sm text-gray-700">{getApiaryName(selectedRequest.apiary_id)}</div>
                                     <div className="text-sm text-gray-500">{getHiveName(selectedRequest.hive_id)}</div>
+                                </div>
+
+                                <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-4 space-y-3">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="text-[10px] font-bold text-gray-400">Comments</div>
+                                        {requestComments.isLoading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                                    </div>
+                                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                        {(requestComments.data || []).length === 0 ? (
+                                            <p className="text-sm text-gray-500">No comments yet. Add context or follow-up details here.</p>
+                                        ) : (
+                                            (requestComments.data || []).map((comment) => (
+                                                <div key={comment.id} className="rounded-xl border border-[#F4D03F]/10 bg-[#FFF9F0] px-3 py-2">
+                                                    <div className="text-[10px] font-black text-[#F4D03F]">
+                                                        {new Date(comment.created_at).toLocaleString()}
+                                                    </div>
+                                                    <div className="text-sm text-gray-700 whitespace-pre-wrap">{comment.message}</div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                    <div className="space-y-2 pt-1">
+                                        <Textarea
+                                            value={commentDraft}
+                                            onChange={(event) => setCommentDraft(event.target.value)}
+                                            className="min-h-[96px] rounded-xl border border-[#F4D03F]/30 bg-[#FFF9F0] text-sm"
+                                            placeholder="Add a follow-up note, reproduction step, or resolution detail."
+                                        />
+                                        <div className="flex justify-end">
+                                            <Button className={glass.btnSecondary} onClick={() => { void handleAddComment(); }} disabled={addRequestComment.isPending || !commentDraft.trim()}>
+                                                {addRequestComment.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                                                Add comment
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 pt-2">

@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Label } from '@/components/ui/label';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { deviceKeys } from '@/hooks/useDevices';
+import { toast } from 'sonner';
 
 interface MyDevicesViewProps {
     devices: IoTDevice[];

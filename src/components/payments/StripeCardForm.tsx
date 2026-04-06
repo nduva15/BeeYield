@@ -14,12 +14,14 @@ const stripePromise = stripePublishableKey
 interface StripeCardFormProps {
     onSuccess?: (paymentMethod: {
         id: string;
-        last4: string;
-        brand: string;
-        exp_month: number;
-        exp_year: number;
+        paymentMethodId?: string;
+        setupIntentId?: string;
+        last4?: string;
+        brand?: string;
+        exp_month?: number;
+        exp_year?: number;
     }) => void;
-    onError?: (error: string) => void;
+    onError?: (error: string | Error) => void;
     mode?: 'save' | 'checkout';
     clientSecret?: string;
     amount?: number;

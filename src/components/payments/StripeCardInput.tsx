@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     CardElement,
     useStripe,
@@ -8,18 +8,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, CreditCard, Shield } from 'lucide-react';
+import { Loader2, CreditCard, Shield, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { createStripeSetupIntent } from '@/services/shopService';
 
 interface StripeCardInputProps {
     onSuccess?: (paymentMethod: {
         id: string;
-        last4: string;
-        brand: string;
-        exp_month: number;
-        exp_year: number;
+        paymentMethodId?: string;
+        setupIntentId?: string;
+        last4?: string;
+        brand?: string;
+        exp_month?: number;
+        exp_year?: number;
     }) => void;
-    onError?: (error: string) => void;
+    onError?: (error: string | Error) => void;
     mode: 'save' | 'checkout';
     clientSecret?: string;
     amount?: number;
@@ -59,11 +62,53 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
     const elements = useElements();
     const [cardholderName, setCardholderName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isPreparing, setIsPreparing] = useState(mode === 'save' && !clientSecret);
     const [cardComplete, setCardComplete] = useState(false);
     const [cardError, setCardError] = useState<string | null>(null);
+    const [setupClientSecret, setSetupClientSecret] = useState(clientSecret ?? '');
+    const [vaultedCard, setVaultedCard] = useState<{ paymentMethodId?: string; setupIntentId?: string } | null>(null);
 
     // Check if Stripe is available (will be null if not initialized properly)
     const isStripeReady = !!stripe && !!elements;
+
+    useEffect(() => {
+        setSetupClientSecret(clientSecret ?? '');
+    }, [clientSecret]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const prepareSetupIntent = async () => {
+            if (mode !== 'save' || clientSecret || setupClientSecret) {
+                setIsPreparing(false);
+                return;
+            }
+
+            setIsPreparing(true);
+            try {
+                const intent = await createStripeSetupIntent();
+                if (!cancelled) {
+                    setSetupClientSecret(intent.client_secret);
+                }
+            } catch (error) {
+                const message = error instanceof Error ? error.message : 'Failed to initialize secure card vault';
+                if (!cancelled) {
+                    setCardError(message);
+                }
+                onError?.(error instanceof Error ? error : message);
+            } finally {
+                if (!cancelled) {
+                    setIsPreparing(false);
+                }
+            }
+        };
+
+        void prepareSetupIntent();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [clientSecret, mode, onError, setupClientSecret]);
 
     if (!isStripeReady && !stripe) {
         return (
@@ -101,12 +146,16 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
 
         try {
             if (mode === 'save') {
-                // Create a PaymentMethod for saving the card
-                const { paymentMethod, error } = await stripe.createPaymentMethod({
-                    type: 'card',
-                    card: cardElement,
-                    billing_details: {
-                        name: cardholderName,
+                if (!setupClientSecret) {
+                    throw new Error('Secure vault is still preparing. Please try again in a moment.');
+                }
+
+                const { error, setupIntent } = await stripe.confirmCardSetup(setupClientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: cardholderName,
+                        },
                     },
                 });
 
@@ -114,18 +163,27 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
                     throw new Error(error.message);
                 }
 
-                if (paymentMethod?.card) {
-                    onSuccess?.({
-                        id: paymentMethod.id,
-                        last4: paymentMethod.card.last4 || '',
-                        brand: paymentMethod.card.brand || 'unknown',
-                        exp_month: paymentMethod.card.exp_month || 0,
-                        exp_year: paymentMethod.card.exp_year || 0,
+                if (setupIntent?.status === 'succeeded') {
+                    const paymentMethodId = typeof setupIntent.payment_method === 'string'
+                        ? setupIntent.payment_method
+                        : setupIntent.payment_method?.id;
+
+                    setVaultedCard({
+                        paymentMethodId,
+                        setupIntentId: setupIntent.id,
                     });
-                    toast.success('Card saved successfully!');
+
+                    onSuccess?.({
+                        id: setupIntent.id,
+                        paymentMethodId,
+                        setupIntentId: setupIntent.id,
+                    });
+                    toast.success('Card vaulted successfully!');
                     // Clear the form
                     cardElement.clear();
                     setCardholderName('');
+                    setCardComplete(false);
+                    setCardError(null);
                 }
             } else if (mode === 'checkout' && clientSecret) {
                 // Confirm payment for checkout
@@ -148,7 +206,7 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
                 if (paymentIntent?.status === 'succeeded') {
                     onSuccess?.({
                         id: paymentIntent.id,
-                        last4: '', // Not available on paymentIntent
+                        last4: '',
                         brand: 'card',
                         exp_month: 0,
                         exp_year: 0,
@@ -159,7 +217,7 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : 'Payment failed';
             setCardError(errorMessage);
-            onError?.(errorMessage);
+            onError?.(error instanceof Error ? error : errorMessage);
             toast.error(errorMessage);
         } finally {
             setIsLoading(false);
@@ -175,13 +233,27 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
     };
 
     const defaultButtonText = mode === 'save'
-        ? 'Save Card Securely'
+        ? 'Verify & Vault'
         : amount
             ? `Pay KES ${amount.toLocaleString()}`
             : 'Complete Payment';
 
+    const isDisabled = !stripe || isLoading || isPreparing || !cardComplete || (mode === 'save' && !setupClientSecret);
+
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
+            {vaultedCard && (
+                <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-600" />
+                    <div className="space-y-1">
+                        <p className="text-sm font-semibold text-emerald-800">Vault verified</p>
+                        <p className="text-xs text-emerald-700">
+                            Stripe confirmed your card and BeeYield is syncing the saved method now.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {showCardholderName && (
                 <div className="space-y-2">
                     <Label htmlFor="cardholder-name">Cardholder Name</Label>
@@ -220,13 +292,13 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
 
             <Button
                 type="submit"
-                disabled={!stripe || isLoading || !cardComplete}
+                disabled={isDisabled}
                 className="w-full h-12 rounded-xl font-bold bg-gradient-to-r from-primary to-amber-600 hover:from-primary/90 hover:to-amber-600/90"
             >
-                {isLoading ? (
+                {isLoading || isPreparing ? (
                     <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Processing...
+                        {isPreparing ? 'Preparing Secure Vault...' : 'Processing...'}
                     </>
                 ) : (
                     <>

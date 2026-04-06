@@ -1,8 +1,24 @@
 /**
  * Shop Service - Connects to Supabase
  */
-import { supabase, supabaseShop } from "@/lib/supabase";
+import { supabase, supabaseBeeYield, supabaseCEBA, supabaseShop } from "@/lib/supabase";
 import { apiGet, apiPost } from "./api";
+
+const getPaymentsClient = () => {
+    if (typeof window !== 'undefined') {
+        const path = window.location.pathname.toLowerCase();
+
+        if ((path.includes('/ceba') || path.startsWith('/admin')) && supabaseCEBA) {
+            return supabaseCEBA;
+        }
+
+        if (path.includes('/beeyield') && supabaseBeeYield) {
+            return supabaseBeeYield;
+        }
+    }
+
+    return supabaseShop;
+};
 
 export interface ProductVariant {
     id: string;
@@ -215,22 +231,35 @@ export const deleteAddress = async (addressId: string) => {
 
 // Payment Method Services
 export const getPaymentMethods = async () => {
-    const { data, error } = await supabaseShop.from('payment_methods').select('*').order('is_default', { ascending: false });
+    const client = getPaymentsClient();
+    const { data, error } = await client
+        .from('payment_methods')
+        .select('*')
+        .eq('status', 'active')
+        .order('is_default', { ascending: false })
+        .order('created_at', { ascending: false });
     if (error) throw error;
     return data;
 };
 
 export const addPaymentMethod = async (paymentMethod: any) => {
-    const { data: { user } } = await supabaseShop.auth.getUser();
-    const { data, error } = await supabaseShop.from('payment_methods').insert({ ...paymentMethod, user_id: user?.id }).select().single();
+    const client = getPaymentsClient();
+    const { data: { user } } = await client.auth.getUser();
+    const { data, error } = await client.from('payment_methods').insert({ ...paymentMethod, user_id: user?.id }).select().single();
     if (error) throw error;
     return data;
 };
 
 export const deletePaymentMethod = async (paymentId: string) => {
-    const { error } = await supabaseShop.from('payment_methods').delete().eq('id', paymentId);
+    const client = getPaymentsClient();
+    const { data, error } = await client.functions.invoke('process-payment', {
+        body: {
+            action: 'detach_payment_method',
+            payment_method_id: paymentId,
+        }
+    });
     if (error) throw error;
-    return { success: true };
+    return data;
 };
 
 // Tracking Services
@@ -333,7 +362,8 @@ export interface StripeSetupIntent {
 
 // Create a PaymentIntent for checkout using the Edge Function
 export const createStripePaymentIntent = async (amount: number, currency: string = 'kes'): Promise<StripePaymentIntent> => {
-    const { data, error } = await supabaseShop.functions.invoke('process-payment', {
+    const client = getPaymentsClient();
+    const { data, error } = await client.functions.invoke('process-payment', {
         body: { amount, currency, action: 'create_intent' }
     });
     if (error) throw error;
@@ -342,47 +372,42 @@ export const createStripePaymentIntent = async (amount: number, currency: string
 
 // Create a SetupIntent for saving card without immediate payment
 export const createStripeSetupIntent = async (): Promise<StripeSetupIntent> => {
-    const { data, error } = await supabaseShop.functions.invoke('process-payment', {
+    const client = getPaymentsClient();
+    const { data, error } = await client.functions.invoke('process-payment', {
         body: { action: 'create_setup_intent' }
     });
     if (error) throw error;
     return data;
 };
 
-// Save a Stripe PaymentMethod to user's account NATIVELY
-export const saveStripePaymentMethod = async (paymentMethodId: string, cardDetails: {
-    last4: string;
-    brand: string;
-    exp_month: number;
-    exp_year: number;
-    card_holder_name?: string;
-}): Promise<unknown> => {
-    const { data: { user } } = await supabaseShop.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
+export const waitForVaultedPaymentMethod = async (
+    paymentMethodId: string,
+    timeoutMs: number = 10000,
+): Promise<any | null> => {
+    const client = getPaymentsClient();
+    const startedAt = Date.now();
 
-    const { data, error } = await supabaseShop
-        .from('payment_methods')
-        .insert({
-            user_id: user.id,
-            type: 'card',
-            stripe_payment_method_id: paymentMethodId,
-            provider: cardDetails.brand.charAt(0).toUpperCase() + cardDetails.brand.slice(1),
-            last4: cardDetails.last4,
-            expiry_month: cardDetails.exp_month,
-            expiry_year: cardDetails.exp_year,
-            card_holder_name: cardDetails.card_holder_name || '',
-            is_default: true,
-        })
-        .select()
-        .single();
+    while (Date.now() - startedAt < timeoutMs) {
+        const { data, error } = await client
+            .from('payment_methods')
+            .select('*')
+            .eq('stripe_payment_method_id', paymentMethodId)
+            .eq('status', 'active')
+            .maybeSingle();
 
-    if (error) throw error;
-    return data;
+        if (error) throw error;
+        if (data) return data;
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    return null;
 };
 
 // Confirm payment was successful via Edge function
 export const confirmStripePayment = async (paymentIntentId: string, orderId: string): Promise<unknown> => {
-    const { data, error } = await supabaseShop.functions.invoke('process-payment', {
+    const client = getPaymentsClient();
+    const { data, error } = await client.functions.invoke('process-payment', {
         body: { action: 'confirm', payment_intent_id: paymentIntentId, order_id: orderId }
     });
     if (error) throw error;

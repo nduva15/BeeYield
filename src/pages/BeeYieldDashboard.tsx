@@ -95,6 +95,7 @@ import HpaOptimizer from '@/components/beeyield/HpaOptimizer';
 import FleetSecurity from '@/components/beeyield/FleetSecurity';
 import ComplianceReport from '@/components/beeyield/ComplianceReport';
 import BeeCalculatorPage from '@/components/beeyield/BeeCalculatorPage';
+import ForageZonesView from '@/components/beeyield/ForageZonesView';
 
 import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 
@@ -226,6 +227,7 @@ const BeeYieldDashboard: React.FC = () => {
                         items: [
                             { id: 'master-map', label: 'Master Map', icon: Map },
                             { id: 'orchard-mapper', label: 'Orchard Mapper', icon: Layers },
+                            { id: 'forage-zones', label: 'Forage zones', icon: MapPin },
                             { id: 'fleet-security', label: 'Hive security', icon: ShieldCheck },
                             { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
                             { id: 'site-reports-tactical', label: 'Field reports', icon: FileBarChart },
@@ -351,6 +353,8 @@ const BeeYieldDashboard: React.FC = () => {
                 return <MasterMapView />;
             case 'orchard-mapper':
                 return <OrchardMapper onTabChange={handleTabChange} />;
+            case 'forage-zones':
+                return <ForageZonesView onTabChange={handleTabChange} />;
 
             case 'fleet-security':
             case 'geospatial-security':

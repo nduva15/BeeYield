@@ -242,6 +242,8 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
     const [activeSubTab, setActiveSubTab] = React.useState('Overview');
     const [currency, setCurrency] = React.useState('KES');
     const [isNewDocFormOpen, setIsNewDocFormOpen] = React.useState(false);
+    const [ledgerSearch, setLedgerSearch] = React.useState('');
+    const [editingTransaction, setEditingTransaction] = React.useState<any | null>(null);
 
     const [newDocType, setNewDocType] = React.useState('invoice');
     const [newDocAmount, setNewDocAmount] = React.useState(0);
@@ -259,6 +261,16 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
         fetchData();
     }, []);
 
+    const resetEntryForm = React.useCallback(() => {
+        setEditingTransaction(null);
+        setNewDocType('invoice');
+        setNewDocAmount(0);
+        setNewDocDate(new Date().toISOString().split('T')[0]);
+        setNewDocDescription('');
+        setSellerName('BeeYield Platform');
+        setBuyerName('');
+    }, []);
+
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -272,6 +284,101 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
             console.error(error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const filteredTransactions = React.useMemo(() => {
+        const query = ledgerSearch.trim().toLowerCase();
+        if (!query) return transactions;
+        return transactions.filter((transaction) =>
+            String(transaction.description || '').toLowerCase().includes(query) ||
+            String(transaction.id || '').toLowerCase().includes(query) ||
+            String(transaction.module_type || transaction.category || '').toLowerCase().includes(query)
+        );
+    }, [ledgerSearch, transactions]);
+
+    const openCreateEntry = () => {
+        resetEntryForm();
+        setIsNewDocFormOpen(true);
+    };
+
+    const openEditEntry = (transaction: any) => {
+        setEditingTransaction(transaction);
+        setNewDocType(transaction.transaction_type === 'expense' ? 'expense' : 'invoice');
+        setNewDocAmount(Number(transaction.amount || 0));
+        setNewDocDate((transaction.date || new Date().toISOString()).split('T')[0]);
+        setNewDocDescription(transaction.description || '');
+        setBuyerName(transaction.metadata?.buyer_name || '');
+        setSellerName(transaction.metadata?.seller_name || 'BeeYield Platform');
+        setIsNewDocFormOpen(true);
+    };
+
+    const handleSaveEntry = async () => {
+        if (!newDocDescription.trim() || !newDocAmount) {
+            toast.error('Amount and description are required.');
+            return;
+        }
+
+        const toastId = toast.loading(editingTransaction ? 'Updating entry...' : 'Saving entry...');
+        const payload = {
+            type: newDocType === 'expense' ? 'expense' as const : 'income' as const,
+            amount: newDocAmount,
+            currency,
+            category: newDocType,
+            date: newDocDate,
+            description: newDocDescription.trim(),
+            status: editingTransaction?.etims_status || 'pending',
+            metadata: {
+                seller_name: sellerName,
+                buyer_name: buyerName,
+            },
+        };
+
+        try {
+            const response = editingTransaction
+                ? await beeyieldService.updateTransaction(editingTransaction.id, payload)
+                : await beeyieldService.createTransaction(payload);
+            if (response.error) throw response.error;
+            await fetchData();
+            setIsNewDocFormOpen(false);
+            resetEntryForm();
+            toast.success(editingTransaction ? 'Entry updated' : 'Entry saved', { id: toastId });
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error?.message || 'Could not save entry', { id: toastId });
+        }
+    };
+
+    const handleDeleteEntry = async (transaction: any) => {
+        if (!window.confirm(`Delete ledger entry ${String(transaction.id || '').slice(0, 8)}?`)) {
+            return;
+        }
+
+        const toastId = toast.loading('Deleting entry...');
+        try {
+            const response = await beeyieldService.deleteTransaction(transaction.id);
+            if (!response.success) throw response.error;
+            await fetchData();
+            toast.success('Entry deleted', { id: toastId });
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error?.message || 'Could not delete entry', { id: toastId });
+        }
+    };
+
+    const handleSyncEntry = async (transaction: any) => {
+        setSyncingId(transaction.id);
+        const toastId = toast.loading('Syncing to eTIMS...');
+        try {
+            const response = await beeyieldService.submitToETIMS(transaction.id);
+            if (!response.success) throw response.error;
+            await fetchData();
+            toast.success('Transaction synced to eTIMS', { id: toastId });
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error?.message || 'Could not sync transaction', { id: toastId });
+        } finally {
+            setSyncingId(null);
         }
     };
 
@@ -317,7 +424,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 subtitle="Track revenue, costs, and invoices."
                 actions={
                     <Button
-                        onClick={() => setIsNewDocFormOpen(true)}
+                        onClick={openCreateEntry}
                         className={cn(glass.btnPrimary, "h-8 px-4 text-xs font-semibold flex items-center gap-2")}
                     >
                         <Plus className="w-3.5 h-3.5" /> New entry
@@ -397,6 +504,8 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-[#1B9157] transition-all" />
                                     <input
                                         placeholder="Search records..."
+                                        value={ledgerSearch}
+                                        onChange={(event) => setLedgerSearch(event.target.value)}
                                         className="w-full h-9 bg-white border border-gray-200 rounded-xl pl-9 pr-4 text-[11px] font-medium text-[#1A1A1A] outline-none focus:ring-1 focus:ring-[#1B9157]/30 transition-all"
                                     />
                                 </div>
@@ -415,7 +524,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100">
-                                            {transactions.map((tx, i) => (
+                                            {filteredTransactions.map((tx, i) => (
                                                 <tr key={i} className="hover:bg-gray-50/30 transition-colors group">
                                                     <td className="px-6 py-4 text-[10px] font-medium text-gray-400 tabular-nums">#{(tx.id || i).toString().slice(0, 8)}</td>
                                                     <td className="px-6 py-4">
@@ -435,7 +544,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                     <td className="px-6 py-4 text-right">
                                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button
-                                                                onClick={() => setSyncingId(tx.id || i)}
+                                                                onClick={() => { void handleSyncEntry(tx); }}
                                                                 className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#F4D03F] transition-colors shadow-sm"
                                                                 aria-label="Sync transaction"
                                                                 title="Sync transaction"
@@ -444,10 +553,19 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                             </button>
                                                             <button
                                                                 className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] transition-colors shadow-sm"
-                                                                aria-label="View transaction details"
-                                                                title="View transaction details"
+                                                                onClick={() => openEditEntry(tx)}
+                                                                aria-label="Edit transaction"
+                                                                title="Edit transaction"
                                                             >
                                                                 <FileText className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <button
+                                                                className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors shadow-sm"
+                                                                onClick={() => { void handleDeleteEntry(tx); }}
+                                                                aria-label="Delete transaction"
+                                                                title="Delete transaction"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
                                                             </button>
                                                         </div>
                                                     </td>
@@ -501,8 +619,8 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         <motion.div initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 30 }} className={cn(glass.card, "w-full max-w-xl p-0 overflow-hidden shadow-2xl bg-white border-gray-100 relative z-10 rounded-3xl")}>
                             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                                 <div>
-                                    <h3 className="text-xl font-bold text-[#1A1A1A] tracking-tight leading-none">New <span className="text-[#1B9157]">entry</span></h3>
-                                    <p className="text-sm text-gray-500 mt-1">Add a record to your billing history.</p>
+                                    <h3 className="text-xl font-bold text-[#1A1A1A] tracking-tight leading-none">{editingTransaction ? 'Edit' : 'New'} <span className="text-[#1B9157]">entry</span></h3>
+                                    <p className="text-sm text-gray-500 mt-1">{editingTransaction ? 'Update this billing record and keep the ledger in sync.' : 'Add a record to your billing history.'}</p>
                                 </div>
                                 <button
                                     onClick={() => setIsNewDocFormOpen(false)}
@@ -553,8 +671,23 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                         <p className="text-xs font-semibold text-gray-600">Secure entry</p>
                                     </div>
                                     <div className="flex gap-3 w-full md:w-auto">
-                                        <Button variant="ghost" type="button" onClick={() => setIsNewDocFormOpen(false)} className="h-10 flex-1 md:px-6 rounded-xl text-sm font-semibold text-gray-500 hover:text-[#1A1A1A]">Cancel</Button>
-                                        <Button onClick={handleGenerateInvoice} className={cn(glass.btnPrimary, "h-10 flex-1 md:px-10 rounded-xl text-sm font-semibold shadow-lg shadow-[#1B9157]/10")}><ShieldCheck className="w-4 h-4 mr-2" /> Save entry</Button>
+                                        <Button
+                                            variant="ghost"
+                                            type="button"
+                                            onClick={() => {
+                                                setIsNewDocFormOpen(false);
+                                                resetEntryForm();
+                                            }}
+                                            className="h-10 flex-1 md:px-6 rounded-xl text-sm font-semibold text-gray-500 hover:text-[#1A1A1A]"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button onClick={() => { void handleSaveEntry(); }} className={cn(glass.btnPrimary, "h-10 flex-1 md:px-10 rounded-xl text-sm font-semibold shadow-lg shadow-[#1B9157]/10")}>
+                                            <ShieldCheck className="w-4 h-4 mr-2" /> {editingTransaction ? 'Update entry' : 'Save entry'}
+                                        </Button>
+                                        <Button onClick={handleGenerateInvoice} className={cn(glass.btnSecondary, "h-10 flex-1 md:px-8 rounded-xl text-sm font-semibold")}>
+                                            <Printer className="w-4 h-4 mr-2" /> Export PDF
+                                        </Button>
                                     </div>
                                 </div>
                             </div>

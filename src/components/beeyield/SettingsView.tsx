@@ -26,7 +26,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { deletePaymentMethod, getPaymentMethods, saveStripePaymentMethod } from '@/services/shopService';
+import { deletePaymentMethod, getPaymentMethods, waitForVaultedPaymentMethod } from '@/services/shopService';
 import { beeyieldService, uploadAvatar, BillingOverview, Transaction } from '@/services/beeyieldService';
 import {
     BeeYieldCard,
@@ -107,7 +107,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             ]);
             setPaymentMethods((methods || []) as SavedPaymentMethod[]);
             setBillingOverview(overview);
-            setTransactions((txs || []) as BillingTx[]);
+            setTransactions((txs || []) as Transaction[]);
         } catch (e: any) {
             const msg = e?.message || 'Failed to load billing data';
             console.error(e);
@@ -710,29 +710,27 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 {StripeCardFormComp ? (
                                                     <StripeCardFormComp
                                                         mode="save"
-                                                        onSuccess={async (paymentMethod: any) => {
+                                                        onSuccess={async (result: any) => {
                                                             try {
-                                                                await saveStripePaymentMethod(paymentMethod.id, {
-                                                                    last4: paymentMethod.last4,
-                                                                    brand: paymentMethod.brand,
-                                                                    exp_month: paymentMethod.exp_month,
-                                                                    exp_year: paymentMethod.exp_year,
-                                                                });
-                                                                toast.success('Card saved');
+                                                                if (result?.paymentMethodId) {
+                                                                    await waitForVaultedPaymentMethod(result.paymentMethodId);
+                                                                }
+                                                                toast.success('Card saved to vault');
                                                                 setIsAddCardOpen(false);
                                                                 await loadBilling();
                                                             } catch (error) {
                                                                 console.error(error);
-                                                                toast.error('Failed to save card');
+                                                                toast.error('Card verified, but vault sync is still pending');
+                                                                await loadBilling();
                                                             }
                                                         }}
                                                         onError={(error: any) => {
                                                             console.error('Stripe error:', error);
-                                                            const msg = error?.message || 'Stripe error';
+                                                            const msg = error?.message || String(error) || 'Stripe error';
                                                             setPageError(msg);
                                                             toast.error(msg);
                                                         }}
-                                                        buttonText="Save Card Securely"
+                                                        buttonText="Verify & Vault"
                                                     />
                                                 ) : (
                                                     <div className="p-4 text-center text-sm text-muted-foreground">

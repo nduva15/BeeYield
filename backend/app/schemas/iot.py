@@ -19,6 +19,20 @@ class IoTDeviceBase(BaseModel):
 class IoTDeviceCreate(IoTDeviceBase):
     pass
 
+class IoTDeviceUpdate(BaseModel):
+    device_code: Optional[str] = None
+    device_name: Optional[str] = None
+    device_type: Optional[str] = None
+    location_name: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    farmer_id: Optional[str] = None
+    apiary_id: Optional[str] = None
+    hive_id: Optional[str] = None
+    status: Optional[str] = None
+    battery_level: Optional[int] = None
+    firmware_version: Optional[str] = None
+
 class IoTDevice(IoTDeviceBase):
     id: str
     created_at: datetime
