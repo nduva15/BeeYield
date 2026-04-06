@@ -34,6 +34,21 @@ export function useCreateScheduledReport() {
     });
 }
 
+export function useUpdateScheduledReport() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: any }) => beeyieldService.updateScheduledReport(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: reportKeys.scheduled() });
+            toast.success('Schedule updated');
+        },
+        onError: (error: any) => {
+            console.error('Update scheduled report error:', error);
+            toast.error('Failed to update schedule');
+        },
+    });
+}
+
 export function useDeleteScheduledReport() {
     const queryClient = useQueryClient();
     return useMutation({

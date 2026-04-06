@@ -19,7 +19,25 @@ vendor
 .env.development.local
 .env.test.local
 .env.production.local
+!.env.example
+!.env.*.example
 backend/.env
+
+# Secret Material
+.envrc
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.keystore
+*.tfvars
+*.tfstate
+*.tfstate.*
+secrets/
+private/
 
 # Editor / OS
 .vscode

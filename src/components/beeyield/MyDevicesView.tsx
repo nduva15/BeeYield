@@ -29,6 +29,8 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const queryClient = useQueryClient();
     const [localDevices, setLocalDevices] = React.useState<IoTDevice[]>(initialDevices);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+    const [editingDevice, setEditingDevice] = React.useState<IoTDevice | null>(null);
+    const [mutatingDeviceId, setMutatingDeviceId] = React.useState<string | null>(null);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('all');
 
@@ -36,20 +38,65 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
         setLocalDevices(initialDevices);
     }, [initialDevices]);
 
-    const handleAddDevice = async (newDeviceData: IoTDeviceCreateInput) => {
-        const { data, error } = await beeyieldService.createDevice(newDeviceData, { silent: true });
-        if (error || !data) {
-            throw error || new Error('Device creation failed');
+    const commitDevices = React.useCallback((nextDevices: IoTDevice[]) => {
+        setLocalDevices(nextDevices);
+        localStorage.setItem('beeyield_devices_cache_v1', JSON.stringify(nextDevices));
+        queryClient.setQueryData(deviceKeys.list(), nextDevices);
+    }, [queryClient]);
+
+    const handleSubmitDevice = async (deviceData: IoTDeviceCreateInput) => {
+        setMutatingDeviceId(editingDevice?.id || 'new');
+        try {
+            if (editingDevice) {
+                const { data, error } = await beeyieldService.updateDevice(editingDevice.id, deviceData);
+                if (error || !data) {
+                    throw error || new Error('Device update failed');
+                }
+
+                const nextDevices = localDevices.map((device) => device.id === data.id ? data : device);
+                commitDevices(nextDevices);
+                setEditingDevice(null);
+                return data;
+            }
+
+            const { data, error } = await beeyieldService.createDevice(deviceData, { silent: true });
+            if (error || !data) {
+                throw error || new Error('Device creation failed');
+            }
+
+            const nextDevices = [data, ...localDevices.filter((device) => device.id !== data.id)];
+            commitDevices(nextDevices);
+            return data;
+        } finally {
+            setMutatingDeviceId(null);
+        }
+    };
+
+    const handleEditDevice = (device: IoTDevice) => {
+        setEditingDevice(device);
+        setIsAddModalOpen(true);
+    };
+
+    const handleDeleteDevice = async (device: IoTDevice) => {
+        if (!window.confirm(`Delete ${device.device_code}? This cannot be undone.`)) {
+            return;
         }
 
-        setLocalDevices((currentDevices) => {
-            const nextDevices = [data, ...currentDevices.filter((device) => device.id !== data.id)];
-            localStorage.setItem('beeyield_devices_cache_v1', JSON.stringify(nextDevices));
-            queryClient.setQueryData(deviceKeys.list(), nextDevices);
-            return nextDevices;
-        });
+        setMutatingDeviceId(device.id);
+        try {
+            const result = await beeyieldService.deleteDevice(device.id);
+            if (!result.success) {
+                throw result.error || new Error('Device deletion failed');
+            }
 
-        return data;
+            const nextDevices = localDevices.filter((entry) => entry.id !== device.id);
+            commitDevices(nextDevices);
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error?.message || 'Failed to delete device');
+        } finally {
+            setMutatingDeviceId(null);
+        }
     };
 
     const filteredDevices = localDevices.filter(d => {
@@ -102,7 +149,10 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 subtitle="Manage devices and view recent readings."
                 actions={
                     <button
-                        onClick={() => setIsAddModalOpen(true)}
+                        onClick={() => {
+                            setEditingDevice(null);
+                            setIsAddModalOpen(true);
+                        }}
                         className={cn(glass.btnPrimary, "h-11 px-8 text-sm font-semibold flex items-center justify-center gap-2")}
                     >
                         <Plus className="w-4 h-4" />
@@ -245,6 +295,19 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                                     <button
+                                                        className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm disabled:opacity-60"
+                                                        onClick={() => handleEditDevice(device)}
+                                                        aria-label="Edit device"
+                                                        title="Edit device"
+                                                        disabled={mutatingDeviceId === device.id}
+                                                    >
+                                                        {mutatingDeviceId === device.id && editingDevice?.id === device.id ? (
+                                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                        ) : (
+                                                            <Edit className="w-3.5 h-3.5" />
+                                                        )}
+                                                    </button>
+                                                    <button
                                                         className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm"
                                                         onClick={() => onTabChange('device', undefined, device.id)}
                                                         aria-label="View device details"
@@ -253,11 +316,17 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                                         <FileSearch className="w-3.5 h-3.5" />
                                                     </button>
                                                     <button
-                                                        className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#1A1A1A] hover:text-white transition-all shadow-sm"
-                                                        aria-label="Device settings"
-                                                        title="Device settings"
+                                                        className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm disabled:opacity-60"
+                                                        onClick={() => handleDeleteDevice(device)}
+                                                        aria-label="Delete device"
+                                                        title="Delete device"
+                                                        disabled={mutatingDeviceId === device.id}
                                                     >
-                                                        <Settings className="w-3.5 h-3.5" />
+                                                        {mutatingDeviceId === device.id && editingDevice?.id !== device.id ? (
+                                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                        ) : (
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        )}
                                                     </button>
                                                 </div>
                                             </td>
@@ -272,10 +341,14 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
 
             <AddDeviceModal
                 open={isAddModalOpen}
-                onOpenChange={setIsAddModalOpen}
-                onAdd={handleAddDevice}
+                onOpenChange={(open) => {
+                    setIsAddModalOpen(open);
+                    if (!open) setEditingDevice(null);
+                }}
+                onSubmit={handleSubmitDevice}
                 apiaries={apiaries}
                 hives={hives}
+                device={editingDevice}
             />
 
             <style>{`

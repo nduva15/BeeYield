@@ -17,6 +17,9 @@ router = APIRouter()
 class RequestCreate(BaseModel):
     subject: str = Field(..., description="Short summary of the issue")
     description: str = Field(..., description="Detailed explanation")
+    type: Optional[str] = Field(None, description="support, maintenance, inspection, other")
+    apiary_id: Optional[str] = Field(None, description="Related apiary")
+    hive_id: Optional[str] = Field(None, description="Related hive")
     category: str = Field("General", description="Hardware, Software, Traceability, General")
     priority: str = Field("Medium", description="Low, Medium, High, Critical")
     status: str = Field("Open", description="Draft, Open")
@@ -24,6 +27,9 @@ class RequestCreate(BaseModel):
 class RequestUpdate(BaseModel):
     subject: Optional[str] = None
     description: Optional[str] = None
+    type: Optional[str] = None
+    apiary_id: Optional[str] = None
+    hive_id: Optional[str] = None
     category: Optional[str] = None
     priority: Optional[str] = None
     status: Optional[str] = None  # Open, In Progress, Resolved, Draft
@@ -36,6 +42,9 @@ class RequestResponse(BaseModel):
     user_id: str
     subject: str
     description: str
+    type: Optional[str] = None
+    apiary_id: Optional[str] = None
+    hive_id: Optional[str] = None
     category: str
     status: str
     priority: str
@@ -121,6 +130,13 @@ async def create_request(
     Triggers an email notification to the admin.
     """
     data = request_in.dict() # pydantic v1
+    normalized_status = _normalize_status(data.get("status")) or "Open"
+    if normalized_status not in {"Draft", "Open"}:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New requests can only start as Draft or Open"
+        )
+    data["status"] = normalized_status
     data["user_id"] = user_id
     
     # Insert into database

@@ -16,6 +16,7 @@ import {
     useDeleteScheduledReport,
     useGeneratedReports,
     useScheduledReports,
+    useUpdateScheduledReport,
 } from '@/hooks/useReports';
 
 const ReportsExportsView: React.FC = () => {
@@ -26,6 +27,7 @@ const ReportsExportsView: React.FC = () => {
     const { data: reports = [], isLoading: reportsLoading } = useGeneratedReports();
     const { data: schedules = [], isLoading: schedulesLoading } = useScheduledReports();
     const createSchedule = useCreateScheduledReport();
+    const updateSchedule = useUpdateScheduledReport();
     const deleteSchedule = useDeleteScheduledReport();
 
     const [reportScope, setReportScope] = React.useState('30');
@@ -34,6 +36,7 @@ const ReportsExportsView: React.FC = () => {
     const [selectedHive, setSelectedHive] = React.useState<string>('all');
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [isGeneratingInsights, setIsGeneratingInsights] = React.useState(false);
+    const [editingScheduleId, setEditingScheduleId] = React.useState<string | null>(null);
     const [scheduleDraft, setScheduleDraft] = React.useState({
         name: '',
         frequency: 'weekly' as 'daily' | 'weekly' | 'monthly',
@@ -98,6 +101,11 @@ const ReportsExportsView: React.FC = () => {
         }
     };
 
+    const resetScheduleForm = () => {
+        setEditingScheduleId(null);
+        setScheduleDraft({ name: '', frequency: 'weekly', recipients: '' });
+    };
+
     const handleCreateSchedule = async () => {
         if (!scheduleDraft.name.trim()) {
             toast.error('Schedule name is required');
@@ -111,7 +119,7 @@ const ReportsExportsView: React.FC = () => {
 
         const toastId = toast.loading('Saving schedule...');
         try {
-            const { error } = await createSchedule.mutateAsync({
+            const payload = {
                 name: scheduleDraft.name.trim(),
                 report_type: 'full_summary',
                 frequency: scheduleDraft.frequency,
@@ -119,14 +127,45 @@ const ReportsExportsView: React.FC = () => {
                 is_active: true,
                 user_id: userId || undefined,
                 report_config: reportParameters,
-            } as any);
+            } as any;
 
-            if (error) throw error;
-            setScheduleDraft({ name: '', frequency: 'weekly', recipients: '' });
-            toast.success('Schedule saved', { id: toastId });
+            const response = editingScheduleId
+                ? await updateSchedule.mutateAsync({ id: editingScheduleId, data: payload })
+                : await createSchedule.mutateAsync(payload);
+
+            if (response.error) throw response.error;
+            resetScheduleForm();
+            toast.success(editingScheduleId ? 'Schedule updated' : 'Schedule saved', { id: toastId });
         } catch (error: any) {
             console.error(error);
             toast.error(error?.message || 'Could not save schedule', { id: toastId });
+        }
+    };
+
+    const handleEditSchedule = (schedule: typeof filteredSchedules[number]) => {
+        setEditingScheduleId(schedule.id);
+        setScheduleDraft({
+            name: schedule.name,
+            frequency: schedule.frequency,
+            recipients: schedule.recipients?.join(', ') || '',
+        });
+    };
+
+    const handleToggleSchedule = async (schedule: typeof filteredSchedules[number]) => {
+        const toastId = toast.loading(schedule.is_active ? 'Pausing schedule...' : 'Activating schedule...');
+        try {
+            const response = await updateSchedule.mutateAsync({
+                id: schedule.id,
+                data: { is_active: !schedule.is_active },
+            });
+            if (response.error) throw response.error;
+            toast.success(schedule.is_active ? 'Schedule paused' : 'Schedule activated', { id: toastId });
+            if (editingScheduleId === schedule.id && schedule.is_active) {
+                resetScheduleForm();
+            }
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error?.message || 'Could not update schedule', { id: toastId });
         }
     };
 
@@ -266,10 +305,17 @@ const ReportsExportsView: React.FC = () => {
                             className={glass.input}
                             placeholder="ops@example.com, finance@example.com"
                         />
-                        <Button className={glass.btnPrimary} onClick={handleCreateSchedule} disabled={createSchedule.isPending}>
-                            <Plus className="w-4 h-4" />
-                            Save schedule
-                        </Button>
+                        <div className="flex gap-3">
+                            <Button className={glass.btnPrimary} onClick={handleCreateSchedule} disabled={createSchedule.isPending || updateSchedule.isPending}>
+                                <Plus className="w-4 h-4" />
+                                {editingScheduleId ? 'Update schedule' : 'Save schedule'}
+                            </Button>
+                            {editingScheduleId && (
+                                <Button className={glass.btnSecondary} onClick={resetScheduleForm}>
+                                    Cancel
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
