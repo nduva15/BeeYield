@@ -224,7 +224,12 @@ def db_select_sync(
     params = {"select": columns}
     if filters:
         for k, v in filters.items():
-            params[k] = f"eq.{v}"
+            if v is None:
+                params[k] = "is.null"
+            elif isinstance(v, str) and _POSTGREST_OPERATOR_RE.match(v):
+                params[k] = v
+            else:
+                params[k] = f"eq.{v}"
             
     apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
     headers = {
