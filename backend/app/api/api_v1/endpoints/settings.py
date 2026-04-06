@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Body, Request
 from typing import List, Optional
 from app.db.supabase_db import db_select, db_upsert, db_update, db_insert
 from app.core import security
+from app.services.mpesa_c2b import normalize_kenyan_phone
 from app.schemas.user_settings import (
     FullSettingsResponse, 
     ThresholdSchema,
@@ -186,6 +187,8 @@ async def update_profile(
     """Update user profile (phone, names, settings)"""
     allowed = ["first_name", "last_name", "phone", "language", "unit_system", "theme", "avatar_url"]
     clean_data = {k: v for k, v in data.items() if k in allowed}
+    if "phone" in clean_data:
+        clean_data["phone_normalized"] = normalize_kenyan_phone(clean_data["phone"])
     
     if not clean_data:
         raise HTTPException(status_code=400, detail="No valid fields provided")

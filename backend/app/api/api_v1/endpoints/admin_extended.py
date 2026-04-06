@@ -453,7 +453,39 @@ async def get_payment_transactions(
             ascending=False, 
             token=token
         )
-        return result
+        if result:
+            return result
+
+        ledger_filters = {}
+        if status:
+            ledger_filters["reconciliation_status"] = status
+        if payment_method == "mpesa":
+            ledger_filters["mpesa_type"] = "c2b"
+
+        ledger_rows = await db_select(
+            "billing_ledger",
+            filters=ledger_filters or None,
+            limit=limit,
+            offset=offset,
+            order_by="created_at",
+            ascending=False,
+            token=token,
+        )
+        return [
+            {
+                "id": row.get("id"),
+                "payment_method": "mpesa",
+                "status": row.get("reconciliation_status") or row.get("payment_status"),
+                "amount_kes": row.get("amount"),
+                "transaction_id": row.get("trans_id"),
+                "mpesa_receipt_number": row.get("trans_id"),
+                "order_id": row.get("routing_target_id") if row.get("routing_target_type") == "order" else None,
+                "metadata": row.get("metadata") or {},
+                "created_at": row.get("created_at"),
+            }
+            for row in ledger_rows
+            if row.get("mpesa_type") == "c2b" or payment_method != "mpesa"
+        ]
     except Exception as e:
         print(f"Payments Fetch Error: {e}")
         return []

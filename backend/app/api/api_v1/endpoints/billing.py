@@ -54,12 +54,21 @@ class LedgerUpdate(BaseModel):
 async def list_ledger(
     limit: int = Query(50, ge=1, le=200),
     transaction_type: Optional[str] = Query(None),
+    payment_status: Optional[str] = Query(None),
+    reconciliation_status: Optional[str] = Query(None),
+    mpesa_type: Optional[str] = Query(None),
     user_id: str = Depends(get_user_id),
     token: Optional[str] = Depends(get_token),
 ):
     filters: dict[str, Any] = {"user_id": user_id}
     if transaction_type:
         filters["transaction_type"] = transaction_type
+    if payment_status:
+        filters["payment_status"] = payment_status
+    if reconciliation_status:
+        filters["reconciliation_status"] = reconciliation_status
+    if mpesa_type:
+        filters["mpesa_type"] = mpesa_type
     return await db_select("billing_ledger", filters=filters, order_by="date", ascending=False, limit=limit, token=token)
 
 

@@ -94,6 +94,19 @@ def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
         )
     return user_id
 
+
+def _coerce_uuid(value: Optional[str]) -> Optional[str]:
+    """Return a normalized UUID string or None when the value is blank/invalid."""
+    if value is None:
+        return None
+    raw = str(value).strip()
+    if not raw:
+        return None
+    try:
+        return str(UUID(raw))
+    except (ValueError, TypeError, AttributeError):
+        return None
+
 # ============================================
 # ENDPOINTS
 # ============================================
@@ -114,22 +127,25 @@ async def save_label_design(
 ):
     """Save or update a label design"""
     design_data = label_in.dict()
-    label_id = design_data.get("id")
+    label_id = _coerce_uuid(design_data.get("id"))
     
     payload = {
         "user_id": user_id,
-        "name": design_data.get("name") or design_data.get("productName") or "Untitled Label",
         "design_json": design_data,
         # Store trace batch code (what ends up on jars / QR)
         "harvest_batch_id": design_data.get("batchNumber") or design_data.get("harvestId"),
-        "include_qr": design_data.get("showQRCode", False)
+        "include_qr": design_data.get("showQRCode", False),
+        "custom_text": design_data.get("marketingNote"),
     }
     
-    # Only include ID if it's a valid non-empty string
-    if label_id and str(label_id).strip():
-        payload["id"] = str(label_id).strip()
+    # Only include ID when it is a valid UUID accepted by the DB.
+    if label_id:
+        payload["id"] = label_id
 
-    print(f"[LABELS] Saving label for user {user_id}, id={label_id}, name={payload['name']}")
+    print(
+        f"[LABELS] Saving label for user {user_id}, id={label_id}, "
+        f"product={design_data.get('productName') or design_data.get('name') or 'Untitled Label'}"
+    )
 
     # Use db_upsert for both insert and update
     result = await db_upsert("saved_labels", payload, token=token)

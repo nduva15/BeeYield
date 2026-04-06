@@ -4,6 +4,7 @@ from typing import Optional
 import random
 from app.core import security
 from app.schemas import shop as schemas
+from app.services import mpesa_c2b
 from app.services import shop_service
 from app.db.supabase_db import db_select
 
@@ -79,6 +80,22 @@ async def mpesa_callback(payload: dict):
     Delegates validation to the Rust ShopEngine.
     """
     return await shop_service.process_mpesa_callback(payload)
+
+
+@router.post("/checkout/c2b/validation")
+async def mpesa_c2b_validation(request: Request, payload: dict):
+    """
+    Public validation URL for Safaricom Daraja C2B paybill transactions.
+    """
+    return await mpesa_c2b.validate_c2b_request(request, payload)
+
+
+@router.post("/checkout/c2b/confirmation")
+async def mpesa_c2b_confirmation(request: Request, payload: dict):
+    """
+    Public confirmation URL for Safaricom Daraja C2B paybill transactions.
+    """
+    return await mpesa_c2b.confirm_c2b_request(request, payload)
 
 @router.get("/checkout/status/{idempotency_key}")
 async def get_checkout_status(idempotency_key: str, token: Optional[str] = Depends(get_token)):

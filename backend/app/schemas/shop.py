@@ -108,14 +108,20 @@ class WalletTransaction(BaseModel):
     id: str
     type: str
     amount: float
-    description: str
+    description: Optional[str] = None
     reference_id: Optional[str] = None
+    reference: Optional[str] = None
+    external_reference: Optional[str] = None
+    source_channel: Optional[str] = None
+    balance_after: Optional[float] = None
     created_at: datetime
 
 class Wallet(BaseModel):
     user_id: str
     balance: float
     currency: str
+    account_reference: Optional[str] = None
+    paybill_reference: Optional[str] = None
     updated_at: datetime
 
 # --- Wishlist ---

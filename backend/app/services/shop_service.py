@@ -3,6 +3,13 @@ from app.core.config import settings
 import logging
 import json
 
+from app.services.mpesa_c2b import (
+    build_order_bill_reference,
+    build_wallet_account_reference,
+    build_wallet_bill_reference,
+    normalize_kenyan_phone,
+)
+
 logger = logging.getLogger(__name__)
 
 # Defensive import: Rust engine is optional — backend works without it
@@ -46,7 +53,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
 
     # 2. Bypass & Auth Check (single pass)
     raw_phone = str(order_in.shipping_address.get("phone", ""))
-    clean_phone = "".join(filter(str.isdigit, raw_phone))
+    clean_phone = normalize_kenyan_phone(raw_phone) or "".join(filter(str.isdigit, raw_phone))
     
     is_bypass = False
     
@@ -176,17 +183,20 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         payment_info = {"message": "Bypass active. Order confirmed.", "status": "completed"}
     elif order_in.payment_method == "mpesa":
         phone: str = clean_phone
-        if phone.startswith("0"):
-            phone = "254" + phone[1:]
-        elif not phone.startswith("254"):
-            phone = "254" + phone
+        manual_bill_reference = build_order_bill_reference(order_number)
+        payment_info["manual_paybill_reference"] = manual_bill_reference
+        payment_info["manual_paybill_short_code"] = settings.MPESA_BUSINESS_SHORTCODE
         
         if not mpesa:
             payment_info = {"success": False, "error": "M-Pesa engine not available (Rust core offline)"}
         else:
             try:
                 stk_res = mpesa.initiate_stk_push(phone, int(order_in.total_kes), order_number)
-                payment_info = stk_res
+                payment_info = {
+                    **stk_res,
+                    "manual_paybill_reference": manual_bill_reference,
+                    "manual_paybill_short_code": settings.MPESA_BUSINESS_SHORTCODE,
+                }
                 
                 checkout_id = stk_res.get("CheckoutRequestID")
                 if checkout_id and id_key:
@@ -353,20 +363,47 @@ async def toggle_wishlist_item(user_id: str, product_id: str, token: Optional[st
 # ==========================================
 
 async def get_user_wallet(user_id: str, token: Optional[str] = None) -> dict:
-    from app.db.supabase_db import db_select, db_insert
+    from app.db.supabase_db import db_select, db_insert, db_update
     results = await db_select("wallets", filters={"user_id": user_id}, token=token)
     if results:
-        return results[0]
+        wallet = results[0]
+        account_reference = wallet.get("account_reference")
+        if not account_reference:
+            account_reference = build_wallet_account_reference(user_id)
+            await db_update("wallets", {"account_reference": account_reference}, {"id": wallet["id"]}, token=token)
+            wallet["account_reference"] = account_reference
+        wallet["paybill_reference"] = build_wallet_bill_reference(account_reference)
+        return wallet
     # Auto-create wallet if missing
-    new_wallet = {"user_id": user_id, "balance": 0.0, "currency": "KES"}
+    account_reference = build_wallet_account_reference(user_id)
+    new_wallet = {
+        "user_id": user_id,
+        "balance": 0.0,
+        "currency": "KES",
+        "account_reference": account_reference,
+    }
     res = await db_insert("wallets", new_wallet, token=token)
     if res.get("success") and res.get("data"):
-        return res["data"][0]
-    return {"user_id": user_id, "balance": 0.0, "currency": "KES"}
+        wallet = res["data"][0]
+        wallet["paybill_reference"] = build_wallet_bill_reference(account_reference)
+        return wallet
+    return {
+        "user_id": user_id,
+        "balance": 0.0,
+        "currency": "KES",
+        "account_reference": account_reference,
+        "paybill_reference": build_wallet_bill_reference(account_reference),
+    }
 
 async def get_wallet_transactions(user_id: str, token: Optional[str] = None) -> List[dict]:
     from app.db.supabase_db import db_select
-    return await db_select("wallet_transactions", filters={"user_id": user_id}, token=token)
+    return await db_select(
+        "wallet_transactions",
+        filters={"user_id": user_id},
+        order_by="created_at",
+        ascending=False,
+        token=token,
+    )
 
 async def top_up_wallet(user_id: str, amount: float, reference: str, token: Optional[str] = None) -> dict:
     from app.db.supabase_db import db_insert, db_update

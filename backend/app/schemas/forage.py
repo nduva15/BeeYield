@@ -41,3 +41,66 @@ class ForageZone(ForageZoneBase):
 
     class Config:
         from_attributes = True
+
+
+class WeatherMetricSource(BaseModel):
+    source: str
+    provider: Optional[str] = None
+    device_id: Optional[str] = None
+    observed_at: Optional[datetime] = None
+
+
+class WeatherCurrent(BaseModel):
+    temperature_c: Optional[float] = None
+    humidity_pct: Optional[float] = None
+    pressure_hpa: Optional[float] = None
+    wind_speed_kmh: Optional[float] = None
+    wind_direction: Optional[str] = None
+    feels_like_c: Optional[float] = None
+    condition: Optional[str] = None
+    cloud_cover_pct: Optional[float] = None
+    sunrise_at: Optional[datetime] = None
+    sunset_at: Optional[datetime] = None
+    uv_index: Optional[float] = None
+    aqi: Optional[int] = None
+    last_observed_at: Optional[datetime] = None
+
+
+class WeatherHourlyPoint(BaseModel):
+    time: datetime
+    temperature_c: Optional[float] = None
+    humidity_pct: Optional[float] = None
+    pressure_hpa: Optional[float] = None
+    wind_speed_kmh: Optional[float] = None
+    condition: Optional[str] = None
+    uv_index: Optional[float] = None
+
+
+class WeatherDailySummary(BaseModel):
+    date: datetime
+    min_temperature_c: Optional[float] = None
+    max_temperature_c: Optional[float] = None
+    sunrise_at: Optional[datetime] = None
+    sunset_at: Optional[datetime] = None
+    uv_index_max: Optional[float] = None
+    max_aqi: Optional[int] = None
+    condition: Optional[str] = None
+
+
+class WeatherLinkedDeviceMeta(BaseModel):
+    device_id: str
+    device_name: Optional[str] = None
+    device_code: Optional[str] = None
+    device_type: Optional[str] = None
+    last_ping: Optional[datetime] = None
+    last_reading_at: Optional[datetime] = None
+
+
+class WeatherSummary(BaseModel):
+    apiary_id: str
+    apiary_name: Optional[str] = None
+    current: WeatherCurrent
+    hourly_forecast: list[WeatherHourlyPoint]
+    daily_summary: list[WeatherDailySummary]
+    source_meta: dict[str, WeatherMetricSource]
+    linked_device_meta: list[WeatherLinkedDeviceMeta]

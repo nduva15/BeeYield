@@ -26,6 +26,20 @@ class Settings(BaseSettings):
             return v
         return v
 
+    @field_validator(
+        "MPESA_ALLOWED_SHORTCODES",
+        "MPESA_SAFARICOM_IP_ALLOWLIST",
+        "MPESA_TRUSTED_PROXY_IPS",
+        mode="before",
+    )
+    @classmethod
+    def assemble_string_lists(cls, v: Union[str, List[str], None]) -> List[str]:
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",") if i.strip()]
+        if isinstance(v, list):
+            return [str(i).strip() for i in v if str(i).strip()]
+        return []
+
     # ============ SUPABASE (Primary Database) ============
     # Fixed: Accept both VITE_SUPABASE_URL and SUPABASE_URL
     SUPABASE_URL: str = Field(default="")
@@ -51,6 +65,8 @@ class Settings(BaseSettings):
     
     OPENAI_API_KEY: Optional[str] = Field(default=None)
     GOOGLE_API_KEY: Optional[str] = Field(default=None)
+    OPEN_METEO_BASE_URL: str = "https://api.open-meteo.com/v1/forecast"
+    OPEN_METEO_AIR_QUALITY_URL: str = "https://air-quality-api.open-meteo.com/v1/air-quality"
     
     # Postgres direct connection (for migrations/legacy sqlalchemy)
     POSTGRES_URL: Optional[str] = Field(default=None)
@@ -73,6 +89,11 @@ class Settings(BaseSettings):
     MPESA_PASSKEY: Optional[str] = None
     MPESA_BUSINESS_SHORTCODE: Optional[str] = None
     MPESA_CALLBACK_URL: Optional[str] = None
+    MPESA_C2B_VALIDATION_URL: Optional[str] = None
+    MPESA_C2B_CONFIRMATION_URL: Optional[str] = None
+    MPESA_ALLOWED_SHORTCODES: List[str] = []
+    MPESA_SAFARICOM_IP_ALLOWLIST: List[str] = []
+    MPESA_TRUSTED_PROXY_IPS: List[str] = []
     SIMULATE_MPESA: bool = False
 
     # ============ EMAIL (Resend) ============
