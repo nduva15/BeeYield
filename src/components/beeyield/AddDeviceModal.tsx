@@ -13,12 +13,13 @@ import { motion } from 'framer-motion';
 interface AddDeviceModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onAdd: (device: IoTDeviceCreateInput) => Promise<IoTDevice>;
+    onSubmit: (device: IoTDeviceCreateInput) => Promise<IoTDevice>;
     apiaries: Apiary[];
     hives: Hive[];
+    device?: IoTDevice | null;
 }
 
-const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onAdd, apiaries, hives }) => {
+const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onSubmit, apiaries, hives, device }) => {
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>("");
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>("");
     const [deviceCode, setDeviceCode] = React.useState("");
@@ -50,6 +51,19 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
     }, [open, resetForm]);
 
     React.useEffect(() => {
+        if (!open) return;
+        if (device) {
+            setSelectedApiaryId(device.apiary_id || device.linked_apiary_id || "");
+            setSelectedHiveId(device.hive_id || "");
+            setDeviceCode(device.device_code || "");
+            setDeviceName(device.device_name || "");
+            setDeviceType(device.device_type || 'inland');
+            return;
+        }
+        resetForm();
+    }, [device, open, resetForm]);
+
+    React.useEffect(() => {
         setSelectedHiveId("");
     }, [selectedApiaryId]);
 
@@ -73,7 +87,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
             return;
         }
 
-        const toastId = toast.loading("Adding device...");
+        const toastId = toast.loading(device ? "Updating device..." : "Adding device...");
         setIsSubmitting(true);
 
         try {
@@ -90,14 +104,14 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                 hive_id: selectedHiveId || undefined,
             };
 
-            await onAdd(newDevice);
+            await onSubmit(newDevice);
 
             resetForm();
             onOpenChange(false);
-            toast.success("Device added.", { id: toastId });
+            toast.success(device ? "Device updated." : "Device added.", { id: toastId });
         } catch (error) {
             console.error(error);
-            toast.error("Could not add device. Please try again.", { id: toastId });
+            toast.error(`Could not ${device ? 'update' : 'add'} device. Please try again.`, { id: toastId });
         } finally {
             setIsSubmitting(false);
         }
@@ -121,7 +135,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 <div className="flex items-center gap-6">
                                     <div className="inline-flex items-center gap-4 px-6 py-2 bg-[#F4D03F]/10 rounded-full border border-[#F4D03F]/20 shadow-2xl skew-x-[-12deg]">
                                         <Cpu className="w-5 h-5 text-[#F4D03F]" />
-                                        <span className="text-[10px] font-black skew-x-[12deg] italic">Add device</span>
+                                        <span className="text-[10px] font-black skew-x-[12deg] italic">{device ? 'Edit device' : 'Add device'}</span>
                                     </div>
                                     <div className="flex items-center gap-3 bg-[#1B9157] px-4 py-2 rounded-full border border-[#1B9157] shadow-inner">
                                         <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
@@ -130,7 +144,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 </div>
                                 <div className="space-y-4">
                                     <h2 className="text-7xl font-black text-foreground tracking-tighter italic leading-[0.85]">
-                                        Add <span className="text-[#F4D03F]">device</span>
+                                        {device ? 'Edit ' : 'Add '}<span className="text-[#F4D03F]">device</span>
                                     </h2>
                                     <p className="text-gray-500 font-black text-[11px] mt-3 italic border-l-2 border-[#F4D03F]/20 pl-8 max-w-sm">
                                         Link a sensor or gateway to a location and optionally pin it to a hive.
@@ -262,7 +276,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                                 ) : (
                                     <ShieldCheck className="w-10 h-10 group-hover/commit:scale-125 transition-all duration-1000 text-[#1A1A1A] fill-current" />
                                 )}
-                                Add device
+                                {device ? 'Update device' : 'Add device'}
                             </button>
                         </div>
                     </form>

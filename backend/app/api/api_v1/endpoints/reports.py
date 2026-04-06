@@ -39,6 +39,15 @@ class ScheduledReportCreate(BaseModel):
     is_active: Optional[bool] = True
     report_config: Optional[dict] = None
 
+
+class ScheduledReportUpdate(BaseModel):
+    name: Optional[str] = None
+    report_type: Optional[str] = None
+    frequency: Optional[str] = None
+    recipients: Optional[List[str]] = None
+    is_active: Optional[bool] = None
+    report_config: Optional[dict] = None
+
 # =======================
 # HELPERS
 # =======================
@@ -254,6 +263,33 @@ async def create_scheduled_report(
         raise HTTPException(status_code=500, detail=result.get("error", "Failed to create schedule"))
 
     return result["data"][0] if result.get("data") else data
+
+
+@router.patch("/scheduled/{schedule_id}", response_model=dict)
+async def update_scheduled_report(
+    schedule_id: str,
+    schedule_in: ScheduledReportUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """Update an existing scheduled report."""
+    existing = await db_select("scheduled_reports", filters={"id": schedule_id}, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+
+    if existing[0].get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    patch = schedule_in.model_dump(exclude_unset=True)
+    if not patch:
+        return existing[0]
+
+    result = await db_update("scheduled_reports", patch, {"id": schedule_id}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to update schedule"))
+
+    rows = result.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else {**existing[0], **patch}
 
 @router.delete("/scheduled/{schedule_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_scheduled_report(

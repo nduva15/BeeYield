@@ -343,17 +343,34 @@ export interface Request {
     user_id: string;
     subject: string;
     description: string;
-    status: 'pending' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'new';
-    priority: 'low' | 'medium' | 'high' | 'Low' | 'Medium' | 'High';
-    type: 'maintenance' | 'support' | 'inspection' | 'other';
+    status: 'pending' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'new' | 'Draft' | 'Open' | 'In Progress' | 'Resolved';
+    priority: 'low' | 'medium' | 'high' | 'Low' | 'Medium' | 'High' | 'Critical';
+    type?: 'maintenance' | 'support' | 'inspection' | 'other' | string;
     apiary_id?: string;
     hive_id?: string;
     category?: string;
     created_at: string;
-    updated_at: string;
+    updated_at?: string | null;
 }
 
 export type SupportRequest = Request;
+
+export interface ForageZone {
+    id: string;
+    user_id: string;
+    apiary_id: string;
+    zone_name?: string | null;
+    flora_type?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    radius_km?: number | null;
+    density_score?: number | null;
+    season?: string | null;
+    geojson?: any;
+    notes?: string | null;
+    created_at: string;
+    updated_at?: string | null;
+}
 
 export interface RequestCreateInput {
     subject: string;
@@ -1761,6 +1778,9 @@ export const beeyieldService = {
             const payload: any = {
                 subject: input.subject,
                 description: input.description,
+                type: input.type || 'support',
+                apiary_id: input.apiary_id,
+                hive_id: input.hive_id,
                 category: input.category || input.type || 'General',
                 priority,
                 status: 'Open',
@@ -2057,6 +2077,16 @@ export const beeyieldService = {
         }
     },
 
+    async updateScheduledReport(id: string, input: Partial<ScheduledReportCreateInput>): Promise<{ data: ScheduledReport | null; error: any }> {
+        try {
+            const data = await apiPatch<ScheduledReport>(`/reports/scheduled/${id}`, input as any);
+            return { data, error: null };
+        } catch (error) {
+            console.error("updateScheduledReport:", error);
+            return { data: null, error };
+        }
+    },
+
     async deleteScheduledReport(id: string): Promise<{ error: any }> {
         try {
             await apiDelete<void>(`/reports/scheduled/${id}`);
@@ -2266,6 +2296,36 @@ export const beeyieldService = {
         }
     },
 
+    async updateTransaction(id: string, input: {
+        type?: 'income' | 'expense';
+        amount?: number;
+        currency?: string;
+        category?: string;
+        date?: string;
+        description?: string;
+        status?: string;
+        metadata?: any;
+    }): Promise<{ data: Transaction | null; error: any }> {
+        try {
+            const data = await apiPatch<Transaction>(`/beeyield/billing/ledger/${id}`, {
+                transaction_type: input.type,
+                amount: input.amount,
+                currency: input.currency,
+                module_type: input.category,
+                date: input.date,
+                description: input.description,
+                etims_status: input.status,
+                metadata: input.metadata,
+            } as any);
+            toast.success('Transaction updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateTransaction:', error);
+            toast.error('Failed to update transaction');
+            return { data: null, error };
+        }
+    },
+
     async deleteTransaction(id: string): Promise<{ success: boolean; error: any }> {
         try {
             await apiDelete<void>(`/beeyield/billing/ledger/${id}`);
@@ -2289,7 +2349,7 @@ export const beeyieldService = {
 
     async submitToETIMS(id: string): Promise<{ success: boolean; etims_id?: string; error?: any }> {
         try {
-            const result = await apiPost<any>(`/integrations/etims/sync/${id}`, {});
+            const result = await apiPost<any>(`/beeyield/billing/sync-etims/${id}`, {});
             return result;
         } catch (error) {
             console.error('submitToETIMS error:', error);
@@ -2580,12 +2640,21 @@ export const beeyieldService = {
     },
 
     // ========== FORAGE ZONES (Flight Map) ==========
-    async getForageZones(apiaryId?: string): Promise<any[]> {
+    async getForageZones(apiaryId?: string): Promise<ForageZone[]> {
         try {
-            return await apiGet<any[]>('/forage/zones', apiaryId ? { apiary_id: apiaryId } : undefined);
+            return await apiGet<ForageZone[]>('/forage/zones', apiaryId ? { apiary_id: apiaryId } : undefined);
         } catch (error) {
             console.error('getForageZones:', error);
             return [];
+        }
+    },
+
+    async getForageZone(id: string): Promise<ForageZone | null> {
+        try {
+            return await apiGet<ForageZone>(`/forage/zones/${id}`);
+        } catch (error) {
+            console.error('getForageZone:', error);
+            return null;
         }
     },
 
@@ -2593,20 +2662,46 @@ export const beeyieldService = {
         apiary_id: string;
         zone_name?: string;
         flora_type?: string;
+        latitude?: number;
+        longitude?: number;
         radius_km?: number;
         density_score?: number;
         season?: string;
         geojson?: any;
         notes?: string;
-    }): Promise<{ data: any; error: any }> {
+    }): Promise<{ data: ForageZone | null; error: any }> {
         try {
-            const data = await apiPost<any>('/forage/zones', input as any);
+            const data = await apiPost<ForageZone>('/forage/zones', input as any);
             toast.success('Forage zone added');
             return { data, error: null };
         } catch (error) {
             console.error('createForageZone:', error);
             toast.error('Failed to add forage zone');
             return { data: null, error };
+        }
+    },
+
+    async updateForageZone(id: string, patch: Partial<ForageZone>): Promise<{ data: ForageZone | null; error: any }> {
+        try {
+            const data = await apiPatch<ForageZone>(`/forage/zones/${id}`, patch as any);
+            toast.success('Forage zone updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateForageZone:', error);
+            toast.error('Failed to update forage zone');
+            return { data: null, error };
+        }
+    },
+
+    async deleteForageZone(id: string): Promise<{ success: boolean; error: any }> {
+        try {
+            await apiDelete<void>(`/forage/zones/${id}`);
+            toast.success('Forage zone deleted');
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteForageZone:', error);
+            toast.error('Failed to delete forage zone');
+            return { success: false, error };
         }
     },
 
