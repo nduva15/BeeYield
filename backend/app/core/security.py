@@ -50,8 +50,16 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
         return payload
     except JWTError:
         if settings.DEBUG:
-            # Fallback for development where SECRET_KEY might not match Supabase secret
-            return jwt.get_unverified_claims(token)
+            # Fallback for development where SECRET_KEY might not match Supabase secret.
+            # If the token itself is malformed, still return a clean 401 instead of a 500.
+            try:
+                payload = jwt.get_unverified_claims(token)
+                user_id: str = payload.get("sub")
+                if user_id is None:
+                    raise credentials_exception
+                return payload
+            except JWTError:
+                raise credentials_exception
         raise credentials_exception
 
 def get_optional_current_user(token: Optional[str] = Depends(OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login", auto_error=False))) -> Optional[Dict[str, Any]]:
@@ -72,5 +80,8 @@ def get_optional_current_user(token: Optional[str] = Depends(OAuth2PasswordBeare
         return payload
     except JWTError:
         if settings.DEBUG:
-            return jwt.get_unverified_claims(token)
+            try:
+                return jwt.get_unverified_claims(token)
+            except JWTError:
+                return None
         return None

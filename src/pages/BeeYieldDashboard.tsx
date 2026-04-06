@@ -427,6 +427,8 @@ const BeeYieldDashboard: React.FC = () => {
                 return <HarvestsView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'flight-map':
                 return <FlightMapView />;
+            case 'global-hive-network':
+                return <GlobalHiveNetwork />;
             case 'varroa':
                 return <VarroaView />;
             case 'pollination-solutions':

@@ -54,6 +54,7 @@ const MasterMapView: React.FC = () => {
     const apiaries = apiariesData || [];
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
     const { hives, isLoading: hivesLoading } = useHivesWithTelemetry(selectedApiaryId || undefined);
+    const hiveCoverageRadiusMeters = 1200;
 
     const selectedApiary = React.useMemo(
         () => apiaries.find((a) => a.id === selectedApiaryId),
@@ -218,7 +219,7 @@ const MasterMapView: React.FC = () => {
                                                     <p className="text-[10px] text-gray-500">Status: {h.status || 'Active'}</p>
                                                 </Popup>
                                             </Marker>
-                                            <Circle center={[h.latitude, h.longitude] as any} radius={1200} pathOptions={{ color: '#10b981', weight: 1, fillOpacity: 0.08 }} />
+                                            <Circle center={[h.latitude, h.longitude] as any} radius={hiveCoverageRadiusMeters} pathOptions={{ color: '#10b981', weight: 1, fillOpacity: 0.08 }} />
                                         </React.Fragment>
                                     ) : null
                                 ))}
@@ -258,6 +259,19 @@ const MasterMapView: React.FC = () => {
                                         <p className="text-[8px] font-bold text-gray-500">
                                             {hivesLoading ? 'Syncing hive telemetry...' : `${hives.length} hives visible`}
                                         </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-3 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm pointer-events-auto max-w-[220px]">
+                                <p className="text-[8px] font-black uppercase tracking-widest text-gray-500 mb-2">Coverage Legend</p>
+                                <div className="flex items-center gap-3">
+                                    <div className="relative w-7 h-7 flex items-center justify-center">
+                                        <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] border border-white shadow-sm" />
+                                        <span className="absolute inset-0 rounded-full border border-[#10b981]/70" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] font-bold text-[#1A1A1A]">Hive + coverage circle</p>
+                                        <p className="text-[8px] font-bold text-gray-400">Approx. {(hiveCoverageRadiusMeters / 1000).toFixed(1)} km forage radius</p>
                                     </div>
                                 </div>
                             </div>

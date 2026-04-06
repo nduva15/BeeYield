@@ -26,6 +26,7 @@ import {
   calculateSuccessProbability,
   estimateYieldLoss,
 } from '@/lib/apicultureModels';
+import { dashboardPollinationCropNames } from '@/data/beePollinationData';
 import { cn } from '@/lib/utils';
 import { resolveTargetFpa } from '@/lib/pollinationInsights';
 import { glass } from './GlassTheme';
@@ -172,7 +173,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
     setSelectedCrop((current) => {
       if (current) return current;
       if (activeApiary.forage_type) return String(activeApiary.forage_type);
-      return selectedCropRequirement?.crop_name || cropRequirements[0]?.crop_name || '';
+      return selectedCropRequirement?.crop_name || cropRequirements[0]?.crop_name || dashboardPollinationCropNames[0];
     });
     setSchemeA({
       hivesPerAcre: Number(currentHpa.toFixed(2)),

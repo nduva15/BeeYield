@@ -17,13 +17,15 @@ const PollinationCalcs: React.FC = () => {
     // Calc Engine State
     const [calcInputs, setCalcInputs] = useState<CalculationInputs>({
         totalAcres: 50,
+        targetFpa: 10,
         hives: Array(10).fill(null).map((_, i) => ({
             frameCount: 8,
             isStrong: i % 3 !== 0,
             isLarge: i % 2 === 0
         })),
         forageCondition: 0.8,
-        bloomIntensity: 0.9
+        bloomIntensity: 0.9,
+        weatherRisk: 0.2
     });
 
     const metrics = useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
@@ -90,6 +92,38 @@ const PollinationCalcs: React.FC = () => {
                                 </div>
 
                                 <div>
+                                    <label htmlFor="pollination-calcs-target-fpa" className="text-[10px] font-black mb-3 block">Target Frames Per Acre</label>
+                                    <div className="flex items-center">
+                                        <button
+                                            onClick={() => setCalcInputs(prev => ({ ...prev, targetFpa: Math.max(4, (prev.targetFpa || 10) - 1) }))}
+                                            aria-label="Decrease target frames per acre"
+                                            title="Decrease target frames per acre"
+                                            className="w-12 h-12 border-4 border-[#064e3b] bg-[#FFF9F0] flex items-center justify-center hover:bg-[#facc15]/10"
+                                        >
+                                            <Minus className="w-4 h-4" />
+                                        </button>
+                                        <input
+                                            id="pollination-calcs-target-fpa"
+                                            name="target_fpa"
+                                            autoComplete="off"
+                                            inputMode="numeric"
+                                            readOnly
+                                            value={calcInputs.targetFpa}
+                                            className="flex-1 h-12 border-y-4 border-[#064e3b] flex items-center justify-center font-black text-xl bg-transparent text-center outline-none"
+                                            aria-label="Target frames per acre"
+                                        />
+                                        <button
+                                            onClick={() => setCalcInputs(prev => ({ ...prev, targetFpa: (prev.targetFpa || 10) + 1 }))}
+                                            aria-label="Increase target frames per acre"
+                                            title="Increase target frames per acre"
+                                            className="w-12 h-12 border-4 border-[#064e3b] bg-[#FFF9F0] flex items-center justify-center hover:bg-[#facc15]/10"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
                                     <label htmlFor="pollination-calcs-bloom-intensity" className="text-[10px] font-black mb-3 block">Bloom Intensity (0.1 - 1.0)</label>
                                     <input
                                         id="pollination-calcs-bloom-intensity"
@@ -134,6 +168,29 @@ const PollinationCalcs: React.FC = () => {
                                         <span>Clear Sky</span>
                                     </div>
                                 </div>
+
+                                <div>
+                                    <label htmlFor="pollination-calcs-weather-risk" className="text-[10px] font-black mb-3 block">Weather Stability</label>
+                                    <input
+                                        id="pollination-calcs-weather-risk"
+                                        name="weather_risk"
+                                        autoComplete="off"
+                                        type="range"
+                                        min="0.05"
+                                        max="0.6"
+                                        step="0.05"
+                                        value={calcInputs.weatherRisk}
+                                        aria-label="Weather risk"
+                                        title="Weather risk"
+                                        onChange={(e) => setCalcInputs(prev => ({ ...prev, weatherRisk: parseFloat(e.target.value) }))}
+                                        className="w-full accent-[#10b981] h-2 bg-neutral-100 rounded-none appearance-none"
+                                    />
+                                    <div className="flex justify-between mt-2 font-black text-[10px]">
+                                        <span>Volatile</span>
+                                        <span className="text-[#10b981]">{Math.round((1 - (calcInputs.weatherRisk || 0)) * 100)}%</span>
+                                        <span>Stable</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -171,6 +228,35 @@ const PollinationCalcs: React.FC = () => {
                             <div>
                                 <p className="text-[10px] font-black mb-4">Efficacy Index</p>
                                 <div className="text-5xl font-black">{metrics.pollinationEfficacy}%</div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            {[
+                                { label: 'Readiness', value: `${metrics.readinessScore}%`, tone: 'text-[#10b981]' },
+                                { label: 'Coverage Gap', value: `${metrics.coverageGapHives} Hives`, tone: 'text-[#064e3b]' },
+                                { label: 'Fruit Set', value: `${metrics.predictedFruitSetPercent}%`, tone: 'text-[#10b981]' },
+                                { label: 'Yield Lift', value: `${metrics.projectedYieldLiftPercent}%`, tone: 'text-[#064e3b]' },
+                            ].map((item) => (
+                                <div key={item.label} className="border-4 border-[#064e3b] p-6 bg-[#FFF9F0] space-y-2">
+                                    <p className="text-[10px] font-black text-neutral-400">{item.label}</p>
+                                    <p className={cn('text-3xl font-black tracking-tight', item.tone)}>{item.value}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="border-4 border-[#064e3b] p-8 bg-[#facc15]/10 grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div>
+                                <p className="text-[10px] font-black mb-3">Required Frames</p>
+                                <div className="text-4xl font-black">{metrics.totalFramesRequired}</div>
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black mb-3 text-[#10b981]">Normalized Flight Hours</p>
+                                <div className="text-4xl font-black text-[#10b981]">{metrics.normalizedFlightHours}h</div>
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black mb-3">Marginal Gain / Hive</p>
+                                <div className="text-4xl font-black">{metrics.marginalGainPerHive}</div>
                             </div>
                         </div>
 

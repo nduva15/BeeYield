@@ -163,6 +163,10 @@ async def optimize_hive_placement(
         configKwargs['bee_flight_radius_km'] = request.bee_flight_radius_km
     if request.ahp_weights is not None:
         configKwargs['ahp_weights'] = request.ahp_weights
+    if request.bloom_intensity is not None:
+        configKwargs['bloom_intensity'] = request.bloom_intensity
+    if request.forage_condition is not None:
+        configKwargs['forage_condition'] = request.forage_condition
 
     optimizer = SpatialOptimizer(OptimizerConfig(**configKwargs))
     

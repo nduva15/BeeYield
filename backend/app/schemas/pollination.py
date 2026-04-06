@@ -313,6 +313,8 @@ class PollinationOptimizationRequest(BaseModel):
     target_crop: str
     bee_flight_radius_km: Optional[float] = 1.5
     ahp_weights: Optional[Dict[str, float]] = None
+    bloom_intensity: Optional[float] = 1.0
+    forage_condition: Optional[float] = 1.0
 
 class PollinationPlacementResult(BaseModel):
     """Output individual placement coordinate and score"""

@@ -1,5 +1,6 @@
 import { supabaseBeeYield } from '@/lib/supabase';
 import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPatch, apiPost, apiPut } from './api';
+import { dashboardPollinationCropDetails } from '@/data/beePollinationData';
 import { toast } from 'sonner';
 
 // Shorthand for the Supabase client used throughout this service
@@ -250,6 +251,68 @@ export interface SensorReading {
     weight?: number;
     delta_w?: number;
     signal_dbm?: number;
+}
+
+export interface WeatherMetricSource {
+    source: 'device' | 'provider' | 'unavailable' | string;
+    device_id?: string | null;
+    provider?: string | null;
+    observed_at?: string | null;
+}
+
+export interface WeatherCurrent {
+    temperature_c?: number | null;
+    humidity_pct?: number | null;
+    pressure_hpa?: number | null;
+    wind_speed_kmh?: number | null;
+    wind_direction?: string | null;
+    feels_like_c?: number | null;
+    condition?: string | null;
+    cloud_cover_pct?: number | null;
+    sunrise_at?: string | null;
+    sunset_at?: string | null;
+    uv_index?: number | null;
+    aqi?: number | null;
+    last_observed_at?: string | null;
+}
+
+export interface WeatherHourlyPoint {
+    timestamp?: string | null;
+    temperature_c?: number | null;
+    humidity_pct?: number | null;
+    pressure_hpa?: number | null;
+    wind_speed_kmh?: number | null;
+    condition?: string | null;
+    uv_index?: number | null;
+}
+
+export interface WeatherDailySummary {
+    date?: string | null;
+    condition?: string | null;
+    temp_max_c?: number | null;
+    temp_min_c?: number | null;
+    sunrise_at?: string | null;
+    sunset_at?: string | null;
+    uv_index_max?: number | null;
+    aqi?: number | null;
+}
+
+export interface WeatherLinkedDeviceMeta {
+    device_id: string;
+    device_name: string;
+    device_type?: string | null;
+    status?: string | null;
+    last_ping?: string | null;
+    last_observed_at?: string | null;
+}
+
+export interface ApiaryWeatherSummary {
+    apiary_id: string;
+    current: WeatherCurrent;
+    hourly_forecast: WeatherHourlyPoint[];
+    daily_summary: WeatherDailySummary;
+    source_meta: Record<string, WeatherMetricSource>;
+    linked_device_meta: WeatherLinkedDeviceMeta[];
 }
 
 export interface Orchard {
@@ -747,6 +810,49 @@ export interface PollinationAnalytics {
     warning_hives: number;
     critical_hives: number;
     total_revenue: number;
+}
+
+const DASHBOARD_CROP_REQUIREMENTS: CropPollinationRequirement[] = dashboardPollinationCropDetails.map((crop, index) => {
+    const range = crop.optimalHivesPerAcre.match(/(\d+(\.\d+)?)\s*-\s*(\d+(\.\d+)?)/);
+    const recommendedHivesPerAcre = range
+        ? Number(((parseFloat(range[1]) + parseFloat(range[3])) / 2).toFixed(1))
+        : Math.max(0.5, Number((crop.targetFPA / 8).toFixed(1)));
+
+    return {
+        id: `dashboard-crop-${index + 1}`,
+        crop_name: crop.cropName,
+        target_fpa: crop.targetFPA,
+        hives_per_acre_recommended: recommendedHivesPerAcre,
+        target_frames_per_hive: 8,
+        metadata: {
+            bee_dependence: crop.beeDependence,
+            dependency_percent: crop.dependencyPercent,
+            economic_impact: crop.economicImpact,
+        },
+    };
+});
+
+const DASHBOARD_CROP_NAMES = new Set(DASHBOARD_CROP_REQUIREMENTS.map((crop) => crop.crop_name));
+
+function normalizeCropRequirements(data: CropPollinationRequirement[] | null | undefined): CropPollinationRequirement[] {
+    const cropMap = new Map<string, CropPollinationRequirement>();
+
+    for (const crop of DASHBOARD_CROP_REQUIREMENTS) {
+        cropMap.set(crop.crop_name, crop);
+    }
+
+    for (const crop of data || []) {
+        const name = String(crop?.crop_name || '').trim();
+        if (!name || !DASHBOARD_CROP_NAMES.has(name)) continue;
+        cropMap.set(name, {
+            ...cropMap.get(name),
+            ...crop,
+            crop_name: name,
+            target_fpa: Number(crop.target_fpa || cropMap.get(name)?.target_fpa || 0),
+        });
+    }
+
+    return DASHBOARD_CROP_REQUIREMENTS.map((crop) => cropMap.get(crop.crop_name) || crop);
 }
 
 // ========== SETTINGS TYPES ==========
@@ -2515,7 +2621,16 @@ export const beeyieldService = {
     },
 
     async getCropRequirements(cropName?: string): Promise<CropPollinationRequirement[]> {
-        return apiGet<CropPollinationRequirement[]>('/pollination/crops', { crop_name: cropName });
+        try {
+            const data = await apiGet<CropPollinationRequirement[]>('/pollination/crops', { crop_name: cropName });
+            const normalized = normalizeCropRequirements(data);
+            if (!cropName) return normalized;
+            return normalized.filter((crop) => crop.crop_name === cropName);
+        } catch (error) {
+            console.error('getCropRequirements:', error);
+            if (!cropName) return DASHBOARD_CROP_REQUIREMENTS;
+            return DASHBOARD_CROP_REQUIREMENTS.filter((crop) => crop.crop_name === cropName);
+        }
     },
 
     async calculatePollination(input: PollinationCalculatorInput): Promise<PollinationCalculatorResult> {
@@ -2528,6 +2643,8 @@ export const beeyieldService = {
         target_crop: string;
         bee_flight_radius_km?: number;
         ahp_weights?: { bloom?: number; roads?: number; water?: number };
+        bloom_intensity?: number;
+        forage_condition?: number;
     }): Promise<any[]> {
         return apiPost<any[]>('/pollination/optimize', input);
     },
@@ -3131,6 +3248,18 @@ export const beeyieldService = {
     },
 
     // ========== FLIGHT & ROUTING (PRD v2) ==========
+    async getFlightAreaDashboard(apiaryId: string, landType?: string): Promise<any> {
+        try {
+            return await apiGet<any>('/forage/flight-area', {
+                apiary_id: apiaryId,
+                land_type: landType,
+            });
+        } catch (error) {
+            console.error('getFlightAreaDashboard:', error);
+            return null;
+        }
+    },
+
     async getFlightPotential(apiaryId: string): Promise<any> {
         try {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -3153,6 +3282,15 @@ export const beeyieldService = {
             return response.json();
         } catch (error) {
             console.error('getWeatherData:', error);
+            return null;
+        }
+    },
+
+    async getApiaryWeatherSummary(apiaryId: string): Promise<ApiaryWeatherSummary | null> {
+        try {
+            return await apiGet<ApiaryWeatherSummary>('/forage/weather-summary', { apiary_id: apiaryId });
+        } catch (error) {
+            console.error('getApiaryWeatherSummary:', error);
             return null;
         }
     },

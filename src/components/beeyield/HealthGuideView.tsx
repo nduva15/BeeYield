@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bug, Dna, Microscope, Activity } from 'lucide-react';
+import { Bug, Dna, Microscope, Activity, ShieldCheck, Stethoscope } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -90,10 +90,15 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                         </div>
                                         <div>
                                             <h2 className="text-3xl font-black text-[#1A1A1A] tracking-tighter">{selectedItem.name}</h2>
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-3 flex-wrap">
                                                 <p className="text-sm font-bold text-[#1B9157]">
-                                                    {activeTab === 'diseases' ? selectedItem.type : selectedItem.commonName}
+                                                    {activeTab === 'diseases' ? selectedItem.type : selectedItem.scientificName}
                                                 </p>
+                                                {activeTab === 'diseases' && selectedItem.cureStatus && (
+                                                    <span className="px-2 py-0.5 rounded-full bg-[#FFF9F0] text-[10px] font-black text-[#1A1A1A]/70 uppercase tracking-wider border border-[#F4D03F]/20">
+                                                        {selectedItem.riskLevel}
+                                                    </span>
+                                                )}
                                                 {activeTab === 'species' && selectedItem.is_extinct && (
                                                     <span className="px-2 py-0.5 rounded-full bg-red-100 text-[10px] font-black text-red-600 uppercase tracking-wider">
                                                         Extinct
@@ -107,7 +112,7 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                         <div className="space-y-4">
                                             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                                 <div className="w-1 h-3 bg-[#F4D03F]" />
-                                                Analysis
+                                                {activeTab === 'diseases' ? 'Causes & Signs' : 'Species Profile'}
                                             </h4>
                                             <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
                                                 {activeTab === 'diseases' ? selectedItem.causes : selectedItem.suitability}
@@ -116,28 +121,82 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                         <div className="space-y-4">
                                             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                                 <div className="w-1 h-3 bg-[#1B9157]" />
-                                                {activeTab === 'diseases' ? 'Resolution' : 'Quick Reference'}
+                                                {activeTab === 'diseases' ? 'Treatment & Management' : 'Health & Management'}
                                             </h4>
-                                            {activeTab === 'diseases' ? (
-                                                <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
-                                                    {selectedItem.treatment}
-                                                </p>
-                                            ) : (
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase">Location:</span>
-                                                        <span className="text-xs font-bold text-[#1A1A1A]">{selectedItem.location || 'Unknown'}</span>
+                                            <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
+                                                {activeTab === 'diseases' ? selectedItem.treatment : selectedItem.healthProfile}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                                        {activeTab === 'diseases' ? (
+                                            <>
+                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
+                                                    <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                                        <Stethoscope className="w-4 h-4 text-[#F4D03F]" />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Detection</span>
+                                                    </div>
+                                                    <p className="text-xs font-bold text-[#1A1A1A]/75 leading-relaxed">{selectedItem.detection}</p>
+                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/60 leading-relaxed">{selectedItem.cureStatus}</p>
+                                                </div>
+                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
+                                                    <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                                        <Bug className="w-4 h-4 text-[#F4D03F]" />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hosts & Spread</span>
+                                                    </div>
+                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/65 leading-relaxed">{selectedItem.transmission}</p>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {(selectedItem.hostSpecies || []).map((host: string) => (
+                                                            <span key={host} className="px-2 py-1 rounded-lg bg-amber-50 text-[10px] font-bold text-amber-700">
+                                                                {host}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
+                                                    <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                                        <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Field Actions</span>
                                                     </div>
                                                     <div className="flex flex-wrap gap-1">
-                                                        {selectedItem.traits.map((trait: string, i: number) => (
-                                                            <span key={i} className="px-2 py-1 rounded-lg bg-emerald-50 text-[10px] font-bold text-emerald-700">
+                                                        {(selectedItem.responseSteps || []).map((step: string) => (
+                                                            <span key={step} className="px-2 py-1 rounded-lg bg-emerald-50 text-[10px] font-bold text-emerald-700">
+                                                                {step}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Origin</span>
+                                                    <p className="text-xs font-bold text-[#1A1A1A]/75">{selectedItem.location || 'Unknown'}</p>
+                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/60 leading-relaxed">{selectedItem.idealUse}</p>
+                                                </div>
+                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Common Pressures</span>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {(selectedItem.commonDiseases || []).map((risk: string) => (
+                                                            <span key={risk} className="px-2 py-1 rounded-lg bg-rose-50 text-[10px] font-bold text-rose-700">
+                                                                {risk}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Traits & Watchouts</span>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {(selectedItem.traits || []).map((trait: string, i: number) => (
+                                                            <span key={`${trait}-${i}`} className="px-2 py-1 rounded-lg bg-emerald-50 text-[10px] font-bold text-emerald-700">
                                                                 {trait}
                                                             </span>
                                                         ))}
                                                     </div>
                                                 </div>
-                                            )}
-                                        </div>
+                                            </>
+                                        )}
                                     </div>
                                     
                                     <div className="flex justify-end pt-4">

@@ -27,13 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.event.inputs.environment }}
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
+        uses: azure/setup-kubectl@v5.0.0
 
       - name: Configure Kubernetes Context
         run: |
@@ -51,14 +51,14 @@ jobs:
       - name: Rollback Deployment
         run: |
           VERSION="${{ github.event.inputs.version }}"
-          
+
           kubectl set image deployment/frontend \
             frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}:${VERSION} \
             -n $NAMESPACE
           kubectl set image deployment/backend \
             backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.BACKEND_IMAGE }}:${VERSION} \
             -n $NAMESPACE
-          
+
           kubectl rollout status deployment/frontend -n $NAMESPACE
           kubectl rollout status deployment/backend -n $NAMESPACE
 
@@ -69,17 +69,16 @@ jobs:
           else
             URL="https://staging.beeyield.com"
           fi
-          
+
           curl -f ${URL}/ || exit 1
           curl -f ${URL}/api/health || exit 1
 
       - name: Notify Slack
-        uses: 8398a7/action-slack@v3
+        uses: slackapi/slack-github-action@v3.0.1
         with:
-          status: ${{ job.status }}
-          text: '⚠️ Emergency rollback to ${{ github.event.inputs.version }} completed for ${{ github.event.inputs.environment }}'
-          fields: repo,message,commit,author,action,eventName,ref,workflow
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload-templated: true
+          payload: |
+            text: "WARNING: emergency rollback to ${{ github.event.inputs.version }} completed for ${{ github.event.inputs.environment }} with status ${{ job.status }}"
         if: always()

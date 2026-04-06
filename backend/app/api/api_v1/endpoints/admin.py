@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from datetime import datetime
 from typing import Any, Optional
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_upsert, get_supabase
+from app.services.account_relink_service import relink_beeyield_account
 from app.services import traceability_service
 from app.services.traceability_batch_service import get_all_batch_views
 from app.core import security
@@ -73,6 +74,21 @@ class UserUpdate(BaseModel):
     last_name: Optional[str] = None
     email: Optional[str] = None
     role: Optional[str] = None
+
+
+class BeeYieldAccountRelinkRequest(BaseModel):
+    target_user_id: str
+    target_email: Optional[str] = None
+    source_user_id: str
+    apiary_id: str
+    farmer_name: str = "Timothy Nduva"
+    first_name: str = "Timothy"
+    last_name: str = "Nduva"
+    phone: Optional[str] = None
+    location_name: str = "Kibwezi"
+    county: Optional[str] = "Makueni"
+    region: Optional[str] = "Eastern"
+    dry_run: bool = False
 
 # --- Orders ---
 
@@ -587,6 +603,35 @@ async def sync_all_data(current_admin: dict = Depends(check_admin_role), token: 
         sync_results["hives"] += 1
 
     return {"status": "success", "synced": sync_results}
+
+
+@router.post("/relink-beeyield-account", response_model=dict[str, Any])
+async def relink_beeyield_account_admin(
+    body: BeeYieldAccountRelinkRequest,
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token),
+):
+    """
+    Reattach an orphaned BeeYield ownership graph to the intended user/farmer account.
+    """
+    try:
+        return await relink_beeyield_account(
+            target_user_id=body.target_user_id,
+            target_email=body.target_email,
+            source_user_id=body.source_user_id,
+            apiary_id=body.apiary_id,
+            farmer_name=body.farmer_name,
+            first_name=body.first_name,
+            last_name=body.last_name,
+            phone=body.phone,
+            location_name=body.location_name,
+            county=body.county,
+            region=body.region,
+            dry_run=body.dry_run,
+            token=token,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Relink failed: {exc}") from exc
 
 @router.post("/seed-data")
 async def seed_dashboard_data(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):

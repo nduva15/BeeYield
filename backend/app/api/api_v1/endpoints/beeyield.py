@@ -4,13 +4,17 @@ User-specific management of apiaries, hives, harvests, tasks, and inspections
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from typing import Optional, List, Any
-from beeyield_core import DashboardEngine  # type: ignore
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
 from app.services.traceability_batch_service import get_batch_views_for_user
 from pydantic import BaseModel, Field
 from datetime import date, datetime
 from uuid import UUID
+
+try:
+    from beeyield_core import DashboardEngine  # type: ignore
+except ImportError:
+    DashboardEngine = None  # type: ignore[assignment]
 
 router = APIRouter()
 
@@ -1573,7 +1577,7 @@ async def get_user_stats(
     token: Optional[str] = Depends(get_token)
 ):
     """Get dashboard statistics for the current user (owned + shared)"""
-    engine = DashboardEngine()
+    engine = DashboardEngine() if DashboardEngine is not None else None
     try:
         # 1. Get all accessible apiary IDs (owned + shared)
         relevant_ids = await get_user_and_farmer_ids(user_id, token)
@@ -1618,7 +1622,15 @@ async def get_user_stats(
             except Exception:
                 pass
 
-        stats = engine.compute_stats(all_apiaries, hives, harvests, tasks)
+        if engine is not None:
+            stats = engine.compute_stats(all_apiaries, hives, harvests, tasks)
+        else:
+            stats = {
+                "apiaries": len(all_apiaries),
+                "hives": len(hives),
+                "harvests": len(harvests),
+                "tasks": len(tasks),
+            }
         return stats
     except Exception as e:
         raise HTTPException(

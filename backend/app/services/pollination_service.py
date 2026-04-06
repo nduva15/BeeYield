@@ -21,12 +21,36 @@ _engine = _RustEngine()
 class PollinationService:
     def __init__(self):
         pass
+
+    _ALLOWED_CROPS = [
+        "Maize",
+        "Sisal",
+        "Mangoes",
+        "Beans",
+        "Sunflower",
+        "Oranges",
+        "Vegetables",
+        "Tomatoes",
+        "Onions",
+    ]
+    _ALLOWED_CROPS_SET = {c.lower(): c for c in _ALLOWED_CROPS}
     
     async def get_crop_requirements(self, crop_name: Optional[str] = None, token: Optional[str] = None) -> List[CropPollinationRequirements]:
         try:
-            filters = {"crop_name": crop_name} if crop_name else {}
+            canonical = None
+            if crop_name:
+                canonical = self._ALLOWED_CROPS_SET.get(str(crop_name).strip().lower())
+            filters = {"crop_name": canonical} if canonical else {}
             data = await db_select('crop_pollination_requirements', filters=filters, token=token)
-            return [CropPollinationRequirements(**item) for item in data]
+            allowed = self._ALLOWED_CROPS_SET
+            filtered = [item for item in data if allowed.get(str(item.get("crop_name", "")).strip().lower())]
+            ordered = sorted(
+                filtered,
+                key=lambda item: self._ALLOWED_CROPS.index(
+                    allowed.get(str(item.get("crop_name", "")).strip().lower())
+                ),
+            )
+            return [CropPollinationRequirements(**item) for item in ordered]
         except Exception:
             return []
     

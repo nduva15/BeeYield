@@ -45,6 +45,7 @@ import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { jsPDF } from 'jspdf';
+import { beePollinationData } from '@/data/beePollinationData';
 
 import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -108,6 +109,41 @@ interface PrecisionPollinationViewProps {
 }
 
 type SubPage = 'home' | 'grid' | 'calcs' | 'map' | 'reports';
+
+const POLLINATION_CROP_ORDER = [
+    'Maize',
+    'Sisal',
+    'Mangoes',
+    'Beans',
+    'Sunflower',
+    'Oranges',
+    'Vegetables',
+    'Tomatoes',
+    'Onions'
+] as const;
+
+const CROP_NAME_ALIASES: Record<string, typeof POLLINATION_CROP_ORDER[number]> = {
+    maize: 'Maize',
+    sisal: 'Sisal',
+    mango: 'Mangoes',
+    mangoes: 'Mangoes',
+    beans: 'Beans',
+    bean: 'Beans',
+    sunflower: 'Sunflower',
+    oranges: 'Oranges',
+    orange: 'Oranges',
+    vegetables: 'Vegetables',
+    vegetable: 'Vegetables',
+    tomatoes: 'Tomatoes',
+    tomato: 'Tomatoes',
+    onions: 'Onions',
+    onion: 'Onions',
+};
+
+const getCanonicalCropName = (raw: unknown) => {
+    const key = String(raw || '').trim().toLowerCase();
+    return CROP_NAME_ALIASES[key];
+};
 
 const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     devices,
@@ -194,6 +230,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
     const [crops, setCrops] = React.useState<any[]>([]);
     const [selectedCrop, setSelectedCrop] = React.useState<string>('');
+    const [pollinationDashboard, setPollinationDashboard] = React.useState<any | null>(null);
+    const [dashboardLoading, setDashboardLoading] = React.useState(false);
 
     React.useEffect(() => {
         if (selectedCrop && crops.length > 0) {
@@ -213,6 +251,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         if (selectedApiary) {
             const acres = selectedApiary.size_acres ?? 25;
             setCalcInputs(prev => ({ ...prev, totalAcres: Number(acres) }));
+            if (Number.isFinite(selectedApiary.latitude) && Number.isFinite(selectedApiary.longitude)) {
+                setMapCenter([Number(selectedApiary.latitude), Number(selectedApiary.longitude)]);
+                setZoom(14);
+            }
         }
     }, [selectedApiary]);
 
@@ -239,6 +281,19 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         const data = await beeyieldService.getPollinationDeployments();
         setDeployments(data);
         setLoading(false);
+    };
+
+    const fetchDashboard = async () => {
+        setDashboardLoading(true);
+        try {
+            const data = await beeyieldService.getPollinationDashboard();
+            setPollinationDashboard(data);
+        } catch (error) {
+            console.error('getPollinationDashboard:', error);
+            setPollinationDashboard(null);
+        } finally {
+            setDashboardLoading(false);
+        }
     };
 
     const handleCommitTasks = async () => {
@@ -277,6 +332,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             toast.error('Select an apiary with coordinates first.');
             return;
         }
+
+        const bloomIntensity = calcInputs.bloomIntensity ?? 1;
+        const forageCondition = calcInputs.forageCondition ?? 1;
+        const adaptiveFlightRadiusKm = Number(Math.min(
+            2.4,
+            Math.max(0.8, 1.15 + ((forageCondition - 0.75) * 0.7) + ((bloomIntensity - 1) * 0.35))
+        ).toFixed(2));
+        const bloomWeight = Number(Math.min(0.75, Math.max(0.35, 0.5 + ((bloomIntensity - 1) * 0.32))).toFixed(2));
+        const waterWeight = Number(Math.min(0.35, Math.max(0.12, 0.18 + ((1 - forageCondition) * 0.16))).toFixed(2));
+        const roadsWeight = Number(Math.max(0.08, Number((1 - bloomWeight - waterWeight).toFixed(2))));
+
         setIsOptimizing(true);
         try {
             const results = await beeyieldService.optimizePollinationPlacement2({
@@ -286,13 +352,15 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                     metrics.hivesRequired || Math.ceil((calcInputs.totalAcres || 1) * (calcInputs.targetFpa || 12) / Math.max(1, calcInputs.averageFramesPerHive || 8))
                 ),
                 target_crop: selectedCrop || (selectedApiary?.forage_type as any) || 'Unknown',
-                bee_flight_radius_km: 1.5,
-                ahp_weights: { bloom: 0.8, roads: 0.2, water: 0.1 }
+                bee_flight_radius_km: adaptiveFlightRadiusKm,
+                ahp_weights: { bloom: bloomWeight, roads: roadsWeight, water: waterWeight },
+                bloom_intensity: bloomIntensity,
+                forage_condition: forageCondition
             });
             const normalized = Array.isArray(results) ? results.map((r: any) => ({
                 lat: Number(r.lat ?? r.latitude ?? r.center?.lat ?? r.y ?? 0),
                 lng: Number(r.lng ?? r.longitude ?? r.center?.lng ?? r.x ?? 0),
-                coverage_radius_km: Number(r.coverage_radius_km ?? r.radius_km ?? 1.5),
+                coverage_radius_km: Number(r.coverage_radius_km ?? r.radius_km ?? adaptiveFlightRadiusKm),
                 score: Number(r.score ?? r.weight ?? 0.5),
                 source: 'api'
             })).filter((r: any) => Number.isFinite(r.lat) && Number.isFinite(r.lng)) : [];
@@ -313,7 +381,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 1,
                 metrics.hivesRequired || Math.ceil((calcInputs.totalAcres || 1) * (calcInputs.targetFpa || 12) / Math.max(1, calcInputs.averageFramesPerHive || 8))
             ),
-            flightRadiusKm: 1.5,
+            flightRadiusKm: adaptiveFlightRadiusKm,
             zones: forageZones,
             windDirectionDeg: 90,
             calcInputs
@@ -326,6 +394,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
     React.useEffect(() => {
         fetchDeployments();
+        fetchDashboard();
     }, []);
 
     React.useEffect(() => {
@@ -334,8 +403,29 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             try {
                 const data = await beeyieldService.getCropRequirements();
                 if (!mounted) return;
-                setCrops(data || []);
-                const names = (data || []).map((c: any) => String(c?.crop_name || c?.cropName || '').trim()).filter(Boolean);
+                const incoming = Array.isArray(data) ? data : [];
+                const indexed = new Map<string, any>();
+                incoming.forEach((c: any) => {
+                    const canonical = getCanonicalCropName(c?.crop_name || c?.cropName);
+                    if (canonical && !indexed.has(canonical)) {
+                        indexed.set(canonical, { ...c, crop_name: canonical });
+                    }
+                });
+
+                const normalized = POLLINATION_CROP_ORDER.map((name) => {
+                    const match = indexed.get(name);
+                    if (match) return match;
+                    const fallback = beePollinationData[name] as any;
+                    return {
+                        crop_name: name,
+                        target_fpa: fallback?.targetFPA ?? undefined,
+                        min_fpa: fallback?.targetFPA ? Math.max(1, fallback.targetFPA - 2) : undefined,
+                        optimal_fpa: fallback?.targetFPA ? fallback.targetFPA + 2 : undefined,
+                    };
+                });
+
+                setCrops(normalized);
+                const names = normalized.map((c: any) => String(c?.crop_name || c?.cropName || '').trim()).filter(Boolean);
                 setSelectedCrop((prev) => {
                     if (prev && names.includes(prev)) return prev;
                     if (selectedApiary?.forage_type && names.includes(String(selectedApiary.forage_type))) return String(selectedApiary.forage_type);
@@ -343,7 +433,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 });
             } catch {
                 if (!mounted) return;
-                setCrops([]);
+                const fallback = POLLINATION_CROP_ORDER.map((name) => {
+                    const data = beePollinationData[name] as any;
+                    return {
+                        crop_name: name,
+                        target_fpa: data?.targetFPA ?? undefined,
+                        min_fpa: data?.targetFPA ? Math.max(1, data.targetFPA - 2) : undefined,
+                        optimal_fpa: data?.targetFPA ? data.targetFPA + 2 : undefined,
+                    };
+                });
+                setCrops(fallback);
+                setSelectedCrop((prev) => prev || POLLINATION_CROP_ORDER[0]);
             }
         };
         loadCrops();
@@ -410,13 +510,23 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 field_name: `Tactical Deployment ${new Date().toLocaleDateString()}`,
                 crop_type: selectedCrop || (selectedApiary?.forage_type as any) || 'Unknown',
                 total_acres: calcInputs.totalAcres,
-                bloom_intensity: 1.0, 
-                forage_condition: 1.0,
+                bloom_intensity: calcInputs.bloomIntensity ?? 1,
+                forage_condition: calcInputs.forageCondition ?? 1,
                 status: 'active',
-                metrics_json: metrics
+                metrics_json: {
+                    ...metrics,
+                    apiary_id: selectedApiaryId || null,
+                    apiary_name: selectedApiary?.name || null,
+                    crop_name: selectedCrop || null,
+                    optimizer: {
+                        forage_zone_count: forageZones.length,
+                        placements_generated: optimalPlacements.length,
+                    }
+                }
             });
             if (result.error) throw result.error;
             await fetchDeployments();
+            await fetchDashboard();
             toast.success('Deployment saved', { id: tid });
         } catch (e: any) {
             console.error(e);
@@ -511,10 +621,32 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         [readings, selectedDeviceId]
     );
 
+    const metrics = React.useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
+    const deployedFrames = React.useMemo(
+        () => deployments.reduce((sum, deployment) => sum + ((deployment.hive_count_deployed || 0) * (calcInputs.averageFramesPerHive || 8)), 0),
+        [deployments, calcInputs.averageFramesPerHive]
+    );
+    const reportAnalytics = pollinationDashboard?.analytics;
+    const recentActivities = pollinationDashboard?.recent_activities || [];
+    const backendHiveSensors = pollinationDashboard?.hive_sensor_data || [];
+    const activeContracts = pollinationDashboard?.contracts || [];
+
     const reportCards = React.useMemo(() => [
-        { title: 'Bloom Saturation Flux', icon: Terminal, color: 'text-[#1B9157]', val: `${metrics.pollinationEfficacy}%`, label: 'Live estimate' },
-        { title: 'Fleet Efficiency Audit', icon: Activity, color: 'text-[#1A1A1A]', val: filteredDevices.length.toString(), label: 'Linked nodes' }
-    ], [filteredDevices.length, metrics.pollinationEfficacy]);
+        {
+            title: 'Bloom Saturation Flux',
+            icon: Terminal,
+            color: 'text-[#1B9157]',
+            val: `${Math.round(reportAnalytics?.coverage_health_percent ?? metrics.pollinationEfficacy)}%`,
+            label: dashboardLoading ? 'Syncing backend' : 'Coverage health'
+        },
+        {
+            title: 'Fleet Efficiency Audit',
+            icon: Activity,
+            color: 'text-[#1A1A1A]',
+            val: String(backendHiveSensors.length || filteredDevices.length),
+            label: activeContracts.length ? `${activeContracts.length} active contracts` : 'Linked nodes'
+        }
+    ], [activeContracts.length, backendHiveSensors.length, dashboardLoading, filteredDevices.length, metrics.pollinationEfficacy, reportAnalytics?.coverage_health_percent]);
 
     const subPageOptions = [
         { id: 'grid', label: 'Nodes', icon: Layers },
@@ -621,6 +753,63 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 }
             />
 
+            <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_1.15fr_0.9fr] gap-4">
+                <div className={cn(glass.card, "p-4 bg-white/50 border-[#1B9157]/10 shadow-sm")}>
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[9px] font-black text-[#1A1A1A]/50 uppercase tracking-widest">Bloom intensity</span>
+                        <span className="text-[10px] font-black text-[#1B9157]">{Math.round((calcInputs.bloomIntensity ?? 1) * 100)}%</span>
+                    </div>
+                    <div className="relative h-2 bg-white/60 rounded-full overflow-hidden border border-[#1B9157]/10">
+                        <input
+                            type="range"
+                            min="0.5"
+                            max="1.5"
+                            step="0.05"
+                            value={calcInputs.bloomIntensity ?? 1}
+                            onChange={e => setCalcInputs(p => ({ ...p, bloomIntensity: parseFloat(e.target.value) }))}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            aria-label="Adjust bloom intensity"
+                            title="Adjust bloom intensity"
+                        />
+                        <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#1B9157]/30 to-[#1B9157] rounded-full transition-all" style={{ width: `${(((calcInputs.bloomIntensity ?? 1) - 0.5) / 1) * 100}%` }} />
+                    </div>
+                </div>
+
+                <div className={cn(glass.card, "p-4 bg-white/50 border-[#F4D03F]/10 shadow-sm")}>
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-[9px] font-black text-[#1A1A1A]/50 uppercase tracking-widest">Forage modifier</span>
+                        <span className="text-[10px] font-black text-[#F4D03F]">{Math.round((calcInputs.forageCondition ?? 1) * 100)}%</span>
+                    </div>
+                    <div className="relative h-2 bg-white/60 rounded-full overflow-hidden border border-[#F4D03F]/10">
+                        <input
+                            type="range"
+                            min="0.4"
+                            max="1.2"
+                            step="0.05"
+                            value={calcInputs.forageCondition ?? 1}
+                            onChange={e => setCalcInputs(p => ({ ...p, forageCondition: parseFloat(e.target.value) }))}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            aria-label="Adjust forage modifier"
+                            title="Adjust forage modifier"
+                        />
+                        <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F4D03F]/30 to-[#F4D03F] rounded-full transition-all" style={{ width: `${(((calcInputs.forageCondition ?? 1) - 0.4) / 0.8) * 100}%` }} />
+                    </div>
+                </div>
+
+                <div className={cn(glass.card, "p-4 bg-[#1A1A1A] text-white border-white/5 shadow-sm")}>
+                    <div className="flex items-center justify-between gap-3">
+                        <div>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-white/50">Model status</p>
+                            <p className="text-sm font-black tracking-tight">{dashboardLoading ? 'Syncing pollination backend...' : metrics.recommendation}</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-[8px] font-black text-white/40 uppercase tracking-widest">Efficacy</p>
+                            <p className="text-xl font-black text-[#F4D03F]">{metrics.pollinationEfficacy}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <AnimatePresence mode="wait">
                 {activeSubPage === 'home' && (
                     <motion.div
@@ -658,13 +847,13 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         <div className="flex justify-between items-baseline mb-1">
                                             <p className={glass.microLabel}>Saturation Progress</p>
                                             <span className="text-[9px] font-black text-[#1B9157]">
-                                                {metrics.totalFramesRequired > 0 ? Math.min(100, Math.round((deployments.reduce((sum, d) => sum + (d.hive_count_deployed || 0), 0) * calcInputs.averageFramesPerHive) / metrics.totalFramesRequired * 100)) : 0}%
+                                                {metrics.totalFramesRequired > 0 ? Math.min(100, Math.round((deployedFrames / metrics.totalFramesRequired) * 100)) : 0}%
                                             </span>
                                         </div>
                                         <div className="h-1.5 w-full bg-[#1B9157]/10 rounded-full overflow-hidden mb-2">
                                             <div 
                                                 className="h-full bg-[#1B9157] transition-all duration-500" 
-                                                style={{ width: `${Math.min(100, metrics.totalFramesRequired > 0 ? ((deployments.reduce((sum, d) => sum + (d.hive_count_deployed || 0), 0) * calcInputs.averageFramesPerHive) / metrics.totalFramesRequired) * 100 : 0)}%` }}
+                                                style={{ width: `${Math.min(100, metrics.totalFramesRequired > 0 ? (deployedFrames / metrics.totalFramesRequired) * 100 : 0)}%` }}
                                             />
                                         </div>
                                         <div className="flex items-baseline gap-1">
@@ -677,7 +866,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
 
                             <div className="space-y-4">
                                 {[
-                                    { label: 'Deployed Strength', val: (deployments.reduce((sum, d) => sum + (d.hive_count_deployed || 0), 0) * calcInputs.averageFramesPerHive).toString(), sub: 'Frames', icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', border: 'border-[#F4D03F]/20' },
+                                    { label: 'Deployed Strength', val: deployedFrames.toString(), sub: 'Frames', icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', border: 'border-[#F4D03F]/20' },
                                     { label: 'Calculated Demand', val: metrics.totalFramesRequired.toString(), sub: 'Frames', icon: Activity, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5', border: 'border-[#1B9157]/20' }
                                 ].map((stat, i) => (
                                     <div key={i} className={cn(glass.card, "p-4 flex items-center justify-between border-white/40 shadow-sm", stat.bg, stat.border)}>
@@ -1147,32 +1336,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 {activeSubPage === 'reports' && (
                     <motion.div key="reports" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {false ? [
-                                { title: 'Bloom Saturation Flux', icon: Terminal, color: 'text-[#1B9157]', val: '—%', label: 'Registry' },
-                                { title: 'Fleet Efficiency Audit', icon: Activity, color: 'text-[#1A1A1A]', val: devices.length.toString(), label: 'Active Nodes' }
-                            ].map((r, i) => (
-                                <div key={i} className={cn(glass.card, "p-0 overflow-hidden border-white/40 shadow-sm")}>
-                                    <div className="p-4 border-b border-[#1B9157]/5 flex justify-between items-center bg-white/50">
-                                        <h4 className={glass.sectionTitle}>{r.title}</h4>
-                                        <div className="w-8 h-8 rounded-lg bg-white border border-gray-100 shadow-sm flex items-center justify-center">
-                                            <r.icon className={cn("w-3.5 h-3.5", r.color)} />
-                                        </div>
-                                    </div>
-                                    <div className="p-6 space-y-8">
-                                        <div className="flex justify-between items-end border-b border-[#1B9157]/5 pb-4">
-                                            <span className={glass.microLabel}>Protocol Status</span>
-                                            <div className="flex items-baseline gap-2">
-                                                <span className={cn("text-3xl font-black tracking-tighter", r.color)}>{r.val}</span>
-                                                <span className="text-[9px] font-black text-gray-400">{r.label}</span>
-                                            </div>
-                                        </div>
-                                        <button onClick={() => handleExport(r.title)} className={cn(glass.btnSecondary, "w-full h-10 text-[9px] font-black rounded-xl flex items-center justify-center gap-2 group")}>
-                                            <FileDown className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" /> 
-                                            <span>Sync Log</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            )) : reportCards.map((r, i) => (
+                            {reportCards.map((r, i) => (
                                 <div key={`report-${i}`} className={cn(glass.card, "p-0 overflow-hidden border-white/40 shadow-sm")}>
                                     <div className="p-4 border-b border-[#1B9157]/5 flex justify-between items-center bg-white/50">
                                         <h4 className={glass.sectionTitle}>{r.title}</h4>
@@ -1197,37 +1361,76 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                             ))}
                         </div>
 
-                        <div className={cn(glass.card, "p-0 bg-white/40 border-[#1B9157]/10 overflow-hidden shadow-xl")}>
-                            <div className="p-5 border-b border-[#1B9157]/10 bg-[#1B9157][0.02] flex items-center justify-between">
-                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Deployment History</h3>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                                    <span className="text-[9px] font-black text-[#1B9157]">{deployments.length} Records logged</span>
+                        <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_0.9fr] gap-5">
+                            <div className={cn(glass.card, "p-0 bg-white/40 border-[#1B9157]/10 overflow-hidden shadow-xl")}>
+                                <div className="p-5 border-b border-[#1B9157]/10 bg-[#1B9157][0.02] flex items-center justify-between">
+                                    <h3 className="text-[10px] font-black text-[#1A1A1A]">Deployment History</h3>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
+                                        <span className="text-[9px] font-black text-[#1B9157]">{deployments.length} Records logged</span>
+                                    </div>
+                                </div>
+                                <div className="p-6 space-y-3 max-h-[400px] overflow-y-auto thin-scrollbar">
+                                    {deployments.length === 0 ? (
+                                        <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
+                                            <div className="w-14 h-14 rounded-3xl bg-gray-100 flex items-center justify-center">
+                                                <Terminal className="w-7 h-7" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <span className="block text-[10px] font-black text-[#1A1A1A]">No deployment history yet</span>
+                                                <span className="block text-[10px] font-bold text-gray-400">Save a pollination plan to start the registry.</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        deployments.map((d, i) => (
+                                            <div key={i} className="flex items-center gap-6 p-4 rounded-2xl border border-[#1B9157]/10 bg-white/40 hover:bg-white hover:border-[#1B9157]/30 transition-all group cursor-default">
+                                                <span className="text-[10px] font-black text-[#1B9157] w-24 tabular-nums tracking-tighter">{new Date(d.created_at).toLocaleDateString()}</span>
+                                                <div className="flex-1 flex items-baseline gap-3">
+                                                    <span className="text-[11px] font-black text-[#1A1A1A] tracking-tight group-hover:text-[#1B9157] transition-colors">{d.field_name}</span>
+                                                    <span className="text-[9px] font-bold text-gray-400 tabular-nums">{d.total_acres} Acres</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{Math.round((d.bloom_intensity ?? 1) * 100)}% bloom</span>
+                                                    <div className="w-2 h-2 rounded-full bg-[#1B9157]/10 group-hover:bg-[#1B9157] group-hover:shadow-sm group-hover:shadow-[#1B9157]/50 transition-all" />
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </div>
-                            <div className="p-6 space-y-3 max-h-[400px] overflow-y-auto thin-scrollbar">
-                                {deployments.length === 0 ? (
-                                    <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
-                                        <div className="w-14 h-14 rounded-3xl bg-gray-100 flex items-center justify-center">
-                                            <Terminal className="w-7 h-7" />
+
+                            <div className={cn(glass.card, "p-0 bg-[#1A1A1A] text-white border-white/5 overflow-hidden shadow-xl")}>
+                                <div className="p-5 border-b border-white/10 flex items-center justify-between">
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-white/70">Backend Activity</h3>
+                                    <span className="text-[9px] font-black text-[#F4D03F]">{activeContracts.length} active contracts</span>
+                                </div>
+                                <div className="p-5 space-y-4 max-h-[400px] overflow-y-auto thin-scrollbar">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                            <p className="text-[8px] font-black uppercase tracking-widest text-white/40">Coverage</p>
+                                            <p className="text-2xl font-black text-[#F4D03F]">{Math.round(reportAnalytics?.coverage_health_percent ?? metrics.pollinationEfficacy)}%</p>
                                         </div>
-                                        <div className="space-y-1">
-                                            <span className="block text-[10px] font-black text-[#1A1A1A]">No deployment history yet</span>
-                                            <span className="block text-[10px] font-bold text-gray-400">Save a pollination plan to start the registry.</span>
+                                        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                            <p className="text-[8px] font-black uppercase tracking-widest text-white/40">Sensor-linked hives</p>
+                                            <p className="text-2xl font-black text-[#1B9157]">{backendHiveSensors.length}</p>
                                         </div>
                                     </div>
-                                ) : (
-                                    deployments.map((d, i) => (
-                                        <div key={i} className="flex items-center gap-6 p-4 rounded-2xl border border-[#1B9157]/10 bg-white/40 hover:bg-white hover:border-[#1B9157]/30 transition-all group cursor-default">
-                                            <span className="text-[10px] font-black text-[#1B9157] w-24 tabular-nums tracking-tighter">{new Date(d.created_at).toLocaleDateString()}</span>
-                                            <div className="flex-1 flex items-baseline gap-3">
-                                                <span className="text-[11px] font-black text-[#1A1A1A] tracking-tight group-hover:text-[#1B9157] transition-colors">{d.field_name}</span>
-                                                <span className="text-[9px] font-bold text-gray-400 tabular-nums">{d.total_acres} Acres</span>
-                                            </div>
-                                            <div className="w-2 h-2 rounded-full bg-[#1B9157]/10 group-hover:bg-[#1B9157] group-hover:shadow-sm group-hover:shadow-[#1B9157]/50 transition-all" />
+                                    {recentActivities.length === 0 ? (
+                                        <div className="rounded-2xl border border-dashed border-white/10 p-5 text-[10px] font-black text-white/40">
+                                            No pollination activity logs returned yet.
                                         </div>
-                                    ))
-                                )}
+                                    ) : (
+                                        recentActivities.slice(0, 6).map((activity: any, index: number) => (
+                                            <div key={`${activity.id || activity.timestamp || index}`} className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-[#F4D03F]">{activity.activity_type || 'activity'}</span>
+                                                    <span className="text-[8px] font-black text-white/40">{activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'Pending sync'}</span>
+                                                </div>
+                                                <p className="text-[10px] font-bold text-white/80">{activity.activity_description || 'Pollination registry updated.'}</p>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </motion.div>

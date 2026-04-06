@@ -27,6 +27,7 @@ export interface PlacementOptimizerInput {
 }
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+const mean = (values: number[]) => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
 
 const haversineKm = (a: LatLng, b: LatLng) => {
     const R = 6371;
@@ -81,6 +82,23 @@ const normalizeNdvi = (v?: number) => {
     return clamp((v - 0.1) / 0.6, 0, 1);
 };
 
+const distanceToPolygonEdgeKm = (point: LatLng, polygon: LatLng[]) => {
+    if (polygon.length < 2) return 0;
+    let minDistance = Infinity;
+
+    for (let i = 0; i < polygon.length; i++) {
+        const start = polygon[i];
+        const end = polygon[(i + 1) % polygon.length];
+        const segmentMidpoint: LatLng = [
+            (start[0] + end[0]) / 2,
+            (start[1] + end[1]) / 2,
+        ];
+        minDistance = Math.min(minDistance, haversineKm(point, segmentMidpoint));
+    }
+
+    return Number.isFinite(minDistance) ? minDistance : 0;
+};
+
 const bearingScore = (center: LatLng, candidate: LatLng, windDeg: number) => {
     // Reward slight upwind placement (10-40 degrees offset)
     const toPointDeg = Math.atan2(
@@ -103,34 +121,51 @@ export const optimizeHivePlacementLocal = (input: PlacementOptimizerInput): Plac
         orchardPolygon.reduce((s, p) => s + p[1], 0) / orchardPolygon.length,
     ];
 
-    const candidates = samplePoints(orchardPolygon, hiveCount * 8);
+    const bloom = clamp(calcInputs?.bloomIntensity ?? 1, 0.5, 1.6);
+    const forage = clamp(calcInputs?.forageCondition ?? 1, 0.4, 1.3);
+    const adaptiveRadiusKm = Number(clamp(
+        flightRadiusKm * (0.92 + (forage - 0.8) * 0.28 + (bloom - 1) * 0.12),
+        0.75,
+        2.4
+    ).toFixed(2));
+
+    const candidates = samplePoints(orchardPolygon, hiveCount * 10);
     if (!candidates.length) return [];
 
     const baseScores = candidates.map((pt) => {
-        const zoneBoost = zones.length
-            ? zones.reduce((best, z) => {
+        const zoneScores = zones.length
+            ? zones.map((z) => {
                 const d = haversineKm(pt, [z.lat, z.lng]);
                 const ndviScore = normalizeNdvi(z.ndvi);
-                const proximity = Math.exp(-((d / Math.max(0.1, flightRadiusKm)) ** 2));
-                return Math.max(best, ndviScore * proximity);
-            }, 0)
-            : 0.5;
+                const moisture = clamp(z.soil_moisture ?? 0.55, 0.15, 0.95);
+                const proximity = Math.exp(-((d / Math.max(0.1, adaptiveRadiusKm * 0.9)) ** 2));
+                return proximity * ((0.7 * ndviScore) + (0.3 * moisture));
+            })
+            : [0.5];
+
+        const zoneBoost = clamp(Math.max(...zoneScores), 0, 1);
+        const zoneConsistency = clamp(mean(zoneScores), 0, 1);
 
         const windScore = bearingScore(centroid, pt, windDirectionDeg);
         const distToCenter = haversineKm(pt, centroid);
-        const centroidScore = Math.exp(-((distToCenter / (flightRadiusKm * 1.2)) ** 2));
+        const centroidScore = Math.exp(-((distToCenter / Math.max(0.2, adaptiveRadiusKm * 1.05)) ** 2));
+        const edgeDistance = distanceToPolygonEdgeKm(pt, orchardPolygon);
+        const edgeScore = clamp(edgeDistance / Math.max(0.12, adaptiveRadiusKm * 0.35), 0, 1);
+        const environmentalLift = clamp((0.52 + 0.48 * bloom) * (0.48 + 0.52 * forage), 0.35, 1.55);
 
-        // Optional bloom / forage multipliers
-        const bloom = calcInputs?.bloomIntensity ?? 1;
-        const forage = calcInputs?.forageCondition ?? 1;
-        const bloomForage = clamp(0.6 + 0.2 * bloom + 0.2 * forage, 0.3, 1.3);
+        const score = (
+            (0.34 * zoneBoost) +
+            (0.16 * zoneConsistency) +
+            (0.18 * windScore) +
+            (0.2 * centroidScore) +
+            (0.12 * edgeScore)
+        ) * environmentalLift;
 
-        const score = (0.45 * zoneBoost) + (0.25 * windScore) + (0.3 * centroidScore);
-        return { pt, score: score * bloomForage };
+        return { pt, score, edgeScore, zoneBoost };
     });
 
     const chosen: PlacementSuggestion[] = [];
-    const minSeparationKm = flightRadiusKm * 0.65;
+    const minSeparationKm = adaptiveRadiusKm * clamp(0.58 + (forage - 0.4) * 0.22, 0.55, 0.82);
 
     while (chosen.length < hiveCount && baseScores.length) {
         baseScores.sort((a, b) => b.score - a.score);
@@ -145,12 +180,16 @@ export const optimizeHivePlacementLocal = (input: PlacementOptimizerInput): Plac
             ? 1
             : clamp(Math.log1p(spacing) / Math.log1p(minSeparationKm * 2), 0, 1);
 
-        const combinedScore = 0.7 * next.score + 0.3 * spacingScore;
+        const overlapPressure = chosen.length
+            ? mean(chosen.map(c => Math.exp(-((haversineKm([c.lat, c.lng], next.pt) / Math.max(0.1, adaptiveRadiusKm)) ** 2))))
+            : 0;
+
+        const combinedScore = (0.62 * next.score) + (0.24 * spacingScore) + (0.14 * (1 - overlapPressure));
         if (spacing >= minSeparationKm * 0.6 || chosen.length === 0) {
             chosen.push({
                 lat: next.pt[0],
                 lng: next.pt[1],
-                coverage_radius_km: flightRadiusKm,
+                coverage_radius_km: adaptiveRadiusKm,
                 score: Number(combinedScore.toFixed(3)),
                 source: 'local'
             });
@@ -163,7 +202,7 @@ export const optimizeHivePlacementLocal = (input: PlacementOptimizerInput): Plac
             chosen.push({
                 lat: best.pt[0],
                 lng: best.pt[1],
-                coverage_radius_km: flightRadiusKm,
+                coverage_radius_km: adaptiveRadiusKm,
                 score: Number(best.score.toFixed(3)),
                 source: 'local'
             });

@@ -47,6 +47,7 @@ const Impact = lazy(() => import('@/pages/Impact'))
 const ESG = lazy(() => import('@/pages/ESG'))
 const Commitment = lazy(() => import('@/pages/Commitment'))
 const OurStory = lazy(() => import('@/pages/OurStory'))
+const GlobalHiveNetwork = lazy(() => import('@/pages/GlobalHiveNetwork'))
 
 const PrecisionPollination = lazy(() => import('@/pages/PrecisionPollination'))
 const PollinationSolutions = lazy(() => import('@/pages/PollinationSolutions'))
@@ -148,6 +149,7 @@ root.render(
                                                         <Route path="/esg" element={<ESG />} />
                                                         <Route path="/commitment" element={<Commitment />} />
                                                         <Route path="/ourstory" element={<OurStory />} />
+                                                        <Route path="/global-hive-network" element={<GlobalHiveNetwork />} />
 
                                                         <Route path="/traceability" element={<Traceability />} />
                                                         <Route path="/precision-pollination" element={<PrecisionPollination />} />

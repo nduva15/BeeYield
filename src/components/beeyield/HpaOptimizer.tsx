@@ -18,6 +18,7 @@ import {
   BeeYieldPageShell,
 } from '@/components/beeyield/BeeYieldUI';
 import { ColonyGrade } from '@/lib/apicultureModels';
+import { dashboardPollinationCropNames } from '@/data/beePollinationData';
 import { resolveTargetFpa } from '@/lib/pollinationInsights';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
@@ -75,7 +76,7 @@ const HpaOptimizer: React.FC = () => {
     if (!activeApiary) return;
 
     setAcreage(Math.max(1, Number(activeApiary.size_acres || 0) || 1));
-    setVariety((current) => current || String(activeApiary.forage_type || cropRequirements[0]?.crop_name || 'Almonds'));
+    setVariety((current) => current || String(activeApiary.forage_type || cropRequirements[0]?.crop_name || dashboardPollinationCropNames[0]));
   }, [activeApiary, cropRequirements]);
 
   const selectedRequirement = React.useMemo(() => {
