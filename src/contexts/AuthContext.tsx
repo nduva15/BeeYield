@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useMe
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 import { Session, User, AuthError, AuthMFAEnrollResponse, AuthMFAChallengeResponse, AuthMFAVerifyResponse, Factor, SupabaseClient } from '@supabase/supabase-js';
+import { apiPost } from '@/services/api';
 
 interface MFAEnrollResult {
     id: string;
@@ -243,6 +244,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             password,
             options: { data: metadata },
         });
+
+        const errorCode = (error as (AuthError & { code?: string }) | null)?.code;
+        const shouldFallbackToBackend = error && (
+            errorCode === 'over_email_send_rate_limit'
+            || errorCode === 'unexpected_failure'
+        );
+
+        if (shouldFallbackToBackend) {
+            try {
+                await apiPost<{
+                    message: string;
+                    user_id?: string;
+                    email_confirmed?: boolean;
+                }>('/auth/register', {
+                    email,
+                    password,
+                    first_name: metadata?.first_name ?? null,
+                    last_name: metadata?.last_name ?? null,
+                    role: metadata?.role ?? 'user',
+                    metadata,
+                });
+
+                const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+
+                if (signInError) {
+                    return { error: signInError, data: { user: null, session: null } };
+                }
+
+                return {
+                    error: null,
+                    data: {
+                        user: signInData.user,
+                        session: signInData.session,
+                    },
+                };
+            } catch (fallbackError) {
+                const message = fallbackError instanceof Error
+                    ? fallbackError.message
+                    : error?.message ?? 'Registration failed';
+                return {
+                    error: {
+                        ...(error ?? {}),
+                        message,
+                    } as AuthError,
+                    data: { user: null, session: null },
+                };
+            }
+        }
+
         return { error, data: { user: data.user, session: data.session } };
     };
 

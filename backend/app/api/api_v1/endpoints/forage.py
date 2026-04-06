@@ -4,6 +4,7 @@ from datetime import datetime
 from app.core import security
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.schemas import forage as schemas
+from app.services.weather_summary_service import fetch_provider_weather, get_weather_summary_for_apiary
 
 router = APIRouter()
 
@@ -122,21 +123,15 @@ async def get_flight_potential(
     current_month = datetime.now().month
     flower_sources = await db_select("flower_sources", token=token)
     
-    # 3. Get Current Weather (Agro-Meteo)
-    # We fetch the latest reading for this apiary
-    weather_readings = await db_select("agro_meteo_readings", filters={"apiary_id": apiary_id}, order_by="recorded_at", ascending=False, limit=1, token=token)
-    
-    if not weather_readings:
-        # Fallback to general sensor readings if agro_meteo is empty
-        weather_readings = await db_select("sensor_readings", filters={"apiary_id": apiary_id}, order_by="recorded_at", ascending=True, limit=1, token=token)
-    
-    weather = weather_readings[0] if weather_readings else None
+    # 3. Get Current Weather Summary (device-first + provider fill)
+    summary = await get_weather_summary_for_apiary(apiary_id, str(current_user.get("sub")), token=token)
+    weather = summary.get("current") or {}
     
     # Logic:
     potential_score = 0
     active_sources = []
-    temp = weather.get("temperature", 20.0) if weather else 20.0
-    humidity = weather.get("humidity", 50.0) if weather else 50.0
+    temp = weather.get("temperature_c", 20.0) if weather else 20.0
+    humidity = weather.get("humidity_pct", 50.0) if weather else 50.0
     
     # Weather Modifier: 
     # Bees stop foraging below 10C or above 38C
@@ -196,21 +191,40 @@ async def get_realtime_weather(
     current_user: dict = Depends(security.get_current_user)
 ):
     """
-    Fetches real-time weather metrics for a specific coordinate.
-    In a production app, this would call OpenWeatherMap or similar.
-    Here we return high-fidelity mock data based on location.
+    Fetches real weather metrics for a specific coordinate.
     """
-    # Deterministic mock based on coordinates
-    seed = abs(int(lat * 100 + lng * 100)) % 100
-    temp = 20 + (seed % 15)
-    humidity = 40 + (seed % 40)
-    solar = 800 + (seed * 2) # Solar pressure W/m2
-    
+    provider = await fetch_provider_weather(lat, lng)
+    if not provider:
+        raise HTTPException(status_code=502, detail="Failed to fetch weather data")
+
+    current = provider.get("current") or {}
     return {
-        "temperature": temp,
-        "humidity": humidity,
-        "solar_pressure": solar,
-        "wind_speed": seed % 10,
-        "description": "Clear Sky" if seed < 50 else "Partly Cloudy" if seed < 80 else "Overcast",
-        "bee_flight_status": "Enabled" if temp > 12 and humidity < 85 else "Disabled (Temp)" if temp <= 12 else "Disabled (Rain)"
+        "temperature": current.get("temperature_c"),
+        "humidity": current.get("humidity_pct"),
+        "solar_pressure": current.get("uv_index"),
+        "wind_speed": current.get("wind_speed_kmh"),
+        "description": current.get("condition"),
+        "bee_flight_status": "Enabled"
+        if (current.get("temperature_c") or 0) > 12 and (current.get("humidity_pct") or 100) < 85
+        else "Disabled",
+        "pressure_hpa": current.get("pressure_hpa"),
+        "feels_like_c": current.get("feels_like_c"),
+        "cloud_cover_pct": current.get("cloud_cover_pct"),
+        "sunrise_at": current.get("sunrise_at"),
+        "sunset_at": current.get("sunset_at"),
+        "aqi": current.get("aqi"),
     }
+
+
+@router.get("/weather-summary", response_model=schemas.WeatherSummary)
+async def get_apiary_weather_summary(
+    apiary_id: str = Query(..., description="Target apiary ID"),
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    try:
+        return await get_weather_summary_for_apiary(apiary_id, user_id, token=token)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc

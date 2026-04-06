@@ -238,6 +238,7 @@ export interface SensorReading {
     id: string;
     device_id: string;
     hive_id?: string;
+    apiary_id?: string;
     sensor_type: 'infield' | 'inland' | 'disease';
     timestamp: string;
     status: string;
@@ -250,6 +251,70 @@ export interface SensorReading {
     weight?: number;
     delta_w?: number;
     signal_dbm?: number;
+}
+
+export interface WeatherMetricSource {
+    source: 'device' | 'provider' | 'derived' | 'unavailable';
+    provider?: string | null;
+    device_id?: string | null;
+    observed_at?: string | null;
+}
+
+export interface WeatherCurrent {
+    temperature_c?: number | null;
+    humidity_pct?: number | null;
+    pressure_hpa?: number | null;
+    wind_speed_kmh?: number | null;
+    wind_direction?: string | null;
+    feels_like_c?: number | null;
+    condition?: string | null;
+    cloud_cover_pct?: number | null;
+    sunrise_at?: string | null;
+    sunset_at?: string | null;
+    uv_index?: number | null;
+    aqi?: number | null;
+    last_observed_at?: string | null;
+}
+
+export interface WeatherHourlyPoint {
+    time: string;
+    temperature_c?: number | null;
+    humidity_pct?: number | null;
+    pressure_hpa?: number | null;
+    wind_speed_kmh?: number | null;
+    condition?: string | null;
+    uv_index?: number | null;
+    aqi?: number | null;
+}
+
+export interface WeatherDailySummary {
+    date: string;
+    min_temperature_c?: number | null;
+    max_temperature_c?: number | null;
+    sunrise_at?: string | null;
+    sunset_at?: string | null;
+    uv_index_max?: number | null;
+    max_aqi?: number | null;
+    condition?: string | null;
+}
+
+export interface WeatherLinkedDeviceMeta {
+    device_id: string;
+    device_name?: string | null;
+    device_code?: string | null;
+    device_type?: string | null;
+    last_ping?: string | null;
+    last_reading_at?: string | null;
+}
+
+export interface ApiaryWeatherSummary {
+    apiary_id: string;
+    apiary_name?: string | null;
+    current: WeatherCurrent;
+    hourly_forecast: WeatherHourlyPoint[];
+    daily_summary: WeatherDailySummary[];
+    source_meta: Record<string, WeatherMetricSource>;
+    linked_device_meta: WeatherLinkedDeviceMeta[];
 }
 
 export interface Orchard {

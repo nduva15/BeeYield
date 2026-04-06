@@ -453,8 +453,6 @@ async def get_payment_transactions(
             ascending=False, 
             token=token
         )
-        if result:
-            return result
 
         ledger_filters = {}
         if status:
@@ -471,7 +469,7 @@ async def get_payment_transactions(
             ascending=False,
             token=token,
         )
-        return [
+        c2b_rows = [
             {
                 "id": row.get("id"),
                 "payment_method": "mpesa",
@@ -486,6 +484,7 @@ async def get_payment_transactions(
             for row in ledger_rows
             if row.get("mpesa_type") == "c2b" or payment_method != "mpesa"
         ]
+        return result + c2b_rows
     except Exception as e:
         print(f"Payments Fetch Error: {e}")
         return []

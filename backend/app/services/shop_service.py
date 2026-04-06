@@ -184,11 +184,17 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
     elif order_in.payment_method == "mpesa":
         phone: str = clean_phone
         manual_bill_reference = build_order_bill_reference(order_number)
-        payment_info["manual_paybill_reference"] = manual_bill_reference
-        payment_info["manual_paybill_short_code"] = settings.MPESA_BUSINESS_SHORTCODE
+        payment_info = {
+            "manual_paybill_reference": manual_bill_reference,
+            "manual_paybill_short_code": settings.MPESA_BUSINESS_SHORTCODE,
+        }
         
         if not mpesa:
-            payment_info = {"success": False, "error": "M-Pesa engine not available (Rust core offline)"}
+            payment_info = {
+                **payment_info,
+                "success": False,
+                "error": "M-Pesa engine not available (Rust core offline)",
+            }
         else:
             try:
                 stk_res = mpesa.initiate_stk_push(phone, int(order_in.total_kes), order_number)

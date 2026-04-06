@@ -122,6 +122,7 @@ export function getBaseUrl(endpoint: string): string {
         "/contact/",
         "/forms/",
         "/pollination/",
+        "/forage/", "forage/",
         "/stats/",
         "/labels", "/labels/", "labels",
         "/image/",
