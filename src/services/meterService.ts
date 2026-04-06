@@ -179,7 +179,9 @@ export const meterService = {
         apartment_id?: string;
         meter_type: string;
         meter_number: string;
+        meter_code?: string | null;
         status?: string;
+        install_date?: string | null;
     }): Promise<Meter> {
         return apiPost<Meter>('/meters/devices', input);
     },

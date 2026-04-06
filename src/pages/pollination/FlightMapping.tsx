@@ -18,10 +18,11 @@ import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
-import WeatherTelemetryPanel from '@/components/beeyield/WeatherTelemetryPanel.tsx';
+import WeatherTelemetryPanel from '@/components/beeyield/WeatherTelemetryPanel';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
-import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary.ts';
-import beeyieldService from '@/services/beeyieldService';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import { useSelectedApiary } from '@/hooks/useSelectedApiary';
+import beeyieldService, { PublicFlightMapPayload } from '@/services/beeyieldService';
 
 const DefaultIcon = L.icon({
     iconUrl: markerIcon,
@@ -52,36 +53,58 @@ function distanceInMeters(a: [number, number], b: [number, number]) {
 
 const FlightMapping: React.FC = () => {
     const { data: apiaries = [], isLoading: apiariesLoading } = useApiaries();
-    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
+    const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
     const [flightPotential, setFlightPotential] = React.useState<any>(null);
     const [isPotentialLoading, setIsPotentialLoading] = React.useState(false);
+    const [publicFlightMap, setPublicFlightMap] = React.useState<PublicFlightMapPayload | null>(null);
+    const [isPublicMapLoading, setIsPublicMapLoading] = React.useState(false);
 
-    React.useEffect(() => {
-        if (!selectedApiaryId && apiaries.length > 0) {
-            setSelectedApiaryId(apiaries[0].id);
-        }
-    }, [apiaries, selectedApiaryId]);
-
-    const selectedApiary = React.useMemo(
+    const privateSelectedApiary = React.useMemo(
         () => apiaries.find((apiary) => apiary.id === selectedApiaryId) || apiaries[0] || null,
         [apiaries, selectedApiaryId],
     );
 
-    const { data: hives = [], isLoading: hivesLoading } = useHives(selectedApiary?.id);
-    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(selectedApiary?.id);
+    const { data: hives = [], isLoading: hivesLoading } = useHives(privateSelectedApiary?.id);
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(privateSelectedApiary?.id);
+
+    React.useEffect(() => {
+        let cancelled = false;
+
+        async function loadPublicFlightMap() {
+            if (apiariesLoading || apiaries.length > 0 || publicFlightMap) return;
+
+            setIsPublicMapLoading(true);
+            try {
+                const data = await beeyieldService.getPublicLiveFlightMap('kibwezi-kenya');
+                if (!cancelled) {
+                    setPublicFlightMap(data);
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsPublicMapLoading(false);
+                }
+            }
+        }
+
+        loadPublicFlightMap();
+        return () => {
+            cancelled = true;
+        };
+    }, [apiaries, apiariesLoading, publicFlightMap]);
 
     React.useEffect(() => {
         let cancelled = false;
 
         async function loadFlightPotential() {
-            if (!selectedApiary?.id) {
-                setFlightPotential(null);
+            if (!privateSelectedApiary?.id) {
+                setFlightPotential(publicFlightMap?.flight_potential || null);
+                setIsPotentialLoading(false);
                 return;
             }
 
             setIsPotentialLoading(true);
             try {
-                const data = await beeyieldService.getFlightPotential(selectedApiary.id);
+                const data = await beeyieldService.getFlightPotential(privateSelectedApiary.id);
                 if (!cancelled) {
                     setFlightPotential(data);
                 }
@@ -96,7 +119,16 @@ const FlightMapping: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [selectedApiary?.id]);
+    }, [privateSelectedApiary?.id, publicFlightMap]);
+
+    const selectedApiary = privateSelectedApiary || publicFlightMap?.apiary || null;
+    const isUsingPublicMap = !privateSelectedApiary && !!publicFlightMap;
+    const resolvedHives = isUsingPublicMap ? publicFlightMap?.hives || [] : hives;
+    const resolvedWeatherSummary = isUsingPublicMap ? publicFlightMap?.weather_summary || null : weatherSummary;
+    const locationOptions = privateSelectedApiary ? apiaries : selectedApiary ? [selectedApiary] : [];
+    const mapModeDescription = isUsingPublicMap
+        ? 'Public live map centered on Kibwezi, Kenya with backend weather enrichment'
+        : 'Real apiary telemetry, forecast enrichment, and route visibility';
 
     const mapCenter = React.useMemo<[number, number]>(() => {
         if (typeof selectedApiary?.latitude === 'number' && typeof selectedApiary?.longitude === 'number') {
@@ -107,31 +139,37 @@ const FlightMapping: React.FC = () => {
 
     const positionedHives = React.useMemo(
         () =>
-            (hives || []).filter(
+            (resolvedHives || []).filter(
                 (hive) => typeof hive.latitude === 'number' && typeof hive.longitude === 'number',
             ),
-        [hives],
+        [resolvedHives],
     );
 
     const routePoints = React.useMemo<[number, number][]>(() => {
+        if (isUsingPublicMap && publicFlightMap?.route_points?.length) {
+            return publicFlightMap.route_points.map((point) => [point.lat, point.lng]);
+        }
         const points: [number, number][] = [mapCenter];
         positionedHives.slice(0, 5).forEach((hive) => {
             points.push([hive.latitude as number, hive.longitude as number]);
         });
         return points;
-    }, [mapCenter, positionedHives]);
+    }, [isUsingPublicMap, mapCenter, positionedHives, publicFlightMap]);
 
     const coverageRadiusM = React.useMemo(() => {
+        if (isUsingPublicMap && publicFlightMap?.coverage_radius_m) {
+            return publicFlightMap.coverage_radius_m;
+        }
         if (positionedHives.length === 0) return null;
         const farthest = positionedHives.reduce((maxDistance, hive) => {
             const distance = distanceInMeters(mapCenter, [hive.latitude as number, hive.longitude as number]);
             return Math.max(maxDistance, distance);
         }, 0);
         return Math.round(farthest + 100);
-    }, [mapCenter, positionedHives]);
+    }, [isUsingPublicMap, mapCenter, positionedHives, publicFlightMap]);
 
     const readiness = React.useMemo(() => {
-        const current = weatherSummary?.current;
+        const current = resolvedWeatherSummary?.current;
         const score = typeof flightPotential?.score === 'number' ? flightPotential.score : 0;
         const temperature = current?.temperature_c;
         const humidity = current?.humidity_pct;
@@ -173,10 +211,12 @@ const FlightMapping: React.FC = () => {
             tone: 'text-[#475569] bg-[#e2e8f0] border-[#cbd5e1]',
             detail: 'Waiting for stronger telemetry and weather alignment.',
         };
-    }, [flightPotential?.score, weatherSummary?.current]);
+    }, [flightPotential?.score, resolvedWeatherSummary?.current]);
 
     const activeSources = flightPotential?.active_sources || [];
-    const linkedDevices = weatherSummary?.linked_device_meta || [];
+    const linkedDevices = resolvedWeatherSummary?.linked_device_meta || [];
+    const telemetryCount = isUsingPublicMap ? 1 : linkedDevices.length;
+    const telemetryReportingCount = isUsingPublicMap ? 1 : linkedDevices.filter((device) => !!device.last_observed_at).length;
 
     return (
         <BeeYieldPageShell className="bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12 -m-0 md:-m-0">
@@ -195,20 +235,21 @@ const FlightMapping: React.FC = () => {
                             Flight <span className="text-[#10b981]">Mapping</span>
                         </h1>
                         <p className="mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-[#064e3b]/45">
-                            Real apiary telemetry, forecast enrichment, and route visibility
+                            {mapModeDescription}
                         </p>
                     </div>
 
                     <div className="rounded-[28px] border-4 border-[#064e3b] bg-[#F7F1E4] p-4 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                         <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#064e3b]/55">
-                            Selected apiary
+                            Selected location
                         </label>
                         <select
                             value={selectedApiary?.id || ''}
                             onChange={(event) => setSelectedApiaryId(event.target.value)}
+                            disabled={!privateSelectedApiary}
                             className="mt-2 min-w-[280px] rounded-2xl border-2 border-[#064e3b]/20 bg-white px-4 py-3 text-sm font-bold text-[#064e3b] outline-none"
                         >
-                            {apiaries.map((apiary) => (
+                            {locationOptions.map((apiary) => (
                                 <option key={apiary.id} value={apiary.id}>
                                     {apiary.name}
                                     {apiary.location_name ? ` | ${apiary.location_name}` : ''}
@@ -228,16 +269,16 @@ const FlightMapping: React.FC = () => {
                     </div>
                     <div className="border-4 border-[#064e3b] bg-[#FFF9F0] p-6 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                         <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Tracked hives</p>
-                        <h4 className="mt-2 text-2xl font-black">{hivesLoading ? '...' : hives.length}</h4>
+                        <h4 className="mt-2 text-2xl font-black">{hivesLoading && !isUsingPublicMap ? '...' : resolvedHives.length}</h4>
                         <p className="mt-2 text-sm font-semibold text-[#064e3b]/60">
-                            {positionedHives.length} mapped with coordinates
+                            {isUsingPublicMap ? `${positionedHives.length} live corridors mapped` : `${positionedHives.length} mapped with coordinates`}
                         </p>
                     </div>
                     <div className="border-4 border-[#064e3b] bg-[#FFF9F0] p-6 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                         <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Linked telemetry</p>
-                        <h4 className="mt-2 text-2xl font-black">{weatherLoading ? '...' : linkedDevices.length}</h4>
+                        <h4 className="mt-2 text-2xl font-black">{weatherLoading && !isUsingPublicMap ? '...' : telemetryCount}</h4>
                         <p className="mt-2 text-sm font-semibold text-[#064e3b]/60">
-                            {linkedDevices.filter((device) => !!device.last_observed_at).length} reporting recently
+                            {isUsingPublicMap ? 'Provider weather feed active for Kibwezi' : `${telemetryReportingCount} reporting recently`}
                         </p>
                     </div>
                 </div>
@@ -251,7 +292,7 @@ const FlightMapping: React.FC = () => {
                             </div>
                             <div className="inline-flex items-center gap-2 rounded-full border border-[#064e3b]/15 bg-white/80 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-[#064e3b]/55">
                                 <MapIcon className="h-4 w-4" />
-                                {apiariesLoading ? 'Syncing' : 'Live'}
+                                {apiariesLoading || isPublicMapLoading ? 'Syncing' : isUsingPublicMap ? 'Public live' : 'Live'}
                             </div>
                         </div>
 
@@ -347,8 +388,8 @@ const FlightMapping: React.FC = () => {
 
                     <div className="space-y-6">
                         <WeatherTelemetryPanel
-                            summary={weatherSummary}
-                            isLoading={weatherLoading}
+                            summary={resolvedWeatherSummary}
+                            isLoading={isUsingPublicMap ? isPublicMapLoading : weatherLoading}
                             title="Flight map weather"
                             compact
                         />
@@ -411,9 +452,9 @@ const FlightMapping: React.FC = () => {
                                             Reporting devices
                                         </span>
                                     </div>
-                                    <p className="mt-3 text-3xl font-black text-[#064e3b]">{linkedDevices.length}</p>
+                                    <p className="mt-3 text-3xl font-black text-[#064e3b]">{telemetryCount}</p>
                                     <p className="mt-1 text-sm font-semibold text-[#064e3b]/60">
-                                        Devices linked to the selected apiary telemetry stream
+                                        {isUsingPublicMap ? 'Public live weather feed powering this map' : 'Devices linked to the selected apiary telemetry stream'}
                                     </p>
                                 </div>
                             </div>
@@ -446,14 +487,14 @@ const FlightMapping: React.FC = () => {
                     </div>
                 </div>
 
-                {(apiariesLoading || (selectedApiary && isPotentialLoading && !weatherSummary)) && (
+                {(apiariesLoading || isPublicMapLoading || (privateSelectedApiary && isPotentialLoading && !resolvedWeatherSummary)) && (
                     <div className="flex items-center gap-3 rounded-[24px] border border-[#064e3b]/10 bg-[#F7F1E4] px-4 py-3 text-sm font-bold text-[#064e3b]">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         Syncing flight map telemetry and weather summary
                     </div>
                 )}
 
-                {!selectedApiary && !apiariesLoading && (
+                {!selectedApiary && !apiariesLoading && !isPublicMapLoading && (
                     <div className="rounded-[28px] border-4 border-dashed border-[#064e3b]/20 bg-[#F7F1E4] p-8 text-center">
                         <MapPin className="mx-auto h-8 w-8 text-[#064e3b]/45" />
                         <h3 className="mt-3 text-2xl font-black text-[#064e3b]">Add an apiary to unlock live flight mapping</h3>

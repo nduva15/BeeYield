@@ -28,18 +28,24 @@ export function useHives(apiaryId?: string) {
             const data = await beeyieldService.getHives(apiaryId);
             return data;
         },
+        enabled: !!userId,
         staleTime: 1000 * 30,
         refetchInterval: 1000 * 30, // 30s poll
+        refetchOnWindowFocus: true,
     });
 }
 
 // Separate hook for high-frequency telemetry
 export function useTelemetry() {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: hiveKeys.telemetry(),
+        queryKey: [...hiveKeys.telemetry(), userId],
         queryFn: async () => {
             return await beeyieldService.getTelemetryLatest();
         },
+        enabled: !!userId,
         staleTime: 1000 * 10, // Telemetry fresh for 10s
         refetchInterval: 1000 * 30, // Poll every 30s (sync with hives)
     });

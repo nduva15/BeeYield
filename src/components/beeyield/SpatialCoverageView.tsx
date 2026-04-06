@@ -30,6 +30,8 @@ import {
 import { beeyieldService, CropPollinationRequirement } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
 
 const getNumeric = (...values: Array<number | string | null | undefined>) => {
   for (const value of values) {
@@ -43,8 +45,6 @@ const SpatialCoverageView: React.FC = () => {
   const [viewMode, setViewMode] = React.useState<'kernel' | 'nodes'>('kernel');
   const [selectedApiaryId, setSelectedApiaryId] = React.useState('');
   const [cropRequirements, setCropRequirements] = React.useState<CropPollinationRequirement[]>([]);
-  const [weather, setWeather] = React.useState<any>(null);
-  const [weatherLoading, setWeatherLoading] = React.useState(false);
 
   const apiariesQuery = useApiaries();
   const alertsQuery = useSensorAlerts(false);
@@ -55,6 +55,7 @@ const SpatialCoverageView: React.FC = () => {
   );
 
   const { hives, isLoading: hivesLoading, refetch: refetchHives } = useHivesWithTelemetry(selectedApiaryId || undefined);
+  const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(selectedApiary?.id);
   const activeAlerts = React.useMemo(
     () => filterAlertsByApiary(alertsQuery.data || [], selectedApiaryId, hives),
     [alertsQuery.data, hives, selectedApiaryId],
@@ -85,33 +86,6 @@ const SpatialCoverageView: React.FC = () => {
     };
   }, []);
 
-  React.useEffect(() => {
-    let mounted = true;
-
-    const loadWeather = async () => {
-      if (!selectedApiary?.latitude || !selectedApiary?.longitude) {
-        setWeather(null);
-        return;
-      }
-
-      setWeatherLoading(true);
-      try {
-        const data = await beeyieldService.getWeatherData(selectedApiary.latitude, selectedApiary.longitude);
-        if (mounted) setWeather(data);
-      } catch (error) {
-        console.error(error);
-        if (mounted) setWeather(null);
-      } finally {
-        if (mounted) setWeatherLoading(false);
-      }
-    };
-
-    loadWeather();
-    return () => {
-      mounted = false;
-    };
-  }, [selectedApiary?.latitude, selectedApiary?.longitude]);
-
   const coverage = React.useMemo(
     () => deriveCoverageMetrics(selectedApiary, hives, activeAlerts, cropRequirements),
     [activeAlerts, cropRequirements, hives, selectedApiary],
@@ -141,18 +115,14 @@ const SpatialCoverageView: React.FC = () => {
   }, [hives]);
 
   const weatherTemperature = getNumeric(
-    weather?.temperature_c,
-    weather?.temperature,
-    weather?.temp_c,
-    weather?.current?.temperature,
-    weather?.current?.temp_c,
+    weatherSummary?.current?.temperature_c,
+    weatherSummary?.current?.feels_like_c,
   );
   const weatherWind = getNumeric(
-    weather?.wind_speed_kph,
-    weather?.wind_speed,
-    weather?.wind?.speed_kph,
-    weather?.current?.wind_speed_kph,
+    weatherSummary?.current?.wind_speed_kmh,
   );
+  const weatherHumidity = getNumeric(weatherSummary?.current?.humidity_pct);
+  const telemetryLinks = weatherSummary?.linked_device_meta?.length || 0;
 
   const windStatus =
     weatherWind === null ? 'Unavailable' : weatherWind <= 10 ? 'Low' : weatherWind <= 20 ? 'Moderate' : 'High';
@@ -379,14 +349,21 @@ const SpatialCoverageView: React.FC = () => {
               </div>
             </div>
 
+            <WeatherTelemetryPanel
+              summary={weatherSummary}
+              isLoading={weatherLoading}
+              compact
+              title="Environmental telemetry"
+            />
+
             <div className={cn(glass.card, 'p-6')}>
               <div className="flex items-center gap-3 border-b border-[#F4D03F]/10 pb-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#F4D03F]/20 bg-[#F4D03F]/10">
                   <Satellite className="h-5 w-5 text-[#F4D03F]" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Environmental Context</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Weather and flight range</p>
+                  <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Flight Weather Context</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Telemetry-backed route signals</p>
                 </div>
               </div>
 
@@ -396,8 +373,18 @@ const SpatialCoverageView: React.FC = () => {
                   <span className="text-sm font-black text-[#1A1A1A]">{windStatus}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Humidity load</span>
+                  <span className="text-sm font-black text-[#1A1A1A]">
+                    {weatherHumidity !== null ? `${Math.round(weatherHumidity)}%` : 'Unavailable'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Foraging radius</span>
                   <span className="text-sm font-black text-[#1B9157]">{foragingRadius}</span>
+                </div>
+                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Linked devices</span>
+                  <span className="text-sm font-black text-[#1A1A1A]">{telemetryLinks}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Open alerts</span>

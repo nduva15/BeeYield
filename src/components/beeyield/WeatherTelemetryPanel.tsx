@@ -102,6 +102,7 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
     const sourceMeta = summary?.source_meta || {};
     const deviceCount = summary?.linked_device_meta?.length || 0;
     const hourly = (summary?.hourly_forecast || []).slice(0, compact ? 6 : 8);
+    const hourlyCards = hourly.length > 0 ? hourly : Array.from({ length: compact ? 6 : 8 }, () => null);
 
     if (isLoading) {
         return (
@@ -113,22 +114,6 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
                             <div key={index} className="h-28 rounded-[24px] bg-[#F4D03F]/15 animate-pulse" />
                         ))}
                     </div>
-                </div>
-            </div>
-        );
-    }
-
-    const hasAnyCurrent = Object.values(current || {}).some((value) => value !== null && value !== undefined && value !== '');
-
-    if (!summary || !hasAnyCurrent) {
-        return (
-            <div className={cn(glass.card, 'p-5', className)}>
-                <div className="rounded-[28px] border border-dashed border-[#064e3b]/15 bg-[#F7F1E4] p-6 text-[#064e3b]">
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">{title}</p>
-                    <p className="mt-3 text-xl font-black">Live weather is not available yet.</p>
-                    <p className="mt-2 text-sm font-semibold text-[#064e3b]/55">
-                        Connect a reporting device or keep the apiary coordinates updated so forecast enrichment can fill the remaining cards.
-                    </p>
                 </div>
             </div>
         );
@@ -153,22 +138,16 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
                     <div className="rounded-[26px] border border-[#064e3b]/10 bg-[#F7F1E4] px-4 py-3">
                         <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Hourly outlook</p>
                         <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
-                            {hourly.length > 0 ? (
-                                hourly.map((point, index) => (
-                                    <div
-                                        key={`${point.timestamp || 'hour'}-${index}`}
-                                        className="min-w-[74px] rounded-2xl border border-[#064e3b]/10 bg-white/70 px-3 py-2 text-center"
-                                    >
-                                        <p className="text-[11px] font-black text-[#064e3b]/55">{formatHour(point.timestamp)}</p>
-                                        <p className="mt-1 text-xl font-black text-[#064e3b]">{formatTemperature(point.temperature_c)}</p>
-                                        <p className="mt-1 text-[11px] font-semibold text-[#064e3b]/55">{point.condition || 'Forecast'}</p>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="rounded-2xl border border-dashed border-[#064e3b]/15 px-4 py-3 text-xs font-semibold text-[#064e3b]/55">
-                                    Hourly forecast unavailable
+                            {hourlyCards.map((point, index) => (
+                                <div
+                                    key={`${point?.timestamp || 'hour'}-${index}`}
+                                    className="min-w-[74px] rounded-2xl border border-[#064e3b]/10 bg-white/70 px-3 py-2 text-center"
+                                >
+                                    <p className="text-[11px] font-black text-[#064e3b]/55">{formatHour(point?.timestamp)}</p>
+                                    <p className="mt-1 text-xl font-black text-[#064e3b]">{formatTemperature(point?.temperature_c)}</p>
+                                    <p className="mt-1 text-[11px] font-semibold text-[#064e3b]/55">{point?.condition || 'No data'}</p>
                                 </div>
-                            )}
+                            ))}
                         </div>
                     </div>
                 </div>

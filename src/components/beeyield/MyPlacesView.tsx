@@ -62,10 +62,13 @@ import {
     useDeleteApiary,
     useHivesWithTelemetry
 } from '@/hooks/useHives';
+import { useSelectedApiary } from '@/hooks/useSelectedApiary';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
 import { HivesTable } from './HivesTable';
 import HiveFormModal from './HiveFormModal';
 import { ApiaryForm } from './ApiaryForm';
 import OrchardDashboardView from './OrchardDashboardView';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 import { glass, GlassStatCard, GlassConfirmModal, GlassModal } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { useAuth } from '@/hooks/useAuth';
@@ -386,6 +389,18 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
     const apiaries = apiariesQuery.data || [];
     const isLoading = apiariesQuery.isLoading;
+    const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
+    const hasSelectedApiary = apiaries.some((apiary) => apiary.id === selectedApiaryId);
+    const weatherApiaryId = hasSelectedApiary ? selectedApiaryId : (apiaries[0]?.id || '');
+    const weatherApiary = apiaries.find((apiary) => apiary.id === weatherApiaryId) || apiaries[0] || null;
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(weatherApiaryId || undefined);
+
+    React.useEffect(() => {
+        if (!apiaries.length) return;
+        if (!hasSelectedApiary && weatherApiaryId) {
+            setSelectedApiaryId(weatherApiaryId);
+        }
+    }, [apiaries.length, hasSelectedApiary, setSelectedApiaryId, weatherApiaryId]);
 
     const resetForm = () => {
         setIsAddingPlace(false);
@@ -449,6 +464,45 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                 <p className="text-[8px] font-bold text-gray-400 mt-1">Records</p>
             </div>
 
+            {apiaries.length > 0 && (
+                <>
+                    <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+                        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                            <div className="space-y-1">
+                                <span className="text-[9px] font-black uppercase tracking-[0.18em] text-gray-400">Weather focus</span>
+                                <h3 className="text-lg font-black tracking-tight text-[#1A1A1A]">
+                                    {weatherApiary?.name || 'Select an apiary'}
+                                </h3>
+                                <p className="text-xs font-semibold text-gray-500">
+                                    Weather cards follow the selected apiary across your dashboard views.
+                                </p>
+                            </div>
+                            <div className="w-full lg:w-[320px]">
+                                <Label className={cn(glass.microLabel, "mb-2 block")}>Apiary weather source</Label>
+                                <Select value={weatherApiaryId} onValueChange={setSelectedApiaryId}>
+                                    <SelectTrigger className={cn(glass.select, "h-11 border-white/40 bg-white/60")}>
+                                        <SelectValue placeholder="Choose an apiary" />
+                                    </SelectTrigger>
+                                    <SelectContent className={glass.selectContent}>
+                                        {apiaries.map((apiary) => (
+                                            <SelectItem key={apiary.id} value={apiary.id}>
+                                                {apiary.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <WeatherTelemetryPanel
+                        summary={weatherSummary}
+                        isLoading={weatherLoading}
+                        title={weatherApiary ? `${weatherApiary.name} weather telemetry` : 'Apiary weather telemetry'}
+                    />
+                </>
+            )}
+
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3, 4, 5, 6].map(i => (
@@ -486,7 +540,10 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                         glass.card,
                                         "p-0 cursor-pointer shadow-sm hover:border-[#F4D03F]/40 transition-all duration-300 relative flex flex-col h-full group bg-white/70 backdrop-blur-md rounded-xl overflow-hidden"
                                     )}
-                                    onClick={() => setViewingApiary(apiary)}
+                                    onClick={() => {
+                                        setSelectedApiaryId(apiary.id);
+                                        setViewingApiary(apiary);
+                                    }}
                                 >
                                     <div className="p-4 flex flex-col h-full relative z-10">
                                         <div className="flex justify-between items-start mb-4">

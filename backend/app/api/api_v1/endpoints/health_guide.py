@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, Query
 from typing import Literal, Optional, Any
 import json
 from pathlib import Path
+from app.db.supabase_db import db_select
 
 
 router = APIRouter()
@@ -27,6 +28,41 @@ def _load_health_guide() -> dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Health guide data load failed: {exc}")
 
 
+async def _load_live_disease_rows() -> list[dict[str, Any]]:
+    try:
+        rows = await db_select(
+            "health_knowledge_base",
+            columns="id,title,category,severity,symptoms,description,treatment_options,prevention_tips,image_url,source_references,is_published",
+            filters={"is_published": True},
+            limit=500,
+            order_by="updated_at",
+            ascending=False,
+        )
+    except Exception:
+        return []
+
+    live_rows: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+
+        live_rows.append({
+            "id": row.get("id"),
+            "name": row.get("title"),
+            "type": row.get("category"),
+            "riskLevel": row.get("severity"),
+            "causes": row.get("description"),
+            "effects": row.get("description"),
+            "symptoms": row.get("symptoms") or [],
+            "treatment": "; ".join(row.get("treatment_options") or []),
+            "prevention": "; ".join(row.get("prevention_tips") or []),
+            "image_url": row.get("image_url"),
+            "sourceReferences": row.get("source_references") or [],
+        })
+
+    return [row for row in live_rows if row.get("name")]
+
+
 @router.get("/knowledge", response_model=dict)
 async def get_health_knowledge(
     kind: Literal["diseases", "species"] = Query(..., description="Which dataset to return"),
@@ -35,8 +71,14 @@ async def get_health_knowledge(
     """
     GET /api/v1/beeyield/health/knowledge?kind=diseases|species&q=...
     """
-    data = _load_health_guide()
-    rows = data.get(kind, [])
+    if kind == "diseases":
+        rows = await _load_live_disease_rows()
+        if not rows:
+            data = _load_health_guide()
+            rows = data.get(kind, [])
+    else:
+        data = _load_health_guide()
+        rows = data.get(kind, [])
     if not isinstance(rows, list):
         rows = []
 

@@ -14,7 +14,7 @@ DEFAULT_TIMOTHY_STORY = (
 
 
 def _service_token(token: Optional[str]) -> Optional[str]:
-    return token or settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY
+    return settings.SUPABASE_SERVICE_ROLE_KEY or token or settings.SUPABASE_KEY
 
 
 def _filter_update_payload(row: dict[str, Any], desired: dict[str, Any]) -> dict[str, Any]:

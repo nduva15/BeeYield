@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { useApiaries } from '@/hooks/useApiaries';
 import { cn } from '@/lib/utils';
-import { beeyieldService } from '@/services/beeyieldService';
+import { beeyieldService, PublicFlightMapPayload } from '@/services/beeyieldService';
 
 type HeatPoint = { id: string; name: string; lat: number; lng: number; intensity: number; status: string };
 type RoutePoint = { id: string; name: string; latitude: number; longitude: number; type: string; status?: string };
@@ -83,6 +83,125 @@ const statusTone = (status: string) => {
 
 const formatMeters = (km: number) => `${Math.round(km * 1000)} m`;
 
+const PUBLIC_ZONE_OFFSETS = [
+    { lat: 0.0105, lng: 0.005 },
+    { lat: -0.008, lng: -0.0065 },
+    { lat: 0.0045, lng: 0.0135 },
+    { lat: -0.011, lng: 0.004 },
+];
+
+function buildPublicFlightArea(publicFlightMap: PublicFlightMapPayload | null, selectedLandTypeId: string) {
+    if (!publicFlightMap) return null;
+
+    const apiary = publicFlightMap.apiary;
+    const apiaryLat = Number(apiary.latitude || -2.4187);
+    const apiaryLng = Number(apiary.longitude || 37.9686);
+    const effectiveRadiusKm = Number((apiary as any).effective_radius_km || 2.4);
+    const maxRadiusKm = Number((apiary as any).max_radius_km || 4.8);
+    const landTypes = (publicFlightMap.land_types || []).map((item) => ({
+        ...item,
+        share_pct: Number(item.share_pct || 0),
+        nectar_score: Number(item.nectar_score || 0),
+    }));
+    const selectedLandType = landTypes.find((item) => item.id === selectedLandTypeId) || landTypes[0] || null;
+    const statusSummary = publicFlightMap.hives.reduce((acc: Record<string, number>, hive) => {
+        const status = String(hive.status || 'Active');
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
+    }, {});
+
+    return {
+        apiary: {
+            ...apiary,
+            effective_radius_km: effectiveRadiusKm,
+            max_radius_km: maxRadiusKm,
+        },
+        controls: {
+            locations: [
+                {
+                    id: String(apiary.id),
+                    name: apiary.name,
+                    label: `${apiary.name} - ${apiary.location_name || 'Kibwezi, Kenya'}`,
+                    latitude: apiaryLat,
+                    longitude: apiaryLng,
+                    hive_count: publicFlightMap.hives.length,
+                    effective_radius_km: effectiveRadiusKm,
+                    max_radius_km: maxRadiusKm,
+                },
+            ],
+            land_types: landTypes,
+            selected_land_type: selectedLandType?.name || '',
+            selected_land_type_id: selectedLandType?.id || '',
+        },
+        forage: {
+            potential_pct: Number(publicFlightMap.flight_potential.score || 0),
+            estimated_share_pct: Number(selectedLandType?.share_pct || 0),
+            recommendation: publicFlightMap.flight_potential.recommendation,
+        },
+        weather: {
+            available: true,
+            message: 'Live Kibwezi weather feed is active.',
+            current: publicFlightMap.weather_summary.current,
+        },
+        education_panel: [
+            'Kibwezi live view is anchored to the public monitoring site.',
+            'Use the land type dropdown to compare nearby forage zones.',
+            `Core flight window is strongest inside ${Math.round(effectiveRadiusKm)} km.`,
+        ],
+        route_planner: {
+            start_options: [
+                {
+                    id: String(apiary.id),
+                    name: apiary.name,
+                    label: `${apiary.name} - ${apiary.location_name || 'Kibwezi, Kenya'}`,
+                    latitude: apiaryLat,
+                    longitude: apiaryLng,
+                },
+            ],
+            suggested_hives: publicFlightMap.hives.map((hive) => ({
+                id: String(hive.id),
+                name: hive.hive_code || 'Kibwezi anchor',
+                status: hive.status || 'Active',
+                latitude: Number(hive.latitude || apiaryLat),
+                longitude: Number(hive.longitude || apiaryLng),
+            })),
+            status_summary: statusSummary,
+            helper_text: 'Public routing preview for Kibwezi, Kenya.',
+        },
+        map: {
+            center: { lat: apiaryLat, lng: apiaryLng },
+            heatmap_points: publicFlightMap.hives.map((hive) => ({
+                id: String(hive.id),
+                name: hive.hive_code || 'Kibwezi anchor',
+                lat: Number(hive.latitude || apiaryLat),
+                lng: Number(hive.longitude || apiaryLng),
+                intensity: String(hive.status || '').toLowerCase().includes('limited') ? 0.55 : 0.82,
+                status: hive.status || 'Active',
+            })),
+            forage_zone_points: landTypes.map((type, index) => ({
+                id: type.id,
+                name: type.name,
+                flora_type: type.name,
+                lat: apiaryLat + (PUBLIC_ZONE_OFFSETS[index]?.lat || 0),
+                lng: apiaryLng + (PUBLIC_ZONE_OFFSETS[index]?.lng || 0),
+                radius_m: Math.round((1.2 + index * 0.35) * 1000),
+                density_score: Math.min(1, Number(type.nectar_score || 0) / 100),
+            })),
+            all_apiaries: [
+                {
+                    id: String(apiary.id),
+                    name: apiary.name,
+                    location_name: apiary.location_name || 'Kibwezi, Kenya',
+                    latitude: apiaryLat,
+                    longitude: apiaryLng,
+                    hive_count: publicFlightMap.hives.length,
+                    effective_radius_km: effectiveRadiusKm,
+                },
+            ],
+        },
+    };
+}
+
 const FlightMapView: React.FC = () => {
     const { data: apiaries = [], isLoading: apiariesLoading } = useApiaries();
     const [selectedApiaryId, setSelectedApiaryId] = useState('');
@@ -99,17 +218,36 @@ const FlightMapView: React.FC = () => {
     const [selectedHiveIds, setSelectedHiveIds] = useState<string[]>([]);
     const [routePath, setRoutePath] = useState<RoutePoint[]>([]);
     const [planningRoute, setPlanningRoute] = useState(false);
+    const hasPrivateApiaries = apiaries.length > 0;
 
     useEffect(() => {
         if (!selectedApiaryId && apiaries.length > 0) setSelectedApiaryId(String(apiaries[0].id));
     }, [apiaries, selectedApiaryId]);
 
-    const { data: flightArea, isLoading: pageLoading, isFetching } = useQuery({
-        queryKey: ['flight-area', selectedApiaryId, selectedLandTypeId || 'default'],
-        queryFn: () => beeyieldService.getFlightAreaDashboard(selectedApiaryId, selectedLandTypeId || undefined),
-        enabled: !!selectedApiaryId,
+    const { data: publicFlightMap, isLoading: publicMapLoading } = useQuery({
+        queryKey: ['public-flight-map', 'kibwezi-kenya'],
+        queryFn: () => beeyieldService.getPublicLiveFlightMap('kibwezi-kenya'),
+        enabled: !apiariesLoading && !hasPrivateApiaries,
         staleTime: 60000,
     });
+
+    useEffect(() => {
+        if (!selectedApiaryId && publicFlightMap?.apiary?.id) {
+            setSelectedApiaryId(String(publicFlightMap.apiary.id));
+        }
+    }, [publicFlightMap?.apiary?.id, selectedApiaryId]);
+
+    const { data: privateFlightArea, isLoading: pageLoading, isFetching } = useQuery({
+        queryKey: ['flight-area', selectedApiaryId, selectedLandTypeId || 'default'],
+        queryFn: () => beeyieldService.getFlightAreaDashboard(selectedApiaryId, selectedLandTypeId || undefined),
+        enabled: hasPrivateApiaries && !!selectedApiaryId,
+        staleTime: 60000,
+    });
+
+    const flightArea = React.useMemo(
+        () => privateFlightArea || buildPublicFlightArea(publicFlightMap || null, selectedLandTypeId),
+        [privateFlightArea, publicFlightMap, selectedLandTypeId],
+    );
 
     useEffect(() => {
         if (!flightArea?.apiary) return;
@@ -131,7 +269,7 @@ const FlightMapView: React.FC = () => {
         });
     }, [flightArea?.route_planner?.suggested_hives]);
 
-    const loading = apiariesLoading || (!!selectedApiaryId && pageLoading && !flightArea);
+    const loading = apiariesLoading || publicMapLoading || (hasPrivateApiaries && !!selectedApiaryId && pageLoading && !flightArea);
     const locationOptions = flightArea?.controls?.locations || apiaries.map((apiary) => ({
         id: String(apiary.id),
         name: apiary.name,
@@ -175,6 +313,30 @@ const FlightMapView: React.FC = () => {
         if (selectedHiveIds.length === 0) return toast.error('Select at least one hive to build a route.');
         setPlanningRoute(true);
         try {
+            if (!hasPrivateApiaries && publicFlightMap?.route_points?.length) {
+                setRoutePath([
+                    {
+                        id: String(publicFlightMap.apiary.id),
+                        name: publicFlightMap.apiary.name,
+                        latitude: Number(publicFlightMap.apiary.latitude || 0),
+                        longitude: Number(publicFlightMap.apiary.longitude || 0),
+                        type: 'origin',
+                    },
+                    ...publicFlightMap.hives
+                        .filter((hive) => selectedHiveIds.includes(String(hive.id)))
+                        .map((hive) => ({
+                            id: String(hive.id),
+                            name: hive.hive_code || 'Kibwezi anchor',
+                            latitude: Number(hive.latitude || 0),
+                            longitude: Number(hive.longitude || 0),
+                            type: 'stop',
+                            status: hive.status || 'Active',
+                        })),
+                ]);
+                toast.success('Kibwezi route preview ready.');
+                return;
+            }
+
             const result = await beeyieldService.planRoute(
                 { lat: Number(startPoint.latitude || 0), lng: Number(startPoint.longitude || 0) },
                 selectedHiveIds
@@ -215,13 +377,15 @@ const FlightMapView: React.FC = () => {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="-m-4 min-h-screen space-y-7 bg-[#f4f6fb] px-4 py-6 md:-m-6 md:px-6 md:py-8">
             <div className="space-y-2">
                 <h1 className="text-4xl font-bold tracking-tight text-[#142645]">Bee Flight Area</h1>
-                <p className="text-sm text-[#6f7b93]">Live forage, map, and route planning for your selected apiary.</p>
+                <p className="text-sm text-[#6f7b93]">
+                    {hasPrivateApiaries ? 'Live forage, map, and route planning for your selected apiary.' : 'Live Kibwezi, Kenya map with backend weather and forage coverage.'}
+                </p>
             </div>
 
             <section className={cn(card, 'p-5 md:p-6')}>
                 <div className="space-y-6">
                     <div className="rounded-[22px] border border-[#d6c29f] bg-white/70 p-4">
-                        <div className="mb-2 text-sm font-medium text-[#9a7d45]">My locations</div>
+                        <div className="mb-2 text-sm font-medium text-[#9a7d45]">{hasPrivateApiaries ? 'My locations' : 'Live location'}</div>
                         <Select value={selectedApiaryId} onValueChange={handleApiaryChange}>
                             <SelectTrigger className="h-14 rounded-2xl border-[#c8b189] bg-white text-lg font-medium text-[#3f3426]">
                                 <SelectValue placeholder="Select an apiary" />
@@ -238,21 +402,32 @@ const FlightMapView: React.FC = () => {
                         <div className="space-y-4">
                             <div className="flex items-end justify-between">
                                 <div>
-                                    <div className="text-sm font-semibold text-[#1f2f4d]">Forage potential</div>
-                                    <div className="text-3xl font-bold text-[#17335f]">~{Math.round(Number(flightArea?.forage?.potential_pct || 0))}%</div>
+                                    <div className="text-[1.05rem] font-semibold text-[#1f2f4d]">Forage potential</div>
                                 </div>
+                                <div className="text-3xl font-bold text-[#17335f]">~{Math.round(Number(flightArea?.forage?.potential_pct || 0))}%</div>
                                 {isFetching ? <Loader2 className="h-4 w-4 animate-spin text-[#ca8a04]" /> : null}
                             </div>
-                            <div className="rounded-[22px] border border-[#d6c29f] bg-white/70 p-4">
-                                <div className="mb-2 text-sm font-medium text-[#9a7d45]">Land type</div>
+                            <div className="rounded-[24px] border border-[#c7781a] bg-[#fff8f2] p-4 shadow-[0_10px_25px_rgba(170,96,14,0.08)]">
+                                <div className="mb-3 text-sm font-medium text-[#b45f0b]">Land type</div>
                                 <Select value={activeLandTypeId} onValueChange={setSelectedLandTypeId}>
-                                    <SelectTrigger className="h-14 rounded-2xl border-[#c8b189] bg-white text-lg font-medium text-[#3f3426]">
+                                    <SelectTrigger className="h-[70px] rounded-[18px] border-2 border-[#b56a13] bg-[#fffdf9] px-5 text-lg font-medium text-[#3f3426] shadow-none focus:ring-0 focus:ring-offset-0">
                                         <SelectValue placeholder="Choose forage type" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-[#dbc7a3] bg-[#fffaf1]">
+                                    <SelectContent className="rounded-[24px] border-[#c7781a] bg-[#fdf0e7] p-0 shadow-[0_24px_40px_rgba(126,62,0,0.16)]">
                                         {landTypes.map((option: any) => (
-                                            <SelectItem key={option.id} value={option.id}>{option.name}</SelectItem>
+                                            <SelectItem
+                                                key={option.id}
+                                                value={option.id}
+                                                className="min-h-[68px] rounded-none border-b border-[#efd9cf] pl-5 pr-12 text-[1.05rem] font-medium text-[#2f2416] focus:bg-[#f8cfb8] focus:text-[#2f2416] data-[state=checked]:bg-[#f8cfb8] data-[state=checked]:text-[#2f2416] [&>span]:left-auto [&>span]:right-4"
+                                            >
+                                                {option.name}
+                                            </SelectItem>
                                         ))}
+                                        {landTypes.length === 0 ? (
+                                            <div className="px-5 py-4 text-sm font-medium text-[#8b6f57]">
+                                                No land types available yet.
+                                            </div>
+                                        ) : null}
                                     </SelectContent>
                                 </Select>
                             </div>

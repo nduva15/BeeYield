@@ -265,12 +265,44 @@ async def db_update(
     filters: dict[str, Any],
     token: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Update records via the Rust/Go gateway, with direct SDK fallback."""
+    """Update records via the Rust/Go gateway, with direct REST and SDK fallbacks."""
     str_filters = {k: str(v) for k, v in filters.items()}
-    payload = {"table": table, "data": _serialize_data(data), "filters": str_filters}
+    serialized_data = _serialize_data(data)
+    payload = {"table": table, "data": serialized_data, "filters": str_filters}
     res = await _request_gateway("/db/update", payload, token)
     
     if not res.get("success"):
+        url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+        params: dict[str, str] = {}
+        for k, v in filters.items():
+            if v is None:
+                params[k] = "is.null"
+            elif isinstance(v, (list, tuple)):
+                v_clean = [i for i in v if i is not None]
+                if v_clean:
+                    params[k] = f"in.({','.join([str(i) for i in v_clean])})"
+                else:
+                    params[k] = "is.null"
+            else:
+                params[k] = f"eq.{v}"
+
+        apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
+        headers = {
+            "apikey": apikey,
+            "Authorization": f"Bearer {token or apikey}",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
+        }
+
+        try:
+            response = await _execute_request("PATCH", url, params=params, json=serialized_data, headers=headers)
+            response.raise_for_status()
+            return {"success": True, "data": response.json()}
+        except httpx.HTTPStatusError as e:
+            print(f"[ERROR] REST update fallback failed: {e.response.status_code} - {e.response.text}")
+        except Exception as e:
+            print(f"[ERROR] REST update fallback failed: {str(e)}")
+
         supabase = get_supabase()
         if supabase:
             try:

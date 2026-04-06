@@ -1,552 +1,523 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
-    Scale,
-    TrendingUp,
-    AlertTriangle,
-    Zap,
-    Activity,
-    ArrowUpRight,
-    ArrowDownRight,
-    History,
-    FileBarChart,
-    ChevronRight,
-    Download,
-    RefreshCw,
-    Cpu,
-    Database,
-    Binary,
-    Network
+  Activity,
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  ChevronRight,
+  Cpu,
+  Database,
+  Download,
+  Gauge,
+  History,
+  RefreshCw,
+  Scale,
+  ShieldCheck,
+  SlidersHorizontal,
+  Waves,
+  Zap,
 } from 'lucide-react';
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    AreaChart,
-    Area,
-    ReferenceLine
-} from 'recharts';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import WeightDynamicsChart from '@/components/telemetry/WeightDynamicsChart';
 import AcousticWaveform from '@/components/telemetry/AcousticWaveform';
-import { glass } from './GlassTheme';
-import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { GlassModal, GlassStatCard, glass } from './GlassTheme';
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSectionHeader } from '@/components/beeyield/BeeYieldUI';
 
 interface WeightData {
-    time: string;
-    weight: number;
-    dwdt: number;
-    timestamp: number;
+  time: string;
+  weight: number;
+  dwdt: number;
+  timestamp: number;
 }
 
+const pill = 'inline-flex items-center gap-2 rounded-2xl border bg-white/75 px-4 py-2 shadow-sm';
+const tile = 'rounded-[28px] border border-white/70 bg-white/75 p-5 shadow-sm';
+
 const HiveTelemetryView: React.FC = () => {
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState<string | null>(null);
-    const [data, setData] = React.useState<WeightData[]>([]);
-    const [gatewayStatus, setGatewayStatus] = React.useState<'Online' | 'Offline' | 'Connecting'>('Online');
-    const [recentAlert, setRecentAlert] = React.useState<string | null>(null);
-    const [hives, setHives] = React.useState<any[]>([]);
-    const [devices, setDevices] = React.useState<any[]>([]);
-    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
-    const [selectedDeviceId, setSelectedDeviceId] = React.useState<string>('');
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [data, setData] = React.useState<WeightData[]>([]);
+  const [gatewayStatus, setGatewayStatus] = React.useState<'Online' | 'Offline' | 'Connecting'>('Online');
+  const [recentAlert, setRecentAlert] = React.useState<string | null>(null);
+  const [hives, setHives] = React.useState<any[]>([]);
+  const [devices, setDevices] = React.useState<any[]>([]);
+  const [selectedHiveId, setSelectedHiveId] = React.useState('');
+  const [selectedDeviceId, setSelectedDeviceId] = React.useState('');
+  const [isTaring, setIsTaring] = React.useState(false);
+  const [calibrationOpen, setCalibrationOpen] = React.useState(false);
+  const [exportOpen, setExportOpen] = React.useState(false);
+  const [manualOffsetValue, setManualOffsetValue] = React.useState('0.00');
+  const [exportFileName, setExportFileName] = React.useState('');
 
-    const latest = data.length ? data[data.length - 1] : null;
-    const prev = data.length > 1 ? data[data.length - 2] : null;
-    const dwdt = latest && prev ? latest.weight - prev.weight : 0;
-    const [isTaring, setIsTaring] = React.useState(false);
+  const latest = data.at(-1) ?? null;
+  const first = data[0] ?? null;
+  const prev = data.length > 1 ? data[data.length - 2] : null;
+  const dwdt = latest && prev ? latest.weight - prev.weight : 0;
+  const latestDelta = latest && first ? latest.weight - first.weight : 0;
+  const isFlowing = dwdt > 0.05;
+  const isAlert = dwdt < -1.5 || recentAlert !== null;
 
-    React.useEffect(() => {
-        let mounted = true;
-        const load = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const [h, d] = await Promise.all([beeyieldService.getHives(), beeyieldService.getDevices()]);
-                if (!mounted) return;
-                setHives(h || []);
-                setDevices(d || []);
-                if (!selectedHiveId && (h || []).length > 0) setSelectedHiveId(h[0].id);
-            } catch (e) {
-                console.error(e);
-                if (!mounted) return;
-                setError((e as any)?.message || 'Failed to load hives/devices.');
-                setHives([]);
-                setDevices([]);
-            }
-            finally {
-                if (mounted) setLoading(false);
-            }
-        };
+  const selectedHive = React.useMemo(
+    () => hives.find((hive) => String(hive.id) === String(selectedHiveId)) ?? null,
+    [hives, selectedHiveId],
+  );
 
-        load();
-        return () => {
-            mounted = false;
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  const linkedDevice = React.useMemo(() => {
+    const byHive = devices.find((device) => {
+      const hiveId = device?.assigned_hive_id ?? device?.hive_id ?? device?.hiveId;
+      return hiveId && String(hiveId) === String(selectedHiveId);
+    });
+    return byHive ?? devices.find((device) => String(device.id) === String(selectedDeviceId)) ?? null;
+  }, [devices, selectedDeviceId, selectedHiveId]);
 
-    const loadSeries = React.useCallback(async () => {
-        if (!selectedHiveId) {
-            setData([]);
-            return;
-        }
-        setLoading(true);
-        setError(null);
-        try {
-            // Prefer backend-filtered readings (hive_id param), then map weight field variants.
-            const rows: any[] = await beeyieldService.getReadings(selectedHiveId, 240);
-            const pickWeight = (r: any) => {
-                const candidates = [r?.weight, r?.weight_kg, r?.hive_weight_kg, r?.mass_kg];
-                const w = candidates.find((v) => typeof v === 'number');
-                return typeof w === 'number' ? w : null;
-            };
+  const activeDeviceId = selectedDeviceId || linkedDevice?.id || '';
+  const deviceLabel =
+    linkedDevice?.serial_number || linkedDevice?.device_name || linkedDevice?.name || (activeDeviceId ? `Sensor ${activeDeviceId}` : 'No linked device');
+  const lastSeen = latest
+    ? new Date(latest.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : 'Waiting for first sync';
+  const totalYield = React.useMemo(() => {
+    let sum = 0;
+    for (let index = 1; index < data.length; index += 1) {
+      const gain = data[index].weight - data[index - 1].weight;
+      if (gain > 0) sum += gain;
+    }
+    return sum.toFixed(2);
+  }, [data]);
 
-            const points = (rows || [])
-                .map((r) => {
-                    const tsRaw = r?.recorded_at || r?.timestamp || r?.created_at;
-                    const ts = tsRaw ? new Date(tsRaw).getTime() : NaN;
-                    const w = pickWeight(r);
-                    if (!Number.isFinite(ts) || typeof w !== 'number') return null;
-                    return { ts, w };
-                })
-                .filter(Boolean) as { ts: number; w: number }[];
+  const refreshMetadata = React.useCallback(async () => {
+    const [loadedHives, loadedDevices] = await Promise.all([beeyieldService.getHives(), beeyieldService.getDevices()]);
+    setHives(loadedHives || []);
+    setDevices(loadedDevices || []);
+    if (!selectedHiveId && loadedHives?.length) setSelectedHiveId(loadedHives[0].id);
+  }, [selectedHiveId]);
 
-            if (points.length < 2) {
-                setData([]);
-                return;
-            }
+  const loadSeries = React.useCallback(async () => {
+    if (!selectedHiveId) {
+      setData([]);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const rows: any[] = await beeyieldService.getReadings(selectedHiveId, 240);
+      const points = (rows || [])
+        .map((row) => {
+          const rawTs = row?.recorded_at || row?.timestamp || row?.created_at;
+          const timestamp = rawTs ? new Date(rawTs).getTime() : Number.NaN;
+          const weight = [row?.weight, row?.weight_kg, row?.hive_weight_kg, row?.mass_kg].find((value) => typeof value === 'number');
+          if (!Number.isFinite(timestamp) || typeof weight !== 'number') return null;
+          return { timestamp, weight };
+        })
+        .filter(Boolean) as Array<{ timestamp: number; weight: number }>;
 
-            points.sort((a, b) => a.ts - b.ts);
-            const mapped: WeightData[] = points.map((p, idx) => {
-                const prev = idx > 0 ? points[idx - 1] : null;
-                const dwdt = prev ? (p.w - prev.w) : 0;
-                return {
-                    time: new Date(p.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    weight: parseFloat(p.w.toFixed(2)),
-                    dwdt: parseFloat(dwdt.toFixed(3)),
-                    timestamp: p.ts,
-                };
-            });
-            setData(mapped);
+      if (points.length < 2) {
+        setData([]);
+        return;
+      }
 
-            // Try to infer device from the latest row to enable calibration actions.
-            const latestRow: any = rows?.[0];
-            const devId = String(latestRow?.device_id || '');
-            if (devId) setSelectedDeviceId(devId);
-        } catch (e) {
-            console.error(e);
-            setError((e as any)?.message || 'Failed to load readings.');
-            setData([]);
-        } finally {
-            setLoading(false);
-        }
-    }, [selectedHiveId]);
+      points.sort((a, b) => a.timestamp - b.timestamp);
+      setData(
+        points.map((point, index) => ({
+          time: new Date(point.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          weight: parseFloat(point.weight.toFixed(2)),
+          dwdt: parseFloat(((index > 0 ? point.weight - points[index - 1].weight : 0)).toFixed(3)),
+          timestamp: point.timestamp,
+        })),
+      );
 
-    React.useEffect(() => {
-        loadSeries();
-        const t = setInterval(loadSeries, 30_000);
-        return () => clearInterval(t);
-    }, [loadSeries]);
+      const deviceId = rows?.[0]?.device_id ? String(rows[0].device_id) : '';
+      if (deviceId) setSelectedDeviceId(deviceId);
+    } catch (loadError) {
+      console.error(loadError);
+      setError((loadError as any)?.message || 'Failed to load telemetry readings.');
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedHiveId]);
 
-    const handleTare = async () => {
-        if (!selectedDeviceId) {
-            toast.error('No device linked to latest readings.');
-            return;
-        }
-        setIsTaring(true);
-        const tid = toast.loading("Taring sensor...");
-        try {
-            const result = await beeyieldService.tareSensor(selectedDeviceId);
-            if (result.success) {
-                toast.success("Sensor tared", { id: tid });
-                await loadSeries();
-            } else {
-                toast.error("Tare failed", { id: tid });
-            }
-        } catch (err) {
-            toast.error("Calibration error", { id: tid });
-        } finally {
-            setIsTaring(false);
-        }
+  React.useEffect(() => {
+    refreshMetadata().catch((loadError) => {
+      console.error(loadError);
+      setError((loadError as any)?.message || 'Failed to load hive metadata.');
+      setLoading(false);
+    });
+  }, [refreshMetadata]);
+
+  React.useEffect(() => {
+    loadSeries();
+    const timer = setInterval(loadSeries, 30_000);
+    return () => clearInterval(timer);
+  }, [loadSeries]);
+
+  React.useEffect(() => {
+    const hiveName = (selectedHive?.hive_code || selectedHive?.name || 'hive').toString().replace(/\s+/g, '-').toLowerCase();
+    setExportFileName(`beeyield-${hiveName}-telemetry`);
+  }, [selectedHive]);
+
+  React.useEffect(() => {
+    const weightSub = beeyieldService.subscribeToWeightAlerts('*', (payload) => {
+      setRecentAlert(`Massive drop detected on Hive ${payload.new.hive_id}`);
+      toast.error('Critical weight anomaly detected.');
+    });
+    const gatewaySub = beeyieldService.subscribeToGatewayStatus('*', (payload) => {
+      setGatewayStatus(payload.new.status);
+      if (payload.new.status === 'Offline') toast.warning('Gateway connectivity lost.');
+    });
+    return () => {
+      if (weightSub && beeyieldService.supabaseBeeYield) beeyieldService.supabaseBeeYield.removeChannel(weightSub);
+      if (gatewaySub && beeyieldService.supabaseBeeYield) beeyieldService.supabaseBeeYield.removeChannel(gatewaySub);
     };
+  }, []);
 
-    const handleManualOffset = async () => {
-        if (!selectedDeviceId) {
-            toast.error('No device linked to latest readings.');
-            return;
-        }
-        const value = prompt("Enter manual offset correction (kg):", "0.0");
-        if (value === null) return;
-        const offset = parseFloat(value);
-        if (Number.isNaN(offset)) return toast.error("Invalid numeric value");
+  const handleRefresh = async () => {
+    const id = toast.loading('Refreshing telemetry...');
+    try {
+      await refreshMetadata();
+      await loadSeries();
+      toast.success('Telemetry updated.', { id });
+    } catch (refreshError: any) {
+      toast.error(refreshError?.message || 'Refresh failed.', { id });
+    }
+  };
 
-        try {
-            const tid = toast.loading('Saving offset…');
-            const res = await beeyieldService.setOffsetCorrection(selectedDeviceId, offset);
-            if (res.success) toast.success('Offset saved', { id: tid });
-            else toast.error('Offset save failed', { id: tid });
-            await loadSeries();
-        } catch (err) {
-            toast.error("Failed to set manual offset");
-        }
-    };
+  const handleTare = async () => {
+    if (!activeDeviceId) {
+      toast.error('No linked device is available for calibration.');
+      return false;
+    }
+    setIsTaring(true);
+    const id = toast.loading('Taring sensor...');
+    try {
+      const result = await beeyieldService.tareSensor(activeDeviceId);
+      if (!result.success) {
+        toast.error('Tare failed.', { id });
+        return false;
+      }
+      toast.success('Sensor tared.', { id });
+      await loadSeries();
+      return true;
+    } catch {
+      toast.error('Calibration error.', { id });
+      return false;
+    } finally {
+      setIsTaring(false);
+    }
+  };
 
-    // Status Logic
-    const isFlowing = dwdt > 0.05;
-    const isAlert = dwdt < -1.5 || recentAlert !== null;
+  const handleSaveOffset = async () => {
+    if (!activeDeviceId) return toast.error('No linked device is available for offset correction.');
+    const offset = parseFloat(manualOffsetValue);
+    if (Number.isNaN(offset)) return toast.error('Enter a valid numeric offset.');
+    const id = toast.loading('Saving offset...');
+    try {
+      const result = await beeyieldService.setOffsetCorrection(activeDeviceId, offset);
+      if (!result.success) return toast.error('Offset save failed.', { id });
+      toast.success('Offset saved.', { id });
+      setCalibrationOpen(false);
+      await loadSeries();
+    } catch {
+      toast.error('Failed to save offset.', { id });
+    }
+  };
 
-    React.useEffect(() => {
-        // Subscribe to real-time weight alerts
-        const weightSub = beeyieldService.subscribeToWeightAlerts("*", (payload) => {
-            setRecentAlert(`Massive drop detected on Hive ${payload.new.hive_id}`);
-            toast.error('CRITICAL: Weight anomaly detected!');
-        });
+  const handleExport = () => {
+    if (!data.length) return toast.error('There is no telemetry data to export yet.');
+    const safeName = (exportFileName || `beeyield-${selectedHiveId || 'hive'}-telemetry`).trim().replace(/[^a-z0-9-_]+/gi, '-');
+    const csv = `timestamp,time,weight_kg,dwdt\n${data.map((row) => `${new Date(row.timestamp).toISOString()},${row.time},${row.weight},${row.dwdt}`).join('\n')}\n`;
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${safeName || 'beeyield-telemetry'}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    setExportOpen(false);
+    toast.success('CSV export downloaded.');
+  };
 
-        // Subscribe to gateway status
-        const gatewaySub = beeyieldService.subscribeToGatewayStatus("*", (payload) => {
-            setGatewayStatus(payload.new.status);
-            if (payload.new.status === 'Offline') {
-                toast.warning('Gateway connectivity lost');
-            }
-        });
+  return (
+    <BeeYieldPageShell className="relative overflow-hidden">
+      <div className="absolute -right-24 top-0 h-80 w-80 rounded-full bg-[#1B9157]/5 blur-[120px] pointer-events-none" />
+      <div className="absolute -left-24 top-1/3 h-80 w-80 rounded-full bg-[#F4D03F]/10 blur-[120px] pointer-events-none" />
 
-        return () => {
-            if (weightSub && beeyieldService.supabaseBeeYield) beeyieldService.supabaseBeeYield.removeChannel(weightSub);
-            if (gatewaySub && beeyieldService.supabaseBeeYield) beeyieldService.supabaseBeeYield.removeChannel(gatewaySub);
-        };
-    }, []);
-
-    // Integration Approximator (Trapezoidal)
-    const totalYield = React.useMemo(() => {
-        let sum = 0;
-        for (let i = 1; i < data.length; i++) {
-            const dt = (data[i].timestamp - data[i - 1].timestamp) / 3600000;
-            const velocity = (data[i].weight - data[i - 1].weight);
-            if (velocity > 0) sum += velocity;
-        }
-        return sum.toFixed(2);
-    }, [data]);
-
-    return (
-        <BeeYieldPageShell className="space-y-12 animate-in fade-in duration-700 pb-20">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
-                <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-50 text-[#1B9157] rounded-full text-xs font-semibold border border-emerald-100">
-                        <Cpu className="w-3.5 h-3.5" />
-                        Live data
-                    </div>
-                    <h1 className="text-5xl font-black text-[#1A1A1A] tracking-tighter leading-none italic">Live <span className="text-[#F4D03F]">readings</span></h1>
-                    <p className="text-sm font-medium text-slate-500 max-w-md px-1">
-                        Recent weight and sensor readings from your hive.
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <div className="min-w-[240px]">
-                        <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                            <SelectTrigger className="h-12 rounded-2xl border border-slate-200 bg-[#FFF9F0] text-[11px] font-bold">
-                                <SelectValue placeholder="Select hive" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {hives.map((h) => (
-                                    <SelectItem key={h.id} value={h.id}>
-                                        {(h.hive_code || h.name || h.id).toString()}
-                                    </SelectItem>
-                                ))}
-                                {hives.length === 0 && (
-                                    <div className="px-3 py-2 text-xs font-semibold text-slate-500">No hives found.</div>
-                                )}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <Button
-                        variant="ghost"
-                        onClick={async () => {
-                            // Reload meta + series for current selection
-                            const tid = toast.loading('Refreshing…');
-                            try {
-                                const [h] = await Promise.all([beeyieldService.getHives(), beeyieldService.getDevices()]);
-                                setHives(h || []);
-                                if (!selectedHiveId && (h || []).length > 0) setSelectedHiveId(h[0].id);
-                                await loadSeries();
-                                toast.success('Updated', { id: tid });
-                            } catch (e: any) {
-                                toast.error(e?.message || 'Refresh failed', { id: tid });
-                            }
-                        }}
-                        disabled={loading}
-                        className="h-12 px-4 rounded-2xl border border-slate-200 bg-white/70 text-slate-500 hover:text-[#F4D03F] shadow-sm transition-all"
-                        title="Refresh data"
-                        aria-label="Refresh data"
-                    >
-                        <RefreshCw className={cn("w-5 h-5", loading ? "animate-spin" : "")} />
-                    </Button>
-                    <div className={cn(
-                        "px-8 py-3 rounded-2xl border flex flex-col items-center transition-all bg-[#FFF9F0] shadow-sm",
-                        gatewayStatus === 'Online' ? "border-emerald-100" : "border-red-100"
-                    )}>
-                        <span className="text-xs font-semibold text-slate-500 mb-1">Gateway</span>
-                        <div className="flex items-center gap-2">
-                            <div className={cn("w-2.5 h-2.5 rounded-full shadow-sm", gatewayStatus === 'Online' ? "bg-[#1B9157] animate-pulse" : "bg-red-500")} />
-                            <span className="text-2xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">
-                                {gatewayStatus}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+      <div className="relative z-10 space-y-6 pb-20">
+        <BeeYieldPageHeader
+          icon={Database}
+          label="Advanced sensor data"
+          title={<>Hive <span className="text-[#F4D03F]">telemetry</span> command center</>}
+          subtitle="Aligned with the BeeYield dashboard and AI pages, with polished pop-out actions for calibration and export."
+          actions={
+            <div className="flex flex-wrap items-center gap-3">
+              <div className={cn(pill, gatewayStatus === 'Online' ? 'border-[#1B9157]/15' : 'border-red-200')}>
+                <span className={cn('h-2.5 w-2.5 rounded-full', gatewayStatus === 'Online' ? 'bg-[#1B9157] animate-pulse' : 'bg-red-500')} />
+                <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Gateway {gatewayStatus}</span>
+              </div>
+              <button type="button" onClick={handleRefresh} disabled={loading} className={cn(glass.btnSecondary, 'h-11 rounded-2xl px-5')}>
+                <RefreshCw className={cn('h-4 w-4 text-[#F4D03F]', loading && 'animate-spin')} />
+                Refresh
+              </button>
+              <button type="button" onClick={() => setCalibrationOpen(true)} className={cn(glass.btnPrimary, 'h-11 rounded-2xl px-5 shadow-lg shadow-[#F4D03F]/20')}>
+                <SlidersHorizontal className="h-4 w-4" />
+                Calibrate
+              </button>
+              <button type="button" onClick={() => setExportOpen(true)} className={cn(glass.btnSecondary, 'h-11 rounded-2xl px-5')}>
+                <Download className="h-4 w-4 text-[#F4D03F]" />
+                Export
+              </button>
             </div>
+          }
+        />
 
-            {error && (
-                <Card className="border border-red-200 bg-red-50/60">
-                    <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {error && (
+          <div className="rounded-[28px] border border-red-200 bg-red-50/80 p-5 shadow-sm">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-red-600">Telemetry issue</p>
+                <p className="mt-1 text-sm font-semibold text-slate-700">{error}</p>
+              </div>
+              <button type="button" onClick={loadSeries} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#1A1A1A] px-5 text-[11px] font-black uppercase tracking-[0.2em] text-white">
+                <RefreshCw className="h-4 w-4" />
+                Retry
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="xl:col-span-8">
+            <div className={cn(glass.section, 'rounded-[36px] border-white/60 bg-gradient-to-br from-[#FFF9F0] via-white/80 to-[#F9F7F2] p-7 shadow-[0_30px_80px_-40px_rgba(26,26,26,0.28)]')}>
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                <div className="space-y-3">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#1B9157]/15 bg-[#1B9157]/10 px-3 py-1.5">
+                    <Activity className="h-3.5 w-3.5 text-[#1B9157]" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#1B9157]">Live pollination telemetry</span>
+                  </div>
+                  <h2 className="max-w-2xl text-4xl font-black leading-none tracking-tight text-[#1A1A1A]">
+                    Field-ready telemetry with a <span className="text-[#F4D03F]">BeeYield AI</span> finish
+                  </h2>
+                  <p className="max-w-2xl border-l-4 border-[#F4D03F]/20 pl-5 text-sm font-medium leading-relaxed text-slate-500">
+                    The page now uses the same premium hierarchy, spacing, and card language as Home and BeeYield AI.
+                  </p>
+                </div>
+
+                <div className="w-full max-w-sm space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Hive selection</label>
+                  <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
+                    <SelectTrigger className={cn(glass.select, 'h-12 rounded-2xl border-white/70 bg-white/80 shadow-sm')}>
+                      <SelectValue placeholder="Select hive" />
+                    </SelectTrigger>
+                    <SelectContent className={cn(glass.selectContent, 'rounded-2xl')}>
+                      {hives.map((hive) => (
+                        <SelectItem key={hive.id} value={hive.id} className="font-black text-[11px]">
+                          {(hive.hive_code || hive.name || hive.id).toString()}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="mt-8 grid gap-5 lg:grid-cols-[1.35fr_0.85fr]">
+                <div className={tile}>
+                  <div className="flex flex-wrap items-start justify-between gap-5">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.24em] text-slate-400">Current biomass</p>
+                      <div className="mt-2 flex items-end gap-2">
+                        <span className="text-6xl font-black leading-none tracking-tight text-[#1A1A1A]">{latest ? latest.weight.toFixed(2) : '0.00'}</span>
+                        <span className="pb-1 text-lg font-black uppercase tracking-[0.18em] text-slate-300">kg</span>
+                      </div>
+                      <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#F4D03F]/20 bg-[#F4D03F]/10 px-3 py-1.5">
+                        {latestDelta >= 0 ? <ArrowUpRight className="h-3.5 w-3.5 text-[#1B9157]" /> : <ArrowDownRight className="h-3.5 w-3.5 text-red-500" />}
+                        <span className={cn('text-[10px] font-black uppercase tracking-[0.18em]', latestDelta >= 0 ? 'text-[#1B9157]' : 'text-red-500')}>
+                          Session delta {latestDelta >= 0 ? '+' : ''}{latestDelta.toFixed(2)} kg
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid min-w-[220px] gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#FFF9F0] p-4">
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Linked hive</p>
+                        <p className="mt-2 text-sm font-black text-[#1A1A1A]">{selectedHive?.hive_code || selectedHive?.name || 'No hive selected'}</p>
+                        <p className="mt-1 text-[11px] font-medium text-slate-500">Last seen {lastSeen}</p>
+                      </div>
+                      <div className="rounded-2xl border border-[#1B9157]/15 bg-white p-4">
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Sensor endpoint</p>
+                        <p className="mt-2 text-sm font-black text-[#1A1A1A]">{deviceLabel}</p>
+                        <p className="mt-1 text-[11px] font-medium text-slate-500">{activeDeviceId ? `Device ID ${activeDeviceId}` : 'Awaiting device link'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                    {[
+                      { label: 'Flux velocity', value: `${dwdt >= 0 ? '+' : ''}${dwdt.toFixed(3)}` },
+                      { label: 'Positive gain', value: `${totalYield} kg` },
+                      { label: 'Anomaly state', value: isAlert ? 'Investigate' : 'Stable' },
+                    ].map((item) => (
+                      <div key={item.label} className="rounded-2xl border border-dashed border-[#F4D03F]/20 bg-gradient-to-r from-[#F4D03F]/10 to-white px-4 py-3">
+                        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">{item.label}</p>
+                        <p className="mt-1 text-base font-black text-[#1A1A1A]">{item.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-[32px] border border-[#1A1A1A]/10 bg-[#1A1A1A] p-6 text-white shadow-[0_24px_70px_-35px_rgba(26,26,26,0.75)]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/40">Operations rail</p>
+                      <h3 className="mt-2 text-2xl font-black tracking-tight">Sensor actions</h3>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-3"><ShieldCheck className="h-5 w-5 text-[#F4D03F]" /></div>
+                  </div>
+
+                  <div className="mt-6 space-y-3">
+                    {[
+                      { label: 'Calibration', text: 'Tare or set a precision offset', action: () => setCalibrationOpen(true), icon: ChevronRight },
+                      { label: 'Reporting', text: 'Prepare a downloadable telemetry pack', action: () => setExportOpen(true), icon: ChevronRight },
+                      { label: 'Sync', text: 'Refresh hive, gateway, and readings', action: handleRefresh, icon: RefreshCw },
+                    ].map((item) => (
+                      <button key={item.label} type="button" onClick={item.action} className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left transition-all hover:border-[#F4D03F]/30 hover:bg-white/10">
                         <div>
-                            <div className="text-[10px] font-black text-red-600">Data load failed</div>
-                            <div className="text-sm font-semibold text-slate-700 break-words mt-1">{error}</div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40">{item.label}</p>
+                          <p className="mt-1 text-sm font-black text-white">{item.text}</p>
                         </div>
-                        <Button
-                            onClick={loadSeries}
-                            className="h-11 rounded-2xl bg-neutral-900 text-white font-black text-[10px]"
-                        >
-                            Retry
-                        </Button>
-                    </CardContent>
-                </Card>
+                        <item.icon className={cn('h-5 w-5 text-[#F4D03F]', item.label === 'Sync' && loading && 'animate-spin')} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="xl:col-span-4 space-y-4">
+            {[
+              { label: 'Live weight', value: latest ? `${latest.weight.toFixed(2)} kg` : '0.00 kg', icon: Scale, color: 'text-[#1A1A1A]' },
+              { label: 'Flux velocity', value: `${dwdt >= 0 ? '+' : ''}${dwdt.toFixed(3)}`, icon: Gauge, color: isFlowing ? 'text-[#1B9157]' : 'text-red-500' },
+              { label: 'Positive gain', value: `${totalYield} kg`, icon: Zap, color: 'text-[#F4D03F]' },
+              { label: 'Security state', value: isAlert ? 'Investigate' : 'Stable', icon: AlertTriangle, color: isAlert ? 'text-red-500' : 'text-[#1B9157]' },
+            ].map((card, index) => (
+              <GlassStatCard key={card.label} label={card.label} value={card.value} icon={card.icon} index={index} color={card.color} />
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <div className={cn(glass.section, 'rounded-[32px] p-6 shadow-sm')}>
+            <BeeYieldSectionHeader icon={Scale} title="Weight dynamics" subtitle="Trendline / load curve" />
+            <WeightDynamicsChart data={data.map((point) => ({ time: point.time, weight: point.weight, velocity: point.dwdt }))} />
+          </div>
+          <div className={cn(glass.section, 'rounded-[32px] p-6 shadow-sm')}>
+            <BeeYieldSectionHeader icon={Waves} title="Acoustic waveform" subtitle="Colony activity surface" />
+            <AcousticWaveform />
+          </div>
+        </div>
+
+        <div className={cn(glass.section, 'rounded-[32px] overflow-hidden shadow-sm')}>
+          <div className="flex flex-col gap-4 border-b border-[#F4D03F]/15 bg-[#F9F7F2]/70 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Telemetry ledger</p>
+              <h3 className="mt-2 text-2xl font-black tracking-tight text-[#1A1A1A]">Recent history</h3>
+              <p className="mt-1 text-sm text-slate-500">A compact, dashboard-native view of the latest telemetry samples.</p>
+            </div>
+            <div className={pill}>
+              <History className="h-4 w-4 text-[#F4D03F]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">{data.length} readings in session</span>
+            </div>
+          </div>
+
+          <div className="divide-y divide-[#F4D03F]/10">
+            {loading ? (
+              <div className="flex items-center gap-3 px-6 py-8 text-sm font-semibold text-slate-500"><RefreshCw className="h-4 w-4 animate-spin" />Loading readings...</div>
+            ) : !data.length ? (
+              <div className="px-6 py-10 text-sm font-semibold text-slate-500">No readings are available for this hive yet.</div>
+            ) : (
+              data.slice(-6).reverse().map((row, index) => (
+                <div key={`${row.timestamp}-${index}`} className="grid gap-4 px-6 py-5 transition-colors hover:bg-[#F4D03F]/5 md:grid-cols-[1.2fr_0.8fr_0.8fr_auto]">
+                  <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Timestamp</p><p className="mt-1 text-sm font-semibold text-slate-600 tabular-nums">{row.time}</p></div>
+                  <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Weight</p><p className="mt-1 text-lg font-black text-[#1A1A1A] tabular-nums">{row.weight} kg</p></div>
+                  <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Change rate</p><p className={cn('mt-1 text-lg font-black tabular-nums', row.dwdt > 0 ? 'text-[#1B9157]' : 'text-red-500')}>{row.dwdt > 0 ? '+' : ''}{row.dwdt.toFixed(3)}</p></div>
+                  <div className="flex items-center justify-start md:justify-end"><div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#F4D03F]/15 bg-white shadow-sm"><ChevronRight className="h-5 w-5 text-[#F4D03F]" /></div></div>
+                </div>
+              ))
             )}
+          </div>
+        </div>
+      </div>
 
-            {!loading && !error && hives.length === 0 && (
-                <Card className="border border-slate-200 bg-white/70">
-                    <CardContent className="p-10 text-center space-y-2">
-                        <div className="text-sm font-black text-[#1A1A1A]">No hives connected yet</div>
-                        <div className="text-xs font-semibold text-slate-500 max-w-xl mx-auto">
-                            Add a hive (or connect a device) to start streaming weight readings into this dashboard.
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+      <GlassModal isOpen={calibrationOpen} onClose={() => setCalibrationOpen(false)} title="Sensor Calibration" subtitle="POP-OUT CONTROL FORM" maxWidth="max-w-2xl">
+        <div className="space-y-5">
+          <div className="rounded-[28px] border border-[#F4D03F]/15 bg-white/70 p-5 shadow-sm">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Linked device</p>
+                <h3 className="mt-2 text-xl font-black tracking-tight text-[#1A1A1A]">{deviceLabel}</h3>
+                <p className="mt-1 text-sm text-slate-500">{selectedHive?.hive_code || selectedHive?.name || 'No hive selected'} • {activeDeviceId || 'No device id'}</p>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#1B9157]/15 bg-[#1B9157]/10 px-3 py-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[#1B9157]" /><span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1B9157]">{gatewayStatus}</span></div>
+            </div>
+          </div>
 
-            {/* Matrix Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Weight Card */}
-                <Card className={cn(glass.card, "shadow-xl overflow-hidden group")}>
-                    <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-[#F9F7F2]/50">
-                        <p className="text-[10px] font-black text-slate-400 mb-2 italic">Current Biomass Score</p>
-                        <CardTitle className="text-6xl font-black text-[#1A1A1A] tracking-tighter italic tabular-nums">
-                            {latest ? latest.weight : '—'}<span className="text-2xl ml-1 opacity-20 not-italic">kg</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 flex flex-col justify-between min-h-[220px]">
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#F9F7F2] border border-slate-100">
-                                <span className="text-[9px] font-black text-slate-400 leading-none">24h Delta</span>
-                                <span className={cn("text-base font-black flex items-center gap-1 leading-none", latest && data[0] && (latest.weight - data[0].weight) > 0 ? "text-[#1B9157]" : "text-red-500")}>
-                                    {latest && data[0] && (latest.weight - data[0].weight) > 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-                                    {latest && data[0] ? `${Math.abs(latest.weight - data[0].weight).toFixed(2)}kg` : '—'}
-                                </span>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 mt-8">
-                            <Button
-                                onClick={handleTare}
-                                disabled={isTaring}
-                                className="h-14 rounded-2xl bg-neutral-900 text-[#1A1A1A] font-black text-[10px] shadow-xl shadow-black/10 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                            >
-                                {isTaring ? <Activity className="w-4 h-4 animate-spin" /> : "Calibration"}
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                onClick={handleManualOffset}
-                                className="h-14 rounded-2xl border border-slate-200 bg-[#FFF9F0] text-slate-400 hover:text-[#F4D03F] font-black text-[10px] transition-all"
-                            >
-                                Manual Offset
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Flux Calculus Card */}
-                <Card className={cn(glass.card, "shadow-xl overflow-hidden")}>
-                    <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-[#F9F7F2]/50">
-                        <p className="text-[10px] font-black text-slate-400 mb-2 italic">Flux Velocity ($dW/dt$)</p>
-                        <CardTitle className="text-6xl font-black text-[#1A1A1A] tracking-tighter italic tabular-nums">
-                            {dwdt > 0 ? '+' : ''}{dwdt.toFixed(3)}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 pb-8 flex flex-col justify-between min-h-[220px]">
-                        <p className="text-[10px] font-bold text-slate-400 leading-relaxed italic">
-                            Rate of change. Positive values often mean foragers are bringing in nectar and moisture is dropping.
-                        </p>
-                        <div className="space-y-4 mt-8">
-                            <div className="h-4 w-full bg-[#F4D03F]/10 rounded-full relative overflow-hidden ring-4 ring-slate-50">
-                                <motion.div
-                                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-500 to-amber-500 rounded-full"
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${Math.min(100, Math.max(0, (dwdt + 0.5) * 100))}%` }}
-                                    transition={{ type: 'spring', damping: 20 }}
-                                />
-                            </div>
-                            <div className="flex justify-between text-[9px] font-black text-slate-400 italic">
-                                <span>Net Consumption</span>
-                                <span>Nectar Influx</span>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Season Yield Card */}
-                <Card className={cn(glass.card, "bg-neutral-900 border-neutral-800 shadow-xl overflow-hidden relative group")}>
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <CardHeader className="p-6 pb-4 border-b border-[#F4D03F]/10 relative z-10">
-                        <p className="text-[10px] font-black text-gray-600 mb-2 italic">Integrative Season Total</p>
-                        <CardTitle className="text-6xl font-black text-[#F4D03F] tracking-tighter italic tabular-nums leading-none">
-                            {totalYield}<span className="text-2xl ml-1 text-[#1A1A1A] opacity-40 not-italic">kg</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 flex flex-col justify-between min-h-[220px] relative z-10">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <Zap className="w-5 h-5 text-[#F4D03F] group-hover:scale-125 transition-transform" />
-                                <span className="text-[10px] font-black text-[#1A1A1A] italic">ROI Audit Confirmed</span>
-                            </div>
-                            <p className="text-[10px] font-medium text-gray-600 leading-relaxed italic">
-                                Value extrapolated via trapezoidal integration of periodic biomass shifts. Primary certification for premium pollination tariffs.
-                            </p>
-                        </div>
-                        <Button className="w-full mt-8 h-16 rounded-2xl bg-[#FFF9F0] text-neutral-900 hover:bg-neutral-100:bg-amber-100 font-black text-xs shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-3 border-none">
-                            <Download className="w-4 h-4" />
-                            Certify Audit
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Alert Card */}
-                <Card className={cn(
-                    glass.card,
-                    "shadow-xl transition-all duration-700",
-                    isAlert
-                        ? "border-red-500/50 bg-red-500/5 shadow-red-500/10 animate-pulse"
-                        : "opacity-60"
-                )}>
-                    <CardHeader className="p-6">
-                        <div className="flex justify-between items-start">
-                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border transition-all", isAlert ? "bg-red-500 text-[#1A1A1A] border-red-400" : "bg-[#F9F7F2] text-slate-300 border-slate-100")}>
-                                <AlertTriangle className="w-8 h-8" />
-                            </div>
-                            <Badge className={cn("rounded-full px-4 py-1.5 font-black text-[9px] border-none", isAlert ? "bg-red-500 text-[#1A1A1A]" : "bg-[#F9F7F2] text-slate-300")}>
-                                SECURE
-                            </Badge>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-6 pt-0">
-                        <h3 className={cn("text-2xl font-black tracking-tighter italic mb-4", isAlert ? "text-red-600" : "text-[#1A1A1A]")}>
-                            Theft Mitigation
-                        </h3>
-                        <p className="text-[11px] font-medium text-slate-500 leading-relaxed italic">
-                            Continuous monitoring for anomalous mass reduction events. Synced with spectral acoustic signatures for secondary validation.
-                        </p>
-                    </CardContent>
-                </Card>
+          <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="rounded-[28px] border border-[#F4D03F]/15 bg-[#FFF9F0] p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Quick tare</p>
+              <h4 className="mt-2 text-lg font-black tracking-tight text-[#1A1A1A]">Zero the active sensor</h4>
+              <p className="mt-2 text-sm leading-relaxed text-slate-500">Use this when the scale needs a clean baseline before the next field reading arrives.</p>
+              <button type="button" onClick={async () => { const success = await handleTare(); if (success) setCalibrationOpen(false); }} disabled={isTaring} className={cn(glass.btnPrimary, 'mt-5 h-11 w-full rounded-2xl shadow-lg shadow-[#F4D03F]/20')}>
+                {isTaring ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
+                Tare sensor
+              </button>
             </div>
 
-            {/* Performance Graphs */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                <WeightDynamicsChart
-                    data={(data || []).map((p) => ({
-                        time: p.time,
-                        weight: p.weight,
-                        velocity: p.dwdt,
-                    }))}
-                />
-                <AcousticWaveform />
+            <div className="rounded-[28px] border border-[#F4D03F]/15 bg-white/80 p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Manual offset</p>
+              <h4 className="mt-2 text-lg font-black tracking-tight text-[#1A1A1A]">Apply a correction value</h4>
+              <div className="mt-4 space-y-2">
+                <label htmlFor="telemetry-manual-offset" className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Offset correction (kg)</label>
+                <Input id="telemetry-manual-offset" type="number" step="0.01" value={manualOffsetValue} onChange={(event) => setManualOffsetValue(event.target.value)} className={cn(glass.input, 'h-12 rounded-2xl bg-[#FFF9F0]')} />
+              </div>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button type="button" onClick={() => setCalibrationOpen(false)} className={cn(glass.btnSecondary, 'h-11 rounded-2xl px-5')}>Cancel</button>
+                <button type="button" onClick={handleSaveOffset} className={cn(glass.btnPrimary, 'h-11 rounded-2xl px-5 shadow-lg shadow-[#F4D03F]/20')}><SlidersHorizontal className="h-4 w-4" />Save offset</button>
+              </div>
             </div>
+          </div>
+        </div>
+      </GlassModal>
 
-            {/* Historical Logs */}
-            <Card className={cn(glass.card, "shadow-xl overflow-hidden")}>
-                <CardHeader className="p-8 border-b border-[#F4D03F]/20 flex flex-row items-center justify-between bg-[#F9F7F2]">
-                    <div className="space-y-1">
-                        <CardTitle className="text-3xl font-black text-[#1A1A1A] tracking-tighter italic">Recent history</CardTitle>
-                        <p className="text-sm font-medium text-slate-500 px-1 italic">Recent readings from this session.</p>
-                    </div>
-                    <div className="w-14 h-14 rounded-2xl bg-[#FFF9F0] border border-slate-200 flex items-center justify-center text-slate-400">
-                        <History className="w-6 h-6" />
-                    </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <div className="divide-y divide-slate-50">
-                        {loading ? (
-                            <div className="px-8 py-8 text-sm font-semibold text-slate-500 flex items-center gap-3">
-                                <Activity className="w-4 h-4 animate-spin" />
-                                Loading readings…
-                            </div>
-                        ) : data.length === 0 ? (
-                            <div className="px-8 py-10 text-sm font-semibold text-slate-500">
-                                No readings available for this hive yet.
-                            </div>
-                        ) : (
-                            data.slice(-5).reverse().map((row, idx) => (
-                            <div key={idx} className="px-8 py-5 flex items-center justify-between hover:bg-[#F4D03F]/10 transition-colors group">
-                                <div className="flex gap-16">
-                                    <div className="min-w-[120px]">
-                                        <span className="text-xs font-semibold text-slate-500 block mb-2 italic text-left">Timestamp</span>
-                                        <span className="text-sm font-semibold text-slate-600 tabular-nums">{row.time}</span>
-                                    </div>
-                                    <div className="min-w-[100px]">
-                                        <span className="text-xs font-semibold text-slate-500 block mb-2 italic text-left">Weight</span>
-                                        <span className="text-lg font-black text-[#1A1A1A] tabular-nums italic">{row.weight} kg</span>
-                                    </div>
-                                    <div className="min-w-[100px]">
-                                        <span className="text-xs font-semibold text-slate-500 block mb-2 italic text-left">Change rate</span>
-                                        <span className={cn("text-lg font-black tabular-nums italic", row.dwdt > 0 ? "text-[#1B9157]" : "text-red-500")}>
-                                            {row.dwdt > 0 ? '+' : ''}{row.dwdt.toFixed(3)}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="w-12 h-12 rounded-xl bg-[#F9F7F2] border border-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bg-[#F4D03F] group-hover:text-[#1A1A1A] group-hover:border-amber-400 transition-all cursor-pointer">
-                                    <ChevronRight className="w-6 h-6" />
-                                </div>
-                            </div>
-                        ))
-                        )}
-                    </div>
-                    <div className="p-8 border-t border-slate-100 bg-[#F9F7F2]/30">
-                        <Button
-                            variant="ghost"
-                            disabled={loading || data.length === 0}
-                            onClick={() => {
-                                const header = 'timestamp,time,weight_kg,dwdt\n';
-                                const rows = data
-                                    .map((r) => `${new Date(r.timestamp).toISOString()},${r.time},${r.weight},${r.dwdt}`)
-                                    .join('\n');
-                                const blob = new Blob([header + rows + '\n'], { type: 'text/csv;charset=utf-8' });
-                                const url = URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = `beeyield-telemetry-${selectedHiveId || 'hive'}-${new Date().toISOString().slice(0, 10)}.csv`;
-                                document.body.appendChild(a);
-                                a.click();
-                                a.remove();
-                                URL.revokeObjectURL(url);
-                            }}
-                            className="h-12 px-8 rounded-xl border border-slate-200 bg-[#FFF9F0] text-slate-500 hover:text-[#F4D03F] font-semibold text-sm gap-4 shadow-sm transition-all group/dl"
-                        >
-                            <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                            Download CSV
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </BeeYieldPageShell>
-    );
+      <GlassModal isOpen={exportOpen} onClose={() => setExportOpen(false)} title="Export Telemetry" subtitle="POP-OUT DELIVERY FORM" maxWidth="max-w-xl">
+        <div className="space-y-5">
+          <div className="rounded-[28px] border border-[#F4D03F]/15 bg-white/80 p-5">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Export bundle</p>
+            <h4 className="mt-2 text-lg font-black tracking-tight text-[#1A1A1A]">Prepare a clean CSV package</h4>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Hive</p><p className="mt-1 text-sm font-black text-[#1A1A1A]">{selectedHive?.hive_code || selectedHive?.name || 'No hive selected'}</p></div>
+              <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Rows</p><p className="mt-1 text-sm font-black text-[#1A1A1A]">{data.length} telemetry records</p></div>
+            </div>
+            <div className="mt-4 space-y-2">
+              <label htmlFor="telemetry-export-name" className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">File name</label>
+              <Input id="telemetry-export-name" value={exportFileName} onChange={(event) => setExportFileName(event.target.value)} className={cn(glass.input, 'h-12 rounded-2xl bg-[#FFF9F0]')} />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <button type="button" onClick={() => setExportOpen(false)} className={cn(glass.btnSecondary, 'h-11 rounded-2xl px-5')}>Cancel</button>
+            <button type="button" onClick={handleExport} className={cn(glass.btnPrimary, 'h-11 rounded-2xl px-5 shadow-lg shadow-[#F4D03F]/20')}><Download className="h-4 w-4" />Download CSV</button>
+          </div>
+        </div>
+      </GlassModal>
+    </BeeYieldPageShell>
+  );
 };
 
 export default HiveTelemetryView;

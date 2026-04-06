@@ -9,12 +9,14 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useHarvests, useCreateHarvest, useUpdateHarvest, useDeleteHarvest } from '@/hooks/useHarvests';
+import { useHarvests, useBatches, useCreateHarvest, useUpdateHarvest, useDeleteHarvest } from '@/hooks/useHarvests';
 import { Harvest } from '@/services/beeyieldService';
 import { ApiaryForm } from './ApiaryForm';
 import { HiveForm } from './HiveForm';
 import { useApiaries } from '@/hooks/useApiaries';
 import { useHives } from '@/hooks/useHives';
+import { useSelectedApiary } from '@/hooks/useSelectedApiary';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,7 +24,7 @@ import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { glass, GlassStatCard, GlassModal } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSectionHeader } from '@/components/beeyield/BeeYieldUI';
-import { beeyieldService } from '@/services/beeyieldService';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 interface HarvestsViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
@@ -39,8 +41,6 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     const [filterHiveId, setFilterHiveId] = React.useState<string>('');
     const [formApiaryId, setFormApiaryId] = React.useState<string>('');
     const [formHiveId, setFormHiveId] = React.useState<string>('');
-    const [batches, setBatches] = React.useState<any[]>([]);
-    const [isBatchesLoading, setIsBatchesLoading] = React.useState(false);
     const [batchYearFilter, setBatchYearFilter] = React.useState('all');
     const [batchHiveFilter, setBatchHiveFilter] = React.useState('');
     const [selectedHarvest, setSelectedHarvest] = React.useState<Harvest | null>(null);
@@ -84,20 +84,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
         if (initialParams?.action === 'open_add_new') {
             setIsAddingHarvest(true);
         }
-        fetchBatches();
     }, [initialParams]);
-
-    const fetchBatches = async () => {
-        setIsBatchesLoading(true);
-        try {
-            const data = await beeyieldService.getBatches();
-            setBatches(data);
-        } catch (error) {
-            console.error('Error fetching batches:', error);
-        } finally {
-            setIsBatchesLoading(false);
-        }
-    };
 
     const [formData, setFormData] = React.useState<Partial<Harvest>>({
         harvest_date: format(new Date(), 'yyyy-MM-dd'),
@@ -116,6 +103,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     });
 
     const { data: harvests = [], isLoading } = useHarvests();
+    const { data: batches = [], isLoading: isBatchesLoading } = useBatches();
 
     // Enrich batches with Hive info from harvests
     const enrichedBatches = React.useMemo(() => {
@@ -131,6 +119,15 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     const { mutate: createHarvest, isPending: isCreating } = useCreateHarvest();
     const { data: apiaries = [] } = useApiaries();
     const { data: hives = [] } = useHives(filterApiaryId || formApiaryId || undefined);
+    const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
+    const weatherApiaryId = filterApiaryId && filterApiaryId !== 'all' ? filterApiaryId : (selectedApiaryId || apiaries[0]?.id || '');
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(weatherApiaryId || undefined);
+
+    React.useEffect(() => {
+        if (filterApiaryId && filterApiaryId !== 'all') {
+            setSelectedApiaryId(filterApiaryId);
+        }
+    }, [filterApiaryId, setSelectedApiaryId]);
 
     const filteredHives = React.useMemo(() => {
         if (!filterApiaryId) return hives;
@@ -337,6 +334,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                 <GlassStatCard label="This month" value={stats.thisMonth} icon={Calendar} index={2} color="text-[#1A1A1A]" />
                 <GlassStatCard label="Average yield" value={`${stats.avgPerHarvest}KG`} icon={Activity} index={3} color="text-[#1B9157]" />
             </div>
+
+            <WeatherTelemetryPanel
+                summary={weatherSummary}
+                isLoading={weatherLoading}
+                title="Harvest weather telemetry"
+            />
 
             <Tabs defaultValue="harvests" className="w-full space-y-6">
                 <TabsList className={cn(glass.filterBar, "bg-white/40 backdrop-blur-xl border-white/20 p-1 rounded-xl w-full max-w-sm mx-auto h-auto flex gap-1")}>

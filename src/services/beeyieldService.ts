@@ -315,6 +315,38 @@ export interface ApiaryWeatherSummary {
     linked_device_meta: WeatherLinkedDeviceMeta[];
 }
 
+export interface PublicFlightMapPoint {
+    lat: number;
+    lng: number;
+}
+
+export interface PublicFlightMapPayload {
+    site_mode: string;
+    source_label: string;
+    apiary: Apiary;
+    hives: Hive[];
+    route_points: PublicFlightMapPoint[];
+    coverage_radius_m: number;
+    land_types?: Array<{
+        id: string;
+        name: string;
+        share_pct: number;
+        nectar_score: number;
+        is_blooming: boolean;
+    }>;
+    weather_summary: ApiaryWeatherSummary;
+    flight_potential: {
+        score: number;
+        status: string;
+        recommendation: string;
+        active_sources: Array<{
+            name: string;
+            potential: number;
+            is_optimal: boolean;
+        }>;
+    };
+}
+
 export interface Orchard {
     id: string;
     grower_id: string;
@@ -3291,6 +3323,17 @@ export const beeyieldService = {
             return await apiGet<ApiaryWeatherSummary>('/forage/weather-summary', { apiary_id: apiaryId });
         } catch (error) {
             console.error('getApiaryWeatherSummary:', error);
+            return null;
+        }
+    },
+
+    async getPublicLiveFlightMap(locationSlug: string = 'kibwezi-kenya'): Promise<PublicFlightMapPayload | null> {
+        try {
+            return await apiGet<PublicFlightMapPayload>('/forage/public-live-map', {
+                location_slug: locationSlug,
+            });
+        } catch (error) {
+            console.error('getPublicLiveFlightMap:', error);
             return null;
         }
     },

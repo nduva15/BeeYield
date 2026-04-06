@@ -113,6 +113,165 @@ def _is_blooming(source: dict[str, Any], month: int) -> bool:
     return month >= start or month <= end
 
 
+PUBLIC_LIVE_LOCATIONS: dict[str, dict[str, Any]] = {
+    "kibwezi-kenya": {
+        "id": "public-kibwezi-kenya",
+        "name": "Kibwezi Flight Monitor",
+        "location_name": "Kibwezi, Makueni County, Kenya",
+        "county": "Makueni",
+        "region": "Eastern Kenya",
+        "country": "Kenya",
+        "latitude": -2.4187,
+        "longitude": 37.9686,
+        "effective_radius_km": 2.4,
+        "max_radius_km": 4.8,
+        "coverage_radius_m": 2600,
+    }
+}
+
+
+def _provider_source_meta(current: dict[str, Any]) -> dict[str, Any]:
+    observed_at = current.get("last_observed_at")
+    provider = current.get("provider") or "open-meteo"
+    keys = (
+        "temperature_c",
+        "humidity_pct",
+        "pressure_hpa",
+        "wind_speed_kmh",
+        "wind_direction",
+        "feels_like_c",
+        "condition",
+        "cloud_cover_pct",
+        "sunrise_at",
+        "sunset_at",
+        "uv_index",
+        "aqi",
+        "last_observed_at",
+    )
+    return {
+        key: {"source": "provider", "provider": provider, "observed_at": observed_at} if current.get(key) is not None else {"source": "unavailable"}
+        for key in keys
+    }
+
+
+def _build_public_hive_points(center_lat: float, center_lng: float) -> list[dict[str, Any]]:
+    return [
+        {
+            "id": "kbz-north-corridor",
+            "hive_code": "KBZ-NORTH",
+            "name": "North corridor",
+            "status": "Active",
+            "latitude": round(center_lat + 0.0105, 6),
+            "longitude": round(center_lng + 0.0060, 6),
+        },
+        {
+            "id": "kbz-east-ridge",
+            "hive_code": "KBZ-EAST",
+            "name": "East ridge",
+            "status": "Watch",
+            "latitude": round(center_lat + 0.0035, 6),
+            "longitude": round(center_lng + 0.0140, 6),
+        },
+        {
+            "id": "kbz-river-belt",
+            "hive_code": "KBZ-RIVER",
+            "name": "River belt",
+            "status": "Active",
+            "latitude": round(center_lat - 0.0090, 6),
+            "longitude": round(center_lng - 0.0055, 6),
+        },
+        {
+            "id": "kbz-south-field",
+            "hive_code": "KBZ-SOUTH",
+            "name": "South field",
+            "status": "Limited",
+            "latitude": round(center_lat - 0.0130, 6),
+            "longitude": round(center_lng + 0.0045, 6),
+        },
+    ]
+
+
+async def _build_public_live_map_payload(location_slug: str = "kibwezi-kenya") -> dict[str, Any]:
+    live_location = PUBLIC_LIVE_LOCATIONS.get(location_slug) or PUBLIC_LIVE_LOCATIONS["kibwezi-kenya"]
+    center_lat = float(live_location["latitude"])
+    center_lng = float(live_location["longitude"])
+
+    provider_summary = await fetch_provider_weather(center_lat, center_lng)
+    current = (provider_summary or {}).get("current") or {}
+    weather_summary = {
+        "apiary_id": str(live_location["id"]),
+        "current": current,
+        "hourly_forecast": (provider_summary or {}).get("hourly_forecast") or [],
+        "daily_summary": (provider_summary or {}).get("daily_summary") or {},
+        "source_meta": _provider_source_meta(current),
+        "linked_device_meta": [],
+    }
+
+    temperature = _to_float(current.get("temperature_c"), 22.0) or 22.0
+    humidity = _to_float(current.get("humidity_pct"), 58.0) or 58.0
+    modifier = _weather_modifier(temperature, humidity)
+
+    active_sources = [
+        {"name": "Acacia corridor", "potential": round(0.82 * modifier, 4), "is_optimal": modifier > 0.6},
+        {"name": "Smallholder orchard belt", "potential": round(0.74 * modifier, 4), "is_optimal": modifier > 0.5},
+        {"name": "Riverine bloom edge", "potential": round(0.68 * modifier, 4), "is_optimal": modifier > 0.45},
+    ]
+    score = round(min(96.0, ((sum(source["potential"] for source in active_sources) / len(active_sources)) * 100.0)), 1)
+    land_types = [
+        {
+            "id": f"public-land-type-{index + 1}",
+            "name": source["name"],
+            "share_pct": round((source["potential"] / max(sum(item["potential"] for item in active_sources), 0.01)) * 100.0, 1),
+            "nectar_score": round(source["potential"] * 100.0, 1),
+            "is_blooming": source["is_optimal"],
+        }
+        for index, source in enumerate(active_sources)
+    ]
+
+    hives = _build_public_hive_points(center_lat, center_lng)
+    route_points = [{"lat": center_lat, "lng": center_lng}] + [
+        {"lat": float(hive["latitude"]), "lng": float(hive["longitude"])} for hive in hives
+    ]
+
+    recommendation = (
+        "Live weather around Kibwezi supports a strong forage window."
+        if score >= 70
+        else "Kibwezi conditions are usable, but routes should be checked during the next weather refresh."
+        if score >= 40
+        else "Current Kibwezi conditions limit long foraging flights."
+    )
+
+    return {
+        "site_mode": "public-live",
+        "source_label": "Live public map for Kibwezi, Kenya",
+        "apiary": {
+            "id": str(live_location["id"]),
+            "name": str(live_location["name"]),
+            "location_name": str(live_location["location_name"]),
+            "county": str(live_location["county"]),
+            "region": str(live_location["region"]),
+            "country": str(live_location["country"]),
+            "latitude": center_lat,
+            "longitude": center_lng,
+            "status": "live",
+            "hive_count": len(hives),
+            "effective_radius_km": float(live_location["effective_radius_km"]),
+            "max_radius_km": float(live_location["max_radius_km"]),
+        },
+        "hives": hives,
+        "route_points": route_points,
+        "coverage_radius_m": int(live_location["coverage_radius_m"]),
+        "land_types": land_types,
+        "flight_potential": {
+            "score": score,
+            "status": _weather_status_from_modifier(modifier),
+            "recommendation": recommendation,
+            "active_sources": active_sources,
+        },
+        "weather_summary": weather_summary,
+    }
+
+
 async def _get_relevant_user_ids(user_id: str, token: Optional[str]) -> list[str]:
     relevant = [user_id]
     try:
@@ -608,6 +767,13 @@ async def get_flight_potential(
         "land_type": payload["controls"]["selected_land_type"],
         "estimated_share_pct": payload["forage"]["estimated_share_pct"],
     }
+
+
+@router.get("/public-live-map")
+async def get_public_live_map(
+    location_slug: str = Query("kibwezi-kenya", description="Public live map location"),
+):
+    return await _build_public_live_map_payload(location_slug=location_slug)
 
 
 @router.get("/weather")

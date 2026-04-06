@@ -1,13 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,20 +10,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { ServiceForm } from './ServiceForm';
-import { Loader2, Send, Printer, Headphones, Mail, Phone, MapPin, Search, Activity, ChevronRight, MessageSquare, ShieldCheck, Clock } from 'lucide-react';
+import { Loader2, Send, Printer, Headphones, Mail, Phone, MapPin, Search, Activity, ChevronRight, MessageSquare, ShieldCheck, X } from 'lucide-react';
 import { beeyieldService, SupportRequest } from '@/services/beeyieldService';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { glass, PageHeader } from './GlassTheme';
 
 interface SupportCenterViewProps {
     onTabChange: (tab: string) => void;
 }
 
-const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) => {
-    const { user } = useAuth();
+const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
     const [activeTab, setActiveTab] = React.useState<'all' | 'new' | 'in_progress' | 'resolved'>('all');
     const [filterText, setFilterText] = React.useState('');
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
@@ -100,7 +90,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
         }
 
         setIsSubmitting(true);
-        const { data, error } = await beeyieldService.createRequest({
+        const { data } = await beeyieldService.createRequest({
             category: formData.category,
             subject: formData.subject,
             description: formData.description,
@@ -301,102 +291,123 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                     </div>
                 </div>
 
-                {/* Dialog Implementation */}
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogContent className={glass.modalCard}>
-                        <div className="p-8 lg:p-10 relative overflow-hidden bg-[#FFF9F0]">
-                            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none" />
-                            
-                            <div className="mb-8 flex items-center gap-4 relative z-10">
-                                <div className="w-12 h-12 bg-[#F9F7F2] rounded-xl flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
-                                    <MessageSquare className="w-5 h-5 text-[#F4D03F]" />
-                                </div>
-                                <div>
-                                    <h2 className={glass.sectionTitle}>New <span className="text-[#F4D03F]">Ticket</span></h2>
-                                    <p className={glass.microLabel}>Submit support request to Mission Control</p>
-                                </div>
-                            </div>
+                <AnimatePresence>
+                    {isDialogOpen && (
+                        <div
+                            className={cn(glass.modalOverlay, "z-[120] p-4 sm:p-6")}
+                            onClick={() => setIsDialogOpen(false)}
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.96, y: 24 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.96, y: 24 }}
+                                transition={{ duration: 0.2, ease: 'easeOut' }}
+                                className={cn(glass.modalCard, "max-w-2xl max-h-[90vh] overflow-y-auto")}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="p-8 lg:p-10 relative overflow-hidden bg-[#FFF9F0]">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsDialogOpen(false)}
+                                        className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-lg border border-[#F4D03F]/20 bg-white/90 text-[#1A1A1A]/60 shadow-sm transition hover:bg-white hover:text-[#1A1A1A]"
+                                        aria-label="Close new ticket form"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none" />
 
-                            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Category</Label>
-                                        <Select value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
-                                            <SelectTrigger id="support-ticket-category" aria-label="Category" className={glass.select}>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                <SelectItem value="Hardware" className="p-2 font-bold uppercase text-xs">Hardware Calibration</SelectItem>
-                                                <SelectItem value="Software" className="p-2 font-bold uppercase text-xs">Software / App Issue</SelectItem>
-                                                <SelectItem value="Traceability" className="p-2 font-bold uppercase text-xs">Data / API Query</SelectItem>
-                                                <SelectItem value="General" className="p-2 font-bold uppercase text-xs">General Inquiry</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                    <div className="mb-8 flex items-center gap-4 pr-12 relative z-10">
+                                        <div className="w-12 h-12 bg-[#F9F7F2] rounded-xl flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                            <MessageSquare className="w-5 h-5 text-[#F4D03F]" />
+                                        </div>
+                                        <div>
+                                            <h2 className={glass.sectionTitle}>New <span className="text-[#F4D03F]">Ticket</span></h2>
+                                            <p className={glass.microLabel}>Submit support request to Mission Control</p>
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Priority</Label>
-                                        <Select value={formData.priority} onValueChange={(val) => handleSelectChange('priority', val)}>
-                                            <SelectTrigger id="support-ticket-priority" aria-label="Priority" className={glass.select}>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent className={glass.selectContent}>
-                                                <SelectItem value="low" className="p-2 font-bold uppercase text-xs">Low Priority</SelectItem>
-                                                <SelectItem value="medium" className="p-2 font-bold uppercase text-xs">Standard Priority</SelectItem>
-                                                <SelectItem value="high" className="p-2 font-bold uppercase text-xs text-red-600">High / Urgent</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
+                                    <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <Label className={glass.microLabel}>Category</Label>
+                                                <Select value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
+                                                    <SelectTrigger id="support-ticket-category" aria-label="Category" className={glass.select}>
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className={glass.selectContent}>
+                                                        <SelectItem value="Hardware" className="p-2 font-bold uppercase text-xs">Hardware Calibration</SelectItem>
+                                                        <SelectItem value="Software" className="p-2 font-bold uppercase text-xs">Software / App Issue</SelectItem>
+                                                        <SelectItem value="Traceability" className="p-2 font-bold uppercase text-xs">Data / API Query</SelectItem>
+                                                        <SelectItem value="General" className="p-2 font-bold uppercase text-xs">General Inquiry</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="support-ticket-subject" className={glass.microLabel}>Subject</Label>
-                                    <Input
-                                        id="support-ticket-subject"
-                                        name="subject"
-                                        autoComplete="off"
-                                        value={formData.subject}
-                                        onChange={handleInputChange}
-                                        placeholder="Briefly describe the issue..."
-                                        className={glass.input}
-                                    />
-                                </div>
+                                            <div className="space-y-2">
+                                                <Label className={glass.microLabel}>Priority</Label>
+                                                <Select value={formData.priority} onValueChange={(val) => handleSelectChange('priority', val)}>
+                                                    <SelectTrigger id="support-ticket-priority" aria-label="Priority" className={glass.select}>
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className={glass.selectContent}>
+                                                        <SelectItem value="low" className="p-2 font-bold uppercase text-xs">Low Priority</SelectItem>
+                                                        <SelectItem value="medium" className="p-2 font-bold uppercase text-xs">Standard Priority</SelectItem>
+                                                        <SelectItem value="high" className="p-2 font-bold uppercase text-xs text-red-600">High / Urgent</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="support-ticket-description" className={glass.microLabel}>Description</Label>
-                                    <Textarea
-                                        id="support-ticket-description"
-                                        name="description"
-                                        autoComplete="off"
-                                        value={formData.description}
-                                        onChange={handleInputChange}
-                                        placeholder="Provide full details..."
-                                        className={cn(glass.input, "min-h-[140px] py-3 resize-none")}
-                                    />
-                                </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="support-ticket-subject" className={glass.microLabel}>Subject</Label>
+                                            <Input
+                                                id="support-ticket-subject"
+                                                name="subject"
+                                                autoComplete="off"
+                                                value={formData.subject}
+                                                onChange={handleInputChange}
+                                                placeholder="Briefly describe the issue..."
+                                                className={glass.input}
+                                            />
+                                        </div>
 
-                                <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-[#F4D03F]/10">
-                                    <div className="flex items-center gap-2 opacity-60">
-                                        <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
-                                        <p className={glass.microLabel}>Secure Channels Active</p>
-                                    </div>
-                                    <div className="flex gap-3 w-full md:w-auto">
-                                        <button type="button" onClick={() => setIsDialogOpen(false)} className={glass.btnSecondary}>
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className={glass.btnPrimary}
-                                        >
-                                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Dispatch Ticket"}
-                                        </button>
-                                    </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="support-ticket-description" className={glass.microLabel}>Description</Label>
+                                            <Textarea
+                                                id="support-ticket-description"
+                                                name="description"
+                                                autoComplete="off"
+                                                value={formData.description}
+                                                onChange={handleInputChange}
+                                                placeholder="Provide full details..."
+                                                className={cn(glass.input, "min-h-[140px] py-3 resize-none")}
+                                            />
+                                        </div>
+
+                                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-[#F4D03F]/10">
+                                            <div className="flex items-center gap-2 opacity-60">
+                                                <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
+                                                <p className={glass.microLabel}>Secure Channels Active</p>
+                                            </div>
+                                            <div className="flex gap-3 w-full md:w-auto">
+                                                <button type="button" onClick={() => setIsDialogOpen(false)} className={glass.btnSecondary}>
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    disabled={isSubmitting}
+                                                    className={glass.btnPrimary}
+                                                >
+                                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Dispatch Ticket"}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
-                            </form>
+                            </motion.div>
                         </div>
-                    </DialogContent>
-                </Dialog>
+                    )}
+                </AnimatePresence>
             </div>
         </motion.div>
     );

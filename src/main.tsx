@@ -87,18 +87,13 @@ const AnalyticsTracker = () => {
 
     useEffect(() => {
         try {
-            // Sanitize the path and search params by manually handling the search string
-            // if it's potentially malformed (e.g. contains a stray %)
-            let safeSearch = '';
-            try {
-                // Testing if the search string is valid
-                decodeURIComponent(location.search);
-                safeSearch = location.search;
-            } catch (e) {
-                console.warn('[Analytics] Malformed search params detected, sanitizing:', location.search);
-                // If malformed, we just strip the search or use a safe version
-                // A simple way is to use URLSearchParams which is more lenient or just skip it
-                safeSearch = '?malformed_params_hidden=true';
+            // Avoid decoding the search string directly because malformed `%`
+            // sequences can throw URIError in some browsers/extensions.
+            const hasMalformedPercentEncoding = /%(?![0-9A-Fa-f]{2})/.test(location.search);
+            const safeSearch = hasMalformedPercentEncoding ? '' : location.search;
+
+            if (hasMalformedPercentEncoding) {
+                console.warn('[Analytics] Malformed search params detected, omitting from page view:', location.search);
             }
 
             trackPageView(location.pathname + safeSearch);

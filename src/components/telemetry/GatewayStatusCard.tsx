@@ -18,18 +18,18 @@ interface GatewayProps {
 }
 
 const GatewayStatusCard: React.FC<GatewayProps> = ({
-    status = 'ONLINE',
-    battery = 84,
-    signal = -64,
-    lastPing = '2m ago',
-    gatewayId = 'GW-ALPHA-01'
+    status = 'OFFLINE',
+    battery,
+    signal,
+    lastPing,
+    gatewayId
 }) => {
     return (
         <div className={cn(glass.card, "p-0 overflow-hidden flex flex-col group w-full")}>
             <div className="p-4 border-b border-gray-100 flex flex-row items-center justify-between bg-gray-50/50">
                 <div className="flex items-center gap-2">
                     <Wifi className={cn("w-4 h-4", status === 'ONLINE' ? "text-[#1B9157]" : "text-red-500")} />
-                    <span className="text-xs font-bold text-[#1A1A1A]">{gatewayId}</span>
+                    <span className="text-xs font-bold text-[#1A1A1A]">{gatewayId || 'Unnamed gateway'}</span>
                 </div>
                 <div className={cn(
                     "w-2 h-2 rounded-full",
@@ -42,15 +42,21 @@ const GatewayStatusCard: React.FC<GatewayProps> = ({
                     <div className="p-3 bg-white border border-gray-100 rounded-xl flex flex-col justify-between h-20 shadow-sm transition-all hover:bg-gray-50">
                         <Battery className="w-4 h-4 text-gray-400" />
                         <div>
-                            <span className="text-lg font-bold text-[#1A1A1A] tracking-tight">{battery}%</span>
+                            <span className="text-lg font-bold text-[#1A1A1A] tracking-tight">
+                                {typeof battery === 'number' ? `${battery}%` : 'N/A'}
+                            </span>
                             <p className="text-[9px] font-bold uppercase text-gray-500 tracking-wider">BATTERY LEVEL</p>
                         </div>
                     </div>
                     <div className="p-3 bg-white border border-gray-100 rounded-xl flex flex-col justify-between h-20 shadow-sm transition-all hover:bg-gray-50">
                         <SignalHigh className="w-4 h-4 text-gray-400" />
                         <div className="flex items-baseline gap-1">
-                            <span className="text-lg font-bold text-[#1A1A1A] tracking-tight">{signal}</span>
-                            <span className="text-[10px] font-medium text-gray-400 leading-none">dBm</span>
+                            <span className="text-lg font-bold text-[#1A1A1A] tracking-tight">
+                                {typeof signal === 'number' ? signal : 'N/A'}
+                            </span>
+                            {typeof signal === 'number' && (
+                                <span className="text-[10px] font-medium text-gray-400 leading-none">dBm</span>
+                            )}
                         </div>
                         <p className="text-[9px] font-bold uppercase text-gray-500 tracking-wider mt-1">RSSI STRENGTH</p>
                     </div>
@@ -61,7 +67,7 @@ const GatewayStatusCard: React.FC<GatewayProps> = ({
                         <Clock className="w-3.5 h-3.5 text-gray-400" />
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">LAST PING</span>
                     </div>
-                    <span className="text-[10px] font-bold text-[#1A1A1A] uppercase">{lastPing}</span>
+                    <span className="text-[10px] font-bold text-[#1A1A1A] uppercase">{lastPing || 'Never'}</span>
                 </div>
 
                 <div className="flex items-center gap-2 transition-transform group-hover:translate-x-1">

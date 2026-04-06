@@ -15,11 +15,14 @@ import { beeyieldService, Hive, IoTDevice, Apiary } from '@/services/beeyieldSer
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHives, useDeleteHive, useUpdateHive, useApiaries } from '@/hooks/useHives';
 import { useHarvests } from '@/hooks/useHarvests';
+import { useSelectedApiary } from '@/hooks/useSelectedApiary';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
 import HiveFormModal from './HiveFormModal';
 import FlipCardHive from './FlipCardHive';
 import HiveDetailView from './HiveDetailView';
 import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import { glass, GlassStatCard } from './GlassTheme';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -90,6 +93,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
         const cached = localStorage.getItem(APIARIES_CACHE_KEY);
         return cached ? JSON.parse(cached) : [];
     });
+    const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
 
     React.useEffect(() => {
         if (hivesData) {
@@ -106,25 +110,32 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     }, [apiariesData]);
 
     const updateHiveMutation = useUpdateHive();
-    const [devices, setDevices] = React.useState<IoTDevice[]>(() => {
-        const cached = localStorage.getItem('beeyield_devices_cache_v1');
-        return cached ? JSON.parse(cached) : [];
-    });
+    const [devices, setDevices] = React.useState<IoTDevice[]>([]);
 
     React.useEffect(() => {
         const fetchDevices = async () => {
             try {
                 const devicesData = await beeyieldService.getDevices();
                 setDevices(devicesData);
-                localStorage.setItem('beeyield_devices_cache_v1', JSON.stringify(devicesData));
+                localStorage.removeItem('beeyield_devices_cache_v1');
             } catch (error) {
                 console.error("Failed to fetch devices", error);
+                setDevices([]);
+                localStorage.removeItem('beeyield_devices_cache_v1');
             }
         };
         fetchDevices();
     }, []);
 
     const isLoading = (hivesLoading || apiariesLoading) && hives.length === 0;
+    const weatherApiaryId = selectedPlace !== 'all' ? selectedPlace : (selectedApiaryId || apiaries[0]?.id || '');
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(weatherApiaryId || undefined);
+
+    React.useEffect(() => {
+        if (selectedPlace && selectedPlace !== 'all') {
+            setSelectedApiaryId(selectedPlace);
+        }
+    }, [selectedPlace, setSelectedApiaryId]);
 
     // Filtering
     const filteredHives = React.useMemo(() => {
@@ -314,6 +325,12 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 <GlassStatCard label="Active Alerts" value={stats.critical} icon={AlertCircle} index={2} color="text-red-500" />
                 <GlassStatCard label="Trends" value="—" icon={TrendingUp} index={3} color="text-[#1A1A1A]" />
             </div>
+
+            <WeatherTelemetryPanel
+                summary={weatherSummary}
+                isLoading={weatherLoading}
+                title="Hive weather telemetry"
+            />
 
             {/* ── Filter Bar ── */}
             <motion.div

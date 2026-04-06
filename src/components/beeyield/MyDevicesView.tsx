@@ -17,6 +17,9 @@ import { Label } from '@/components/ui/label';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { deviceKeys } from '@/hooks/useDevices';
 import { toast } from 'sonner';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import { useSelectedApiary } from '@/hooks/useSelectedApiary';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 interface MyDevicesViewProps {
     devices: IoTDevice[];
@@ -34,14 +37,15 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const [mutatingDeviceId, setMutatingDeviceId] = React.useState<string | null>(null);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('all');
+    const [sharedApiaryId, setSharedApiaryId] = useSelectedApiary(apiaries[0]?.id);
 
     React.useEffect(() => {
         setLocalDevices(initialDevices);
+        localStorage.removeItem('beeyield_devices_cache_v1');
     }, [initialDevices]);
 
     const commitDevices = React.useCallback((nextDevices: IoTDevice[]) => {
         setLocalDevices(nextDevices);
-        localStorage.setItem('beeyield_devices_cache_v1', JSON.stringify(nextDevices));
         queryClient.setQueryData(deviceKeys.list(), nextDevices);
     }, [queryClient]);
 
@@ -133,6 +137,19 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const oneDay = 24 * 60 * 60 * 1000;
     const measured24h = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay))).length;
     const offlineCount = localDevices.filter(d => !readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 3))).length;
+    const weatherApiaryId = React.useMemo(() => {
+        if (selectedApiaryId !== 'all') return selectedApiaryId;
+        const deviceApiary = filteredDevices.find((device) => device.linked_apiary_id || device.apiary_id);
+        return sharedApiaryId || deviceApiary?.linked_apiary_id || deviceApiary?.apiary_id || apiaries[0]?.id;
+    }, [apiaries, filteredDevices, selectedApiaryId, sharedApiaryId]);
+    const selectedApiaryName = weatherApiaryId ? apiaries.find((apiary) => apiary.id === weatherApiaryId)?.name : null;
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(weatherApiaryId);
+
+    React.useEffect(() => {
+        if (selectedApiaryId !== 'all') {
+            setSharedApiaryId(selectedApiaryId);
+        }
+    }, [selectedApiaryId, setSharedApiaryId]);
 
     return (
         <BeeYieldPageShell className={glass.page}>
@@ -169,6 +186,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 <GlassStatCard label="Offline" value={offlineCount} icon={Wifi} index={2} color="text-red-500" />
                 <GlassStatCard label="Low battery" value={localDevices.filter(d => d.battery_level < 20).length} icon={Battery} index={3} color="text-[#F4D03F]" />
             </div>
+
+            <WeatherTelemetryPanel
+                summary={weatherSummary}
+                isLoading={weatherLoading}
+                title={selectedApiaryName ? `${selectedApiaryName} device weather` : 'Device fleet weather'}
+                compact
+            />
 
             {/* Device Registry */}
             <div className={glass.section}>

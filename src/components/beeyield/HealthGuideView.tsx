@@ -7,6 +7,7 @@ import beeyieldService from '@/services/beeyieldService';
 import { BeeSpeciesGallery } from './BeeSpeciesGallery';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getGuideFallbackImage, getGuideImage } from '@/lib/beeGuideImages';
 
 const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) => void }> = ({ onTabChange }) => {
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
@@ -22,6 +23,9 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
             setLoading(false);
         });
     }, []);
+
+    const selectedItemImage = React.useMemo(() => getGuideImage(selectedItem), [selectedItem]);
+    const selectedItemFallbackImage = React.useMemo(() => getGuideFallbackImage(selectedItem), [selectedItem]);
 
     return (
         <BeeYieldPageShell className={glass.page}>
@@ -94,7 +98,7 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                                 <p className="text-sm font-bold text-[#1B9157]">
                                                     {activeTab === 'diseases' ? selectedItem.type : selectedItem.scientificName}
                                                 </p>
-                                                {activeTab === 'diseases' && selectedItem.cureStatus && (
+                                                {activeTab === 'diseases' && selectedItem.riskLevel && (
                                                     <span className="px-2 py-0.5 rounded-full bg-[#FFF9F0] text-[10px] font-black text-[#1A1A1A]/70 uppercase tracking-wider border border-[#F4D03F]/20">
                                                         {selectedItem.riskLevel}
                                                     </span>
@@ -108,14 +112,57 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-[#F4D03F]/10">
+                                    {selectedItemImage && (
+                                        <div className="pt-6 border-t border-[#F4D03F]/10">
+                                            <div className="relative overflow-hidden rounded-[2rem] border border-[#F4D03F]/15 bg-[#FFF9F0]">
+                                                <img
+                                                    src={selectedItemImage}
+                                                    alt={selectedItem.commonName || selectedItem.name}
+                                                    loading="lazy"
+                                                    referrerPolicy="no-referrer"
+                                                    onError={(event) => {
+                                                        const img = event.currentTarget;
+                                                        if (img.dataset.fallbackApplied) {
+                                                            img.src = '/placeholder.svg';
+                                                            return;
+                                                        }
+
+                                                        img.dataset.fallbackApplied = '1';
+                                                        img.src = selectedItemFallbackImage && img.src !== selectedItemFallbackImage
+                                                            ? selectedItemFallbackImage
+                                                            : '/placeholder.svg';
+                                                    }}
+                                                    className="h-72 w-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/55 via-transparent to-transparent" />
+                                                <div className="absolute left-5 bottom-5 right-5 flex items-end justify-between gap-4">
+                                                    <div>
+                                                        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/70">
+                                                            {activeTab === 'species' ? 'Live species photo' : 'Live health reference'}
+                                                        </p>
+                                                        <p className="text-lg font-black text-white tracking-tight">
+                                                            {selectedItem.commonName || selectedItem.name}
+                                                        </p>
+                                                    </div>
+                                                    <span className="rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#1A1A1A]">
+                                                        {activeTab === 'species' ? 'Exact photo' : 'Reference image'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className={cn(
+                                        "grid grid-cols-1 md:grid-cols-2 gap-8",
+                                        selectedItemImage ? "pt-2" : "pt-6 border-t border-[#F4D03F]/10",
+                                    )}>
                                         <div className="space-y-4">
                                             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                                 <div className="w-1 h-3 bg-[#F4D03F]" />
                                                 {activeTab === 'diseases' ? 'Causes & Signs' : 'Species Profile'}
                                             </h4>
                                             <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
-                                                {activeTab === 'diseases' ? selectedItem.causes : selectedItem.suitability}
+                                                {activeTab === 'diseases' ? selectedItem.causes : (selectedItem.suitability || selectedItem.description || 'No species profile is stored for this record yet.')}
                                             </p>
                                         </div>
                                         <div className="space-y-4">
@@ -124,7 +171,7 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                                 {activeTab === 'diseases' ? 'Treatment & Management' : 'Health & Management'}
                                             </h4>
                                             <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
-                                                {activeTab === 'diseases' ? selectedItem.treatment : selectedItem.healthProfile}
+                                                {activeTab === 'diseases' ? selectedItem.treatment : (selectedItem.healthProfile || selectedItem.notes || 'Health management notes are not available for this species yet.')}
                                             </p>
                                         </div>
                                     </div>
@@ -137,15 +184,17 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                                         <Stethoscope className="w-4 h-4 text-[#F4D03F]" />
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Detection</span>
                                                     </div>
-                                                    <p className="text-xs font-bold text-[#1A1A1A]/75 leading-relaxed">{selectedItem.detection}</p>
-                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/60 leading-relaxed">{selectedItem.cureStatus}</p>
+                                                    <p className="text-xs font-bold text-[#1A1A1A]/75 leading-relaxed">
+                                                        {selectedItem.detection || (selectedItem.symptoms || []).join(', ') || 'Detection notes are not stored for this record yet.'}
+                                                    </p>
+                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/60 leading-relaxed">{selectedItem.cureStatus || selectedItem.prevention}</p>
                                                 </div>
                                                 <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
                                                     <div className="flex items-center gap-2 text-[#1A1A1A]">
                                                         <Bug className="w-4 h-4 text-[#F4D03F]" />
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hosts & Spread</span>
                                                     </div>
-                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/65 leading-relaxed">{selectedItem.transmission}</p>
+                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/65 leading-relaxed">{selectedItem.transmission || selectedItem.prevention || 'Transmission notes are not stored for this record yet.'}</p>
                                                     <div className="flex flex-wrap gap-1">
                                                         {(selectedItem.hostSpecies || []).map((host: string) => (
                                                             <span key={host} className="px-2 py-1 rounded-lg bg-amber-50 text-[10px] font-bold text-amber-700">
@@ -160,7 +209,7 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Field Actions</span>
                                                     </div>
                                                     <div className="flex flex-wrap gap-1">
-                                                        {(selectedItem.responseSteps || []).map((step: string) => (
+                                                        {(selectedItem.responseSteps || selectedItem.symptoms || []).map((step: string) => (
                                                             <span key={step} className="px-2 py-1 rounded-lg bg-emerald-50 text-[10px] font-bold text-emerald-700">
                                                                 {step}
                                                             </span>
@@ -173,7 +222,7 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                                 <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Origin</span>
                                                     <p className="text-xs font-bold text-[#1A1A1A]/75">{selectedItem.location || 'Unknown'}</p>
-                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/60 leading-relaxed">{selectedItem.idealUse}</p>
+                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/60 leading-relaxed">{selectedItem.idealUse || selectedItem.suitability}</p>
                                                 </div>
                                                 <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Common Pressures</span>
@@ -211,7 +260,7 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
 
                                 {activeTab === 'species' && (
                                     <div className={cn(glass.card, "p-0 overflow-hidden rounded-[2.5rem]")}>
-                                        <BeeSpeciesGallery />
+                                        <BeeSpeciesGallery species={speciesData} />
                                     </div>
                                 )}
                             </motion.div>

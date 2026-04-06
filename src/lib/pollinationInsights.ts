@@ -94,12 +94,18 @@ export function resolveTargetFpa(
 ) {
   const normalized = normalizeCropName(forageType);
   const matchedRequirement = cropRequirements.find((crop) => normalizeCropName(crop.crop_name) === normalized);
-  if (matchedRequirement?.target_fpa) return Number(matchedRequirement.target_fpa);
+  const requirementFpa = Number(matchedRequirement?.target_fpa);
+  if (Number.isFinite(requirementFpa) && requirementFpa > 0) return requirementFpa;
 
   const matchedProfile = Object.entries(CROP_PROFILES).find(([name]) => normalizeCropName(name) === normalized);
-  if (matchedProfile) return matchedProfile[1].recommendedFPA;
+  const profileFpa = matchedProfile?.[1]?.recommendedFPA;
+  if (Number.isFinite(profileFpa) && profileFpa > 0) return profileFpa;
 
-  return CROP_PROFILES.Almonds.recommendedFPA;
+  const defaultProfile =
+    CROP_PROFILES.Maize
+    || Object.values(CROP_PROFILES).find((profile) => Number.isFinite(profile?.recommendedFPA) && profile.recommendedFPA > 0);
+
+  return defaultProfile?.recommendedFPA ?? 8;
 }
 
 export function filterHivesByApiary(hives: Hive[], apiaryId?: string | null) {

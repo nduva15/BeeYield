@@ -5,6 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { beeyieldService, Apiary, ApiaryCreateInput, Hive } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 // Query key factory for consistent key management
 export const apiaryKeys = {
@@ -28,12 +29,16 @@ export const hiveKeys = {
  * PRD: refetchInterval of 30 seconds for real-time dashboard updates
  */
 export function useApiaries() {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: apiaryKeys.lists(),
+        queryKey: [...apiaryKeys.lists(), userId],
         queryFn: async () => {
             const data = await beeyieldService.getApiaries();
             return data;
         },
+        enabled: !!userId,
         staleTime: 1000 * 30, // Consider data fresh for 30 seconds
         refetchInterval: 1000 * 30, // Background refetch every 30 seconds per PRD
         refetchOnWindowFocus: true,
@@ -45,8 +50,11 @@ export function useApiaries() {
  * Fetch a single apiary by ID with its hives
  */
 export function useApiary(id: string | null) {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: apiaryKeys.detail(id || ''),
+        queryKey: [...apiaryKeys.detail(id || ''), userId],
         queryFn: async () => {
             if (!id) return null;
             // First get the apiary from the list
@@ -58,7 +66,7 @@ export function useApiary(id: string | null) {
             const hives = await beeyieldService.getHives(id);
             return { ...apiary, hives };
         },
-        enabled: !!id,
+        enabled: !!id && !!userId,
         staleTime: 1000 * 30,
     });
 }
@@ -67,11 +75,15 @@ export function useApiary(id: string | null) {
  * Fetch hives for a specific apiary or all user hives
  */
 export function useHives(apiaryId?: string) {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: hiveKeys.list(apiaryId),
+        queryKey: [...hiveKeys.list(apiaryId), userId],
         queryFn: async () => {
             return await beeyieldService.getHives(apiaryId);
         },
+        enabled: !!userId,
         staleTime: 1000 * 30,
         refetchInterval: 1000 * 30, // Real-time hive status updates
     });

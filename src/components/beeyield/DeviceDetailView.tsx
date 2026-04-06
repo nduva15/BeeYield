@@ -11,6 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RefreshCw, ArrowLeft, Cpu, Activity, Battery, MapPin, Hexagon, Signal, Clock, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 interface DeviceDetailViewProps {
   deviceId: string;
@@ -68,6 +70,8 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
     const hiveId = device?.hive_id;
     return hiveId ? hives.find((h) => h.id === hiveId) || null : null;
   }, [hives, device]);
+  const weatherApiaryId = device?.linked_apiary_id || device?.apiary_id || apiary?.id;
+  const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(weatherApiaryId);
 
   React.useEffect(() => {
     if (!device || !editOpen) return;
@@ -334,6 +338,13 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
         </div>
 
         <div className="lg:col-span-8 space-y-6">
+          <WeatherTelemetryPanel
+            summary={weatherSummary}
+            isLoading={weatherLoading}
+            title={apiary?.name ? `${apiary.name} weather` : 'Linked apiary weather'}
+            compact
+          />
+
           <BeeYieldCard className="p-0 overflow-hidden">
             <div className="p-5 border-b border-white/20 bg-white/20 flex items-center justify-between">
               <div className="flex items-center gap-3">

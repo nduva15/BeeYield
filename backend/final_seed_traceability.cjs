@@ -1,111 +1,340 @@
+const fs = require('fs');
+const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
-const { v4: uuidv4 } = require('uuid');
+const { v5: uuidv5 } = require('uuid');
 
-const SUPABASE_URL = 'https://ezfccfypwmuvbpujkqrg.supabase.co';
-const SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Nzc2MDE3OCwiZXhwIjoyMDgzMzM2MTc4fQ.cUAMauYI-cqpPjy-OWUhXIc9viL4PpX87rniDjYTjLI';
+const SUPABASE_URL =
+  process.env.SUPABASE_URL ||
+  'https://ezfccfypwmuvbpujkqrg.supabase.co';
+const SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Nzc2MDE3OCwiZXhwIjoyMDgzMzM2MTc4fQ.cUAMauYI-cqpPjy-OWUhXIc9viL4PpX87rniDjYTjLI';
+const CANONICAL_DATA_PATH = path.join(
+  __dirname,
+  'data',
+  'canonical_traceability_records.txt'
+);
+
+const NAMESPACE = '7d119d09-7623-4171-a4e8-5716b4dbcf12';
+const CANONICAL_USER_EMAIL = 'timothynduva349@gmail.com';
+const CANONICAL_FARMER_PHONE = '0742004187';
+const CANONICAL_FARMER_NAME = 'Timothy Nduva';
+const CANONICAL_APIARY_NAME = 'BeeYield Canonical Traceability Apiary';
+const CANONICAL_LOCATION_NAME = 'Kibwezi Sanctuary';
+const CANONICAL_HIVE_CODE = 'N/A';
+const TRACE_SOURCE = 'seed_import';
+const DEVICE_TYPE = 'system_import';
+const PROCESSING_METHOD = 'Raw Cold Extraction';
+const PRODUCT_IDS = {
+  acacia: 'e8a9f7d2-4b2a-4a2a-8b2a-4a2a4a2a4a2a',
+  premium: 'f1b1a1a1-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+};
+
+const MONTHS = {
+  Jan: '01',
+  Feb: '02',
+  Mar: '03',
+  Apr: '04',
+  May: '05',
+  Jun: '06',
+  Jul: '07',
+  Aug: '08',
+  Sep: '09',
+  Oct: '10',
+  Nov: '11',
+  Dec: '12',
+};
+
+if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+  throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.');
+}
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-const P_ACACIA_ID = "e8a9f7d2-4b2a-4a2a-8b2a-4a2a4a2a4a2a";
-const P_PREMIUM_ID = "f1b1a1a1-1b1b-1b1b-1b1b-1b1b1b1b1b1b";
-
-async function main() {
-    console.log('Seeding Comprehensive Traceability Data...');
-
-    // 1. Farmer
-    const farmerId = uuidv4();
-    const { data: farmer, error: fError } = await supabase.from('farmers').upsert({
-        id: farmerId,
-        name: "Timothy Nduva",
-        phone: "0742004187",
-        experience_years: 15,
-        story: "Timothy Nduva is a master beekeeper in Kibwezi, Makueni. He specializes in organic Acacia honey production and sustainable beekeeping practices.",
-        location_name: "Kibwezi Sanctuary",
-        county: "Makueni",
-        region: "Eastern",
-        latitude: -2.41,
-        longitude: 37.97,
-        status: "active"
-    }).select().single();
-    if (fError) { console.error('Farmer Error:', fError); return; }
-    console.log('Farmer seeded:', farmer.name);
-
-    // 2. Apiary
-    const apiaryId = uuidv4();
-    const { data: apiary, error: aError } = await supabase.from('apiaries').upsert({
-        id: apiaryId,
-        name: "Kibwezi Savanna Apiary",
-        location_name: "Kibwezi West",
-        county: "Makueni",
-        region: "Eastern",
-        latitude: -2.412,
-        longitude: 37.975,
-        farmer_id: farmerId,
-        status: "active",
-        flora_types: ["Acacia Tortilis", "Desert Date", "Wildflowers"]
-    }).select().single();
-    if (aError) { console.error('Apiary Error:', aError); return; }
-    console.log('Apiary seeded:', apiary.name);
-
-    // 3. Hives
-    const hive1Id = uuidv4();
-    const hive2Id = uuidv4();
-    const { error: hError } = await supabase.from('hives').upsert([
-        { id: hive1Id, hive_code: "KIB-H-001", apiary_id: apiaryId, type: "Langstroth", installation_date: "2020-06-01", status: "active" },
-        { id: hive2Id, hive_code: "KIB-H-002", apiary_id: apiaryId, type: "Langstroth", installation_date: "2020-07-15", status: "active" }
-    ]);
-    if (hError) console.error('Hives Error:', hError);
-    console.log('Hives seeded.');
-
-    // 4. Harvests & Batches
-    const types = ["BeeYield Acacia", "BeeYield Premium Acacia"];
-    const batchCodes = ["BY-AC-24-001", "BY-AC-24-002", "BY-PR-24-001", "BY-PR-24-002"];
-    
-    for (let i = 0; i < batchCodes.length; i++) {
-        const type = i < 2 ? types[0] : types[1];
-        const batchCode = batchCodes[i];
-        const harvestDate = i % 2 === 0 ? "2024-01-15" : "2024-02-10";
-        
-        // Record Harvest
-        const harvestId = uuidv4();
-        const { error: hvError } = await supabase.from('harvests').upsert({
-            id: harvestId,
-            hive_id: i % 2 === 0 ? hive1Id : hive2Id,
-            farmer_id: farmerId,
-            harvest_date: harvestDate,
-            quantity_kg: 25.5,
-            quality_score: 95 + i,
-            notes: `Excellent ${type} harvest with high clarity.`,
-            honey_type: type,
-            batch_code: batchCode
-        });
-        if (hvError) console.error(`Harvest Error (${batchCode}):`, hvError);
-
-        // Create Honey Batch
-        const { error: bError } = await supabase.from('honey_batches').upsert({
-            batch_code: batchCode,
-            honey_type: type,
-            harvest_date: harvestDate,
-            quantity_kg: 25.5,
-            processing_method: "Raw Cold Extraction",
-            farmer_name: farmer.name,
-            apiary_name: apiary.name,
-            location_county: apiary.county,
-            quality_grade: "A",
-            status: "verified"
-        });
-        if (bError) console.error(`Batch Error (${batchCode}):`, bError);
-        
-        console.log(`Seeded Batch: ${batchCode} (${type})`);
-    }
-
-    // 5. Update Product Variants to link to these batches
-    // Acacia variants
-    await supabase.from('product_variants').update({ batch_code: "BY-AC-24-001" }).eq('product_id', P_ACACIA_ID);
-    // Premium variants
-    await supabase.from('product_variants').update({ batch_code: "BY-PR-24-001" }).eq('product_id', P_PREMIUM_ID);
-
-    console.log('All traceability data seeded and linked to shop products.');
+function stableId(scope, value) {
+  return uuidv5(`${scope}:${value}`, NAMESPACE);
 }
 
-main().catch(console.error);
+function parseHumanDate(value) {
+  const match = String(value || '')
+    .trim()
+    .match(/^([A-Za-z]{3})\s+(\d{1,2}),\s+(\d{4})$/);
+
+  if (!match) {
+    throw new Error(`Unsupported date format: ${value}`);
+  }
+
+  const [, monthName, day, year] = match;
+  const month = MONTHS[monthName];
+  if (!month) {
+    throw new Error(`Unsupported month: ${monthName}`);
+  }
+
+  return `${year}-${month}-${day.padStart(2, '0')}`;
+}
+
+function parseQuantityKg(value) {
+  const numeric = Number.parseFloat(String(value || '').replace(/[^\d.]/g, ''));
+  if (!Number.isFinite(numeric)) {
+    throw new Error(`Could not parse quantity from "${value}"`);
+  }
+  return numeric;
+}
+
+function normalizeGrade(value) {
+  const cleaned = String(value || '').trim();
+  const match = cleaned.match(/^GRADE\s+(.+)$/i);
+  return (match ? match[1] : cleaned).trim() || 'A';
+}
+
+function parseCanonicalRecords(raw) {
+  const lines = raw
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const records = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const recordLine = lines[index];
+    if (!/^(BEE|BY)-/.test(recordLine)) {
+      continue;
+    }
+
+    const cols = recordLine.split(/\t+/).map((part) => part.trim());
+    if (cols.length < 6) {
+      throw new Error(`Malformed canonical record line: ${recordLine}`);
+    }
+
+    const blockchainHash = lines[index + 1] && lines[index + 1].startsWith('0x')
+      ? lines[++index].trim()
+      : '';
+    const normalizedHash = /^0x\.{3,}$/i.test(blockchainHash)
+      ? null
+      : (blockchainHash || null);
+
+    const [batchCode, hiveCode, harvestDate, honeyType, netKg, grade] = cols;
+
+    records.push({
+      batch_code: batchCode,
+      hive_code: hiveCode || CANONICAL_HIVE_CODE,
+      harvest_date: parseHumanDate(harvestDate),
+      honey_type: honeyType,
+      quantity_kg: parseQuantityKg(netKg),
+      grade: normalizeGrade(grade),
+      blockchain_hash: normalizedHash,
+    });
+  }
+
+  return records;
+}
+
+function buildSeedRows(records, ids, userId) {
+  const harvestRows = [];
+  const batchRows = [];
+  const traceRows = [];
+
+  for (const record of records) {
+    const harvestId = stableId('harvest', record.batch_code);
+    const batchId = stableId('batch', record.batch_code);
+    const traceId = stableId('trace', record.batch_code);
+    const traceCreatedAt = `${record.harvest_date}T08:00:00.000Z`;
+    const isPremium = /premium/i.test(record.honey_type);
+    const status = record.blockchain_hash ? 'verified' : 'recorded';
+
+    harvestRows.push({
+      id: harvestId,
+      user_id: userId,
+      hive_id: ids.hiveId,
+      apiary_id: ids.apiaryId,
+      farmer_id: ids.farmerId,
+      date: record.harvest_date,
+      weight_kg: record.quantity_kg,
+      quantity_left_for_bees_kg: 0,
+      honey_type: record.honey_type,
+      batch_code: record.batch_code,
+      color_grade: record.grade,
+      quality: `Grade ${record.grade}`,
+      is_verified: Boolean(record.blockchain_hash),
+      blockchain_hash: record.blockchain_hash,
+      notes: 'Canonical BeeYield traceability import',
+      extraction_method: PROCESSING_METHOD,
+      floral_source: 'Acacia',
+      weather_conditions: 'Captured from canonical record import',
+      created_at: traceCreatedAt,
+      updated_at: traceCreatedAt,
+      farmer_name: CANONICAL_FARMER_NAME,
+      batch_id: record.batch_code,
+      florage_type: isPremium ? 'Premium Acacia' : 'Acacia',
+      qr_code_url: `/traceability?code=${encodeURIComponent(record.batch_code)}`,
+    });
+
+    batchRows.push({
+      id: batchId,
+      batch_code: record.batch_code,
+      honey_type: record.honey_type,
+      harvest_date: record.harvest_date,
+      quantity_kg: record.quantity_kg,
+      processing_method: PROCESSING_METHOD,
+      block_hash: record.blockchain_hash,
+      farmer_name: CANONICAL_FARMER_NAME,
+      farmer_phone: CANONICAL_FARMER_PHONE,
+      beekeeper_name: CANONICAL_FARMER_NAME,
+      beekeeper_id: ids.farmerId,
+      apiary_name: CANONICAL_APIARY_NAME,
+      location_county: 'Makueni',
+      location_region: 'Eastern',
+      latitude: -2.41,
+      longitude: 37.97,
+      quality_grade: record.grade,
+      color_grade: record.grade,
+      status,
+      created_at: traceCreatedAt,
+    });
+
+    traceRows.push({
+      id: traceId,
+      batch_code: record.batch_code,
+      batch_id: harvestId,
+      honey_type: record.honey_type,
+      farmer_name: CANONICAL_FARMER_NAME,
+      apiary_name: CANONICAL_APIARY_NAME,
+      traced_by_email: CANONICAL_USER_EMAIL,
+      traced_by_name: CANONICAL_FARMER_NAME,
+      trace_source: TRACE_SOURCE,
+      device_type: DEVICE_TYPE,
+      device_info: 'backend/final_seed_traceability.cjs',
+      is_authenticated: true,
+      created_at: traceCreatedAt,
+    });
+  }
+
+  return { harvestRows, batchRows, traceRows };
+}
+
+async function upsertChunked(table, rows, options = {}, chunkSize = 100) {
+  for (let start = 0; start < rows.length; start += chunkSize) {
+    const chunk = rows.slice(start, start + chunkSize);
+    const { error } = await supabase.from(table).upsert(chunk, options);
+    if (error) {
+      throw new Error(`Failed to upsert ${table} rows ${start}-${start + chunk.length - 1}: ${error.message}`);
+    }
+  }
+}
+
+async function ensureCanonicalEntities(userId) {
+  const farmerId = stableId('farmer', CANONICAL_FARMER_NAME);
+  const apiaryId = stableId('apiary', CANONICAL_APIARY_NAME);
+  const hiveId = stableId('hive', `${CANONICAL_APIARY_NAME}:${CANONICAL_HIVE_CODE}`);
+
+  await upsertChunked('farmers', [
+    {
+      id: farmerId,
+      farmer_id: farmerId,
+      name: CANONICAL_FARMER_NAME,
+      phone: CANONICAL_FARMER_PHONE,
+      experience_years: 15,
+      story: 'Canonical BeeYield traceability farmer record used to preserve the historical batch ledger.',
+      location_name: CANONICAL_LOCATION_NAME,
+      county: 'Makueni',
+      region: 'Eastern',
+      latitude: -2.41,
+      longitude: 37.97,
+      status: 'active',
+    },
+  ], { onConflict: 'id' });
+
+  await upsertChunked('apiaries', [
+    {
+      id: apiaryId,
+      name: CANONICAL_APIARY_NAME,
+      location_name: CANONICAL_LOCATION_NAME,
+      county: 'Makueni',
+      region: 'Eastern',
+      latitude: -2.41,
+      longitude: 37.97,
+      farmer_id: farmerId,
+      status: 'active',
+    },
+  ], { onConflict: 'id' });
+
+  await upsertChunked('hives', [
+    {
+      id: hiveId,
+      hive_code: CANONICAL_HIVE_CODE,
+      apiary_id: apiaryId,
+      type: 'Traceability Placeholder',
+      installation_date: '2020-01-01',
+      status: 'active',
+      notes: 'Used to anchor historical and retail traceability records where the source hive was not captured.',
+    },
+  ], { onConflict: 'id' });
+
+  return { farmerId, apiaryId, hiveId };
+}
+
+async function resolveCanonicalUserId() {
+  const { data, error } = await supabase.auth.admin.listUsers();
+  if (error) {
+    throw new Error(`Failed to list users: ${error.message}`);
+  }
+
+  const user = data.users.find((entry) => entry.email === CANONICAL_USER_EMAIL);
+  if (!user) {
+    throw new Error(`User ${CANONICAL_USER_EMAIL} not found.`);
+  }
+
+  return user.id;
+}
+
+async function linkShopVariants() {
+  const updates = [
+    { productId: PRODUCT_IDS.acacia, batchCode: 'BY-AC-24-002' },
+    { productId: PRODUCT_IDS.premium, batchCode: 'BY-PR-24-002' },
+  ];
+
+  for (const update of updates) {
+    const { error } = await supabase
+      .from('product_variants')
+      .update({ batch_code: update.batchCode })
+      .eq('product_id', update.productId);
+
+    if (error) {
+      throw new Error(`Failed to link product ${update.productId} to ${update.batchCode}: ${error.message}`);
+    }
+  }
+}
+
+async function main() {
+  const dryRun = process.argv.includes('--dry-run');
+  const raw = fs.readFileSync(CANONICAL_DATA_PATH, 'utf8');
+  const records = parseCanonicalRecords(raw);
+
+  if (records.length === 0) {
+    throw new Error('No canonical traceability records were parsed.');
+  }
+
+  console.log(`Parsed ${records.length} canonical traceability records.`);
+  console.log(`First batch: ${records[0].batch_code}`);
+  console.log(`Last batch: ${records[records.length - 1].batch_code}`);
+
+  if (dryRun) {
+    return;
+  }
+
+  const userId = await resolveCanonicalUserId();
+  const ids = await ensureCanonicalEntities(userId);
+  const { harvestRows, batchRows, traceRows } = buildSeedRows(records, ids, userId);
+
+  await upsertChunked('harvests', harvestRows, { onConflict: 'id' });
+  await upsertChunked('honey_batches', batchRows, { onConflict: 'id' });
+  await upsertChunked('tracing_history', traceRows, { onConflict: 'id' });
+  await linkShopVariants();
+
+  console.log('Canonical harvest, batch, and tracing history records have been seeded.');
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

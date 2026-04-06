@@ -36,7 +36,7 @@ async def get_meter(meter_id: str):
 async def create_meter(body: schemas.MeterCreate):
     """Create/enroll a new meter device."""
     try:
-        return await MeterService.create_meter(body.model_dump())
+        return await MeterService.create_meter(body.model_dump(mode="json", exclude_none=True))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -44,7 +44,7 @@ async def create_meter(body: schemas.MeterCreate):
 async def update_meter(meter_id: str, body: schemas.MeterUpdate):
     """Update a meter device."""
     try:
-        updated = await MeterService.update_meter(meter_id, body.model_dump(exclude_unset=True))
+        updated = await MeterService.update_meter(meter_id, body.model_dump(mode="json", exclude_unset=True))
         if not updated:
             raise HTTPException(status_code=404, detail="Meter not found")
         return updated
@@ -60,6 +60,14 @@ async def delete_meter(meter_id: str):
     if not ok:
         raise HTTPException(status_code=404, detail="Meter not found or deletion failed")
     return None
+
+@router.post("/readings", response_model=schemas.Reading)
+async def create_meter_reading(body: schemas.ReadingCreate):
+    """Create a meter reading and refresh the device snapshot."""
+    try:
+        return await MeterService.create_reading(body.model_dump(mode="json", exclude_none=True))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/readings/{meter_id}", response_model=List[schemas.Reading])
 async def get_meter_readings(meter_id: str, limit: int = 50):

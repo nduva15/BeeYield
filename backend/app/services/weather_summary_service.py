@@ -225,7 +225,7 @@ async def fetch_provider_weather(latitude: float, longitude: float) -> Optional[
         "latitude": latitude,
         "longitude": longitude,
         "timezone": "auto",
-        "forecast_days": 2,
+        "forecast_days": 7,
         "current": ",".join(
             [
                 "temperature_2m",
@@ -263,7 +263,7 @@ async def fetch_provider_weather(latitude: float, longitude: float) -> Optional[
         "latitude": latitude,
         "longitude": longitude,
         "timezone": "auto",
-        "forecast_days": 2,
+        "forecast_days": 7,
         "hourly": "us_aqi",
     }
 
@@ -302,7 +302,7 @@ async def fetch_provider_weather(latitude: float, longitude: float) -> Optional[
 
     hourly_forecast: list[dict[str, Any]] = []
     hourly_times = hourly.get("time") or []
-    for index, timestamp in enumerate(hourly_times[:12]):
+    for index, timestamp in enumerate(hourly_times[:168]):
         hourly_forecast.append(
             {
                 "timestamp": _to_iso(timestamp),

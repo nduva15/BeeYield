@@ -85,6 +85,7 @@ release/
 *.py
 !backend/main.py
 !backend/app/**/*.py
+!supabase/migrations/20260406183000_resilient_auth_profile_sync.sql
 !*.config.*
 
 # Internal Logs and Debugging

@@ -1,17 +1,20 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutGrid, MapPin, Hexagon, Hand, User, Mail, ShieldCheck, Calendar, Activity, ClipboardList, HelpCircle, FileBarChart, Cpu, Puzzle, Database, ArrowRight, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
+import { LayoutGrid, MapPin, Hexagon, Hand, Mail, ShieldCheck, Calendar, Activity, ClipboardList, HelpCircle, FileBarChart, Cpu, Puzzle, Database, ArrowRight, RefreshCw, Binary, Scale, CloudSun, Droplets, Wind, Thermometer, Sunrise } from 'lucide-react';
 import { glass, PageHeader, GlassModal } from './GlassTheme';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useApiaries } from '@/hooks/useHives';
 import { useHives } from '@/hooks/useHives';
-import { useHarvests, useUpdateHarvest, useDeleteHarvest } from '@/hooks/useHarvests';
-import type { Apiary, Hive, Harvest, IoTDevice, SensorReading } from '@/services/beeyieldService';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import { useSelectedApiary } from '@/hooks/useSelectedApiary';
+import { useHarvests, useBatches, useUpdateHarvest, useDeleteHarvest } from '@/hooks/useHarvests';
+import type { Apiary, BatchView, Hive, Harvest, IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 interface DashboardHomeViewProps {
     devices: IoTDevice[];
@@ -19,6 +22,8 @@ interface DashboardHomeViewProps {
     apiaries: Apiary[];
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
+
+const DEG = '\u00B0';
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
     return (
@@ -35,10 +40,15 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const apiariesQuery = useApiaries();
     const hivesQuery = useHives();
     const harvestsQuery = useHarvests();
+    const batchesQuery = useBatches({ limit: 50 });
 
     const apiaries = apiariesQuery.data || [];
     const hives = hivesQuery.data || [];
     const harvests = harvestsQuery.data || [];
+    const batches = batchesQuery.data || [];
+    const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
+    const primaryApiary = apiaries.find((apiary) => apiary.id === selectedApiaryId) || apiaries[0] || null;
+    const { data: weatherSummary, isLoading: isWeatherLoading } = useApiaryWeatherSummary(primaryApiary?.id);
     const { mutate: updateHarvest, isPending: isUpdating } = useUpdateHarvest();
     const { mutate: deleteHarvest, isPending: isDeleting } = useDeleteHarvest();
     const [isEditing, setIsEditing] = React.useState(false);
@@ -81,6 +91,87 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const recentHarvests = [...harvests]
         .sort((a: any, b: any) => new Date(b.harvest_date).getTime() - new Date(a.harvest_date).getTime())
         .slice(0, 8);
+
+    const recentBatches = [...batches]
+        .sort((a, b) => new Date(b.harvest_date || 0).getTime() - new Date(a.harvest_date || 0).getTime())
+        .slice(0, 8);
+
+    const productionSummary = React.useMemo(() => {
+        const totalHarvestedKg = harvests.reduce((sum, harvest) => sum + (harvest.quantity_kg || 0), 0);
+        const leftForBeesKg = harvests.reduce((sum, harvest) => sum + (harvest.quantity_left_for_bees_kg || 0), 0);
+        const verifiedBatches = batches.filter(batch => batch.verification_status === 'verified' || batch.blockchain_verified).length;
+
+        return {
+            totalHarvestedKg,
+            leftForBeesKg,
+            verifiedBatches,
+        };
+    }, [batches, harvests]);
+
+    const weatherCurrent = weatherSummary?.current;
+    const weatherDaily = weatherSummary?.daily_summary;
+    const linkedWeatherDevices = weatherSummary?.linked_device_meta?.length || 0;
+
+    const weatherReadiness = React.useMemo(() => {
+        const temperature = weatherCurrent?.temperature_c;
+        const wind = weatherCurrent?.wind_speed_kmh;
+        const humidity = weatherCurrent?.humidity_pct;
+
+        if (typeof temperature === 'number' && temperature < 10) {
+            return {
+                label: 'Hold',
+                tone: 'border-[#f3c4be] bg-[#fff1ef] text-[#b45309]',
+                detail: 'Flight activity may stay grounded until temperatures recover.',
+            };
+        }
+
+        if ((typeof wind === 'number' && wind > 22) || (typeof humidity === 'number' && humidity > 88)) {
+            return {
+                label: 'Watch',
+                tone: 'border-[#f4df9b] bg-[#fff7de] text-[#a16207]',
+                detail: 'Telemetry suggests moderate stress for foraging routes.',
+            };
+        }
+
+        return {
+            label: 'Ready',
+            tone: 'border-[#cde7cf] bg-[#eefaf0] text-[#166534]',
+            detail: 'Conditions are supportive for inspections and active forage windows.',
+        };
+    }, [weatherCurrent?.humidity_pct, weatherCurrent?.temperature_c, weatherCurrent?.wind_speed_kmh]);
+
+    const weatherHighlights = [
+        {
+            label: 'Humidity',
+            value: typeof weatherCurrent?.humidity_pct === 'number' ? `${Math.round(weatherCurrent.humidity_pct)}%` : '--',
+            icon: Droplets,
+            accent: 'text-sky-600 bg-sky-50 border-sky-100',
+            detail: 'Relative moisture',
+        },
+        {
+            label: 'Wind',
+            value: typeof weatherCurrent?.wind_speed_kmh === 'number' ? `${weatherCurrent.wind_speed_kmh.toFixed(1)} km/h` : '--',
+            icon: Wind,
+            accent: 'text-teal-700 bg-teal-50 border-teal-100',
+            detail: weatherCurrent?.wind_direction || 'Direction pending',
+        },
+        {
+            label: 'Feels like',
+            value: typeof weatherCurrent?.feels_like_c === 'number' ? `${Math.round(weatherCurrent.feels_like_c)}${DEG}` : '--',
+            icon: Thermometer,
+            accent: 'text-orange-600 bg-orange-50 border-orange-100',
+            detail: 'Ambient perception',
+        },
+        {
+            label: 'Sunrise',
+            value: weatherCurrent?.sunrise_at
+                ? new Date(weatherCurrent.sunrise_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : '--',
+            icon: Sunrise,
+            accent: 'text-amber-600 bg-amber-50 border-amber-100',
+            detail: weatherDaily?.condition || 'Daily outlook',
+        },
+    ];
 
     return (
         <motion.div
@@ -191,6 +282,164 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     </div>
                 </div>
 
+                <div className="lg:col-span-12">
+                    <div className={cn(glass.section, "overflow-hidden")}>
+                        <div className="border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,249,240,0.96),rgba(249,247,242,0.98))] px-5 py-5 md:px-6">
+                            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+                                <div className="space-y-5">
+                                    <div className="flex flex-wrap items-start justify-between gap-4">
+                                        <div className="space-y-2">
+                                            <div className="inline-flex items-center gap-2 rounded-full border border-[#F4D03F]/20 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
+                                                <CloudSun className="h-3.5 w-3.5 text-[#F4D03F]" />
+                                                Home weather
+                                            </div>
+                                            <div>
+                                                <h3 className="text-2xl font-black tracking-tight text-[#1A1A1A]">
+                                                    {primaryApiary ? `${primaryApiary.name} forecast window` : 'Apiary weather overview'}
+                                                </h3>
+                                                <p className="mt-1 text-sm text-gray-500">
+                                                    Keep the home dashboard focused on what the bees can do right now.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className={cn("rounded-2xl border px-3 py-2 text-xs font-black uppercase tracking-[0.18em]", weatherReadiness.tone)}>
+                                            {weatherReadiness.label}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-4 md:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]">
+                                        <div className="rounded-[24px] border border-[#F4D03F]/15 bg-white/75 p-4">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Current field conditions</p>
+                                                    <div className="mt-3 flex items-end gap-3">
+                                                        <p className="text-5xl font-black tracking-tight text-[#1A1A1A]">
+                                                            {typeof weatherCurrent?.temperature_c === 'number' ? `${Math.round(weatherCurrent.temperature_c)}${DEG}` : `--${DEG}`}
+                                                        </p>
+                                                        <div className="pb-1">
+                                                            <p className="text-sm font-black text-[#1A1A1A]">
+                                                                {weatherCurrent?.condition || 'Condition pending'}
+                                                            </p>
+                                                            <p className="text-xs font-semibold text-gray-500">
+                                                                {primaryApiary?.location_name || 'Location not set'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F4D03F]/10 p-3 text-[#8a6a00]">
+                                                    <CloudSun className="h-5 w-5" />
+                                                </div>
+                                            </div>
+                                            <p className="mt-4 text-sm font-semibold text-gray-600">
+                                                {weatherReadiness.detail}
+                                            </p>
+                                        </div>
+
+                                        <div className="rounded-[24px] border border-[#F4D03F]/15 bg-white/75 p-4">
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Active apiary</p>
+                                                    <p className="mt-1 text-sm font-bold text-[#1A1A1A]">
+                                                        {primaryApiary?.name || 'Select an apiary'}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onTabChange('flight-map')}
+                                                    className={cn(glass.btnSecondary, "h-9 px-3 text-[10px]")}
+                                                >
+                                                    <ArrowRight className="h-3.5 w-3.5 text-[#F4D03F]" />
+                                                    Flight map
+                                                </button>
+                                            </div>
+
+                                            <div className="mt-4">
+                                                <Select value={selectedApiaryId || primaryApiary?.id || ''} onValueChange={setSelectedApiaryId}>
+                                                    <SelectTrigger className={cn(glass.select, "h-11 bg-white")}>
+                                                        <SelectValue placeholder="Select apiary" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className={glass.selectContent}>
+                                                        {apiaries.map((apiary) => (
+                                                            <SelectItem key={apiary.id} value={apiary.id} className="text-xs font-semibold">
+                                                                {apiary.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            <div className="mt-4 grid grid-cols-2 gap-3">
+                                                <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-3">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Linked devices</p>
+                                                    <p className="mt-2 text-lg font-black text-[#1A1A1A]">{linkedWeatherDevices}</p>
+                                                </div>
+                                                <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-3">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Observed</p>
+                                                    <p className="mt-2 text-lg font-black text-[#1A1A1A]">
+                                                        {weatherCurrent?.last_observed_at
+                                                            ? new Date(weatherCurrent.last_observed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                                            : '--'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
+                                    {weatherHighlights.map((item) => (
+                                        <div key={item.label} className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">{item.label}</p>
+                                                    <p className="mt-2 text-2xl font-black tracking-tight text-[#1A1A1A]">{item.value}</p>
+                                                    <p className="mt-1 text-[11px] font-semibold text-gray-500">{item.detail}</p>
+                                                </div>
+                                                <div className={cn("rounded-2xl border p-3", item.accent)}>
+                                                    <item.icon className="h-4 w-4" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-5 md:p-6">
+                            <WeatherTelemetryPanel
+                                summary={weatherSummary}
+                                isLoading={isWeatherLoading}
+                                compact
+                                title={primaryApiary ? `${primaryApiary.name} weather telemetry` : 'Apiary weather telemetry'}
+                                className="border-0 bg-transparent p-0 shadow-none"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="lg:col-span-12">
+                    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+                        {[
+                            { label: 'Apiaries', value: apiaries.length, icon: MapPin, hint: 'Linked locations' },
+                            { label: 'Hives', value: hives.length, icon: Hexagon, hint: 'Active inventory' },
+                            { label: 'Harvested', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${productionSummary.leftForBeesKg.toFixed(1)} KG left for bees` },
+                            { label: 'Batches', value: batches.length, icon: Binary, hint: `${productionSummary.verifiedBatches} blockchain-verified` },
+                        ].map((card) => (
+                            <div key={card.label} className={cn(glass.section, "p-5 bg-white/60")}>
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/10 flex items-center justify-center">
+                                        <card.icon className="w-5 h-5 text-[#F4D03F]" />
+                                    </div>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">{card.label}</span>
+                                </div>
+                                <div className="text-2xl font-black tracking-tight text-[#1A1A1A]">{card.value}</div>
+                                <p className="text-[10px] text-gray-500 mt-1">{card.hint}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "overflow-hidden")}>
                         <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
@@ -255,6 +504,57 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate group-hover:text-[#F4D03F] transition-colors">{h.hive_code}</div>
                                         <div className="text-[10px] text-gray-500 truncate">{h.status || 'Active'}</div>
                                     </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="lg:col-span-4">
+                    <div className={cn(glass.section, "overflow-hidden")}>
+                        <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
+                            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onTabChange('harvests')}>
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 group-hover:bg-[#F4D03F]/20 transition-all">
+                                    <Binary className="w-4 h-4 text-[#F4D03F]" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-semibold text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors">Traceability Batches</h3>
+                                    <p className="text-[11px] text-gray-500">{batches.length} records</p>
+                                </div>
+                            </div>
+                            <button onClick={() => onTabChange('harvests')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px]")}>
+                                Open
+                            </button>
+                        </div>
+                        <div className="p-4 space-y-2">
+                            {batchesQuery.isLoading ? (
+                                <div className="text-[11px] text-gray-500">Loading…</div>
+                            ) : recentBatches.length === 0 ? (
+                                <div className="text-[11px] text-gray-500">No batches yet.</div>
+                            ) : (
+                                recentBatches.map((batch: BatchView) => (
+                                    <button
+                                        key={batch.id}
+                                        onClick={() => onTabChange('harvests')}
+                                        className="w-full text-left bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-[#F4D03F]/5 transition-all active:scale-[0.98] group"
+                                    >
+                                        <div className="min-w-0">
+                                            <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate group-hover:text-[#F4D03F] transition-colors">
+                                                {batch.batch_code}
+                                            </div>
+                                            <div className="text-[10px] text-gray-500 truncate">
+                                                {batch.apiary_name || batch.apiary?.name || batch.hive?.hive_code || 'Traceability record'}
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                                            <div className="text-[10px] font-black tabular-nums text-[#1A1A1A]">
+                                                {(batch.quantity_kg ?? 0).toFixed(1)} kg
+                                            </div>
+                                            <div className="text-[10px] text-gray-500">
+                                                {batch.verification_status || batch.completeness?.status || 'pending review'}
+                                            </div>
+                                        </div>
+                                    </button>
                                 ))
                             )}
                         </div>

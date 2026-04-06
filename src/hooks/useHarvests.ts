@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { beeyieldService, Harvest, HarvestCreateInput } from '@/services/beeyieldService';
+import { beeyieldService, BatchView, Harvest, HarvestCreateInput } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 export const harvestKeys = {
     all: ['harvests'] as const,
@@ -11,13 +12,41 @@ export const harvestKeys = {
     summary: () => [...harvestKeys.all, 'summary'] as const,
 };
 
+export const batchKeys = {
+    all: ['batches'] as const,
+    lists: () => [...batchKeys.all, 'list'] as const,
+    list: (filters?: any) => [...batchKeys.lists(), { filters }] as const,
+};
+
 export function useHarvests(filters?: any) {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: harvestKeys.list(filters),
+        queryKey: [...harvestKeys.list(filters), userId],
         queryFn: async () => {
             return await beeyieldService.getHarvests(filters);
         },
+        enabled: !!userId,
         staleTime: 1000 * 60 * 5, // 5 minutes
+        refetchInterval: 1000 * 30,
+        refetchOnWindowFocus: true,
+    });
+}
+
+export function useBatches(filters?: { honey_type?: string; year?: number; limit?: number }) {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
+    return useQuery({
+        queryKey: [...batchKeys.list(filters), userId],
+        queryFn: async () => {
+            return await beeyieldService.getBatches(filters);
+        },
+        enabled: !!userId,
+        staleTime: 1000 * 60,
+        refetchInterval: 1000 * 30,
+        refetchOnWindowFocus: true,
     });
 }
 
