@@ -31,7 +31,7 @@ type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter';
 type Method = 'Formic acid' | 'Oxalic acid' | 'Thymol';
 
 const TOOL_COUNT = 18;
-const homeCard = 'rounded-[24px] border border-[#F4D03F]/15 bg-white/80 p-5 shadow-sm';
+const homeCard = 'flex h-full flex-col rounded-[20px] border border-[#F4D03F]/12 bg-white/85 p-4 shadow-[0_10px_28px_rgba(143,104,18,0.08)]';
 const sectionTone = 'border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,249,240,0.96),rgba(249,247,242,0.98))]';
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -47,7 +47,7 @@ const sectionMeta = [
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="space-y-2">
-      <span className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">{label}</span>
+      <span className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">{label}</span>
       {children}
     </label>
   );
@@ -58,7 +58,7 @@ function NumberInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       type="number"
-      className={cn(glass.input, 'h-11 w-full rounded-2xl border-[#F4D03F]/15 bg-[#FFFDF7] px-4 text-sm font-bold text-[#1A1A1A]', props.className)}
+      className={cn(glass.input, 'h-10 w-full rounded-xl border-[#F4D03F]/15 bg-[#FFFDF7] px-3.5 text-[13px] font-bold text-[#1A1A1A]', props.className)}
     />
   );
 }
@@ -67,16 +67,16 @@ function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       {...props}
-      className={cn(glass.select, 'h-11 w-full rounded-2xl border-[#F4D03F]/15 bg-[#FFFDF7] px-4 text-sm font-bold text-[#1A1A1A]', props.className)}
+      className={cn(glass.select, 'h-10 w-full rounded-xl border-[#F4D03F]/15 bg-[#FFFDF7] px-3.5 text-[13px] font-bold text-[#1A1A1A]', props.className)}
     />
   );
 }
 
 function StatTile({ label, value, accent = 'text-[#1A1A1A]' }: { label: string; value: React.ReactNode; accent?: string }) {
   return (
-    <div className="rounded-2xl border border-[#F4D03F]/12 bg-[#FFF9F0] p-3">
-      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">{label}</p>
-      <p className={cn('mt-2 text-2xl font-black tracking-tight', accent)}>{value}</p>
+    <div className="rounded-xl border border-[#F4D03F]/12 bg-[#FFF9F0] p-3">
+      <p className="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400">{label}</p>
+      <p className={cn('mt-1.5 text-[1.15rem] font-black tracking-tight', accent)}>{value}</p>
     </div>
   );
 }
@@ -98,9 +98,9 @@ function StatusBox({
         : 'border-[#f3c4be] bg-[#fff1ef] text-[#b45309]';
 
   return (
-    <div className={cn('rounded-2xl border p-4', toneClass)}>
-      <p className="text-[10px] font-black uppercase tracking-[0.18em]">{title}</p>
-      <p className="mt-2 text-sm font-semibold leading-relaxed">{body}</p>
+    <div className={cn('rounded-xl border p-3.5', toneClass)}>
+      <p className="text-[9px] font-black uppercase tracking-[0.16em]">{title}</p>
+      <p className="mt-1.5 text-[13px] font-semibold leading-relaxed">{body}</p>
     </div>
   );
 }
@@ -124,21 +124,21 @@ function ToolCard({
     <article className={cn(homeCard, className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h3 className="text-[1.1rem] font-black tracking-tight text-[#1A1A1A]">{title}</h3>
-          <p className="text-[13px] leading-relaxed text-gray-500">{description}</p>
+          <h3 className="text-[1rem] font-black tracking-tight text-[#1A1A1A]">{title}</h3>
+          <p className="text-[12px] leading-relaxed text-gray-500">{description}</p>
         </div>
         <div className="flex items-center gap-2">
           {badge ? (
-            <Badge className="rounded-full border border-[#F4D03F]/20 bg-[#F4D03F]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
+            <Badge className="rounded-full border border-[#F4D03F]/20 bg-[#F4D03F]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#8a6a00]">
               {badge}
             </Badge>
           ) : null}
-          <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F4D03F]/10 p-3 text-[#8a6a00]">
-            <Icon className="h-4 w-4" />
+          <div className="rounded-xl border border-[#F4D03F]/15 bg-[#F4D03F]/10 p-2.5 text-[#8a6a00]">
+            <Icon className="h-3.5 w-3.5" />
           </div>
         </div>
       </div>
-      <div className="mt-4 space-y-4">{children}</div>
+      <div className="mt-4 space-y-3.5">{children}</div>
     </article>
   );
 }
@@ -162,25 +162,25 @@ function SectionBlock({
     <section id={id} className={cn(glass.section, 'scroll-mt-24 overflow-hidden')}>
       <div className={cn(sectionTone, 'px-5 py-4 md:px-6')}>
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               {Icon ? (
-                <div className="rounded-2xl border border-[#F4D03F]/15 bg-white/80 p-2 text-[#8a6a00]">
-                  <Icon className="h-4 w-4" />
+                <div className="rounded-xl border border-[#F4D03F]/15 bg-white/80 p-2 text-[#8a6a00]">
+                  <Icon className="h-3.5 w-3.5" />
                 </div>
               ) : null}
               {badge ? (
-                <Badge className="rounded-full border border-[#F4D03F]/20 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
+                <Badge className="rounded-full border border-[#F4D03F]/20 bg-white/80 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#8a6a00]">
                   {badge}
                 </Badge>
               ) : null}
             </div>
-            <h2 className="text-[1.45rem] font-black tracking-tight text-[#1A1A1A]">{title}</h2>
+            <h2 className="text-[1.25rem] font-black tracking-tight text-[#1A1A1A]">{title}</h2>
           </div>
         </div>
-        <p className="mt-1 text-[13px] text-gray-500">{subtitle}</p>
+        <p className="mt-1 text-[12px] text-gray-500">{subtitle}</p>
       </div>
-      <div className="grid gap-4 p-5 md:p-6 xl:grid-cols-3">{children}</div>
+      <div className="grid gap-4 p-5 md:p-6 lg:grid-cols-3">{children}</div>
     </section>
   );
 }
@@ -412,29 +412,29 @@ const BeeCalculatorSuite = () => {
         <div className={cn(sectionTone, 'px-5 py-5 md:px-6')}>
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#F4D03F]/20 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">Intelligent hives · calculators</div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#F4D03F]/20 bg-white/80 px-3 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#8a6a00]">Intelligent hives · calculators</div>
               <div>
-                <h2 className="text-3xl font-black tracking-tight text-[#1A1A1A]">Beekeeping calculators</h2>
-                <p className="mt-2 max-w-2xl text-sm text-gray-500">Results are indicative. Use them as operational checks before inspections, feeding, transport, or treatment decisions.</p>
+                <h2 className="text-[2rem] font-black tracking-tight text-[#1A1A1A] md:text-[2.15rem]">Beekeeping calculators</h2>
+                <p className="mt-2 max-w-2xl text-[13px] text-gray-500">Results are indicative. Use them as operational checks before inspections, feeding, transport, or treatment decisions.</p>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Tools</p>
-                <p className="mt-2 text-3xl font-black tracking-tight text-[#1A1A1A]">{TOOL_COUNT}</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Tools</p>
+                <p className="mt-1.5 text-[1.7rem] font-black tracking-tight text-[#1A1A1A]">{TOOL_COUNT}</p>
               </div>
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Tip</p>
-                <p className="mt-2 text-sm font-semibold leading-relaxed text-[#1A1A1A]">Move section by section like a seasonal checklist.</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Tip</p>
+                <p className="mt-1.5 text-[13px] font-semibold leading-relaxed text-[#1A1A1A]">Move section by section like a seasonal checklist.</p>
               </div>
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Winter gap</p>
-                <p className="mt-2 text-2xl font-black tracking-tight text-[#8a6a00]">{winterResult.deficitKg} kg</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Winter gap</p>
+                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#8a6a00]">{winterResult.deficitKg} kg</p>
                 <p className="mt-1 text-[11px] font-semibold text-gray-500">Current shortfall to winter stores.</p>
               </div>
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Varroa call</p>
-                <p className={cn('mt-2 text-2xl font-black tracking-tight', varroaDecision.tone === 'green' ? 'text-[#166534]' : varroaDecision.tone === 'amber' ? 'text-[#a16207]' : 'text-[#b45309]')}>
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Varroa call</p>
+                <p className={cn('mt-1.5 text-[1.35rem] font-black tracking-tight', varroaDecision.tone === 'green' ? 'text-[#166534]' : varroaDecision.tone === 'amber' ? 'text-[#a16207]' : 'text-[#b45309]')}>
                   {varroaDecision.label}
                 </p>
                 <p className="mt-1 text-[11px] font-semibold text-gray-500">{varroaResult.percentage}% infestation in current sample.</p>
@@ -449,16 +449,16 @@ const BeeCalculatorSuite = () => {
               key={section.id}
               type="button"
               onClick={() => jumpToSection(section.id)}
-              className={cn('rounded-full border px-4 py-2 text-left transition-all', activeSection === section.id ? 'border-[#F4D03F]/40 bg-[#FFF4CC] text-[#1A1A1A]' : 'border-[#F4D03F]/15 bg-white text-gray-600 hover:border-[#F4D03F]/30 hover:bg-[#FFF9F0]')}
+              className={cn('rounded-full border px-3.5 py-2 text-left transition-all', activeSection === section.id ? 'border-[#F4D03F]/40 bg-[#FFF4CC] text-[#1A1A1A]' : 'border-[#F4D03F]/15 bg-white text-gray-600 hover:border-[#F4D03F]/30 hover:bg-[#FFF9F0]')}
             >
-              <div className="flex items-center gap-2 text-[11px] font-black tracking-tight">
+              <div className="flex items-center gap-2 text-[10px] font-black tracking-tight">
                 <section.icon className="h-3.5 w-3.5" />
                 <span>{section.label}</span>
               </div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] opacity-60">{section.note}</div>
+              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] opacity-60">{section.note}</div>
             </button>
           ))}
-          </div>
+        </div>
         </div>
       </section>
 
