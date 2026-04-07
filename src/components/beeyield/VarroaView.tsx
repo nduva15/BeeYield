@@ -44,13 +44,13 @@ const buildSimulation = (
     return Array.from({ length: points }, (_, index) => {
         const progress = index / (points - 1);
         const day = Math.round(progress * simulationDays);
-        const curve = Math.exp(progress * 4.15);
+        const curve = Math.exp(progress * 4.4);
         const mitesSample = Math.round(initialMiteCount * curve);
-        const mitesX10 = mitesSample * 10;
-        const allBrood = Math.round((adultBeePopulation * 180) + (progress ** 3 * collapseThreshold * 18));
-        const cappedBrood = Math.round(allBrood * 0.64);
+        const mitesX10 = mitesSample;
+        const allBrood = Math.round(120000 + (progress ** 4.5 * 8800000));
+        const cappedBrood = Math.round(allBrood * 0.95);
         const adultBees = Math.round(adultBeePopulation * (0.92 + (progress * 0.1)));
-        const alcoholWash = Math.max(0, Math.round(mitesSample / 10));
+        const alcoholWash = Math.max(0, Math.round(mitesSample / 30));
         return {
             day: `D${day}`,
             alcoholWash,
@@ -99,9 +99,9 @@ const Field = ({
 
 const VarroaView: React.FC = () => {
     const today = React.useMemo(() => new Date().toISOString().slice(0, 10), []);
-    const [startMode, setStartMode] = React.useState<StartMode>('observed');
+    const [startMode, setStartMode] = React.useState<StartMode>('default');
     const [startDate, setStartDate] = React.useState(today);
-    const [initialMiteCount, setInitialMiteCount] = React.useState(600);
+    const [initialMiteCount, setInitialMiteCount] = React.useState(120);
     const [adultBeePopulation, setAdultBeePopulation] = React.useState(20000);
     const [simulationDays, setSimulationDays] = React.useState(180);
     const [collapseThreshold, setCollapseThreshold] = React.useState(3000);
@@ -115,12 +115,6 @@ const VarroaView: React.FC = () => {
     const [treatmentDay, setTreatmentDay] = React.useState(0);
     const [treatmentType, setTreatmentType] = React.useState('amitraz');
     const [temperature, setTemperature] = React.useState(20);
-    const [changeNotes, setChangeNotes] = React.useState<string[]>([
-        'Rebuilding the page around the modeling layout in the reference image.',
-        'Matching the white card stack, yellow action states, and form-first flow.',
-        'Keeping the simulation chart visible under the configuration sections.',
-    ]);
-
     React.useEffect(() => {
         if (startMode === 'observed') {
             setInitialMiteCount(mitesPerDay * colonyMultiplier);
@@ -164,9 +158,6 @@ const VarroaView: React.FC = () => {
                             <button type="button" className={cn(ghostPillClass, 'px-5 py-2 text-[14px]')}>
                                 Show quick tour
                             </button>
-                            <div className="hidden text-[13px] text-[#8a97aa] md:block">
-                                {changeNotes[0]}
-                            </div>
                         </div>
                     </div>
                 </section>
@@ -311,7 +302,7 @@ const VarroaView: React.FC = () => {
                             <Field label="Type">
                                 <input value={treatmentType} onChange={(e) => setTreatmentType(e.target.value)} className={inputClass} />
                             </Field>
-                            <Field label="Temperature (°C)" className="md:col-span-2">
+                            <Field label="Temperature (C)" className="md:col-span-2">
                                 <input type="number" value={temperature} onChange={(e) => setTemperature(Number(e.target.value) || 0)} className={inputClass} />
                             </Field>
                         </div>
@@ -330,7 +321,7 @@ const VarroaView: React.FC = () => {
                             Get weather from BeeHUB Weather
                         </button>
                         <div className="text-[13px] text-[#8a97aa]">
-                            {changeNotes[1]}
+                            Changes in fields recalculate the simulation automatically.
                         </div>
                     </div>
                 </section>
@@ -372,9 +363,6 @@ const VarroaView: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="text-[13px] text-[#8a97aa]">
-                            {changeNotes[2]}
-                        </div>
                     </div>
                 </section>
             </div>

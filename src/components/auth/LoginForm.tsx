@@ -86,14 +86,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 );
 
                 if (insertError) {
-                    const isSuperAdmin = [SUPER_ADMIN_EMAIL, 'timothynduva349@gmail.com'].includes(loggedInUser?.email?.toLowerCase() || '');
-                    if (!isSuperAdmin) {
-                        toast.error('Profile setup failed', {
-                            description: 'We couldn\'t finalize your account profile. Please try again.'
-                        });
-                        setLoading(false);
-                        return;
-                    }
+                    console.error('Non-blocking profile sync failure during login', insertError);
+                    toast.info('Signed in, but some profile details still need syncing.');
                 }
             }
 
