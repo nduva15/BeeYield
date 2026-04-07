@@ -35,7 +35,7 @@ const OurStory = () => {
                 The Story of <span className="text-primary">BeeYield</span>
               </h1>
               <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to improve pollination for a sustainable future.
+                Born in Kibwezi, Makueni County, Kenya - a story of family, resilience, and a mission to improve pollination for a sustainable future.
               </p>
             </div>
 
@@ -89,20 +89,20 @@ const OurStory = () => {
             <div className="order-1 lg:order-2 space-y-6">
               <Badge variant="outline" className="mb-2">
                 <Home className="mr-2 h-3 w-3" />
-                Kibwezi, Kenya • 2020
+                Kibwezi, Kenya - 2020
               </Badge>
               <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
                 A Pandemic Spark, a Family Mission
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  In 2020, as the world slowed down during the COVID pandemic, <strong className="text-foreground">Timothy Nduva</strong> found himself restless in rural Kibwezi, Kenya. While attending Strathmore University, Timothy’s curiosity and drive for innovation grew. The unique challenges of the pandemic became the spark that ignited BeeYield’s vision for scalable, tech-driven beekeeping solutions.
+                  In 2020, as the world slowed down during the COVID pandemic, <strong className="text-foreground">Timothy Nduva</strong> found himself restless in rural Kibwezi, Kenya. While attending Strathmore University, Timothy's curiosity and drive for innovation grew. The unique challenges of the pandemic became the spark that ignited BeeYield's vision for scalable, tech-driven beekeeping solutions.
                 </p>
                 <p>
-                  But BeeYield was never a solo journey. Timothy’s sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their own unique skills—ranging from web development and product design to IoT research. Together, the siblings transformed a small family apiary into a platform for technological advancement and agricultural impact.
+                  But BeeYield was never a solo journey. Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their own unique skills, ranging from web development and product design to IoT research. Together, the siblings transformed a small family apiary into a platform for technological advancement and agricultural impact.
                 </p>
                 <p>
-                  What began with just half an acre and four hives quickly became a family mission to empower farmers, advance pollination, and prove that innovation can flourish anywhere—even in the most unexpected places.
+                  What began with just half an acre and four hives quickly became a family mission to empower farmers, advance pollination, and prove that innovation can flourish anywhere, even in the most unexpected places.
                 </p>
               </div>
             </div>
@@ -115,7 +115,7 @@ const OurStory = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground sm:text-4xl mb-4">
-              From 4 Hives to 184 — Our Growth Journey
+              From 4 Hives to 184 - Our Growth Journey
             </h2>
             <p className="text-muted-foreground">
               What began on half an acre has grown into a thriving 5-acre apiary, fenced and flourishing.
@@ -158,12 +158,12 @@ const OurStory = () => {
               {
                 icon: Users,
                 title: "Family-Driven",
-                desc: "Built by siblings Timothy, Agatha, and Carole — we combine passion with purpose, bringing diverse skills under one shared vision."
+                desc: "Built by siblings Timothy, Agatha, and Carole - we combine passion with purpose, bringing diverse skills under one shared vision."
               },
               {
                 icon: Sprout,
                 title: "Guardians of Nature",
-                desc: "With 2,500+ trees planted, we're not just beekeepers — we're ecosystem builders committed to environmental restoration."
+                desc: "With 2,500+ trees planted, we're not just beekeepers - we're ecosystem builders committed to environmental restoration."
               },
               {
                 icon: Cpu,
@@ -201,10 +201,10 @@ const OurStory = () => {
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">25 acres+</strong> of farmland, proving the value of managed pollination services in Kenya.
+                  Our pollination journey started with traditional methods - moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">25 acres+</strong> of farmland, proving the value of managed pollination services in Kenya.
                 </p>
                 <p>
-                  But we knew we could do more. Today, BeeYield is evolving toward precision pollination — using sensors, data, and hive management to deliver clear pollination results.
+                  But we knew we could do more. Today, BeeYield is evolving toward precision pollination - using sensors, data, and hive management to deliver clear pollination results.
                 </p>
                 <p>
                   Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.
@@ -226,7 +226,7 @@ const OurStory = () => {
                         <Heart className="h-8 w-8" />
                       </div>
                       <p className="text-lg font-semibold text-foreground">Growing Together</p>
-                      <p className="text-sm text-muted-foreground mt-2">Kibwezi, Kenya → Africa → Beeyond</p>
+                      <p className="text-sm text-muted-foreground mt-2">Kibwezi, Kenya to Africa to beyond</p>
                     </div>
                   </div>
                 </CardContent>
@@ -248,7 +248,7 @@ const OurStory = () => {
                 Join Us on Our <span className="text-[#1B9157]">Journey</span>
               </h2>
               <p className="text-[#1B9157]/80 max-w-2xl mx-auto mb-10 text-lg relative z-10">
-                From a family dream in rural Kenya to a growing presence in pollination services — we're just getting started. Partner with us to improve agriculture.
+                From a family dream in rural Kenya to a growing presence in pollination services - we're just getting started. Partner with us to improve agriculture.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
                 <Button size="lg" className="bg-[#FFF9F0] text-[#1B9157] hover:bg-green-50 font-bold px-8 h-12 rounded-xl" asChild>

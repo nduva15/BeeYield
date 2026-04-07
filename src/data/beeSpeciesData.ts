@@ -9,6 +9,10 @@ export interface BeeSpeciesDetail {
     pros: string[];
     cons: string[];
     description: string;
+    commonDiseases?: string[];
+    preventionFocus?: string;
+    management?: string;
+    idealUse?: string;
     references?: string[];
 }
 

@@ -116,8 +116,8 @@ const Team = () => {
             });
 
             toast({
-                title: "✅ Message Sent!",
-                description: response?.message || "We've received your inquiry and will be in touch with the Directorate soon.",
+                title: "Message sent",
+                description: response?.message || "We've received your inquiry and will be in touch shortly.",
             });
 
             setFormData({
@@ -147,7 +147,7 @@ const Team = () => {
             image: TIMOTHY_PHOTO,
             linkedin: "https://linkedin.com/in/timothynduva",
             email: "info@beeyield.com",
-            achievements: ["Architect of HoneyChain™", "Strategic Vision Lead", "Family Mission Founder"]
+            achievements: ["HoneyChain strategy", "Strategic vision", "Family mission founder"]
         },
         {
             name: "Carole Nduva",
@@ -163,7 +163,7 @@ const Team = () => {
             name: "Agatha Nduva",
             role: "Director, Product & Engineering",
             department: "Engineering",
-            description: "Agatha leads our engineering work—building reliable systems for data collection, reporting, and traceability.",
+            description: "Agatha leads the product and engineering direction behind BeeYield's data tools, reporting systems, and trust-building digital experiences.",
             image: LOGO,
             linkedin: "",
             email: "info@beeyield.com",
@@ -202,7 +202,7 @@ const Team = () => {
         },
         {
             title: "Verifiable Impact",
-            description: "Our 50/50 Harvest Promise and reforestation projects are not just goals—they are hard-coded into our DNA.",
+            description: "We connect the team story to measurable outcomes: the 50/50 harvest promise, traceability, tree planting, and pollination support.",
             icon: <Activity className="h-8 w-8 text-beeyield-green" />
         },
         {

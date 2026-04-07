@@ -23,6 +23,35 @@ export interface PollinationMetrics {
     recommendation: string;
     hivesRequired: number;
     totalFramesRequired: number;
+    coverageGapFrames: number;
+    coverageGapHives: number;
+    readinessScore: number;
+    normalizedFlightHours: number;
+    predictedFruitSetPercent: number;
+    projectedYieldLiftPercent: number;
+    marginalGainPerHive: number;
+    recommendedHivesLow: number;
+    recommendedHivesHigh: number;
+    saturationRisk: 'low' | 'balanced' | 'high';
+}
+
+export interface HealthyHiveInputs {
+    colonyFrames: number;
+    broodFrames: number;
+    queenPresenceScore: number;
+    weeklyFlightHours: number;
+    weatherQuality: number;
+    orientation?: 'east' | 'south' | 'west' | 'north';
+}
+
+export interface HealthyHiveMetrics {
+    healthyHiveIndex: number;
+    colonyStrengthScore: number;
+    broodHealthScore: number;
+    queenStrengthScore: number;
+    weatherNormalizedFlightScore: number;
+    deploymentReadiness: 'hold' | 'watch' | 'deploy';
+    recommendation: string;
 }
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
@@ -72,6 +101,51 @@ export const calculatePollinationMetrics = (inputs: CalculationInputs): Pollinat
     const hivesRequired = avgFramesPerHive > 0
         ? Math.max(1, Math.ceil(totalFramesRequired / avgFramesPerHive))
         : 0;
+    const coverageGapFrames = Math.max(0, Math.round(totalFramesRequired - effectiveFrames));
+    const coverageGapHives = avgFramesPerHive > 0
+        ? Math.ceil(coverageGapFrames / avgFramesPerHive)
+        : 0;
+    const readinessScore = clamp(
+        Math.round(
+            (ratio * 45) +
+            (bloom * 20) +
+            (forage * 18) +
+            ((1 - weatherRisk) * 17)
+        ),
+        0,
+        100
+    );
+    const normalizedFlightHours = Number(
+        clamp(
+            (4.5 + (bloom * 2.2) + (forage * 1.8) + (ratio * 1.4) - (weatherRisk * 3.2)),
+            1.5,
+            11.5
+        ).toFixed(1)
+    );
+    const predictedFruitSetPercent = clamp(
+        Math.round(32 + (ratio * 42) + (bloom * 10) + (forage * 8) - (weatherRisk * 11)),
+        18,
+        96
+    );
+    const projectedYieldLiftPercent = Number(
+        clamp(((predictedFruitSetPercent - 48) * 0.62), 0, 32).toFixed(1)
+    );
+    const marginalGainPerHive = Number(
+        (
+            avgFramesPerHive *
+            bloomMultiplier *
+            forageMultiplier *
+            weatherMultiplier /
+            Math.max(acres, 1)
+        ).toFixed(2)
+    );
+    const recommendedHivesLow = Math.max(1, Math.floor(hivesRequired * 0.95));
+    const recommendedHivesHigh = Math.max(recommendedHivesLow, Math.ceil(hivesRequired * 1.15));
+    const saturationRisk: PollinationMetrics['saturationRisk'] = ratio > 1.22
+        ? 'high'
+        : ratio < 0.9
+            ? 'low'
+            : 'balanced';
 
     let recommendation = 'Solid coverage. Maintain deployments and monitor bloom curve.';
     if (pollinationEfficacy < 60) {
@@ -90,6 +164,76 @@ export const calculatePollinationMetrics = (inputs: CalculationInputs): Pollinat
         pollinationEfficacy: clamp(pollinationEfficacy, 0, 100),
         recommendation,
         hivesRequired,
-        totalFramesRequired: Math.round(totalFramesRequired)
+        totalFramesRequired: Math.round(totalFramesRequired),
+        coverageGapFrames,
+        coverageGapHives,
+        readinessScore,
+        normalizedFlightHours,
+        predictedFruitSetPercent,
+        projectedYieldLiftPercent,
+        marginalGainPerHive,
+        recommendedHivesLow,
+        recommendedHivesHigh,
+        saturationRisk
+    };
+};
+
+export const calculateHealthyHiveIndex = (inputs: HealthyHiveInputs): HealthyHiveMetrics => {
+    const colonyStrengthScore = clamp(Math.round((inputs.colonyFrames / 10) * 100), 10, 100);
+    const broodHealthScore = clamp(Math.round((inputs.broodFrames / 6) * 100), 10, 100);
+    const queenStrengthScore = clamp(Math.round(inputs.queenPresenceScore * 100), 0, 100);
+
+    const orientationBonus = (() => {
+        switch (inputs.orientation) {
+            case 'east':
+                return 1.08;
+            case 'south':
+                return 1.04;
+            case 'north':
+                return 0.96;
+            case 'west':
+            default:
+                return 0.93;
+        }
+    })();
+
+    // Inspired by public BeeHero framing: colony size, brood, and queen presence
+    // normalized through weather and flight-hours performance.
+    const weatherNormalizedFlightScore = clamp(
+        Math.round((inputs.weeklyFlightHours / 42) * 100 * clamp(inputs.weatherQuality, 0.3, 1.1) * orientationBonus),
+        0,
+        100
+    );
+
+    const healthyHiveIndex = clamp(
+        Math.round(
+            colonyStrengthScore * 0.35 +
+            broodHealthScore * 0.25 +
+            queenStrengthScore * 0.2 +
+            weatherNormalizedFlightScore * 0.2
+        ),
+        0,
+        100
+    );
+
+    let deploymentReadiness: HealthyHiveMetrics['deploymentReadiness'] = 'watch';
+    let recommendation = 'Colony is serviceable, but keep brood and flight performance under review.';
+
+    if (healthyHiveIndex >= 82) {
+        deploymentReadiness = 'deploy';
+        recommendation = 'Deployment ready. Prioritize this hive for narrow bloom windows and premium contracts.';
+    } else if (healthyHiveIndex < 60) {
+        deploymentReadiness = 'hold';
+        recommendation = 'Hold back from premium pollination. Strengthen brood, confirm queen status, and retest flight hours.';
+    }
+
+    return {
+        healthyHiveIndex,
+        colonyStrengthScore,
+        broodHealthScore,
+        queenStrengthScore,
+        weatherNormalizedFlightScore,
+        deploymentReadiness,
+        recommendation,
     };
 };

@@ -5,8 +5,11 @@ export interface SymptomDetail {
     symptoms: string;
     detection: string;
     treatment: string;
+    management?: string;
+    cureStatus?: string;
     prevention: string;
     transmission: string;
+    hostSpecies?: string[];
     riskLevel: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
     steps: string[];
     references?: string[];
@@ -21,8 +24,11 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         symptoms: "Larvae turn coffee-brown and ropy; distinct 'foul' decayed-fish odor.",
         detection: "Rope Test; Holst Milk Test; EFD Diagnostic Kits.",
         treatment: "Incineration of bees and equipment; scorching non-combustibles.",
+        management: "Treat as a notifiable emergency: quarantine the yard, stop moving equipment, destroy infected brood material, and sanitize all reusable tools before touching healthy colonies.",
+        cureStatus: "No field cure once brood is heavily infected; containment and destruction are the standard control pathway.",
         prevention: "Inspect brood often; sterilize hive tools between colonies; avoid exchanging contaminated comb or honey; use hygienic queens and isolate suspect equipment immediately.",
         transmission: "Robbing; drifting; contaminated equipment.",
+        hostSpecies: ["Apis mellifera", "Apis cerana"],
         riskLevel: "CRITICAL",
         steps: ["Execute Rope Test", "Contact apiary inspector", "Incinerate infected frames"]
     },
@@ -33,8 +39,11 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         symptoms: "Melted/rubbery larvae; sour/yeasty smell; spotty brood pattern.",
         detection: "Visual inspection of coiled larvae; potash test.",
         treatment: "Re-queening; Shook Swarm; Terramycin (in some regions).",
+        management: "Relieve nutritional stress fast, narrow brood space if colonies are weak, remove badly affected comb, and requeen colonies that fail to recover brood pattern.",
+        cureStatus: "Often recoverable with nutrition, sanitation, and queen improvement when caught early.",
         prevention: "Maintain strong spring nutrition; avoid prolonged brood chilling; replace dark comb; reduce stress during dearth and requeen weak colonies quickly.",
         transmission: "Nurse bees; trophallaxis; contaminated pollen.",
+        hostSpecies: ["Apis mellifera", "Apis cerana"],
         riskLevel: "HIGH",
         steps: ["Identify twisted yellow larvae", "Feed syrup", "Re-queen"]
     },
@@ -114,8 +123,11 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         symptoms: "Chronic intestinal damage; suppressed immune system.",
         detection: "PCR testing; quantitative microscopy.",
         treatment: "Keep colonies strong; probiotic supplements.",
+        management: "Reduce every avoidable stressor at once: improve forage, keep colonies dry, replace old comb, and prevent drifting and feed competition between yards.",
+        cureStatus: "Manageable but rarely 'cured' outright; the goal is suppression and colony resilience.",
         prevention: "Provide diverse forage and clean water; reduce pesticide exposure; avoid damp wintering conditions; replace old comb and prevent drifting between colonies.",
         transmission: "Queen trade; drifting; shared waterers.",
+        hostSpecies: ["Apis mellifera", "Apis cerana", "Apis dorsata"],
         riskLevel: "CRITICAL",
         steps: ["PCR test", "Protein supplements", "Limit stress"]
     },
@@ -128,8 +140,11 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         symptoms: "Inability to fly; shortened lifestyle; population crash.",
         detection: "Observation; RT-PCR.",
         treatment: "Aggressive Varroa suppression.",
+        management: "Use repeated mite counts before and after treatment, break brood when needed, and requeen from hygienic stock if colonies show persistent deformed brood emergence.",
+        cureStatus: "No direct antiviral cure; control depends on keeping mite pressure low enough for colonies to recover.",
         prevention: "Keep Varroa below action thresholds all season; monitor with alcohol washes; rotate mite treatments; favor hygienic/VSH stock and avoid collapsing donor colonies.",
         transmission: "Varroa destructor (vector); vertical.",
+        hostSpecies: ["Apis mellifera", "Apis cerana", "Apis laboriosa"],
         riskLevel: "CRITICAL",
         steps: ["Alcohol Wash", "Miticide treatment", "Re-test count"]
     },
@@ -274,8 +289,11 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         symptoms: "Deformed wings; PMS; weight loss; collapse.",
         detection: "Alcohol Wash (>3%); Sticky Board.",
         treatment: "Organic Acids; Thymol; Amitraz.",
+        management: "Plan around brood presence, season, and temperature; rotate chemistries; retest every treatment cycle; and do not let collapsing colonies reinfest nearby yards.",
+        cureStatus: "Controllable with disciplined IPM, but not permanently eliminated from most managed landscapes.",
         prevention: "Run an IPM plan with frequent mite counts; rotate treatment families; cull drone brood strategically; prevent robbing and select for hygienic/VSH queens.",
         transmission: "Drifting; robbing; transport.",
+        hostSpecies: ["Apis mellifera", "Apis cerana"],
         riskLevel: "CRITICAL",
         steps: ["300-bee wash", "Apply treatment", "Re-test"]
     },
@@ -1135,9 +1153,85 @@ export const beeHealthData: Record<string, SymptomDetail> = {
         symptoms: "Field force disappears, brood care breaks down, and the remaining colony cannot recover despite food reserves.",
         detection: "Rule out starvation, queen loss, and acute poisoning first; review mite history, migration events, feed quality, and recent disease pressure.",
         treatment: "Stabilize surviving units by combining weak colonies, requeening if needed, correcting Varroa pressure, and improving forage and feed support.",
+        management: "Handle CCD as a systems-failure investigation: audit migration, mite records, pesticide timing, forage gaps, queen age, and nutritional support across the full season.",
+        cureStatus: "No single cure because CCD is syndromic; recovery depends on removing the underlying stress stack.",
         prevention: "Maintain strong year-round Varroa control; reduce transport and nutritional stress; replace failing queens promptly; avoid stacking multiple chemical exposures.",
         transmission: "Syndromic collapse rather than direct contagion; often emerges from multiple concurrent stressors.",
+        hostSpecies: ["Apis mellifera"],
         riskLevel: "CRITICAL",
         steps: ["Audit mite history", "Review forage and pesticide exposure", "Combine survivors if needed", "Requeen weak units"]
+    },
+    "Nosema bombi": {
+        scientificName: "Nosema bombi",
+        causes: "Microsporidian infection spreads through contaminated nest material, flowers, and contact between commercial and wild bumblebee populations.",
+        signs: "Small bumble colonies, sluggish queens, uneven brood development, and reduced worker numbers during peak forage.",
+        symptoms: "Lower reproduction, shortened queen lifespan, weak worker output, and poor overwintering success in native bumble species.",
+        detection: "Microscopy or PCR on bumblebee gut samples; compare colony growth against expected seasonal buildup.",
+        treatment: "No widely accepted direct field cure; support with clean nesting conditions and reduced stress.",
+        management: "Prioritize biosecurity around commercial bumblebee use, remove heavily contaminated nesting material, and protect diverse pesticide-light forage near wild habitat.",
+        cureStatus: "Supportive management only; best practice focuses on suppression and habitat protection rather than cure.",
+        prevention: "Avoid pathogen spillover from managed pollinators; keep nesting habitat dry and undisturbed; reduce pesticide load and conserve forage continuity.",
+        transmission: "Shared flowers, contaminated nests, drifting queens, and commercial colony spillover.",
+        hostSpecies: ["Bombus impatiens", "Bombus terrestris", "Wild bumblebees"],
+        riskLevel: "HIGH",
+        steps: ["Separate managed and wild pollinator zones", "Remove contaminated nest material", "Improve forage continuity"]
+    },
+    "Crithidia bombi": {
+        scientificName: "Crithidia bombi",
+        causes: "Gut parasite pressure rises when bumblebees share flowers under forage scarcity or crowding, especially where colonies are nutritionally stressed.",
+        signs: "Normal-looking adults with steadily reduced foraging efficiency, weak queen performance, and poor colony growth.",
+        symptoms: "Chronic energy loss, lower pollination performance, weakened immunity, and reduced queen founding success.",
+        detection: "Microscopy or PCR from gut washings; field clue is unexplained loss of bumblebee performance despite adequate bloom.",
+        treatment: "No standard direct cure; reduce stress and improve clean forage access.",
+        management: "Keep flower resources abundant and spatially distributed, reduce crowding from managed colonies, and avoid moving weak commercial bumblebee units between sites.",
+        cureStatus: "Managed through ecology and sanitation rather than medication.",
+        prevention: "Support diverse continuous bloom, rotate greenhouse pollinator units carefully, and limit spillover from commercial colonies into wild pollinator habitat.",
+        transmission: "Shared flowers, fecal contamination, and colony crowding.",
+        hostSpecies: ["Bombus impatiens", "Bombus terrestris", "Wild bumblebees"],
+        riskLevel: "MEDIUM",
+        steps: ["Reduce managed colony crowding", "Expand clean bloom resources", "Retire weak commercial colonies quickly"]
+    },
+    "Phorid Fly Parasitism": {
+        scientificName: "Apocephalus borealis",
+        causes: "Parasitic phorid flies oviposit in adult bees, most often where colonies are already stressed and night-light attraction increases abnormal flight.",
+        signs: "Disoriented adults leaving at odd hours, weak crawling bees, and larvae emerging from dead bees after collection.",
+        symptoms: "Reduced worker lifespan, disorientation, nighttime wandering, and local population drain in stingless, honey, or bumble bee systems.",
+        detection: "Collect suspect adults and observe for larval emergence; combine with night-flight monitoring and local trap counts.",
+        treatment: "Remove infested adults where practical and reduce attractant lighting near colonies.",
+        management: "Keep colonies strong, reduce unnecessary night lighting, and clean dead-outs quickly so fly pressure does not build around apiaries and meliponaries.",
+        cureStatus: "No direct cure; pressure is reduced through sanitation and stress reduction.",
+        prevention: "Avoid chronic colony stress, manage lighting around yards, and remove dead bees and nesting debris routinely.",
+        transmission: "Adult fly parasitism rather than bee-to-bee spread.",
+        hostSpecies: ["Apis mellifera", "Bombus spp.", "Stingless bees"],
+        riskLevel: "MEDIUM",
+        steps: ["Collect and inspect suspect adults", "Reduce night lighting", "Improve yard sanitation"]
+    },
+    "Ant Invasion": {
+        causes: "Ant pressure increases when colonies are weak, stands bridge to vegetation, or feed, syrup, brood debris, and resin stores attract scavenging or predatory ant species.",
+        signs: "Ant trails on legs and hive covers, robbed syrup, disturbed stingless bee pots, and bees clustering away from the invaded side of the hive.",
+        symptoms: "Brood loss, weakened colonies, contamination of food stores, and absconding in stingless or small colonies.",
+        detection: "Visual trail mapping around stands, roofs, and nearby vegetation; inspect base supports and feeder areas.",
+        treatment: "Break trails immediately, clean attractants, elevate or isolate stands, and use safe exclusion barriers around hive supports.",
+        management: "Treat this as apiary hygiene and stand design issue: keep vegetation clear, remove spilled feed, protect nest entrances, and intervene before brood or pot stores are damaged.",
+        cureStatus: "Fully manageable if structural access and attractants are removed early.",
+        prevention: "Maintain clean hive stands, trim vegetation bridges, avoid syrup spills, and use physical barriers or moats where appropriate.",
+        transmission: "Environmental invasion from surrounding ant populations.",
+        hostSpecies: ["Stingless bees", "Solitary cavity nesters", "Weak honey bee colonies"],
+        riskLevel: "HIGH",
+        steps: ["Break ant trails", "Clean spilled feed", "Install stand barriers", "Inspect brood stores"]
+    },
+    "Pollen Mite Fouling": {
+        causes: "Stored pollen provisions or solitary bee nesting tubes become fouled by mites, mold, and debris when humidity rises and sanitation breaks down.",
+        signs: "Dusty nesting cavities, collapsed pollen loaves, poor larval development, and weak emergence from mason or leafcutter nesting blocks.",
+        symptoms: "Reduced brood survival, malformed adults, lower emergence rates, and chronic nest failure in managed solitary bee systems.",
+        detection: "Open sample nesting tubes or blocks after the season; inspect provisions for mites, mold, and compacted debris.",
+        treatment: "Discard badly fouled nesting material, dry replacement nests thoroughly, and sanitize reusable components before the next season.",
+        management: "Rotate nesting materials aggressively, store completed nests under clean dry conditions, and avoid reusing moldy inserts or blocks.",
+        cureStatus: "Recoverable at the population level when contaminated nesting material is replaced.",
+        prevention: "Keep nesting media dry, harvest and store occupied tubes correctly, and maintain annual sanitation for solitary bee equipment.",
+        transmission: "Contaminated nesting media and stored pollen provisions.",
+        hostSpecies: ["Osmia spp.", "Megachile spp.", "Ground and cavity-nesting solitary bees"],
+        riskLevel: "MEDIUM",
+        steps: ["Inspect nesting media", "Discard contaminated tubes", "Dry and sanitize replacements"]
     }
 };

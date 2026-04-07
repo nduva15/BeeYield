@@ -50,28 +50,88 @@ function _includesGuideQuery(values: Array<string | undefined>, q?: string) {
     return values.some((value) => value?.toLowerCase().includes(needle));
 }
 
+function _uniqueStrings(values: Array<string | undefined>) {
+    return Array.from(new Set(values.filter((value): value is string => Boolean(value && value.trim()))));
+}
+
+function _joinSentences(parts: Array<string | undefined>) {
+    return parts.filter(Boolean).join(' ');
+}
+
+function _speciesText(name: string, detail: BeeSpeciesDetail) {
+    return `${name} ${detail.commonName} ${detail.scientificName} ${detail.origin} ${detail.characteristics}`.toLowerCase();
+}
+
+function _inferSpeciesHealthProfile(name: string, detail: BeeSpeciesDetail) {
+    const text = _speciesText(name, detail);
+
+    if (text.includes('bombus') || text.includes('bumble')) {
+        return {
+            commonDiseases: ['Nosema bombi', 'Crithidia bombi', 'Pesticide Poisoning', 'Starvation Stress'],
+            preventionFocus: 'Protect continuous bloom, avoid commercial-to-wild pathogen spillover, keep pesticide pressure low, and maintain undisturbed nesting habitat.',
+            management: 'Bumblebee stewardship depends on habitat continuity more than hive-style intervention: protect queens, reduce disturbance, and retire weak managed colonies quickly.',
+            idealUse: 'Cool-weather pollination, greenhouse crops, and buzz-pollinated plants such as tomatoes and berries.',
+        };
+    }
+
+    if (text.includes('stingless') || text.includes('melipona') || text.includes('tetragon') || text.includes('angelita') || text.includes('jatai') || text.includes('sugarbag') || text.includes('dammar')) {
+        return {
+            commonDiseases: ['Ant Invasion', 'Phorid Fly Parasitism', 'Fungal Bloom (Post-Flood)', 'Starvation Stress'],
+            preventionFocus: 'Prioritize dry hive architecture, ant exclusion, clean entrances, and protected forage close to the colony because stingless bees have small foraging reserves.',
+            management: 'Meliponiculture works best with stable humidity, strong hive stands, minimal vibration, and rapid cleanup of spilled honey or damaged storage pots.',
+            idealUse: 'Medicinal honey production, protected cultivation, and safe pollination near homes, schools, and small gardens.',
+        };
+    }
+
+    if (text.includes('osmia') || text.includes('megachile') || text.includes('xylocopa') || text.includes('andrena') || text.includes('halict') || text.includes('orchid bee') || text.includes('wool carder')) {
+        return {
+            commonDiseases: ['Pollen Mite Fouling', 'Pesticide Poisoning', 'Fungal Bloom (Post-Flood)'],
+            preventionFocus: 'Keep nesting media dry and clean, avoid insecticide use during active flight, and preserve nesting substrate such as bare soil, hollow stems, or drilled blocks.',
+            management: 'Most solitary bees are managed through habitat and nesting sanitation rather than direct treatment, so annual nest rotation and clean storage are critical.',
+            idealUse: 'Targeted orchard, seed crop, and native habitat pollination where site fidelity and early bloom performance matter.',
+        };
+    }
+
+    if (text.includes('cerana') || text.includes('dorsata') || text.includes('florea') || text.includes('andreniformis') || text.includes('laboriosa')) {
+        return {
+            commonDiseases: ['Tropilaelaps mercedesae', 'Sacbrood Virus (SBV)', 'Nosema ceranae (Disappearing)', 'Oriental Hornet'],
+            preventionFocus: 'Match colonies to native climate, avoid unnecessary transfers, and monitor brood parasites and hornet pressure where Asian honey bees and open nesters operate.',
+            management: 'These species need location-specific management, lighter intervention, and strong protection against brood parasites, migration stress, and predator pressure.',
+            idealUse: 'Regional pollination systems and traditional honey production adapted to Asian, tropical, or high-altitude ecologies.',
+        };
+    }
+
+    return {
+        commonDiseases: ['Varroa Destructor (Generic)', 'Deformed Wing Virus (DWV)', 'American Foulbrood (AFB)', 'European Foulbrood (EFB)', 'Nosema ceranae (Disappearing)', 'Small Hive Beetle'],
+        preventionFocus: 'Run year-round IPM, monitor brood health closely, refresh dark comb, and protect colonies from nutritional stress, drifting, robbing, and pesticide exposure.',
+        management: 'Managed honey bees perform best when mite control, queen quality, forage continuity, and sanitation are handled as one system rather than as isolated fixes.',
+        idealUse: 'Managed honey production, crop pollination, and scalable apiary operations with regular inspection and health monitoring.',
+    };
+}
+
 function _buildDiseaseGuideItems(q?: string) {
     return Object.entries(beeHealthData)
         .map(([name, detail]: [string, SymptomDetail]) => ({
             id: _slugifyGuideId(name),
             name,
             type: detail.scientificName ? `${detail.riskLevel} risk | ${detail.scientificName}` : `${detail.riskLevel} risk`,
-            causes: [
+            causes: _joinSentences([
                 detail.causes ? `Causes: ${detail.causes}` : '',
                 detail.signs ? `Signs: ${detail.signs}` : '',
                 detail.symptoms ? `Symptoms: ${detail.symptoms}` : '',
-                detail.transmission ? `Transmission: ${detail.transmission}` : '',
-                detail.detection ? `Detection: ${detail.detection}` : '',
-            ]
-                .filter(Boolean)
-                .join(' '),
-            treatment: [
+            ]),
+            treatment: _joinSentences([
                 detail.treatment ? `Treatment: ${detail.treatment}` : '',
+                detail.management ? `Management: ${detail.management}` : '',
                 detail.prevention ? `Prevention: ${detail.prevention}` : '',
-                detail.steps?.length ? `Response: ${detail.steps.join(' -> ')}` : '',
-            ]
-                .filter(Boolean)
-                .join(' '),
+            ]),
+            detection: detail.detection,
+            transmission: detail.transmission,
+            management: detail.management ?? '',
+            prevention: detail.prevention,
+            cureStatus: detail.cureStatus ?? 'Treatment depends on early detection, disease pressure, and the colony’s remaining strength.',
+            hostSpecies: detail.hostSpecies ?? ['Managed honey bees'],
+            responseSteps: detail.steps ?? [],
             riskLevel: detail.riskLevel,
             scientificName: detail.scientificName,
             references: detail.references ?? [],
@@ -93,39 +153,56 @@ function _buildDiseaseGuideItems(q?: string) {
 
 function _buildSpeciesGuideItems(q?: string) {
     return Object.entries(beeSpeciesData)
-        .map(([name, detail]: [string, BeeSpeciesDetail]) => ({
-            id: _slugifyGuideId(name),
-            name,
-            commonName: detail.scientificName,
-            suitability: [
-                detail.description,
-                `Climate: ${detail.climateSuitability}`,
-                `Temperament: ${detail.temperament}`,
-                `Profile: ${detail.characteristics}`,
-                `Honey yield: ${detail.honeyYield}`,
-            ]
-                .filter(Boolean)
-                .join(' '),
-            location: detail.origin,
-            traits: Array.from(
-                new Set(
-                    [
-                        detail.temperament.split(/[;,]/)[0]?.trim(),
-                        ...detail.pros,
-                    ].filter(Boolean)
-                )
-            ).slice(0, 5),
-            is_extinct: false,
-            references: detail.references ?? [],
-        }))
+        .map(([name, detail]: [string, BeeSpeciesDetail]) => {
+            const inferred = _inferSpeciesHealthProfile(name, detail);
+            const commonDiseases = _uniqueStrings([...(detail.commonDiseases ?? []), ...inferred.commonDiseases]);
+
+            return {
+                id: _slugifyGuideId(name),
+                name,
+                commonName: detail.commonName,
+                scientificName: detail.scientificName,
+                suitability: _joinSentences([
+                    detail.description,
+                    `Climate: ${detail.climateSuitability}.`,
+                    `Temperament: ${detail.temperament}.`,
+                    `Profile: ${detail.characteristics}.`,
+                    `Honey yield: ${detail.honeyYield}.`,
+                    detail.idealUse || inferred.idealUse ? `Best use: ${detail.idealUse ?? inferred.idealUse}.` : '',
+                ]),
+                healthProfile: _joinSentences([
+                    commonDiseases.length ? `Common disease and pressure profile: ${commonDiseases.join(', ')}.` : '',
+                    detail.preventionFocus || inferred.preventionFocus ? `Prevention focus: ${detail.preventionFocus ?? inferred.preventionFocus}` : '',
+                    detail.management || inferred.management ? `Management: ${detail.management ?? inferred.management}` : '',
+                ]),
+                management: detail.management ?? inferred.management,
+                preventionFocus: detail.preventionFocus ?? inferred.preventionFocus,
+                commonDiseases,
+                idealUse: detail.idealUse ?? inferred.idealUse,
+                location: detail.origin,
+                traits: _uniqueStrings([
+                    detail.temperament.split(/[;,]/)[0]?.trim(),
+                    ...detail.pros,
+                    ...detail.cons.map((item) => `Watch: ${item}`),
+                ]).slice(0, 8),
+                is_extinct: false,
+                references: detail.references ?? [],
+            };
+        })
         .filter((item) =>
             _includesGuideQuery(
                 [
                     item.name,
+                    item.scientificName,
                     item.commonName,
                     item.suitability,
+                    item.healthProfile,
                     item.location,
+                    item.management,
+                    item.preventionFocus,
+                    item.idealUse,
                     ...(item.traits || []),
+                    ...(item.commonDiseases || []),
                 ],
                 q
             )
@@ -2599,7 +2676,16 @@ export const beeyieldService = {
     },
 
     async getCropRequirements(cropName?: string): Promise<CropPollinationRequirement[]> {
-        return apiGet<CropPollinationRequirement[]>('/pollination/crops', { crop_name: cropName });
+        try {
+            const data = await apiGet<CropPollinationRequirement[]>('/pollination/crops', { crop_name: cropName });
+            const normalized = normalizeCropRequirements(data);
+            if (!cropName) return normalized;
+            return normalized.filter((crop) => crop.crop_name === cropName);
+        } catch (error) {
+            console.error('getCropRequirements:', error);
+            if (!cropName) return DASHBOARD_CROP_REQUIREMENTS;
+            return DASHBOARD_CROP_REQUIREMENTS.filter((crop) => crop.crop_name === cropName);
+        }
     },
 
     async calculatePollination(input: PollinationCalculatorInput): Promise<PollinationCalculatorResult> {

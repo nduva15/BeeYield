@@ -22,6 +22,7 @@ import { beeyieldService } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
+import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 
 // Fix Leaflet default icon issue
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -96,7 +97,7 @@ const FlightMapView: React.FC = () => {
     const [places, setPlaces] = useState<any[]>([]);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const selectedApiaryId = selectedPlace?.apiary_id || selectedPlace?.linked_apiary_id || selectedPlaceId || '';
-    const { data: weatherSummary } = useApiaryWeatherSummary(selectedApiaryId || undefined);
+    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(selectedApiaryId || undefined);
     const weather = React.useMemo(() => ({
         temperature: weatherSummary?.current?.temperature_c ?? null,
         humidity: weatherSummary?.current?.humidity_pct ?? null,
@@ -259,7 +260,66 @@ const FlightMapView: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Tactical Sidebar */}
                 <div className="lg:col-span-4 space-y-6">
-                    {/* Live Weather Metrics */}
+                    <WeatherTelemetryPanel
+                        summary={weatherSummary}
+                        isLoading={weatherLoading}
+                        title="Flight map weather"
+                        compact
+                    />
+
+                    {(weatherSummary?.current?.temperature_c != null || weatherSummary?.current?.humidity_pct != null) && (
+                        <div className={cn(glass.section, "overflow-hidden border-white/60 bg-white/55 shadow-xl")}>
+                            <div className="border-b border-[#F4D03F]/15 px-5 py-4 flex items-center justify-between">
+                                <div>
+                                    <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Flight readiness</h3>
+                                    <p className="text-[10px] font-semibold text-slate-500">Weather-aware deployment status for this apiary.</p>
+                                </div>
+                                <span className={cn(
+                                    "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em]",
+                                    (weatherSummary?.current?.temperature_c || 0) > 12 && (weatherSummary?.current?.humidity_pct || 100) < 85
+                                        ? "border border-[#1B9157]/20 bg-[#1B9157]/10 text-[#1B9157]"
+                                        : "border border-[#F4D03F]/20 bg-[#F4D03F]/10 text-[#9A6B00]"
+                                )}>
+                                    {(weatherSummary?.current?.temperature_c || 0) > 12 && (weatherSummary?.current?.humidity_pct || 100) < 85 ? "Enabled" : "Limited"}
+                                </span>
+                            </div>
+                            <div className="space-y-4 p-5">
+                                {weatherSummary?.current?.temperature_c != null && weatherSummary.current.temperature_c < 10 && (
+                                    <Alert className="bg-red-50 border-red-100 text-red-700 rounded-2xl">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        <AlertTitle className="font-black text-xs">Flight Grounded</AlertTitle>
+                                        <AlertDescription className="text-[10px] font-medium opacity-80">
+                                            Temperature is below 10°C, so foraging activity is expected to be dormant.
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm">
+                                        <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Potential score</div>
+                                        <div className="mt-2 text-3xl font-black tracking-tight text-[#1A1A1A]">{Math.round(foragePotential?.score || 0)}%</div>
+                                        <div className="mt-2 h-1.5 w-full rounded-full overflow-hidden bg-[#F4D03F]/10">
+                                            <div className="h-full rounded-full bg-[#1B9157]" style={{ width: `${foragePotential?.score || 0}%` }} />
+                                        </div>
+                                    </div>
+                                    <div className="rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm">
+                                        <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Active sources</div>
+                                        <div className="mt-2 text-3xl font-black tracking-tight text-[#1A1A1A]">{foragePotential?.active_sources?.length || 0}</div>
+                                        <div className="mt-1 text-[10px] font-semibold text-slate-500">Blooming nectar zones near the selected site.</div>
+                                    </div>
+                                </div>
+
+                                <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4">
+                                    <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Recommendation</div>
+                                    <p className="mt-2 text-[11px] font-semibold leading-relaxed text-slate-600">
+                                        {foragePotential?.recommendation || "Real-time weather and bloom telemetry will drive your routing recommendation here."}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {false && (
                     <div className={cn(glass.card, "p-0 overflow-hidden")}>
                         <div className="bg-[#1A1A1A] p-5 text-white">
                             <h3 className="text-[10px] font-bold text-[#F4D03F] mb-4">Bee-Specific Meteo</h3>
@@ -307,6 +367,7 @@ const FlightMapView: React.FC = () => {
                             </div>
                         </div>
                     </div>
+                    )}
 
                     {/* Radius Controls */}
                     <div className={cn(glass.card, "p-5 space-y-5")}>
