@@ -16,9 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { getLearnMaterialByName } from "@/data/learnMaterials";
 
 const PrecisionPollination = () => {
   const [isProfessionalOpen, setIsProfessionalOpen] = useState(false);
+  const handbook = getLearnMaterialByName("PRECISION POLLINATION HANDBOOK");
 
   const professionalTools = [
     { label: 'Tactical Grid', icon: Layers, path: '/beeyield-dashboard', description: 'Live device monitoring' },
@@ -275,7 +277,9 @@ const PrecisionPollination = () => {
                 Download our free guide to understand bees and how to get the most from them during pollination.
               </p>
               <Button className="gap-2" asChild>
-                <Link to="/learn">Download Guide <ArrowRight className="h-4 w-4" /></Link>
+                <a href={handbook?.pdfPath || "/learn"} target="_blank" rel="noreferrer">
+                  Download Guide <ArrowRight className="h-4 w-4" />
+                </a>
               </Button>
             </div>
 

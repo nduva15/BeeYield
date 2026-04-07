@@ -169,7 +169,10 @@ const Shop = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {visibleProducts.map((product) => (
+          {visibleProducts.map((product) => {
+            const material = product.category === "education" ? getLearnMaterialByName(product.name) : undefined;
+
+            return (
             <Card
               key={product.id}
               className={cn(
@@ -312,9 +315,26 @@ const Shop = () => {
                                   product.category
                                 )}
                               </p>
+                              {material && (
+                                <p className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157]">
+                                  {material.formatLabel}
+                                </p>
+                              )}
                             </div>
 
                             <div className="flex flex-col gap-2">
+                              {material && (
+                                <Button
+                                  asChild
+                                  variant="outline"
+                                  className="w-full h-11 rounded-2xl border-amber-200 bg-white px-4 text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157] hover:bg-amber-50"
+                                >
+                                  <a href={material.pdfPath} target="_blank" rel="noreferrer">
+                                    <Download className="h-3.5 w-3.5" />
+                                    Open PDF
+                                  </a>
+                                </Button>
+                              )}
                               <Button
                                 className={cn(
                                   "w-full h-12 rounded-2xl font-black text-[10px] transition-all duration-300 shadow-lg px-6",
@@ -342,7 +362,8 @@ const Shop = () => {
                         </div>
                       </CardContent>
                     </Card>
-          ))}
+            );
+          })}
         </div>
       </section>
     </BeeYieldPageShell>
