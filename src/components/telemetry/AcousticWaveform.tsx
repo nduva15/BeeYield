@@ -1,128 +1,149 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-    Volume2,
-    Activity,
-    Zap,
-    ShieldCheck,
-    Mic,
-    Play,
-    Square,
-    Waves as WaveformIcon,
-    Upload,
-    Loader2
-} from 'lucide-react';
+import { Activity, Loader2, Mic, Play, ShieldCheck, Square, Upload, Waves as WaveformIcon, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+
+const waveformBars = [32, 58, 24, 76, 45, 64, 28, 84, 50, 68, 34, 60, 26, 72, 40, 56];
 
 const AcousticWaveform: React.FC = () => {
-    const [isPlaying, setIsPlaying] = React.useState(false);
-    const [isAnalyzing, setIsAnalyzing] = React.useState(false);
-    const [analysisResult, setAnalysisResult] = React.useState<any>(null);
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isAnalyzing, setIsAnalyzing] = React.useState(false);
+  const [analysisResult, setAnalysisResult] = React.useState<any>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-    const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setIsAnalyzing(true);
-            try {
-                const result = await beeyieldService.analyzeHiveAudio({
-                    file,
-                    hiveId: undefined
-                });
-                setAnalysisResult(result);
-                toast.success("Acoustic analysis complete!");
-            } catch (error: any) {
-                toast.error("Audio analysis failed", { description: error.message });
-            } finally {
-                setIsAnalyzing(false);
-            }
-        }
-    };
+  const handleAudioUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files?.[0]) return;
 
-    return (
-        <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(250,204,21,1)]">
-            <CardHeader className="p-6 border-b-4 border-[#064e3b]/5 flex flex-row items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <WaveformIcon className="w-5 h-5 text-[#064e3b]" />
-                    <CardTitle className="text-lg font-black text-[#064e3b] uppercase tracking-tighter">Spectral Health Profile</CardTitle>
-                </div>
-                <Badge className="bg-[#10b981] text-white rounded-none px-3 py-1 text-[9px] font-black italic">SIGNATURE: OPTIMAL</Badge>
-            </CardHeader>
-            <CardContent className="p-6">
-                {/* Waveform Visualization (requires real audio stream) */}
-                <div className="h-32 w-full bg-[#064e3b] relative flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px]" />
+    const file = event.target.files[0];
+    setIsAnalyzing(true);
 
-                    <div className="text-center px-6">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/80">
-                            Upload audio to view analysis
-                        </p>
-                        <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/40 mt-1">
-                            No simulated waveform
-                        </p>
-                    </div>
+    try {
+      const result = await beeyieldService.analyzeHiveAudio({ file, hiveId: undefined });
+      setAnalysisResult(result);
+      toast.success('Acoustic analysis complete.');
+    } catch (error: any) {
+      toast.error('Audio analysis failed.', { description: error.message });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
-                    <button
-                        onClick={() => setIsPlaying(!isPlaying)}
-                        className="absolute bottom-4 right-4 w-10 h-10 bg-[#facc15] border-2 border-[#064e3b] flex items-center justify-center hover:bg-white transition-colors"
-                        aria-label={isPlaying ? "Stop playback" : "Start playback"}
-                        title={isPlaying ? "Stop playback" : "Start playback"}
-                    >
-                        {isPlaying ? <Square className="w-4 h-4 text-[#064e3b]" /> : <Play className="w-4 h-4 text-[#064e3b] fill-[#064e3b]" />}
-                    </button>
+  const confidence = Math.round((analysisResult?.confidence || 0) * 100);
+  const statusLabel = analysisResult?.classification || 'Awaiting upload';
+  const signalState = analysisResult?.alert_triggered ? 'Alert flagged' : analysisResult ? 'Signal stable' : 'No signal';
 
-                    <div className="absolute top-2 left-4 text-[7px] font-mono text-[#10b981]/60 uppercase">
-                        {analysisResult ? `Result: ${analysisResult.classification} (${Math.round((analysisResult.confidence || 0) * 100)}%)` : "No audio uploaded"}
-                    </div>
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <WaveformIcon className="h-4 w-4 text-[#1B9157]" />
+            <h3 className="text-sm font-black uppercase tracking-[0.18em] text-[#1A1A1A]">Spectral health profile</h3>
+          </div>
+          <p className="text-[11px] font-medium text-slate-500">A cleaner acoustic surface that matches the telemetry shell and keeps upload actions close to the chart.</p>
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#1B9157]/15 bg-[#1B9157]/10 px-3 py-1.5">
+          <ShieldCheck className="h-3.5 w-3.5 text-[#1B9157]" />
+          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1B9157]">{signalState}</span>
+        </div>
+      </div>
 
-                    <div className="absolute top-2 right-4 flex gap-2">
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleAudioUpload}
-                            className="hidden"
-                            accept="audio/*"
-                            aria-label="Upload audio for analysis"
-                            title="Upload audio for analysis"
-                        />
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={isAnalyzing}
-                            className="w-8 h-8 bg-white/10 border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors"
-                        >
-                            {isAnalyzing ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Mic className="w-4 h-4 text-white" />}
-                        </button>
-                    </div>
-                </div>
+      <div className="rounded-[28px] border border-[#1A1A1A]/10 bg-[#1A1A1A] p-5 text-white shadow-[0_24px_70px_-35px_rgba(26,26,26,0.75)]">
+        <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-gradient-to-br from-[#111111] via-[#163126] to-[#1A1A1A] p-5">
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#F4D03F_1px,transparent_1px)] [background-size:24px_24px]" />
 
-                {/* Interpretation */}
-                <div className="mt-6 space-y-4">
-                    <div className="flex items-center justify-between border-b-2 border-[#064e3b]/5 pb-4">
-                        <div className="flex items-center gap-2">
-                            <Activity className="w-4 h-4 text-[#064e3b]" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/60">Brood Cluster Density</span>
-                        </div>
-                        <span className="text-xs font-black text-[#064e3b]">—</span>
-                    </div>
+          <div className="relative flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">Live spectral strip</p>
+              <p className="mt-1 text-sm font-black text-white">{statusLabel}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleAudioUpload}
+                className="hidden"
+                accept="audio/*"
+                aria-label="Upload audio for acoustic analysis"
+                title="Upload audio for acoustic analysis"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isAnalyzing}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 text-[10px] font-black uppercase tracking-[0.18em] text-white transition-all hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                Upload audio
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsPlaying((value) => !value)}
+                className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F4D03F] text-[#1A1A1A] transition-all hover:scale-[1.03]"
+                aria-label={isPlaying ? 'Stop playback preview' : 'Start playback preview'}
+                title={isPlaying ? 'Stop playback preview' : 'Start playback preview'}
+              >
+                {isPlaying ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4 fill-[#1A1A1A]" />}
+              </button>
+            </div>
+          </div>
 
-                    <div className="p-4 bg-neutral-50/50 border-2 border-[#064e3b]/5">
-                        <h4 className="text-[10px] font-black uppercase text-[#064e3b] mb-2 flex items-center gap-2">
-                            <ShieldCheck className="w-3.5 h-3.5 text-[#10b981]" />
-                            Transformer Insights
-                        </h4>
-                        <p className="text-[9px] font-bold text-[#064e3b]/60 uppercase leading-relaxed">
-                            {analysisResult
-                                ? `State: ${analysisResult.classification}. ${analysisResult.alert_triggered ? 'ALERT TRIGGERED' : 'No alert triggered.'}`
-                                : 'Upload audio to generate an acoustic assessment.'}
-                        </p>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
+          <div className="relative mt-6 flex h-40 items-end gap-2 overflow-hidden rounded-[22px] border border-white/10 bg-black/15 px-4 pb-4 pt-6">
+            {waveformBars.map((height, index) => (
+              <motion.div
+                key={`${height}-${index}`}
+                className={cn(
+                  'flex-1 rounded-full bg-gradient-to-t from-[#F4D03F] via-[#F7E08A] to-[#1B9157]',
+                  isPlaying ? 'opacity-100' : 'opacity-75',
+                )}
+                initial={{ height: `${Math.max(12, height - 10)}%` }}
+                animate={{ height: `${isPlaying ? height : Math.max(14, Math.round(height * 0.65))}%` }}
+                transition={{ duration: 0.45, delay: index * 0.02, repeat: isPlaying ? Infinity : 0, repeatType: 'mirror' }}
+              />
+            ))}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/15 to-transparent" />
+          </div>
+
+          <div className="relative mt-4 grid gap-3 sm:grid-cols-3">
+            {[
+              { label: 'Classification', value: statusLabel },
+              { label: 'Confidence', value: analysisResult ? `${confidence}%` : 'Pending' },
+              { label: 'Alert state', value: signalState },
+            ].map((item) => (
+              <div key={item.label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/40">{item.label}</p>
+                <p className="mt-1 text-sm font-black text-white">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#FFF9F0] px-4 py-4">
+          <div className="flex items-center gap-2">
+            <Activity className="h-4 w-4 text-[#1B9157]" />
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Brood cluster density</p>
+          </div>
+          <p className="mt-2 text-base font-black text-[#1A1A1A]">{analysisResult?.brood_density || 'Awaiting acoustic read'}</p>
+        </div>
+
+        <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#FFF9F0] px-4 py-4">
+          <div className="flex items-center gap-2">
+            <Zap className="h-4 w-4 text-[#F4D03F]" />
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Transformer insights</p>
+          </div>
+          <p className="mt-2 text-sm font-bold leading-relaxed text-slate-600">
+            {analysisResult
+              ? `State: ${analysisResult.classification}. ${analysisResult.alert_triggered ? 'Alert triggered for follow-up.' : 'No alert triggered.'}`
+              : 'Upload audio to generate an acoustic assessment.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AcousticWaveform;
