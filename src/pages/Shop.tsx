@@ -35,6 +35,33 @@ import { CATALOG } from "@/data/catalog";
 import { getLearnMaterialByName } from "@/data/learnMaterials";
 
 const STATIC_PRODUCTS: Product[] = CATALOG as Product[];
+const CATEGORY_CONTENT: Record<string, { eyebrow: string; title: string; description: string; pills: string[] }> = {
+  honey: {
+    eyebrow: "Traceable Honey",
+    title: "Pure honey with verified origin and seasonal harvest batches.",
+    description: "Single-origin BeeYield honey with transparent batch handling, clean packaging, and everyday staples for gifting or home use.",
+    pills: ["3 jar sizes", "Batch-linked stock", "Verified quality"]
+  },
+  hardware: {
+    eyebrow: "Apiary Technology",
+    title: "Sensors, gateways, and monitoring tools built for productive hives.",
+    description: "BeeHUB devices and accessories for climate telemetry, weight tracking, solar power, security, and acoustic monitoring.",
+    pills: ["Live monitoring", "Solar-ready kits", "Commercial apiaries"]
+  },
+  merch: {
+    eyebrow: "BeeYield Merch Drop",
+    title: "Eight branded merch materials designed as one coherent BeeYield collection.",
+    description: "Logo-led apparel and fieldwear for beekeepers, partners, and fans of the brand. The range covers beanies, tees, hoodies, carry gear, and a pro bee suit.",
+    pills: ["8-piece collection", "Brand-first graphics", "Fieldwear and lifestyle"]
+  },
+  education: {
+    eyebrow: "Bee Academy",
+    title: "Guides, courses, and operational playbooks for modern beekeeping.",
+    description: "Downloadable learning materials and training products for beginners, commercial operators, and BeeYield technology users.",
+    pills: ["PDF guides", "Video learning", "Professional toolkits"]
+  }
+};
+
 const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [activeCategory, setActiveCategory] = useState<string>("honey");
@@ -114,6 +141,7 @@ const Shop = () => {
   };
 
   const visibleProducts = STATIC_PRODUCTS.filter(p => p.category === activeCategory);
+  const categoryContent = CATEGORY_CONTENT[activeCategory] || CATEGORY_CONTENT.honey;
 
   return (
     <BeeYieldPageShell className="bg-background">
@@ -126,7 +154,7 @@ const Shop = () => {
               BeeYield <span className="text-[#F4D03F]">Store</span>
             </h1>
             <p className="text-sm text-muted-foreground max-w-xl">
-              Our curated collection of premium 100% pure honey.
+              BeeYield honey, merch, technology, and learning materials in one curated store.
             </p>
           </div>
 
@@ -167,6 +195,33 @@ const Shop = () => {
             </button>
           ))}
         </div>
+
+        <section className="mb-10 overflow-hidden rounded-[2rem] border border-border/50 bg-gradient-to-br from-[#FFF9F0] via-white to-[#F4D03F]/15 p-6 shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl space-y-3">
+              <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[#1B9157]">
+                {categoryContent.eyebrow}
+              </p>
+              <h2 className="text-2xl font-black tracking-tight text-[#1A1A1A] md:text-3xl">
+                {categoryContent.title}
+              </h2>
+              <p className="max-w-2xl text-sm leading-6 text-[#1B4332]/75">
+                {categoryContent.description}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {categoryContent.pills.map((pill) => (
+                <Badge
+                  key={pill}
+                  className="rounded-full border border-[#1B9157]/15 bg-white/90 px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157] shadow-sm"
+                >
+                  {pill}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {visibleProducts.map((product) => {

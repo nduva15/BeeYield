@@ -17,10 +17,10 @@ use supabase_client::SupabaseClient;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // Load .env file if present (searches up the directory tree)
+    // Load shared defaults first, then let backend-specific settings override them.
     let _ = dotenvy::from_filename("../../.env");
-    let _ = dotenvy::from_filename("../../backend/.env");
-    let _ = dotenvy::dotenv();
+    let _ = dotenvy::from_filename_override("../../backend/.env");
+    let _ = dotenvy::from_filename_override(".env");
 
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 

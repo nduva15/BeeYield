@@ -1,0 +1,33 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="140" y1="120" x2="1020" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF9F0"/>
+      <stop offset="1" stop-color="#F5E7AF"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="410" y1="352" x2="842" y2="806" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A1A1A"/>
+      <stop offset="1" stop-color="#2C2C2C"/>
+    </linearGradient>
+    <filter id="shadow" x="246" y="220" width="760" height="738" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#1B4332" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="1200" rx="72" fill="url(#bg)"/>
+  <g opacity="0.12" stroke="#1B9157" stroke-width="8">
+    <path d="M210 236C266 236 266 324 322 324"/>
+    <path d="M880 884C936 884 936 972 992 972"/>
+    <path d="M920 236C976 236 976 324 1032 324"/>
+  </g>
+  <g filter="url(#shadow)">
+    <ellipse cx="610" cy="850" rx="270" ry="54" fill="#1A1A1A" opacity="0.12"/>
+    <path d="M398 532C398 410.497 496.497 312 618 312C723.09 312 812.333 385.433 833 488V642H398V532Z" fill="url(#cap)"/>
+    <path d="M834 520C891.333 528.667 947.067 552.867 972 608C980 626 965.532 642 945.857 642H833L834 520Z" fill="#145A32"/>
+    <path d="M441 438C486.905 384.004 551.686 352 622 352C672.525 352 720.193 368.527 759.143 399.286" stroke="#F4D03F" stroke-width="16" stroke-linecap="round"/>
+    <rect x="476" y="474" width="284" height="138" rx="34" fill="#FFF9F0"/>
+    <text x="618" y="544" text-anchor="middle" fill="#1A1A1A" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="800" letter-spacing="8">BEEYIELD</text>
+    <text x="618" y="584" text-anchor="middle" fill="#1B9157" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="5">APIARY FIELD CAP</text>
+    <path d="M564 430H674" stroke="#2ECC71" stroke-width="10" stroke-linecap="round"/>
+    <path d="M890 562C894 612 878 653 840 686" stroke="#2ECC71" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <text x="600" y="1090" text-anchor="middle" fill="#1B4332" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" letter-spacing="6">BEEYIELD BRAND MERCH</text>
+</svg>

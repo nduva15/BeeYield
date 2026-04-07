@@ -310,105 +310,129 @@ export const CATALOG: Product[] = [
   // --- MERCH (8 items) ---
   {
     id: "m1",
-    name: "BeeYield Premium Hoodie",
-    description: "Heavyweight organic cotton hoodie with embroidered BeeYield logo. Stylish, warm, and built to last.",
+    name: "BeeYield Field Beanie",
+    description: "Cold-weather rib knit beanie with a woven BeeYield front patch and clean apiary-ready styling.",
     category: "merch",
-    badge: "Premium Gear",
-    images: ["/images/products/beeyield_hoodie.png"],
-    rating: 4.9,
-    review_count: 86,
+    badge: "New Drop",
+    images: ["/images/products/beeyield_beanie.svg"],
+    rating: 4.8,
+    review_count: 38,
     is_active: true,
     variants: [
-      { id: "vm1-1", size: "M", price_kes: 3800, stock_quantity: 20, is_available: true },
-      { id: "vm1-2", size: "L", price_kes: 3800, stock_quantity: 25, is_available: true }
+      { id: "vm1-1", size: "Standard", price_kes: 1400, stock_quantity: 55, is_available: true },
+      { id: "vm1-2", size: "Premium Knit", price_kes: 1800, stock_quantity: 32, is_available: true }
     ]
   },
   {
     id: "m2",
-    name: "BeeYield Trucker Cap",
-    description: "Classic ventilated trucker cap with embroidered logo. Perfect for sunny days in the apiary.",
+    name: "BeeYield Apiary Field Cap",
+    description: "Structured field cap with embroidered wordmark, breathable panels, and a low-glare bill for long hive days.",
     category: "merch",
-    badge: null,
-    images: ["/images/products/beeyield_cap.png"],
-    rating: 4.5,
-    review_count: 42,
+    badge: "Core Uniform",
+    images: ["/images/products/beeyield_field_cap.svg"],
+    rating: 4.8,
+    review_count: 64,
     is_active: true,
-    variants: [{ id: "vm2-1", size: "Standard", price_kes: 1200, stock_quantity: 60, is_available: true }]
+    variants: [
+      { id: "vm2-1", size: "Classic Fit", price_kes: 1600, stock_quantity: 60, is_available: true },
+      { id: "vm2-2", size: "Mesh Back", price_kes: 1750, stock_quantity: 44, is_available: true }
+    ]
   },
   {
     id: "m3",
-    name: "Sustainability Tote Bag",
-    description: "Eco-friendly heavy canvas tote. Features stunning botanical bee artwork.",
+    name: "BeeYield Signature Tee",
+    description: "Soft premium cotton tee with centered BeeYield hex mark on the chest and a clean logo-forward finish.",
     category: "merch",
-    badge: "Eco-Choice",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.7,
-    review_count: 42,
+    badge: "Best Seller",
+    images: ["/images/products/beeyield_signature_tee.svg"],
+    rating: 4.9,
+    review_count: 112,
     is_active: true,
-    variants: [{ id: "vm3-1", size: "Large", price_kes: 1200, stock_quantity: 100, is_available: true }]
+    variants: [
+      { id: "vm3-1", size: "S", price_kes: 2200, stock_quantity: 24, is_available: true },
+      { id: "vm3-2", size: "M", price_kes: 2200, stock_quantity: 38, is_available: true },
+      { id: "vm3-3", size: "L", price_kes: 2200, stock_quantity: 36, is_available: true },
+      { id: "vm3-4", size: "XL", price_kes: 2350, stock_quantity: 20, is_available: true }
+    ]
   },
   {
     id: "m4",
-    name: "Signature Beekeeper Tee",
-    description: "Soft, breathable 100% organic cotton. A minimalist design that makes a statement.",
+    name: "BeeYield Long Sleeve Field Tee",
+    description: "Performance-weight long sleeve tee with front chest branding and sleeve detailing for early-morning inspections.",
     category: "merch",
-    badge: null,
-    images: ["/images/products/beekeeper_tshirt.png"],
+    badge: "Fieldwear",
+    images: ["/images/products/beeyield_longsleeve.svg"],
     rating: 4.8,
-    review_count: 124,
+    review_count: 58,
     is_active: true,
     variants: [
-      { id: "vm4-1", size: "M", price_kes: 2200, stock_quantity: 30, is_available: true },
-      { id: "vm4-2", size: "L", price_kes: 2200, stock_quantity: 40, is_available: true }
+      { id: "vm4-1", size: "M", price_kes: 2800, stock_quantity: 26, is_available: true },
+      { id: "vm4-2", size: "L", price_kes: 2800, stock_quantity: 34, is_available: true },
+      { id: "vm4-3", size: "XL", price_kes: 2950, stock_quantity: 18, is_available: true }
     ]
   },
   {
     id: "m5",
-    name: "BeeYield Ceramic Mug",
-    description: "A high-fire ceramic mug in matte charcoal. Ergonomic design for that perfect morning coffee.",
+    name: "BeeYield Heavyweight Hoodie",
+    description: "Premium heavyweight fleece hoodie with oversized back identity panel and BeeYield chest application.",
     category: "merch",
-    badge: "Lifestyle",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.6,
-    review_count: 34,
+    badge: "Premium Gear",
+    images: ["/images/products/beeyield_heavyweight_hoodie.svg"],
+    rating: 4.9,
+    review_count: 86,
     is_active: true,
-    variants: [{ id: "vm5-1", size: "12oz", price_kes: 950, stock_quantity: 60, is_available: true }]
+    variants: [
+      { id: "vm5-1", size: "M", price_kes: 4200, stock_quantity: 18, is_available: true },
+      { id: "vm5-2", size: "L", price_kes: 4200, stock_quantity: 24, is_available: true },
+      { id: "vm5-3", size: "XL", price_kes: 4400, stock_quantity: 16, is_available: true }
+    ]
   },
   {
     id: "m6",
-    name: "Beekeeping Enamel Pin",
-    description: "Limited edition enamel pins featuring different bee species. Perfect for your jacket.",
+    name: "BeeYield Crewneck Sweatshirt",
+    description: "Relaxed crewneck with a bold BeeYield front seal, built for cool evenings and clean everyday wear.",
     category: "merch",
-    badge: "Collectible",
-    images: ["/images/products/beeyield_cap.png"],
-    rating: 5.0,
-    review_count: 48,
+    badge: "Limited Run",
+    images: ["/images/products/beeyield_crewneck.svg"],
+    rating: 4.7,
+    review_count: 46,
     is_active: true,
-    variants: [{ id: "vm6-1", size: "Set", price_kes: 1500, stock_quantity: 200, is_available: true }]
+    variants: [
+      { id: "vm6-1", size: "M", price_kes: 3600, stock_quantity: 22, is_available: true },
+      { id: "vm6-2", size: "L", price_kes: 3600, stock_quantity: 28, is_available: true },
+      { id: "vm6-3", size: "XL", price_kes: 3750, stock_quantity: 14, is_available: true }
+    ]
   },
   {
     id: "m7",
-    name: "Bamboo Bee Hotel",
-    description: "Support solitary bees in your garden with this sustainably sourced bamboo bee hotel.",
+    name: "BeeYield Canvas Tote",
+    description: "Heavy-duty canvas tote with BeeYield honeycomb shield, sized for market runs, notebooks, or field gear.",
     category: "merch",
-    badge: "Garden",
-    images: ["/images/products/beeyield_tote_bag.png"],
+    badge: "Eco Carry",
+    images: ["/images/products/beeyield_canvas_tote.svg"],
     rating: 4.8,
-    review_count: 29,
+    review_count: 52,
     is_active: true,
-    variants: [{ id: "vm7-1", size: "Standard", price_kes: 3200, stock_quantity: 15, is_available: true }]
+    variants: [
+      { id: "vm7-1", size: "Standard", price_kes: 1500, stock_quantity: 72, is_available: true },
+      { id: "vm7-2", size: "Wide Gusset", price_kes: 1750, stock_quantity: 36, is_available: true }
+    ]
   },
   {
     id: "m8",
-    name: "Wildflower Seed Mix",
-    description: "A curated blend of 25 native wildflower species designed to provide forage for bees.",
+    name: "BeeYield Pro Bee Suit",
+    description: "Professional bee suit with BeeYield chest and back branding, reinforced seams, and visibility-focused field details.",
     category: "merch",
-    badge: "Impact",
-    images: ["/images/products/beeyield_tote_bag.png"],
-    rating: 4.7,
-    review_count: 156,
+    badge: "Pro Kit",
+    images: ["/images/products/beeyield_pro_bee_suit.svg"],
+    rating: 4.9,
+    review_count: 27,
     is_active: true,
-    variants: [{ id: "vm8-1", size: "50g Pack", price_kes: 450, stock_quantity: 500, is_available: true }]
+    variants: [
+      { id: "vm8-1", size: "M", price_kes: 9800, stock_quantity: 8, is_available: true },
+      { id: "vm8-2", size: "L", price_kes: 9800, stock_quantity: 10, is_available: true },
+      { id: "vm8-3", size: "XL", price_kes: 10200, stock_quantity: 6, is_available: true }
+    ]
   },
 
   // --- EDUCATION / LEARN (8 items) ---

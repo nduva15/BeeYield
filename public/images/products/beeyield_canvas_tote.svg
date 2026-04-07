@@ -1,0 +1,27 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="160" y1="130" x2="1020" y2="1070" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF9F0"/>
+      <stop offset="1" stop-color="#E8F4ED"/>
+    </linearGradient>
+    <linearGradient id="bag" x1="404" y1="314" x2="804" y2="920" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF8"/>
+      <stop offset="1" stop-color="#F0E7D1"/>
+    </linearGradient>
+    <filter id="shadow" x="236" y="170" width="728" height="914" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="28" stdDeviation="30" flood-color="#1B4332" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="1200" rx="72" fill="url(#bg)"/>
+  <g filter="url(#shadow)">
+    <ellipse cx="600" cy="930" rx="226" ry="50" fill="#1A1A1A" opacity="0.1"/>
+    <path d="M406 366C406 258.857 492.857 172 600 172C707.143 172 794 258.857 794 366" stroke="#1B9157" stroke-width="28" stroke-linecap="round"/>
+    <path d="M406 366C406 322 441.667 286.333 486 286.333H714C758.333 286.333 794 322 794 366V872C794 903.137 768.748 928.389 737.611 928.389H462.389C431.252 928.389 406 903.137 406 872V366Z" fill="url(#bag)"/>
+    <rect x="468" y="438" width="264" height="246" rx="36" fill="#1B9157"/>
+    <path d="M600 500L664 538V612L600 650L536 612V538L600 500Z" fill="#F4D03F"/>
+    <path d="M556 702H644" stroke="#1A1A1A" stroke-width="10" stroke-linecap="round"/>
+    <text x="600" y="786" text-anchor="middle" fill="#1A1A1A" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="800" letter-spacing="7">BEEYIELD</text>
+    <text x="600" y="838" text-anchor="middle" fill="#1B9157" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="7">CANVAS TOTE</text>
+  </g>
+  <text x="600" y="1090" text-anchor="middle" fill="#1B4332" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" letter-spacing="6">BEEYIELD BRAND MERCH</text>
+</svg>
