@@ -1143,6 +1143,48 @@ export interface Transaction {
     etims_qr_url?: string | null;
 }
 
+export interface VarroaSimulationPoint {
+    day: number;
+    dayLabel: string;
+    population: number;
+    phoretic: number;
+    dailyMiteFall: number;
+    cumulativeMiteFall: number;
+    brood: number;
+    mitesInBrood: number;
+    broodlessPhoretic: number;
+    infectionPer100: number;
+    scenarioRisk: number;
+    adultBees: number;
+    allBrood: number;
+    cappedBrood: number;
+    alcoholWash: number;
+}
+
+export interface VarroaSimulationSummary {
+    estimatedMiteCount: number;
+    totalPopulation: number;
+    phoretic: number;
+    brood: number;
+    dailyMiteFall: number;
+    collapseThreshold: number;
+}
+
+export interface VarroaSimulationMeta {
+    source: string;
+    modelVersion: string;
+    generatedAt: string;
+    startMode: string;
+    measurementType: string;
+    treatmentType: string;
+}
+
+export interface VarroaSimulationResponse {
+    timeline: VarroaSimulationPoint[];
+    summary: VarroaSimulationSummary;
+    meta: VarroaSimulationMeta;
+}
+
 export const beeyieldService = {
     supabaseBeeYield: sb,
     _configsCache: null as any[] | null,
@@ -2439,48 +2481,6 @@ export const beeyieldService = {
         // Sound readings are persisted server-side (acoustic inferences/readings). Client should not write raw sensor rows.
         return { data: null, error: new Error('createAcousticReading is not supported via client-side CRUD') };
     },
-
-export interface VarroaSimulationPoint {
-    day: number;
-    dayLabel: string;
-    population: number;
-    phoretic: number;
-    dailyMiteFall: number;
-    cumulativeMiteFall: number;
-    brood: number;
-    mitesInBrood: number;
-    broodlessPhoretic: number;
-    infectionPer100: number;
-    scenarioRisk: number;
-    adultBees: number;
-    allBrood: number;
-    cappedBrood: number;
-    alcoholWash: number;
-}
-
-export interface VarroaSimulationSummary {
-    estimatedMiteCount: number;
-    totalPopulation: number;
-    phoretic: number;
-    brood: number;
-    dailyMiteFall: number;
-    collapseThreshold: number;
-}
-
-export interface VarroaSimulationMeta {
-    source: string;
-    modelVersion: string;
-    generatedAt: string;
-    startMode: string;
-    measurementType: string;
-    treatmentType: string;
-}
-
-export interface VarroaSimulationResponse {
-    timeline: VarroaSimulationPoint[];
-    summary: VarroaSimulationSummary;
-    meta: VarroaSimulationMeta;
-}
 
     // ========== VARROA READINGS & TREATMENTS ==========
     async getVarroaReadings(hiveId?: string): Promise<any[]> {
