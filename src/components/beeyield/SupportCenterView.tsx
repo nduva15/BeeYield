@@ -12,22 +12,24 @@ import {
 } from "@/components/ui/select";
 import { toast } from 'sonner';
 import { ServiceForm } from './ServiceForm';
-import { Loader2, Send, Printer, Headphones, Mail, Phone, MapPin, Search, Activity, ChevronRight, MessageSquare, ShieldCheck, X } from 'lucide-react';
+import { Loader2, Send, Printer, Headphones, Mail, Phone, MapPin, Search, Activity, ChevronRight, MessageSquare, ShieldCheck, X, Pencil, Trash2 } from 'lucide-react';
 import { beeyieldService, SupportRequest } from '@/services/beeyieldService';
 import { AnimatePresence, motion } from 'framer-motion';
-import { glass, PageHeader } from './GlassTheme';
+import { glass, PageHeader, GlassConfirmModal } from './GlassTheme';
 
 interface SupportCenterViewProps {
     onTabChange: (tab: string) => void;
 }
 
-const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
+const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange: _onTabChange }) => {
     const [activeTab, setActiveTab] = React.useState<'all' | 'new' | 'in_progress' | 'resolved'>('all');
     const [filterText, setFilterText] = React.useState('');
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
     const [supportRequests, setSupportRequests] = React.useState<SupportRequest[]>([]);
+    const [editingRequest, setEditingRequest] = React.useState<SupportRequest | null>(null);
+    const [requestToDelete, setRequestToDelete] = React.useState<SupportRequest | null>(null);
 
     const [formData, setFormData] = React.useState({
         category: 'General',
@@ -82,6 +84,37 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const openCreateForm = () => {
+        setEditingRequest(null);
+        setFormData({
+            category: 'General',
+            subject: '',
+            description: '',
+            priority: 'medium',
+        });
+        setIsDialogOpen(true);
+    };
+
+    const openEditForm = (request: SupportRequest) => {
+        setEditingRequest(request);
+        setFormData({
+            category: request.category || 'General',
+            subject: request.subject || '',
+            description: request.description || '',
+            priority: String(request.priority || 'medium').toLowerCase(),
+        });
+        setIsDialogOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!requestToDelete) return;
+        const result = await beeyieldService.deleteRequest(requestToDelete.id);
+        if (result.success) {
+            setSupportRequests((prev) => prev.filter((request) => request.id !== requestToDelete.id));
+        }
+        setRequestToDelete(null);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.subject || !formData.description) {
@@ -90,6 +123,25 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
         }
 
         setIsSubmitting(true);
+        if (editingRequest) {
+            const { data } = await beeyieldService.updateRequest(editingRequest.id, {
+                category: formData.category,
+                subject: formData.subject,
+                description: formData.description,
+                priority: formData.priority as any,
+            });
+            if (data) {
+                setSupportRequests((prev) =>
+                    prev.map((request) => (request.id === editingRequest.id ? data : request))
+                );
+                setIsDialogOpen(false);
+                setEditingRequest(null);
+                toast.success("Ticket Updated");
+            }
+            setIsSubmitting(false);
+            return;
+        }
+
         const { data } = await beeyieldService.createRequest({
             category: formData.category,
             subject: formData.subject,
@@ -119,14 +171,14 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                 title={<>Support <span className="text-[#F4D03F]">Page View</span></>}
                 subtitle="High-priority assistance for your apiculture operations."
                 actions={
-                    <button
-                        onClick={() => setIsDialogOpen(true)}
-                        className={glass.btnPrimary}
-                    >
-                        New Ticket <ChevronRight className="w-4 h-4 ml-1" />
-                    </button>
-                }
-            />
+                        <button
+                            onClick={openCreateForm}
+                            className={glass.btnPrimary}
+                        >
+                            New Ticket <ChevronRight className="w-4 h-4 ml-1" />
+                        </button>
+                    }
+                />
 
             {/* Print Layout */}
             <div className="hidden print:block">
@@ -249,6 +301,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                             <th className={cn(glass.tableHead, "text-left")}>Priority</th>
                                             <th className={cn(glass.tableHead, "text-left")}>Status</th>
                                             <th className={cn(glass.tableHead, "text-left")}>Created</th>
+                                            <th className={cn(glass.tableHead, "text-right")}>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[#F4D03F]/10">
@@ -281,6 +334,26 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                                 </td>
                                                 <td className="px-4 py-4 text-xs font-bold text-gray-400 tabular-nums">
                                                     {new Date(request.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openEditForm(request)}
+                                                            className={cn(glass.btnSecondary, "h-8 px-2 text-xs")}
+                                                        >
+                                                            <Pencil className="w-3.5 h-3.5" />
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setRequestToDelete(request)}
+                                                            className={cn(glass.btnSecondary, "h-8 px-2 text-xs border-red-200 text-red-600 hover:bg-red-50")}
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -321,8 +394,13 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                             <MessageSquare className="w-5 h-5 text-[#F4D03F]" />
                                         </div>
                                         <div>
-                                            <h2 className={glass.sectionTitle}>New <span className="text-[#F4D03F]">Ticket</span></h2>
-                                            <p className={glass.microLabel}>Submit support request to Mission Control</p>
+                                            <h2 className={glass.sectionTitle}>
+                                                {editingRequest ? "Edit " : "New "}
+                                                <span className="text-[#F4D03F]">Ticket</span>
+                                            </h2>
+                                            <p className={glass.microLabel}>
+                                                {editingRequest ? "Update this support request." : "Submit support request to Mission Control"}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -398,7 +476,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                                     disabled={isSubmitting}
                                                     className={glass.btnPrimary}
                                                 >
-                                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Dispatch Ticket"}
+                                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : editingRequest ? "Save Changes" : "Dispatch Ticket"}
                                                 </button>
                                             </div>
                                         </div>
@@ -408,6 +486,16 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                         </div>
                     )}
                 </AnimatePresence>
+                <GlassConfirmModal
+                    isOpen={!!requestToDelete}
+                    onClose={() => setRequestToDelete(null)}
+                    onConfirm={handleDelete}
+                    title="Delete Ticket"
+                    message="This will permanently remove the support ticket. This action cannot be undone."
+                    confirmLabel="Delete Ticket"
+                    cancelLabel="Cancel"
+                    variant="danger"
+                />
             </div>
         </motion.div>
     );

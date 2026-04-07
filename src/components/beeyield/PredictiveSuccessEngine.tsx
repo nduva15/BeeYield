@@ -41,7 +41,7 @@ const CROP_OPTIONS = [
 ];
 
 function formatNumber(value: number | null | undefined, digits = 1) {
-    if (value === null || value === undefined || Number.isNaN(value)) return '—';
+    if (value === null || value === undefined || Number.isNaN(value)) return '--';
     return new Intl.NumberFormat('en-US', {
         maximumFractionDigits: digits,
         minimumFractionDigits: digits > 0 ? Math.min(digits, 1) : 0,
