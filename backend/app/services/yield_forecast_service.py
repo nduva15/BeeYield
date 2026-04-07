@@ -325,3 +325,339 @@ def _weather_context(provider_weather: Optional[dict[str, Any]], date_from: date
         status = "Constrained"
 
     return score, status, current, detail
+
+
+def _vegetation_context(
+    crop_profile: str,
+    radius_m: int,
+    apiary: Optional[dict[str, Any]],
+    forage_zones: list[dict[str, Any]],
+) -> tuple[float, str]:
+    crop = CROP_BASELINES[crop_profile]
+    densities = [
+        density
+        for density in (_normalize_density_score(zone.get("density_score")) for zone in forage_zones)
+        if density is not None
+    ]
+    zone_radius_ratios = [
+        _clamp((_to_float(zone.get("radius_km"), 0.0) or 0.0) * 1000.0 / max(radius_m, 1), 0.0, 1.2)
+        for zone in forage_zones
+    ]
+    density_component = mean(densities) if densities else crop["vegetation_bias"]
+    coverage_component = mean(zone_radius_ratios) if zone_radius_ratios else 0.58
+    radius_penalty = _clamp((radius_m - 2200) / 12000.0, 0.0, 0.16)
+
+    forage_name = str((apiary or {}).get("primary_forage") or (apiary or {}).get("forage_type") or "").lower()
+    crop_match_bonus = 0.08 if forage_name and crop_profile in forage_name else 0.0
+    diversity_bonus = min(len(densities), 5) * 0.018
+
+    normalized = (
+        density_component * 0.52
+        + crop["vegetation_bias"] * 0.25
+        + coverage_component * 0.17
+        + crop_match_bonus
+        + diversity_bonus
+        - radius_penalty
+    )
+    score = round(_clamp(normalized * 100.0, 30.0, 96.0), 1)
+    detail = (
+        f"{len(forage_zones)} forage zones, crop profile {crop_profile.upper()}, and radius dilution modeled together"
+        if forage_zones
+        else f"{crop_profile.upper()} crop baseline used with radius-adjusted vegetation prior"
+    )
+    return score, detail
+
+
+def _activity_context(sensor_rows: list[dict[str, Any]], manual_activity_pct: Optional[float]) -> tuple[float, float, int, str]:
+    if manual_activity_pct is not None:
+        score = round(_clamp(manual_activity_pct, 0.0, 100.0), 1)
+        return score, 0.0, 0, "Manual bee activity override supplied by operator"
+
+    scored_rows: list[tuple[datetime, float]] = []
+    for row in sensor_rows:
+        timestamp = _to_datetime(row.get("timestamp") or row.get("recorded_at") or row.get("created_at"))
+        score = _pick_activity_value(row)
+        if timestamp and score is not None:
+            scored_rows.append((timestamp, score))
+
+    if not scored_rows:
+        return 55.0, 0.0, 0, "No recent activity packets were available; baseline apiary flight activity used"
+
+    scored_rows.sort(key=lambda item: item[0])
+    latest = scored_rows[-1][0]
+    weighted_pairs: list[tuple[float, float]] = []
+    for timestamp, score in scored_rows[-180:]:
+        age_hours = max(0.0, (latest - timestamp).total_seconds() / 3600.0)
+        weight = math.exp(-age_hours / 72.0)
+        weighted_pairs.append((score, weight))
+
+    weighted_score = round(_weighted_mean(weighted_pairs, default=55.0), 1)
+    recent_values = [value for _, value in scored_rows[-24:]]
+    early_values = [value for _, value in scored_rows[-48:-24]]
+    recent_avg = mean(recent_values) if recent_values else weighted_score
+    early_avg = mean(early_values) if early_values else recent_avg
+    trend = round(recent_avg - early_avg, 2)
+    volatility = _stddev(recent_values) if len(recent_values) > 2 else 0.0
+    trend_adjusted = round(_clamp(weighted_score + (trend * 0.35) - (volatility * 0.15), 12.0, 98.0), 1)
+
+    detail = f"{len(scored_rows)} activity packets with recency weighting, trend, and volatility controls"
+    return trend_adjusted, trend, len(scored_rows), detail
+
+
+def _build_monthly_series(harvest_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    month_totals: dict[tuple[int, int], float] = defaultdict(float)
+    for row in harvest_rows:
+        harvest_date = _to_date(row.get("harvest_date") or row.get("date"))
+        quantity_kg = _to_float(row.get("quantity_kg"), 0.0) or 0.0
+        if not harvest_date or quantity_kg <= 0:
+            continue
+        month_totals[(harvest_date.year, harvest_date.month)] += quantity_kg
+
+    if not month_totals:
+        return []
+
+    keys = sorted(month_totals.keys())
+    cursor = date(keys[0][0], keys[0][1], 1)
+    end = date(keys[-1][0], keys[-1][1], 1)
+    series: list[dict[str, Any]] = []
+    while cursor <= end:
+        series.append({"date": cursor, "yield_kg": round(month_totals.get((cursor.year, cursor.month), 0.0), 3)})
+        if cursor.month == 12:
+            cursor = date(cursor.year + 1, 1, 1)
+        else:
+            cursor = date(cursor.year, cursor.month + 1, 1)
+    return series
+
+
+def _history_context(
+    harvest_rows: list[dict[str, Any]],
+    date_from: date,
+    date_to: date,
+    active_hives: int,
+    crop_profile: str,
+) -> dict[str, Any]:
+    window_days = max(1, (date_to - date_from).days + 1)
+    harvest_points: list[tuple[date, float]] = []
+    for row in harvest_rows:
+        harvest_date = _to_date(row.get("harvest_date") or row.get("date"))
+        quantity_kg = _to_float(row.get("quantity_kg"), 0.0) or 0.0
+        if harvest_date and quantity_kg > 0:
+            harvest_points.append((harvest_date, quantity_kg))
+
+    harvest_points.sort(key=lambda item: item[0])
+    monthly_series = _build_monthly_series(harvest_rows)
+    harvest_count = len(harvest_points)
+    recent_cutoff = date.today() - timedelta(days=365)
+    recent_total_kg = round(sum(quantity for harvest_date, quantity in harvest_points if harvest_date >= recent_cutoff), 2)
+
+    crop_base = CROP_BASELINES[crop_profile]["kg_per_hive_day"] * active_hives * window_days
+    if harvest_points:
+        observed_days = max(365, (harvest_points[-1][0] - harvest_points[0][0]).days + 1)
+        annualized = max(recent_total_kg, (sum(quantity for _, quantity in harvest_points) / observed_days) * 365.0)
+        baseline = round((annualized / 365.0) * window_days, 2)
+    else:
+        baseline = round(crop_base, 2)
+
+    analogues: list[tuple[float, float]] = []
+    for year in {harvest_date.year for harvest_date, _ in harvest_points if harvest_date.year < date_from.year}:
+        shifted_start = date(year, date_from.month, min(date_from.day, 28))
+        shifted_end = shifted_start + timedelta(days=window_days - 1)
+        total = sum(quantity for harvest_date, quantity in harvest_points if shifted_start <= harvest_date <= shifted_end)
+        if total > 0:
+            recency_weight = 1.0 / max(1, date_from.year - year)
+            analogues.append((round(total, 2), recency_weight))
+    seasonal_analogue = round(_weighted_mean(analogues, default=baseline), 2) if analogues else None
+
+    regression_estimate = None
+    if len(monthly_series) >= 6:
+        yields = [point["yield_kg"] for point in monthly_series]
+        max_target = max(max(yields), 1.0)
+        train_x: list[list[float]] = []
+        train_y: list[float] = []
+        weights: list[float] = []
+        total_points = len(monthly_series)
+        for index, point in enumerate(monthly_series):
+            lag1 = yields[index - 1] / max_target if index >= 1 else 0.0
+            lag3 = mean(yields[max(0, index - 3):index]) / max_target if index >= 1 else 0.0
+            train_x.append(_month_features(point["date"], index / max(total_points - 1, 1), lag1, lag3))
+            train_y.append(point["yield_kg"])
+            weights.append(0.6 + ((index + 1) / total_points) * 0.8)
+
+        coefficients = _ridge_regression(train_x, train_y, weights)
+        midpoint = date_from + timedelta(days=max(0, (date_to - date_from).days // 2))
+        lag1 = yields[-1] / max_target if yields else 0.0
+        lag3 = mean(yields[-3:]) / max_target if len(yields) >= 3 else lag1
+        predicted_month = max(0.0, _dot(_month_features(midpoint, 1.05, lag1, lag3), coefficients))
+        regression_estimate = round((predicted_month / 30.0) * window_days, 2)
+
+    history_score = round(_clamp(34.0 + min(26.0, harvest_count * 4.2) + min(30.0, recent_total_kg * 0.15), 20.0, 94.0), 1)
+
+    return {
+        "baseline_kg": baseline,
+        "seasonal_analogue_kg": seasonal_analogue,
+        "regression_kg": regression_estimate,
+        "harvest_count": harvest_count,
+        "recent_total_kg": recent_total_kg,
+        "history_score": history_score,
+    }
+
+
+def _ensemble_forecast(
+    *,
+    baseline_kg: float,
+    crop_profile: str,
+    active_hives: int,
+    window_days: int,
+    radius_m: int,
+    vegetation_score: float,
+    weather_score: float,
+    activity_score: float,
+    activity_trend: float,
+    history_context: dict[str, Any],
+) -> dict[str, Any]:
+    crop = CROP_BASELINES[crop_profile]
+    radius_factor = _clamp(1.03 - max(radius_m - 1800, 0) / 20000.0, 0.82, 1.06)
+    vegetation_factor = _clamp(0.76 + (vegetation_score / 100.0) * 0.48, 0.72, 1.22)
+    weather_factor = _clamp(0.74 + (weather_score / 100.0) * 0.46, 0.70, 1.20)
+    activity_factor = _clamp(0.72 + (activity_score / 100.0) * 0.44 + (activity_trend / 100.0) * 0.12, 0.68, 1.18)
+    maturity_factor = _clamp(0.88 + min(history_context["harvest_count"], 10) * 0.018, 0.88, 1.08)
+    seasonal_factor = _clamp(0.78 + crop["seasonality"] * 0.34, 0.86, 1.12)
+
+    expert_prior = round(baseline_kg * vegetation_factor * weather_factor * activity_factor * radius_factor * maturity_factor * seasonal_factor, 2)
+    crop_floor = round(crop["kg_per_hive_day"] * active_hives * window_days * 0.82, 2)
+    expert_prior = max(expert_prior, crop_floor)
+
+    components: list[dict[str, Any]] = [
+        {"key": "expert", "label": "Expert prior", "value_kg": expert_prior, "weight": 0.0, "detail": "Crop, radius, vegetation, weather, and activity multipliers"}
+    ]
+    if history_context["seasonal_analogue_kg"] is not None:
+        components.append({"key": "seasonal", "label": "Seasonal analogue", "value_kg": history_context["seasonal_analogue_kg"], "weight": 0.0, "detail": "Same-window yields from previous years with recency weighting"})
+    if history_context["regression_kg"] is not None:
+        components.append({"key": "regression", "label": "ML regression", "value_kg": history_context["regression_kg"], "weight": 0.0, "detail": "Ridge regression over monthly harvest seasonality and trend features"})
+
+    data_strength = _clamp(history_context["harvest_count"] / 10.0, 0.0, 1.0)
+    weights = {
+        "expert": 0.55 - (data_strength * 0.2),
+        "seasonal": 0.25 + (0.18 if history_context["seasonal_analogue_kg"] is not None else 0.0),
+        "regression": 0.20 + (0.16 if history_context["regression_kg"] is not None else 0.0),
+    }
+    total = sum(weights.get(component["key"], 0.0) for component in components) or 1.0
+    for component in components:
+        component["weight"] = round((weights.get(component["key"], 0.0) / total) * 100.0, 1)
+
+    expected = round(sum(component["value_kg"] * (component["weight"] / 100.0) for component in components), 2)
+    disagreement = _stddev([component["value_kg"] for component in components])
+    return {"expected_kg": expected, "components": components, "disagreement": disagreement}
+
+
+def _build_timeline(
+    *,
+    date_from: date,
+    date_to: date,
+    expected_yield_kg: float,
+    low_kg: float,
+    high_kg: float,
+    activity_score: float,
+    weather_score: float,
+    vegetation_score: float,
+) -> list[dict[str, Any]]:
+    total_days = max(1, (date_to - date_from).days + 1)
+    point_count = min(12, total_days)
+    if point_count == 1:
+        weights = [1.0]
+    else:
+        raw_weights = []
+        for index in range(point_count):
+            position = index / (point_count - 1)
+            wave = 0.92 + 0.14 * math.sin(position * math.pi) + 0.06 * math.cos(position * math.pi * 2)
+            raw_weights.append(max(0.25, wave))
+        total_weight = sum(raw_weights) or 1.0
+        weights = [weight / total_weight for weight in raw_weights]
+
+    step_days = max(1, round(total_days / point_count))
+    timeline: list[dict[str, Any]] = []
+    for index, weight in enumerate(weights):
+        drift = (index - ((point_count - 1) / 2.0)) * 1.4
+        point_date = min(date_to, date_from + timedelta(days=index * step_days))
+        timeline.append(
+            {
+                "date": point_date.isoformat(),
+                "yield_kg": round(expected_yield_kg * weight, 2),
+                "lower_kg": round(low_kg * weight, 2),
+                "upper_kg": round(high_kg * weight, 2),
+                "activity_index": round(_clamp(activity_score + drift + 1.5, 0.0, 100.0), 1),
+                "weather_index": round(_clamp(weather_score - (abs(drift) * 0.7), 0.0, 100.0), 1),
+                "vegetation_index": round(_clamp(vegetation_score + (abs(drift) * 0.5), 0.0, 100.0), 1),
+            }
+        )
+    return timeline
+
+
+def _impact(score: float, positive_threshold: float = 70.0, neutral_threshold: float = 52.0) -> str:
+    if score >= positive_threshold:
+        return "positive"
+    if score >= neutral_threshold:
+        return "neutral"
+    return "negative"
+
+
+async def build_yield_forecast(
+    *,
+    user_id: str,
+    token: Optional[str],
+    apiary_id: Optional[str],
+    latitude: Optional[float],
+    longitude: Optional[float],
+    date_from: date,
+    date_to: date,
+    radius_m: int,
+    vegetation_index: str,
+    crop_profile: str,
+    bee_activity_pct: Optional[float],
+) -> dict[str, Any]:
+    if latitude is None or longitude is None:
+        raise ValueError("Latitude and longitude are required.")
+    if date_to < date_from:
+        raise ValueError("Date range is invalid.")
+
+    crop_profile = _normalize_crop_profile(crop_profile)
+    accessible_apiaries = await _get_accessible_apiaries(user_id, token)
+    selected_apiary, nearest_distance_km = _resolve_context_apiary(accessible_apiaries, apiary_id, latitude, longitude)
+
+    if selected_apiary:
+        latitude = _to_float(selected_apiary.get("latitude"), latitude) or latitude
+        longitude = _to_float(selected_apiary.get("longitude"), longitude) or longitude
+
+    context_apiary_ids = [str(selected_apiary["id"])] if selected_apiary else _uniq_strings([apiary.get("id") for apiary in accessible_apiaries])
+    hives = await db_select("hives", filters={"apiary_id": context_apiary_ids}, limit=1000, token=token) if context_apiary_ids else []
+    harvests = await db_select("harvests", filters={"apiary_id": context_apiary_ids}, limit=1000, order_by="harvest_date", ascending=False, token=token) if context_apiary_ids else []
+    forage_zones = await db_select("forage_zones", filters={"apiary_id": context_apiary_ids}, limit=1000, token=token) if context_apiary_ids else []
+
+    hive_ids = _uniq_strings([hive.get("id") for hive in hives])
+    sensor_rows = await db_select("sensor_readings", filters={"hive_id": hive_ids}, limit=600, order_by="timestamp", ascending=False, token=token) if hive_ids else []
+
+    active_hives = len([hive for hive in hives if "inactive" not in str(hive.get("status") or "").lower()])
+    if active_hives <= 0:
+        active_hives = int(_to_float((selected_apiary or {}).get("expected_hives"), 0.0) or 0)
+    if active_hives <= 0:
+        active_hives = 12
+
+    provider_weather = await fetch_provider_weather(latitude, longitude)
+    weather_score, weather_status, current_weather, weather_detail = _weather_context(provider_weather, date_from, date_to, latitude)
+    vegetation_score, vegetation_detail = _vegetation_context(crop_profile, radius_m, selected_apiary, forage_zones)
+    activity_score, activity_trend, sensor_sample_count, activity_detail = _activity_context(sensor_rows, bee_activity_pct)
+
+    window_days = max(1, (date_to - date_from).days + 1)
+    history = _history_context(harvests, date_from, date_to, active_hives, crop_profile)
+    ensemble = _ensemble_forecast(
+        baseline_kg=history["baseline_kg"],
+        crop_profile=crop_profile,
+        active_hives=active_hives,
+        window_days=window_days,
+        radius_m=radius_m,
+        vegetation_score=vegetation_score,
+        weather_score=weather_score,
+        activity_score=activity_score,
+        activity_trend=activity_trend,
+        history_context=history,
+    )

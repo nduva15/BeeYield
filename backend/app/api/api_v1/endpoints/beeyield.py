@@ -191,6 +191,13 @@ class CalculatorLogCreate(BaseModel):
     inputs: dict[str, Any] = Field(default_factory=dict)
     results: dict[str, Any] = Field(default_factory=dict)
 
+
+class CalculatorLogUpdate(BaseModel):
+    calculation_type: Optional[str] = Field(None, min_length=1, description="Top-level calculator module")
+    sub_type: Optional[str] = Field(None, min_length=1, description="Active section or calculator identifier")
+    inputs: Optional[dict[str, Any]] = None
+    results: Optional[dict[str, Any]] = None
+
 # ============================================
 # HELPER FUNCTIONS
 # ============================================
@@ -276,6 +283,80 @@ async def _insert_calculator_log_with_fallback(
     raise HTTPException(
         status_code=500,
         detail=legacy_result.get("error") or modern_result.get("error") or "Failed to create calculator log",
+    )
+
+
+async def _get_calculator_log_for_user(log_id: str, user_id: str, token: Optional[str]) -> dict[str, Any]:
+    rows = await db_select(
+        "calculator_logs",
+        filters={"id": log_id, "user_id": user_id},
+        limit=1,
+        token=token,
+    )
+    if not rows:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calculator log not found")
+    return rows[0]
+
+
+async def _update_calculator_log_with_fallback(
+    log_id: str,
+    existing_row: dict[str, Any],
+    patch: CalculatorLogUpdate,
+    user_id: str,
+    token: Optional[str],
+) -> dict[str, Any]:
+    patch_data = patch.model_dump(exclude_unset=True)
+    if not patch_data:
+        return _normalize_calculator_log(existing_row)
+
+    modern_patch: dict[str, Any] = {}
+    if "calculation_type" in patch_data:
+        modern_patch["calculation_type"] = patch_data["calculation_type"]
+    if "sub_type" in patch_data:
+        modern_patch["sub_type"] = patch_data["sub_type"]
+    if "inputs" in patch_data:
+        modern_patch["inputs"] = patch_data["inputs"]
+    if "results" in patch_data:
+        modern_patch["results"] = patch_data["results"]
+
+    if modern_patch:
+        modern_result = await db_update("calculator_logs", modern_patch, {"id": log_id, "user_id": user_id}, token=token)
+        if modern_result.get("success"):
+            rows = modern_result.get("data") or []
+            record = rows[0] if isinstance(rows, list) and rows else {**existing_row, **modern_patch}
+            return _normalize_calculator_log(record)
+    else:
+        modern_result = {"success": False, "error": "No modern fields to update"}
+
+    legacy_input = existing_row.get("input_json") if isinstance(existing_row.get("input_json"), dict) else {}
+    legacy_output = existing_row.get("output_json") if isinstance(existing_row.get("output_json"), dict) else existing_row.get("output_json")
+
+    legacy_patch: dict[str, Any] = {}
+    if "calculation_type" in patch_data:
+        legacy_patch["module_type"] = patch_data["calculation_type"]
+
+    if "sub_type" in patch_data or "inputs" in patch_data:
+        next_input = dict(legacy_input or {})
+        if "sub_type" in patch_data:
+            next_input["sub_type"] = patch_data["sub_type"]
+        if "inputs" in patch_data:
+            next_input["inputs"] = patch_data["inputs"]
+        legacy_patch["input_json"] = next_input
+
+    if "results" in patch_data:
+        legacy_patch["output_json"] = patch_data["results"]
+    elif legacy_output is not None:
+        legacy_patch["output_json"] = legacy_output
+
+    legacy_result = await db_update("calculator_logs", legacy_patch, {"id": log_id, "user_id": user_id}, token=token)
+    if legacy_result.get("success"):
+        rows = legacy_result.get("data") or []
+        record = rows[0] if isinstance(rows, list) and rows else {**existing_row, **legacy_patch}
+        return _normalize_calculator_log(record)
+
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=legacy_result.get("error") or modern_result.get("error") or "Failed to update calculator log",
     )
 
 def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
@@ -1229,6 +1310,16 @@ async def get_calculator_logs(
     return normalized_rows[:limit]
 
 
+@router.get("/calculator-logs/{log_id}", response_model=dict)
+async def get_calculator_log(
+    log_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    row = await _get_calculator_log_for_user(log_id, user_id, token)
+    return _normalize_calculator_log(row)
+
+
 @router.post("/calculator-logs", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_calculator_log(
     body: CalculatorLogCreate,
@@ -1236,6 +1327,30 @@ async def create_calculator_log(
     token: Optional[str] = Depends(get_token),
 ):
     return await _insert_calculator_log_with_fallback(body, user_id, token)
+
+
+@router.put("/calculator-logs/{log_id}", response_model=dict)
+async def update_calculator_log(
+    log_id: str,
+    body: CalculatorLogUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing_row = await _get_calculator_log_for_user(log_id, user_id, token)
+    return await _update_calculator_log_with_fallback(log_id, existing_row, body, user_id, token)
+
+
+@router.delete("/calculator-logs/{log_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_calculator_log(
+    log_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    await _get_calculator_log_for_user(log_id, user_id, token)
+    result = await db_delete("calculator_logs", {"id": log_id, "user_id": user_id}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=result.get("error", "Failed to delete calculator log"))
+    return None
 
 
 # ============================================

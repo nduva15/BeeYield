@@ -81,6 +81,14 @@ class LabelDesignInternal(BaseModel):
     design_json: dict
     created_at: datetime.datetime
 
+
+class LabelTemplateSchema(BaseModel):
+    id: UUID
+    name: str
+    dimensions_json: Optional[dict] = None
+    css_style: Optional[str] = None
+    is_premium: bool = False
+
 # ============================================
 # HELPERS
 # ============================================
@@ -135,6 +143,7 @@ def _db_token(token: Optional[str]) -> Optional[str]:
 
 def _build_label_payload(design_data: dict, *, include_user_id: Optional[str] = None) -> dict:
     payload = {
+        "name": _resolve_label_name(design_data),
         "design_json": design_data,
         "harvest_batch_id": design_data.get("batchNumber") or design_data.get("harvestId"),
         "include_qr": design_data.get("showQRCode", False),
@@ -143,6 +152,23 @@ def _build_label_payload(design_data: dict, *, include_user_id: Optional[str] = 
     if include_user_id:
         payload["user_id"] = include_user_id
     return payload
+
+
+def _normalize_saved_label(row: dict) -> dict:
+    design_json = row.get("design_json") if isinstance(row.get("design_json"), dict) else {}
+    normalized_name = str(row.get("name") or design_json.get("name") or design_json.get("productName") or "Untitled Label").strip() or "Untitled Label"
+    normalized_id = str(row.get("id") or design_json.get("id") or "")
+    normalized_design = {
+        **design_json,
+        "id": normalized_id,
+        "name": normalized_name,
+    }
+    return {
+        **row,
+        "id": normalized_id,
+        "name": normalized_name,
+        "design_json": normalized_design,
+    }
 
 
 def _read_offline_labels() -> list[dict]:
@@ -218,7 +244,7 @@ async def _get_saved_label(label_id: str, user_id: str, token: Optional[str]) ->
             return offline
     if not labels:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Label design not found")
-    return labels[0]
+    return _normalize_saved_label(labels[0])
 
 # ============================================
 # ENDPOINTS
@@ -233,14 +259,26 @@ async def get_user_labels(
     rows = await db_select(
         "saved_labels",
         filters={"user_id": user_id},
-        order_by="created_at",
+        order_by="updated_at",
         ascending=False,
         token=_db_token(token),
     )
     if rows:
-        return rows
+        return [_normalize_saved_label(row) for row in rows]
     if settings.DEBUG:
-        return _offline_user_labels(user_id)
+        return [_normalize_saved_label(row) for row in _offline_user_labels(user_id)]
+    return rows
+
+
+@router.get("/templates", response_model=List[dict])
+async def get_label_templates(token: Optional[str] = Depends(get_token)):
+    """List label templates available to the generator."""
+    rows = await db_select(
+        "label_templates",
+        order_by="name",
+        ascending=True,
+        token=_db_token(token),
+    )
     return rows
 
 
@@ -286,14 +324,14 @@ async def create_label_design(
     data = result.get("data")
     if not data or not isinstance(data, list) or len(data) == 0:
         fallback_id = label_id or str(datetime.datetime.now().timestamp())
-        return {
+        return _normalize_saved_label({
             "id": fallback_id,
             "name": _resolve_label_name(design_data),
             "design_json": {**design_data, "id": fallback_id, "name": _resolve_label_name(design_data)},
             "user_id": user_id
-        }
+        })
 
-    return data[0]
+    return _normalize_saved_label(data[0])
 
 
 @router.put("/{label_id}", response_model=dict)
@@ -317,7 +355,7 @@ async def update_label_design(
         error_detail = result.get("error", "Failed to update label design")
         print(f"[LABELS] Update failed: {error_detail}")
         if settings.DEBUG:
-            return _offline_upsert_label(label_id, user_id, design_data)
+            return _normalize_saved_label(_offline_upsert_label(label_id, user_id, design_data))
         raise HTTPException(status_code=500, detail=str(error_detail))
 
     return await _get_saved_label(label_id, user_id, token)

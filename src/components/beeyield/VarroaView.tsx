@@ -133,6 +133,8 @@ const VarroaView: React.FC = () => {
     const [region, setRegion] = React.useState('Central Europe');
     const [colonyStrength, setColonyStrength] = React.useState<ColonyStrength>('Medium');
     const [broodMode, setBroodMode] = React.useState<BroodMode>('Seasonal (auto)');
+    const [reinvasionPressure, setReinvasionPressure] = React.useState<ReinvasionPressure>('Medium');
+    const [hygieneProfile, setHygieneProfile] = React.useState<HygieneProfile>('Standard');
     const [treatmentMode, setTreatmentMode] = React.useState('Profile');
     const [treatmentDay, setTreatmentDay] = React.useState(0);
     const [treatmentType, setTreatmentType] = React.useState('amitraz');
@@ -148,24 +150,92 @@ const VarroaView: React.FC = () => {
         if (startMode === 'observed') setInitialMiteCount(mitesPerDay * colonyMultiplier);
     }, [startMode, mitesPerDay, colonyMultiplier]);
 
-    const simulationData = React.useMemo(
-        () => buildSimulationData(initialMiteCount, simulationDays, adultBeePopulation),
-        [initialMiteCount, simulationDays, adultBeePopulation],
+    const simulation = React.useMemo(
+        () =>
+            simulateVarroaModel({
+                startDate,
+                startMode,
+                measurementType,
+                region,
+                initialMiteCount,
+                adultBeePopulation,
+                simulationDays,
+                collapseThreshold,
+                colonyStrength,
+                broodMode,
+                reinvasionPressure,
+                hygieneProfile,
+                treatmentType,
+                treatmentDay,
+                temperature,
+                mitesPerDay,
+                colonyMultiplier,
+                hasBrood,
+            }),
+        [
+            adultBeePopulation,
+            broodMode,
+            collapseThreshold,
+            colonyMultiplier,
+            colonyStrength,
+            hasBrood,
+            hygieneProfile,
+            initialMiteCount,
+            measurementType,
+            mitesPerDay,
+            region,
+            reinvasionPressure,
+            simulationDays,
+            startDate,
+            startMode,
+            temperature,
+            treatmentDay,
+            treatmentType,
+        ],
     );
+
+    const simulationData = simulation.timeline;
+    const modelSummary = simulation.summary;
+    const treatmentWindows = simulation.windows;
+    const treatmentInsight = simulation.treatmentInsight;
 
     const recentRows = React.useMemo(
         () =>
             simulationData.slice(-7).reverse().map((row) => ({
                 day: row.day,
-                totalPopulation: row.population.toLocaleString(),
+                totalPopulation: row.totalMites.toLocaleString(),
                 phoretic: row.phoretic.toLocaleString(),
                 dailyMiteFall: row.dailyMiteFall.toLocaleString(),
+                infestation: `${row.infectionPer100.toFixed(2)}%`,
+                risk: row.scenarioRisk.toFixed(1),
             })),
         [simulationData],
     );
 
-    const estimatedMiteCount = mitesPerDay * colonyMultiplier;
-    const lastPoint = simulationData[simulationData.length - 1];
+    const estimatedMiteCount = modelSummary.estimatedMiteCount;
+    const lastPoint = simulationData[simulationData.length - 1] ?? {
+        population: 0,
+        phoretic: 0,
+        mitesInBrood: 0,
+        dailyMiteFall: 0,
+        infectionPer100: 0,
+        scenarioRisk: 0,
+        treatmentEffect: 0,
+        reinvasionLoad: 0,
+        ambientTemperature: temperature,
+        dailyPopulationChange: 0,
+        brood: 0,
+        alcoholWash: 0,
+        allBrood: 0,
+        cappedBrood: 0,
+        cumulativeMiteFall: 0,
+        broodlessPhoretic: 0,
+        adultBees: 0,
+        totalMites: 0,
+        broodIndex: 0,
+        day: 0,
+        dayLabel: '0',
+    };
 
     return (
         <div className={pageClass}>
@@ -321,6 +391,28 @@ const VarroaView: React.FC = () => {
                                 ))}
                             </div>
                         </div>
+
+                        <div className="space-y-3">
+                            <div className={labelClass}>Reinvasion pressure</div>
+                            <div className="grid gap-3 md:grid-cols-3">
+                                {(['Low', 'Medium', 'High'] as ReinvasionPressure[]).map((item) => (
+                                    <ToggleChip key={item} active={reinvasionPressure === item} onClick={() => setReinvasionPressure(item)} className="h-[36px] text-center">
+                                        {item}
+                                    </ToggleChip>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className={labelClass}>Hygienic behavior</div>
+                            <div className="grid gap-3 md:grid-cols-3">
+                                {(['Standard', 'VSH', 'Resistant'] as HygieneProfile[]).map((item) => (
+                                    <ToggleChip key={item} active={hygieneProfile === item} onClick={() => setHygieneProfile(item)} className="h-[36px] text-center">
+                                        {item}
+                                    </ToggleChip>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -362,6 +454,52 @@ const VarroaView: React.FC = () => {
                 <section className={cn(cardClass, 'p-5 md:p-6')}>
                     <div className="space-y-5">
                         <h2 className={titleClass}>Simulation</h2>
+
+                        <div className="grid gap-3 lg:grid-cols-[1.3fr_0.9fr]">
+                            <div className={cn(softCardClass, 'p-4')}>
+                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                    <div>
+                                        <div className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#6b7280]">Forecast intelligence</div>
+                                        <div className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-[#1a1a1a]">
+                                            {modelSummary.riskBand === 'critical' ? 'Critical pressure' : modelSummary.riskBand === 'watch' ? 'Rising pressure' : 'Stable trajectory'}
+                                        </div>
+                                    </div>
+                                    <div className={cn(modelSummary.riskBand === 'critical' ? 'bg-[#fff1ef] text-[#b45309]' : modelSummary.riskBand === 'watch' ? 'bg-[#fff7de] text-[#a16207]' : 'bg-[#eefaf0] text-[#166534]', 'rounded-full px-3 py-1 text-[12px] font-semibold')}>
+                                        Risk {modelSummary.peakRisk.toFixed(1)}
+                                    </div>
+                                </div>
+                                <p className="mt-3 text-[13px] leading-6 text-[#6b7280]">{modelSummary.recommendation}</p>
+                                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                                    <div className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
+                                        <div className="text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">Peak infestation</div>
+                                        <div className="mt-2 text-[20px] font-semibold text-[#1a1a1a]">{modelSummary.peakInfestation.toFixed(1)}%</div>
+                                    </div>
+                                    <div className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
+                                        <div className="text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">Forecast confidence</div>
+                                        <div className="mt-2 text-[20px] font-semibold text-[#1a1a1a]">{modelSummary.confidence.toFixed(0)}%</div>
+                                    </div>
+                                    <div className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
+                                        <div className="text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">Collapse day</div>
+                                        <div className="mt-2 text-[20px] font-semibold text-[#1a1a1a]">{modelSummary.collapseDay === null ? 'None' : modelSummary.collapseDay}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={cn(softCardClass, 'p-4')}>
+                                <div className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#6b7280]">Best treatment windows</div>
+                                <div className="mt-3 space-y-3">
+                                    {treatmentWindows.map((window, index) => (
+                                        <div key={`${window.day}-${window.score}`} className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div className="text-[14px] font-semibold text-[#1a1a1a]">Window {index + 1}: day {window.day}</div>
+                                                <div className="rounded-full bg-[#fff4db] px-2.5 py-1 text-[11px] font-semibold text-[#a16207]">{window.score.toFixed(0)}</div>
+                                            </div>
+                                            <p className="mt-2 text-[12px] leading-5 text-[#6b7280]">{window.rationale}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
 
                         <div className={cn(softCardClass, 'p-4')}>
                             <div className="space-y-4">
@@ -409,11 +547,13 @@ const VarroaView: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="grid gap-3 md:grid-cols-4">
-                            <StatTile label="Total population" value={lastPoint.population.toLocaleString()} />
+                        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+                            <StatTile label="Total mite load" value={modelSummary.totalPopulation.toLocaleString()} />
                             <StatTile label="Phoretic" value={lastPoint.phoretic.toLocaleString()} />
-                            <StatTile label="Brood" value={lastPoint.brood.toLocaleString()} />
+                            <StatTile label="Mites in brood" value={modelSummary.brood.toLocaleString()} />
                             <StatTile label="Daily mite fall" value={lastPoint.dailyMiteFall.toLocaleString()} />
+                            <StatTile label="Alcohol wash" value={lastPoint.alcoholWash.toFixed(1)} />
+                            <StatTile label="Treatment effect" value={`${lastPoint.treatmentEffect.toFixed(0)}%`} />
                         </div>
 
                         <div className="grid gap-3 md:grid-cols-3">
@@ -422,8 +562,10 @@ const VarroaView: React.FC = () => {
                             <MiniChartCard title="Phoretic vs brood" dataKey="phoretic" color="#0ea5a8" data={simulationData} secondaryKey="brood" secondaryColor="#86c06a" />
                             <MiniChartCard title="Daily mite fall" dataKey="dailyMiteFall" color="#94a3b8" data={simulationData} secondaryKey="phoretic" secondaryColor="#cbd5e1" />
                             <MiniChartCard title="Cumulative mite fall" dataKey="cumulativeMiteFall" color="#334155" data={simulationData} />
-                            <MiniChartCard title="Daily population change" dataKey="population" color="#7c3aed" data={simulationData} />
+                            <MiniChartCard title="Daily population change" dataKey="dailyPopulationChange" color="#7c3aed" data={simulationData} />
                             <MiniChartCard title="Infestation per 100 bees" dataKey="infectionPer100" color="#0ea5ff" data={simulationData} />
+                            <MiniChartCard title="Treatment suppression" dataKey="treatmentEffect" color="#16a34a" data={simulationData} />
+                            <MiniChartCard title="Reinvasion pressure" dataKey="reinvasionLoad" color="#f97316" data={simulationData} />
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-[12px] text-[#607086]">
@@ -447,9 +589,11 @@ const VarroaView: React.FC = () => {
                                 <thead className="bg-[#fff9f0] text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">
                                     <tr>
                                         <th className="px-4 py-3 font-medium">Day</th>
-                                        <th className="px-4 py-3 font-medium">Total population</th>
+                                        <th className="px-4 py-3 font-medium">Total mite load</th>
                                         <th className="px-4 py-3 font-medium">Phoretic</th>
                                         <th className="px-4 py-3 font-medium">Daily mite fall</th>
+                                        <th className="px-4 py-3 font-medium">Infestation</th>
+                                        <th className="px-4 py-3 font-medium">Risk</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-[13px] text-[#1f2937]">
@@ -459,6 +603,8 @@ const VarroaView: React.FC = () => {
                                             <td className="px-4 py-3">{row.totalPopulation}</td>
                                             <td className="px-4 py-3">{row.phoretic}</td>
                                             <td className="px-4 py-3">{row.dailyMiteFall}</td>
+                                            <td className="px-4 py-3">{row.infestation}</td>
+                                            <td className="px-4 py-3">{row.risk}</td>
                                         </tr>
                                     ))}
                                 </tbody>

@@ -17,24 +17,68 @@ export const queryClient = new QueryClient({
     },
 });
 
-// 2. Create an IDB persister
-const dbPromise = openDB('beeyield-db', 1, {
-    upgrade(db) {
-        db.createObjectStore('react-query');
-    },
-});
+// 2. Create a resilient IDB persister (guards against corrupted cache/IDB errors)
+const DB_NAME = 'beeyield-db';
+const STORE_NAME = 'react-query';
+
+const deleteDb = () => {
+    if (typeof indexedDB === 'undefined') return;
+    try {
+        indexedDB.deleteDatabase(DB_NAME);
+    } catch {
+        // ignore cleanup errors
+    }
+};
+
+const openSafeDb = async () => {
+    try {
+        return await openDB(DB_NAME, 1, {
+            upgrade(db) {
+                db.createObjectStore(STORE_NAME);
+            },
+        });
+    } catch (error) {
+        console.warn('[QueryCache] Failed to open IDB, falling back to memory.', error);
+        deleteDb();
+        return null;
+    }
+};
+
+const dbPromise = openSafeDb();
 
 const idbPersister = createAsyncStoragePersister({
     storage: {
         getItem: async (key) => {
-            const val = await (await dbPromise).get('react-query', key);
-            return val ?? null;
+            try {
+                const db = await dbPromise;
+                if (!db) return null;
+                const val = await db.get(STORE_NAME, key);
+                return val ?? null;
+            } catch (error) {
+                console.warn('[QueryCache] Failed to read cache, clearing store.', error);
+                deleteDb();
+                return null;
+            }
         },
         setItem: async (key, value) => {
-            await (await dbPromise).put('react-query', value, key);
+            try {
+                const db = await dbPromise;
+                if (!db) return;
+                await db.put(STORE_NAME, value, key);
+            } catch (error) {
+                console.warn('[QueryCache] Failed to persist cache, clearing store.', error);
+                deleteDb();
+            }
         },
         removeItem: async (key) => {
-            await (await dbPromise).delete('react-query', key);
+            try {
+                const db = await dbPromise;
+                if (!db) return;
+                await db.delete(STORE_NAME, key);
+            } catch (error) {
+                console.warn('[QueryCache] Failed to remove cache key, clearing store.', error);
+                deleteDb();
+            }
         },
     },
 });
@@ -58,5 +102,8 @@ export function BeeYieldQueryProvider({ children }: { children: React.ReactNode 
 // 4. Helper to clear cache (e.g. on logout)
 export async function clearQueryCache() {
     queryClient.clear();
-    await (await dbPromise).clear('react-query');
+    const db = await dbPromise;
+    if (db) {
+        await db.clear(STORE_NAME);
+    }
 }
