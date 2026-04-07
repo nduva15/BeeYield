@@ -2,15 +2,23 @@ import React from 'react';
 import {
   AlertTriangle,
   Beaker,
+  Bell,
   BookOpen,
   Brain,
   Calculator,
   Flower2,
   Gauge,
   GaugeCircle,
+  History,
+  Loader2,
+  Moon,
   Package,
+  RefreshCw,
   Scale,
+  Search,
+  Settings,
   ShieldCheck,
+  Sun,
   Sprout,
   Syringe,
   Thermometer,
@@ -19,20 +27,29 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { glass } from '@/components/beeyield/GlassTheme';
-import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { cn } from '@/lib/utils';
 import { useBeekeepingMath } from '@/hooks/useBeekeepingMath';
 import { calculatePollinationMetrics } from '@/lib/pollinationCalculations';
+import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { apiPost } from '@/services/api';
+import { beeyieldService, type CalculatorLogCreateInput } from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 type FeedRatio = '1:1' | '2:1';
 type HiveStrength = 'Modest' | 'Medium' | 'Strong';
 type ForageType = 'Poor' | 'Average' | 'Rich';
 type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter';
 type Method = 'Formic acid' | 'Oxalic acid' | 'Thymol';
+type SectionId = 'feeding' | 'treatment' | 'equipment' | 'economics' | 'mini' | 'quizzes';
+type SyncState = 'idle' | 'saving' | 'saved' | 'error';
 
 const TOOL_COUNT = 18;
-const homeCard = 'flex h-full flex-col rounded-[20px] border border-[#F4D03F]/12 bg-white/85 p-4 shadow-[0_10px_28px_rgba(143,104,18,0.08)]';
-const sectionTone = 'border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,249,240,0.96),rgba(249,247,242,0.98))]';
+const homeCard = 'flex h-full flex-col rounded-[28px] border border-[#1A1A1A]/6 bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]';
+const sectionTone = 'border-b border-[#F4D03F]/14 bg-[linear-gradient(135deg,rgba(255,250,242,0.98),rgba(245,248,255,0.98))]';
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 const sectionMeta = [
@@ -44,10 +61,19 @@ const sectionMeta = [
   { id: 'quizzes', label: 'Quizzes and tips', note: '4 tools', icon: BookOpen },
 ] as const;
 
+const sectionSearchCatalog: Record<SectionId, string[]> = {
+  feeding: ['Sugar syrup calculator', 'Fondant / invert dough per colony', 'Feeding shortfall to winter'],
+  treatment: ['Treatment timing & weather window', 'Varroa drop calculator', 'prophylaxis'],
+  equipment: ['Wax foundation calculator', 'Jar & label calculator', 'Queen replacement'],
+  economics: ['Pollination contract optimizer', 'Deployment calculus', 'ROI'],
+  mini: ['worth flying there', 'flights per day', 'apiary overloaded', 'honey frames'],
+  quizzes: ['beekeeping style', 'bees say stop', 'working or heating', 'open hive today'],
+};
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="space-y-2">
-      <span className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">{label}</span>
+      <span className="text-[13px] font-semibold tracking-tight text-[#3C445B]">{label}</span>
       {children}
     </label>
   );
@@ -58,7 +84,7 @@ function NumberInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       type="number"
-      className={cn(glass.input, 'h-10 w-full rounded-xl border-[#F4D03F]/15 bg-[#FFFDF7] px-3.5 text-[13px] font-bold text-[#1A1A1A]', props.className)}
+      className={cn(glass.input, 'h-14 w-full rounded-[18px] border-[#1A1A1A]/10 bg-white px-4 text-[16px] font-medium text-[#1A1A1A] shadow-none', props.className)}
     />
   );
 }
@@ -67,16 +93,16 @@ function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       {...props}
-      className={cn(glass.select, 'h-10 w-full rounded-xl border-[#F4D03F]/15 bg-[#FFFDF7] px-3.5 text-[13px] font-bold text-[#1A1A1A]', props.className)}
+      className={cn(glass.select, 'h-14 w-full rounded-[18px] border-[#1A1A1A]/10 bg-white px-4 text-[16px] font-medium text-[#1A1A1A] shadow-none', props.className)}
     />
   );
 }
 
 function StatTile({ label, value, accent = 'text-[#1A1A1A]' }: { label: string; value: React.ReactNode; accent?: string }) {
   return (
-    <div className="rounded-xl border border-[#F4D03F]/12 bg-[#FFF9F0] p-3">
-      <p className="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400">{label}</p>
-      <p className={cn('mt-1.5 text-[1.15rem] font-black tracking-tight', accent)}>{value}</p>
+    <div className="flex min-h-[88px] items-end justify-between gap-4 rounded-[18px] border border-[#1A1A1A]/7 bg-[#F7F8FC] p-4">
+      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#7B849A]">{label}</p>
+      <p className={cn('text-right text-[1.45rem] font-black tracking-tight', accent)}>{value}</p>
     </div>
   );
 }
@@ -124,21 +150,21 @@ function ToolCard({
     <article className={cn(homeCard, className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <h3 className="text-[1rem] font-black tracking-tight text-[#1A1A1A]">{title}</h3>
-          <p className="text-[12px] leading-relaxed text-gray-500">{description}</p>
+          <h3 className="text-[1.1rem] font-black tracking-tight text-[#102042] md:text-[1.2rem]">{title}</h3>
+          <p className="text-[14px] leading-relaxed text-[#667085]">{description}</p>
         </div>
         <div className="flex items-center gap-2">
           {badge ? (
-            <Badge className="rounded-full border border-[#F4D03F]/20 bg-[#F4D03F]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#8a6a00]">
+            <Badge className="rounded-full border border-[#F4D03F]/20 bg-[#FFF4CC] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#8a6a00]">
               {badge}
             </Badge>
           ) : null}
-          <div className="rounded-xl border border-[#F4D03F]/15 bg-[#F4D03F]/10 p-2.5 text-[#8a6a00]">
+          <div className="rounded-2xl border border-[#1A1A1A]/7 bg-[#F8FAFF] p-2.5 text-[#5B6477]">
             <Icon className="h-3.5 w-3.5" />
           </div>
         </div>
       </div>
-      <div className="mt-4 space-y-3.5">{children}</div>
+      <div className="mt-5 space-y-4">{children}</div>
     </article>
   );
 }
@@ -160,34 +186,78 @@ function SectionBlock({
 }) {
   return (
     <section id={id} className={cn(glass.section, 'scroll-mt-24 overflow-hidden')}>
-      <div className={cn(sectionTone, 'px-5 py-4 md:px-6')}>
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              {Icon ? (
-                <div className="rounded-xl border border-[#F4D03F]/15 bg-white/80 p-2 text-[#8a6a00]">
-                  <Icon className="h-3.5 w-3.5" />
-                </div>
-              ) : null}
-              {badge ? (
-                <Badge className="rounded-full border border-[#F4D03F]/20 bg-white/80 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#8a6a00]">
-                  {badge}
-                </Badge>
-              ) : null}
-            </div>
-            <h2 className="text-[1.25rem] font-black tracking-tight text-[#1A1A1A]">{title}</h2>
+      <div className={cn(sectionTone, 'px-5 py-5 md:px-6')}>
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-[2rem] font-black tracking-tight text-[#102042]">{title}</h2>
+            {badge ? (
+              <Badge className="rounded-full border border-[#E6B25B]/45 bg-[#FFF2D8] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#B46A11]">
+                {badge}
+              </Badge>
+            ) : null}
           </div>
+          <p className="text-[14px] text-[#667085]">{subtitle}</p>
         </div>
-        <p className="mt-1 text-[12px] text-gray-500">{subtitle}</p>
       </div>
       <div className="grid gap-4 p-5 md:p-6 lg:grid-cols-3">{children}</div>
     </section>
   );
 }
 
+function UtilityButton({
+  icon: Icon,
+  label,
+  onClick,
+  badge,
+  active,
+  disabled = false,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick?: () => void;
+  badge?: string | number;
+  active?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        'flex h-14 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-all',
+        active ? 'border-[#F4D03F]/35 bg-[#FFF2D8] text-[#1A1A1A]' : 'border-[#1A1A1A]/8 bg-white text-[#1A1A1A] hover:border-[#F4D03F]/25 hover:bg-[#FFF9F0]',
+        disabled && 'cursor-not-allowed opacity-60',
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      <span>{label}</span>
+      {badge !== undefined ? (
+        <span className="rounded-full bg-[#F5F7FB] px-2 py-0.5 text-[11px] font-black text-[#46506A]">{badge}</span>
+      ) : null}
+    </button>
+  );
+}
+
 const BeeCalculatorSuite = () => {
   const math = useBeekeepingMath();
+  const { user, beeyieldUser } = useAuth();
+  const { language, setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
+  const userId = beeyieldUser?.id || user?.id;
+  const apiariesQuery = useApiaries();
+  const hivesQuery = useHives();
   const [activeSection, setActiveSection] = React.useState('feeding');
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [historyOpen, setHistoryOpen] = React.useState(false);
+  const [historyLogs, setHistoryLogs] = React.useState<any[]>([]);
+  const [alertsCount, setAlertsCount] = React.useState(0);
+  const [isLoadingHistory, setIsLoadingHistory] = React.useState(false);
+  const [isRefreshingSignals, setIsRefreshingSignals] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [syncState, setSyncState] = React.useState<SyncState>('idle');
+  const [lastSyncedAt, setLastSyncedAt] = React.useState<string | null>(null);
+  const lastAutoSavedPayload = React.useRef('');
 
   const [syrupVolume, setSyrupVolume] = React.useState(18);
   const [feedRatio, setFeedRatio] = React.useState<FeedRatio>('1:1');
@@ -256,6 +326,9 @@ const BeeCalculatorSuite = () => {
   const [inspectTemp, setInspectTemp] = React.useState(20);
   const [inspectWind, setInspectWind] = React.useState(3);
   const [inspectFlow, setInspectFlow] = React.useState<'Dearth' | 'Normal flow' | 'Strong flow'>('Normal flow');
+
+  const apiaries = apiariesQuery.data ?? [];
+  const hives = hivesQuery.data ?? [];
 
   const syrupResult = React.useMemo(() => math.calculateSyrup(syrupVolume, feedRatio), [feedRatio, math, syrupVolume]);
   const winterResult = React.useMemo(() => math.calculateWinterDeficit(currentStoresKg, targetStoresKg), [currentStoresKg, math, targetStoresKg]);
@@ -362,8 +435,243 @@ const BeeCalculatorSuite = () => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const visibleSections = React.useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return sectionMeta;
+
+    return sectionMeta.filter((section) => {
+      const haystack = [section.label, section.note, ...sectionSearchCatalog[section.id]].join(' ').toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [searchQuery]);
+
+  const visibleSectionIds = React.useMemo(() => new Set(visibleSections.map((section) => section.id)), [visibleSections]);
+
+  const matchingApiaries = React.useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return [];
+    return apiaries.filter((apiary) => `${apiary.name ?? ''} ${apiary.location_name ?? ''}`.toLowerCase().includes(query));
+  }, [apiaries, searchQuery]);
+
+  const matchingHives = React.useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return [];
+    return hives.filter((hive) => `${hive.hive_name ?? ''} ${hive.hive_code ?? ''}`.toLowerCase().includes(query));
+  }, [hives, searchQuery]);
+
+  const buildSnapshot = (sectionId: string): CalculatorLogCreateInput => {
+    const calculation_type =
+      sectionId === 'feeding' ? 'feeding' : sectionId === 'equipment' ? 'logistics' : sectionId === 'economics' ? 'economy' : 'health';
+
+    switch (sectionId) {
+      case 'feeding':
+        return {
+          calculation_type,
+          sub_type: sectionId,
+          inputs: { feedRatio, syrupVolume, fondantColonies, fondantKgPerColony, alreadyFedKg, winterHiveType, currentStoresKg, targetStoresKg },
+          results: { syrupResult, fondantNeededKg, fondantToBuyKg, winterResult },
+        };
+      case 'treatment':
+        return {
+          calculation_type,
+          sub_type: sectionId,
+          inputs: { treatmentMethod, dayTemperature, broodPresent, mitesFound, sampleSize, treatmentMonth },
+          results: { treatmentTone, treatmentMessage, varroaResult, currentVarroaBand, varroaDecision },
+        };
+      case 'equipment':
+        return {
+          calculation_type,
+          sub_type: sectionId,
+          inputs: { frameType, boxesToFit, sheetsAvailable, sheetWeightG, honeyKg, jarSizeMl, reservePct, cartonSize, totalColonies, replacementRate, splitsPlanned },
+          results: { totalFramesToBuild, sheetsToBuy, waxMassKg, jarCounts, labelsNeeded, cartonsNeeded, queensToReplace, totalQueensNeeded },
+        };
+      case 'economics':
+        return {
+          calculation_type,
+          sub_type: sectionId,
+          inputs: { economicAcres, economicHives, economicFrames, targetFpa, contractPrice, cropValuePerAcre, bloomIntensity, forageCondition, weatherRisk, hivesPerPallet, deploymentSpeed, laneTurns, siteSpacingMeters },
+          results: { economicMetrics, projectedPollinationRevenue, deploymentCost, projectedRoi, palletsRequired, routeDistanceKm, fieldHours, overlapRisk },
+        };
+      case 'mini':
+        return {
+          calculation_type,
+          sub_type: sectionId,
+          inputs: { flightDistance, flightForageType, flightStrength, seasonFlights, nectarDistance, nectarFlow, apiaryHives, forageAreaHa, overloadSeason, honeyFrameDistance, honeyFrameForage, honeyFrameStrength },
+          results: { flightProfitability, flightsPerDay, overloadAssessment, honeyFrameEstimate },
+        };
+      default:
+        return {
+          calculation_type,
+          sub_type: sectionId,
+          inputs: { reactionStyle, planningStyle, riskAttitude, stopTemp, stopWind, stopSeason, outsideTemp, outsideSeason, outsideStrength, inspectTemp, inspectWind, inspectFlow },
+          results: { beekeeperStyle, stopDecision, heatingDecision, inspectionDecision },
+        };
+    }
+  };
+
+  const snapshotPayload = React.useMemo(() => buildSnapshot(activeSection), [
+    activeSection,
+    alreadyFedKg,
+    apiaryHives,
+    beekeeperStyle,
+    bloomIntensity,
+    broodPresent,
+    boxesToFit,
+    cartonSize,
+    contractPrice,
+    cropValuePerAcre,
+    currentStoresKg,
+    currentVarroaBand,
+    dayTemperature,
+    deploymentCost,
+    deploymentSpeed,
+    economicAcres,
+    economicFrames,
+    economicHives,
+    economicMetrics,
+    feedRatio,
+    fieldHours,
+    flightDistance,
+    flightForageType,
+    flightProfitability,
+    flightStrength,
+    flightsPerDay,
+    fondantColonies,
+    fondantKgPerColony,
+    fondantNeededKg,
+    fondantToBuyKg,
+    forageAreaHa,
+    forageCondition,
+    frameType,
+    heatingDecision,
+    hivesPerPallet,
+    honeyFrameDistance,
+    honeyFrameEstimate,
+    honeyFrameForage,
+    honeyFrameStrength,
+    honeyKg,
+    inspectFlow,
+    inspectTemp,
+    inspectWind,
+    inspectionDecision,
+    jarCounts,
+    jarSizeMl,
+    labelsNeeded,
+    laneTurns,
+    mitesFound,
+    nectarDistance,
+    nectarFlow,
+    outsideSeason,
+    outsideStrength,
+    outsideTemp,
+    overlapRisk,
+    overloadAssessment,
+    overloadSeason,
+    palletsRequired,
+    planningStyle,
+    projectedPollinationRevenue,
+    projectedRoi,
+    queensToReplace,
+    reactionStyle,
+    replacementRate,
+    reservePct,
+    riskAttitude,
+    routeDistanceKm,
+    sampleSize,
+    seasonFlights,
+    sheetsAvailable,
+    sheetsToBuy,
+    sheetWeightG,
+    siteSpacingMeters,
+    splitsPlanned,
+    stopDecision,
+    stopSeason,
+    stopTemp,
+    stopWind,
+    syrupResult,
+    syrupVolume,
+    targetFpa,
+    targetStoresKg,
+    totalColonies,
+    totalFramesToBuild,
+    totalQueensNeeded,
+    treatmentMessage,
+    treatmentMethod,
+    treatmentMonth,
+    treatmentTone,
+    varroaDecision,
+    varroaResult,
+    waxMassKg,
+    weatherRisk,
+    winterHiveType,
+    winterResult,
+  ]);
+
+  const syncBadgeLabel =
+    syncState === 'saving' ? 'Syncing' : syncState === 'saved' ? 'Synced' : syncState === 'error' ? 'Sync issue' : 'Cloud ready';
+
+  const loadHistory = React.useCallback(async (openAfterLoad = false) => {
+    if (!userId) return;
+
+    setIsLoadingHistory(true);
+    try {
+      const logs = await beeyieldService.getCalculatorLogs();
+      const nextLogs = [...(logs ?? [])]
+        .sort((a: any, b: any) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime())
+        .slice(0, 6);
+      setHistoryLogs(nextLogs);
+      if (openAfterLoad) setHistoryOpen(true);
+    } catch (error) {
+      console.error('Failed to load calculator history', error);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  }, [userId]);
+
+  const refreshSignals = React.useCallback(async () => {
+    if (!userId) return;
+
+    setIsRefreshingSignals(true);
+    try {
+      const [alerts, logs] = await Promise.all([beeyieldService.getSensorAlerts(false, 5), beeyieldService.getCalculatorLogs()]);
+      setAlertsCount(alerts?.length ?? 0);
+      setHistoryLogs(
+        [...(logs ?? [])]
+          .sort((a: any, b: any) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime())
+          .slice(0, 6),
+      );
+    } catch (error) {
+      console.error('Failed to refresh calculator signals', error);
+    } finally {
+      setIsRefreshingSignals(false);
+    }
+  }, [userId]);
+
+  const saveSnapshot = React.useCallback(async () => {
+    if (!userId) {
+      toast.error('BeeYield sign-in is required to persist calculator history.');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await apiPost('/beeyield/calculator-logs', snapshotPayload);
+      lastAutoSavedPayload.current = JSON.stringify(snapshotPayload);
+      setSyncState('saved');
+      setLastSyncedAt(new Date().toISOString());
+      toast.success('Calculator snapshot saved to BeeYield Cloud.');
+      void loadHistory();
+    } catch (error) {
+      console.error('Failed to save calculator snapshot', error);
+      setSyncState('error');
+      toast.error('Failed to save calculator snapshot.');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [loadHistory, snapshotPayload, userId]);
+
   React.useEffect(() => {
-    const sections = sectionMeta
+    const sections = visibleSections
       .map((section) => document.getElementById(section.id))
       .filter((node): node is HTMLElement => Boolean(node));
 
@@ -387,35 +695,58 @@ const BeeCalculatorSuite = () => {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [visibleSections]);
 
   React.useEffect(() => {
     setTargetStoresKg(winterHiveType === 'Nucleus' ? 8 : winterHiveType === 'Double brood' ? 25 : 18);
   }, [winterHiveType]);
 
+  React.useEffect(() => {
+    if (visibleSections.length && !visibleSectionIds.has(activeSection as SectionId)) {
+      setActiveSection(visibleSections[0].id);
+    }
+  }, [activeSection, visibleSectionIds, visibleSections]);
+
+  React.useEffect(() => {
+    if (!userId) return;
+    void refreshSignals();
+  }, [refreshSignals, userId]);
+
+  React.useEffect(() => {
+    if (!userId) return;
+
+    const payloadKey = JSON.stringify(snapshotPayload);
+    if (payloadKey === lastAutoSavedPayload.current) return;
+
+    const timer = globalThis.setTimeout(async () => {
+      setSyncState('saving');
+      try {
+        await apiPost('/beeyield/calculator-logs', snapshotPayload);
+        lastAutoSavedPayload.current = payloadKey;
+        setSyncState('saved');
+        setLastSyncedAt(new Date().toISOString());
+      } catch (error) {
+        console.error('Silent calculator sync failed', error);
+        setSyncState('error');
+      }
+    }, 1200);
+
+    return () => globalThis.clearTimeout(timer);
+  }, [snapshotPayload, userId]);
+
   return (
     <BeeYieldPageShell className="space-y-6">
-      <BeeYieldPageHeader
-        icon={Calculator}
-        label="Beekeeping calculators"
-        title={<>Beekeeping <span className="text-[#F4D03F]">calculators</span></>}
-        subtitle="Click through feeding, treatments, equipment, and field heuristics without leaving the BeeYield home experience."
-        actions={
-          <div className="flex flex-wrap gap-2">
-            <Badge className="rounded-full border border-[#F4D03F]/20 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">{TOOL_COUNT} tools</Badge>
-            <Badge className="rounded-full border border-[#1B9157]/15 bg-[#eefaf0] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#166534]">Home UI preserved</Badge>
-          </div>
-        }
-      />
-
+      <div className="space-y-3">
+        <h1 className="text-[2.1rem] font-black tracking-tight text-[#102042] md:text-[2.4rem]">Beekeeping calculators</h1>
+      </div>
       <section className={cn(glass.section, 'overflow-hidden')}>
         <div className={cn(sectionTone, 'px-5 py-5 md:px-6')}>
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)]">
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-[#F4D03F]/20 bg-white/80 px-3 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#8a6a00]">Intelligent hives · calculators</div>
               <div>
-                <h2 className="text-[2rem] font-black tracking-tight text-[#1A1A1A] md:text-[2.15rem]">Beekeeping calculators</h2>
-                <p className="mt-2 max-w-2xl text-[13px] text-gray-500">Results are indicative. Use them as operational checks before inspections, feeding, transport, or treatment decisions.</p>
+                <h2 className="text-[2rem] font-black tracking-tight text-[#102042] md:text-[2.25rem]">Beekeeping calculators</h2>
+                <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-[#667085]">Quick tools for feeding, treatments, logistics, and economics. Results are indicative and meant to support apiary decisions.</p>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -424,45 +755,105 @@ const BeeCalculatorSuite = () => {
                 <p className="mt-1.5 text-[1.7rem] font-black tracking-tight text-[#1A1A1A]">{TOOL_COUNT}</p>
               </div>
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Connected</p>
+                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#1A1A1A]">{apiaries.length} apiaries</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">{hives.length} hives available in BeeYield.</p>
+              </div>
+              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Cloud sync</p>
+                <p className={cn('mt-1.5 text-[1.35rem] font-black tracking-tight', syncState === 'error' ? 'text-[#B45309]' : 'text-[#166534]')}>{syncBadgeLabel}</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">{lastSyncedAt ? `Last write ${new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Auto-save enabled for the active section.'}</p>
+              </div>
+              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
                 <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Tip</p>
-                <p className="mt-1.5 text-[13px] font-semibold leading-relaxed text-[#1A1A1A]">Move section by section like a seasonal checklist.</p>
-              </div>
-              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Winter gap</p>
-                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#8a6a00]">{winterResult.deficitKg} kg</p>
-                <p className="mt-1 text-[11px] font-semibold text-gray-500">Current shortfall to winter stores.</p>
-              </div>
-              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Varroa call</p>
-                <p className={cn('mt-1.5 text-[1.35rem] font-black tracking-tight', varroaDecision.tone === 'green' ? 'text-[#166534]' : varroaDecision.tone === 'amber' ? 'text-[#a16207]' : 'text-[#b45309]')}>
-                  {varroaDecision.label}
-                </p>
-                <p className="mt-1 text-[11px] font-semibold text-gray-500">{varroaResult.percentage}% infestation in current sample.</p>
+                <p className="mt-1.5 text-[13px] font-semibold leading-relaxed text-[#1A1A1A]">Move between sections like a seasonal checklist and let the cloud log each step.</p>
               </div>
             </div>
           </div>
         </div>
         <div className="border-t border-[#F4D03F]/10 bg-[#F9F7F2] px-4 py-4 md:px-5">
-          <div className="flex flex-wrap gap-2">
-          {sectionMeta.map((section) => (
-            <button
-              key={section.id}
-              type="button"
-              onClick={() => jumpToSection(section.id)}
-              className={cn('rounded-full border px-3.5 py-2 text-left transition-all', activeSection === section.id ? 'border-[#F4D03F]/40 bg-[#FFF4CC] text-[#1A1A1A]' : 'border-[#F4D03F]/15 bg-white text-gray-600 hover:border-[#F4D03F]/30 hover:bg-[#FFF9F0]')}
-            >
-              <div className="flex items-center gap-2 text-[10px] font-black tracking-tight">
-                <section.icon className="h-3.5 w-3.5" />
-                <span>{section.label}</span>
+          <div className="sticky top-4 z-20 space-y-3">
+            <div className="flex flex-wrap items-center gap-3 rounded-[30px] border border-white/70 bg-[#EFF3FB]/92 px-4 py-3 shadow-[0_20px_45px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+              <div className="flex min-w-[260px] flex-1 items-center gap-3 rounded-full border border-[#1A1A1A]/10 bg-white px-4 py-3">
+                <Search className="h-5 w-5 text-[#667085]" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search calculators, apiaries, beehives"
+                  className="w-full bg-transparent text-[15px] font-medium text-[#1A1A1A] outline-none placeholder:text-[#667085]"
+                />
               </div>
-              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] opacity-60">{section.note}</div>
-            </button>
-          ))}
-        </div>
+              <UtilityButton icon={Settings} label={language === 'EN' ? 'English' : language === 'SW' ? 'Swahili' : language} onClick={() => setLanguage(language === 'EN' ? 'SW' : 'EN')} />
+              <UtilityButton icon={theme === 'dark' ? Sun : Moon} label={theme === 'dark' ? 'Light' : 'Dark'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+              <UtilityButton icon={RefreshCw} label="Refresh" onClick={() => void refreshSignals()} active={isRefreshingSignals} disabled={isRefreshingSignals} />
+              <UtilityButton icon={Bell} label="Alerts" badge={alertsCount} onClick={() => void refreshSignals()} />
+              <UtilityButton icon={History} label="History" badge={historyLogs.length} onClick={() => { setHistoryOpen((open) => !open); if (!historyOpen) void loadHistory(true); }} active={historyOpen} />
+              <UtilityButton icon={isSaving ? Loader2 : Calculator} label={isSaving ? 'Saving' : 'Save'} onClick={() => void saveSnapshot()} disabled={isSaving} />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 px-1 text-[12px] font-medium text-[#667085]">
+              <span>{visibleSections.length} calculator section{visibleSections.length === 1 ? '' : 's'} visible</span>
+              {searchQuery.trim() ? <span>{matchingApiaries.length} matching apiaries</span> : null}
+              {searchQuery.trim() ? <span>{matchingHives.length} matching hives</span> : null}
+            </div>
+
+            {historyOpen ? (
+              <div className="rounded-[28px] border border-[#1A1A1A]/7 bg-white/95 p-4 shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[12px] font-black uppercase tracking-[0.18em] text-[#7B849A]">Recent calculator history</p>
+                    <p className="mt-1 text-[14px] text-[#667085]">Latest snapshots stored in BeeYield Cloud for this workspace.</p>
+                  </div>
+                  {isLoadingHistory ? <Loader2 className="h-4 w-4 animate-spin text-[#667085]" /> : null}
+                </div>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  {historyLogs.length ? (
+                    historyLogs.map((log) => (
+                      <div key={log.id} className="rounded-[20px] border border-[#1A1A1A]/7 bg-[#F7F8FC] p-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7B849A]">{String(log.sub_type ?? log.calculation_type ?? 'snapshot').replace(/-/g, ' ')}</p>
+                        <p className="mt-2 text-[14px] font-bold text-[#102042]">{String(log.calculation_type ?? 'calculator').replace(/-/g, ' ')}</p>
+                        <p className="mt-2 text-[12px] text-[#667085]">{log.created_at ? new Date(log.created_at).toLocaleString() : 'Pending timestamp'}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-[20px] border border-dashed border-[#1A1A1A]/12 bg-[#FCFCFD] p-4 text-[14px] text-[#667085] md:col-span-3">
+                      No saved snapshots yet for this calculator suite.
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {visibleSections.map((section) => (
+              <button
+                key={section.id}
+                type="button"
+                onClick={() => jumpToSection(section.id)}
+                className={cn('rounded-full border px-3.5 py-2 text-left transition-all', activeSection === section.id ? 'border-[#F4D03F]/40 bg-[#FFF4CC] text-[#1A1A1A]' : 'border-[#F4D03F]/15 bg-white text-gray-600 hover:border-[#F4D03F]/30 hover:bg-[#FFF9F0]')}
+              >
+                <div className="flex items-center gap-2 text-[10px] font-black tracking-tight">
+                  <section.icon className="h-3.5 w-3.5" />
+                  <span>{section.label}</span>
+                </div>
+                <div className="text-[9px] font-semibold uppercase tracking-[0.12em] opacity-60">{section.note}</div>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
-      <SectionBlock id="feeding" title="Feeding" subtitle="Plan winter stores and syrup quantities before the next feeding round." badge="3 tools" icon={Beaker}>
+      {!visibleSections.length ? (
+        <section className={cn(glass.section, 'p-6')}>
+          <p className="text-lg font-black text-[#102042]">No calculator sections match "{searchQuery}".</p>
+          <p className="mt-2 text-[14px] text-[#667085]">Try a tool name like "syrup", "varroa", "queen", or search one of your apiary names.</p>
+        </section>
+      ) : null}
+
+      {visibleSectionIds.has('feeding') ? (
+      <SectionBlock id="feeding" title="Feeding" subtitle="Plan winter stores and run quick syrup and fondant calculations." badge="Top priority" icon={Beaker}>
         <ToolCard icon={Beaker} title="Sugar syrup calculator" description="Quick ratio mix for field batches.">
           <Field label="Syrup ratio">
             <div className="grid grid-cols-2 gap-2">
@@ -524,8 +915,10 @@ const BeeCalculatorSuite = () => {
           </div>
         </ToolCard>
       </SectionBlock>
+      ) : null}
 
-      <SectionBlock id="treatment" title="Treatment / prophylaxis" subtitle="Check weather windows and interpret mite pressure before you treat." badge="2 tools" icon={Syringe}>
+      {visibleSectionIds.has('treatment') ? (
+      <SectionBlock id="treatment" title="Treatment / prophylaxis" subtitle="Logistics helper for treatments and varroa drop interpretation." icon={Syringe}>
         <ToolCard icon={Syringe} title="Treatment timing & weather window" description="Simple weather gate for common treatment methods.">
           <Field label="Method">
             <SelectInput value={treatmentMethod} onChange={(event) => setTreatmentMethod(event.target.value as Method)}>
@@ -605,8 +998,10 @@ const BeeCalculatorSuite = () => {
           </div>
         </ToolCard>
       </SectionBlock>
+      ) : null}
 
-      <SectionBlock id="equipment" title="Equipment / apiary" subtitle="Plan purchases, packaging, and replacement queens before the next yard move." badge="3 tools" icon={Package}>
+      {visibleSectionIds.has('equipment') ? (
+      <SectionBlock id="equipment" title="Equipment / apiary" subtitle="Plan purchases, packaging, and replacement queens before the next yard move." icon={Package}>
         <ToolCard icon={Package} title="Wax foundation calculator" description="Count the sheets and wax weight needed for upcoming frame work.">
           <Field label="Frame type">
             <SelectInput value={frameType} onChange={(event) => setFrameType(event.target.value as 'Langstroth deep' | 'Langstroth super' | 'Warre')}>
@@ -668,8 +1063,10 @@ const BeeCalculatorSuite = () => {
           </div>
         </ToolCard>
       </SectionBlock>
+      ) : null}
 
-      <SectionBlock id="economics" title="Economics" subtitle="Keep the forecasting pieces from the old suite, but inside the home dashboard visual language." badge="2 tools" icon={GaugeCircle}>
+      {visibleSectionIds.has('economics') ? (
+      <SectionBlock id="economics" title="Economics" subtitle="Keep forecasting pieces integrated with the rest of the home-style suite." icon={GaugeCircle}>
         <ToolCard icon={GaugeCircle} title="Pollination contract optimizer" description="Blend coverage, bloom, and value into a quick contract check." badge="ROI" className="xl:col-span-2">
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Orchard size ac">
@@ -734,8 +1131,10 @@ const BeeCalculatorSuite = () => {
           <StatusBox title={overlapRisk > 20 ? 'Competition watch' : 'Spacing healthy'} body={`Current spacing keeps overlap risk around ${overlapRisk}%. Recommended contract band stays at ${economicMetrics.recommendedHivesLow}-${economicMetrics.recommendedHivesHigh} hives.`} tone={overlapRisk > 20 ? 'amber' : 'green'} />
         </ToolCard>
       </SectionBlock>
+      ) : null}
 
-      <SectionBlock id="mini" title="Mini calculators (educational)" subtitle="Fast heuristics for training, field intuition, and crew alignment." badge="4 tools" icon={Brain}>
+      {visibleSectionIds.has('mini') ? (
+      <SectionBlock id="mini" title="Mini calculators (educational)" subtitle="Fast heuristics for training, field intuition, and crew alignment." icon={Brain}>
         <ToolCard icon={Wind} title="Is it worth flying there?" description="Energy balance heuristic for forage trips.">
           <Field label="Forage distance km">
             <NumberInput value={flightDistance} min={0.2} step={0.1} onChange={(event) => setFlightDistance(Number(event.target.value))} />
@@ -818,8 +1217,10 @@ const BeeCalculatorSuite = () => {
           <StatTile label="Estimate" value={honeyFrameEstimate} accent="text-[#166534]" />
         </ToolCard>
       </SectionBlock>
+      ) : null}
 
-      <SectionBlock id="quizzes" title="Quizzes and tips" subtitle="Tiny interactive prompts for training decisions and inspection judgment." badge="4 tools" icon={BookOpen}>
+      {visibleSectionIds.has('quizzes') ? (
+      <SectionBlock id="quizzes" title="Quizzes and tips" subtitle="Tiny interactive prompts for training decisions and inspection judgment." icon={BookOpen}>
         <ToolCard icon={BookOpen} title="Your beekeeping style" description="See the management bias your answers imply.">
           <Field label="Reaction to first symptoms">
             <SelectInput value={reactionStyle} onChange={(event) => setReactionStyle(event.target.value as 'Wait and observe' | 'Treat early')}>
@@ -899,6 +1300,7 @@ const BeeCalculatorSuite = () => {
           <StatusBox title={inspectionDecision.label} body={inspectionDecision.tone === 'green' ? 'Conditions support a fuller inspection window.' : inspectionDecision.tone === 'amber' ? 'Keep the hive open briefly and avoid creating robbing pressure.' : 'Wait for calmer, warmer conditions before breaking the cluster or brood nest.'} tone={inspectionDecision.tone} />
         </ToolCard>
       </SectionBlock>
+      ) : null}
 
     </BeeYieldPageShell>
   );

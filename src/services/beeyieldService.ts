@@ -315,6 +315,98 @@ export interface ApiaryWeatherSummary {
     linked_device_meta: WeatherLinkedDeviceMeta[];
 }
 
+export interface YieldForecastRequest {
+    apiary_id?: string | null;
+    latitude: number;
+    longitude: number;
+    date_from: string;
+    date_to: string;
+    radius_m: number;
+    vegetation_index: string;
+    crop_profile: string;
+    bee_activity_pct?: number | null;
+}
+
+export interface YieldForecastSourceStatus {
+    key: string;
+    label: string;
+    status: string;
+    detail: string;
+}
+
+export interface YieldForecastTimelinePoint {
+    date: string;
+    yield_kg: number;
+    lower_kg: number;
+    upper_kg: number;
+    activity_index: number;
+    weather_index: number;
+    vegetation_index: number;
+}
+
+export interface YieldForecastResponse {
+    location: {
+        label: string;
+        latitude: number;
+        longitude: number;
+        source: 'apiary' | 'manual';
+        apiary_id?: string | null;
+        apiary_name?: string | null;
+        nearest_apiary_distance_km?: number | null;
+    };
+    analysis_window: {
+        date_from: string;
+        date_to: string;
+        days: number;
+        radius_m: number;
+        vegetation_index: string;
+        crop_profile: string;
+        bee_activity_pct?: number | null;
+    };
+    forecast: {
+        expected_yield_kg: number;
+        low_kg: number;
+        high_kg: number;
+        confidence_pct: number;
+        yield_per_hive_kg: number;
+        yield_per_acre_kg?: number | null;
+        forecast_score: number;
+    };
+    comparisons: {
+        last_period_yield_kg?: number | null;
+        delta_pct?: number | null;
+        active_hives: number;
+        harvest_count: number;
+        sensor_samples: number;
+    };
+    signals: {
+        vegetation_score: number;
+        weather_score: number;
+        activity_score: number;
+        history_score: number;
+        source_statuses: YieldForecastSourceStatus[];
+    };
+    timeline: YieldForecastTimelinePoint[];
+    drivers: Array<{
+        label: string;
+        impact: 'positive' | 'neutral' | 'negative';
+        value: string;
+        detail: string;
+    }>;
+    recommendations: string[];
+    weather: {
+        current: WeatherCurrent;
+        status: string;
+    };
+    map: {
+        center: {
+            lat: number;
+            lng: number;
+        };
+        radius_m: number;
+    };
+}
+
 export interface PublicFlightMapPoint {
     lat: number;
     lng: number;
@@ -3339,6 +3431,10 @@ export const beeyieldService = {
             console.error('getPublicLiveFlightMap:', error);
             return null;
         }
+    },
+
+    async runYieldForecast(input: YieldForecastRequest): Promise<YieldForecastResponse> {
+        return apiPost<YieldForecastResponse>('beeyield/yield-forecast/run', input);
     },
 
     async planRoute(startPoint: { lat: number, lng: number }, selectedHiveIds: string[]): Promise<any> {

@@ -82,6 +82,7 @@ release/
 
 # Sensitive Scripts and Dumps (Project Hardening)
 *.sql
+!supabase/migrations/*.sql
 *.py
 !backend/main.py
 !backend/app/**/*.py

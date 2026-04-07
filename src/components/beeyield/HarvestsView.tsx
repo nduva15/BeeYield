@@ -210,6 +210,110 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
         });
     }, [harvests, searchQuery, filterYear, filterApiaryId, filterHiveId]);
 
+    const hiveRelationshipRows = React.useMemo(() => {
+        const rows = new Map<string, {
+            hive_id: string;
+            hive_code: string;
+            apiary_id: string;
+            apiary_name: string;
+            harvest_count: number;
+            batch_count: number;
+            latest_harvest_date: string;
+            latest_batch_date: string;
+            latest_batch_code: string;
+        }>();
+
+        const ensureRow = (hiveId: string, partial?: Partial<{
+            hive_code: string;
+            apiary_id: string;
+            apiary_name: string;
+        }>) => {
+            const safeHiveId = hiveId || `unlinked-${rows.size + 1}`;
+            if (!rows.has(safeHiveId)) {
+                rows.set(safeHiveId, {
+                    hive_id: safeHiveId,
+                    hive_code: partial?.hive_code || 'N/A',
+                    apiary_id: partial?.apiary_id || '',
+                    apiary_name: partial?.apiary_name || 'Unassigned',
+                    harvest_count: 0,
+                    batch_count: 0,
+                    latest_harvest_date: '',
+                    latest_batch_date: '',
+                    latest_batch_code: '',
+                });
+            }
+
+            const current = rows.get(safeHiveId)!;
+            if (partial?.hive_code && current.hive_code === 'N/A') current.hive_code = partial.hive_code;
+            if (partial?.apiary_id && !current.apiary_id) current.apiary_id = partial.apiary_id;
+            if (partial?.apiary_name && current.apiary_name === 'Unassigned') current.apiary_name = partial.apiary_name;
+            return current;
+        };
+
+        filteredHives.forEach((h: any) => {
+            ensureRow(String(h.id), {
+                hive_code: h.hive_code || 'N/A',
+                apiary_id: h.apiary_id || h.apiary?.id || '',
+                apiary_name: h.apiary?.name || apiaries.find((a: any) => a.id === (h.apiary_id || h.apiary?.id))?.name || 'Unassigned',
+            });
+        });
+
+        filteredHarvests.forEach((harvest: any) => {
+            const hiveId = String(harvest.hive_id || harvest.hive?.id || '');
+            const row = ensureRow(hiveId, {
+                hive_code: harvest.hive?.hive_code || harvest.hive_code || 'N/A',
+                apiary_id: harvest.apiary_id || harvest.apiary?.id || '',
+                apiary_name: harvest.apiary?.name || 'Unassigned',
+            });
+            row.harvest_count += 1;
+            const harvestDate = String(harvest.harvest_date || '');
+            if (harvestDate && (!row.latest_harvest_date || harvestDate > row.latest_harvest_date)) {
+                row.latest_harvest_date = harvestDate;
+            }
+        });
+
+        visibleBatches.forEach((batch: any) => {
+            const hiveId = String(batch.hive_id || batch.hive?.id || '');
+            const row = ensureRow(hiveId, {
+                hive_code: batch.hive_code || batch.hive?.hive_code || 'N/A',
+                apiary_id: batch.apiary_id || batch.apiary?.id || '',
+                apiary_name: batch.apiary_name || batch.apiary?.name || 'Unassigned',
+            });
+            row.batch_count += 1;
+
+            const batchDate = String(batch.harvest_date || '');
+            const isLatestBatch = Boolean(batchDate && (!row.latest_batch_date || batchDate >= row.latest_batch_date));
+            if (isLatestBatch) {
+                row.latest_batch_date = batchDate;
+            }
+            if (batch.batch_code && isLatestBatch) {
+                row.latest_batch_code = batch.batch_code;
+            }
+        });
+
+        return Array.from(rows.values())
+            .filter((row) => row.harvest_count > 0 || row.batch_count > 0)
+            .sort((left, right) => {
+                if (left.apiary_name !== right.apiary_name) {
+                    return left.apiary_name.localeCompare(right.apiary_name);
+                }
+                return left.hive_code.localeCompare(right.hive_code);
+            });
+    }, [filteredHives, filteredHarvests, visibleBatches, apiaries]);
+
+    const traceabilityRelationshipStats = React.useMemo(() => {
+        const apiaryIds = new Set(hiveRelationshipRows.map((row) => row.apiary_id).filter(Boolean));
+        const linkedHarvests = hiveRelationshipRows.reduce((sum, row) => sum + row.harvest_count, 0);
+        const linkedBatches = hiveRelationshipRows.reduce((sum, row) => sum + row.batch_count, 0);
+
+        return {
+            apiaries: apiaryIds.size,
+            hives: hiveRelationshipRows.length,
+            linkedHarvests,
+            linkedBatches,
+        };
+    }, [hiveRelationshipRows]);
+
     const exportHarvestsCsv = React.useCallback(() => {
         const rows = filteredHarvests.map((h) => ({
             batch_code: h.batch_code || '',
@@ -612,6 +716,67 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                         </Select>
                     </div>
                 </div>
+
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <GlassStatCard label="Apiaries in view" value={traceabilityRelationshipStats.apiaries} icon={MapPin} index={0} />
+                    <GlassStatCard label="Hives in view" value={traceabilityRelationshipStats.hives} icon={Hexagon} index={1} color="text-[#1A1A1A]" />
+                    <GlassStatCard label="Harvest logs linked" value={traceabilityRelationshipStats.linkedHarvests} icon={History} index={2} color="text-[#1A1A1A]" />
+                    <GlassStatCard label="Batches linked" value={traceabilityRelationshipStats.linkedBatches} icon={Database} index={3} color="text-[#1B9157]" />
+                </div>
+
+                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
+                    <div className="px-6 py-5 border-b border-white/40 bg-white/30 backdrop-blur-sm">
+                        <div className="flex items-center gap-3">
+                            <Layers className="w-4 h-4 text-[#F4D03F]" />
+                            <div>
+                                <h3 className="text-sm font-black text-[#1A1A1A] tracking-tight">Batches Per Hive</h3>
+                                <p className="text-[11px] font-medium text-gray-500">Apiary, hive, linked harvest logs, and traceability batches in one view.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-white/20 border-b border-white/30">
+                                <tr>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Apiary</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Hive</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-center">Harvest Logs</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-center">Traceability Batches</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Latest Harvest</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Latest Batch</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#F4D03F]/5">
+                                {hiveRelationshipRows.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={6} className="p-12 text-center text-xs text-gray-400 font-bold">
+                                            No hive relationships found for this selection.
+                                        </td>
+                                    </tr>
+                                ) : hiveRelationshipRows.map((row) => (
+                                    <tr key={row.hive_id} className="hover:bg-white/40 transition-colors">
+                                        <td className="px-6 py-4 text-[11px] font-bold text-[#1A1A1A]">{row.apiary_name}</td>
+                                        <td className="px-6 py-4 text-[11px] font-black text-[#1B9157]">{row.hive_code}</td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className="text-[11px] font-black text-[#1A1A1A] tabular-nums">{row.harvest_count}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className="text-[11px] font-black text-[#1A1A1A] tabular-nums">{row.batch_count}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-[10px] font-bold text-gray-500 tabular-nums">
+                                            {row.latest_harvest_date ? format(new Date(row.latest_harvest_date), 'MMM dd, yyyy') : '—'}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-[10px] font-black text-[#1A1A1A] font-mono uppercase">
+                                                {row.latest_batch_code || '—'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 
                 <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
                     <div className="overflow-x-auto">
@@ -620,6 +785,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                 <tr>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Batch Code</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Hive</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Apiary</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Harvest Date</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Honey Type</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-center">Net (KG)</th>
@@ -629,9 +795,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                             </thead>
                             <tbody className="divide-y divide-[#F4D03F]/5">
                                 {isBatchesLoading ? (
-                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">Verifying records...</td></tr>
+                                    <tr><td colSpan={8} className="p-12 text-center text-xs text-gray-400 font-bold">Verifying records...</td></tr>
                                 ) : visibleBatches.length === 0 ? (
-                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">No traceability records found for this selection.</td></tr>
+                                    <tr><td colSpan={8} className="p-12 text-center text-xs text-gray-400 font-bold">No traceability records found for this selection.</td></tr>
                                 ) : visibleBatches.map((batch: any) => (
                                     <tr key={batch.id} className="hover:bg-white/50 transition-colors group">
                                         <td className="px-6 py-4">
@@ -642,6 +808,11 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         <td className="px-6 py-4">
                                             <span className="text-[10px] font-black text-[#1B9157] tracking-tighter">
                                                 {batch.hive_code}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-[10px] font-bold text-[#1A1A1A]">
+                                                {batch.apiary_name || batch.apiary?.name || '—'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">

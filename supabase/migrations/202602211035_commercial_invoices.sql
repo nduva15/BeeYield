@@ -1,0 +1,5 @@
+-- ==========================================
+-- BEEYIELD: COMMERCIAL DOCUMENTS (DEPRECATED)
+-- ==========================================
+-- This file is deprecated in favor of the unified public.billing_ledger table.
+-- Consolidated schema is now managed in 202602211018 and 202602211028.
