@@ -1,6 +1,7 @@
 import React from 'react';
-import { CalendarDays, ChevronDown, Search, Sparkles, Settings, Wand2 } from 'lucide-react';
+import { CalendarDays, ChevronRight, FlaskConical, Leaf, Search, Settings, Sparkles, ThumbsUp, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
 import {
     Area,
     AreaChart,
@@ -17,17 +18,17 @@ type StartMode = 'observed' | 'default';
 type ColonyStrength = 'Weak' | 'Medium' | 'Strong';
 type BroodMode = 'Seasonal (auto)' | 'Manual (advanced)' | 'Broodless';
 
-const pageClass = 'min-h-screen bg-[#f3f6fb] px-4 py-6 md:px-6 lg:px-8';
-const shellClass = 'mx-auto max-w-[1120px] space-y-4';
-const cardClass = 'rounded-[18px] border border-[#e2e8f0] bg-white shadow-[0_12px_40px_rgba(15,23,42,0.05)]';
-const softCardClass = 'rounded-[16px] border border-[#e7edf5] bg-[#fbfcfe]';
-const labelClass = 'text-[11px] font-medium uppercase tracking-[0.05em] text-[#607086]';
-const titleClass = 'text-[18px] font-semibold tracking-[-0.02em] text-[#182235]';
-const inputClass = 'h-11 w-full rounded-[12px] border border-[#d7deea] bg-white px-4 text-[15px] text-[#182235] outline-none transition focus:border-[#f5b938] focus:ring-2 focus:ring-[#f5b938]/20';
-const chipClass = 'rounded-full border border-[#d6dfeb] bg-white px-4 py-2.5 text-[13px] font-medium text-[#41506a]';
-const activeChipClass = 'rounded-full border border-[#dfab27] bg-[#f6bc3a] px-4 py-2.5 text-[13px] font-medium text-[#1f2937] shadow-[0_10px_20px_rgba(245,185,56,0.25)]';
-const okPillClass = 'inline-flex items-center rounded-full border border-[#7ed8a2] bg-[#dff7e8] px-4 py-2 text-[13px] font-semibold text-[#13794a]';
-const warningPillClass = 'inline-flex items-center rounded-full border border-[#dfab27] bg-[#f6bc3a] px-4 py-2 text-[13px] font-medium text-[#1f2937] shadow-[0_10px_20px_rgba(245,185,56,0.25)]';
+const pageClass = cn(glass.page, 'space-y-4 pb-10');
+const shellClass = 'mx-auto max-w-[1120px] space-y-5';
+const cardClass = cn(glass.section, 'rounded-[18px] border-[#f4d03f]/20 bg-white shadow-[0_10px_30px_rgba(26,26,26,0.05)]');
+const softCardClass = 'rounded-[16px] border border-[#f4d03f]/18 bg-[#fffdf8]';
+const labelClass = 'text-[11px] font-medium uppercase tracking-[0.05em] text-[#64748b]';
+const titleClass = 'text-[18px] font-semibold tracking-[-0.02em] text-[#1a1a1a]';
+const inputClass = 'h-11 w-full rounded-[12px] border border-[#f4d03f]/30 bg-[#fff9f0] px-4 text-[15px] text-[#1a1a1a] outline-none transition focus:border-[#f4d03f] focus:ring-2 focus:ring-[#f4d03f]/30';
+const chipClass = 'rounded-full border border-[#f4d03f]/25 bg-[#fff9f0] px-4 py-2.5 text-[13px] font-medium text-[#4b5563] transition hover:bg-[#f4d03f]/8';
+const activeChipClass = 'rounded-full border border-[#dfab27] bg-[#f6bc3a] px-4 py-2.5 text-[13px] font-medium text-[#1f2937] shadow-[0_10px_20px_rgba(245,185,56,0.24)]';
+const okPillClass = 'inline-flex items-center gap-2 rounded-full border border-[#7ed8a2] bg-[#dff7e8] px-4 py-2 text-[13px] font-semibold text-[#13794a]';
+const warningPillClass = 'inline-flex items-center gap-2 rounded-full border border-[#dfab27] bg-[#f6bc3a] px-4 py-2 text-[13px] font-medium text-[#1f2937] shadow-[0_10px_20px_rgba(245,185,56,0.24)]';
 
 const faqItems = [
     'Is this a veterinary diagnosis?',
@@ -206,35 +207,35 @@ const VarroaView: React.FC = () => {
     return (
         <div className={pageClass}>
             <div className={shellClass}>
-                <section className={cn(cardClass, 'bg-[linear-gradient(180deg,#fff9ee_0%,#ffffff_100%)] px-5 py-4')}>
+                <section className="relative overflow-hidden rounded-[18px] border border-[#f4d03f]/20 bg-gradient-to-r from-[#f4d03f]/8 via-[#fff9f0] to-[#fffdf8] px-5 py-4 shadow-sm">
                     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div className="space-y-1">
-                            <div className="text-[15px] font-semibold text-[#182235]">First steps</div>
-                            <div className="text-[13px] text-[#7d8ca2]">Start here to set up your apiaries, devices, and measurements.</div>
+                            <div className="text-[15px] font-semibold text-[#1a1a1a]">First steps</div>
+                            <div className="text-[13px] text-[#6b7280]">Start here to set up your apiaries, devices, and measurements.</div>
                             <div className="mt-3 flex flex-wrap gap-2">
                                 {quickLinks.map((item) => (
-                                    <span key={item} className="rounded-full border border-[#ebe2d0] bg-white px-3 py-1.5 text-[11px] font-medium text-[#263247]">
+                                    <span key={item} className="rounded-full border border-[#f4d03f]/20 bg-[#fff9f0] px-3 py-1.5 text-[11px] font-medium text-[#1f2937] shadow-sm">
                                         {item}
                                     </span>
                                 ))}
                             </div>
                         </div>
-                        <button type="button" className="self-start rounded-full border border-[#ece7da] bg-white px-3 py-1 text-[11px] text-[#68768c]">
+                        <button type="button" className="self-start rounded-lg border border-[#f4d03f]/20 bg-[#fff9f0] px-3 py-1 text-[11px] text-[#6b7280] transition hover:bg-[#f4d03f]/10">
                             Hide
                         </button>
                     </div>
                 </section>
 
                 <header className="space-y-1 px-1">
-                    <h1 className="text-[32px] font-semibold tracking-[-0.04em] text-[#182235]">Varroa Modeling</h1>
+                    <h1 className="text-[32px] font-semibold tracking-[-0.04em] text-[#1a1a1a]">Varroa Modeling</h1>
                 </header>
 
                 <section className={cn(cardClass, 'p-5 md:p-6')}>
                     <div className="space-y-4">
                         <h2 className={titleClass}>How to use the model</h2>
-                        <div className="text-[13px] leading-6 text-[#7d8ca2]">
+                        <div className="text-[13px] leading-6 text-[#6b7280]">
                             <p>A few steps to get a useful forecast quickly.</p>
-                            <ol className="mt-3 space-y-1.5 text-[#4d5d74]">
+                            <ol className="mt-3 space-y-1.5 text-[#4b5563]">
                                 <li>1. Choose a starting point: your mite fall/alcohol data or a default scenario.</li>
                                 <li>2. Set colony parameters (strength and brood mode).</li>
                                 <li>3. Add planned treatments and temperatures if you want to include them.</li>
@@ -252,9 +253,9 @@ const VarroaView: React.FC = () => {
                     <div className="mt-4 space-y-3">
                         {faqItems.map((item) => (
                             <details key={item} className="group">
-                                <summary className="list-none cursor-pointer text-[14px] font-medium text-[#182235]">
+                                <summary className="list-none cursor-pointer text-[14px] font-medium text-[#1a1a1a]">
                                     <span className="inline-flex items-center gap-2">
-                                        <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+                                        <ChevronRight className="h-4 w-4 transition group-open:rotate-90" />
                                         {item}
                                     </span>
                                 </summary>

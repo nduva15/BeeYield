@@ -211,6 +211,7 @@ function UtilityButton({
   badge,
   active,
   disabled = false,
+  compact = false,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
@@ -218,6 +219,7 @@ function UtilityButton({
   badge?: string | number;
   active?: boolean;
   disabled?: boolean;
+  compact?: boolean;
 }) {
   return (
     <button
@@ -225,15 +227,20 @@ function UtilityButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'flex h-14 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-all',
+        compact ? 'relative flex h-14 w-14 items-center justify-center rounded-full border transition-all' : 'flex h-14 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-all',
         active ? 'border-[#F4D03F]/35 bg-[#FFF2D8] text-[#1A1A1A]' : 'border-[#1A1A1A]/8 bg-white text-[#1A1A1A] hover:border-[#F4D03F]/25 hover:bg-[#FFF9F0]',
         disabled && 'cursor-not-allowed opacity-60',
       )}
     >
       <Icon className="h-4 w-4" />
-      <span>{label}</span>
-      {badge !== undefined ? (
+      {!compact ? <span>{label}</span> : null}
+      {!compact && badge !== undefined ? (
         <span className="rounded-full bg-[#F5F7FB] px-2 py-0.5 text-[11px] font-black text-[#46506A]">{badge}</span>
+      ) : null}
+      {compact && badge !== undefined ? (
+        <span className="absolute right-1.5 top-1.5 rounded-full bg-[#F5F7FB] px-1.5 py-0.5 text-[10px] font-black text-[#46506A]">
+          {badge}
+        </span>
       ) : null}
     </button>
   );
@@ -785,11 +792,11 @@ const BeeCalculatorSuite = () => {
                 />
               </div>
               <UtilityButton icon={Settings} label={language === 'EN' ? 'English' : language === 'SW' ? 'Swahili' : language} onClick={() => setLanguage(language === 'EN' ? 'SW' : 'EN')} />
-              <UtilityButton icon={theme === 'dark' ? Sun : Moon} label={theme === 'dark' ? 'Light' : 'Dark'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
-              <UtilityButton icon={RefreshCw} label="Refresh" onClick={() => void refreshSignals()} active={isRefreshingSignals} disabled={isRefreshingSignals} />
-              <UtilityButton icon={Bell} label="Alerts" badge={alertsCount} onClick={() => void refreshSignals()} />
-              <UtilityButton icon={History} label="History" badge={historyLogs.length} onClick={() => { setHistoryOpen((open) => !open); if (!historyOpen) void loadHistory(true); }} active={historyOpen} />
-              <UtilityButton icon={isSaving ? Loader2 : Calculator} label={isSaving ? 'Saving' : 'Save'} onClick={() => void saveSnapshot()} disabled={isSaving} />
+              <UtilityButton compact icon={theme === 'dark' ? Sun : Moon} label={theme === 'dark' ? 'Light' : 'Dark'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+              <UtilityButton compact icon={RefreshCw} label="Refresh" onClick={() => void refreshSignals()} active={isRefreshingSignals} disabled={isRefreshingSignals} />
+              <UtilityButton compact icon={Bell} label="Alerts" badge={alertsCount} onClick={() => void refreshSignals()} />
+              <UtilityButton compact icon={History} label="History" badge={historyLogs.length} onClick={() => { setHistoryOpen((open) => !open); if (!historyOpen) void loadHistory(true); }} active={historyOpen} />
+              <UtilityButton compact icon={isSaving ? Loader2 : Calculator} label={isSaving ? 'Saving' : 'Save'} onClick={() => void saveSnapshot()} disabled={isSaving} />
             </div>
 
             <div className="flex flex-wrap items-center gap-3 px-1 text-[12px] font-medium text-[#667085]">

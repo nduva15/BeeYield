@@ -24,7 +24,6 @@ export default defineConfig({
         warmup: {
             clientFiles: [
                 './src/main.tsx',
-                './src/pages/BeeYieldDashboard.tsx',
                 './src/pages/AdminDashboard.tsx',
                 './src/pages/PollinationServices.tsx'
             ],

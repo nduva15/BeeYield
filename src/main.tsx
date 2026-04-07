@@ -57,6 +57,7 @@ const PollinationRequest = lazy(() => import('@/pages/PollinationRequest'))
 const Diseases = lazy(() => import('@/pages/Diseases'))
 const Media = lazy(() => import('@/pages/Media'))
 const BeeYieldDashboard = lazy(() => import('@/pages/BeeYieldDashboard'))
+const BeeCalculatorSuite = lazy(() => import('@/pages/BeeCalculatorSuite'))
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'))
 const ContentEditor = lazy(() => import('@/components/beeyield/ContentEditor'))
 const AdminLogin = lazy(() => import('@/pages/AdminAuth'))
@@ -160,6 +161,8 @@ root.render(
                                                         <Route path="/precision-pollination/map" element={<FlightMapping />} />
                                                         <Route path="/precision-pollination/reports" element={<PollinationReports />} />
                                                         <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
+                                                        <Route path="/bee-calculator" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />
+                                                        <Route path="/calculator-suite" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />
                                                         <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />
                                                         <Route path="/ceba" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                                                         <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
