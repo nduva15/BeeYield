@@ -13,6 +13,7 @@ DO $$
 DECLARE
     v_user_email TEXT := 'timothynduva349@gmail.com';
     v_user_id UUID;
+    v_farmer_id UUID;
     v_apiary_id UUID;
     v_target_hives INTEGER := 184;
     v_hive_count INTEGER := 0;
@@ -54,6 +55,26 @@ BEGIN
     IF v_user_id IS NULL THEN
         RAISE NOTICE 'Timothy user not found. Skipping harvest correction.';
         RETURN;
+    END IF;
+
+    SELECT id
+    INTO v_farmer_id
+    FROM public.farmers
+    WHERE user_id = v_user_id
+      AND name = 'Timothy Nduva'
+    LIMIT 1;
+
+    IF v_farmer_id IS NULL THEN
+        INSERT INTO public.farmers (
+            user_id,
+            name,
+            location_name
+        ) VALUES (
+            v_user_id,
+            'Timothy Nduva',
+            'Kibwezi'
+        )
+        RETURNING id INTO v_farmer_id;
     END IF;
 
     SELECT id
@@ -199,7 +220,7 @@ BEGIN
                 is_verified,
                 moisture_content_percent,
                 color_grade,
-                farmer_name
+                farmer_id
             ) VALUES (
                 v_user_id,
                 v_apiary_id,
@@ -226,7 +247,7 @@ BEGIN
                 true,
                 17.5,
                 v_color_grade,
-                'Timothy Nduva'
+                v_farmer_id
             );
         END LOOP;
     END LOOP;

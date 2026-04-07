@@ -1,11 +1,13 @@
 import React from 'react';
 import {
   AlertTriangle,
+  ArrowRight,
   Beaker,
   Bell,
   BookOpen,
   Brain,
   Calculator,
+  CloudSun,
   Flower2,
   Gauge,
   GaugeCircle,
@@ -26,18 +28,22 @@ import {
   Wind,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { glass } from '@/components/beeyield/GlassTheme';
+import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import WeatherTelemetryPanel from '@/components/beeyield/WeatherTelemetryPanel';
 import { cn } from '@/lib/utils';
 import { useBeekeepingMath } from '@/hooks/useBeekeepingMath';
 import { calculatePollinationMetrics } from '@/lib/pollinationCalculations';
 import { useAuth } from '@/hooks/useAuth';
+import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { useSelectedApiary } from '@/hooks/useSelectedApiary';
 import { apiPost } from '@/services/api';
 import { beeyieldService, type CalculatorLogCreateInput } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 type FeedRatio = '1:1' | '2:1';
 type HiveStrength = 'Modest' | 'Medium' | 'Strong';
@@ -246,9 +252,20 @@ function UtilityButton({
   );
 }
 
+function HomeInfoCard({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <div className={cn(glass.section, 'p-5', className)}>{children}</div>;
+}
+
 const BeeCalculatorSuite = () => {
   const math = useBeekeepingMath();
   const { user, beeyieldUser } = useAuth();
+  const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
   const userId = beeyieldUser?.id || user?.id;
@@ -336,6 +353,47 @@ const BeeCalculatorSuite = () => {
 
   const apiaries = apiariesQuery.data ?? [];
   const hives = hivesQuery.data ?? [];
+  const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
+  const primaryApiary = apiaries.find((apiary) => apiary.id === selectedApiaryId) || apiaries[0] || null;
+  const primaryApiaryHiveCount = React.useMemo(
+    () => hives.filter((hive) => hive.apiary_id === primaryApiary?.id).length,
+    [hives, primaryApiary?.id],
+  );
+  const { data: weatherSummary, isLoading: isWeatherLoading } = useApiaryWeatherSummary(primaryApiary?.id);
+  const weatherCurrent = weatherSummary?.current;
+  const linkedWeatherDevices = weatherSummary?.linked_device_meta?.length || 0;
+  const weatherReadiness = React.useMemo(() => {
+    const temperature = weatherCurrent?.temperature_c;
+    const wind = weatherCurrent?.wind_speed_kmh;
+    const humidity = weatherCurrent?.humidity_pct;
+
+    if (typeof temperature === 'number' && temperature < 10) {
+      return {
+        label: 'Hold',
+        tone: 'border-[#f3c4be] bg-[#fff1ef] text-[#b45309]',
+        detail: 'Flight activity may stay grounded until temperatures recover.',
+      };
+    }
+
+    if ((typeof wind === 'number' && wind > 22) || (typeof humidity === 'number' && humidity > 88)) {
+      return {
+        label: 'Watch',
+        tone: 'border-[#f4df9b] bg-[#fff7de] text-[#a16207]',
+        detail: 'Telemetry suggests moderate stress for foraging routes.',
+      };
+    }
+
+    return {
+      label: 'Ready',
+      tone: 'border-[#cde7cf] bg-[#eefaf0] text-[#166534]',
+      detail: 'Conditions are supportive for inspections and active forage windows.',
+    };
+  }, [weatherCurrent?.humidity_pct, weatherCurrent?.temperature_c, weatherCurrent?.wind_speed_kmh]);
+  const userMetadata = user?.user_metadata || {};
+  const fullName = userMetadata.first_name || userMetadata.full_name || user?.email?.split('@')[0] || 'User';
+  const avatarUrl = userMetadata.avatar_url as string | undefined;
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
 
   const syrupResult = React.useMemo(() => math.calculateSyrup(syrupVolume, feedRatio), [feedRatio, math, syrupVolume]);
   const winterResult = React.useMemo(() => math.calculateWinterDeficit(currentStoresKg, targetStoresKg), [currentStoresKg, math, targetStoresKg]);
@@ -743,9 +801,246 @@ const BeeCalculatorSuite = () => {
 
   return (
     <BeeYieldPageShell className="space-y-6">
-      <div className="space-y-3">
-        <h1 className="text-[2.1rem] font-black tracking-tight text-[#102042] md:text-[2.4rem]">Beekeeping calculators</h1>
+      <PageHeader
+        icon={Calculator}
+        label="BeeYield AI Dashboard"
+        title={<>{greeting}, {fullName}</>}
+        subtitle="Home-style calculator operations with live BeeYield context, telemetry-aware readiness, and cloud logging."
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => navigate('/beeyield-dashboard?tab=home')}
+              className={cn(glass.btnSecondary, 'gap-2')}
+            >
+              <ArrowRight className="h-4 w-4 text-[#F4D03F]" />
+              Dashboard home
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/beeyield-dashboard?tab=precision-pollination-folder')}
+              className={cn(glass.btnPrimary)}
+            >
+              <Flower2 className="h-4 w-4" />
+              Pollination
+            </button>
+          </div>
+        }
+      />
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <HomeInfoCard>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-[#F4D03F]/10 bg-white shadow-sm">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt={fullName} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-[#F9F7F2] text-sm font-bold text-[#F4D03F]">
+                    {fullName.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-[#1A1A1A]">{fullName}</h3>
+                <p className="text-[11px] text-gray-500">Calculator workspace identity</p>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-xl border border-[#F4D03F]/10 bg-white/50 p-4">
+              <div className="flex items-center justify-between gap-4 border-b border-[#F4D03F]/10 py-2">
+                <span className="text-[10px] font-black text-gray-400">Email</span>
+                <span className="text-[11px] break-all text-right font-bold text-[#1A1A1A]">{user?.email || '--'}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 border-b border-[#F4D03F]/10 py-2">
+                <span className="text-[10px] font-black text-gray-400">Profile</span>
+                <span className="text-[11px] text-right font-bold text-[#1A1A1A]">{beeyieldUser ? 'BeeYield active' : 'Account only'}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 border-b border-[#F4D03F]/10 py-2">
+                <span className="text-[10px] font-black text-gray-400">Apiaries</span>
+                <span className="text-[11px] text-right font-bold text-[#1A1A1A]">{apiaries.length}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 py-2">
+                <span className="text-[10px] font-black text-gray-400">Hives</span>
+                <span className="text-[11px] text-right font-bold text-[#1A1A1A]">{hives.length}</span>
+              </div>
+            </div>
+
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => navigate('/beeyield-dashboard?tab=settings')}
+                className={cn(glass.btnSecondary, 'flex-1 justify-center gap-2')}
+              >
+                <Settings className="h-4 w-4 text-[#F4D03F]" />
+                Settings
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/beeyield-dashboard?tab=support')}
+                className={cn(glass.btnSecondary, 'flex-1 justify-center gap-2')}
+              >
+                <Bell className="h-4 w-4 text-[#F4D03F]" />
+                Support
+              </button>
+            </div>
+          </HomeInfoCard>
+        </div>
+
+        <div className="lg:col-span-8">
+          <HomeInfoCard>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-semibold text-[#1A1A1A]">Calculator mission control</h3>
+                <p className="text-[11px] text-gray-500">Home-style signals for the tools, sync state, and the selected apiary.</p>
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Tools</p>
+                <p className="mt-1.5 text-[1.7rem] font-black tracking-tight text-[#1A1A1A]">{TOOL_COUNT}</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">Feeding, health, equipment, and economics.</p>
+              </div>
+              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Cloud sync</p>
+                <p className={cn('mt-1.5 text-[1.35rem] font-black tracking-tight', syncState === 'error' ? 'text-[#B45309]' : 'text-[#166534]')}>{syncBadgeLabel}</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">{lastSyncedAt ? `Last write ${new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Auto-save enabled for the active section.'}</p>
+              </div>
+              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Alerts & history</p>
+                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#1A1A1A]">{alertsCount} alerts</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">{historyLogs.length} saved snapshots available in BeeYield Cloud.</p>
+              </div>
+              <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Selected apiary</p>
+                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#1A1A1A]">{primaryApiary?.name || 'No apiary'}</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">{primaryApiaryHiveCount} hive{primaryApiaryHiveCount === 1 ? '' : 's'} linked to this workspace focus.</p>
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {[
+                { label: 'Dashboard home', sub: 'Operational overview', icon: Calculator, href: '/beeyield-dashboard?tab=home' },
+                { label: 'Hives', sub: 'Inspections and harvests', icon: ShieldCheck, href: '/beeyield-dashboard?tab=beeyield' },
+                { label: 'Pollination', sub: 'Plans and reports', icon: Flower2, href: '/beeyield-dashboard?tab=precision-pollination-folder' },
+                { label: 'Sensor alerts', sub: 'Active notifications', icon: Bell, href: '/beeyield-dashboard?tab=sensor-alerts' },
+                { label: 'Reports', sub: 'Exports and summaries', icon: Gauge, href: '/beeyield-dashboard?tab=reports-exports' },
+                { label: 'Support', sub: 'Requests and help', icon: BookOpen, href: '/beeyield-dashboard?tab=support' },
+              ].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.href}
+                    type="button"
+                    onClick={() => navigate(item.href)}
+                    className="flex items-center justify-between rounded-xl border border-[#F4D03F]/12 bg-white/70 px-4 py-3 text-left transition-all hover:border-[#F4D03F]/30 hover:bg-white"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-[#1A1A1A]">{item.label}</p>
+                      <p className="text-[11px] text-gray-500">{item.sub}</p>
+                    </div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#F4D03F]/12 bg-[#F9F7F2]">
+                      <Icon className="h-4 w-4 text-[#F4D03F]" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </HomeInfoCard>
+        </div>
       </div>
+
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <HomeInfoCard>
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Selected apiary telemetry</p>
+              <h2 className="mt-1 text-[1.45rem] font-black tracking-tight text-[#102042]">{primaryApiary?.name || 'Choose an apiary'}</h2>
+              <p className="mt-1 text-sm text-[#667085]">
+                Weather and readiness panels use the same selected apiary context as the rest of BeeYield Home.
+              </p>
+            </div>
+
+            <div className="w-full max-w-xs">
+              <label className="space-y-2">
+                <span className="text-[13px] font-semibold tracking-tight text-[#3C445B]">Active apiary</span>
+                <select
+                  value={selectedApiaryId || ''}
+                  onChange={(event) => setSelectedApiaryId(event.target.value)}
+                  className={cn(glass.select, 'h-12 w-full rounded-[18px] border-[#1A1A1A]/10 bg-white px-4 text-[15px] font-medium text-[#1A1A1A] shadow-none')}
+                >
+                  {apiaries.length ? (
+                    apiaries.map((apiary) => (
+                      <option key={apiary.id} value={apiary.id}>
+                        {apiary.name || apiary.location_name || 'Unnamed apiary'}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">No apiaries available</option>
+                  )}
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className={cn('rounded-[20px] border p-4', weatherReadiness.tone)}>
+              <p className="text-[10px] font-black uppercase tracking-[0.16em]">Readiness</p>
+              <p className="mt-2 text-xl font-black tracking-tight">{weatherReadiness.label}</p>
+              <p className="mt-1 text-[12px] font-semibold">{weatherReadiness.detail}</p>
+            </div>
+            <div className="rounded-[20px] border border-[#F4D03F]/12 bg-white/80 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Condition</p>
+              <p className="mt-2 text-xl font-black tracking-tight text-[#1A1A1A]">{weatherCurrent?.condition || '--'}</p>
+              <p className="mt-1 text-[12px] font-semibold text-gray-500">
+                {typeof weatherCurrent?.temperature_c === 'number' ? `${Math.round(weatherCurrent.temperature_c)} C` : 'Waiting for temperature'}
+              </p>
+            </div>
+            <div className="rounded-[20px] border border-[#F4D03F]/12 bg-white/80 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Coverage</p>
+              <p className="mt-2 text-xl font-black tracking-tight text-[#1A1A1A]">{linkedWeatherDevices}</p>
+              <p className="mt-1 text-[12px] font-semibold text-gray-500">Linked telemetry device{linkedWeatherDevices === 1 ? '' : 's'} in the weather summary.</p>
+            </div>
+          </div>
+        </HomeInfoCard>
+
+        <HomeInfoCard className="h-full">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Backend state</p>
+              <h3 className="mt-1 text-lg font-black tracking-tight text-[#102042]">Calculator cloud path</h3>
+            </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#F4D03F]/12 bg-[#F9F7F2]">
+              <CloudSun className="h-4 w-4 text-[#F4D03F]" />
+            </div>
+          </div>
+          <div className="mt-4 space-y-3">
+            <div className="rounded-[18px] border border-[#F4D03F]/10 bg-white/80 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">History fetch</p>
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">Reads calculator snapshots through `beeyieldService.getCalculatorLogs()`.</p>
+            </div>
+            <div className="rounded-[18px] border border-[#F4D03F]/10 bg-white/80 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Save path</p>
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">Writes to `/beeyield/calculator-logs` with auto-save and manual save.</p>
+            </div>
+            <div className="rounded-[18px] border border-[#F4D03F]/10 bg-white/80 p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Weather source</p>
+              <p className="mt-1 text-sm font-semibold text-[#1A1A1A]">Uses the selected apiary weather summary from the BeeYield backend.</p>
+            </div>
+          </div>
+        </HomeInfoCard>
+      </div>
+
+      {primaryApiary ? (
+        <WeatherTelemetryPanel
+          summary={weatherSummary}
+          isLoading={isWeatherLoading}
+          title={`${primaryApiary.name || 'Selected apiary'} weather telemetry`}
+          compact
+        />
+      ) : null}
+
       <section className={cn(glass.section, 'overflow-hidden')}>
         <div className={cn(sectionTone, 'px-5 py-5 md:px-6')}>
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)]">
@@ -758,22 +1053,24 @@ const BeeCalculatorSuite = () => {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Tools</p>
-                <p className="mt-1.5 text-[1.7rem] font-black tracking-tight text-[#1A1A1A]">{TOOL_COUNT}</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Focused apiary</p>
+                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#1A1A1A]">{primaryApiary?.name || 'No apiary selected'}</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">{primaryApiaryHiveCount} hive{primaryApiaryHiveCount === 1 ? '' : 's'} currently in scope.</p>
               </div>
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Connected</p>
-                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#1A1A1A]">{apiaries.length} apiaries</p>
-                <p className="mt-1 text-[11px] font-semibold text-gray-500">{hives.length} hives available in BeeYield.</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Weather readiness</p>
+                <p className={cn('mt-1.5 text-[1.35rem] font-black tracking-tight', weatherReadiness.label === 'Hold' ? 'text-[#B45309]' : weatherReadiness.label === 'Watch' ? 'text-[#a16207]' : 'text-[#166534]')}>{weatherReadiness.label}</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">{weatherCurrent?.condition || 'Telemetry pending'}.</p>
               </div>
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Cloud sync</p>
-                <p className={cn('mt-1.5 text-[1.35rem] font-black tracking-tight', syncState === 'error' ? 'text-[#B45309]' : 'text-[#166534]')}>{syncBadgeLabel}</p>
-                <p className="mt-1 text-[11px] font-semibold text-gray-500">{lastSyncedAt ? `Last write ${new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Auto-save enabled for the active section.'}</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">History loaded</p>
+                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#1A1A1A]">{historyLogs.length}</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">Recent snapshots available in BeeYield Cloud.</p>
               </div>
               <div className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
-                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Tip</p>
-                <p className="mt-1.5 text-[13px] font-semibold leading-relaxed text-[#1A1A1A]">Move between sections like a seasonal checklist and let the cloud log each step.</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Telemetry links</p>
+                <p className="mt-1.5 text-[1.35rem] font-black tracking-tight text-[#1A1A1A]">{linkedWeatherDevices}</p>
+                <p className="mt-1 text-[11px] font-semibold text-gray-500">Weather-linked device{linkedWeatherDevices === 1 ? '' : 's'} backing this view.</p>
               </div>
             </div>
           </div>

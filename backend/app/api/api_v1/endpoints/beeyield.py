@@ -184,6 +184,13 @@ class InspectionUpdate(BaseModel):
     treatment: Optional[str] = None
     notes: Optional[str] = None
 
+
+class CalculatorLogCreate(BaseModel):
+    calculation_type: str = Field(..., min_length=1, description="Top-level calculator module")
+    sub_type: str = Field(..., min_length=1, description="Active section or calculator identifier")
+    inputs: dict[str, Any] = Field(default_factory=dict)
+    results: dict[str, Any] = Field(default_factory=dict)
+
 # ============================================
 # HELPER FUNCTIONS
 # ============================================
@@ -194,6 +201,82 @@ def _process_apiary_output(a: dict) -> dict:
     if "status" not in a:
         a["status"] = "active" if a.get("is_active", True) else "inactive"
     return a
+
+
+def _normalize_calculator_log(row: dict[str, Any]) -> dict[str, Any]:
+    """Normalize legacy and current calculator log schemas into the frontend shape."""
+    legacy_input = row.get("input_json")
+    legacy_output = row.get("output_json")
+
+    normalized_inputs = row.get("inputs")
+    if normalized_inputs is None:
+        if isinstance(legacy_input, dict) and "inputs" in legacy_input:
+            normalized_inputs = legacy_input.get("inputs") or {}
+        else:
+            normalized_inputs = legacy_input or {}
+
+    normalized_results = row.get("results")
+    if normalized_results is None:
+        if isinstance(legacy_output, dict) and "results" in legacy_output:
+            normalized_results = legacy_output.get("results") or {}
+        else:
+            normalized_results = legacy_output or {}
+
+    sub_type = row.get("sub_type")
+    if not sub_type and isinstance(legacy_input, dict):
+        sub_type = legacy_input.get("sub_type")
+
+    return {
+        **row,
+        "calculation_type": row.get("calculation_type") or row.get("module_type") or "health",
+        "sub_type": sub_type or row.get("module_type") or "snapshot",
+        "inputs": normalized_inputs,
+        "results": normalized_results,
+    }
+
+
+async def _insert_calculator_log_with_fallback(
+    payload: CalculatorLogCreate,
+    user_id: str,
+    token: Optional[str],
+) -> dict[str, Any]:
+    """Insert calculator logs against either the current or legacy DB schema."""
+    created_at = datetime.utcnow().isoformat()
+    modern_payload = {
+        "user_id": user_id,
+        "calculation_type": payload.calculation_type,
+        "sub_type": payload.sub_type,
+        "inputs": payload.inputs,
+        "results": payload.results,
+        "created_at": created_at,
+    }
+
+    modern_result = await db_insert("calculator_logs", modern_payload, token=token)
+    if modern_result.get("success"):
+        rows = modern_result.get("data") or []
+        record = rows[0] if isinstance(rows, list) and rows else modern_payload
+        return _normalize_calculator_log(record)
+
+    legacy_payload = {
+        "user_id": user_id,
+        "module_type": payload.calculation_type,
+        "input_json": {
+            "sub_type": payload.sub_type,
+            "inputs": payload.inputs,
+        },
+        "output_json": payload.results,
+        "created_at": created_at,
+    }
+    legacy_result = await db_insert("calculator_logs", legacy_payload, token=token)
+    if legacy_result.get("success"):
+        rows = legacy_result.get("data") or []
+        record = rows[0] if isinstance(rows, list) and rows else legacy_payload
+        return _normalize_calculator_log(record)
+
+    raise HTTPException(
+        status_code=500,
+        detail=legacy_result.get("error") or modern_result.get("error") or "Failed to create calculator log",
+    )
 
 def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
     """Extract user ID from JWT token"""
@@ -1139,26 +1222,20 @@ async def get_calculator_logs(
     token: Optional[str] = Depends(get_token),
 ):
     filters: dict[str, Any] = {"user_id": user_id}
+    rows = await db_select("calculator_logs", filters=filters, order_by="created_at", ascending=False, limit=limit, token=token)
+    normalized_rows = [_normalize_calculator_log(row) for row in rows]
     if calculation_type:
-        filters["calculation_type"] = calculation_type
-    return await db_select("calculator_logs", filters=filters, order_by="created_at", ascending=False, limit=limit, token=token)
+        normalized_rows = [row for row in normalized_rows if row.get("calculation_type") == calculation_type]
+    return normalized_rows[:limit]
 
 
 @router.post("/calculator-logs", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_calculator_log(
-    body: dict,
+    body: CalculatorLogCreate,
     user_id: str = Depends(get_user_id),
     token: Optional[str] = Depends(get_token),
 ):
-    payload = dict(body or {})
-    payload["user_id"] = user_id
-    payload.setdefault("created_at", datetime.utcnow().isoformat())
-
-    res = await db_insert("calculator_logs", payload, token=token)
-    if not res.get("success"):
-        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create calculator log"))
-    rows = res.get("data") or []
-    return rows[0] if isinstance(rows, list) and rows else payload
+    return await _insert_calculator_log_with_fallback(body, user_id, token)
 
 
 # ============================================

@@ -206,6 +206,66 @@ export interface DeviceAuditLog {
     created_at: string;
 }
 
+export interface BluetoothDeviceRecord {
+    mac_address: string;
+    name: string;
+    device_type: string;
+    assigned_hive_id?: string | null;
+    last_sync_at?: string | null;
+    battery_volts?: number | null;
+    firmware_version?: string | null;
+    user_id?: string;
+}
+
+export interface BluetoothDeviceCreateInput {
+    mac_address: string;
+    name: string;
+    device_type?: string;
+    assigned_hive_id?: string | null;
+    battery_volts?: number | null;
+    firmware_version?: string | null;
+}
+
+export interface BluetoothDeviceUpdateInput {
+    name?: string;
+    device_type?: string;
+    assigned_hive_id?: string | null;
+    battery_volts?: number | null;
+    firmware_version?: string | null;
+}
+
+export interface BluetoothReadingUpload {
+    device_mac: string;
+    recorded_at: string;
+    temp_c?: number | null;
+    weight_kg?: number | null;
+    humidity?: number | null;
+}
+
+export interface UsbHubDeviceRecord {
+    id?: string;
+    serial_number: string;
+    firmware_version?: string | null;
+    config_json?: Record<string, any> | null;
+    status?: string | null;
+    last_connected_at?: string | null;
+    last_sync_at?: string | null;
+    user_id?: string;
+}
+
+export interface UsbHubDeviceCreateInput {
+    serial_number: string;
+    firmware_version?: string | null;
+    config_json?: Record<string, any>;
+    status?: string;
+}
+
+export interface UsbHubDeviceUpdateInput {
+    firmware_version?: string | null;
+    config_json?: Record<string, any>;
+    status?: string;
+}
+
 // ========== POLLINATION TYPES ==========
 export interface CropPollinationRequirement {
     id: string;
@@ -567,6 +627,7 @@ export interface RequestCreateInput {
     apiary_id?: string;
     hive_id?: string;
     category?: string;
+    status?: string;
 }
 
 export interface RequestComment {
@@ -2000,20 +2061,23 @@ export const beeyieldService = {
 
     async createRequest(input: RequestCreateInput): Promise<{ data: SupportRequest | null; error: any }> {
         try {
-            const pRaw = String(input.priority || 'Medium').trim();
+            const pRaw = String(input.priority || 'Medium').trim().toLowerCase();
             const priority =
-                pRaw.toLowerCase() === 'low' ? 'Low' :
-                pRaw.toLowerCase() === 'high' ? 'High' :
+                pRaw === 'low' ? 'Low' :
+                pRaw === 'high' ? 'High' :
+                pRaw === 'critical' ? 'Critical' :
                 'Medium';
+            const statusRaw = String(input.status || 'Open').trim().toLowerCase();
+            const requestStatus = statusRaw === 'draft' ? 'Draft' : 'Open';
             const payload: any = {
-                subject: input.subject,
-                description: input.description,
+                subject: input.subject.trim(),
+                description: input.description.trim(),
                 type: input.type || 'support',
-                apiary_id: input.apiary_id,
-                hive_id: input.hive_id,
+                apiary_id: input.apiary_id || undefined,
+                hive_id: input.hive_id || undefined,
                 category: input.category || input.type || 'General',
                 priority,
-                status: 'Open',
+                status: requestStatus,
             };
             const data = await apiPost<SupportRequest>('beeyield/requests', payload);
             toast.success('Request submitted');
@@ -2025,9 +2089,34 @@ export const beeyieldService = {
         }
     },
 
-    async updateRequest(id: string, patch: Partial<{ subject: string; description: string; category: string; priority: string; status: string }>): Promise<{ data: SupportRequest | null; error: any }> {
+    async updateRequest(
+        id: string,
+        patch: Partial<{ subject: string; description: string; type: string; apiary_id: string; hive_id: string; category: string; priority: string; status: string }>
+    ): Promise<{ data: SupportRequest | null; error: any }> {
         try {
-            const data = await apiPatch<SupportRequest>(`beeyield/requests/${id}`, patch as any);
+            const priorityRaw = patch.priority ? String(patch.priority).trim().toLowerCase() : undefined;
+            const normalizedPriority =
+                priorityRaw === undefined ? undefined :
+                priorityRaw === 'low' ? 'Low' :
+                priorityRaw === 'high' ? 'High' :
+                priorityRaw === 'critical' ? 'Critical' :
+                'Medium';
+            const statusRaw = patch.status ? String(patch.status).trim().toLowerCase() : undefined;
+            const normalizedStatus =
+                statusRaw === undefined ? undefined :
+                statusRaw === 'draft' ? 'Draft' :
+                statusRaw === 'resolved' ? 'Resolved' :
+                statusRaw === 'in progress' || statusRaw === 'in_progress' ? 'In Progress' :
+                'Open';
+            const data = await apiPatch<SupportRequest>(`beeyield/requests/${id}`, {
+                ...patch,
+                subject: patch.subject?.trim(),
+                description: patch.description?.trim(),
+                apiary_id: patch.apiary_id || undefined,
+                hive_id: patch.hive_id || undefined,
+                priority: normalizedPriority,
+                status: normalizedStatus,
+            } as any);
             toast.success('Request updated');
             return { data, error: null };
         } catch (error) {
@@ -2351,6 +2440,48 @@ export const beeyieldService = {
         return { data: null, error: new Error('createAcousticReading is not supported via client-side CRUD') };
     },
 
+export interface VarroaSimulationPoint {
+    day: number;
+    dayLabel: string;
+    population: number;
+    phoretic: number;
+    dailyMiteFall: number;
+    cumulativeMiteFall: number;
+    brood: number;
+    mitesInBrood: number;
+    broodlessPhoretic: number;
+    infectionPer100: number;
+    scenarioRisk: number;
+    adultBees: number;
+    allBrood: number;
+    cappedBrood: number;
+    alcoholWash: number;
+}
+
+export interface VarroaSimulationSummary {
+    estimatedMiteCount: number;
+    totalPopulation: number;
+    phoretic: number;
+    brood: number;
+    dailyMiteFall: number;
+    collapseThreshold: number;
+}
+
+export interface VarroaSimulationMeta {
+    source: string;
+    modelVersion: string;
+    generatedAt: string;
+    startMode: string;
+    measurementType: string;
+    treatmentType: string;
+}
+
+export interface VarroaSimulationResponse {
+    timeline: VarroaSimulationPoint[];
+    summary: VarroaSimulationSummary;
+    meta: VarroaSimulationMeta;
+}
+
     // ========== VARROA READINGS & TREATMENTS ==========
     async getVarroaReadings(hiveId?: string): Promise<any[]> {
         try {
@@ -2387,6 +2518,29 @@ export const beeyieldService = {
             console.error('createVarroaReading:', error);
             toast.error('Failed to record varroa reading');
             return { data: null, error };
+        }
+    },
+
+    async simulateVarroaModel(input: {
+        start_mode?: 'observed' | 'default';
+        initial_mite_count?: number;
+        simulation_days?: number;
+        adult_bee_population?: number;
+        collapse_threshold?: number;
+        mites_per_day?: number;
+        colony_multiplier?: number;
+        brood_mode?: string;
+        colony_strength?: string;
+        treatment_day?: number;
+        treatment_type?: string;
+        temperature_c?: number;
+        measurement_type?: string;
+    }): Promise<VarroaSimulationResponse | null> {
+        try {
+            return await apiPost<VarroaSimulationResponse>('/measurements/varroa/simulate', input);
+        } catch (error) {
+            console.error('simulateVarroaModel:', error);
+            return null;
         }
     },
 
@@ -2615,18 +2769,18 @@ export const beeyieldService = {
     },
 
     // ========== BLUETOOTH DEVICES ==========
-    async getBluetoothDevices(): Promise<any[]> {
+    async getBluetoothDevices(): Promise<BluetoothDeviceRecord[]> {
         try {
-            return await apiGet<any[]>('/beeyield/bluetooth/devices');
+            return await apiGet<BluetoothDeviceRecord[]>('/beeyield/bluetooth/devices');
         } catch (error) {
             console.error('getBluetoothDevices:', error);
             return [];
         }
     },
 
-    async registerBluetoothDevice(input: any): Promise<any> {
+    async registerBluetoothDevice(input: BluetoothDeviceCreateInput): Promise<BluetoothDeviceRecord | null> {
         try {
-            const data = await apiPost<any>('/beeyield/bluetooth/devices', input);
+            const data = await apiPost<BluetoothDeviceRecord>('/beeyield/bluetooth/devices', input);
             toast.success('Bluetooth device registered');
             return data;
         } catch (error) {
@@ -2636,9 +2790,43 @@ export const beeyieldService = {
         }
     },
 
-    async uploadBluetoothReadings(readings: any[]): Promise<any> {
+    async updateBluetoothDevice(macAddress: string, input: BluetoothDeviceUpdateInput): Promise<BluetoothDeviceRecord | null> {
+        try {
+            const data = await apiPatch<BluetoothDeviceRecord>(`/beeyield/bluetooth/devices/${encodeURIComponent(macAddress)}`, input);
+            toast.success('Bluetooth device updated');
+            return data;
+        } catch (error) {
+            console.error('updateBluetoothDevice:', error);
+            toast.error('Failed to update Bluetooth device');
+            return null;
+        }
+    },
+
+    async deleteBluetoothDevice(macAddress: string): Promise<{ success: boolean; error?: any }> {
+        try {
+            await apiDelete<void>(`/beeyield/bluetooth/devices/${encodeURIComponent(macAddress)}`);
+            toast.success('Bluetooth device deleted');
+            return { success: true };
+        } catch (error) {
+            console.error('deleteBluetoothDevice:', error);
+            toast.error('Failed to delete Bluetooth device');
+            return { success: false, error };
+        }
+    },
+
+    async uploadBluetoothReadings(readings: BluetoothReadingUpload[]): Promise<{ status: string; count: number }> {
         const payload = { readings };
-        return apiPost<any>('/beeyield/bluetooth/sync', payload);
+        return apiPost<{ status: string; count: number }>('/beeyield/bluetooth/sync', payload);
+    },
+
+    async syncBluetoothReadings(payload: { readings: BluetoothReadingUpload[] }): Promise<{ ok: boolean; count: number; error?: any }> {
+        try {
+            const data = await apiPost<{ status: string; count: number }>('/beeyield/bluetooth/sync', payload);
+            return { ok: true, count: data.count ?? payload.readings.length };
+        } catch (error) {
+            console.error('syncBluetoothReadings:', error);
+            return { ok: false, count: 0, error };
+        }
     },
 
     // ========== ACTIVITY FEED ==========
@@ -2666,9 +2854,9 @@ export const beeyieldService = {
     },
 
     // ========== USB DEVICE PAIRING ==========
-    async getPairedUsbDevices(): Promise<any[]> {
+    async getPairedUsbDevices(): Promise<UsbHubDeviceRecord[]> {
         try {
-            return await apiGet<any[]>('/hub/devices');
+            return await apiGet<UsbHubDeviceRecord[]>('/hub/devices');
         } catch (error) {
             console.error('getPairedUsbDevices:', error);
             return [];
@@ -2681,14 +2869,16 @@ export const beeyieldService = {
         serial_number?: string;
         firmware_version?: string;
         config?: any;
-    }): Promise<{ data: any; error: any }> {
+        status?: string;
+    }): Promise<{ data: UsbHubDeviceRecord | null; error: any }> {
         try {
             const payload = {
                 serial_number: input.serial_number || input.device_uid,
                 firmware_version: input.firmware_version,
                 config_json: input.config || {},
+                status: input.status || 'paired',
             };
-            const data = await apiPost<any>('/hub/handshake', payload);
+            const data = await apiPost<UsbHubDeviceRecord>('/hub/devices', payload);
             toast.success('Device paired successfully');
             return { data, error: null };
         } catch (error) {
@@ -2698,9 +2888,21 @@ export const beeyieldService = {
         }
     },
 
+    async updatePairedUsbDevice(serialNumber: string, input: UsbHubDeviceUpdateInput): Promise<{ data: UsbHubDeviceRecord | null; error: any }> {
+        try {
+            const data = await apiPatch<UsbHubDeviceRecord>(`/hub/devices/${encodeURIComponent(serialNumber)}`, input);
+            toast.success('USB device updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updatePairedUsbDevice:', error);
+            toast.error('Failed to update USB device');
+            return { data: null, error };
+        }
+    },
+
     async unpairUsbDevice(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete<void>(`/hub/devices/${id}`);
+            await apiDelete<void>(`/hub/devices/${encodeURIComponent(id)}`);
             toast.success('Device unpaired');
             return { error: null };
         } catch (error) {

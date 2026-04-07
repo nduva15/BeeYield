@@ -233,6 +233,7 @@ async def trigger_health_check(
 @router.get("/alerts")
 async def get_alerts(
     resolved: bool = False,
+    limit: int = 50,
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
@@ -244,7 +245,8 @@ async def get_alerts(
     if email != settings.ADMIN_EMAIL:
         filters["user_id"] = user_id
 
-    return await db_select("sensor_alerts", filters=filters, order_by="created_at", ascending=False, token=token)
+    safe_limit = max(1, min(int(limit), 500))
+    return await db_select("sensor_alerts", filters=filters, order_by="created_at", ascending=False, limit=safe_limit, token=token)
 
 
 @router.patch("/alerts/{alert_id}", response_model=dict)

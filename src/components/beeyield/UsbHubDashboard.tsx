@@ -1,458 +1,411 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 import {
-    Maximize2,
-    Search,
-    Bell,
-    HelpCircle,
-    Wifi,
-    Settings as SettingsIcon,
-    LogOut,
-    ChevronDown,
-    Moon,
-    Headphones,
-    Zap,
     Cpu,
-    Activity,
-    ShieldCheck,
-    Box,
+    Edit3,
     FileCode,
     Loader2,
-    Terminal
+    Search,
+    ShieldCheck,
+    Trash2,
+    Usb,
 } from 'lucide-react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import logoAsset from '@/assets/Logo.png';
-import { useAuth } from '@/contexts/AuthContext';
-import { glass, GlassStatCard } from './GlassTheme';
-import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/contexts/AuthContext';
 import { apiPost } from '@/services/api';
+import { beeyieldService, UsbHubDeviceCreateInput, UsbHubDeviceRecord } from '@/services/beeyieldService';
+import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
+
+type UsbConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
 export function UsbHubDashboard() {
     const [device, setDevice] = React.useState<USBDevice | null>(null);
-    const [connectionStatus, setConnectionStatus] = React.useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
+    const [connectionStatus, setConnectionStatus] = React.useState<UsbConnectionStatus>('disconnected');
     const [syncProgress, setSyncProgress] = React.useState(0);
     const [isFlashing, setIsFlashing] = React.useState(false);
     const [logs, setLogs] = React.useState<string[]>([]);
     const [lastError, setLastError] = React.useState<string | null>(null);
-    const logsEndRef = React.useRef<HTMLDivElement>(null);
 
     const [firmwareFile, setFirmwareFile] = React.useState<File | null>(null);
-    const [manifestJson, setManifestJson] = React.useState<string>(`{
-  "name": "BeeYield Hub Queen Firmware",
-  "version": "1.2.5",
-  "builds": [
-    {
-      "chipFamily": "ESP32-S3",
-      "parts": []
-    }
-  ]
-}`);
-    const [manifestError, setManifestError] = React.useState<string | null>(null);
+    const [manifestJson, setManifestJson] = React.useState('{\n  "name": "BeeYield Hub Queen Firmware",\n  "version": "1.2.5",\n  "builds": []\n}');
 
-    const firmwareError = React.useMemo(() => {
-        if (!firmwareFile) return null;
-        const name = firmwareFile.name?.toLowerCase() || '';
-        if (!name.endsWith('.bin')) return 'Firmware must be a .bin file.';
-        if (firmwareFile.size <= 0) return 'Firmware file is empty.';
-        // 50MB sanity limit (keeps the UI responsive)
-        if (firmwareFile.size > 50 * 1024 * 1024) return 'Firmware file is too large (max 50MB).';
-        return null;
-    }, [firmwareFile]);
+    const [pairedDevices, setPairedDevices] = React.useState<UsbHubDeviceRecord[]>([]);
+    const [showDeviceModal, setShowDeviceModal] = React.useState(false);
+    const [editingDevice, setEditingDevice] = React.useState<UsbHubDeviceRecord | null>(null);
+    const [serialNumber, setSerialNumber] = React.useState('');
+    const [firmwareVersion, setFirmwareVersion] = React.useState('');
+    const [deviceStatus, setDeviceStatus] = React.useState('paired');
+    const [configJson, setConfigJson] = React.useState('{\n  "sample_rate": 300\n}');
+    const [isSaving, setIsSaving] = React.useState(false);
 
-    const manifestIsValid = React.useMemo(() => {
-        try {
-            const parsed = JSON.parse(manifestJson);
-            if (!parsed || typeof parsed !== 'object') return false;
-            return true;
-        } catch {
-            return false;
-        }
-    }, [manifestJson]);
-
-    const queryClient = useQueryClient();
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
-    const scrollToBottom = () => {
-        logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    React.useEffect(() => {
+        void loadDevices();
+    }, []);
+
+    const addLog = React.useCallback((message: string) => {
+        setLogs((prev) => [...prev, `${new Date().toLocaleTimeString()} > ${message}`].slice(-80));
+    }, []);
+
+    const loadDevices = async () => {
+        const data = await beeyieldService.getPairedUsbDevices();
+        setPairedDevices(data || []);
     };
 
-    React.useEffect(() => {
-        scrollToBottom();
-    }, [logs]);
+    const resetForm = React.useCallback(() => {
+        setEditingDevice(null);
+        setSerialNumber(device?.serialNumber || '');
+        setFirmwareVersion('');
+        setDeviceStatus('paired');
+        setConfigJson('{\n  "sample_rate": 300\n}');
+    }, [device]);
+
+    const openCreateModal = () => {
+        resetForm();
+        setShowDeviceModal(true);
+    };
+
+    const openEditModal = (record: UsbHubDeviceRecord) => {
+        setEditingDevice(record);
+        setSerialNumber(record.serial_number);
+        setFirmwareVersion(record.firmware_version || '');
+        setDeviceStatus(record.status || 'paired');
+        setConfigJson(JSON.stringify(record.config_json || {}, null, 2));
+        setShowDeviceModal(true);
+    };
 
     const connectDevice = async () => {
         try {
             setConnectionStatus('connecting');
             setLastError(null);
+
             const usbDevice = await navigator.usb.requestDevice({ filters: [] });
             await usbDevice.open();
             if (usbDevice.configuration === null) await usbDevice.selectConfiguration(1);
             await usbDevice.claimInterface(0);
+
             setDevice(usbDevice);
             setConnectionStatus('connected');
-            addLog("Connecting to the device...");
-            addLog("Connected to BeeYield Hub Alpha successfully.");
+            setSerialNumber(usbDevice.serialNumber || '');
+            addLog(`Connected to ${usbDevice.productName || 'BeeYield hub'}.`);
 
-            await handshake(usbDevice);
-            toast.success("BeeYield Hub Alpha connected");
-        } catch (error: any) {
-            setConnectionStatus('error');
-            console.error(error);
-            const msg = error?.message || 'Connection aborted';
-            setLastError(msg);
-            addLog(`Connection Error: ${msg}`);
-            toast.error(msg);
-        }
-    };
-
-    const handshake = async (usbDevice: USBDevice) => {
-        try {
-            let fw = 'unknown';
+            let version = firmwareVersion || '1.0.0';
             try {
                 const parsed = JSON.parse(manifestJson);
-                fw = String(parsed?.version || fw);
+                version = String(parsed?.version || version);
             } catch {
-                // ignore
+                // keep current version
             }
-            const payload = {
+
+            await apiPost('/hub/handshake', {
                 serial_number: usbDevice.serialNumber || 'UNKNOWN-SN',
-                firmware_version: fw,
+                firmware_version: version,
                 config_json: { sample_rate: 300 },
-                user_id: userId
-            };
-            await apiPost('/hub/handshake', payload);
-            queryClient.invalidateQueries({ queryKey: ['hub-devices'] });
-            addLog("Device synced.");
-        } catch (err: any) {
-            console.error("Handshake failed", err);
-            const msg = err?.message || 'Could not sync device';
-            setLastError(msg);
-            addLog(`Sync Error: ${msg}`);
+                user_id: userId,
+            });
+
+            await loadDevices();
+            toast.success('BeeYield hub connected');
+        } catch (error: any) {
+            console.error(error);
+            setConnectionStatus('error');
+            setLastError(error?.message || 'Connection aborted');
+            addLog(`Connection error: ${error?.message || 'Unknown error'}`);
+            toast.error(error?.message || 'Failed to connect');
         }
     };
 
-    const addLog = (msg: string) => {
-        setLogs(prev => [...prev, `${new Date().toLocaleTimeString()} > ${msg}`]);
-    }
-
     const handleFlash = async () => {
-        if (!device) {
-            toast.error("Establish physical link first");
-            return;
-        }
-        if (!firmwareFile) {
-            toast.warning("Upload industrial firmware (.bin)");
-            return;
-        }
-        if (firmwareError) {
-            toast.error(firmwareError);
-            return;
-        }
-        if (!manifestIsValid) {
-            toast.error('Manifest JSON is invalid.');
-            setManifestError('Manifest JSON is invalid.');
+        if (!device || !firmwareFile) {
+            toast.error('Connect a device and choose a firmware file first');
             return;
         }
 
         setIsFlashing(true);
         setSyncProgress(0);
-        addLog("Initiating high-priority firmware write sequence...");
+        addLog('Initiating firmware staging...');
 
         try {
-            const startedAt = Date.now();
             const sessionRes = await apiPost<{ id: string }>('/hub/sync/start', {
                 hub_sn: device.serialNumber || 'UNKNOWN-SN',
                 records_count: 0,
-                user_id: userId
+                user_id: userId,
             });
 
-            // We can't actually flash firmware via WebUSB here (varies by chip/driver),
-            // but we can validate the payload size + log a "flash attempt" session.
-            // Progress is tied to local file read to avoid fake timeouts.
-            const chunkSize = 256 * 1024; // 256KB
             const total = Math.max(1, firmwareFile.size);
             let processed = 0;
+            const chunkSize = 256 * 1024;
+
             while (processed < total) {
                 const next = Math.min(total, processed + chunkSize);
-                // read slice to exercise browser file pipeline (keeps UI responsive)
                 await firmwareFile.slice(processed, next).arrayBuffer();
                 processed = next;
-                const pct = Math.round((processed / total) * 100);
-                setSyncProgress(pct);
-                if (pct % 20 === 0) addLog(`Staging firmware bytes... ${pct}%`);
+                setSyncProgress(Math.round((processed / total) * 100));
             }
 
             await apiPost('/hub/sync/complete', {
                 session_id: (sessionRes as any)?.id || (sessionRes as any)?.data?.id,
                 status: 'success',
-                duration_sec: Math.max(1, Math.round((Date.now() - startedAt) / 1000)),
-                user_id: userId
+                duration_sec: 1,
+                user_id: userId,
             });
 
-            addLog("Firmware payload staged locally. Checksum validated.");
-            addLog("NOTE: Actual device flashing requires a hardware-specific flasher/toolchain.");
-            toast.success("Firmware staged", { description: "Upload + validation completed. Connect a supported flasher to write firmware." });
-        } catch (err) {
-            addLog("Write execution error. Buffer underrun or link severed.");
-            toast.error("Update failed");
+            addLog('Firmware payload staged successfully.');
+            toast.success('Firmware staged');
+            await loadDevices();
+        } catch (error: any) {
+            console.error(error);
+            addLog(`Flash error: ${error?.message || 'Unknown error'}`);
+            toast.error('Update failed');
         } finally {
             setIsFlashing(false);
         }
-    }
+    };
+
+    const handleSaveDevice = async () => {
+        if (!serialNumber.trim()) {
+            toast.error('Serial number is required');
+            return;
+        }
+
+        let parsedConfig: Record<string, any> = {};
+        try {
+            parsedConfig = configJson.trim() ? JSON.parse(configJson) : {};
+        } catch {
+            toast.error('Config JSON is invalid');
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            if (editingDevice) {
+                await beeyieldService.updatePairedUsbDevice(editingDevice.serial_number, {
+                    firmware_version: firmwareVersion || null,
+                    status: deviceStatus,
+                    config_json: parsedConfig,
+                });
+                addLog(`Updated paired device ${editingDevice.serial_number}.`);
+            } else {
+                const payload: UsbHubDeviceCreateInput = {
+                    serial_number: serialNumber.trim(),
+                    firmware_version: firmwareVersion || null,
+                    status: deviceStatus,
+                    config_json: parsedConfig,
+                };
+                await beeyieldService.pairUsbDevice({
+                    device_uid: payload.serial_number,
+                    serial_number: payload.serial_number,
+                    firmware_version: payload.firmware_version || undefined,
+                    status: payload.status,
+                    config: payload.config_json,
+                });
+                addLog(`Paired device ${payload.serial_number}.`);
+            }
+
+            setShowDeviceModal(false);
+            resetForm();
+            await loadDevices();
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeleteDevice = async (record: UsbHubDeviceRecord) => {
+        if (!window.confirm(`Delete paired device "${record.serial_number}"?`)) return;
+        const result = await beeyieldService.unpairUsbDevice(record.serial_number);
+        if (!result.error) {
+            addLog(`Removed paired device ${record.serial_number}.`);
+            await loadDevices();
+        }
+    };
 
     return (
         <BeeYieldPageShell>
             <BeeYieldPageHeader
                 icon={Cpu}
-                label="Hardware Version Alpha Comm Port"
-                title={<>Architecture <span className="text-[#F4D03F]">Manager</span></>}
-                subtitle="High-fidelity physical link interface for BeeYield Hub Alpha."
+                label="Hardware comms"
+                title={<>USB <span className="text-[#F4D03F]">Architecture</span></>}
+                subtitle="Connect hardware, stage firmware, and manage paired USB hub records."
                 actions={
-                    <div className="flex items-center gap-3">
-                        <div className={cn(
-                            "flex items-center gap-2.5 px-4 h-9 rounded-xl border backdrop-blur-md transition-all duration-500",
-                            connectionStatus === 'connected' ? 'bg-[#1B9157]/10 border-[#1B9157]/20 shadow-sm' : 'bg-white/40 border-white/20 opacity-80'
-                        )}>
-                            <div className={cn(
-                                "w-1.5 h-1.5 rounded-full",
-                                connectionStatus === 'connected' ? 'bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse' : 'bg-gray-400/50'
-                            )} />
-                            <span className={cn("text-[9px] font-black", connectionStatus === 'connected' ? 'text-[#1B9157]' : 'text-gray-400')}>
-                                {connectionStatus === 'connected' ? 'Handshake Established' : 'Link Offline'}
-                            </span>
-                        </div>
-                    </div>
+                    <button onClick={connectDevice} className={glass.btnPrimary} disabled={connectionStatus === 'connecting'}>
+                        {connectionStatus === 'connecting' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                        {connectionStatus === 'connecting' ? 'Connecting...' : 'Connect Device'}
+                    </button>
                 }
             />
 
-            {/* LIVE TERMINAL SECTION */}
-            <div className={glass.section}>
-                <div className={glass.sectionHeader}>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center">
-                            <Terminal className="w-5 h-5 text-[#F4D03F]" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-bold text-[#1A1A1A]">Hardware Terminal</h3>
-                            <p className="text-sm text-gray-400">Physical link stream for industrial hub diagnostics.</p>
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={connectDevice}
-                        className={glass.btnPrimary}
-                        disabled={connectionStatus === 'connecting'}
-                    >
-                        {connectionStatus === 'connecting' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                        {connectionStatus === 'connecting' ? 'Connecting…' : 'Connect Device'}
-                    </button>
-                </div>
-
-                <div className="p-6">
-                    {connectionStatus === 'error' && lastError && (
-                        <div className="mb-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4">
-                            <div className="flex items-start justify-between gap-4">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-black text-destructive">USB Error</p>
-                                    <p className="text-sm font-semibold text-[#1A1A1A] break-words">{lastError}</p>
-                                </div>
-                                <button
-                                    type="button"
-                                    className={cn(glass.btnSecondary, "h-9 px-4 text-[10px] font-black")}
-                                    onClick={() => {
-                                        setLastError(null);
-                                        setConnectionStatus('disconnected');
-                                    }}
-                                >
-                                    Dismiss
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                    <div className="bg-[#1A1A1A] rounded-xl p-6 font-mono text-[11px] relative overflow-hidden shadow-inner border border-black min-h-[300px] text-[#F4D03F]">
-                        {logs.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-full gap-4 py-20 opacity-30">
-                                <span className="text-xs font-bold animate-pulse">Awaiting Connection...</span>
-                            </div>
-                        ) : (
-                            <div className="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar-terminal pr-4">
-                                {logs.map((log, i) => (
-                                    <div key={i} className="flex gap-4 border-b border-white/5 pb-1 last:border-0">
-                                        <span className="text-white/20 w-8">[{i + 1}]</span>
-                                        <span className="leading-relaxed">{log}</span>
-                                    </div>
-                                ))}
-                                <div ref={logsEndRef} />
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            {/* LOWER INTERFACE GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* FIRMWARE OVERWRITE INTERFACE */}
-                <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="lg:col-span-8 space-y-6"
-                >
-                    <div className={glass.card + " p-6 h-full"}>
-                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#F4D03F]/10">
+                <div className="lg:col-span-7 space-y-6">
+                    <div className={cn(glass.section, 'p-6')}>
+                        <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h3 className="text-lg font-bold text-[#1A1A1A]">Firmware Upload</h3>
-                                <p className="text-sm text-gray-500">Securely flash new architecture to the hub.</p>
+                                <h3 className="text-lg font-bold text-[#1A1A1A]">Firmware staging</h3>
+                                <p className="text-sm text-gray-500">Validate and stage firmware payloads for the connected hub.</p>
                             </div>
-                            <FileCode className="w-6 h-6 text-[#F4D03F]" />
+                            <span className={glass.badge}>{connectionStatus === 'connected' ? 'Connected' : 'Offline'}</span>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 flex-1">
-                            <div className="md:col-span-5 space-y-5">
-                                <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-[#F4D03F]/20 rounded-xl p-8 bg-[#F9F7F2] hover:bg-[#F4D03F]/5 transition-all cursor-pointer group">
-                                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm mb-4 border border-[#F4D03F]/10">
-                                        <SettingsIcon className={cn("w-6 h-6 text-[#F4D03F]", isFlashing ? "animate-spin" : "")} />
-                                    </div>
-                                    <p className="text-sm font-bold text-[#1A1A1A] text-center">
-                                        {firmwareFile ? firmwareFile.name : 'Select .bin file'}
-                                    </p>
-                                    <Input
-                                        id="firmware-input-dash"
-                                        name="firmware_bin"
-                                        autoComplete="off"
-                                        type="file"
-                                        accept=".bin"
-                                        className="hidden"
-                                        onChange={(e) => setFirmwareFile(e.target.files?.[0] || null)}
-                                    />
-                                </label>
-                                {firmwareError && (
-                                    <div className="text-[11px] font-semibold text-red-600">{firmwareError}</div>
-                                )}
+                        {lastError && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-600">{lastError}</div>}
 
-                                <button
-                                    onClick={handleFlash}
-                                    className={glass.btnPrimary + " w-full h-11"}
-                                    disabled={isFlashing || connectionStatus !== 'connected' || !device || !firmwareFile || !!firmwareError || !manifestIsValid}
-                                >
-                                    {isFlashing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Start Flash'}
-                                </button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                                <Label htmlFor="firmware-input">Firmware binary</Label>
+                                <Input id="firmware-input" type="file" accept=".bin" onChange={(event) => setFirmwareFile(event.target.files?.[0] || null)} />
+                                <p className="text-xs text-gray-500">{firmwareFile?.name || 'No firmware selected'}</p>
                             </div>
+                            <div className="space-y-3">
+                                <Label htmlFor="manifest-json">Manifest JSON</Label>
+                                <Textarea id="manifest-json" value={manifestJson} onChange={(event) => setManifestJson(event.target.value)} className="min-h-[160px] font-mono text-[11px]" />
+                            </div>
+                        </div>
 
-                            <div className="md:col-span-7 flex flex-col">
-                                <div className="bg-[#1A1A1A]/5 rounded-2xl p-4 flex-1 border border-[#F4D03F]/5">
-                                    <label htmlFor="firmware-manifest-json" className="sr-only">Manifest JSON</label>
-                                    <Textarea
-                                        id="firmware-manifest-json"
-                                        name="manifest_json"
-                                        autoComplete="off"
-                                        value={manifestJson}
-                                        onChange={(e) => {
-                                            const v = e.target.value;
-                                            setManifestJson(v);
-                                            if (!v.trim()) {
-                                                setManifestError('Manifest JSON is required.');
-                                                return;
-                                            }
-                                            try {
-                                                JSON.parse(v);
-                                                setManifestError(null);
-                                            } catch {
-                                                setManifestError('Manifest JSON is invalid.');
-                                            }
-                                        }}
-                                        className="w-full h-full min-h-[180px] p-4 font-mono text-[9px] leading-relaxed resize-none bg-transparent border-none focus:ring-0 text-[#1A1A1A]/70 font-bold"
-                                        spellCheck={false}
-                                    />
+                        <div className="mt-6 space-y-3">
+                            <button onClick={handleFlash} className={glass.btnPrimary} disabled={isFlashing || connectionStatus !== 'connected' || !firmwareFile}>
+                                {isFlashing ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileCode className="w-4 h-4" />}
+                                {isFlashing ? 'Staging...' : 'Start Flash'}
+                            </button>
+                            {isFlashing && (
+                                <div className="space-y-2">
+                                    <div className="flex justify-between text-xs font-bold text-[#1A1A1A]">
+                                        <span>Progress</span>
+                                        <span>{syncProgress}%</span>
+                                    </div>
+                                    <div className="h-2 rounded-full bg-white/60 border border-white/40 p-0.5">
+                                        <div className="h-full rounded-full bg-[#1B9157]" style={{ width: `${syncProgress}%` }} />
+                                    </div>
                                 </div>
-                                {manifestError && (
-                                    <div className="mt-2 text-[11px] font-semibold text-red-600">{manifestError}</div>
-                                )}
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={cn(glass.section, 'p-6')}>
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-lg font-bold text-[#1A1A1A]">Paired USB devices</h3>
+                                <p className="text-sm text-gray-500">Create, update, and delete saved hub records.</p>
+                            </div>
+                            <button onClick={openCreateModal} className={glass.btnPrimary}>
+                                <ShieldCheck className="w-4 h-4" />
+                                Add Device
+                            </button>
+                        </div>
+
+                        <div className="space-y-3">
+                            {pairedDevices.length === 0 ? (
+                                <div className="rounded-2xl border border-dashed border-[#F4D03F]/25 bg-[#FFF9F0] p-6 text-center text-sm font-semibold text-[#1A1A1A]">
+                                    No paired USB devices yet.
+                                </div>
+                            ) : pairedDevices.map((record) => (
+                                <div key={record.serial_number} className="rounded-2xl border border-white/60 bg-white/50 p-4">
+                                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-bold text-[#1A1A1A]">{record.serial_number}</p>
+                                            <div className="flex flex-wrap gap-3 text-[10px] font-semibold text-gray-500">
+                                                <span>Firmware: {record.firmware_version || 'Unknown'}</span>
+                                                <span>Status: {record.status || 'paired'}</span>
+                                                <span>Last sync: {record.last_sync_at ? new Date(record.last_sync_at).toLocaleString() : 'Never'}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => openEditModal(record)} className={cn(glass.btnSecondary, 'h-10 px-4 text-[10px]')}>
+                                                <Edit3 className="w-4 h-4" />
+                                                Edit
+                                            </button>
+                                            <button onClick={() => handleDeleteDevice(record)} className="h-10 px-4 rounded-xl border border-red-200 bg-white text-[10px] font-black text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                                <Trash2 className="w-4 h-4" />
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="lg:col-span-5 space-y-6">
+                    <div className={cn(glass.section, 'p-5')}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                <Usb className="w-5 h-5 text-[#F4D03F]" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-[#1A1A1A]">Current link</h3>
+                                <p className="text-sm text-gray-500">Latest hardware connection status.</p>
                             </div>
                         </div>
-
-                        {/* PROGRESS MONITOR */}
-                        <div className="mt-8 pt-6 border-t border-[#F4D03F]/10">
-                            <AnimatePresence mode="wait">
-                                {isFlashing ? (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0 }}
-                                        className="space-y-4"
-                                    >
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Writing data...</span>
-                                            <span className="text-2xl font-black text-[#F4D03F] tracking-tighter tabular-nums">{syncProgress}%</span>
-                                        </div>
-                                        <div className="h-2 w-full bg-white/60 rounded-full overflow-hidden p-0.5 border border-[#F4D03F]/10 shadow-inner">
-                                            <motion.div
-                                                className="h-full bg-[#1B9157] rounded-full"
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${syncProgress}%` }}
-                                            />
-                                        </div>
-                                    </motion.div>
-                                ) : (
-                                    <div className="flex items-center gap-4 p-4 bg-[#1B9157][0.02] rounded-2xl border border-[#1B9157]/10">
-                                        <div className="w-9 h-9 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
-                                            <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
-                                        </div>
-                                        <div>
-                                            <span className="text-[9px] font-black text-[#1B9157]">System Standby</span>
-                                            <p className="text-[8px] font-black text-gray-400 mt-0.5">Verified For Overwrite</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </AnimatePresence>
+                        <div className="space-y-3 text-sm font-semibold text-gray-600">
+                            <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4">Status: {connectionStatus}</div>
+                            <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4">Device: {device?.serialNumber || 'No device connected'}</div>
                         </div>
                     </div>
-                </motion.div>
 
-                {/* SAFETY PROTOCOL CARD */}
-                <motion.div
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="lg:col-span-4"
-                >
-                    <div className={glass.card + " p-6 h-full"}>
-                        <div className="mb-8 border-b border-[#F4D03F]/10 pb-4">
-                            <h2 className="text-lg font-bold text-[#1A1A1A]">Safety checklist</h2>
-                            <p className="text-sm text-gray-500">Critical checks before flashing hardware.</p>
+                    <div className={cn(glass.section, 'p-5')}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-bold text-[#1A1A1A]">Event log</h3>
+                            <button onClick={() => setLogs([])} className={cn(glass.btnSecondary, 'h-8 px-3 text-[10px]')}>Clear</button>
                         </div>
-
-                        <ul className="space-y-4">
-                            {[
-                                { t: "Close serial sessions", d: "Make sure only one tool is connected." },
-                                { t: "Stabilize 5V Voltage", d: "Prevent mid-flash brownout" },
-                                { t: "Device match", d: "Chip ID check" },
-                                { t: "Persistent Link", d: "Do not sever USB bridge" }
-                            ].map((item, i) => (
-                                <li key={i} className="flex gap-4 items-start">
-                                    <div className="w-8 h-8 bg-[#F9F7F2] border border-[#F4D03F]/20 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold text-[#1A1A1A]">
-                                        {i + 1}
-                                    </div>
-                                    <div className="space-y-0.5">
-                                        <p className="text-sm font-bold text-[#1A1A1A]">{item.t}</p>
-                                        <p className="text-xs text-gray-400">{item.d}</p>
-                                    </div>
-                                </li>
+                        <div className="h-80 overflow-y-auto space-y-2 pr-2 font-mono text-[10px]">
+                            {logs.length === 0 ? (
+                                <div className="h-full flex items-center justify-center text-gray-400">No activity found</div>
+                            ) : logs.map((entry, index) => (
+                                <div key={`${entry}-${index}`} className="rounded-lg border border-white/50 bg-white/40 px-3 py-2 text-gray-600">{entry}</div>
                             ))}
-                        </ul>
+                        </div>
                     </div>
-                </motion.div>
+                </div>
             </div>
 
-            <style>{`
-                .custom-scrollbar-terminal::-webkit-scrollbar { width: 4px; }
-                .custom-scrollbar-terminal::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.2); border-radius: 10px; }
-            `}</style>
+            <Dialog open={showDeviceModal} onOpenChange={setShowDeviceModal}>
+                <DialogContent className="max-w-[460px] bg-transparent border-none p-0 shadow-none overflow-visible">
+                    <motion.div initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} className={cn(glass.card, 'p-0 overflow-hidden shadow-2xl relative bg-white/90 border-white/20')}>
+                        <div className="px-6 py-5 border-b border-[#F4D03F]/10">
+                            <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-3 inline-block')}>
+                                {editingDevice ? 'Edit hub' : 'Add hub'}
+                            </div>
+                            <h2 className={cn(glass.sectionTitle, 'uppercase leading-none mb-1')}>
+                                {editingDevice ? 'Update ' : 'Save '}<span className="text-[#F4D03F]">USB device</span>
+                            </h2>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="usb-serial">Serial number</Label>
+                                <Input id="usb-serial" value={serialNumber} onChange={(event) => setSerialNumber(event.target.value)} disabled={!!editingDevice} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="usb-firmware">Firmware version</Label>
+                                <Input id="usb-firmware" value={firmwareVersion} onChange={(event) => setFirmwareVersion(event.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="usb-status">Status</Label>
+                                <Input id="usb-status" value={deviceStatus} onChange={(event) => setDeviceStatus(event.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="usb-config-json">Config JSON</Label>
+                                <Textarea id="usb-config-json" value={configJson} onChange={(event) => setConfigJson(event.target.value)} className="min-h-[160px] font-mono text-[11px]" />
+                            </div>
+                            <div className="flex flex-col gap-2 pt-4 border-t border-[#F4D03F]/10">
+                                <button className={cn(glass.btnPrimary, 'w-full h-10 text-[10px] font-black rounded-xl')} onClick={handleSaveDevice} disabled={isSaving}>
+                                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                                    <span>{editingDevice ? 'Save changes' : 'Save device'}</span>
+                                </button>
+                                <button className={cn(glass.btnSecondary, 'w-full h-10 text-[10px] font-black rounded-xl')} onClick={() => setShowDeviceModal(false)}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </DialogContent>
+            </Dialog>
         </BeeYieldPageShell>
     );
 }

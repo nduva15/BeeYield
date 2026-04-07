@@ -5,7 +5,7 @@ export interface LearnMaterial {
   subtitle: string;
   formatLabel: string;
   teaser: string;
-  pdfPath: string;
+  fileName: string;
 }
 
 export const LEARN_MATERIALS: LearnMaterial[] = [
@@ -16,7 +16,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     subtitle: "A practical first-season handbook for apiary setup, inspections, feeding, and harvest timing.",
     formatLabel: "12+ page PDF handbook",
     teaser: "Start with the right site, the right box, and a routine your bees can actually thrive in.",
-    pdfPath: "/learn-pdfs/beeyield-beekeeping-starter-guide.pdf",
+    fileName: "beeyield-beekeeping-starter-guide.pdf",
   },
   {
     productId: "edu-2",
@@ -25,7 +25,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     subtitle: "BeeYield's field model for crop deployment, colony strength, bloom timing, and frames per acre.",
     formatLabel: "12+ page PDF handbook",
     teaser: "Move from hive counts to measurable pollination power with a frames-per-acre operating model.",
-    pdfPath: "/learn-pdfs/beeyield-precision-pollination-handbook.pdf",
+    fileName: "beeyield-precision-pollination-handbook.pdf",
   },
   {
     productId: "edu-3",
@@ -34,7 +34,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     subtitle: "Companion workbook for selecting breeder stock, grafting larvae, building nucs, and introducing queens.",
     formatLabel: "12+ page PDF workbook",
     teaser: "Use the course alongside a field-ready workbook that keeps queen rearing disciplined and repeatable.",
-    pdfPath: "/learn-pdfs/beeyield-queen-rearing-masterclass-workbook.pdf",
+    fileName: "beeyield-queen-rearing-masterclass-workbook.pdf",
   },
   {
     productId: "edu-4",
@@ -43,7 +43,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     subtitle: "A post-harvest guide to moisture control, extraction hygiene, settling, bottling, and traceability.",
     formatLabel: "12+ page PDF manual",
     teaser: "Protect flavour, enzymes, and shelf life from the moment supers leave the yard.",
-    pdfPath: "/learn-pdfs/beeyield-honey-processing-manual.pdf",
+    fileName: "beeyield-honey-processing-manual.pdf",
   },
   {
     productId: "edu-5",
@@ -52,7 +52,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     subtitle: "Technical handbook for using BeeYield sensor data to interpret brood heat, humidity, weight, sound, and alerts.",
     formatLabel: "12+ page PDF handbook",
     teaser: "Learn what each sensor means, what a healthy signal looks like, and when to walk to the hive.",
-    pdfPath: "/learn-pdfs/beeyield-hive-monitoring-course-handbook.pdf",
+    fileName: "beeyield-hive-monitoring-course-handbook.pdf",
   },
   {
     productId: "edu-6",
@@ -61,7 +61,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     subtitle: "A biosecurity-first field guide to Varroa, foulbrood, Nosema, small hive beetle, wax moth, and stress diagnosis.",
     formatLabel: "12+ page PDF field guide",
     teaser: "Catch the signal early, sample properly, and respond with an integrated management plan.",
-    pdfPath: "/learn-pdfs/beeyield-disease-and-pest-management.pdf",
+    fileName: "beeyield-disease-and-pest-management.pdf",
   },
   {
     productId: "edu-7",
@@ -70,7 +70,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     subtitle: "Commercial playbook for pricing, product mix, compliance, market channels, contracts, and scale decisions.",
     formatLabel: "12+ page PDF playbook",
     teaser: "Turn beekeeping into a disciplined enterprise with better numbers, packaging, and market timing.",
-    pdfPath: "/learn-pdfs/beeyield-business-of-beekeeping.pdf",
+    fileName: "beeyield-business-of-beekeeping.pdf",
   },
   {
     productId: "edu-8",
@@ -79,7 +79,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     subtitle: "Bundle roadmap with reading order, yearly cadence, KPI sheets, templates, and implementation checklists.",
     formatLabel: "12+ page PDF roadmap",
     teaser: "Use the full library as a system, not a stack of disconnected downloads.",
-    pdfPath: "/learn-pdfs/beeyield-complete-beekeeper-bundle-roadmap.pdf",
+    fileName: "beeyield-complete-beekeeper-bundle-roadmap.pdf",
   },
 ];
 

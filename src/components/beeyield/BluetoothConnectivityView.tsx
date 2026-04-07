@@ -5,557 +5,651 @@ declare global {
 }
 
 import React from 'react';
-import { beeyieldService, Apiary, Hive } from '@/services/beeyieldService';
+import { motion } from 'framer-motion';
 import {
-    Bluetooth as BluetoothIcon,
-    X,
-    Search,
+    Activity,
     Battery,
-    Thermometer,
-    Scale,
+    Bluetooth as BluetoothIcon,
     Droplet,
-    Save,
-    RefreshCw,
-    Smartphone,
-    ChevronRight,
-    Cpu,
-    ShieldCheck,
-    Terminal,
+    Edit3,
     Loader2,
-    Activity
+    MapPin,
+    RefreshCw,
+    Save,
+    Scale,
+    Search,
+    ShieldCheck,
+    Smartphone,
+    Thermometer,
+    Trash2,
+    X,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { motion, AnimatePresence } from 'framer-motion';
+
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    beeyieldService,
+    BluetoothDeviceCreateInput,
+    BluetoothDeviceRecord,
+    BluetoothReadingUpload,
+    Hive,
+} from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 import { glass, PageHeader } from './GlassTheme';
 
-// Service UUID from PRD
 const BEEYIELD_SERVICE_UUID = '0000ffe0-0000-1000-8000-00805f9b34fb';
 
-interface BluetoothDevice {
-    mac_address: string;
-    name: string;
-    device_type: string;
-    assigned_hive_id?: string;
-    last_sync_at?: string;
-    battery_volts?: number;
+type ConnectionStatus = 'Idle' | 'Scanning' | 'Connecting' | 'Connected' | 'Error';
+
+interface BluetoothConnectivityViewProps {
+    onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
-export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, message?: string, action?: string) => void }> = ({ onTabChange }) => {
+export const BluetoothConnectivityView: React.FC<BluetoothConnectivityViewProps> = () => {
     const [connectedDevice, setConnectedDevice] = React.useState<any>(null);
     const [gattServer, setGattServer] = React.useState<any>(null);
-    const [status, setStatus] = React.useState<'Idle' | 'Scanning' | 'Connecting' | 'Connected' | 'Error'>('Idle');
+    const [status, setStatus] = React.useState<ConnectionStatus>('Idle');
     const [logs, setLogs] = React.useState<string[]>([]);
-    const [liveData, setLiveData] = React.useState<{ temp?: number, weight?: number, humidity?: number, battery?: number }>({});
+    const [liveData, setLiveData] = React.useState<{ temp?: number; weight?: number; humidity?: number; battery?: number }>({});
     const [syncProgress, setSyncProgress] = React.useState(0);
     const [isSyncing, setIsSyncing] = React.useState(false);
 
-    // DB state
-    const [knownDevice, setKnownDevice] = React.useState<BluetoothDevice | null>(null);
-    const [showSetupModal, setShowSetupModal] = React.useState(false);
-    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [bluetoothDevices, setBluetoothDevices] = React.useState<BluetoothDeviceRecord[]>([]);
+    const [knownDevice, setKnownDevice] = React.useState<BluetoothDeviceRecord | null>(null);
     const [hives, setHives] = React.useState<Hive[]>([]);
 
-    // Setup form
+    const [showSetupModal, setShowSetupModal] = React.useState(false);
+    const [editingDevice, setEditingDevice] = React.useState<BluetoothDeviceRecord | null>(null);
+    const [setupMacAddress, setSetupMacAddress] = React.useState('');
     const [setupName, setSetupName] = React.useState('New Sensor');
-    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
+    const [setupType, setSetupType] = React.useState('scale');
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('unassigned');
+    const [batteryVolts, setBatteryVolts] = React.useState('');
+    const [firmwareVersion, setFirmwareVersion] = React.useState('');
+    const [isSaving, setIsSaving] = React.useState(false);
 
     React.useEffect(() => {
-        loadData();
+        void loadData();
     }, []);
+
+    React.useEffect(() => {
+        if (!connectedDevice?.id) {
+            setKnownDevice(null);
+            return;
+        }
+        const matched = bluetoothDevices.find((device) => device.mac_address === connectedDevice.id) || null;
+        setKnownDevice(matched);
+    }, [bluetoothDevices, connectedDevice]);
 
     const loadData = async () => {
         try {
-            const [apiariesData, hivesData] = await Promise.all([
-                beeyieldService.getApiaries(),
-                beeyieldService.getHives()
+            const [hivesData, bluetoothData] = await Promise.all([
+                beeyieldService.getHives(),
+                beeyieldService.getBluetoothDevices(),
             ]);
-            setApiaries(apiariesData || []);
+
             setHives(hivesData || []);
-        } catch (err) {
-            console.error("Failed to load data", err);
+            setBluetoothDevices(bluetoothData || []);
+        } catch (error) {
+            console.error('Failed to load bluetooth dashboard data', error);
+            toast.error('Could not load Bluetooth device data');
         }
     };
 
-    const addLog = (msg: string) => {
+    const addLog = React.useCallback((message: string) => {
         const timestamp = new Date().toLocaleTimeString();
-        setLogs(prev => [`[${timestamp}] ${msg}`, ...prev].slice(0, 50));
+        setLogs((prev) => [`[${timestamp}] ${message}`, ...prev].slice(0, 60));
+    }, []);
+
+    const resetSetupForm = React.useCallback(() => {
+        setEditingDevice(null);
+        setSetupMacAddress('');
+        setSetupName('New Sensor');
+        setSetupType('scale');
+        setSelectedHiveId('unassigned');
+        setBatteryVolts('');
+        setFirmwareVersion('');
+    }, []);
+
+    const handleOpenChange = (open: boolean) => {
+        setShowSetupModal(open);
+        if (!open) {
+            resetSetupForm();
+        }
     };
 
-    const handleSearch = async () => {
-        if (!navigator.bluetooth) {
-            toast.error("Bluetooth is not supported in this browser.");
-            return;
-        }
+    const openCreateModal = React.useCallback(() => {
+        resetSetupForm();
+        setSetupMacAddress(connectedDevice?.id || '');
+        setSetupName(connectedDevice?.name || 'New Sensor');
+        setShowSetupModal(true);
+    }, [connectedDevice, resetSetupForm]);
 
+    const openEditModal = React.useCallback((device: BluetoothDeviceRecord) => {
+        setEditingDevice(device);
+        setSetupMacAddress(device.mac_address);
+        setSetupName(device.name || 'New Sensor');
+        setSetupType(device.device_type || 'scale');
+        setSelectedHiveId(device.assigned_hive_id || 'unassigned');
+        setBatteryVolts(device.battery_volts != null ? String(device.battery_volts) : '');
+        setFirmwareVersion(device.firmware_version || '');
+        setShowSetupModal(true);
+    }, []);
+
+    const disconnect = () => {
         try {
-            setStatus('Scanning');
-            addLog("Searching for sensors...");
-
-            const device = await navigator.bluetooth.requestDevice({
-                filters: [{ namePrefix: 'BeeYield' }],
-                optionalServices: ['battery_service', BEEYIELD_SERVICE_UUID]
-            });
-
-            addLog(`Found: ${device.name}`);
-            setConnectedDevice(device);
-            setStatus('Connecting');
-
-            device.addEventListener('gattserverdisconnected', onDisconnected);
-
-            addLog("Connecting...");
-            const server = await device.gatt.connect();
-            setGattServer(server);
-            setStatus('Connected');
-            addLog("Connected.");
-
-            checkDeviceInDB(device.id, device.name || 'BeeYield Device');
-            startMonitoring(server);
-
-        } catch (error: any) {
-            console.error(error);
-            setStatus('Error');
-            addLog(`Error: ${error.message}`);
-            if (error.name !== 'NotFoundError' && error.name !== 'UserCancelledError') {
-                toast.error(`Bluetooth Error: ${error.message}`);
-            }
+            gattServer?.device?.gatt?.disconnect?.();
+        } catch (error) {
+            console.warn('Disconnect failed', error);
         }
-    };
-
-    const onDisconnected = () => {
         setStatus('Idle');
         setConnectedDevice(null);
         setGattServer(null);
-        addLog("Disconnected.");
-        toast.info("Sensor disconnected");
+        addLog('Disconnected.');
     };
 
-    const checkDeviceInDB = async (id: string, name: string) => {
-        const devices = await beeyieldService.getBluetoothDevices();
-        const found = devices.find(d => d.mac_address === id);
+    const onDisconnected = React.useCallback(() => {
+        setStatus('Idle');
+        setConnectedDevice(null);
+        setGattServer(null);
+        addLog('Disconnected.');
+        toast.info('Sensor disconnected');
+    }, [addLog]);
 
+    const checkDeviceInDB = React.useCallback((id: string, name?: string) => {
+        const found = bluetoothDevices.find((device) => device.mac_address === id) || null;
+        setKnownDevice(found);
         if (found) {
-            setKnownDevice(found);
-            addLog(`Recognized: ${found.name}`);
-            toast.success(`Connected to ${found.name}`);
-        } else {
-            addLog("New sensor found. Setup required.");
-            setKnownDevice(null);
-            setSetupName(name);
-            setShowSetupModal(true);
+            addLog(`Recognized saved device: ${found.name}`);
+            return;
         }
-    };
+
+        addLog('New sensor detected. Save it to your registry.');
+        setEditingDevice(null);
+        setSetupMacAddress(id);
+        setSetupName(name || 'New Sensor');
+        setSetupType('scale');
+        setSelectedHiveId('unassigned');
+        setBatteryVolts('');
+        setFirmwareVersion('');
+        setShowSetupModal(true);
+    }, [addLog, bluetoothDevices]);
 
     const startMonitoring = async (server: any) => {
         try {
             const batteryService = await server.getPrimaryService('battery_service');
             const batteryChar = await batteryService.getCharacteristic('battery_level');
             const batteryVal = await batteryChar.readValue();
-            setLiveData(prev => ({ ...prev, battery: batteryVal.getUint8(0) }));
+            setLiveData((prev) => ({ ...prev, battery: batteryVal.getUint8(0) }));
 
-            const byService = await server.getPrimaryService(BEEYIELD_SERVICE_UUID);
-            const characteristics = await byService.getCharacteristics();
+            const beeyieldServiceHandle = await server.getPrimaryService(BEEYIELD_SERVICE_UUID);
+            const characteristics = await beeyieldServiceHandle.getCharacteristics();
+            const notifyChar = characteristics.find((characteristic: any) => characteristic.properties.notify);
 
-            const notifyChar = characteristics.find((c: any) => c.properties.notify);
-            if (notifyChar) {
-                await notifyChar.startNotifications();
-                notifyChar.addEventListener('characteristicvaluechanged', (event: any) => {
-                    const value = event.target.value;
-                    const temp = value.getUint8(0) + value.getUint8(1) / 100;
-                    const weight = (value.getUint8(2) << 8 | value.getUint8(3)) / 10;
-                    const humidity = value.getUint8(4);
-
-                    setLiveData(prev => ({ ...prev, temp, weight, humidity }));
-                });
-                addLog("Live data stream active.");
-            }
-        } catch (error) {
-            addLog("Could not start monitoring.");
-            console.error(error);
-        }
-    };
-
-    const handleSync = async () => {
-        if (!gattServer) return;
-
-        setIsSyncing(true);
-        setSyncProgress(0);
-        addLog("Syncing saved data...");
-
-        try {
-            const mac = connectedDevice?.id;
-            if (!mac) {
-                throw new Error('No connected device id available');
-            }
-
-            // Best-effort: sync at least the current live reading (and battery if present).
-            // If/when sensor memory download is implemented, this payload can become a batch.
-            const nowIso = new Date().toISOString();
-            const reading = {
-                device_mac: mac,
-                recorded_at: nowIso,
-                temp_c: typeof liveData.temp === 'number' ? liveData.temp : null,
-                weight_kg: typeof liveData.weight === 'number' ? liveData.weight : null,
-                humidity: typeof liveData.humidity === 'number' ? liveData.humidity : null,
-            };
-
-            const hasAnyMetric = Object.values(reading).some((v) => typeof v === 'number');
-            if (!hasAnyMetric) {
-                addLog("No telemetry yet. Wait for live values, then sync again.");
-                toast.info('No telemetry received yet');
+            if (!notifyChar) {
+                addLog('Live characteristic not available on this sensor.');
                 return;
             }
 
-            setSyncProgress(20);
-            addLog("Preparing data...");
+            await notifyChar.startNotifications();
+            notifyChar.addEventListener('characteristicvaluechanged', (event: any) => {
+                const value = event.target.value;
+                const temp = value.getUint8(0) + value.getUint8(1) / 100;
+                const weight = ((value.getUint8(2) << 8) | value.getUint8(3)) / 10;
+                const humidity = value.getUint8(4);
 
-            const res = await beeyieldService.syncBluetoothReadings({ readings: [reading] });
-            setSyncProgress(100);
+                setLiveData((prev) => ({ ...prev, temp, weight, humidity }));
+            });
 
-            if (!res.ok) {
-                throw res.error || new Error('Sync failed');
-            }
+            addLog('Live data stream active.');
+        } catch (error) {
+            console.error('Monitoring failed', error);
+            addLog('Could not start monitoring.');
+        }
+    };
 
-            addLog(`Sync complete. Uploaded ${res.count} reading(s).`);
-            toast.success(`Synced ${res.count} reading(s)`);
+    const handleSearch = async () => {
+        if (!navigator.bluetooth) {
+            toast.error('Bluetooth is not supported in this browser.');
+            return;
+        }
+
+        try {
+            setStatus('Scanning');
+            addLog('Searching for sensors...');
+
+            const device = await navigator.bluetooth.requestDevice({
+                filters: [{ namePrefix: 'BeeYield' }],
+                optionalServices: ['battery_service', BEEYIELD_SERVICE_UUID],
+            });
+
+            addLog(`Found ${device.name || device.id}`);
+            setConnectedDevice(device);
+            setStatus('Connecting');
+            device.addEventListener('gattserverdisconnected', onDisconnected);
+
+            const server = await device.gatt.connect();
+            setGattServer(server);
+            setStatus('Connected');
+            addLog('Connected.');
+
+            checkDeviceInDB(device.id, device.name);
+            await startMonitoring(server);
         } catch (error: any) {
-            addLog(`Sync error: ${error.message}`);
-            toast.error("Sync failed");
-        } finally {
-            setIsSyncing(false);
-            setSyncProgress(100);
+            console.error(error);
+            setStatus('Error');
+            addLog(`Error: ${error.message}`);
+            if (error.name !== 'NotFoundError' && error.name !== 'UserCancelledError') {
+                toast.error(`Bluetooth error: ${error.message}`);
+            }
         }
     };
 
     const handleSetupSubmit = async () => {
-        if (!connectedDevice) return;
+        if (!setupMacAddress.trim()) {
+            toast.error('A Bluetooth device id is required');
+            return;
+        }
 
-        const res = await beeyieldService.registerBluetoothDevice({
-            mac_address: connectedDevice.id,
-            name: setupName,
-            device_type: 'scale',
-            assigned_hive_id: selectedHiveId
-        });
+        setIsSaving(true);
+        try {
+            const payload: BluetoothDeviceCreateInput = {
+                mac_address: setupMacAddress.trim(),
+                name: setupName.trim() || 'New Sensor',
+                device_type: setupType || 'scale',
+                assigned_hive_id: selectedHiveId === 'unassigned' ? null : selectedHiveId,
+                battery_volts: batteryVolts ? Number(batteryVolts) : null,
+                firmware_version: firmwareVersion.trim() || null,
+            };
 
-        if (res) {
-            setKnownDevice(res);
-            setShowSetupModal(false);
-            addLog(`Sensor saved as ${setupName}`);
+            const saved = editingDevice
+                ? await beeyieldService.updateBluetoothDevice(editingDevice.mac_address, {
+                    name: payload.name,
+                    device_type: payload.device_type,
+                    assigned_hive_id: payload.assigned_hive_id,
+                    battery_volts: payload.battery_volts,
+                    firmware_version: payload.firmware_version,
+                })
+                : await beeyieldService.registerBluetoothDevice(payload);
+
+            if (!saved) return;
+
+            addLog(`${editingDevice ? 'Updated' : 'Saved'} ${saved.name}.`);
+            handleOpenChange(false);
+            await loadData();
+        } finally {
+            setIsSaving(false);
         }
     };
 
+    const handleDelete = async (device: BluetoothDeviceRecord) => {
+        if (!window.confirm(`Delete Bluetooth device "${device.name}"?`)) return;
+        const result = await beeyieldService.deleteBluetoothDevice(device.mac_address);
+        if (result.success) {
+            addLog(`Deleted ${device.name}.`);
+            await loadData();
+        }
+    };
+
+    const handleSync = async () => {
+        if (!connectedDevice?.id) {
+            toast.error('Connect a device first');
+            return;
+        }
+
+        const reading: BluetoothReadingUpload = {
+            device_mac: connectedDevice.id,
+            recorded_at: new Date().toISOString(),
+            temp_c: typeof liveData.temp === 'number' ? liveData.temp : null,
+            weight_kg: typeof liveData.weight === 'number' ? liveData.weight : null,
+            humidity: typeof liveData.humidity === 'number' ? liveData.humidity : null,
+        };
+
+        const hasTelemetry = [reading.temp_c, reading.weight_kg, reading.humidity].some((value) => typeof value === 'number');
+        if (!hasTelemetry) {
+            toast.info('No telemetry received yet');
+            addLog('No telemetry available to sync.');
+            return;
+        }
+
+        setIsSyncing(true);
+        setSyncProgress(15);
+        addLog('Preparing sync payload...');
+
+        try {
+            const result = await beeyieldService.syncBluetoothReadings({ readings: [reading] });
+            if (!result.ok) {
+                throw result.error || new Error('Sync failed');
+            }
+
+            setSyncProgress(100);
+            addLog(`Sync complete. Uploaded ${result.count} reading(s).`);
+            toast.success(`Synced ${result.count} reading(s)`);
+            await loadData();
+        } catch (error: any) {
+            console.error(error);
+            addLog(`Sync error: ${error.message || 'Unknown error'}`);
+            toast.error('Sync failed');
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
+    const currentHive = knownDevice?.assigned_hive_id
+        ? hives.find((hive) => hive.id === knownDevice.assigned_hive_id)
+        : null;
+
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
-            {/* Header Section */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={glass.page}>
             <PageHeader
                 icon={BluetoothIcon}
                 label="Wireless connection"
                 title={<>Device <span className="text-[#F4D03F]">Link</span></>}
-                subtitle="Connect your sensors directly using Bluetooth."
+                subtitle="Connect BeeYield sensors over Bluetooth, inspect live telemetry, and manage the saved registry from one place."
                 actions={
                     <div className="flex gap-3">
-                        <AnimatePresence mode="wait">
-                            {status === 'Connected' ? (
-                                <motion.button
-                                    key="disconnect"
-                                    initial={{ opacity: 0, scale: 0.98 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.98 }}
-                                    onClick={() => gattServer?.device.gatt.disconnect()}
-                                    className={cn(glass.btnSecondary, "h-8 px-4 text-red-500 border-red-500/10 hover:bg-red-500/10 font-black text-[9px] rounded-xl shadow-sm flex items-center gap-2")}
-                                >
-                                    <X className="w-3.5 h-3.5" />
-                                    Disconnect Link
-                                </motion.button>
-                            ) : (
-                                <motion.button
-                                    key="search"
-                                    initial={{ opacity: 0, scale: 0.98 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.98 }}
-                                    onClick={handleSearch}
-                                    disabled={status === 'Scanning' || status === 'Connecting'}
-                                    className={glass.btnPrimary}
-                                >
-                                     {status === 'Scanning' ? (
-                                         <>
-                                             <Loader2 className="w-4 h-4 animate-spin" />
-                                             Scanning...
-                                         </>
-                                     ) : (
-                                         <>
-                                             <Search className="w-4 h-4" />
-                                             Detect Devices
-                                         </>
-                                     )}
-                                 </motion.button>
-                            )}
-                        </AnimatePresence>
+                        {status === 'Connected' ? (
+                            <button
+                                onClick={disconnect}
+                                className={cn(glass.btnSecondary, 'h-8 px-4 text-red-500 border-red-500/10 hover:bg-red-500/10 font-black text-[9px] rounded-xl shadow-sm flex items-center gap-2')}
+                            >
+                                <X className="w-3.5 h-3.5" />
+                                Disconnect
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleSearch}
+                                disabled={status === 'Scanning' || status === 'Connecting'}
+                                className={glass.btnPrimary}
+                            >
+                                {status === 'Scanning' || status === 'Connecting' ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        {status === 'Scanning' ? 'Scanning...' : 'Connecting...'}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Search className="w-4 h-4" />
+                                        Detect Devices
+                                    </>
+                                )}
+                            </button>
+                        )}
                     </div>
                 }
             />
 
-            {/* Status Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {[
-                    { label: 'Network status', value: status === 'Idle' ? 'Ready' : status.toUpperCase(), icon: Smartphone, color: status === 'Connected' ? 'bg-[#1B9157]/10 text-[#1B9157]' : 'bg-[#F4D03F]/10 text-[#F4D03F]', sub: connectedDevice ? connectedDevice.id : 'Waiting...' },
-                    { label: 'Battery Level', value: liveData.battery ? `${liveData.battery}%` : '0%', icon: Battery, color: liveData.battery && liveData.battery < 20 ? 'bg-red-500/10 text-red-500' : 'bg-[#1B9157]/10 text-[#1B9157]', progress: liveData.battery || 0 },
-                    { label: 'Hive Sync', value: knownDevice?.assigned_hive_id ? hives.find(h => h.id === knownDevice.assigned_hive_id)?.hive_code || 'Active' : 'Not Linked', icon: Activity, color: 'bg-[#F4D03F]/10 text-[#F4D03F]', action: () => status === 'Connected' && setShowSetupModal(true) }
-                ].map((stat, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        className={glass.card + " p-5 transition-all duration-300"}
-                    >
-                        <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none transition-transform group-hover:scale-110 duration-700"><stat.icon className="w-12 h-12" /></div>
+                    {
+                        label: 'Network status',
+                        value: status === 'Idle' ? 'Ready' : status.toUpperCase(),
+                        icon: Smartphone,
+                        sub: connectedDevice ? connectedDevice.id : 'Waiting for a sensor',
+                        color: status === 'Connected' ? 'bg-[#1B9157]/10 text-[#1B9157]' : 'bg-[#F4D03F]/10 text-[#F4D03F]',
+                    },
+                    {
+                        label: 'Battery',
+                        value: liveData.battery != null ? `${liveData.battery}%` : 'No data',
+                        icon: Battery,
+                        sub: knownDevice?.battery_volts != null ? `${knownDevice.battery_volts.toFixed(2)}V saved` : 'No saved voltage',
+                        color: liveData.battery != null && liveData.battery < 20 ? 'bg-red-500/10 text-red-500' : 'bg-[#1B9157]/10 text-[#1B9157]',
+                    },
+                    {
+                        label: 'Linked hive',
+                        value: currentHive?.hive_code || 'Not linked',
+                        icon: Activity,
+                        sub: knownDevice?.name || 'Save a sensor to assign it',
+                        color: 'bg-[#F4D03F]/10 text-[#F4D03F]',
+                    },
+                ].map((stat) => (
+                    <div key={stat.label} className={cn(glass.card, 'p-5')}>
                         <div className="flex items-center gap-3 mb-3">
-                            <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center border transition-all shadow-sm", stat.color)}>
+                            <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center border shadow-sm', stat.color)}>
                                 <stat.icon className="w-4 h-4" />
                             </div>
                             <p className={glass.microLabel}>{stat.label}</p>
                         </div>
                         <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{stat.value}</h3>
-                        <p className="text-[10px] font-medium text-gray-400 truncate">{stat.sub || 'Standby'}</p>
-                        
-                        {stat.progress !== undefined && (
-                            <div className="mt-5 w-full h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 shadow-inner p-0.5">
-                                <motion.div
-                                    className={cn("h-full rounded-full relative", stat.progress < 20 ? 'bg-red-500' : 'bg-[#1B9157]')}
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${stat.progress}%` }}
-                                />
-                            </div>
-                        )}
-                        {stat.action && (
-                            <button
-                                onClick={stat.action}
-                                className="mt-5 h-8 px-3.5 rounded-lg border border-[#F4D03F]/20 text-sm font-semibold text-[#D4AC0D] hover:bg-[#F4D03F]/10 transition-all flex items-center gap-2 group/btn"
-                            >
-                                Configure <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
-                            </button>
-                        )}
-                    </motion.div>
+                        <p className="text-[10px] font-medium text-gray-400 truncate">{stat.sub}</p>
+                    </div>
                 ))}
             </div>
 
-            {/* Live Data & Sync Section */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div className="lg:col-span-12 space-y-6">
-                    <div className={glass.section + " p-6"}>
+                <div className="lg:col-span-7 space-y-6">
+                    <div className={cn(glass.section, 'p-6')}>
                         <div className="flex items-center justify-between mb-8">
                             <div>
                                 <h3 className="text-lg font-bold text-[#1A1A1A]">Live readings</h3>
-                                <p className="text-sm text-gray-500">Live stream of environmental metrics from the sensor.</p>
-                            </div>
-                            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-[#1B9157] rounded-full text-xs font-semibold border border-emerald-100">
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                                Live
+                                <p className="text-sm text-gray-500">Current telemetry from the connected Bluetooth sensor.</p>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             {[
-                                { label: 'Temperature', val: liveData.temp?.toFixed(1) || '0.0', unit: '°C', icon: Thermometer, color: 'text-red-500', bg: 'bg-red-500/5', max: 60, stroke: '#EF4444' },
-                                { label: 'Weight', val: liveData.weight?.toFixed(1) || '0.0', unit: 'kg', icon: Scale, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/5', max: 100, stroke: '#F4D03F' },
-                                { label: 'Humidity', val: liveData.humidity || '0', unit: '%', icon: Droplet, color: 'text-blue-500', bg: 'bg-blue-500/5', max: 100, stroke: '#3B82F6' }
-                            ].map((gauge, i) => (
-                                <div key={i} className="flex flex-col items-center gap-5 group/gauge">
-                                    <div className="relative w-28 h-28 flex items-center justify-center">
-                                        <svg className="w-full h-full -rotate-90 absolute">
-                                            <circle cx="56" cy="56" r="50" fill="none" stroke="currentColor" strokeOpacity="0.05" strokeWidth="5" />
-                                            <motion.circle
-                                                cx="56" cy="56" r="50" fill="none"
-                                                stroke={gauge.stroke} strokeWidth="5"
-                                                strokeDasharray="314"
-                                                initial={{ strokeDashoffset: 314 }}
-                                                animate={{ strokeDashoffset: 314 - (314 * (Math.min(Number(gauge.val), gauge.max) / gauge.max)) }}
-                                                strokeLinecap="round"
-                                                className="transition-all duration-1000"
-                                            />
-                                        </svg>
-                                        <div className="flex flex-col items-center relative z-10">
-                                            <span className="text-lg font-bold tabular-nums leading-none tracking-tight mb-0.5 text-[#1A1A1A]">{gauge.val}</span>
-                                            <span className="text-[9px] font-bold opacity-40">{gauge.unit}</span>
-                                        </div>
+                                { label: 'Temperature', value: liveData.temp?.toFixed(1) || '0.0', unit: 'C', icon: Thermometer, accent: 'text-red-500' },
+                                { label: 'Weight', value: liveData.weight?.toFixed(1) || '0.0', unit: 'kg', icon: Scale, accent: 'text-[#F4D03F]' },
+                                { label: 'Humidity', value: liveData.humidity != null ? String(liveData.humidity) : '0', unit: '%', icon: Droplet, accent: 'text-blue-500' },
+                            ].map((metric) => (
+                                <div key={metric.label} className="rounded-2xl border border-white/60 bg-white/50 p-5">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <p className={glass.microLabel}>{metric.label}</p>
+                                        <metric.icon className={cn('w-4 h-4', metric.accent)} />
                                     </div>
-                                    <div className={glass.badge}>
-                                        {gauge.label}
+                                    <div className="flex items-end gap-2">
+                                        <span className="text-3xl font-black tracking-tight text-[#1A1A1A]">{metric.value}</span>
+                                        <span className="text-xs font-bold text-gray-400 pb-1">{metric.unit}</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className={glass.section + " p-5"}>
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
-                                        <RefreshCw className={cn("w-5 h-5 text-[#F4D03F]", isSyncing && "animate-spin")} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-[#1A1A1A]">Cloud Synchronization</h3>
-                                        <p className="text-sm text-gray-500">Synchronize sensor data with your account.</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={handleSync}
-                                    disabled={!gattServer || isSyncing}
-                                    className={glass.btnPrimary}
-                                >
-                                    <Save className="w-4 h-4" />
-                                    Sync Data
-                                </button>
+                    <div className={cn(glass.section, 'p-6')}>
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-lg font-bold text-[#1A1A1A]">Sensor registry</h3>
+                                <p className="text-sm text-gray-500">Create, edit, and remove Bluetooth device records tied to your hives.</p>
                             </div>
-
-                            <div className="space-y-5">
-                                <div className="bg-white/40 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between border border-white/60 shadow-inner gap-4">
-                                    <div className="flex gap-3 items-center">
-                                        <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
-                                            <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[7px] font-black text-gray-400">Last Synchronization</p>
-                                            <p className="text-[10px] font-black text-[#1A1A1A] tracking-tighter">{knownDevice?.last_sync_at || 'No Record'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-center sm:text-right">
-                                        <p className="text-[7px] font-black text-gray-400">Upload status</p>
-                                        <span className="text-[9px] font-black text-[#1B9157]">Synced</span>
-                                    </div>
-                                </div>
-
-                                <AnimatePresence>
-                                    {isSyncing && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="space-y-3"
-                                        >
-                                            <div className="flex justify-between items-end px-1">
-                                                <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Sync in progress...</span>
-                                                <span className="text-lg font-black tabular-nums tracking-tighter text-[#1A1A1A]">{syncProgress}%</span>
-                                            </div>
-                                            <div className="h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 p-0.5">
-                                                <motion.div
-                                                    className="h-full bg-[#F4D03F] rounded-full shadow-sm"
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${syncProgress}%` }}
-                                                />
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                            <Button className={glass.btnPrimary} onClick={openCreateModal}>
+                                <ShieldCheck className="w-4 h-4" />
+                                Add Sensor
+                            </Button>
                         </div>
 
-                        <div className={glass.section + " p-5 flex flex-col"}>
-                            <div className="flex items-center justify-between mb-5">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 bg-[#F9F7F2] rounded-lg flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
-                                        <Terminal className="w-4 h-4 text-[#F4D03F]" />
-                                    </div>
-                                    <span className="text-sm font-bold text-[#1A1A1A]">Event Log</span>
+                        <div className="space-y-3">
+                            {bluetoothDevices.length === 0 ? (
+                                <div className="rounded-2xl border border-dashed border-[#F4D03F]/25 bg-[#FFF9F0] p-6 text-center">
+                                    <p className="text-sm font-semibold text-[#1A1A1A]">No Bluetooth devices saved yet.</p>
+                                    <p className="text-xs text-gray-500 mt-2">Connect a sensor or create a registry record manually.</p>
                                 </div>
-                                <button
-                                    onClick={() => setLogs([])}
-                                    className={glass.btnSecondary + " h-8 px-3 text-[10px]"}
-                                >
-                                    Clear
-                                </button>
-                            </div>
-
-                            <div className="h-40 overflow-y-auto font-mono text-[9px] leading-relaxed space-y-2 thin-scrollbar pr-2 flex-1">
-                                {logs.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-full opacity-20 gap-2">
-                                        <Loader2 className="w-4 h-4 animate-spin-slow" />
-                                        <p className="text-[8px] font-black">No activity found</p>
-                                    </div>
-                                ) : (
-                                    logs.map((log, i) => (
-                                        <div key={i} className="flex gap-3 pb-1 border-b border-white/10 last:border-0 hover:bg-white/40 px-2 rounded-lg transition-colors">
-                                            <span className="text-[#F4D03F]/40 shrink-0 font-black text-[8px]">0{logs.length - i}</span>
-                                            <span className={cn("font-bold tracking-tight lowercase", log.includes('Error') ? 'text-red-500' : 'text-gray-500')}>
-                                                {log.split('] ')[1]}
-                                            </span>
+                            ) : (
+                                bluetoothDevices.map((device) => {
+                                    const hive = device.assigned_hive_id ? hives.find((item) => item.id === device.assigned_hive_id) : null;
+                                    return (
+                                        <div key={device.mac_address} className="rounded-2xl border border-white/60 bg-white/50 p-4">
+                                            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                                                <div className="space-y-1">
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <p className="text-sm font-bold text-[#1A1A1A]">{device.name}</p>
+                                                        <span className={glass.badge}>{device.device_type || 'sensor'}</span>
+                                                    </div>
+                                                    <p className="text-[10px] font-mono text-gray-500">{device.mac_address}</p>
+                                                    <div className="flex flex-wrap items-center gap-3 text-[10px] font-semibold text-gray-500">
+                                                        <span className="inline-flex items-center gap-1">
+                                                            <MapPin className="w-3 h-3 text-[#F4D03F]" />
+                                                            {hive?.hive_code || 'No hive assigned'}
+                                                        </span>
+                                                        <span>Last sync: {device.last_sync_at ? new Date(device.last_sync_at).toLocaleString() : 'Never'}</span>
+                                                        <span>Firmware: {device.firmware_version || 'Unknown'}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Button variant="outline" className="rounded-xl" onClick={() => openEditModal(device)}>
+                                                        <Edit3 className="w-4 h-4" />
+                                                        Edit
+                                                    </Button>
+                                                    <Button variant="outline" className="rounded-xl text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleDelete(device)}>
+                                                        <Trash2 className="w-4 h-4" />
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </div>
                                         </div>
-                                    ))
-                                )}
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="lg:col-span-5 space-y-6">
+                    <div className={cn(glass.section, 'p-5')}>
+                        <div className="flex items-center justify-between mb-5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 bg-[#F9F7F2] rounded-lg flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                    <RefreshCw className={cn('w-4 h-4 text-[#F4D03F]', isSyncing && 'animate-spin')} />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-[#1A1A1A]">Cloud sync</h3>
+                                    <p className="text-sm text-gray-500">Upload live readings from the connected sensor.</p>
+                                </div>
                             </div>
+                            <button onClick={handleSync} disabled={!gattServer || isSyncing} className={glass.btnPrimary}>
+                                <Save className="w-4 h-4" />
+                                Sync Data
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4">
+                                <p className={glass.microLabel}>Saved device</p>
+                                <p className="mt-1 text-sm font-bold text-[#1A1A1A]">{knownDevice?.name || 'Unsaved connection'}</p>
+                            </div>
+                            <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4">
+                                <p className={glass.microLabel}>Last sync</p>
+                                <p className="mt-1 text-sm font-bold text-[#1A1A1A]">{knownDevice?.last_sync_at ? new Date(knownDevice.last_sync_at).toLocaleString() : 'No sync yet'}</p>
+                            </div>
+                            {isSyncing && (
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-end px-1">
+                                        <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Sync in progress...</span>
+                                        <span className="text-lg font-black tabular-nums tracking-tighter text-[#1A1A1A]">{syncProgress}%</span>
+                                    </div>
+                                    <div className="h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 p-0.5">
+                                        <div className="h-full bg-[#F4D03F] rounded-full shadow-sm" style={{ width: `${syncProgress}%` }} />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={cn(glass.section, 'p-5 flex flex-col')}>
+                        <div className="flex items-center justify-between mb-5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 bg-[#F9F7F2] rounded-lg flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                    <Activity className="w-4 h-4 text-[#F4D03F]" />
+                                </div>
+                                <span className="text-sm font-bold text-[#1A1A1A]">Event log</span>
+                            </div>
+                            <button onClick={() => setLogs([])} className={cn(glass.btnSecondary, 'h-8 px-3 text-[10px]')}>
+                                Clear
+                            </button>
+                        </div>
+
+                        <div className="h-64 overflow-y-auto font-mono text-[9px] leading-relaxed space-y-2 thin-scrollbar pr-2 flex-1">
+                            {logs.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-full opacity-20 gap-2">
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <p className="text-[8px] font-black">No activity found</p>
+                                </div>
+                            ) : (
+                                logs.map((log, index) => (
+                                    <div key={`${log}-${index}`} className="flex gap-3 pb-1 border-b border-white/10 last:border-0 hover:bg-white/40 px-2 rounded-lg transition-colors">
+                                        <span className="text-[#F4D03F]/40 shrink-0 font-black text-[8px]">{String(logs.length - index).padStart(2, '0')}</span>
+                                        <span className={cn('font-bold tracking-tight', log.includes('Error') ? 'text-red-500' : 'text-gray-500')}>{log}</span>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <Dialog open={showSetupModal} onOpenChange={setShowSetupModal}>
-                <DialogContent className="max-w-[400px] bg-transparent border-none p-0 shadow-none overflow-visible">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative bg-white/90 border-white/20")}
-                    >
-                         <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-                        
-                        <div className="px-6 py-5 border-b border-[#F4D03F]/10 relative z-10">
+            <Dialog open={showSetupModal} onOpenChange={handleOpenChange}>
+                <DialogContent className="max-w-[420px] bg-transparent border-none p-0 shadow-none overflow-visible">
+                    <motion.div initial={{ opacity: 0, scale: 0.98, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} className={cn(glass.card, 'p-0 overflow-hidden shadow-2xl relative bg-white/90 border-white/20')}>
+                        <div className="px-6 py-5 border-b border-[#F4D03F]/10">
                             <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-3 inline-block')}>
-                                Add sensor
+                                {editingDevice ? 'Edit sensor' : 'Add sensor'}
                             </div>
-                            <h2 className={cn(glass.sectionTitle, "uppercase leading-none mb-1")}>Add <span className="text-[#F4D03F]">sensor</span></h2>
-                            <p className={glass.microLabel}>Link a sensor to a hive.</p>
+                            <h2 className={cn(glass.sectionTitle, 'uppercase leading-none mb-1')}>
+                                {editingDevice ? 'Update ' : 'Save '}<span className="text-[#F4D03F]">sensor</span>
+                            </h2>
+                            <p className={glass.microLabel}>Keep the registry aligned with your connected hardware.</p>
                         </div>
 
-                        <div className="p-6 space-y-5 relative z-10">
+                        <div className="p-6 space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="bluetooth-setup-name" className={glass.microLabel}>Sensor Alias</Label>
-                                <Input
-                                    id="bluetooth-setup-name"
-                                    name="device_name"
-                                    autoComplete="off"
-                                    value={setupName}
-                                    onChange={(e) => setSetupName(e.target.value)}
-                                    className={cn(glass.input, "w-full h-10 font-black text-[10px] bg-white/50 border-white/40 focus:bg-white")}
-                                    placeholder="e.g. Alpha Scale 01"
-                                />
+                                <Label htmlFor="bluetooth-mac-address" className={glass.microLabel}>Device id</Label>
+                                <Input id="bluetooth-mac-address" value={setupMacAddress} onChange={(event) => setSetupMacAddress(event.target.value)} disabled={!!editingDevice} className={cn(glass.input, 'h-10 font-black text-[10px] bg-white/50 border-white/40')} placeholder="BeeYield sensor id" />
                             </div>
                             <div className="space-y-2">
-                                <Label className={glass.microLabel}>Hive</Label>
-                                <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                                    <SelectTrigger id="bluetooth-setup-hive" aria-label="Hive" className={cn(glass.select, "w-full h-10 font-black text-[10px] bg-white/50 border-white/40 focus:bg-white")}>
-                                        <SelectValue placeholder="Select a hive…" />
-                                    </SelectTrigger>
-                                    <SelectContent className={glass.selectContent}>
-                                        {hives.map(hive => (
-                                            <SelectItem key={hive.id} value={hive.id} className=" font-black text-[10px]">
-                                                {hive.hive_code}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Label htmlFor="bluetooth-setup-name" className={glass.microLabel}>Sensor alias</Label>
+                                <Input id="bluetooth-setup-name" value={setupName} onChange={(event) => setSetupName(event.target.value)} className={cn(glass.input, 'h-10 font-black text-[10px] bg-white/50 border-white/40')} placeholder="Alpha Scale 01" />
                             </div>
-
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                    <Label className={glass.microLabel}>Type</Label>
+                                    <Select value={setupType} onValueChange={setSetupType}>
+                                        <SelectTrigger className={cn(glass.select, 'h-10 font-black text-[10px] bg-white/50 border-white/40')}>
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent className={glass.selectContent}>
+                                            <SelectItem value="scale">Scale</SelectItem>
+                                            <SelectItem value="sensor">Sensor</SelectItem>
+                                            <SelectItem value="gateway">Gateway</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="bluetooth-firmware" className={glass.microLabel}>Firmware</Label>
+                                    <Input id="bluetooth-firmware" value={firmwareVersion} onChange={(event) => setFirmwareVersion(event.target.value)} className={cn(glass.input, 'h-10 font-black text-[10px] bg-white/50 border-white/40')} placeholder="1.0.0" />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                    <Label className={glass.microLabel}>Hive</Label>
+                                    <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
+                                        <SelectTrigger className={cn(glass.select, 'h-10 font-black text-[10px] bg-white/50 border-white/40')}>
+                                            <SelectValue placeholder="Select hive" />
+                                        </SelectTrigger>
+                                        <SelectContent className={glass.selectContent}>
+                                            <SelectItem value="unassigned">Unassigned</SelectItem>
+                                            {hives.map((hive) => (
+                                                <SelectItem key={hive.id} value={hive.id}>
+                                                    {hive.hive_code}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="bluetooth-battery-volts" className={glass.microLabel}>Battery volts</Label>
+                                    <Input id="bluetooth-battery-volts" value={batteryVolts} onChange={(event) => setBatteryVolts(event.target.value)} className={cn(glass.input, 'h-10 font-black text-[10px] bg-white/50 border-white/40')} placeholder="4.10" />
+                                </div>
+                            </div>
                             <div className="flex flex-col gap-2 pt-4 border-t border-[#F4D03F]/10">
-                                <button
-                                    className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black rounded-xl")}
-                                    onClick={handleSetupSubmit}
-                                >
-                                    <ShieldCheck className="w-4 h-4" />
-                                    <span>Save</span>
+                                <button className={cn(glass.btnPrimary, 'w-full h-10 text-[10px] font-black rounded-xl')} onClick={handleSetupSubmit} disabled={isSaving}>
+                                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                                    <span>{editingDevice ? 'Save changes' : 'Save sensor'}</span>
                                 </button>
-                                <button
-                                    className={cn(glass.btnSecondary, "w-full h-10 text-[10px] font-black rounded-xl")}
-                                    onClick={() => setShowSetupModal(false)}
-                                >
+                                <button className={cn(glass.btnSecondary, 'w-full h-10 text-[10px] font-black rounded-xl')} onClick={() => handleOpenChange(false)}>
                                     Cancel
                                 </button>
                             </div>
@@ -563,14 +657,6 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                     </motion.div>
                 </DialogContent>
             </Dialog>
-
-            <style>{`
-                .thin-scrollbar::-webkit-scrollbar { width: 3px; }
-                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.2); border-radius: 10px; }
-                @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                .animate-spin-slow { animation: spin-slow 8s linear infinite; }
-            `}</style>
         </motion.div>
     );
 };

@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from typing import Optional, List
-from app.db.supabase_db import db_select, db_insert, db_update
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
 from pydantic import BaseModel
 from datetime import datetime
@@ -14,6 +14,16 @@ class BluetoothDeviceCreate(BaseModel):
     name: str = "New Sensor"
     device_type: str = "scale"
     assigned_hive_id: Optional[UUID] = None
+    battery_volts: Optional[float] = None
+    firmware_version: Optional[str] = None
+
+
+class BluetoothDeviceUpdate(BaseModel):
+    name: Optional[str] = None
+    device_type: Optional[str] = None
+    assigned_hive_id: Optional[UUID] = None
+    battery_volts: Optional[float] = None
+    firmware_version: Optional[str] = None
 
 class ReadingBuffer(BaseModel):
     device_mac: str
@@ -47,7 +57,25 @@ async def get_bluetooth_devices(
     token: Optional[str] = Depends(get_token)
 ):
     """Get all bluetooth devices paired by the user."""
-    return await db_select("bluetooth_devices", filters={"user_id": user_id}, token=token)
+    return await db_select("bluetooth_devices", filters={"user_id": user_id}, order_by="name", ascending=True, token=token)
+
+
+@router.get("/devices/{mac_address}", response_model=dict)
+async def get_bluetooth_device(
+    mac_address: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
+    """Get one bluetooth device owned by the current user."""
+    rows = await db_select(
+        "bluetooth_devices",
+        filters={"mac_address": mac_address, "user_id": user_id},
+        limit=1,
+        token=token,
+    )
+    if not rows:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bluetooth device not found")
+    return rows[0]
 
 @router.post("/devices", response_model=dict)
 async def register_bluetooth_device(
@@ -74,6 +102,58 @@ async def register_bluetooth_device(
         raise HTTPException(status_code=500, detail=result.get("error", "DB Error"))
     
     return result["data"][0] if result.get("data") else data
+
+
+@router.patch("/devices/{mac_address}", response_model=dict)
+async def update_bluetooth_device(
+    mac_address: str,
+    device_in: BluetoothDeviceUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Update a bluetooth device owned by the current user."""
+    rows = await db_select(
+        "bluetooth_devices",
+        filters={"mac_address": mac_address, "user_id": user_id},
+        limit=1,
+        token=token,
+    )
+    if not rows:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bluetooth device not found")
+
+    patch = device_in.dict(exclude_unset=True)
+    if not patch:
+        return rows[0]
+
+    result = await db_update("bluetooth_devices", patch, {"mac_address": mac_address}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "DB Error"))
+
+    updated_rows = result.get("data") or []
+    return updated_rows[0] if updated_rows else {**rows[0], **patch}
+
+
+@router.delete("/devices/{mac_address}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_bluetooth_device(
+    mac_address: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Delete a bluetooth device owned by the current user."""
+    rows = await db_select(
+        "bluetooth_devices",
+        filters={"mac_address": mac_address, "user_id": user_id},
+        limit=1,
+        token=token,
+    )
+    if not rows:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bluetooth device not found")
+
+    result = await db_delete("bluetooth_devices", {"mac_address": mac_address}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "DB Error"))
+
+    return None
 
 @router.post("/sync", status_code=status.HTTP_201_CREATED)
 async def sync_readings(

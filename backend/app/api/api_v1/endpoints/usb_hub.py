@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from app.db.supabase_db import db_select, db_insert, db_update
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
 
 router = APIRouter()
@@ -27,7 +27,20 @@ def get_token(request: Request) -> Optional[str]:
 class HubDeviceRegister(BaseModel):
     serial_number: str
     firmware_version: Optional[str] = "1.0.0"
-    config_json: Optional[Dict[str, Any]] = {}
+    config_json: Dict[str, Any] = Field(default_factory=dict)
+
+
+class HubDeviceCreate(BaseModel):
+    serial_number: str
+    firmware_version: Optional[str] = "1.0.0"
+    config_json: Dict[str, Any] = Field(default_factory=dict)
+    status: Optional[str] = "paired"
+
+
+class HubDeviceUpdate(BaseModel):
+    firmware_version: Optional[str] = None
+    config_json: Optional[Dict[str, Any]] = None
+    status: Optional[str] = None
 
 class SyncSessionStart(BaseModel):
     hub_sn: str
@@ -140,7 +153,72 @@ async def get_my_devices(
     token: Optional[str] = Depends(get_token)
 ):
     """Get all devices owned by user"""
-    return await db_select("hub_devices", filters={"user_id": user_id}, token=token)
+    return await db_select("hub_devices", filters={"user_id": user_id}, order_by="last_connected_at", ascending=False, token=token)
+
+
+@router.get("/devices/{serial_number}", response_model=dict)
+async def get_device(
+    serial_number: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Get one paired hub device owned by the user."""
+    rows = await db_select("hub_devices", filters={"serial_number": serial_number, "user_id": user_id}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Device not found")
+    return rows[0]
+
+
+@router.post("/devices", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def create_device(
+    device: HubDeviceCreate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Create a paired USB device record without a live handshake."""
+    existing = await db_select("hub_devices", filters={"serial_number": device.serial_number}, limit=1, token=token)
+    if existing:
+        if existing[0].get("user_id") != user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Device registered to another user")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Device already exists")
+
+    payload = {
+        "serial_number": device.serial_number,
+        "user_id": user_id,
+        "firmware_version": device.firmware_version,
+        "config_json": device.config_json or {},
+        "status": device.status or "paired",
+        "last_connected_at": None,
+        "last_sync_at": None,
+    }
+    res = await db_insert("hub_devices", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=res.get("error", "Failed to create device"))
+    rows = res.get("data") or []
+    return rows[0] if rows else payload
+
+
+@router.patch("/devices/{serial_number}", response_model=dict)
+async def update_device(
+    serial_number: str,
+    patch: HubDeviceUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    """Update a paired USB device record."""
+    rows = await db_select("hub_devices", filters={"serial_number": serial_number, "user_id": user_id}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Device not found")
+
+    patch_data = patch.dict(exclude_unset=True)
+    if not patch_data:
+        return rows[0]
+
+    res = await db_update("hub_devices", patch_data, {"serial_number": serial_number}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=res.get("error", "Failed to update device"))
+    updated = res.get("data") or []
+    return updated[0] if updated else {**rows[0], **patch_data}
 
 
 @router.delete("/devices/{serial_number}", status_code=status.HTTP_204_NO_CONTENT)
@@ -154,7 +232,6 @@ async def delete_device(
     if not rows:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    from app.db.supabase_db import db_delete
     res = await db_delete("hub_devices", {"serial_number": serial_number}, token=token)
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete device"))
