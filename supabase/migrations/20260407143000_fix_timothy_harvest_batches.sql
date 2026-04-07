@@ -20,6 +20,11 @@ DECLARE
     v_hive_ids UUID[];
     v_hive_codes TEXT[];
     v_hive_idx INTEGER;
+    v_hive_code TEXT;
+    v_harvest_id UUID;
+    v_honey_batches_exists BOOLEAN := FALSE;
+    v_batch_cols TEXT[];
+    v_batch_vals TEXT[];
 
     v_year INTEGER;
     v_total_kg NUMERIC;
@@ -57,6 +62,14 @@ BEGIN
         RETURN;
     END IF;
 
+    SELECT EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND table_name = 'honey_batches'
+    )
+    INTO v_honey_batches_exists;
+
     SELECT id
     INTO v_farmer_id
     FROM public.farmers
@@ -77,6 +90,13 @@ BEGIN
         RETURNING id INTO v_farmer_id;
     END IF;
 
+    UPDATE public.farmers
+    SET
+        user_id = v_user_id,
+        name = 'Timothy Nduva',
+        location_name = COALESCE(location_name, 'Kibwezi')
+    WHERE id = v_farmer_id;
+
     SELECT id
     INTO v_apiary_id
     FROM public.apiaries
@@ -96,6 +116,7 @@ BEGIN
     IF v_apiary_id IS NULL THEN
         INSERT INTO public.apiaries (
             user_id,
+            farmer_id,
             name,
             location_name,
             apiary_type,
@@ -103,6 +124,7 @@ BEGIN
             status
         ) VALUES (
             v_user_id,
+            v_farmer_id,
             'Kibwezi Main Apiary',
             'Kibwezi',
             'Permanent',
@@ -111,6 +133,14 @@ BEGIN
         )
         RETURNING id INTO v_apiary_id;
     END IF;
+
+    UPDATE public.apiaries
+    SET
+        user_id = v_user_id,
+        farmer_id = v_farmer_id,
+        name = 'Kibwezi Main Apiary',
+        location_name = COALESCE(location_name, 'Kibwezi')
+    WHERE id = v_apiary_id;
 
     SELECT count(*)
     INTO v_hive_count
@@ -122,6 +152,7 @@ BEGIN
             hive_code,
             apiary_id,
             user_id,
+            farmer_id,
             status,
             health_status,
             hive_type
@@ -130,11 +161,19 @@ BEGIN
             'KBZ-' || to_char(v_hive_count + seq, 'FM000'),
             v_apiary_id,
             v_user_id,
+            v_farmer_id,
             'ACTIVE',
             'Good',
             'Langstroth'
         FROM generate_series(1, v_target_hives - v_hive_count) AS seq;
     END IF;
+
+    UPDATE public.hives
+    SET
+        user_id = v_user_id,
+        apiary_id = v_apiary_id,
+        farmer_id = v_farmer_id
+    WHERE apiary_id = v_apiary_id;
 
     SELECT
         array_agg(id ORDER BY hive_code),
@@ -152,6 +191,26 @@ BEGIN
     WHERE user_id = v_user_id
       AND harvest_date >= DATE '2020-01-01'
       AND harvest_date < DATE '2027-01-01';
+
+    IF v_honey_batches_exists
+       AND EXISTS (
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND table_name = 'honey_batches'
+              AND column_name = 'batch_code'
+       ) THEN
+        EXECUTE $delete_batches$
+            DELETE FROM public.honey_batches
+            WHERE batch_code LIKE 'BY-2020%'
+               OR batch_code LIKE 'BY-2021%'
+               OR batch_code LIKE 'BY-2022%'
+               OR batch_code LIKE 'BY-2023%'
+               OR batch_code LIKE 'BY-2024%'
+               OR batch_code LIKE 'BY-2025%'
+               OR batch_code LIKE 'BY-2026%'
+        $delete_batches$;
+    END IF;
 
     FOR v_year, v_total_kg, v_start_date, v_end_date, v_honey_type, v_nectar_source, v_color_grade IN
         SELECT *
@@ -192,11 +251,12 @@ BEGIN
             ELSE
                 v_hive_idx := ((v_year - 2020) * 31 + (v_batch_seq - 1)) % array_length(v_hive_ids, 1) + 1;
             END IF;
+            v_hive_code := v_hive_codes[v_hive_idx];
 
             v_batch_code := format(
                 'BY-%s-%s',
                 to_char(v_batch_date, 'YYYYMMDD'),
-                right(upper(regexp_replace(v_hive_codes[v_hive_idx], '[^A-Z0-9]', '', 'g')), 4)
+                right(upper(regexp_replace(v_hive_code, '[^A-Z0-9]', '', 'g')), 4)
             );
 
             v_batch_id := format(
@@ -248,7 +308,155 @@ BEGIN
                 17.5,
                 v_color_grade,
                 v_farmer_id
-            );
+            )
+            RETURNING id INTO v_harvest_id;
+
+            IF v_honey_batches_exists THEN
+                v_batch_cols := ARRAY[]::TEXT[];
+                v_batch_vals := ARRAY[]::TEXT[];
+
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'batch_code'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'batch_code');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_batch_code));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'harvest_id'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'harvest_id');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_harvest_id));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'hive_id'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'hive_id');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_hive_ids[v_hive_idx]));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'apiary_id'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'apiary_id');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_apiary_id));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'farmer_id'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'farmer_id');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_farmer_id));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'user_id'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'user_id');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_user_id));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'harvest_date'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'harvest_date');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_batch_date));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'honey_type'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'honey_type');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_honey_type));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'quantity_kg'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'quantity_kg');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_quantity));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'processing_method'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'processing_method');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable('Cold Extraction'));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'farmer_name'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'farmer_name');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable('Timothy Nduva'));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'beekeeper_name'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'beekeeper_name');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable('Timothy Nduva'));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'beekeeper_id'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'beekeeper_id');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_farmer_id::TEXT));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'apiary_name'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'apiary_name');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable('Kibwezi Main Apiary'));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'hive_code'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'hive_code');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_hive_code));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'quality_grade'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'quality_grade');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable('GRADE A'));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'moisture_content'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'moisture_content');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(17.5));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'color_grade'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'color_grade');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable(v_color_grade));
+                END IF;
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'status'
+                ) THEN
+                    v_batch_cols := array_append(v_batch_cols, 'status');
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable('ready'));
+                END IF;
+
+                IF array_length(v_batch_cols, 1) IS NOT NULL THEN
+                    EXECUTE format(
+                        'INSERT INTO public.honey_batches (%s) VALUES (%s)',
+                        array_to_string(v_batch_cols, ', '),
+                        array_to_string(v_batch_vals, ', ')
+                    );
+                END IF;
+            END IF;
         END LOOP;
     END LOOP;
 END $$;

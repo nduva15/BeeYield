@@ -3,6 +3,14 @@ import { CalendarDays, ChevronRight, FlaskConical, Leaf, Search, Settings, Spark
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
 import {
+    type BroodMode,
+    type ColonyStrength,
+    type HygieneProfile,
+    type ReinvasionPressure,
+    type StartMode,
+    simulateVarroaModel,
+} from '@/lib/varroaModel';
+import {
     Area,
     AreaChart,
     CartesianGrid,
@@ -13,10 +21,6 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-
-type StartMode = 'observed' | 'default';
-type ColonyStrength = 'Weak' | 'Medium' | 'Strong';
-type BroodMode = 'Seasonal (auto)' | 'Manual (advanced)' | 'Broodless';
 
 const pageClass = cn(glass.page, 'space-y-4 pb-10');
 const shellClass = 'mx-auto max-w-[1120px] space-y-5';
@@ -51,47 +55,6 @@ const formatDate = (value: string) => {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return value;
     return date.toLocaleDateString('en-GB');
-};
-
-const buildSimulationData = (initialMiteCount: number, simulationDays: number, adultBeePopulation: number) => {
-    const steps = 12;
-
-    return Array.from({ length: steps }, (_, index) => {
-        const progress = index / (steps - 1);
-        const day = Math.round(progress * simulationDays);
-        const growth = Math.exp(progress * 4.25);
-        const phoretic = Math.round(initialMiteCount * growth);
-        const dailyMiteFall = Math.max(1, Math.round(phoretic / 180));
-        const cumulativeMiteFall = Math.round(dailyMiteFall * (day + 1) * 0.42);
-        const population = Math.round(adultBeePopulation * (0.96 + (progress * 0.18)));
-        const brood = Math.round(164246 * (1.02 - progress * 0.42 + (Math.sin(progress * 6) * 0.05)));
-        const mitesInBrood = Math.round(phoretic * (0.18 + progress * 0.35));
-        const broodlessPhoretic = Math.round(phoretic * (0.42 + progress * 0.16));
-        const infectionPer100 = Number(((phoretic / Math.max(population, 1)) * 100).toFixed(1));
-        const scenarioRisk = Math.round(50000 + progress ** 4 * 520000);
-        const adultBees = Math.round(population * (0.85 + progress * 0.08));
-        const allBrood = Math.round(brood * 1.9);
-        const cappedBrood = Math.round(brood * 1.35);
-        const alcoholWash = Math.round(phoretic / 60);
-
-        return {
-            day,
-            dayLabel: `${day}`,
-            population,
-            phoretic,
-            dailyMiteFall,
-            cumulativeMiteFall,
-            brood,
-            mitesInBrood,
-            broodlessPhoretic,
-            infectionPer100,
-            scenarioRisk,
-            adultBees,
-            allBrood,
-            cappedBrood,
-            alcoholWash,
-        };
-    });
 };
 
 const StatTile = ({ label, value }: { label: string; value: string }) => (
