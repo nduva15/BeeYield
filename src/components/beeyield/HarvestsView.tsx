@@ -105,17 +105,46 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     const { data: harvests = [], isLoading } = useHarvests();
     const { data: batches = [], isLoading: isBatchesLoading } = useBatches();
 
-    // Enrich batches with Hive info from harvests
+    const harvestsByBatchCode = React.useMemo(() => {
+        const entries = harvests
+            .filter((harvest: any) => Boolean(harvest.batch_code))
+            .map((harvest: any) => [String(harvest.batch_code), harvest] as const);
+        return new Map(entries);
+    }, [harvests]);
+
     const enrichedBatches = React.useMemo(() => {
-        return batches.map(b => {
-            const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
+        return batches.map((batch: any) => {
+            const linkedHarvest = harvestsByBatchCode.get(String(batch.batch_code || ''));
+            const linkedBatchHarvest = batch.harvest || {};
+            const linkedHive = batch.hive || linkedBatchHarvest.hive || linkedHarvest?.hive;
+            const resolvedHarvestDate = batch.harvest_date || linkedBatchHarvest.harvest_date || linkedHarvest?.harvest_date;
+            const rawGrade = batch.quality_grade || batch.color_grade || linkedBatchHarvest.color_grade || linkedHarvest?.color_grade || 'A';
+            const normalizedGrade = String(rawGrade)
+                .replace(/^GRADE\s+/i, '')
+                .trim()
+                .toUpperCase() || 'A';
+
             return {
-                ...b,
-                hive_code: h?.hive?.hive_code || 'N/A',
-                harvest_year: h?.harvest_date ? new Date(h.harvest_date).getFullYear().toString() : (b.harvest_date ? new Date(b.harvest_date).getFullYear().toString() : 'all')
+                ...batch,
+                hive_code: linkedHive?.hive_code || batch.hive_code || linkedHarvest?.hive_code || 'N/A',
+                hive_id: batch.hive?.id || linkedBatchHarvest.hive_id || linkedHarvest?.hive_id || linkedHarvest?.hive?.id || '',
+                apiary_id: batch.apiary?.id || linkedBatchHarvest.apiary_id || linkedHarvest?.apiary_id || linkedHarvest?.apiary?.id || '',
+                harvest_date: resolvedHarvestDate || '',
+                harvest_year: resolvedHarvestDate ? new Date(resolvedHarvestDate).getFullYear().toString() : 'all',
+                quality_grade: normalizedGrade,
+                quality_grade_label: `GRADE ${normalizedGrade}`,
+                block_hash: batch.block_hash || batch.blockchain_status?.block_hash || linkedBatchHarvest.blockchain_hash || linkedHarvest?.blockchain_hash || '',
             };
         });
-    }, [batches, harvests]);
+    }, [batches, harvestsByBatchCode]);
+
+    const visibleBatches = React.useMemo(() => {
+        return enrichedBatches
+            .filter((batch: any) => batchYearFilter === 'all' || batch.harvest_year === batchYearFilter)
+            .filter((batch: any) => !filterApiaryId || filterApiaryId === 'all' || batch.apiary_id === filterApiaryId)
+            .filter((batch: any) => !filterHiveId || filterHiveId === 'all' || batch.hive_id === filterHiveId);
+    }, [enrichedBatches, batchYearFilter, filterApiaryId, filterHiveId]);
+
     const { mutate: createHarvest, isPending: isCreating } = useCreateHarvest();
     const { data: apiaries = [] } = useApiaries();
     const { data: hives = [] } = useHives(filterApiaryId || formApiaryId || undefined);
@@ -130,7 +159,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
     }, [filterApiaryId, setSelectedApiaryId]);
 
     const filteredHives = React.useMemo(() => {
-        if (!filterApiaryId) return hives;
+        if (!filterApiaryId || filterApiaryId === 'all') return hives;
         return hives.filter((h: any) => (h.apiary_id || h.apiary?.id) === filterApiaryId);
     }, [hives, filterApiaryId]);
 
@@ -601,33 +630,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                             <tbody className="divide-y divide-[#F4D03F]/5">
                                 {isBatchesLoading ? (
                                     <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">Verifying records...</td></tr>
-                                ) : enrichedBatches
-                                    .filter(b => batchYearFilter === 'all' || b.harvest_year === batchYearFilter)
-                                    .filter(b => {
-                                        if (!filterApiaryId || filterApiaryId === 'all') return true;
-                                        const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
-                                        return (h as any)?.apiary_id === filterApiaryId || (h as any)?.apiary?.id === filterApiaryId;
-                                    })
-                                    .filter(b => {
-                                        if (!filterHiveId || filterHiveId === 'all') return true;
-                                        const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
-                                        return h?.hive_id === filterHiveId || (h as any)?.hive?.id === filterHiveId;
-                                    })
-                                    .length === 0 ? (
+                                ) : visibleBatches.length === 0 ? (
                                     <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">No traceability records found for this selection.</td></tr>
-                                ) : enrichedBatches
-                                    .filter(b => batchYearFilter === 'all' || b.harvest_year === batchYearFilter)
-                                    .filter(b => {
-                                        if (!filterApiaryId || filterApiaryId === 'all') return true;
-                                        const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
-                                        return (h as any)?.apiary_id === filterApiaryId || (h as any)?.apiary?.id === filterApiaryId;
-                                    })
-                                    .filter(b => {
-                                        if (!filterHiveId || filterHiveId === 'all') return true;
-                                        const h = harvests.find((hv: any) => hv.batch_code === b.batch_code);
-                                        return h?.hive_id === filterHiveId || (h as any)?.hive?.id === filterHiveId;
-                                    })
-                                    .map((batch) => (
+                                ) : visibleBatches.map((batch: any) => (
                                     <tr key={batch.id} className="hover:bg-white/50 transition-colors group">
                                         <td className="px-6 py-4">
                                             <span className="text-[11px] font-black text-[#1A1A1A] tabular-nums font-mono text-primary/80 uppercase">
@@ -641,7 +646,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="text-[10px] font-bold text-gray-500 tabular-nums">
-                                                {format(new Date(batch.harvest_date), 'MMM dd, yyyy')}
+                                                {batch.harvest_date ? format(new Date(batch.harvest_date), 'MMM dd, yyyy') : '—'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-[10px] font-semibold text-gray-600">
@@ -657,14 +662,14 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                 "border-none text-[9px] font-black px-2",
                                                 batch.quality_grade === 'A' ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-[#F4D03F]/10 text-[#F4D03F]"
                                             )}>
-                                                GRADE {batch.quality_grade}
+                                                {batch.quality_grade_label}
                                             </Badge>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
                                                 <code className="text-[8px] font-mono text-gray-400 opacity-60">
-                                                    {(batch.block_hash || '0x...').slice(0, 16)}...
+                                                    {batch.block_hash ? `${batch.block_hash.slice(0, 16)}...` : '0x...'}
                                                 </code>
                                             </div>
                                         </td>
