@@ -95,9 +95,9 @@ const buildSimulationData = (initialMiteCount: number, simulationDays: number, a
 };
 
 const StatTile = ({ label, value }: { label: string; value: string }) => (
-    <div className="rounded-[12px] border border-[#e6edf5] bg-[#fbfcfe] px-4 py-3">
-        <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-[#7d8ca2]">{label}</div>
-        <div className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-[#1a2436]">{value}</div>
+    <div className="rounded-[12px] border border-[#f4d03f]/20 bg-[#fff9f0] px-4 py-3 shadow-sm">
+        <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-[#6b7280]">{label}</div>
+        <div className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-[#1a1a1a]">{value}</div>
     </div>
 );
 
@@ -117,13 +117,13 @@ const MiniChartCard = ({
     secondaryColor?: string;
 }) => (
     <div className={cn(softCardClass, 'p-3')}>
-        <div className="mb-2 text-[12px] font-semibold text-[#1a2436]">{title}</div>
+        <div className="mb-2 text-[12px] font-semibold text-[#1a1a1a]">{title}</div>
         <div className="h-[160px]">
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-                    <CartesianGrid stroke="#edf1f6" />
-                    <XAxis dataKey="dayLabel" tick={{ fontSize: 10, fill: '#7d8ca2' }} tickLine={false} axisLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: '#7d8ca2' }} tickLine={false} axisLine={false} />
+                    <CartesianGrid stroke="#f2e9cf" />
+                    <XAxis dataKey="dayLabel" tick={{ fontSize: 10, fill: '#6b7280' }} tickLine={false} axisLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: '#6b7280' }} tickLine={false} axisLine={false} />
                     <Tooltip />
                     <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} dot={false} />
                     {secondaryKey && secondaryColor ? <Line type="monotone" dataKey={secondaryKey} stroke={secondaryColor} strokeWidth={2} dot={false} /> : null}
@@ -402,7 +402,7 @@ const VarroaView: React.FC = () => {
 
                         <div className={cn(softCardClass, 'p-4')}>
                             <div className="space-y-4">
-                                <h3 className="text-[14px] font-semibold text-[#182235]">Season overview</h3>
+                                <h3 className="text-[14px] font-semibold text-[#1a1a1a]">Season overview</h3>
                                 <div className="flex flex-wrap gap-2">
                                     <span className="rounded-[6px] bg-[#2ea7e0] px-3 py-2 text-[12px] font-medium text-white">Alcohol wash</span>
                                     <span className="rounded-[6px] bg-[#c92020] px-3 py-2 text-[12px] font-medium text-white">Mites x10</span>
@@ -413,10 +413,10 @@ const VarroaView: React.FC = () => {
                                 <div className="h-[360px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={simulationData} margin={{ top: 12, right: 12, left: 12, bottom: 0 }}>
-                                            <CartesianGrid stroke="#edf1f6" />
-                                            <XAxis dataKey="dayLabel" tick={{ fontSize: 11, fill: '#7d8ca2' }} tickLine={false} axisLine={false} />
-                                            <YAxis yAxisId="left" tick={{ fontSize: 11, fill: '#7d8ca2' }} tickLine={false} axisLine={false} />
-                                            <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: '#7d8ca2' }} tickLine={false} axisLine={false} />
+                                            <CartesianGrid stroke="#f2e9cf" />
+                                            <XAxis dataKey="dayLabel" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
+                                            <YAxis yAxisId="left" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
+                                            <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
                                             <Tooltip />
                                             <Line yAxisId="right" type="monotone" dataKey="alcoholWash" stroke="#2ea7e0" strokeWidth={2.5} dot={false} />
                                             <Line yAxisId="right" type="monotone" dataKey="phoretic" stroke="#d81f26" strokeWidth={2.5} dot={false} strokeDasharray="3 3" />
@@ -431,13 +431,13 @@ const VarroaView: React.FC = () => {
 
                         <div className={cn(softCardClass, 'p-4')}>
                             <div className="space-y-3">
-                                <h3 className="text-[14px] font-semibold text-[#182235]">Scenario comparison</h3>
+                                <h3 className="text-[14px] font-semibold text-[#1a1a1a]">Scenario comparison</h3>
                                 <div className="h-[220px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <AreaChart data={simulationData} margin={{ top: 8, right: 10, left: 0, bottom: 0 }}>
-                                            <CartesianGrid stroke="#edf1f6" />
-                                            <XAxis dataKey="dayLabel" tick={{ fontSize: 11, fill: '#7d8ca2' }} tickLine={false} axisLine={false} />
-                                            <YAxis tick={{ fontSize: 11, fill: '#7d8ca2' }} tickLine={false} axisLine={false} />
+                                            <CartesianGrid stroke="#f2e9cf" />
+                                            <XAxis dataKey="dayLabel" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
+                                            <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
                                             <Tooltip />
                                             <Area type="monotone" dataKey="scenarioRisk" stroke="#2f63e1" fill="#2f63e1" fillOpacity={0.12} strokeWidth={2.5} />
                                         </AreaChart>
@@ -479,9 +479,9 @@ const VarroaView: React.FC = () => {
                         </div>
 
                         <div className={cn(softCardClass, 'overflow-hidden')}>
-                            <div className="border-b border-[#e6edf5] px-4 py-3 text-[14px] font-semibold text-[#182235]">Recent days</div>
+                            <div className="border-b border-[#f4d03f]/20 px-4 py-3 text-[14px] font-semibold text-[#1a1a1a]">Recent days</div>
                             <table className="w-full text-left">
-                                <thead className="bg-[#fbfcfe] text-[11px] uppercase tracking-[0.05em] text-[#7d8ca2]">
+                                <thead className="bg-[#fff9f0] text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">
                                     <tr>
                                         <th className="px-4 py-3 font-medium">Day</th>
                                         <th className="px-4 py-3 font-medium">Total population</th>
@@ -489,9 +489,9 @@ const VarroaView: React.FC = () => {
                                         <th className="px-4 py-3 font-medium">Daily mite fall</th>
                                     </tr>
                                 </thead>
-                                <tbody className="text-[13px] text-[#24324a]">
+                                <tbody className="text-[13px] text-[#1f2937]">
                                     {recentRows.map((row) => (
-                                        <tr key={row.day} className="border-t border-[#eef2f7]">
+                                        <tr key={row.day} className="border-t border-[#f4d03f]/12">
                                             <td className="px-4 py-3">{row.day}</td>
                                             <td className="px-4 py-3">{row.totalPopulation}</td>
                                             <td className="px-4 py-3">{row.phoretic}</td>
@@ -507,7 +507,7 @@ const VarroaView: React.FC = () => {
                 <section className={cn(cardClass, 'p-5 md:p-6')}>
                     <div className="space-y-4">
                         <h2 className={titleClass}>What does this treatment really do?</h2>
-                        <p className="text-[13px] text-[#7d8ca2]">Choose the treatment to review its procedure, strengths, and limits.</p>
+                        <p className="text-[13px] text-[#6b7280]">Choose the treatment to review its procedure, strengths, and limits.</p>
                         <div className="grid gap-4 md:grid-cols-2">
                             <Field label="Choose treatment">
                                 <input value={treatmentType} onChange={(e) => setTreatmentType(e.target.value)} className={inputClass} />
@@ -518,16 +518,16 @@ const VarroaView: React.FC = () => {
                         </div>
                         <div className="grid gap-3 md:grid-cols-3">
                             <div className={cn(softCardClass, 'p-4')}>
-                                <div className="text-[12px] font-semibold text-[#182235]">What happens to Varroa</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#607086]">Strong contact effect on mites and faster phoretic suppression.</p>
+                                <div className="text-[12px] font-semibold text-[#1a1a1a]">What happens to Varroa</div>
+                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">Strong contact effect on mites and faster phoretic suppression.</p>
                             </div>
                             <div className={cn(softCardClass, 'p-4')}>
-                                <div className="text-[12px] font-semibold text-[#182235]">What happens to bees</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#607086]">Short acting; requires correct dose and colony timing to reduce stress.</p>
+                                <div className="text-[12px] font-semibold text-[#1a1a1a]">What happens to bees</div>
+                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">Short acting; requires correct dose and colony timing to reduce stress.</p>
                             </div>
                             <div className={cn(softCardClass, 'p-4')}>
-                                <div className="text-[12px] font-semibold text-[#182235]">What does NOT do</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#607086]">Does not prevent rebound if brood remains capped and reinvasion continues.</p>
+                                <div className="text-[12px] font-semibold text-[#1a1a1a]">What does NOT do</div>
+                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">Does not prevent rebound if brood remains capped and reinvasion continues.</p>
                             </div>
                         </div>
                     </div>
@@ -535,13 +535,13 @@ const VarroaView: React.FC = () => {
 
                 <section className={cn(cardClass, 'p-4 md:px-5 md:py-4')}>
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#607086]">
+                        <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#6b7280]">
                             <span className="rounded-full bg-[#fff4db] px-2 py-1 text-[#a06a00]">BeeHUB Plus</span>
                             <span>{formatDate(startDate)}</span>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                             <div className="relative min-w-[260px]">
-                                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]" />
+                                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
                                 <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={cn(inputClass, 'h-10 pl-9 text-[13px]')} />
                             </div>
                             <button type="button" className={chipClass}>{language}</button>
@@ -560,7 +560,10 @@ const VarroaView: React.FC = () => {
 
                 <section className={cn(cardClass, 'p-5 md:p-6')}>
                     <div className="space-y-4">
-                        <h2 className={titleClass}>Is the temperature favorable for treatment?</h2>
+                        <h2 className={cn(titleClass, 'flex items-center gap-2')}>
+                            <FlaskConical className="h-4 w-4 text-[#f59e0b]" />
+                            Is the temperature favorable for treatment?
+                        </h2>
                         <div className="grid gap-4 md:grid-cols-3">
                             <Field label="Treatment">
                                 <input value="Formic acid" readOnly className={inputClass} />
@@ -570,16 +573,22 @@ const VarroaView: React.FC = () => {
                             </Field>
                         </div>
                         <button type="button" onClick={() => setManualTemperature((value) => !value)} className={warningPillClass}>
-                            Use manual temperature
+                            {manualTemperature ? 'Use manual temperature' : 'Use weather-linked temperature'}
                         </button>
-                        <div className={okPillClass}>OK</div>
-                        <p className="text-[13px] text-[#607086]">Efficacy and safety depend on how fast the substance evaporates.</p>
+                        <div className={okPillClass}>
+                            <ThumbsUp className="h-4 w-4" />
+                            OK
+                        </div>
+                        <p className="text-[13px] text-[#6b7280]">Efficacy and safety depend on how fast the substance evaporates.</p>
                     </div>
                 </section>
 
                 <section className={cn(cardClass, 'p-5 md:p-6')}>
                     <div className="space-y-4">
-                        <h2 className={titleClass}>Does oxalic acid (OA) make sense?</h2>
+                        <h2 className={cn(titleClass, 'flex items-center gap-2')}>
+                            <Leaf className="h-4 w-4 text-[#84cc16]" />
+                            Does oxalic acid (OA) make sense?
+                        </h2>
                         <div className="grid gap-4 md:grid-cols-2">
                             <Field label="Temperature (C)">
                                 <input type="number" value={oaTemperature} onChange={(e) => setOaTemperature(Number(e.target.value) || 0)} className={inputClass} />
@@ -588,8 +597,11 @@ const VarroaView: React.FC = () => {
                         <button type="button" onClick={() => setHasBrood((value) => !value)} className={chipClass}>
                             Is there brood in the hive?
                         </button>
-                        <div className={okPillClass}>{hasBrood ? 'YES' : 'NO'}</div>
-                        <p className="text-[14px] font-medium text-[#24324a]">OA is very effective against phoretic mites.</p>
+                        <div className={okPillClass}>
+                            <ThumbsUp className="h-4 w-4" />
+                            {hasBrood ? 'YES' : 'NO'}
+                        </div>
+                        <p className="text-[14px] font-medium text-[#1f2937]">OA is very effective against phoretic mites.</p>
                         <p className="text-[13px] text-[#7d8ca2]">This tool is not veterinary advice.</p>
                     </div>
                 </section>
