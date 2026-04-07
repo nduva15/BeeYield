@@ -17,6 +17,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import SEO from "@/components/SEO";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { beePollinationData } from "@/data/beePollinationData";
 
 const PollinationServices = () => {
@@ -182,21 +183,19 @@ const PollinationServices = () => {
                             transition={{ duration: 1, delay: 0.3 }}
                             className="relative"
                         >
-                            <div className="relative aspect-square rounded-[3rem] bg-neutral-900 overflow-hidden shadow-2xl group">
-                                <img
-                                    src="https://images.unsplash.com/photo-159742324403d-11424eb0429f?q=80&w=1000&auto=format&fit=crop"
-                                    alt="Sunflower Pollination"
-                                    className="w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
+                            <div className="relative">
+                                <YouTubeEmbed
+                                    title="BeeYield pollination overview"
+                                    loading="eager"
+                                    wrapperClassName="aspect-[4/5] md:aspect-[5/4] rounded-[3rem] border-neutral-900/10 bg-neutral-900 shadow-2xl"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent opacity-90" />
 
-                                {/* Floating Overlay Info */}
-                                <div className="absolute bottom-10 left-10 text-[#1A1A1A]">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] font-black text-[#1B9157]">Live data</span>
+                                <div className="pointer-events-none absolute inset-x-0 bottom-0 rounded-b-[3rem] bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent p-8 md:p-10">
+                                    <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 backdrop-blur-sm">
+                                        <div className="h-2 w-2 rounded-full bg-[#F4D03F]" />
+                                        <span className="text-[10px] font-black uppercase tracking-[0.24em] text-white/80">Featured video</span>
                                     </div>
-                                    <p className="text-2xl font-black tracking-tighter">Site: KIB-01</p>
+                                    <p className="text-2xl font-black tracking-tighter text-white">See BeeYield in action</p>
                                 </div>
                             </div>
 
@@ -287,28 +286,16 @@ const PollinationServices = () => {
 
                     <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                         {/* Swanson Farms Video */}
-                        <div className="group relative overflow-hidden rounded-[2.5rem] bg-neutral-100 shadow-premium aspect-video border border-neutral-100">
-                            <iframe
-                                className="absolute inset-0 w-full h-full border-0"
-                                src="https://www.youtube.com/embed/3n_bI6L_Dk8"
-                                title="Pollination Partnerships: Swanson Farms' Growth Story"
-                                loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
+                        <YouTubeEmbed
+                            title="Pollination Partnerships: BeeYield overview"
+                            wrapperClassName="aspect-video"
+                        />
 
                         {/* BeeYield Platform Video */}
-                        <div className="group relative overflow-hidden rounded-[2.5rem] bg-neutral-100 shadow-premium aspect-video border border-neutral-100">
-                            <iframe
-                                className="absolute inset-0 w-full h-full border-0"
-                                src="https://www.youtube.com/embed/Lq21C8u9m0o"
-                                title="BeeYield Pollination Insight Platform"
-                                loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
+                        <YouTubeEmbed
+                            title="BeeYield Pollination Insight Platform"
+                            wrapperClassName="aspect-video"
+                        />
                     </div>
                 </div>
             </section>

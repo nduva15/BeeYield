@@ -3,7 +3,6 @@
 
 export const routeMap: Record<string, () => Promise<any>> = {
     '/honey': () => import('@/pages/HoneyLanding'),
-    '/about': () => import('@/pages/About'),
     '/shop': () => import('@/pages/Shop'),
     '/contact': () => import('@/pages/Contact'),
     '/traceability': () => import('@/pages/Traceability'),
@@ -41,7 +40,7 @@ export function initPrefetch() {
     window.addEventListener('load', () => {
         setTimeout(() => {
             // Pre-warm the most likely first clicks
-            ['/', '/shop', '/about', '/contact'].forEach(path => {
+            ['/', '/shop', '/contact'].forEach(path => {
                 if (routeMap[path]) routeMap[path]().catch(() => { });
             });
         }, 2000);

@@ -37,7 +37,6 @@ import { Route as CareersImport } from './routes/careers'
 import { Route as BlogsImport } from './routes/blogs'
 import { Route as BeeyieldDashboardImport } from './routes/beeyield-dashboard'
 import { Route as AccountSettingsImport } from './routes/account-settings'
-import { Route as AboutImport } from './routes/about'
 import { Route as SplatImport } from './routes/$'
 import { Route as IndexImport } from './routes/index'
 import { Route as AdminIndexImport } from './routes/admin/index'
@@ -201,12 +200,6 @@ const AccountSettingsRoute = AccountSettingsImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AboutRoute = AboutImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const SplatRoute = SplatImport.update({
   id: '/$',
   path: '/$',
@@ -247,13 +240,6 @@ declare module '@tanstack/react-router' {
       path: '/$'
       fullPath: '/$'
       preLoaderRoute: typeof SplatImport
-      parentRoute: typeof rootRoute
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
     '/account-settings': {
@@ -460,7 +446,6 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/about': typeof AboutRoute
   '/account-settings': typeof AccountSettingsRoute
   '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
@@ -494,7 +479,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/about': typeof AboutRoute
   '/account-settings': typeof AccountSettingsRoute
   '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
@@ -529,7 +513,6 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/about': typeof AboutRoute
   '/account-settings': typeof AccountSettingsRoute
   '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
@@ -565,7 +548,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$'
-    | '/about'
     | '/account-settings'
     | '/beeyield-dashboard'
     | '/blogs'
@@ -598,7 +580,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$'
-    | '/about'
     | '/account-settings'
     | '/beeyield-dashboard'
     | '/blogs'
@@ -631,7 +612,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$'
-    | '/about'
     | '/account-settings'
     | '/beeyield-dashboard'
     | '/blogs'
@@ -666,7 +646,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
-  AboutRoute: typeof AboutRoute
   AccountSettingsRoute: typeof AccountSettingsRoute
   BeeyieldDashboardRoute: typeof BeeyieldDashboardRoute
   BlogsRoute: typeof BlogsRoute
@@ -700,7 +679,6 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
-  AboutRoute: AboutRoute,
   AccountSettingsRoute: AccountSettingsRoute,
   BeeyieldDashboardRoute: BeeyieldDashboardRoute,
   BlogsRoute: BlogsRoute,
@@ -743,7 +721,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/$",
-        "/about",
         "/account-settings",
         "/beeyield-dashboard",
         "/blogs",
@@ -779,9 +756,6 @@ export const routeTree = rootRoute
     },
     "/$": {
       "filePath": "$.tsx"
-    },
-    "/about": {
-      "filePath": "about.tsx"
     },
     "/account-settings": {
       "filePath": "account-settings.tsx"

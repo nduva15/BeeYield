@@ -42,10 +42,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const harvestsQuery = useHarvests();
     const batchesQuery = useBatches({ limit: 50 });
 
-    const apiaries = apiariesQuery.data || [];
-    const hives = hivesQuery.data || [];
-    const harvests = harvestsQuery.data || [];
-    const batches = batchesQuery.data || [];
+    const apiaries = React.useMemo(() => apiariesQuery.data ?? [], [apiariesQuery.data]);
+    const hives = React.useMemo(() => hivesQuery.data ?? [], [hivesQuery.data]);
+    const harvests = React.useMemo(() => harvestsQuery.data ?? [], [harvestsQuery.data]);
+    const batches = React.useMemo(() => batchesQuery.data ?? [], [batchesQuery.data]);
     const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
     const primaryApiary = apiaries.find((apiary) => apiary.id === selectedApiaryId) || apiaries[0] || null;
     const { data: weatherSummary, isLoading: isWeatherLoading } = useApiaryWeatherSummary(primaryApiary?.id);

@@ -446,6 +446,19 @@ export interface YieldForecastResponse {
         history_score: number;
         source_statuses: YieldForecastSourceStatus[];
     };
+    model?: {
+        name: string;
+        strategy: string;
+        disagreement_kg: number;
+        components: Array<{
+            key: string;
+            label: string;
+            value_kg: number;
+            weight: number;
+            detail: string;
+        }>;
+        rationale: string[];
+    };
     timeline: YieldForecastTimelinePoint[];
     drivers: Array<{
         label: string;

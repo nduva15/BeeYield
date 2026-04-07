@@ -241,7 +241,7 @@ async def _get_saved_label(label_id: str, user_id: str, token: Optional[str]) ->
     if not labels and settings.DEBUG:
         offline = _offline_get_label(label_id, user_id)
         if offline:
-            return offline
+            return _normalize_saved_label(offline)
     if not labels:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Label design not found")
     return _normalize_saved_label(labels[0])
@@ -318,7 +318,7 @@ async def create_label_design(
         print(f"[LABELS] Create failed: {error_detail}")
         if settings.DEBUG:
             offline = _offline_upsert_label(label_id or str(uuid4()), user_id, design_data)
-            return offline
+            return _normalize_saved_label(offline)
         raise HTTPException(status_code=500, detail=str(error_detail))
 
     data = result.get("data")

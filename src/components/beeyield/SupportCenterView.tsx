@@ -55,6 +55,12 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange: _onT
     }, []);
 
     const normalizeStatus = React.useCallback((s: any) => String(s || '').toLowerCase().replace(/\s+/g, '_'), []);
+    const normalizePriority = React.useCallback((value?: string) => {
+        const raw = String(value || '').trim().toLowerCase();
+        if (raw === 'low') return 'Low';
+        if (raw === 'high') return 'High';
+        return 'Medium';
+    }, []);
 
     const stats = {
         total: supportRequests.length,
@@ -128,7 +134,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange: _onT
                 category: formData.category,
                 subject: formData.subject,
                 description: formData.description,
-                priority: formData.priority as any,
+                priority: normalizePriority(formData.priority),
             });
             if (data) {
                 setSupportRequests((prev) =>

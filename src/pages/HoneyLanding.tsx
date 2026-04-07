@@ -506,7 +506,7 @@ const HeritageSection = () => {
               </p>
               <div className="pt-4">
                 <Button size="lg" variant="link" className="text-beeyield-green font-black p-0 h-auto gap-2 text-xs group" asChild>
-                  <Link to="/about">
+                  <Link to="/ourstory">
                     Learn Our Story <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>

@@ -5,7 +5,8 @@ ALTER TABLE public.calculator_logs
     ADD COLUMN IF NOT EXISTS calculation_type TEXT,
     ADD COLUMN IF NOT EXISTS sub_type TEXT,
     ADD COLUMN IF NOT EXISTS inputs JSONB,
-    ADD COLUMN IF NOT EXISTS results JSONB;
+    ADD COLUMN IF NOT EXISTS results JSONB,
+    ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
 UPDATE public.calculator_logs
 SET
@@ -38,10 +39,21 @@ ALTER TABLE public.calculator_logs
     ALTER COLUMN calculation_type SET DEFAULT 'health',
     ALTER COLUMN sub_type SET DEFAULT 'snapshot',
     ALTER COLUMN inputs SET DEFAULT '{}'::jsonb,
-    ALTER COLUMN results SET DEFAULT '{}'::jsonb;
+    ALTER COLUMN results SET DEFAULT '{}'::jsonb,
+    ALTER COLUMN updated_at SET DEFAULT NOW();
+
+UPDATE public.calculator_logs
+SET updated_at = COALESCE(updated_at, created_at, NOW())
+WHERE updated_at IS NULL;
 
 CREATE INDEX IF NOT EXISTS idx_calculator_logs_user_created_at
     ON public.calculator_logs (user_id, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_calculator_logs_user_calculation_type
     ON public.calculator_logs (user_id, calculation_type);
+
+DROP TRIGGER IF EXISTS update_calculator_logs_updated_at ON public.calculator_logs;
+CREATE TRIGGER update_calculator_logs_updated_at
+    BEFORE UPDATE ON public.calculator_logs
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_updated_at_column();

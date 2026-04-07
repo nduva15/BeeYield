@@ -31,7 +31,6 @@ import '@/index.css'
 // All pages are lazy-loaded to keep the initial bundle small
 const PollinationServices = lazy(() => import('@/pages/PollinationServices'))
 const Honey = lazy(() => import('@/pages/HoneyLanding'))
-const About = lazy(() => import('@/pages/About'))
 const Shop = lazy(() => import('@/pages/Shop'))
 const Contact = lazy(() => import('@/pages/Contact'))
 const Traceability = lazy(() => import('@/pages/Traceability'))
@@ -131,7 +130,6 @@ root.render(
                                                 <Suspense fallback={<PageLoader />}>
                                                     <Routes>
                                                         <Route path="/" element={<PollinationServices />} />
-                                                        <Route path="/about" element={<About />} />
                                                         <Route path="/contact" element={<Contact />} />
                                                         <Route path="/honey" element={<Honey />} />
                                                         <Route path="/shop" element={<Shop />} />

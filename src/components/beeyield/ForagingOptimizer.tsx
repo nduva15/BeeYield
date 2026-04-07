@@ -61,8 +61,8 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
     const { data: harvestsData, isLoading: harvestsLoading } = useHarvests();
     const { data: potentialData, isLoading: potentialLoading } = useFlightPotential(selectedApiaryId || undefined);
 
-    const apiaries = apiariesData || [];
-    const harvests = harvestsData || [];
+    const apiaries = React.useMemo(() => apiariesData ?? [], [apiariesData]);
+    const harvests = React.useMemo(() => harvestsData ?? [], [harvestsData]);
     const loading = apiariesLoading || harvestsLoading || potentialLoading;
 
     React.useEffect(() => {
@@ -169,7 +169,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
         { hour: '16:00', activity: Math.max(24, forageInsight.score - 26), flight: Math.max(20, forageInsight.score - 18) },
     ]), [forageInsight.score]);
 
-    const commitLocationShift = React.useCallback(() => {
+    const commitLocationShift = () => {
         setShiftRecentlyCommitted(true);
         if (shiftTimeoutRef.current) window.clearTimeout(shiftTimeoutRef.current);
         shiftTimeoutRef.current = window.setTimeout(() => setShiftRecentlyCommitted(false), 10_000);
@@ -190,7 +190,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                 toast.error('Could not commit shift');
             }
         })();
-    }, [forageInsight.score, selectedApiary?.name, selectedApiaryId]);
+    };
 
     React.useEffect(() => () => {
         if (shiftTimeoutRef.current) window.clearTimeout(shiftTimeoutRef.current);

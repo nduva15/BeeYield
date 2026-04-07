@@ -1,46 +1,40 @@
 import { useState } from "react";
-import { 
-  Globe, 
-  Award, 
-  Users, 
-  Code, 
-  Briefcase, 
-  Mail, 
-  ExternalLink, 
-  Cpu, 
-  Droplet, 
-  ShieldCheck, 
-  Terminal,
-  Layers,
-  Sparkles,
-  X,
-  Target,
-  ArrowRight,
-  Shield,
-  Zap,
-  BookOpen,
-  Hexagon,
-  Heart,
-  CheckCircle2,
+import {
   Activity,
-  Star,
-  Trophy,
-  Leaf,
-  LayoutDashboard,
-  HelpCircle,
-  Lock as LockIcon,
-  Phone
+  ArrowRight,
+  Briefcase,
+  CheckCircle2,
+  Cpu,
+  Globe,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Users,
+  X,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { useToast } from "@/hooks/use-toast";
+import { submitContactForm } from "@/services/contactService";
+
+import BEEYIELD_LOGO from "@/assets/beeyield-logo.png";
+import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 
 const LinkedinIcon = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className={className}
   >
     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
@@ -48,605 +42,697 @@ const LinkedinIcon = ({ className }: { className?: string }) => (
     <circle cx="4" cy="4" r="2" />
   </svg>
 );
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { motion, AnimatePresence } from "framer-motion";
-import { submitContactForm } from "@/services/contactService";
-import { useToast } from "@/hooks/use-toast";
-import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
-import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
-import LOGO from "@/assets/Logo.png";
+type PortraitStyle = "photo" | "logo";
 
 interface TeamMember {
   name: string;
   role: string;
+  department: string;
   description: string;
   image: string;
+  portraitStyle: PortraitStyle;
   linkedin: string;
   email: string;
   achievements: string[];
-  department: string;
+}
+
+const founders: TeamMember[] = [
+  {
+    name: "Timothy Nduva",
+    role: "CEO & Founder",
+    department: "Directorate",
+    description:
+      "Timothy founded BeeYield at the family farm in Kibwezi during the 2020 pandemic. He leads the team building practical tools for beekeepers and a clear traceability record for every harvest.",
+    image: TIMOTHY_PHOTO,
+    portraitStyle: "photo",
+    linkedin: "https://linkedin.com/in/timothynduva",
+    email: "info@beeyield.com",
+    achievements: [
+      "HoneyChain architecture",
+      "Field-led product direction",
+      "Traceability leadership",
+    ],
+  },
+  {
+    name: "Carole Nduva",
+    role: "Technical Director",
+    department: "Operations",
+    description:
+      "Carole leads operational planning across hive deployments, partner coordination, and the day-to-day systems that keep BeeYield practical for working apiaries.",
+    image: BEEYIELD_LOGO,
+    portraitStyle: "logo",
+    linkedin: "#",
+    email: "info@beeyield.com",
+    achievements: [
+      "Operational scale-up",
+      "Partner delivery workflows",
+      "Field logistics planning",
+    ],
+  },
+  {
+    name: "Agatha Nduva",
+    role: "Technical Director",
+    department: "Engineering",
+    description:
+      "Agatha leads engineering work for data collection, reporting, and product reliability so beekeepers can trust every signal and every record.",
+    image: BEEYIELD_LOGO,
+    portraitStyle: "logo",
+    linkedin: "#",
+    email: "info@beeyield.com",
+    achievements: [
+      "Product engineering",
+      "Data reliability",
+      "Security and privacy",
+    ],
+  },
+];
+
+const specialists: TeamMember[] = [
+  {
+    name: "Rose Ndinda",
+    role: "VP Technology",
+    department: "Engineering",
+    description:
+      "Rose focuses on resilient web and mobile experiences, making BeeYield's telemetry, dashboards, and decision tools easier to use in the field.",
+    image: BEEYIELD_LOGO,
+    portraitStyle: "logo",
+    linkedin: "#",
+    email: "info@beeyield.com",
+    achievements: [
+      "Dashboard systems",
+      "Mobile experience",
+      "UI delivery standards",
+    ],
+  },
+  {
+    name: "Nicholas Nduva",
+    role: "Board Member",
+    department: "Governance",
+    description:
+      "Nicholas provides governance oversight, helping BeeYield grow with sound decision-making, compliance discipline, and long-term stewardship.",
+    image: BEEYIELD_LOGO,
+    portraitStyle: "logo",
+    linkedin: "#",
+    email: "info@beeyield.com",
+    achievements: [
+      "Governance oversight",
+      "Sustainability roadmap",
+      "Legal and board support",
+    ],
+  },
+];
+
+const teamValues = [
+  {
+    title: "Field-first product thinking",
+    description:
+      "We build for real apiaries, not presentation decks. Every workflow has to make life easier for the beekeeper in the field.",
+    icon: <Users className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: "Reliable data",
+    description:
+      "Our team focuses on trustworthy telemetry, clear reporting, and records that support decisions from hive to harvest.",
+    icon: <Cpu className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: "Healthy hives",
+    description:
+      "The work behind BeeYield is organized around practical monitoring, early response, and better outcomes for bee colonies.",
+    icon: <Activity className="h-8 w-8 text-primary" />,
+  },
+  {
+    title: "Transparent stewardship",
+    description:
+      "We care about traceability, operational discipline, and long-term environmental responsibility as part of the product.",
+    icon: <ShieldCheck className="h-8 w-8 text-primary" />,
+  },
+];
+
+const mediaStandards = [
+  "Approved photography is used where available.",
+  "AI-generated portraits have been replaced with BeeYield-branded logo media.",
+  "Team visuals now follow the same warm palette and clean tone as the disease page.",
+];
+
+const teamStats = [
+  { label: "Leadership roles", value: "5" },
+  { label: "Core focus areas", value: "4" },
+  { label: "Operating base", value: "Kibwezi" },
+];
+
+function MemberPortrait({
+  member,
+  large = false,
+}: {
+  member: TeamMember;
+  large?: boolean;
+}) {
+  if (member.portraitStyle === "photo") {
+    return (
+      <img
+        src={member.image}
+        alt={member.name}
+        className="h-full w-full object-cover"
+      />
+    );
+  }
+
+  return (
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-gradient-to-br from-[#164a33] via-[#1b9157] to-[#f4d03f]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.28),transparent_42%)]" />
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/20 to-transparent" />
+      <div className="absolute left-6 top-6 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/90 backdrop-blur">
+        BeeYield
+      </div>
+      <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-white/15 bg-black/15 px-4 py-3 text-white backdrop-blur-sm">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/70">
+          Branded team media
+        </p>
+        <p className="mt-1 text-sm font-semibold">{member.name}</p>
+      </div>
+      <div className="relative flex flex-col items-center gap-4 text-center">
+        <div className="rounded-[2rem] border border-white/20 bg-white/12 p-5 shadow-2xl backdrop-blur-md">
+          <img
+            src={BEEYIELD_LOGO}
+            alt="BeeYield logo"
+            className={large ? "h-28 w-28 object-contain" : "h-20 w-20 object-contain"}
+          />
+        </div>
+        <div className="px-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-white/80">
+            Approved brand placeholder
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MemberCard({
+  member,
+  onSelect,
+}: {
+  member: TeamMember;
+  onSelect: (member: TeamMember) => void;
+}) {
+  return (
+    <Card className="group overflow-hidden border-none bg-muted/40 shadow-lg transition-shadow hover:shadow-xl">
+      <button
+        type="button"
+        onClick={() => onSelect(member)}
+        className="block w-full text-left"
+      >
+        <div className="relative aspect-[4/5] overflow-hidden">
+          <MemberPortrait member={member} />
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent p-6 text-white">
+            <Badge className="mb-3 bg-white/12 text-white hover:bg-white/12">
+              {member.department}
+            </Badge>
+            <h3 className="mb-1 text-2xl font-bold tracking-tight text-white">
+              {member.name}
+            </h3>
+            <p className="text-sm text-white/85">{member.role}</p>
+          </div>
+        </div>
+        <CardContent className="space-y-4 p-6">
+          <p className="line-clamp-4 text-sm leading-relaxed text-muted-foreground">
+            {member.description}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {member.achievements.slice(0, 2).map((item) => (
+              <span
+                key={item}
+                className="rounded-full bg-background px-3 py-1 text-xs font-medium text-foreground shadow-sm"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 text-sm font-medium text-primary">
+            View profile <ArrowRight className="h-4 w-4" />
+          </div>
+        </CardContent>
+      </button>
+    </Card>
+  );
 }
 
 const Team = () => {
-    const { toast } = useToast();
-    const [loading, setLoading] = useState(false);
-    const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-    const [formData, setFormData] = useState({
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "+254",
+    message: "",
+  });
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const nameParts = formData.name.trim().split(/\s+/);
+      const first_name = nameParts[0] || "";
+      const last_name =
+        nameParts.length > 1 ? nameParts.slice(1).join(" ") : "Unknown";
+
+      const response = await submitContactForm({
+        first_name,
+        last_name,
+        email: formData.email,
+        phone: formData.phone,
+        city: "Nairobi",
+        state: "Nairobi",
+        country: "Kenya",
+        inquiry_type: "general",
+        topic: "Team Inquiry",
+        message: formData.message,
+      });
+
+      toast({
+        title: "Message sent",
+        description:
+          response?.message ||
+          "We've received your inquiry and will get back to you soon.",
+      });
+
+      setFormData({
         name: "",
         email: "",
         phone: "+254",
-        message: ""
-    });
+        message: "",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Submission failed",
+        description: "There was an error sending your message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
+  return (
+    <BeeYieldPageShell className="min-h-screen bg-background p-0 text-foreground">
+      <section className="relative overflow-hidden bg-gradient-to-br from-amber-500/10 via-background to-background py-24 lg:py-32">
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="mx-auto max-w-4xl text-center">
+            <Badge className="mb-6 bg-primary text-primary-foreground hover:bg-primary/90">
+              Meet the BeeYield Team
+            </Badge>
+            <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl">
+              The people building <span className="text-primary">healthy hives</span>, clearer records, and practical tools for beekeepers
+            </h1>
+            <p className="mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-muted-foreground">
+              Our team combines field experience, operations, engineering, and governance to keep BeeYield useful from hive monitoring to harvest traceability.
+            </p>
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
+              <Button
+                size="lg"
+                className="gap-2"
+                onClick={() =>
+                  document
+                    .getElementById("team-members")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Meet the team <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() =>
+                  document
+                    .getElementById("contact")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Contact us
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/5 to-transparent" />
+      </section>
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const nameParts = formData.name.trim().split(/\s+/);
-            const first_name = nameParts[0] || "";
-            const last_name = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "Unknown";
-
-            const response = await submitContactForm({
-                first_name,
-                last_name,
-                email: formData.email,
-                phone: formData.phone,
-                city: "Nairobi",
-                state: "Nairobi",
-                country: "Kenya",
-                inquiry_type: "general",
-                topic: "Team Inquiry",
-                message: formData.message
-            });
-
-            toast({
-                title: "✅ Message Sent!",
-                description: response?.message || "We've received your inquiry and will be in touch with the Directorate soon.",
-            });
-
-            setFormData({
-                name: "",
-                email: "",
-                phone: "+254",
-                message: ""
-            });
-        } catch (error) {
-            console.error(error);
-            toast({
-                title: "Submission Failed",
-                description: "There was an error sending your message. Please try again.",
-                variant: "destructive"
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const founders: TeamMember[] = [
-        {
-            name: "Timothy Nduva",
-            role: "CEO & Founder",
-            department: "Directorate",
-            description: "Timothy founded BeeYield at the family farm in Kibwezi during the 2020 pandemic. He leads the team building practical tools for beekeepers and a clear traceability record for every harvest.",
-            image: TIMOTHY_PHOTO,
-            linkedin: "https://linkedin.com/in/timothynduva",
-            email: "info@beeyield.com",
-            achievements: ["Architect of HoneyChain™", "Strategic Vision Lead", "Family Mission Founder"]
-        },
-        {
-            name: "Carole Nduva",
-            role: "Technical Director",
-            department: "Operations",
-            description: "Co-architect of BeeYield's strategic operations. Carole leads the integration of operational technology with large-scale apiary management, scaling our impact to hundreds of commercial partners.",
-            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
-            email: "info@beeyield.com",
-            achievements: ["Operations Scalability", "Partner Ecosystem", "Logistics Architecture"]
-        },
-        {
-            name: "Agatha Nduva",
-            role: "Technical Director",
-            department: "Engineering",
-            description: "Agatha leads our engineering work—building reliable systems for data collection, reporting, and traceability.",
-            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
-            email: "info@beeyield.com",
-            achievements: ["Product engineering", "Data reliability", "Security & privacy"]
-        },
-    ];
-
-    const specialists: TeamMember[] = [
-        {
-            name: "Rose Ndinda",
-            role: "VP Technology",
-            department: "Engineering",
-            description: "Expert software architect focused on building resilient, user-centric mobile and web platforms for beekeepers. Leading our specialist technical unit to deliver high-fidelity data visualizations.",
-            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
-            email: "info@beeyield.com",
-            achievements: ["IoT Dashboard Architect", "Mobile Latency Optimization", "UI/UX Technical Lead"]
-        },
-        {
-            name: "Nicholas Nduva",
-            role: "Board Member",
-            department: "Governance",
-            description: "Seasoned advisor providing strategic oversight and ensuring BeeYield maintains the highest standards of corporate governance and environmental stewardship.",
-            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
-            email: "info@beeyield.com",
-            achievements: ["Seed Funding Oversight", "Sustainability Roadmap", "Legal Compliance"]
-        },
-    ];
-
-    const teamValues = [
-        {
-            title: "Family Integrity",
-            description: "Founded on the sibling bond of Timothy, Carole, and Agatha, we operate with a level of trust that only family can provide.",
-            icon: <Users className="h-8 w-8 text-beeyield-green" />
-        },
-        {
-            title: "Verifiable Impact",
-            description: "Our 50/50 Harvest Promise and reforestation projects are not just goals—they are hard-coded into our DNA.",
-            icon: <Activity className="h-8 w-8 text-beeyield-green" />
-        },
-        {
-            title: "Technical Excellence",
-            description: "We engineering the future of apiculture using high-precision IoT sensors and distributed intelligent systems.",
-            icon: <Cpu className="h-8 w-8 text-beeyield-green" />
-        },
-        {
-            title: "Planetary Stewardship",
-            description: "Every line of code and every sensor deployed is dedicated to securing the future of global biodiversity.",
-            icon: <Globe className="h-8 w-8 text-beeyield-green" />
-        }
-    ];
-
-    return (
-        <BeeYieldPageShell className="bg-background text-foreground">
-            {/* Hero Section - Cleaner flow with Big Logo */}
-            <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-gradient-to-br from-beeyield-green/5 via-background to-background overflow-hidden border-b border-neutral-100">
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-                        <motion.img 
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            src={LOGO} 
-                            alt="BeeYield Logo" 
-                            className="h-32 md:h-48 w-auto mb-16 drop-shadow-2xl" 
-                        />
-                        <Badge className="mb-6 bg-beeyield-green/10 text-beeyield-green border-none px-4 py-1.5 font-black text-[10px]">
-                            The Sibling Narrative
-                        </Badge>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter leading-[0.9] text-neutral-900 uppercase">
-                            Architecture <br /> Of <span className="text-beeyield-green">Trust</span>
-                        </h1>
-                        <p className="text-xl text-neutral-500 leading-relaxed mb-12 max-w-2xl mx-auto font-medium">
-                            Engineering the future of verifiable apiculture and ecosystem restoration through family unity and technical courage since 2020.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button 
-                                size="lg" 
-                                className="h-14 px-10 bg-neutral-900 text-beeyield-green font-black text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20"
-                                onClick={() => document.getElementById('narrative')?.scrollIntoView({ behavior: 'smooth' })}
-                            >
-                                Our Journey
-                            </Button>
-                            <Button 
-                                size="lg" 
-                                variant="outline" 
-                                className="h-14 px-10 border-neutral-200 text-neutral-900 font-black text-xs rounded-2xl hover:bg-neutral-50 transition-all"
-                                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                            >
-                                Contact Directorate
-                            </Button>
-                        </div>
-                    </div>
+      <section className="bg-muted/30 py-20">
+        <div className="container mx-auto px-4">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div className="order-2 overflow-hidden rounded-2xl shadow-2xl lg:order-1">
+              <div className="grid gap-px bg-border md:grid-cols-3">
+                {teamStats.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="bg-background px-6 py-8 text-center"
+                  >
+                    <p className="text-3xl font-bold text-foreground">
+                      {stat.value}
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="relative min-h-[280px] bg-gradient-to-br from-[#164a33] via-[#1b9157] to-[#f4d03f] p-10 text-white">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.28),transparent_36%)]" />
+                <div className="relative flex h-full flex-col justify-between gap-10">
+                  <div className="flex items-center justify-between gap-6">
+                    <img
+                      src={BEEYIELD_LOGO}
+                      alt="BeeYield logo"
+                      className="h-16 w-16 object-contain"
+                    />
+                    <Badge className="bg-white/15 text-white hover:bg-white/15">
+                      Kibwezi, Kenya
+                    </Badge>
+                  </div>
+                  <div>
+                    <h2 className="mb-4 text-3xl font-bold text-white">
+                      A family-led team with a practical operating model
+                    </h2>
+                    <p className="max-w-xl text-white/90">
+                      BeeYield started on a family farm and still runs with the same focus: build tools that are clear, dependable, and useful in daily apiary work.
+                    </p>
+                  </div>
                 </div>
-                {/* Subtle decorative elements */}
-                <div className="absolute top-0 right-0 w-1/4 h-full bg-beeyield-green/[0.02] -skew-x-12 translate-x-20 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-1/4 h-full bg-beeyield-gold/[0.02] skew-x-12 -translate-x-20 pointer-events-none" />
-            </section>
+              </div>
+            </div>
 
-            {/* Narrative Section - Kibwezi Genesis */}
-            <section id="narrative" className="py-32 lg:py-48 relative overflow-hidden bg-white">
-                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neutral-100 to-transparent" />
-                <div className="container mx-auto px-4">
-                    <div className="grid lg:grid-cols-2 gap-24 items-center">
-                        <motion.div 
-                            initial={{ opacity: 0, x: -30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            className="relative"
-                        >
-                            <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-900 group">
-                                <img 
-                                    src="/antigravity/brain/b2a8ae08-a486-48a2-ab35-59df514ab2bf/kibwezi_farm_arid_beauty_1773451657629.png" 
-                                    alt="Kibwezi Farm Genesis" 
-                                    className="w-full h-full object-cover grayscale opacity-60 group-hover:scale-110 transition-transform"
-                                    style={{ transitionDuration: '2000ms' }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
-                                <div className="absolute bottom-12 left-12 right-12 p-10 bg-white/5 backdrop-blur-2xl rounded-[2rem] border border-white/10 shadow-2xl">
-                                   <div className="flex items-center gap-4 mb-6">
-                                      <div className="h-0.5 w-12 bg-beeyield-green" />
-                                      <span className="text-[10px] font-black text-beeyield-green">Est. 2020</span>
-                                   </div>
-                                   <p className="text-white text-xl md:text-2xl font-black italic leading-tight tracking-tighter">
-                                     "Rural courage and family unity are the core sensors of our mission."
-                                   </p>
-                                </div>
-                            </div>
-                            {/* Industrial decorative border */}
-                            <div className="absolute -top-6 -left-6 w-32 h-32 border-t-2 border-l-2 border-beeyield-green/20 rounded-tl-[3rem] -z-10" />
-                            <div className="absolute -bottom-6 -right-6 w-32 h-32 border-b-2 border-r-2 border-beeyield-gold/20 rounded-br-[3rem] -z-10" />
-                        </motion.div>
+            <div className="order-1 lg:order-2">
+              <h2 className="mb-6 text-3xl font-bold">
+                A team page that now matches the BeeYield product story
+              </h2>
+              <p className="mb-6 text-lg text-muted-foreground">
+                We simplified the tone, softened the layout, and aligned the page with the same warm palette and readable structure used on the disease page.
+              </p>
+              <p className="text-lg text-muted-foreground">
+                For team media, BeeYield-branded logo portraits are now used wherever AI-generated profile photos appeared. Timothy keeps his approved photograph, while Carole, Agatha, Rose, and Nicholas now use consistent branded media.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                        <div className="space-y-12">
-                            <div>
-                                <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-4 py-1.5 font-black text-[10px]">
-                                    Strategic Genesis
-                                </Badge>
-                                <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter leading-none mb-8">
-                                    Kibwezi <br />
-                                    <span className="text-beeyield-green">Genesis</span>
-                                </h2>
-                                <p className="text-xl text-neutral-500 leading-relaxed font-medium">
-                                    BeeYield was born from a sibling's commitment to verifiable stewardship. In 2020, Timothy Nduva and his sisters Carole and Agatha returned to their family farm in Kibwezi to architect a future where technology serves the hive.
-                                </p>
-                            </div>
+      <section className="bg-background py-24">
+        <div className="container mx-auto px-4">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-3xl font-bold">How the team works</h2>
+            <p className="text-muted-foreground">
+              The same priorities behind our disease monitoring work guide the people behind BeeYield.
+            </p>
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {teamValues.map((value) => (
+              <Card
+                key={value.title}
+                className="border-none bg-muted/40 shadow-lg transition-shadow hover:shadow-xl"
+              >
+                <CardContent className="p-6 text-center">
+                  <div className="mb-4 inline-flex items-center justify-center rounded-full bg-background p-3 shadow-sm">
+                    {value.icon}
+                  </div>
+                  <h3 className="mb-3 text-xl font-semibold">{value.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {value.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
-                            <div className="grid gap-10 pt-6">
-                                <div className="flex items-start gap-6 group">
-                                   <div className="h-14 w-14 shrink-0 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center justify-center group-hover:bg-beeyield-green group-hover:border-beeyield-green transition-all shadow-sm">
-                                      <Leaf className="w-6 h-6 text-beeyield-green group-hover:text-white transition-colors" />
-                                   </div>
-                                   <div>
-                                      <h4 className="text-xl font-black text-neutral-900 tracking-tight mb-2">50/50 Harvest Promise</h4>
-                                      <p className="text-neutral-400 font-medium leading-relaxed">Hard-coded commitment to leaving half the surplus honey for colony survival and ecosystem health.</p>
-                                   </div>
-                                </div>
-                                <div className="flex items-start gap-6 group">
-                                   <div className="h-14 w-14 shrink-0 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center justify-center group-hover:bg-beeyield-gold group-hover:border-beeyield-gold transition-all shadow-sm">
-                                      <ShieldCheck className="w-6 h-6 text-beeyield-gold group-hover:text-white transition-colors" />
-                                   </div>
-                                   <div>
-                                      <h4 className="text-xl font-black text-neutral-900 tracking-tight mb-2">Traceability</h4>
-                                      <p className="text-neutral-400 font-medium leading-relaxed">Each batch can be checked so customers can see where their honey came from.</p>
-                                   </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      <section id="team-members" className="bg-primary py-24 text-primary-foreground">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto mb-16 max-w-3xl text-center">
+            <h2 className="mb-6 text-3xl font-bold">Leadership and specialist team</h2>
+            <p className="text-lg opacity-90">
+              BeeYield brings together leadership across operations, engineering, governance, and field delivery.
+            </p>
+          </div>
+
+          <div className="mb-12">
+            <h3 className="mb-6 text-center text-2xl font-bold">Directorate</h3>
+            <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+              {founders.map((member) => (
+                <MemberCard
+                  key={member.name}
+                  member={member}
+                  onSelect={setSelectedMember}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="mb-6 text-center text-2xl font-bold">Specialists and governance</h3>
+            <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
+              {specialists.map((member) => (
+                <MemberCard
+                  key={member.name}
+                  member={member}
+                  onSelect={setSelectedMember}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-background py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <h2 className="mb-6 text-3xl font-bold">Team media</h2>
+              <p className="mb-8 text-lg text-muted-foreground">
+                Portraits should feel consistent with the BeeYield brand. Where approved photography is not available, we now use a branded BeeYield logo treatment instead of generic AI portrait imagery.
+              </p>
+              <div className="space-y-4">
+                {mediaStandards.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-start gap-4 rounded-2xl bg-muted/40 p-4"
+                  >
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                    <p className="text-muted-foreground">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Card className="overflow-hidden border-none bg-muted/40 shadow-lg">
+              <div className="grid gap-px bg-border md:grid-cols-2">
+                <div className="bg-background p-6">
+                  <p className="mb-3 text-sm font-medium text-muted-foreground">
+                    Approved photo
+                  </p>
+                  <div className="overflow-hidden rounded-2xl">
+                    <img
+                      src={TIMOTHY_PHOTO}
+                      alt="Timothy Nduva"
+                      className="aspect-[4/5] w-full object-cover"
+                    />
+                  </div>
                 </div>
-            </section>
-
-            {/* Directives Section - Technical Grid */}
-            <section className="py-32 bg-neutral-50/50 border-y border-neutral-100 relative">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] pointer-events-none" />
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="text-center mb-24">
-                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4 italic">Core Directives</h2>
-                        <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
-                        <p className="text-neutral-400 font-medium text-xs">The underlying code of the Directorate</p>
+                <div className="bg-background p-6">
+                  <p className="mb-3 text-sm font-medium text-muted-foreground">
+                    Branded placeholder
+                  </p>
+                  <div className="overflow-hidden rounded-2xl">
+                    <div className="aspect-[4/5]">
+                      <MemberPortrait member={founders[1]} />
                     </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
-                        {teamValues.map((value, index) => (
-                            <motion.div 
-                                key={index} 
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="bg-white p-12 rounded-[2.5rem] border border-neutral-100 shadow-soft hover:shadow-glow hover:border-beeyield-green/20 transition-all duration-500 group"
-                            >
-                                <div className="mb-10 inline-flex items-center justify-center p-6 bg-neutral-50 rounded-3xl group-hover:bg-beeyield-green/10 transition-colors">
-                                    {value.icon}
-                                </div>
-                                <h3 className="text-2xl font-black text-neutral-900 mb-6 italic tracking-tight leading-none">{value.title}</h3>
-                                <p className="text-neutral-400 leading-relaxed font-medium">
-                                    {value.description}
-                                </p>
-                            </motion.div>
-                        ))}
-                    </div>
+                  </div>
                 </div>
-            </section>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
 
-            {/* Team Grid Section - Strategic Command */}
-            <section id="team-members" className="py-32 lg:py-48 bg-white">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-32 max-w-3xl mx-auto">
-                        <Badge className="bg-neutral-100 text-neutral-400 border-none mb-8 px-5 py-2 font-black text-[10px] rounded-full">
-                            Strategic Command Unit
-                        </Badge>
-                        <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-8 italic leading-none">The Directorate</h2>
-                        <p className="text-xl text-neutral-500 font-medium leading-relaxed">
-                            A unified specialist unit engineering the precision protocols and distributed infrastructure of BeeYield.
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-16 max-w-7xl mx-auto mb-32">
-                        {founders.map((member, index) => (
-                            <motion.div 
-                                key={index} 
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                onClick={() => setSelectedMember(member)}
-                                className="group cursor-pointer flex flex-col items-center"
-                            >
-                                <div className="w-full aspect-[4/5] rounded-[2rem] overflow-hidden bg-neutral-100 relative mb-10 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.15)] transition-all duration-700">
-                                    <img 
-                                        src={member.image} 
-                                        alt={member.name} 
-                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" 
-                                    />
-                                    <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[10px] text-beeyield-green font-semibold">
-                                       <span>ID: {member.name.substring(0,3).toUpperCase()}00{index}</span>
-                                       <span className="flex items-center gap-1"><div className="w-1 h-1 bg-beeyield-green rounded-full animate-pulse" />Online</span>
-                                    </div>
-                                    <div className="absolute bottom-10 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                                       <Button className="w-full bg-beeyield-green text-black font-semibold h-12 rounded-xl border border-beeyield-green shadow-[0_0_30px_rgba(45,168,79,0.2)]">View profile</Button>
-                                    </div>
-                                </div>
-                                <div className="text-center space-y-3">
-                                    <span className="text-[9px] font-black text-neutral-300">Technical Directorate</span>
-                                    <h4 className="text-4xl font-black text-neutral-900 italic tracking-tight leading-none">{member.name}</h4>
-                                    <div className="flex items-center justify-center gap-2">
-                                       <div className="h-1 w-1 bg-beeyield-green rounded-full animate-pulse" />
-                                       <p className="text-[10px] font-black text-beeyield-green">{member.role}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-
-                    <div className="flex items-center gap-12 mb-24 max-w-6xl mx-auto">
-                        <div className="h-px w-full bg-gradient-to-r from-transparent to-neutral-200" />
-                        <span className="text-[10px] whitespace-nowrap font-black text-neutral-300">Technical Specialists</span>
-                        <div className="h-px w-full bg-gradient-to-l from-transparent to-neutral-200" />
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-16 max-w-5xl mx-auto items-stretch">
-                        {specialists.map((member, index) => (
-                           <motion.div 
-                                 key={index} 
-                                 initial={{ opacity: 0, y: 30 }}
-                                 whileInView={{ opacity: 1, y: 0 }}
-                                 viewport={{ once: true }}
-                                 onClick={() => setSelectedMember(member)}
-                                 className="group cursor-pointer flex flex-col items-center"
-                             >
-                                 <div className="w-full aspect-[4/5] rounded-[2rem] overflow-hidden bg-neutral-100 relative mb-10 border border-neutral-100 shadow-soft group-hover:shadow-2xl transition-all duration-700">
-                                     <img 
-                                         src={member.image} 
-                                         alt={member.name} 
-                                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" 
-                                     />
-                                     <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-t from-neutral-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                     <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[8px] text-beeyield-green font-black">
-                                        <span>ID_SEC: {member.name.substring(0,3).toUpperCase()}99{index}</span>
-                                        <span className="flex items-center gap-1"><div className="w-1 h-1 bg-beeyield-gold rounded-full animate-pulse" />Operational</span>
-                                     </div>
-                                 </div>
-                                 <div className="text-center space-y-3">
-                                     <span className="text-[9px] font-black text-neutral-300">Operations Unit</span>
-                                     <h4 className="text-4xl font-black text-neutral-900 italic tracking-tight leading-none">{member.name}</h4>
-                                     <div className="flex items-center justify-center gap-2">
-                                        <div className="h-1 w-1 bg-beeyield-green rounded-full animate-pulse" />
-                                        <p className="text-[10px] font-black text-beeyield-green">{member.role}</p>
-                                     </div>
-                                 </div>
-                             </motion.div>
-                         ))}
-                    </div>
+      <section className="bg-muted/20 py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid gap-16 lg:grid-cols-2">
+            <div className="rounded-2xl bg-background p-8 shadow-xl">
+              <h2 className="mb-6 text-3xl font-bold">Contact the team</h2>
+              <p className="mb-8 text-muted-foreground">
+                Reach out for partnerships, technology questions, or team inquiries.
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 rounded-xl bg-muted/40 p-4">
+                  <Mail className="h-5 w-5 text-primary" />
+                  <span>info@beeyield.com</span>
                 </div>
-            </section>
-
-            {/* Leadership section */}
-            <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-20 p-12 bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-white/10">
-                            <div className="space-y-6 max-w-xl">
-                                <div className="flex items-center gap-3">
-                                   <div className="h-2 w-2 bg-beeyield-green rounded-full animate-pulse" />
-                                   <span className="text-[10px] font-black text-beeyield-green">Status: Active</span>
-                                </div>
-                                <h2 className="text-4xl lg:text-5xl font-black italic tracking-tighter leading-none">Meet the <span className="text-beeyield-green">team</span></h2>
-                                <p className="text-neutral-400 font-medium leading-relaxed">
-                                    Our leadership team focuses on practical work: healthier hives, reliable data, and clear traceability from hive to jar.
-                                </p>
-                            </div>
-                            <div className="grid grid-cols-2 gap-6 w-full md:w-auto">
-                                {[
-                                    { label: "Operations", val: "Active", icon: Activity },
-                                    { label: "Records", val: "Verified", icon: ShieldCheck },
-                                    { label: "Network", val: "Growing", icon: Globe },
-                                    { label: "Support", val: "On", icon: LockIcon }
-                                ].map((stat, i) => (
-                                    <div key={i} className="p-6 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center text-center">
-                                       <stat.icon className="w-5 h-5 text-beeyield-green mb-3 opacity-50" />
-                                       <span className="text-2xl font-black mb-1">{stat.val}</span>
-                                       <span className="text-[9px] font-black text-neutral-500">{stat.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* (removed faux system logs) */}
-                    </div>
+                <div className="flex items-center gap-4 rounded-xl bg-muted/40 p-4">
+                  <Phone className="h-5 w-5 text-primary" />
+                  <span>+254 team support</span>
                 </div>
-            </section>
-
-            {/* Partners & Contact Section */}
-            <section className="py-32 lg:py-48 bg-neutral-50 border-t border-neutral-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-beeyield-green/[0.01] -skew-x-12 translate-x-32 pointer-events-none" />
-                <div className="container mx-auto px-4">
-                    <div className="grid lg:grid-cols-2 gap-32 items-center">
-                        <div>
-                            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-5 py-2 font-black text-[10px] rounded-full">
-                                Strategic Ecosystem
-                            </Badge>
-                            <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-10 italic leading-none">Global <span className="text-beeyield-green">Partners</span></h2>
-                            <p className="text-xl text-neutral-400 font-medium mb-16 leading-relaxed">
-                                BeeYield collaborates with planetary-scale partners to advance beekeeping technology that secures global biodiversity and rural prosperity.
-                            </p>
-                            
-                            <div className="grid grid-cols-2 gap-8">
-                                {[
-                                    { label: "Community", icon: Users },
-                                    { label: "Apiology", icon: Activity },
-                                    { label: "Precision IoT", icon: Cpu },
-                                    { label: "Chain Verify", icon: ShieldCheck }
-                                ].map((p, i) => (
-                                    <div key={i} className="flex items-center gap-6 p-8 bg-white rounded-[2rem] border border-neutral-100 shadow-soft group hover:border-beeyield-green/30 transition-all">
-                                        <div className="h-14 w-14 shrink-0 flex items-center justify-center bg-neutral-50 rounded-2xl text-beeyield-green group-hover:bg-beeyield-green group-hover:text-white transition-all">
-                                            <p.icon className="h-7 w-7" />
-                                        </div>
-                                        <span className="font-black text-xs text-neutral-900">{p.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Contact Form */}
-                        <div id="contact">
-                            <div className="bg-white p-12 lg:p-16 rounded-[3.5rem] border border-neutral-100 shadow-soft relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-48 h-48 bg-beeyield-green/[0.02] rounded-full -translate-x-20 -translate-y-20 border border-beeyield-green/5" />
-                                <h3 className="text-4xl font-black text-neutral-900 italic tracking-tight mb-10 leading-none">Direct Inquiry</h3>
-                                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-3">
-                                            <Label htmlFor="name" className="text-[10px] font-black text-neutral-400 ml-1">Full Name</Label>
-                                            <Input id="name" name="name" placeholder="Director..." value={formData.name} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <Label htmlFor="email" className="text-[10px] font-black text-neutral-400 ml-1">Email</Label>
-                                            <Input id="email" name="email" type="email" placeholder="authority@domain.com" value={formData.email} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <Label htmlFor="phone" className="text-[10px] font-black text-neutral-400 ml-1">Phone (optional)</Label>
-                                        <Input id="phone" name="phone" type="tel" placeholder="+254" value={formData.phone} onChange={handleInputChange} className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
-                                    </div>
-                                    <div className="space-y-3">
-                                        <Label htmlFor="message" className="text-[10px] font-black text-neutral-400 ml-1">Message</Label>
-                                        <Textarea id="message" name="message" placeholder="Describe the mission brief..." className="min-h-[160px] rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all p-6" value={formData.message} onChange={handleInputChange} required />
-                                    </div>
-                                    <Button type="submit" className="w-full h-20 rounded-3xl bg-neutral-900 text-beeyield-green font-black text-xs shadow-2xl shadow-neutral-900/30 hover:scale-[1.02] active:scale-95 transition-all" disabled={loading}>
-                                        {loading ? "Transmitting..." : "Send Secure Message"}
-                                    </Button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                <div className="flex items-center gap-4 rounded-xl bg-muted/40 p-4">
+                  <Globe className="h-5 w-5 text-primary" />
+                  <span>Based in Kenya, serving beekeepers globally</span>
                 </div>
-            </section>
+                <div className="flex items-center gap-4 rounded-xl bg-muted/40 p-4">
+                  <Briefcase className="h-5 w-5 text-primary" />
+                  <span>Operations, engineering, and governance in one team</span>
+                </div>
+              </div>
+            </div>
 
-            {/* Member Modal */}
-            <Dialog open={!!selectedMember} onOpenChange={() => setSelectedMember(null)}>
-                <DialogContent className="max-w-[900px] bg-transparent border-none p-0 shadow-none overflow-visible">
-                    <AnimatePresence>
-                        {selectedMember && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                                className="bg-white rounded-[3.5rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.3)] relative border border-neutral-100 flex flex-col"
-                            >
-                                {/* Header with Logo */}
-                                <div className="p-10 border-b border-neutral-100 flex items-center justify-between bg-white relative z-10 shrink-0">
-                                    <img src={LOGO} alt="BeeYield Logo" className="h-12 w-auto" />
-                                    <button 
-                                        onClick={() => setSelectedMember(null)}
-                                        className="w-12 h-12 bg-neutral-50 hover:bg-neutral-900 hover:text-white rounded-2xl flex items-center justify-center transition-all active:scale-95"
-                                        aria-label="Close member details"
-                                        title="Close"
-                                    >
-                                        <X className="w-6 h-6" />
-                                    </button>
-                                </div>
+            <div id="contact">
+              <div className="rounded-2xl border border-border bg-background p-8">
+                <h3 className="mb-6 text-2xl font-bold">Send a message</h3>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Full name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      placeholder="Your name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Mobile</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="+254..."
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      placeholder="How can we help?"
+                      className="min-h-[120px]"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Sending..." : "Send message"}
+                  </Button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                                <div className="flex flex-col md:flex-row flex-1">
-                                   <div className="md:w-[45%] relative bg-neutral-900 aspect-square md:aspect-auto">
-                                      <img 
-                                        src={selectedMember.image} 
-                                        alt={selectedMember.name} 
-                                        className="w-full h-full object-cover grayscale"
-                                      />
-                                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
-                                      <div className="absolute bottom-10 left-10">
-                                         <Badge className="bg-beeyield-green text-black border-none mb-4 px-4 py-2 font-black text-[10px] rounded-lg">
-                                            {selectedMember.department}
-                                         </Badge>
-                                         <h3 className="text-white text-4xl font-black italic tracking-tighter leading-tight">{selectedMember.name}</h3>
-                                      </div>
-                                   </div>
+      <Dialog open={!!selectedMember} onOpenChange={() => setSelectedMember(null)}>
+        <DialogContent className="max-w-4xl overflow-hidden border-none bg-transparent p-0 shadow-none">
+          {selectedMember && (
+            <div className="overflow-hidden rounded-[2rem] bg-background shadow-2xl">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={BEEYIELD_LOGO}
+                    alt="BeeYield logo"
+                    className="h-10 w-10 object-contain"
+                  />
+                  <div>
+                    <p className="text-sm font-semibold">BeeYield Team</p>
+                    <p className="text-xs text-muted-foreground">
+                      Leadership profile
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedMember(null)}
+                  className="rounded-xl bg-muted p-2 text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground"
+                  aria-label="Close member details"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-                                   <div className="md:w-[55%] p-16 flex flex-col justify-center bg-white relative">
-                                      <div className="absolute top-0 right-0 w-32 h-32 bg-beeyield-green/[0.02] rounded-full translate-x-12 -translate-y-12 border border-beeyield-green/10" />
-                                      <div className="mb-10">
-                                         <span className="text-[12px] font-semibold text-beeyield-green block mb-4">Team member</span>
-                                         <h2 className="text-4xl font-black text-neutral-900 italic leading-[0.9] tracking-tighter">{selectedMember.role}</h2>
-                                      </div>
-                                      <p className="text-neutral-500 text-xl leading-relaxed font-medium mb-10">
-                                         {selectedMember.description}
-                                      </p>
-                                      
-                                      <div className="space-y-4 pt-6 border-t border-neutral-100">
-                                         <span className="text-[12px] font-semibold text-neutral-400 block mb-2">Highlights</span>
-                                         {selectedMember.achievements.map((ach, i) => (
-                                            <div key={i} className="flex items-center gap-3">
-                                               <CheckCircle2 className="w-5 h-5 text-beeyield-green" />
-                                               <span className="text-sm font-bold text-neutral-700 uppercase">{ach}</span>
-                                            </div>
-                                         ))}
-                                      </div>
-                                   </div>
-                                </div>
+              <div className="grid md:grid-cols-[minmax(0,360px)_1fr]">
+                <div className="min-h-[360px] bg-muted">
+                  <MemberPortrait member={selectedMember} large />
+                </div>
+                <div className="p-8">
+                  <Badge className="mb-4 bg-primary text-primary-foreground hover:bg-primary/90">
+                    {selectedMember.department}
+                  </Badge>
+                  <h2 className="mb-2 text-3xl font-bold">
+                    {selectedMember.name}
+                  </h2>
+                  <p className="mb-6 text-lg text-primary">
+                    {selectedMember.role}
+                  </p>
+                  <p className="mb-8 leading-relaxed text-muted-foreground">
+                    {selectedMember.description}
+                  </p>
 
-                                <div className="grid grid-cols-2 divide-x divide-neutral-100 border-t border-neutral-100 h-28 shrink-0 bg-neutral-50/50">
-                                   <a 
-                                     href={selectedMember.linkedin} 
-                                     target="_blank" 
-                                     rel="noopener noreferrer"
-                                     className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
-                                   >
-                                      <LinkedinIcon className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
-                                      <span className="text-xs font-black text-neutral-400 group-hover:text-neutral-900 transition-colors">LinkedIn Profile</span>
-                                   </a>
-                                   <a 
-                                     href={`mailto:${selectedMember.email}`} 
-                                     className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
-                                   >
-                                      <Mail className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
-                                      <span className="text-xs font-black text-neutral-400 group-hover:text-neutral-900 transition-colors">Contact Office</span>
-                                   </a>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </DialogContent>
-            </Dialog>
-        </BeeYieldPageShell>
-    );
+                  <div className="mb-8 grid gap-3">
+                    {selectedMember.achievements.map((item) => (
+                      <div key={item} className="flex items-center gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-primary" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <a
+                      href={selectedMember.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-3 rounded-xl bg-muted px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/80"
+                    >
+                      <LinkedinIcon className="h-5 w-5" />
+                      LinkedIn
+                    </a>
+                    <a
+                      href={`mailto:${selectedMember.email}`}
+                      className="flex items-center justify-center gap-3 rounded-xl bg-muted px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/80"
+                    >
+                      <Mail className="h-5 w-5" />
+                      Email office
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </BeeYieldPageShell>
+  );
 };
 
 export default Team;

@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
 const PollinationSolutions = () => {
   const [supportType, setSupportType] = useState("monthly");
@@ -300,13 +301,9 @@ const PollinationSolutions = () => {
 
       {/* Video Section */}
       <div className="relative w-full h-[70vh] bg-foreground">
-        <iframe
-          className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed/vV-m_k8E5Yc"
+        <YouTubeEmbed
           title="About BeeYield"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
+          wrapperClassName="h-full w-full rounded-none border-0 bg-foreground shadow-none"
         />
       </div>
 
@@ -341,7 +338,7 @@ const PollinationSolutions = () => {
                 This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world.
               </p>
               <Button variant="secondary" className="gap-2" asChild>
-                <Link to="/about">Learn More <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/ourstory">Learn More <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>
           </div>

@@ -622,21 +622,21 @@ const VarroaView: React.FC = () => {
                                 <input value={treatmentType} onChange={(e) => setTreatmentType(e.target.value)} className={inputClass} />
                             </Field>
                             <Field label="Best used (day)">
-                                <input value="Optimal seed day" readOnly className={inputClass} />
+                                <input value={modelSummary.bestWindow ? `Day ${modelSummary.bestWindow.day}` : 'No clear window'} readOnly className={inputClass} />
                             </Field>
                         </div>
                         <div className="grid gap-3 md:grid-cols-3">
                             <div className={cn(softCardClass, 'p-4')}>
                                 <div className="text-[12px] font-semibold text-[#1a1a1a]">What happens to Varroa</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">Strong contact effect on mites and faster phoretic suppression.</p>
+                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">{treatmentInsight.varroaEffect}</p>
                             </div>
                             <div className={cn(softCardClass, 'p-4')}>
                                 <div className="text-[12px] font-semibold text-[#1a1a1a]">What happens to bees</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">Short acting; requires correct dose and colony timing to reduce stress.</p>
+                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">{treatmentInsight.beeEffect}</p>
                             </div>
                             <div className={cn(softCardClass, 'p-4')}>
                                 <div className="text-[12px] font-semibold text-[#1a1a1a]">What does NOT do</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">Does not prevent rebound if brood remains capped and reinvasion continues.</p>
+                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">{treatmentInsight.limitation}</p>
                             </div>
                         </div>
                     </div>

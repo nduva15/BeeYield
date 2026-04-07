@@ -661,3 +661,180 @@ async def build_yield_forecast(
         activity_trend=activity_trend,
         history_context=history,
     )
+    expected_yield_kg = ensemble["expected_kg"]
+    component_disagreement = ensemble["disagreement"]
+    composite_score = round(
+        (vegetation_score * 0.28)
+        + (weather_score * 0.20)
+        + (activity_score * 0.22)
+        + (history["history_score"] * 0.20)
+        + (_clamp(100.0 - component_disagreement * 4.0, 30.0, 96.0) * 0.10),
+        1,
+    )
+
+    confidence_pct = round(
+        _clamp(
+            42.0
+            + min(18.0, history["harvest_count"] * 2.8)
+            + min(15.0, sensor_sample_count * 0.18)
+            + (12.0 if provider_weather else 4.0)
+            + (_clamp(100.0 - component_disagreement * 5.0, 30.0, 100.0) * 0.12),
+            38.0,
+            96.0,
+        ),
+        1,
+    )
+    uncertainty_band = 0.12 + ((100.0 - confidence_pct) / 140.0) + min(0.18, component_disagreement / max(expected_yield_kg, 1.0) * 0.35)
+    low_kg = round(expected_yield_kg * (1.0 - uncertainty_band), 2)
+    high_kg = round(expected_yield_kg * (1.0 + uncertainty_band), 2)
+
+    size_acres = _to_float((selected_apiary or {}).get("size_acres"))
+    yield_per_hive_kg = round(expected_yield_kg / max(active_hives, 1), 2)
+    yield_per_acre_kg = round(expected_yield_kg / size_acres, 2) if size_acres and size_acres > 0 else None
+    comparable_total = history["seasonal_analogue_kg"]
+    delta_pct = round(((expected_yield_kg - comparable_total) / comparable_total) * 100.0, 1) if comparable_total and comparable_total > 0 else None
+
+    location_label = _format_location_label(selected_apiary, latitude, longitude)
+
+    drivers = [
+        {
+            "label": f"{vegetation_index.upper()} vegetation signal",
+            "impact": _impact(vegetation_score),
+            "value": f"{vegetation_score:.0f}/100",
+            "detail": vegetation_detail,
+        },
+        {
+            "label": "Weather flight window",
+            "impact": _impact(weather_score),
+            "value": weather_status,
+            "detail": weather_detail,
+        },
+        {
+            "label": "Bee activity trend",
+            "impact": _impact(activity_score),
+            "value": f"{activity_score:.0f}%",
+            "detail": f"{activity_detail}. Trend {activity_trend:+.1f} points",
+        },
+        {
+            "label": "Harvest memory",
+            "impact": _impact(history["history_score"], positive_threshold=66.0, neutral_threshold=48.0),
+            "value": f"{history['harvest_count']} records",
+            "detail": f"{history['recent_total_kg']:.1f} kg logged in the last 365 days",
+        },
+    ]
+
+    recommendations: list[str] = []
+    if vegetation_score < 58:
+        recommendations.append("Tighten the radius around stronger bloom corridors or enrich forage-zone density scoring before using the upper forecast band.")
+    if weather_score < 58:
+        recommendations.append("Weather is limiting flight hours. Use the lower band for commitments and revisit after the next weather refresh.")
+    if activity_score < 55:
+        recommendations.append("Colony activity is below the model target. Audit entrances, brood status, and forage access before scaling harvest expectations.")
+    if history["harvest_count"] < 4:
+        recommendations.append("Historical depth is still thin. Record more harvest batches to strengthen the regression and seasonal analogue models.")
+    if component_disagreement > max(4.0, expected_yield_kg * 0.18):
+        recommendations.append("Model components disagree more than usual. Treat this forecast as exploratory and review location settings before execution.")
+    if not recommendations:
+        recommendations.append("Model components are aligned. Use the central forecast for planning and the upper band for stretch scenarios.")
+
+    source_statuses = [
+        {
+            "key": "vegetation",
+            "label": "Vegetation",
+            "status": "available" if forage_zones or selected_apiary else "baseline",
+            "detail": vegetation_detail,
+        },
+        {
+            "key": "weather",
+            "label": "Weather",
+            "status": "available" if provider_weather else "baseline",
+            "detail": weather_detail,
+        },
+        {
+            "key": "activity",
+            "label": "Bee activity",
+            "status": "available" if bee_activity_pct is not None or sensor_sample_count > 0 else "baseline",
+            "detail": activity_detail,
+        },
+        {
+            "key": "history",
+            "label": "Harvest history",
+            "status": "available" if history["harvest_count"] > 0 else "baseline",
+            "detail": f"{history['harvest_count']} harvest records available for training and analogues",
+        },
+    ]
+
+    return {
+        "location": {
+            "label": location_label,
+            "latitude": round(latitude, 6),
+            "longitude": round(longitude, 6),
+            "source": "apiary" if apiary_id else "manual",
+            "apiary_id": str(selected_apiary["id"]) if selected_apiary else None,
+            "apiary_name": selected_apiary.get("name") if selected_apiary else None,
+            "nearest_apiary_distance_km": round(nearest_distance_km, 2) if nearest_distance_km is not None else None,
+        },
+        "analysis_window": {
+            "date_from": date_from.isoformat(),
+            "date_to": date_to.isoformat(),
+            "days": window_days,
+            "radius_m": radius_m,
+            "vegetation_index": vegetation_index.upper(),
+            "crop_profile": crop_profile,
+            "bee_activity_pct": round(_clamp(bee_activity_pct, 0.0, 100.0), 1) if bee_activity_pct is not None else None,
+        },
+        "forecast": {
+            "expected_yield_kg": expected_yield_kg,
+            "low_kg": low_kg,
+            "high_kg": high_kg,
+            "confidence_pct": confidence_pct,
+            "yield_per_hive_kg": yield_per_hive_kg,
+            "yield_per_acre_kg": yield_per_acre_kg,
+            "forecast_score": composite_score,
+        },
+        "comparisons": {
+            "last_period_yield_kg": comparable_total,
+            "delta_pct": delta_pct,
+            "active_hives": active_hives,
+            "harvest_count": history["harvest_count"],
+            "sensor_samples": sensor_sample_count,
+        },
+        "signals": {
+            "vegetation_score": vegetation_score,
+            "weather_score": weather_score,
+            "activity_score": activity_score,
+            "history_score": history["history_score"],
+            "source_statuses": source_statuses,
+        },
+        "model": {
+            "name": "BeeYield Ensemble Expert Model",
+            "strategy": "expert prior + seasonal analogue + ridge regression",
+            "disagreement_kg": round(component_disagreement, 2),
+            "components": ensemble["components"],
+            "rationale": [
+                "Expert prior translates crop physics, radius, flight weather, and activity into a field-operable yield baseline.",
+                "Seasonal analogue pulls the same harvest window from previous years to preserve local phenology and bloom timing.",
+                "Ridge regression fits monthly seasonality and trend features without overreacting to sparse harvest history.",
+            ],
+        },
+        "timeline": _build_timeline(
+            date_from=date_from,
+            date_to=date_to,
+            expected_yield_kg=expected_yield_kg,
+            low_kg=low_kg,
+            high_kg=high_kg,
+            activity_score=activity_score,
+            weather_score=weather_score,
+            vegetation_score=vegetation_score,
+        ),
+        "drivers": drivers,
+        "recommendations": recommendations,
+        "weather": {
+            "current": current_weather,
+            "status": weather_status,
+        },
+        "map": {
+            "center": {"lat": round(latitude, 6), "lng": round(longitude, 6)},
+            "radius_m": radius_m,
+        },
+    }
