@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { ensureProfileForUser } from '@/lib/profileSync';
+import { getBeeYieldPendingOnboardingPath } from '@/lib/beeyieldOnboarding';
 
 /**
  * Auth Callback Page
@@ -107,7 +108,10 @@ const AuthCallback = () => {
                     toast.success(`Welcome back, ${fullName}! 🎉`);
 
                     // Successfully authenticated, redirect to intended destination
-                    const returnTo = localStorage.getItem('authReturnTo') || '/';
+                    const pendingBeeYieldReturnTo = storedBackend === 'beeyield'
+                        ? getBeeYieldPendingOnboardingPath()
+                        : null;
+                    const returnTo = localStorage.getItem('authReturnTo') || pendingBeeYieldReturnTo || '/';
                     localStorage.removeItem('authReturnTo');
 
                     // Small delay to ensure session is fully propagated

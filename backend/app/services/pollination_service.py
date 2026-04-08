@@ -7,6 +7,8 @@ Python handles asynchronous DB orchestration and schema validation.
 from typing import List, Optional
 from app.db.supabase_db import db_select
 from app.schemas.pollination import (
+    BloomSimulationInput,
+    BloomSimulationResult,
     CropPollinationRequirements,
     PollinationCalculatorInput,
     PollinationCalculatorResult,
@@ -67,6 +69,19 @@ class PollinationService:
             target_fpa=target_fpa
         )
         return PollinationCalculatorResult(**res)
+
+    async def simulate_bloom(self, input_data: BloomSimulationInput) -> BloomSimulationResult:
+        """Simulate bloom-period colony output with Rust-managed modifiers."""
+        res = _engine.simulate_bloom(
+            frame_count=input_data.frame_count,
+            orientation=input_data.orientation,
+            bees_per_frame=input_data.bees_per_frame,
+            has_cover_crop=input_data.has_cover_crop,
+            pesticide_stewardship=input_data.pesticide_stewardship,
+            bloom_period_days=input_data.bloom_period_days,
+            base_flight_hours=input_data.base_flight_hours,
+        )
+        return BloomSimulationResult(**res)
 
     async def get_contracts(self, user_id=None, status=None, token=None) -> List[PollinationContract]:
         filters = {}

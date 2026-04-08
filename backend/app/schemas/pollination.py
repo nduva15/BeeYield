@@ -304,6 +304,68 @@ class PollinationCalculatorResult(BaseModel):
         }
 
 
+class BloomSimulationInput(BaseModel):
+    """Input for bloom-period colony simulation"""
+    frame_count: int = Field(..., gt=0, description="Frames of bees in the colony")
+    orientation: str = Field("East", description="Hive entrance orientation")
+    bees_per_frame: int = Field(3000, gt=0, description="Estimated bees per frame")
+    has_cover_crop: bool = False
+    pesticide_stewardship: bool = True
+    bloom_period_days: int = Field(1, gt=0, description="Number of bloom days to project")
+    base_flight_hours: float = Field(8.0, ge=0.0, le=24.0)
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "frame_count": 10,
+                "orientation": "East",
+                "bees_per_frame": 3000,
+                "has_cover_crop": True,
+                "pesticide_stewardship": True,
+                "bloom_period_days": 21,
+                "base_flight_hours": 8.0,
+            }
+        }
+
+
+class BloomSimulationResult(BaseModel):
+    """Rust-computed bloom-period pollination output for a single colony"""
+    frame_count: int
+    orientation: str
+    bees_per_frame: int
+    total_bees: int
+    active_foragers: int
+    forager_ratio_percent: float
+    daily_flight_hours: float
+    total_forager_hours: float
+    bloom_period_days: int
+    estimated_bloom_forager_hours: float
+    orientation_bonus_minutes: float
+    colony_strength_bonus_minutes: float
+    has_cover_crop: bool
+    pesticide_stewardship: bool
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "frame_count": 10,
+                "orientation": "East",
+                "bees_per_frame": 3000,
+                "total_bees": 30000,
+                "active_foragers": 7920,
+                "forager_ratio_percent": 26.4,
+                "daily_flight_hours": 9.49,
+                "total_forager_hours": 75160.8,
+                "bloom_period_days": 21,
+                "estimated_bloom_forager_hours": 1578376.8,
+                "orientation_bonus_minutes": 44.2,
+                "colony_strength_bonus_minutes": 45.0,
+                "has_cover_crop": True,
+                "pesticide_stewardship": True,
+            }
+        }
+
+
 # ========== SPATIAL OPTIMIZATION SCHEMAS ==========
 
 class PollinationOptimizationRequest(BaseModel):

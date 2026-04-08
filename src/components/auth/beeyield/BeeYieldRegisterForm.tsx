@@ -8,6 +8,8 @@ import { Loader2, Mail, Lock as LockIcon, User, ShieldCheck, Database, ArrowRigh
 import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
 import { ensureProfileForUser } from '@/lib/profileSync';
+import { useNavigate } from 'react-router-dom';
+import { getBeeYieldDashboardPath, setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
 
 interface BeeYieldRegisterFormProps {
     onSuccess?: () => void;
@@ -19,6 +21,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
     onSwitchToLogin
 }) => {
     const { signUp, signInWithGoogle } = useAuth();
+    const navigate = useNavigate();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -37,7 +40,9 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             return;
         }
 
-        const { error } = await signUp(email, password, {
+        setBeeYieldPendingOnboarding({ step: 'apiary' });
+
+        const { data, error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: 'professional',
@@ -64,15 +69,21 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 }
             }
 
-            toast.success("Account created");
-            onSuccess?.();
+            if (data?.session) {
+                toast.success("Account created");
+                navigate(getBeeYieldDashboardPath('apiary'), { replace: true });
+            } else {
+                toast.success("Check your email to verify your account.");
+                onSuccess?.();
+            }
         }
         setLoading(false);
     };
 
     const handleGoogleSignUp = async () => {
         setGoogleLoading(true);
-        localStorage.setItem('authReturnTo', '/beeyield-dashboard');
+        setBeeYieldPendingOnboarding({ step: 'apiary' });
+        localStorage.setItem('authReturnTo', getBeeYieldDashboardPath('apiary'));
         localStorage.setItem('authBackend', 'beeyield');
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield');
         if (error) {

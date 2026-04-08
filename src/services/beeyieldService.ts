@@ -605,6 +605,7 @@ export interface ScheduledReportCreateInput {
 export interface Request {
     id: string;
     user_id: string;
+    reference_id?: string;
     subject: string;
     description: string;
     status: 'pending' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'new' | 'Draft' | 'Open' | 'In Progress' | 'Resolved';
@@ -686,6 +687,7 @@ export interface RequestComment {
     author_id: string;
     message: string;
     created_at: string;
+    is_internal?: boolean;
 }
 
 // ========== APIARY & FARMER TYPES ==========
@@ -936,6 +938,7 @@ export interface Task {
     parent_task_id?: string;
     has_spawned_next?: boolean;
     recurrence_status?: 'active' | 'paused' | 'stopped';
+    completed_at?: string;
     created_at?: string;
     updated_at?: string;
     apiary?: Apiary;
@@ -959,6 +962,7 @@ export interface TaskCreateInput {
     parent_task_id?: string;
     has_spawned_next?: boolean;
     recurrence_status?: 'active' | 'paused' | 'stopped';
+    completed_at?: string;
     recurrence?: string;
 }
 

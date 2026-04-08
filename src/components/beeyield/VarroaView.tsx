@@ -1,7 +1,18 @@
 import React from 'react';
-import { CalendarDays, ChevronRight, FlaskConical, Leaf, Search, Settings, Sparkles, ThumbsUp, Wand2 } from 'lucide-react';
+import { CalendarDays, ChevronRight, FlaskConical, Leaf, Search, Settings, Sparkles, ThumbsUp, Trash2, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
+import {
+    useCreateVarroaReading,
+    useCreateVarroaTreatment,
+    useDeleteVarroaReading,
+    useDeleteVarroaTreatment,
+    useUpdateVarroaReading,
+    useUpdateVarroaTreatment,
+    useVarroaReadings,
+    useVarroaTreatments,
+} from '@/hooks/useVarroa';
 import {
     type BroodMode,
     type ColonyStrength,
@@ -50,6 +61,38 @@ const quickLinks = [
     'BeeHUB Agro Intelligence',
     'Settings',
 ];
+
+const treatmentLabels: Record<string, string> = {
+    oxalic_acid: 'Oxalic acid',
+    formic_acid: 'Formic acid',
+    thymol: 'Thymol',
+    amitraz: 'Amitraz',
+    fluvalinate: 'Fluvalinate',
+    biotechnical: 'Biotechnical',
+    other: 'Other',
+};
+
+const treatmentTypeToModel = (value: string) => value.replace(/_/g, ' ');
+
+const defaultReadingForm = (today: string, hiveId: string) => ({
+    hive_id: hiveId,
+    reading_date: today,
+    method: 'alcohol_wash' as const,
+    mite_count: 0,
+    sample_size: 300,
+    inspector_name: '',
+    notes: '',
+});
+
+const defaultTreatmentForm = (today: string, hiveId: string) => ({
+    hive_id: hiveId,
+    treatment_type: 'amitraz' as const,
+    start_date: today,
+    end_date: '',
+    dosage: '',
+    effectiveness_percent: 95,
+    notes: '',
+});
 
 const formatDate = (value: string) => {
     const date = new Date(value);
@@ -121,6 +164,10 @@ const ToggleChip = ({
 
 const VarroaView: React.FC = () => {
     const today = React.useMemo(() => new Date().toISOString().slice(0, 10), []);
+    const { data: apiaries = [] } = useApiaries();
+    const { data: hives = [] } = useHives();
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState('all_apiaries');
+    const [selectedHiveId, setSelectedHiveId] = React.useState('');
     const [startMode, setStartMode] = React.useState<StartMode>('default');
     const [startDate, setStartDate] = React.useState(today);
     const [initialMiteCount, setInitialMiteCount] = React.useState(120);
@@ -145,10 +192,117 @@ const VarroaView: React.FC = () => {
     const [treatmentAdvisorTemp, setTreatmentAdvisorTemp] = React.useState(20);
     const [oaTemperature, setOaTemperature] = React.useState(10);
     const [hasBrood, setHasBrood] = React.useState(true);
+    const [editingReadingId, setEditingReadingId] = React.useState<string | null>(null);
+    const [editingTreatmentId, setEditingTreatmentId] = React.useState<string | null>(null);
+    const [readingForm, setReadingForm] = React.useState(() => defaultReadingForm(today, ''));
+    const [treatmentForm, setTreatmentForm] = React.useState(() => defaultTreatmentForm(today, ''));
+
+    const filteredHives = React.useMemo(
+        () => hives.filter((hive) => selectedApiaryId === 'all_apiaries' || hive.apiary_id === selectedApiaryId),
+        [hives, selectedApiaryId],
+    );
+
+    React.useEffect(() => {
+        if (!filteredHives.length) {
+            setSelectedHiveId('');
+            return;
+        }
+        if (!filteredHives.some((hive) => hive.id === selectedHiveId)) {
+            setSelectedHiveId(filteredHives[0].id);
+        }
+    }, [filteredHives, selectedHiveId]);
+
+    React.useEffect(() => {
+        setReadingForm((current) => ({ ...current, hive_id: selectedHiveId }));
+        setTreatmentForm((current) => ({ ...current, hive_id: selectedHiveId }));
+    }, [selectedHiveId]);
+
+    const { data: varroaReadings = [], isLoading: readingsLoading } = useVarroaReadings(selectedHiveId || undefined);
+    const { data: varroaTreatments = [], isLoading: treatmentsLoading } = useVarroaTreatments(selectedHiveId || undefined);
+    const createReadingMutation = useCreateVarroaReading();
+    const updateReadingMutation = useUpdateVarroaReading();
+    const deleteReadingMutation = useDeleteVarroaReading();
+    const createTreatmentMutation = useCreateVarroaTreatment();
+    const updateTreatmentMutation = useUpdateVarroaTreatment();
+    const deleteTreatmentMutation = useDeleteVarroaTreatment();
+
+    const applyReadingToSimulation = React.useCallback((miteCount: number, readingDate: string, method: string) => {
+        setStartMode('observed');
+        setStartDate(readingDate);
+        setMeasurementType(method);
+        setMitesPerDay(miteCount);
+        setInitialMiteCount(Math.max(miteCount * colonyMultiplier, miteCount));
+    }, [colonyMultiplier]);
+
+    const applyTreatmentToSimulation = React.useCallback((type: string, date?: string) => {
+        setTreatmentType(treatmentTypeToModel(type));
+        if (date) setStartDate(date);
+        setTreatmentDay(0);
+    }, []);
+
+    const resetReadingForm = React.useCallback(() => {
+        setEditingReadingId(null);
+        setReadingForm(defaultReadingForm(today, selectedHiveId));
+    }, [selectedHiveId, today]);
+
+    const resetTreatmentForm = React.useCallback(() => {
+        setEditingTreatmentId(null);
+        setTreatmentForm(defaultTreatmentForm(today, selectedHiveId));
+    }, [selectedHiveId, today]);
 
     React.useEffect(() => {
         if (startMode === 'observed') setInitialMiteCount(mitesPerDay * colonyMultiplier);
     }, [startMode, mitesPerDay, colonyMultiplier]);
+
+    React.useEffect(() => {
+        if (editingReadingId || !varroaReadings.length) return;
+        const latestReading = varroaReadings[0];
+        applyReadingToSimulation(latestReading.mite_count, latestReading.reading_date, latestReading.method);
+    }, [applyReadingToSimulation, editingReadingId, varroaReadings]);
+
+    React.useEffect(() => {
+        if (editingTreatmentId || !varroaTreatments.length) return;
+        const latestTreatment = varroaTreatments[0];
+        setTreatmentType(treatmentTypeToModel(latestTreatment.treatment_type));
+    }, [editingTreatmentId, varroaTreatments]);
+
+    const handleSaveReading = React.useCallback(async () => {
+        if (!readingForm.hive_id) return;
+        const payload = {
+            ...readingForm,
+            mite_count: Number(readingForm.mite_count) || 0,
+            sample_size: Number(readingForm.sample_size) || 300,
+        };
+
+        if (editingReadingId) {
+            await updateReadingMutation.mutateAsync({ id: editingReadingId, data: payload });
+        } else {
+            await createReadingMutation.mutateAsync(payload);
+        }
+
+        applyReadingToSimulation(payload.mite_count, payload.reading_date, payload.method);
+        resetReadingForm();
+    }, [applyReadingToSimulation, createReadingMutation, editingReadingId, readingForm, resetReadingForm, updateReadingMutation]);
+
+    const handleSaveTreatment = React.useCallback(async () => {
+        if (!treatmentForm.hive_id) return;
+        const payload = {
+            ...treatmentForm,
+            end_date: treatmentForm.end_date || undefined,
+            dosage: treatmentForm.dosage || undefined,
+            effectiveness_percent: Number(treatmentForm.effectiveness_percent),
+            notes: treatmentForm.notes || undefined,
+        };
+
+        if (editingTreatmentId) {
+            await updateTreatmentMutation.mutateAsync({ id: editingTreatmentId, data: payload });
+        } else {
+            await createTreatmentMutation.mutateAsync(payload);
+        }
+
+        applyTreatmentToSimulation(payload.treatment_type, payload.start_date);
+        resetTreatmentForm();
+    }, [applyTreatmentToSimulation, createTreatmentMutation, editingTreatmentId, resetTreatmentForm, treatmentForm, updateTreatmentMutation]);
 
     const simulation = React.useMemo(
         () =>
@@ -213,6 +367,8 @@ const VarroaView: React.FC = () => {
     );
 
     const estimatedMiteCount = modelSummary.estimatedMiteCount;
+    const latestReading = varroaReadings[0];
+    const latestTreatment = varroaTreatments[0];
     const lastPoint = simulationData[simulationData.length - 1] ?? {
         population: 0,
         phoretic: 0,
@@ -262,6 +418,240 @@ const VarroaView: React.FC = () => {
                 <header className="space-y-1 px-1">
                     <h1 className="text-[32px] font-semibold tracking-[-0.04em] text-[#1a1a1a]">Varroa Modeling</h1>
                 </header>
+
+                <section className={cn(cardClass, 'p-5 md:p-6')}>
+                    <div className="space-y-6">
+                        <div>
+                            <h2 className={titleClass}>Field records</h2>
+                            <p className="mt-1 text-[13px] text-[#6b7280]">Capture dedicated mite readings and treatments for a hive, then reuse them in the simulator.</p>
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <Field label="Apiary">
+                                <select value={selectedApiaryId} onChange={(e) => setSelectedApiaryId(e.target.value)} className={inputClass}>
+                                    <option value="all_apiaries">All apiaries</option>
+                                    {apiaries.map((apiary) => (
+                                        <option key={apiary.id} value={apiary.id}>{apiary.name}</option>
+                                    ))}
+                                </select>
+                            </Field>
+                            <Field label="Hive">
+                                <select value={selectedHiveId} onChange={(e) => setSelectedHiveId(e.target.value)} className={inputClass}>
+                                    <option value="">Select hive</option>
+                                    {filteredHives.map((hive) => (
+                                        <option key={hive.id} value={hive.id}>{hive.hive_code}</option>
+                                    ))}
+                                </select>
+                            </Field>
+                        </div>
+
+                        <div className="grid gap-4 xl:grid-cols-2">
+                            <div className={cn(softCardClass, 'p-4')}>
+                                <div className="flex items-center justify-between gap-3">
+                                    <div>
+                                        <div className="text-[14px] font-semibold text-[#1a1a1a]">Varroa readings</div>
+                                        <div className="text-[12px] text-[#6b7280]">The latest saved reading becomes your observed-start input.</div>
+                                    </div>
+                                    {editingReadingId ? <button type="button" onClick={resetReadingForm} className={chipClass}>Cancel edit</button> : null}
+                                </div>
+
+                                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                                    <Field label="Reading date">
+                                        <input type="date" value={readingForm.reading_date} onChange={(e) => setReadingForm((current) => ({ ...current, reading_date: e.target.value }))} className={inputClass} />
+                                    </Field>
+                                    <Field label="Method">
+                                        <select value={readingForm.method} onChange={(e) => setReadingForm((current) => ({ ...current, method: e.target.value as typeof current.method }))} className={inputClass}>
+                                            <option value="alcohol_wash">Alcohol wash</option>
+                                            <option value="sticky_board">Sticky board</option>
+                                            <option value="sugar_roll">Sugar roll</option>
+                                            <option value="visual">Visual</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </Field>
+                                    <Field label="Mite count">
+                                        <input type="number" value={readingForm.mite_count} onChange={(e) => setReadingForm((current) => ({ ...current, mite_count: Number(e.target.value) || 0 }))} className={inputClass} />
+                                    </Field>
+                                    <Field label="Sample size">
+                                        <input type="number" value={readingForm.sample_size} onChange={(e) => setReadingForm((current) => ({ ...current, sample_size: Number(e.target.value) || 300 }))} className={inputClass} />
+                                    </Field>
+                                    <Field label="Inspector">
+                                        <input value={readingForm.inspector_name} onChange={(e) => setReadingForm((current) => ({ ...current, inspector_name: e.target.value }))} className={inputClass} />
+                                    </Field>
+                                    <Field label="Notes">
+                                        <input value={readingForm.notes} onChange={(e) => setReadingForm((current) => ({ ...current, notes: e.target.value }))} className={inputClass} />
+                                    </Field>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    disabled={!selectedHiveId || createReadingMutation.isPending || updateReadingMutation.isPending}
+                                    onClick={handleSaveReading}
+                                    className="mt-4 h-11 w-full rounded-full bg-[#f5b938] text-[14px] font-medium text-[#1f2937] shadow-[0_10px_22px_rgba(245,185,56,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    {editingReadingId ? 'Update reading' : 'Save reading'}
+                                </button>
+
+                                <div className="mt-4 space-y-3">
+                                    {readingsLoading ? (
+                                        <div className="text-[13px] text-[#6b7280]">Loading readings...</div>
+                                    ) : varroaReadings.length === 0 ? (
+                                        <div className="text-[13px] text-[#6b7280]">No readings recorded for this hive yet.</div>
+                                    ) : (
+                                        varroaReadings.slice(0, 4).map((reading) => (
+                                            <div key={reading.id} className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
+                                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                                    <div>
+                                                        <div className="text-[14px] font-semibold text-[#1a1a1a]">{formatDate(reading.reading_date)} · {reading.method.replace(/_/g, ' ')}</div>
+                                                        <div className="mt-1 text-[12px] text-[#6b7280]">{reading.mite_count} mites / {reading.sample_size} bees · {reading.infestation_rate.toFixed(2)}%</div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <button type="button" onClick={() => applyReadingToSimulation(reading.mite_count, reading.reading_date, reading.method)} className={chipClass}>Use</button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setEditingReadingId(reading.id);
+                                                                setReadingForm({
+                                                                    hive_id: reading.hive_id,
+                                                                    reading_date: reading.reading_date,
+                                                                    method: reading.method,
+                                                                    mite_count: reading.mite_count,
+                                                                    sample_size: reading.sample_size,
+                                                                    inspector_name: reading.inspector_name || '',
+                                                                    notes: reading.notes || '',
+                                                                });
+                                                            }}
+                                                            className={chipClass}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={async () => {
+                                                                if (!window.confirm('Delete this varroa reading?')) return;
+                                                                await deleteReadingMutation.mutateAsync(reading.id);
+                                                                if (editingReadingId === reading.id) resetReadingForm();
+                                                            }}
+                                                            className={chipClass}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className={cn(softCardClass, 'p-4')}>
+                                <div className="flex items-center justify-between gap-3">
+                                    <div>
+                                        <div className="text-[14px] font-semibold text-[#1a1a1a]">Treatments</div>
+                                        <div className="text-[12px] text-[#6b7280]">Saved treatments can be pushed into the active simulation.</div>
+                                    </div>
+                                    {editingTreatmentId ? <button type="button" onClick={resetTreatmentForm} className={chipClass}>Cancel edit</button> : null}
+                                </div>
+
+                                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                                    <Field label="Treatment type">
+                                        <select value={treatmentForm.treatment_type} onChange={(e) => setTreatmentForm((current) => ({ ...current, treatment_type: e.target.value as typeof current.treatment_type }))} className={inputClass}>
+                                            {Object.entries(treatmentLabels).map(([value, label]) => (
+                                                <option key={value} value={value}>{label}</option>
+                                            ))}
+                                        </select>
+                                    </Field>
+                                    <Field label="Start date">
+                                        <input type="date" value={treatmentForm.start_date} onChange={(e) => setTreatmentForm((current) => ({ ...current, start_date: e.target.value }))} className={inputClass} />
+                                    </Field>
+                                    <Field label="End date">
+                                        <input type="date" value={treatmentForm.end_date} onChange={(e) => setTreatmentForm((current) => ({ ...current, end_date: e.target.value }))} className={inputClass} />
+                                    </Field>
+                                    <Field label="Effectiveness (%)">
+                                        <input type="number" value={treatmentForm.effectiveness_percent} onChange={(e) => setTreatmentForm((current) => ({ ...current, effectiveness_percent: Number(e.target.value) || 0 }))} className={inputClass} />
+                                    </Field>
+                                    <Field label="Dosage">
+                                        <input value={treatmentForm.dosage} onChange={(e) => setTreatmentForm((current) => ({ ...current, dosage: e.target.value }))} className={inputClass} />
+                                    </Field>
+                                    <Field label="Notes">
+                                        <input value={treatmentForm.notes} onChange={(e) => setTreatmentForm((current) => ({ ...current, notes: e.target.value }))} className={inputClass} />
+                                    </Field>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    disabled={!selectedHiveId || createTreatmentMutation.isPending || updateTreatmentMutation.isPending}
+                                    onClick={handleSaveTreatment}
+                                    className="mt-4 h-11 w-full rounded-full bg-[#f5b938] text-[14px] font-medium text-[#1f2937] shadow-[0_10px_22px_rgba(245,185,56,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    {editingTreatmentId ? 'Update treatment' : 'Save treatment'}
+                                </button>
+
+                                <div className="mt-4 space-y-3">
+                                    {treatmentsLoading ? (
+                                        <div className="text-[13px] text-[#6b7280]">Loading treatments...</div>
+                                    ) : varroaTreatments.length === 0 ? (
+                                        <div className="text-[13px] text-[#6b7280]">No treatments recorded for this hive yet.</div>
+                                    ) : (
+                                        varroaTreatments.slice(0, 4).map((treatment) => (
+                                            <div key={treatment.id} className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
+                                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                                    <div>
+                                                        <div className="text-[14px] font-semibold text-[#1a1a1a]">{treatmentLabels[treatment.treatment_type] || treatment.treatment_type}</div>
+                                                        <div className="mt-1 text-[12px] text-[#6b7280]">
+                                                            {formatDate(treatment.start_date)}
+                                                            {treatment.end_date ? ` to ${formatDate(treatment.end_date)}` : ''}
+                                                            {treatment.effectiveness_percent !== undefined ? ` · ${treatment.effectiveness_percent}%` : ''}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <button type="button" onClick={() => applyTreatmentToSimulation(treatment.treatment_type, treatment.start_date)} className={chipClass}>Use</button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setEditingTreatmentId(treatment.id);
+                                                                setTreatmentForm({
+                                                                    hive_id: treatment.hive_id,
+                                                                    treatment_type: treatment.treatment_type,
+                                                                    start_date: treatment.start_date,
+                                                                    end_date: treatment.end_date || '',
+                                                                    dosage: treatment.dosage || '',
+                                                                    effectiveness_percent: treatment.effectiveness_percent ?? 0,
+                                                                    notes: treatment.notes || '',
+                                                                });
+                                                            }}
+                                                            className={chipClass}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={async () => {
+                                                                if (!window.confirm('Delete this varroa treatment?')) return;
+                                                                await deleteTreatmentMutation.mutateAsync(treatment.id);
+                                                                if (editingTreatmentId === treatment.id) resetTreatmentForm();
+                                                            }}
+                                                            className={chipClass}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {selectedHiveId && latestReading ? (
+                            <div className="grid gap-3 md:grid-cols-3">
+                                <StatTile label="Latest infestation" value={`${latestReading.infestation_rate.toFixed(2)}%`} />
+                                <StatTile label="Latest sample" value={`${latestReading.mite_count}/${latestReading.sample_size}`} />
+                                <StatTile label="Latest treatment" value={latestTreatment ? (treatmentLabels[latestTreatment.treatment_type] || latestTreatment.treatment_type) : 'None'} />
+                            </div>
+                        ) : null}
+                    </div>
+                </section>
 
                 <section className={cn(cardClass, 'p-5 md:p-6')}>
                     <div className="space-y-4">
@@ -433,8 +823,13 @@ const VarroaView: React.FC = () => {
                                 <input type="number" value={temperature} onChange={(e) => setTemperature(Number(e.target.value) || 0)} className={inputClass} />
                             </Field>
                         </div>
-                        <button type="button" className="h-11 w-full rounded-full bg-[#f5b938] text-[14px] font-medium text-[#1f2937] shadow-[0_10px_22px_rgba(245,185,56,0.25)]">
-                            Add treatment
+                        <button
+                            type="button"
+                            disabled={!latestTreatment}
+                            onClick={() => latestTreatment && applyTreatmentToSimulation(latestTreatment.treatment_type, latestTreatment.start_date)}
+                            className="h-11 w-full rounded-full bg-[#f5b938] text-[14px] font-medium text-[#1f2937] shadow-[0_10px_22px_rgba(245,185,56,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {latestTreatment ? `Use latest saved treatment (${treatmentLabels[latestTreatment.treatment_type] || latestTreatment.treatment_type})` : 'Save a treatment record to reuse it here'}
                         </button>
                     </div>
                 </section>

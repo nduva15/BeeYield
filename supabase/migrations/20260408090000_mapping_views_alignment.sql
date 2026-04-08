@@ -28,6 +28,22 @@ alter table public.forage_zones
     add column if not exists longitude double precision,
     add column if not exists updated_at timestamptz default now();
 
+do $$
+declare
+    forage_constraint text;
+begin
+    select conname
+    into forage_constraint
+    from pg_constraint
+    where conrelid = 'public.forage_zones'::regclass
+      and contype = 'c'
+      and pg_get_constraintdef(oid) ilike '%season%';
+
+    if forage_constraint is not null then
+        execute format('alter table public.forage_zones drop constraint %I', forage_constraint);
+    end if;
+end $$;
+
 alter table public.forage_zones
     alter column radius_km set default 1.5;
 
@@ -72,6 +88,17 @@ create policy "Growers manage own orchards"
 on public.orchards for all
 using ((select auth.uid()) = grower_id)
 with check ((select auth.uid()) = grower_id);
+
+create policy "Beekeepers see contracted orchards"
+on public.orchards for select
+using (
+    exists (
+        select 1
+        from public.pollination_contracts
+        where pollination_contracts.orchard_id = orchards.id
+          and pollination_contracts.beekeeper_id = (select auth.uid())
+    )
+);
 
 create index if not exists idx_orchards_grower_id on public.orchards(grower_id);
 create index if not exists idx_orchards_apiary_id on public.orchards(apiary_id);

@@ -143,6 +143,19 @@ async def calculate_pollination_needs(
     return await pollination_service.calculate_pollination_needs(input_data, token=token)
 
 
+@router.post("/bloom", response_model=schemas.BloomSimulationResult)
+async def simulate_bloom_pollination(
+    input_data: schemas.BloomSimulationInput,
+):
+    """
+    Simulate bloom-period pollination output for a single colony.
+
+    Captures the bloom-management effects of hive orientation, cover crops,
+    and pesticide stewardship on active foragers and forager-hours.
+    """
+    return await pollination_service.simulate_bloom(input_data)
+
+
 # ========== FLIGHT OPTIMIZATION (AHP / SPATIAL) ==========
 
 @router.post("/optimize", response_model=List[schemas.PollinationPlacementResult])
