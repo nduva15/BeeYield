@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, Shield } from "lucide-react";
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { ensureProfileForUser } from '@/lib/profileSync';
+import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
 
 interface LoginFormProps {
     onSuccess?: () => void;
@@ -207,16 +208,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
             'admin': '/ceba'
         };
         const returnTo = returnPathMap[variant] || '/';
+        const redirectTo = buildAuthCallbackUrl({ backend: activeBackend, returnTo, requireMetadata });
 
-        localStorage.setItem('authReturnTo', returnTo);
-        localStorage.setItem('authBackend', activeBackend);
-        if (requireMetadata) {
-            localStorage.setItem('authRequireMetadata', JSON.stringify(requireMetadata));
-        } else {
-            localStorage.removeItem('authRequireMetadata');
-        }
+        persistAuthRedirectState({ backend: activeBackend, returnTo, requireMetadata });
 
-        const { error } = await signInWithGoogle(undefined, activeBackend);
+        const { error } = await signInWithGoogle(undefined, activeBackend, { redirectTo });
         if (error) {
             toast.error('Google login failed', { description: error.message });
             setGoogleLoading(false);

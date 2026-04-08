@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, ArrowRight, LogIn } from "lucide-react";
+import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
 
 interface ShopLoginFormProps {
     onSuccess?: () => void;
@@ -67,10 +68,10 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
-        localStorage.setItem('authReturnTo', '/shop-dashboard');
-        localStorage.setItem('authBackend', 'shop');
+        const redirectTo = buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard' });
+        persistAuthRedirectState({ backend: 'shop', returnTo: '/shop-dashboard' });
 
-        const { error } = await signInWithGoogle(undefined, 'shop');
+        const { error } = await signInWithGoogle(undefined, 'shop', { redirectTo });
         if (error) {
             toast.error('Google sign-in failed', { description: error.message });
             setGoogleLoading(false);

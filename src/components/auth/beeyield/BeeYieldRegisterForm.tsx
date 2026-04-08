@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
 import { ensureProfileForUser } from '@/lib/profileSync';
 import { useNavigate } from 'react-router-dom';
-import { getBeeYieldDashboardPath, setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
+import { clearBeeYieldPendingOnboarding, getBeeYieldDashboardPath, setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
+import { buildAuthCallbackUrl } from '@/lib/authRedirect';
 
 interface BeeYieldRegisterFormProps {
     onSuccess?: () => void;
@@ -40,16 +41,19 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             return;
         }
 
-        setBeeYieldPendingOnboarding({ step: 'apiary' });
+        setBeeYieldPendingOnboarding({ step: 'apiary', email });
 
         const { data, error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: 'professional',
             beeyield_active: true
-        }, 'beeyield');
+        }, 'beeyield', {
+            emailRedirectTo: buildAuthCallbackUrl({ backend: 'beeyield', returnTo: getBeeYieldDashboardPath('apiary') }),
+        });
 
         if (error) {
+            clearBeeYieldPendingOnboarding();
             toast.error("Registration failed", { description: error.message });
         } else {
             const { supabaseBeeYield } = await import('@/lib/supabase');
@@ -82,10 +86,11 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
 
     const handleGoogleSignUp = async () => {
         setGoogleLoading(true);
-        setBeeYieldPendingOnboarding({ step: 'apiary' });
+        setBeeYieldPendingOnboarding({ step: 'apiary', email });
         localStorage.setItem('authReturnTo', getBeeYieldDashboardPath('apiary'));
         localStorage.setItem('authBackend', 'beeyield');
-        const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield');
+        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo: getBeeYieldDashboardPath('apiary') });
+        const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield', { redirectTo });
         if (error) {
             toast.error("Google sign-up failed", { description: error.message });
             setGoogleLoading(false);

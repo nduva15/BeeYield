@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, Hexagon, Zap, Activity, LogIn, ShieldCheck } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
+import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
 
 interface BeeYieldLoginFormProps {
     onSuccess?: () => void;
@@ -69,10 +70,10 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
-        localStorage.setItem('authReturnTo', '/beeyield-dashboard');
-        localStorage.setItem('authBackend', 'beeyield');
+        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo: '/beeyield-dashboard' });
+        persistAuthRedirectState({ backend: 'beeyield', returnTo: '/beeyield-dashboard' });
 
-        const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield');
+        const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield', { redirectTo });
         if (error) {
             toast.error('Google sign-in failed', { description: error.message });
             setGoogleLoading(false);

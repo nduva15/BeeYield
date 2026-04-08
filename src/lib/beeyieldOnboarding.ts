@@ -2,6 +2,8 @@ export type BeeYieldOnboardingStep = 'apiary' | 'hive' | 'device';
 
 export interface BeeYieldOnboardingState {
     step: BeeYieldOnboardingStep;
+    email?: string;
+    createdAt?: string;
 }
 
 export interface BeeYieldDashboardTarget {
@@ -10,6 +12,18 @@ export interface BeeYieldDashboardTarget {
 }
 
 const STORAGE_KEY = 'beeyieldPendingOnboarding';
+const MAX_ONBOARDING_AGE_MS = 1000 * 60 * 60 * 24 * 7;
+
+const normalizeEmail = (value?: string | null) => value?.trim().toLowerCase() || '';
+
+const isFreshOnboardingState = (createdAt?: string) => {
+    if (!createdAt) return true;
+
+    const createdAtMs = new Date(createdAt).getTime();
+    if (Number.isNaN(createdAtMs)) return false;
+
+    return (Date.now() - createdAtMs) <= MAX_ONBOARDING_AGE_MS;
+};
 
 export const buildBeeYieldOnboardingAction = (
     step: BeeYieldOnboardingStep,
@@ -57,18 +71,37 @@ export const getBeeYieldDashboardPath = (
 };
 
 export const setBeeYieldPendingOnboarding = (state: BeeYieldOnboardingState = { step: 'apiary' }) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        ...state,
+        email: normalizeEmail(state.email) || undefined,
+        createdAt: state.createdAt || new Date().toISOString(),
+    }));
 };
 
-export const getBeeYieldPendingOnboarding = (): BeeYieldOnboardingState | null => {
+export const getBeeYieldPendingOnboarding = (userEmail?: string | null): BeeYieldOnboardingState | null => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
 
     try {
         const parsed = JSON.parse(raw) as BeeYieldOnboardingState;
-        if (parsed?.step === 'apiary' || parsed?.step === 'hive' || parsed?.step === 'device') {
-            return parsed;
+
+        if (!(parsed?.step === 'apiary' || parsed?.step === 'hive' || parsed?.step === 'device')) {
+            localStorage.removeItem(STORAGE_KEY);
+            return null;
         }
+
+        if (!isFreshOnboardingState(parsed.createdAt)) {
+            localStorage.removeItem(STORAGE_KEY);
+            return null;
+        }
+
+        const pendingEmail = normalizeEmail(parsed.email);
+        const currentEmail = normalizeEmail(userEmail);
+        if (pendingEmail && currentEmail && pendingEmail !== currentEmail) {
+            return null;
+        }
+
+        return parsed;
     } catch (error) {
         console.error('Failed to parse BeeYield onboarding state', error);
     }
@@ -81,8 +114,8 @@ export const clearBeeYieldPendingOnboarding = () => {
     localStorage.removeItem(STORAGE_KEY);
 };
 
-export const getBeeYieldPendingOnboardingPath = (): string | null => {
-    const state = getBeeYieldPendingOnboarding();
+export const getBeeYieldPendingOnboardingPath = (userEmail?: string | null): string | null => {
+    const state = getBeeYieldPendingOnboarding(userEmail);
     if (!state) return null;
     return getBeeYieldDashboardPath(state.step);
 };

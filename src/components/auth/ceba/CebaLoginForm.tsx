@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, Shield, Terminal, Activity, Server, Globe, LogIn } from "lucide-react";
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { ensureProfileForUser } from '@/lib/profileSync';
+import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
 
 interface CebaLoginFormProps {
     onSuccess?: () => void;
@@ -125,10 +126,10 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
-        localStorage.setItem('authReturnTo', '/ceba');
-        localStorage.setItem('authBackend', 'ceba');
+        const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba' });
+        persistAuthRedirectState({ backend: 'ceba', returnTo: '/ceba' });
 
-        const { error } = await signInWithGoogle(undefined, 'ceba');
+        const { error } = await signInWithGoogle(undefined, 'ceba', { redirectTo });
         if (error) {
             toast.error('Google login failed', { description: error.message });
             setGoogleLoading(false);

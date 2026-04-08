@@ -116,7 +116,19 @@ with check ((select auth.uid()) = grower_id);
 
 do $$
 begin
-    if to_regclass('public.pollination_contracts') is not null then
+    if exists (
+        select 1
+        from information_schema.columns
+        where table_schema = 'public'
+          and table_name = 'pollination_contracts'
+          and column_name = 'orchard_id'
+    ) and exists (
+        select 1
+        from information_schema.columns
+        where table_schema = 'public'
+          and table_name = 'pollination_contracts'
+          and column_name = 'beekeeper_id'
+    ) then
         execute $policy$
             create policy "Beekeepers see contracted orchards"
             on public.orchards for select

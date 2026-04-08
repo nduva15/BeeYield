@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Shield, UserPlus } from "lucide-react";
 import { ensureProfileForUser } from '@/lib/profileSync';
+import { buildAuthCallbackUrl } from '@/lib/authRedirect';
 
 interface CebaRegisterFormProps {
     onSuccess?: () => void;
@@ -35,12 +36,14 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
             return;
         }
 
-        const { error } = await signUp(email, password, {
+        const { data: signupData, error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: 'admin',
             ceba_active: true
-        }, 'ceba');
+        }, 'ceba', {
+            emailRedirectTo: buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba' }),
+        });
 
         if (error) {
             toast.error("Registration failed", { description: error.message });
@@ -62,7 +65,11 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                 }
             }
 
-            toast.success("Admin account created successfully");
+            if (signupData?.session) {
+                toast.success("Admin account created successfully");
+            } else {
+                toast.success("Check your email to verify your admin account.");
+            }
             onSuccess?.();
         }
         setLoading(false);
@@ -72,8 +79,8 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
         setGoogleLoading(true);
         localStorage.setItem('authReturnTo', '/ceba');
         localStorage.setItem('authBackend', 'ceba');
-
-        const { error } = await signInWithGoogle({ ceba_active: true }, 'ceba');
+        const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba' });
+        const { error } = await signInWithGoogle({ ceba_active: true }, 'ceba', { redirectTo });
         if (error) {
             toast.error('Google registration failed', { description: error.message });
             setGoogleLoading(false);

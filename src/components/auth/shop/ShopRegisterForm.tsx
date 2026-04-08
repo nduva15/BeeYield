@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Sparkles, UserPlus } from "lucide-react";
 import { ensureProfileForUser } from '@/lib/profileSync';
+import { buildAuthCallbackUrl } from '@/lib/authRedirect';
 
 interface ShopRegisterFormProps {
     onSuccess?: () => void;
@@ -35,11 +36,13 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
             return;
         }
 
-        const { error } = await signUp(email, password, {
+        const { data: signupData, error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: 'user'
-        }, 'shop');
+        }, 'shop', {
+            emailRedirectTo: buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard' }),
+        });
 
         if (error) {
             toast.error("Registration failed", { description: error.message });
@@ -61,7 +64,11 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
                 }
             }
 
-            toast.success("Account created successfully");
+            if (signupData?.session) {
+                toast.success("Account created successfully");
+            } else {
+                toast.success("Check your email to verify your account.");
+            }
             onSuccess?.();
         }
         setLoading(false);
@@ -71,7 +78,8 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
         setGoogleLoading(true);
         localStorage.setItem('authReturnTo', '/shop-dashboard');
         localStorage.setItem('authBackend', 'shop');
-        const { error } = await signInWithGoogle(undefined, 'shop');
+        const redirectTo = buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard' });
+        const { error } = await signInWithGoogle(undefined, 'shop', { redirectTo });
         if (error) {
             toast.error("Google registration failed", { description: error.message });
             setGoogleLoading(false);
