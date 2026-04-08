@@ -13,9 +13,8 @@ import {
 } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import beeyieldService, { Apiary, Hive, Inspection, Harvest } from '@/services/beeyieldService';
+import beeyieldService, { Apiary, Hive, Inspection, Harvest, Task } from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
 import { glass, GlassStatCard } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
@@ -23,7 +22,6 @@ import { useHarvests } from '@/hooks/useHarvests';
 import { useInspections, useCreateInspection, useUpdateInspection, useDeleteInspection } from '@/hooks/useInspections';
 import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 import { useCreateVarroaReading, useUpdateVarroaReading, useVarroaReadings } from '@/hooks/useVarroa';
-import { Task } from '@/services/beeyieldService';
 
 interface InspectionsViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -94,9 +92,6 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>('all_hives');
     const [selectedBatchCode, setSelectedBatchCode] = React.useState<string>('all_batches');
     const [searchQuery, setSearchQuery] = React.useState('');
-
-    const { user, beeyieldUser } = useAuth();
-    const userId = beeyieldUser?.id || user?.id;
 
     // Task linked logic
     const [linkedTaskId, setLinkedTaskId] = React.useState<string | null>(null);
@@ -239,7 +234,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                 });
             }
 
-            if (savedInspection && Number(formData.varroa_mite_count) > 0) {
+            if (savedInspection && (Number(formData.varroa_mite_count) > 0 || syncedVisualReading)) {
                 const syncNotes = ['Auto-synced from inspection log.', formData.findings].filter(Boolean).join(' ');
 
                 if (syncedVisualReading) {
@@ -1047,12 +1042,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
                                             {/* Content Section */}
                                             <div className="flex-1 space-y-3 min-w-0 relative">
-                                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                                                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                                                     {[
                                                         { l: 'Temp', v: `${inspection.temperature_celsius}°C`, i: Thermometer, c: 'text-red-500', b: 'bg-red-500/10' },
                                                         { l: 'Honey', v: `${inspection.honey_stores}kg`, i: Zap, c: 'text-[#F4D03F]', b: 'bg-[#F4D03F]/10' },
                                                         { l: 'Brood', v: (inspection.brood_pattern || 'Solid'), i: Target, c: 'text-[#1B9157]', b: 'bg-[#1B9157]/10' },
-                                                        { l: 'Weather', v: (inspection.weather_condition || 'Sunny'), i: Sun, c: 'text-[#F4D03F]', b: 'bg-orange-400/10' }
+                                                        { l: 'Weather', v: (inspection.weather_condition || 'Sunny'), i: Sun, c: 'text-[#F4D03F]', b: 'bg-orange-400/10' },
+                                                        { l: 'Varroa', v: `${inspection.varroa_mite_count || 0} mites`, i: Microscope, c: 'text-red-500', b: 'bg-red-500/10' }
                                                     ].map((s, idx) => {
                                                         const Icon = s.i;
                                                         return (

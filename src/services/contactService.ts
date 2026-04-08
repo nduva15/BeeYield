@@ -21,6 +21,7 @@ export interface ContactSubmission {
     experience_years?: string;
     topic: string;
     message?: string;
+    form_specific_data?: Record<string, unknown>;
 }
 
 export interface PollinationRequest {

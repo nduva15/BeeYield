@@ -177,7 +177,7 @@ export function UsbHubDashboard() {
             return;
         }
 
-        let parsedConfig: Record<string, any> = {};
+        let parsedConfig: Record<string, any>;
         try {
             parsedConfig = configJson.trim() ? JSON.parse(configJson) : {};
         } catch {

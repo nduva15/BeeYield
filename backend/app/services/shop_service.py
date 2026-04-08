@@ -214,13 +214,48 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
     }
 
 async def apply_coupon_code(code: str, total_amount: float) -> dict:
-    """Validate a coupon code — Python implementation."""
-    # TODO: Implement coupon lookup from database
-    return {"valid": False, "message": "Invalid or expired coupon code."}
+    """Validate coupon codes for the ecommerce checkout flow."""
+    normalized = (code or "").strip().upper()
+
+    coupon_rules = {
+        "WELCOME10": {"discount_percent": 10.0, "minimum_amount": 1500.0, "message": "Welcome offer applied."},
+        "HONEY15": {"discount_percent": 15.0, "minimum_amount": 3000.0, "message": "Honey harvest promo applied."},
+        "BEEYIELD5": {"discount_percent": 5.0, "minimum_amount": 0.0, "message": "Loyalty discount applied."},
+    }
+
+    rule = coupon_rules.get(normalized)
+    if not rule:
+        return {
+            "valid": False,
+            "code": normalized,
+            "discount_percent": 0.0,
+            "discount_amount": 0.0,
+            "message": "Invalid or expired coupon code.",
+        }
+
+    if total_amount < rule["minimum_amount"]:
+        return {
+            "valid": False,
+            "code": normalized,
+            "discount_percent": rule["discount_percent"],
+            "discount_amount": 0.0,
+            "message": f"Coupon requires a minimum cart value of KES {int(rule['minimum_amount'])}.",
+        }
+
+    discount_amount = round((rule["discount_percent"] / 100.0) * total_amount, 2)
+    return {
+        "valid": True,
+        "code": normalized,
+        "discount_percent": rule["discount_percent"],
+        "discount_amount": discount_amount,
+        "message": rule["message"],
+    }
 
 async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> list[dict[str, Any]]:
     from app.db.supabase_db import db_select
-    filters = {"category": category} if category else None
+    filters: dict[str, Any] = {"is_active": True}
+    if category:
+        filters["category"] = category
     res = await db_select("products", columns="*,variants:product_variants(*)", filters=filters, token=token)
     return res
 
@@ -233,7 +268,8 @@ async def get_product_by_id(product_id: str, token: Optional[str] = None) -> Opt
 async def get_user_orders(user_id: str, token: Optional[str] = None) -> list[dict[str, Any]]:
     from app.db.supabase_db import db_select
     columns = "*,items:order_items(*,product:products(*))"
-    return await db_select("orders", columns=columns, filters={"user_id": user_id}, token=token)
+    orders = await db_select("orders", columns=columns, filters={"user_id": user_id}, token=token)
+    return sorted(orders, key=lambda row: row.get("created_at", ""), reverse=True)
 
 async def get_order(order_id: str, token: Optional[str] = None) -> Optional[dict]:
     from app.db.supabase_db import db_select
@@ -437,18 +473,71 @@ async def get_order_tracking(order_id: str, token: Optional[str] = None) -> Opti
     from app.db.supabase_db import db_select
     results = await db_select("order_tracking", filters={"order_id": order_id}, token=token)
     if results:
-        return results[0]
+        record = results[0]
+        raw_events = record.get("events") or record.get("history") or []
+        if not isinstance(raw_events, list):
+            raw_events = []
+
+        events = []
+        for event in raw_events:
+            if not isinstance(event, dict):
+                continue
+            events.append({
+                "status": event.get("status") or record.get("status") or "processing",
+                "location": event.get("location"),
+                "description": event.get("description") or event.get("label") or "Fulfillment step recorded.",
+                "created_at": event.get("created_at") or record.get("updated_at") or record.get("created_at"),
+            })
+
+        if not events:
+            events = [{
+                "status": record.get("status", "processing"),
+                "location": record.get("current_location"),
+                "description": record.get("description", "Order is moving through fulfillment."),
+                "created_at": record.get("updated_at") or record.get("created_at"),
+            }]
+
+        return {
+            "order_id": order_id,
+            "current_status": record.get("status", "processing"),
+            "estimated_delivery": record.get("estimated_delivery", "Within 24 hours"),
+            "events": events,
+        }
     # Return a default tracking state based on order status
     order = await get_order(order_id, token=token)
     if order:
+        current_status = order.get("status", "pending")
+        event_map = {
+            "pending": [
+                {"status": "pending", "description": "Order placed and awaiting confirmation."},
+            ],
+            "processing": [
+                {"status": "pending", "description": "Order placed successfully."},
+                {"status": "processing", "description": "Payment confirmed and fulfillment started."},
+            ],
+            "shipped": [
+                {"status": "pending", "description": "Order placed successfully."},
+                {"status": "processing", "description": "Order packed and prepared for dispatch."},
+                {"status": "shipped", "description": "Shipment is on the road to the customer."},
+            ],
+            "completed": [
+                {"status": "pending", "description": "Order placed successfully."},
+                {"status": "processing", "description": "Order packed and prepared for dispatch."},
+                {"status": "shipped", "description": "Shipment is on the road to the customer."},
+                {"status": "completed", "description": "Order delivered successfully."},
+            ],
+        }
         return {
             "order_id": order_id,
-            "status": order.get("status", "pending"),
-            "steps": [
-                {"label": "Order Placed", "completed": True},
-                {"label": "Payment Confirmed", "completed": order.get("status") in ("processing", "shipped", "completed")},
-                {"label": "Shipped", "completed": order.get("status") in ("shipped", "completed")},
-                {"label": "Delivered", "completed": order.get("status") == "completed"},
-            ]
+            "current_status": current_status,
+            "estimated_delivery": "Delivered" if current_status == "completed" else "Within 24 hours",
+            "events": [
+                {
+                    **event,
+                    "location": None,
+                    "created_at": order.get("created_at"),
+                }
+                for event in event_map.get(current_status, event_map["pending"])
+            ],
         }
     return None

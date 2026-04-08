@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
 import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
 import { StripeCardForm } from '@/components/payments/StripeCardForm';
-import { initializeCheckout, CheckoutOrder, downloadInvoice, createStripePaymentIntent } from '@/services/shopService';
+import { initializeCheckout, CheckoutOrder, validateCoupon } from '@/services/shopService';
 import { adminService } from '@/services/adminService';
 import {
     ShoppingCart, Truck, MapPin, Tag, Minus, Plus, X, ArrowRight,
@@ -139,6 +139,7 @@ const Checkout = () => {
     const serviceFee = Math.round(subtotal * 0.025); // 2.5% service fee
     const taxAmount = Math.round(subtotal * 0.16); // 16% VAT
     const couponDiscount = appliedCoupon ? Math.round(subtotal * appliedCoupon.discount / 100) : 0;
+    const freeShippingGap = Math.max(0, 5000 - subtotal);
     const isBypassActive = (shippingDetails.phone === '0742004187' || paymentDetails.mpesaNumber === '0742004187');
     const totalPayable = isBypassActive ? 0 : (subtotal + deliveryCost + tipAmount + serviceFee + taxAmount - couponDiscount);
 
@@ -151,10 +152,17 @@ const Checkout = () => {
         }
         setCouponLoading(true);
         try {
-            // In production, call backend API
-            // For now, since user said "delete all mock data", we'll just try to fetch it if API exists
-            // or return error if not found.
-            toast.error('Coupon system currently unavailable');
+            const result = await validateCoupon(couponCode, subtotal);
+            if (!result.valid) {
+                toast.error(result.message || 'Invalid coupon code');
+                return;
+            }
+
+            setAppliedCoupon({
+                code: result.code,
+                discount: result.discount_percent,
+            });
+            toast.success(result.message || `${result.code} applied successfully`);
         } catch (error) {
             toast.error('Invalid coupon code');
         } finally {
@@ -225,12 +233,14 @@ const Checkout = () => {
                 },
                 payment_method: paymentMethod,
                 payment_method_id: paymentMethod === 'card' ? (stripePaymentMethodId || undefined) : undefined,
+                delivery_method: deliveryMethod,
                 items: items.map(item => ({
                     product_id: item.productId.toString(),
                     variant_id: item.variantId,
                     quantity: item.quantity
                 })),
                 total_kes: totalPayable,
+                coupon_code: appliedCoupon?.code,
                 notes: shippingDetails.notes,
                 idempotency_key: (window as any)._checkoutId || crypto.randomUUID(),
             };
@@ -608,14 +618,19 @@ const Checkout = () => {
 
             {/* Main Content */}
             <div className="container max-w-6xl mx-auto px-4 py-8">
-                <h1 className="text-3xl md:text-4xl font-black mb-8">
+                <div className="mb-8 space-y-3">
+                    <h1 className="text-3xl md:text-4xl font-black">
                     {currentStep === 'cart' && 'My Cart'}
                     {currentStep === 'payment-info' && 'Payment Information'}
                     {currentStep === 'delivery' && 'Delivery Details'}
                     {currentStep === 'payment' && 'Confirm & Pay'}
                     {currentStep === 'shipment' && 'Your Shipment'}
                     {currentStep === 'receipt' && 'Order Receipt'}
-                </h1>
+                    </h1>
+                    <p className="max-w-2xl text-sm text-muted-foreground">
+                        Secure ecommerce checkout with verified honey batches, saved payment methods, and 24-hour delivery dispatch across Kenya.
+                    </p>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left Column - Cart Items or Shipping Form */}
@@ -1239,6 +1254,11 @@ const Checkout = () => {
                                             )}
                                         </div>
                                     </RadioGroup>
+                                    <p className="text-xs text-muted-foreground">
+                                        {freeShippingGap > 0
+                                            ? `Add ${formatPrice(freeShippingGap)} more to unlock free delivery.`
+                                            : 'Free delivery unlocked for this order.'}
+                                    </p>
                                 </div>
 
                                 <Separator />
@@ -1308,7 +1328,7 @@ const Checkout = () => {
                                         onClick={handleProceedToCheckout}
                                         className="w-full h-12 rounded-xl text-lg font-bold bg-gradient-to-r from-primary to-amber-600 hover:from-primary/90 hover:to-amber-600/90 shadow-glow"
                                     >
-                                        PAY
+                                        Continue to Secure Checkout
                                     </Button>
                                 )}
 

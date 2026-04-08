@@ -139,14 +139,13 @@ async def get_order_detail(
 #  NEW ENDPOINTS
 # ==========================================
 
-@router.post("/checkout/coupon/validate", response_model=dict)
+@router.post("/checkout/coupon/validate", response_model=schemas.CouponValidationResult)
 async def validate_coupon(
-    code: str, 
-    amount: float,
+    coupon_in: schemas.CouponValidationRequest,
     token: Optional[str] = Depends(get_token)
 ):
     """Validate a coupon code via the Rust engine"""
-    return await shop_service.apply_coupon_code(code, amount)
+    return await shop_service.apply_coupon_code(coupon_in.code, coupon_in.amount)
 
 # --- Wallet ---
 @router.get("/wallet", response_model=schemas.Wallet)

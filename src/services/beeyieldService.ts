@@ -1339,6 +1339,89 @@ function normalizeVarroaTreatment(record: any): VarroaTreatment {
     };
 }
 
+function mapApiaryRecord(record: any, hiveCountByApiary: Record<string, number> = {}): Apiary {
+    const apiaryId = String(record?.id ?? '');
+
+    return {
+        ...record,
+        id: apiaryId,
+        type: record?.apiary_type || record?.type || 'Permanent',
+        forage_type: record?.primary_forage || record?.forage_type || '',
+        hive_count: record?.hive_count ?? hiveCountByApiary[apiaryId] ?? 0,
+    };
+}
+
+function mapHiveRecord(record: any): Hive {
+    return {
+        ...record,
+        id: String(record?.id ?? ''),
+        apiary_name: record?.apiary?.name || record?.apiary_name,
+    };
+}
+
+function mapHarvestRecord(record: any): Harvest {
+    const normalized = { ...record };
+
+    if (normalized.date && !normalized.harvest_date) {
+        normalized.harvest_date = normalized.date;
+    }
+    if (normalized.weight_kg !== undefined && normalized.quantity_kg === undefined) {
+        normalized.quantity_kg = normalized.weight_kg;
+    }
+    if (normalized.floral_source && !normalized.nectar_source) {
+        normalized.nectar_source = normalized.floral_source;
+    }
+    if (normalized.moisture_content !== undefined && normalized.moisture_content_percent === undefined) {
+        normalized.moisture_content_percent = normalized.moisture_content;
+    }
+    if (normalized.hive?.apiary && !normalized.apiary) {
+        normalized.apiary = normalized.hive.apiary;
+    }
+
+    return normalized as Harvest;
+}
+
+function mapBatchRecord(record: any): BatchView {
+    return {
+        ...record,
+        id: String(record?.id ?? record?.batch_code ?? ''),
+        blockchain_verified: Boolean(record?.blockchain_verified ?? record?.block_hash),
+        verification_status: record?.verification_status || record?.status,
+    };
+}
+
+function deriveBatchViewsFromHarvests(harvests: Harvest[]): BatchView[] {
+    const seen = new Set<string>();
+    const derived: BatchView[] = [];
+
+    for (const harvest of harvests) {
+        const key = harvest.batch_code || harvest.id;
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        derived.push({
+            id: key,
+            batch_code: harvest.batch_code || harvest.id,
+            honey_type: harvest.honey_type,
+            harvest_date: harvest.harvest_date,
+            quantity_kg: harvest.quantity_kg,
+            color_grade: harvest.color_grade,
+            apiary: harvest.apiary || harvest.hive?.apiary || null,
+            apiary_name: harvest.apiary?.name || harvest.hive?.apiary?.name,
+            farmer: harvest.farmer || null,
+            farmer_name: harvest.farmer?.name,
+            hive: harvest.hive || null,
+            verification_status: harvest.is_verified ? 'verified' : 'pending',
+            blockchain_verified: Boolean(harvest.is_verified),
+            status: harvest.is_verified ? 'verified' : 'pending',
+            quantity_left_for_bees_kg: harvest.quantity_left_for_bees_kg,
+            florage_type: harvest.florage_type,
+            harvest,
+        });
+    }
+
+    return derived;
+}
+
 export const beeyieldService = {
     supabaseBeeYield: sb,
     _configsCache: null as any[] | null,
@@ -1658,13 +1741,34 @@ export const beeyieldService = {
     async getApiaries(): Promise<Apiary[]> {
         try {
             const data = await apiGet<Apiary[]>('beeyield/apiaries');
-            return data.map((a: any) => ({
-                ...a,
-                type: a.apiary_type || a.type || 'Permanent',
-                forage_type: a.primary_forage || a.forage_type || ''
-            }));
+            if (Array.isArray(data) && data.length > 0) {
+                return data.map((record: any) => mapApiaryRecord(record));
+            }
         } catch (error) {
             console.error('getApiaries:', error);
+        }
+
+        if (!sb) return [];
+
+        try {
+            const [{ data: apiaries, error: apiariesError }, { data: hives, error: hivesError }] = await Promise.all([
+                sb.from('apiaries').select('*, farmer:farmers(*)').order('created_at', { ascending: false }),
+                sb.from('hives').select('id, apiary_id'),
+            ]);
+
+            if (apiariesError) throw apiariesError;
+            if (hivesError) throw hivesError;
+
+            const hiveCountByApiary = (hives || []).reduce<Record<string, number>>((acc, hive: any) => {
+                const apiaryId = String(hive?.apiary_id ?? '');
+                if (!apiaryId) return acc;
+                acc[apiaryId] = (acc[apiaryId] || 0) + 1;
+                return acc;
+            }, {});
+
+            return (apiaries || []).map((record: any) => mapApiaryRecord(record, hiveCountByApiary));
+        } catch (fallbackError) {
+            console.error('getApiaries fallback:', fallbackError);
             return [];
         }
     },
@@ -1762,12 +1866,31 @@ export const beeyieldService = {
     async getHives(apiaryId?: string): Promise<Hive[]> {
         try {
             const data = await apiGet<Hive[]>('beeyield/hives', apiaryId ? { apiary_id: apiaryId } : undefined);
-            return data.map((h: any) => ({
-                ...h,
-                apiary_name: h.apiary?.name || h.apiary_name
-            }));
+            if (Array.isArray(data) && data.length > 0) {
+                return data.map((record: any) => mapHiveRecord(record));
+            }
         } catch (error) {
             console.error('getHives:', error);
+        }
+
+        if (!sb) return [];
+
+        try {
+            let query = sb
+                .from('hives')
+                .select('*, apiary:apiaries(*), farmer:farmers(*)')
+                .order('created_at', { ascending: false });
+
+            if (apiaryId) {
+                query = query.eq('apiary_id', apiaryId);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+
+            return (data || []).map((record: any) => mapHiveRecord(record));
+        } catch (fallbackError) {
+            console.error('getHives fallback:', fallbackError);
             return [];
         }
     },
@@ -1813,9 +1936,43 @@ export const beeyieldService = {
     async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
         try {
             const data = await apiGet<Harvest[]>('beeyield/harvests', filters as any);
-            return Array.isArray(data) ? data : [];
+            if (Array.isArray(data) && data.length > 0) {
+                return data.map((record: any) => mapHarvestRecord(record));
+            }
         } catch (error) {
             console.error('getHarvests:', error);
+        }
+
+        if (!sb) return [];
+
+        try {
+            let query = sb
+                .from('harvests')
+                .select('*, hive:hives(*, apiary:apiaries(*)), farmer:farmers(*)')
+                .order('harvest_date', { ascending: false })
+                .limit(2000);
+
+            if (filters?.hive_id) {
+                query = query.eq('hive_id', filters.hive_id);
+            }
+            if (filters?.apiary_id) {
+                query = query.eq('apiary_id', filters.apiary_id);
+            }
+            if (filters?.farmer_id) {
+                query = query.eq('farmer_id', filters.farmer_id);
+            }
+            if (filters?.year) {
+                query = query
+                    .gte('harvest_date', `${filters.year}-01-01`)
+                    .lt('harvest_date', `${filters.year + 1}-01-01`);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+
+            return (data || []).map((record: any) => mapHarvestRecord(record));
+        } catch (fallbackError) {
+            console.error('getHarvests fallback:', fallbackError);
             return [];
         }
     },
@@ -1827,10 +1984,53 @@ export const beeyieldService = {
             if (filters?.year) params.year = filters.year;
             if (filters?.limit) params.limit = filters.limit;
             const data = await apiGet<BatchView[]>('beeyield/batches', params);
-            return Array.isArray(data) ? data : [];
+            if (Array.isArray(data) && data.length > 0) {
+                return data.map((record: any) => mapBatchRecord(record));
+            }
         } catch (error) {
             console.error('getBatches:', error);
-            return [];
+        }
+
+        const deriveFromHarvests = async () => {
+            let derived = deriveBatchViewsFromHarvests(await this.getHarvests(filters?.year ? { year: filters.year } : undefined));
+            if (filters?.honey_type) {
+                derived = derived.filter((batch) => batch.honey_type === filters.honey_type);
+            }
+            if (filters?.limit) {
+                derived = derived.slice(0, filters.limit);
+            }
+            return derived;
+        };
+
+        if (!sb) return deriveFromHarvests();
+
+        try {
+            let query = sb
+                .from('honey_batches')
+                .select('*')
+                .order('harvest_date', { ascending: false })
+                .limit(filters?.limit || 1000);
+
+            if (filters?.honey_type) {
+                query = query.eq('honey_type', filters.honey_type);
+            }
+            if (filters?.year) {
+                query = query
+                    .gte('harvest_date', `${filters.year}-01-01`)
+                    .lt('harvest_date', `${filters.year + 1}-01-01`);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                return data.map((record: any) => mapBatchRecord(record));
+            }
+
+            return deriveFromHarvests();
+        } catch (fallbackError) {
+            console.error('getBatches fallback:', fallbackError);
+            return deriveFromHarvests();
         }
     },
 

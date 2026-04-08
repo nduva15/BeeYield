@@ -1162,18 +1162,20 @@ const ShopDashboard = () => {
                             },
                             payment_method: paymentMethod,
                             payment_method_id: paymentMethod === 'card' ? (selectedPaymentMethodId || undefined) : undefined,
+                            delivery_method: 'delivery',
                             items: items.map(item => ({
                                 product_id: item.productId.toString(),
                                 variant_id: item.variantId,
                                 quantity: item.quantity
                             })),
                             total_kes: checkoutTotalWithShipping,
-                            notes: shippingDetails.notes + (shippingDetails.building ? ` | Bldg: ${shippingDetails.building}` : "") + (shippingDetails.apartment ? ` | Apt: ${shippingDetails.apartment}` : "")
+                            notes: shippingDetails.notes + (shippingDetails.building ? ` | Bldg: ${shippingDetails.building}` : "") + (shippingDetails.apartment ? ` | Apt: ${shippingDetails.apartment}` : ""),
+                            idempotency_key: crypto.randomUUID(),
                         };
 
 
                         const response = await initializeCheckout(orderData, session?.access_token);
-                        setOrderNumber(response.order_id || `BY-${Date.now().toString(36).toUpperCase()}`);
+                        setOrderNumber(response.order_number || response.order_id || `BY-${Date.now().toString(36).toUpperCase()}`);
                         clearCart();
                         setCheckoutStep('confirmation');
                         toast.success('Order placed successfully!');

@@ -127,6 +127,7 @@ class WishlistItem(BaseModel):
     product_name: Optional[str] = None
     product_image: Optional[str] = None
     product_price: Optional[float] = None
+    product: Optional[dict] = None
 
 # --- Tracking ---
 class TrackingEvent(BaseModel):
@@ -140,4 +141,17 @@ class TrackingInfo(BaseModel):
     current_status: str
     estimated_delivery: Optional[str] = None
     events: list[TrackingEvent]
+
+
+class CouponValidationRequest(BaseModel):
+    code: str
+    amount: float
+
+
+class CouponValidationResult(BaseModel):
+    valid: bool
+    code: str
+    discount_percent: float = 0
+    discount_amount: float = 0
+    message: str
 
