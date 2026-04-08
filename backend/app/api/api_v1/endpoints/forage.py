@@ -113,6 +113,44 @@ def _is_blooming(source: dict[str, Any], month: int) -> bool:
     return month >= start or month <= end
 
 
+def _optional_id(value: Any) -> Optional[str]:
+    if value in (None, "", "null"):
+        return None
+    return str(value)
+
+
+async def _clear_default_map_views(
+    user_id: str,
+    scope: dict[str, Any],
+    token: Optional[str] = None,
+    exclude_id: Optional[str] = None,
+) -> None:
+    rows = await db_select("map_views", filters={"user_id": user_id}, limit=1000, token=token)
+    target_apiary_id = _optional_id(scope.get("apiary_id"))
+    target_view_type = _normalize_text(scope.get("view_type") or "general") or "general"
+
+    for row in rows:
+        if not row.get("is_default"):
+            continue
+        if exclude_id and str(row.get("id")) == str(exclude_id):
+            continue
+        if _optional_id(row.get("apiary_id")) != target_apiary_id:
+            continue
+        row_view_type = _normalize_text(row.get("view_type") or "general") or "general"
+        if row_view_type != target_view_type:
+            continue
+
+        await db_update(
+            "map_views",
+            {
+                "is_default": False,
+                "updated_at": datetime.utcnow().isoformat(),
+            },
+            {"id": row.get("id"), "user_id": user_id},
+            token=token,
+        )
+
+
 PUBLIC_LIVE_LOCATIONS: dict[str, dict[str, Any]] = {
     "kibwezi-kenya": {
         "id": "public-kibwezi-kenya",
@@ -733,6 +771,269 @@ async def delete_forage_zone(
     res = await db_delete("forage_zones", {"id": zone_id, "user_id": user_id}, token=token)
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete forage zone"))
+    return None
+
+
+# ============================================
+# ORCHARDS (CRUD)
+# ============================================
+
+
+@router.get("/orchards", response_model=list[schemas.Orchard])
+async def list_orchards(
+    apiary_id: Optional[str] = None,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    filters: dict[str, Any] = {"grower_id": user_id}
+    if apiary_id:
+        filters["apiary_id"] = apiary_id
+    return await db_select("orchards", filters=filters, order_by="created_at", ascending=False, limit=1000, token=token)
+
+
+@router.get("/orchards/{orchard_id}", response_model=schemas.Orchard)
+async def get_orchard(
+    orchard_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    rows = await db_select("orchards", filters={"id": orchard_id, "grower_id": user_id}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Orchard not found")
+    return rows[0]
+
+
+@router.post("/orchards", response_model=schemas.Orchard, status_code=status.HTTP_201_CREATED)
+async def create_orchard(
+    body: schemas.OrchardCreate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    payload = body.model_dump(mode="json")
+    payload["grower_id"] = user_id
+    res = await db_insert("orchards", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create orchard"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+@router.patch("/orchards/{orchard_id}", response_model=schemas.Orchard)
+async def update_orchard(
+    orchard_id: str,
+    body: schemas.OrchardUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("orchards", filters={"id": orchard_id, "grower_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Orchard not found")
+
+    patch = body.model_dump(exclude_unset=True, mode="json")
+    if not patch:
+        return existing[0]
+    patch["updated_at"] = datetime.utcnow().isoformat()
+
+    res = await db_update("orchards", patch, {"id": orchard_id, "grower_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update orchard"))
+    rows = await db_select("orchards", filters={"id": orchard_id, "grower_id": user_id}, limit=1, token=token)
+    return rows[0] if rows else {**existing[0], **patch}
+
+
+@router.delete("/orchards/{orchard_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_orchard(
+    orchard_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("orchards", filters={"id": orchard_id, "grower_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Orchard not found")
+
+    res = await db_delete("orchards", {"id": orchard_id, "grower_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete orchard"))
+    return None
+
+
+# ============================================
+# GEOFENCES (CRUD)
+# ============================================
+
+
+@router.get("/geofences", response_model=list[schemas.Geofence])
+async def list_geofences(
+    apiary_id: Optional[str] = None,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    filters: dict[str, Any] = {"user_id": user_id}
+    if apiary_id:
+        filters["apiary_id"] = apiary_id
+    return await db_select("geofences", filters=filters, order_by="created_at", ascending=False, limit=1000, token=token)
+
+
+@router.get("/geofences/{geofence_id}", response_model=schemas.Geofence)
+async def get_geofence(
+    geofence_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    rows = await db_select("geofences", filters={"id": geofence_id, "user_id": user_id}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Geofence not found")
+    return rows[0]
+
+
+@router.post("/geofences", response_model=schemas.Geofence, status_code=status.HTTP_201_CREATED)
+async def create_geofence(
+    body: schemas.GeofenceCreate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    payload = body.model_dump(mode="json")
+    payload["user_id"] = user_id
+    res = await db_insert("geofences", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create geofence"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+@router.patch("/geofences/{geofence_id}", response_model=schemas.Geofence)
+async def update_geofence(
+    geofence_id: str,
+    body: schemas.GeofenceUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("geofences", filters={"id": geofence_id, "user_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Geofence not found")
+
+    patch = body.model_dump(exclude_unset=True, mode="json")
+    if not patch:
+        return existing[0]
+    patch["updated_at"] = datetime.utcnow().isoformat()
+
+    res = await db_update("geofences", patch, {"id": geofence_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update geofence"))
+    rows = await db_select("geofences", filters={"id": geofence_id, "user_id": user_id}, limit=1, token=token)
+    return rows[0] if rows else {**existing[0], **patch}
+
+
+@router.delete("/geofences/{geofence_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_geofence(
+    geofence_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("geofences", filters={"id": geofence_id, "user_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Geofence not found")
+
+    res = await db_delete("geofences", {"id": geofence_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete geofence"))
+    return None
+
+
+# ============================================
+# MAP VIEWS (CRUD)
+# ============================================
+
+
+@router.get("/map-views", response_model=list[schemas.MapView])
+async def list_map_views(
+    apiary_id: Optional[str] = None,
+    view_type: Optional[str] = None,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    filters: dict[str, Any] = {"user_id": user_id}
+    if apiary_id:
+        filters["apiary_id"] = apiary_id
+    if view_type:
+        filters["view_type"] = view_type
+    return await db_select("map_views", filters=filters, order_by="created_at", ascending=False, limit=1000, token=token)
+
+
+@router.get("/map-views/{map_view_id}", response_model=schemas.MapView)
+async def get_map_view(
+    map_view_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    rows = await db_select("map_views", filters={"id": map_view_id, "user_id": user_id}, limit=1, token=token)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Map view not found")
+    return rows[0]
+
+
+@router.post("/map-views", response_model=schemas.MapView, status_code=status.HTTP_201_CREATED)
+async def create_map_view(
+    body: schemas.MapViewCreate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    payload = body.model_dump(mode="json")
+    payload["user_id"] = user_id
+
+    if payload.get("is_default"):
+        await _clear_default_map_views(user_id, payload, token=token)
+
+    res = await db_insert("map_views", payload, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to create map view"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+@router.patch("/map-views/{map_view_id}", response_model=schemas.MapView)
+async def update_map_view(
+    map_view_id: str,
+    body: schemas.MapViewUpdate,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("map_views", filters={"id": map_view_id, "user_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Map view not found")
+
+    patch = body.model_dump(exclude_unset=True, mode="json")
+    if not patch:
+        return existing[0]
+
+    merged_scope = {
+        "apiary_id": patch.get("apiary_id", existing[0].get("apiary_id")),
+        "view_type": patch.get("view_type", existing[0].get("view_type")),
+    }
+    if patch.get("is_default"):
+        await _clear_default_map_views(user_id, merged_scope, token=token, exclude_id=map_view_id)
+
+    patch["updated_at"] = datetime.utcnow().isoformat()
+    res = await db_update("map_views", patch, {"id": map_view_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update map view"))
+    rows = await db_select("map_views", filters={"id": map_view_id, "user_id": user_id}, limit=1, token=token)
+    return rows[0] if rows else {**existing[0], **patch}
+
+
+@router.delete("/map-views/{map_view_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_map_view(
+    map_view_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("map_views", filters={"id": map_view_id, "user_id": user_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Map view not found")
+
+    res = await db_delete("map_views", {"id": map_view_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete map view"))
     return None
 
 

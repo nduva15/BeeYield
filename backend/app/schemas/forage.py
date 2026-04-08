@@ -43,6 +43,118 @@ class ForageZone(ForageZoneBase):
         from_attributes = True
 
 
+class OrchardBase(BaseModel):
+    name: str
+    apiary_id: Optional[UUID] = None
+    location_name: Optional[str] = None
+    boundary_geojson: Optional[Any] = None
+    acreage: Optional[float] = None
+    crop_type: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class OrchardCreate(OrchardBase):
+    pass
+
+
+class OrchardUpdate(BaseModel):
+    name: Optional[str] = None
+    apiary_id: Optional[UUID] = None
+    location_name: Optional[str] = None
+    boundary_geojson: Optional[Any] = None
+    acreage: Optional[float] = None
+    crop_type: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class Orchard(OrchardBase):
+    id: UUID
+    grower_id: UUID
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class GeofenceBase(BaseModel):
+    name: str
+    apiary_id: Optional[UUID] = None
+    center_latitude: Optional[float] = None
+    center_longitude: Optional[float] = None
+    radius_meters: Optional[float] = None
+    boundary_geojson: Optional[Any] = None
+    notes: Optional[str] = None
+    alert_triggered: bool = False
+
+
+class GeofenceCreate(GeofenceBase):
+    pass
+
+
+class GeofenceUpdate(BaseModel):
+    name: Optional[str] = None
+    apiary_id: Optional[UUID] = None
+    center_latitude: Optional[float] = None
+    center_longitude: Optional[float] = None
+    radius_meters: Optional[float] = None
+    boundary_geojson: Optional[Any] = None
+    notes: Optional[str] = None
+    alert_triggered: Optional[bool] = None
+
+
+class Geofence(GeofenceBase):
+    id: UUID
+    user_id: UUID
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class MapViewBase(BaseModel):
+    name: str
+    apiary_id: Optional[UUID] = None
+    description: Optional[str] = None
+    view_type: str = "general"
+    center_latitude: Optional[float] = None
+    center_longitude: Optional[float] = None
+    zoom_level: Optional[int] = None
+    active_layers: List[str] = Field(default_factory=list)
+    filters: Dict[str, Any] = Field(default_factory=dict)
+    viewport_state: Dict[str, Any] = Field(default_factory=dict)
+    is_default: bool = False
+
+
+class MapViewCreate(MapViewBase):
+    pass
+
+
+class MapViewUpdate(BaseModel):
+    name: Optional[str] = None
+    apiary_id: Optional[UUID] = None
+    description: Optional[str] = None
+    view_type: Optional[str] = None
+    center_latitude: Optional[float] = None
+    center_longitude: Optional[float] = None
+    zoom_level: Optional[int] = None
+    active_layers: Optional[List[str]] = None
+    filters: Optional[Dict[str, Any]] = None
+    viewport_state: Optional[Dict[str, Any]] = None
+    is_default: Optional[bool] = None
+
+
+class MapView(MapViewBase):
+    id: UUID
+    user_id: UUID
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class WeatherMetricSource(BaseModel):
     source: str
     device_id: Optional[str] = None

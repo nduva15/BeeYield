@@ -27,6 +27,8 @@ const USER_OWNED_TABLES: &[&str] = &[
     "requests",
     "tasks",
     "inspections",
+    "varroa_readings",
+    "varroa_treatments",
     "sensor_alerts",
     "generated_reports",
     "scheduled_reports",
@@ -119,6 +121,8 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
     register_crud_scope(cfg, "/api/v1/iot/devices", "devices");
     register_crud_scope(cfg, "/api/v1/iot/alerts", "sensor_alerts");
     register_crud_scope(cfg, "/api/v1/inspections", "inspections");
+    register_crud_scope(cfg, "/api/v1/varroa/readings", "varroa_readings");
+    register_crud_scope(cfg, "/api/v1/varroa/treatments", "varroa_treatments");
 
     register_crud_scope(cfg, "/api/v1/meters/buildings", "meters_buildings");
     register_crud_scope(cfg, "/api/v1/meters/apartments", "meters_apartments");
