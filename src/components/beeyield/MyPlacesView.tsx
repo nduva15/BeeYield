@@ -372,9 +372,10 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
 
 interface MyPlacesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
+    initialParams?: { message?: string; action?: string } | null;
 }
 
-const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
+const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams }) => {
     // UI State
     const [isAddingPlace, setIsAddingPlace] = React.useState(false);
     const [editingApiary, setEditingApiary] = React.useState<Apiary | null>(null);
@@ -402,9 +403,25 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         }
     }, [apiaries.length, hasSelectedApiary, setSelectedApiaryId, weatherApiaryId]);
 
+    React.useEffect(() => {
+        if (initialParams?.action !== 'onboarding:add-apiary') return;
+        setViewingApiary(null);
+        setEditingApiary(null);
+        setIsAddingPlace(true);
+    }, [initialParams?.action]);
+
     const resetForm = () => {
         setIsAddingPlace(false);
         setEditingApiary(null);
+    };
+
+    const handleApiaryFormSuccess = (newApiary?: Apiary) => {
+        const shouldAdvanceOnboarding = initialParams?.action === 'onboarding:add-apiary' && !editingApiary && !!newApiary?.id;
+        resetForm();
+
+        if (shouldAdvanceOnboarding && newApiary?.id) {
+            onTabChange('beeyield', undefined, `onboarding:add-hive:${newApiary.id}`);
+        }
     };
 
     const handleEdit = (apiary: Apiary) => {
@@ -632,7 +649,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
             >
                 <ApiaryForm
                     apiary={editingApiary}
-                    onSuccess={resetForm}
+                    onSuccess={handleApiaryFormSuccess}
                     onCancel={resetForm}
                 />
             </GlassModal>

@@ -23,15 +23,17 @@ import HiveDetailView from './HiveDetailView';
 import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import { glass, GlassStatCard } from './GlassTheme';
 import WeatherTelemetryPanel from './WeatherTelemetryPanel';
+import { buildBeeYieldOnboardingAction } from '@/lib/beeyieldOnboarding';
 
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
+    initialParams?: { message?: string; action?: string } | null;
 }
 
 const HIVES_CACHE_KEY = 'beeyield_hives_cache_v1';
 const APIARIES_CACHE_KEY = 'beeyield_apiaries_cache_v1';
 
-const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) => {
+const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, initialParams }) => {
     // UI State
     const [selectedPlace, setSelectedPlace] = React.useState('all');
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -42,6 +44,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     // Modal states
     const [isHiveModalOpen, setIsHiveModalOpen] = React.useState(false);
     const [editingHive, setEditingHive] = React.useState<Hive | null>(null);
+    const [onboardingApiaryId, setOnboardingApiaryId] = React.useState<string>('');
 
     // Notes and Quick Details states
     const [isNotesModalOpen, setIsNotesModalOpen] = React.useState(false);
@@ -113,6 +116,17 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     const [devices, setDevices] = React.useState<IoTDevice[]>([]);
 
     React.useEffect(() => {
+        const action = initialParams?.action || '';
+        if (!action.startsWith('onboarding:add-hive')) return;
+
+        const [, , apiaryId = ''] = action.split(':');
+        setSelectedHiveId(null);
+        setEditingHive(null);
+        setOnboardingApiaryId(apiaryId);
+        setIsHiveModalOpen(true);
+    }, [initialParams?.action]);
+
+    React.useEffect(() => {
         const fetchDevices = async () => {
             try {
                 const devicesData = await beeyieldService.getDevices();
@@ -169,8 +183,30 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     };
 
     const handleEditHive = (hive: Hive) => {
+        setOnboardingApiaryId('');
         setEditingHive(hive);
         setIsHiveModalOpen(true);
+    };
+
+    const handleHiveModalSuccess = (newHive?: Hive) => {
+        const shouldAdvanceOnboarding =
+            (initialParams?.action || '').startsWith('onboarding:add-hive') &&
+            !editingHive &&
+            !!newHive?.id;
+
+        setIsHiveModalOpen(false);
+        setEditingHive(null);
+
+        if (shouldAdvanceOnboarding && newHive?.id) {
+            onTabChange(
+                'devices',
+                undefined,
+                buildBeeYieldOnboardingAction('device', {
+                    apiaryId: newHive.apiary_id || onboardingApiaryId || undefined,
+                    hiveId: newHive.id,
+                }),
+            );
+        }
     };
 
     const handleRequestInspection = (hive: Hive, e: React.MouseEvent) => {
@@ -532,8 +568,13 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
 
             <HiveFormModal
                 isOpen={isHiveModalOpen}
-                onClose={() => setIsHiveModalOpen(false)}
+                onClose={() => {
+                    setIsHiveModalOpen(false);
+                    setEditingHive(null);
+                }}
                 editingHive={editingHive}
+                preselectedApiaryId={onboardingApiaryId || undefined}
+                onSuccess={handleHiveModalSuccess}
             />
 
             {/* Inspection Request */}

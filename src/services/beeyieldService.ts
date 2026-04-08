@@ -515,11 +515,15 @@ export interface PublicFlightMapPayload {
 export interface Orchard {
     id: string;
     grower_id: string;
+    apiary_id?: string | null;
     name: string;
-    crop_type: string;
-    boundaries: any; // GeoJSON
-    acreage: number;
+    location_name?: string | null;
+    crop_type?: string | null;
+    boundary_geojson?: any;
+    acreage?: number | null;
+    notes?: string | null;
     created_at: string;
+    updated_at?: string | null;
 }
 
 export interface TelemetryGateway {
@@ -628,6 +632,39 @@ export interface ForageZone {
     season?: string | null;
     geojson?: any;
     notes?: string | null;
+    created_at: string;
+    updated_at?: string | null;
+}
+
+export interface Geofence {
+    id: string;
+    user_id: string;
+    apiary_id?: string | null;
+    name: string;
+    center_latitude?: number | null;
+    center_longitude?: number | null;
+    radius_meters?: number | null;
+    boundary_geojson?: any;
+    notes?: string | null;
+    alert_triggered: boolean;
+    created_at: string;
+    updated_at?: string | null;
+}
+
+export interface MapView {
+    id: string;
+    user_id: string;
+    apiary_id?: string | null;
+    name: string;
+    description?: string | null;
+    view_type: string;
+    center_latitude?: number | null;
+    center_longitude?: number | null;
+    zoom_level?: number | null;
+    active_layers: string[];
+    filters: Record<string, any>;
+    viewport_state: Record<string, any>;
+    is_default: boolean;
     created_at: string;
     updated_at?: string | null;
 }
@@ -978,6 +1015,39 @@ export interface Inspection extends InspectionCreateInput {
     updated_at: string;
 }
 
+export interface VarroaReadingCreateInput {
+    hive_id: string;
+    reading_date: string;
+    method?: 'alcohol_wash' | 'sticky_board' | 'sugar_roll' | 'visual' | 'other';
+    mite_count: number;
+    sample_size?: number;
+    inspector_name?: string;
+    notes?: string;
+}
+
+export interface VarroaReading extends VarroaReadingCreateInput {
+    id: string;
+    infestation_rate: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface VarroaTreatmentCreateInput {
+    hive_id: string;
+    treatment_type: 'oxalic_acid' | 'formic_acid' | 'thymol' | 'amitraz' | 'fluvalinate' | 'biotechnical' | 'other';
+    start_date: string;
+    end_date?: string;
+    dosage?: string;
+    effectiveness_percent?: number;
+    notes?: string;
+}
+
+export interface VarroaTreatment extends VarroaTreatmentCreateInput {
+    id: string;
+    created_at: string;
+    updated_at: string;
+}
+
 // ========== PRECISION POLLINATION TYPES ==========
 export interface PollinationContract {
     id: string;
@@ -1196,6 +1266,73 @@ export interface VarroaSimulationResponse {
     timeline: VarroaSimulationPoint[];
     summary: VarroaSimulationSummary;
     meta: VarroaSimulationMeta;
+}
+
+function normalizeInspection(record: any): Inspection {
+    const inspectionDate = record?.inspection_date ?? record?.date ?? new Date().toISOString().slice(0, 10);
+
+    return {
+        id: String(record?.id ?? ''),
+        hive_id: String(record?.hive_id ?? ''),
+        inspector_name: record?.inspector_name ?? '',
+        inspection_date: String(inspectionDate),
+        findings: record?.findings ?? '',
+        actions_taken: record?.actions_taken ?? '',
+        health_status: record?.health_status ?? 'healthy',
+        temperament: record?.temperament ?? 'calm',
+        honey_stores: Number(record?.honey_stores ?? 0),
+        pollen_stores: Number(record?.pollen_stores ?? 0),
+        brood_pattern: record?.brood_pattern ?? 'solid',
+        eggs_seen: Boolean(record?.eggs_seen),
+        queen_seen: Boolean(record?.queen_seen),
+        queen_cells_seen: Boolean(record?.queen_cells_seen),
+        varroa_mite_count: Number(record?.varroa_mite_count ?? 0),
+        small_hive_beetles_seen: Number(record?.small_hive_beetles_seen ?? 0),
+        weather_condition: record?.weather_condition ?? 'sunny',
+        temperature_celsius: Number(record?.temperature_celsius ?? 25),
+        notes: record?.notes ?? '',
+        created_at: record?.created_at ?? _nowIso(),
+        updated_at: record?.updated_at ?? record?.created_at ?? _nowIso(),
+    };
+}
+
+function normalizeVarroaReading(record: any): VarroaReading {
+    const miteCount = Number(record?.mite_count ?? 0);
+    const sampleSize = Number(record?.sample_size ?? 300);
+    const infestationRate = Number(
+        record?.infestation_rate ?? (sampleSize > 0 ? ((miteCount / sampleSize) * 100).toFixed(2) : 0),
+    );
+
+    return {
+        id: String(record?.id ?? ''),
+        hive_id: String(record?.hive_id ?? ''),
+        reading_date: String(record?.reading_date ?? new Date().toISOString().slice(0, 10)),
+        method: record?.method ?? 'alcohol_wash',
+        mite_count: miteCount,
+        sample_size: sampleSize,
+        inspector_name: record?.inspector_name ?? '',
+        notes: record?.notes ?? '',
+        infestation_rate: Number.isFinite(infestationRate) ? infestationRate : 0,
+        created_at: record?.created_at ?? _nowIso(),
+        updated_at: record?.updated_at ?? record?.created_at ?? _nowIso(),
+    };
+}
+
+function normalizeVarroaTreatment(record: any): VarroaTreatment {
+    return {
+        id: String(record?.id ?? ''),
+        hive_id: String(record?.hive_id ?? ''),
+        treatment_type: record?.treatment_type ?? 'other',
+        start_date: String(record?.start_date ?? new Date().toISOString().slice(0, 10)),
+        end_date: record?.end_date ?? undefined,
+        dosage: record?.dosage ?? '',
+        effectiveness_percent: record?.effectiveness_percent === null || record?.effectiveness_percent === undefined
+            ? undefined
+            : Number(record.effectiveness_percent),
+        notes: record?.notes ?? '',
+        created_at: record?.created_at ?? _nowIso(),
+        updated_at: record?.updated_at ?? record?.created_at ?? _nowIso(),
+    };
 }
 
 export const beeyieldService = {
@@ -1899,7 +2036,8 @@ export const beeyieldService = {
     // ========== INSPECTIONS ==========
     async getInspections(hiveId?: string): Promise<Inspection[]> {
         try {
-            return await apiGet<Inspection[]>('inspections', hiveId ? { hive_id: hiveId } : undefined);
+            const rows = await apiGet<any[]>('inspections', hiveId ? { hive_id: hiveId } : undefined);
+            return (rows || []).map(normalizeInspection);
         } catch (error) {
             console.error('getInspections:', error);
             return [];
@@ -1908,7 +2046,7 @@ export const beeyieldService = {
 
     async getInspectionById(id: string): Promise<Inspection | null> {
         try {
-            return await apiGet<Inspection>(`inspections/${id}`);
+            return normalizeInspection(await apiGet<any>(`inspections/${id}`));
         } catch (error) {
             console.error('getInspectionById:', error);
             return null;
@@ -1917,7 +2055,7 @@ export const beeyieldService = {
 
     async createInspection(inspection: InspectionCreateInput): Promise<{ data: Inspection | null; error: any }> {
         try {
-            const data = await apiPost<Inspection>('inspections', inspection);
+            const data = normalizeInspection(await apiPost<any>('inspections', inspection));
             toast.success('Inspection saved successfully');
             return { data, error: null };
         } catch (error) {
@@ -1929,7 +2067,7 @@ export const beeyieldService = {
 
     async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
         try {
-            const data = await apiPut<Inspection>(`inspections/${id}`, updates);
+            const data = normalizeInspection(await apiPut<any>(`inspections/${id}`, updates));
             toast.success('Inspection updated successfully');
             return { data, error: null };
         } catch (error) {
@@ -2496,41 +2634,53 @@ export const beeyieldService = {
     },
 
     // ========== VARROA READINGS & TREATMENTS ==========
-    async getVarroaReadings(hiveId?: string): Promise<any[]> {
+    async getVarroaReadings(hiveId?: string): Promise<VarroaReading[]> {
         try {
-            return await apiGet<any[]>('/measurements/varroa/readings', hiveId ? { hive_id: hiveId } : undefined);
+            const rows = await apiGet<any[]>('/varroa/readings', hiveId ? { hive_id: hiveId } : undefined);
+            return (rows || []).map(normalizeVarroaReading);
         } catch (error) {
             console.error('getVarroaReadings:', error);
             return [];
         }
     },
 
-    async createVarroaReading(input: {
-        hive_id: string;
-        reading_date: string;
-        method?: string;
-        mite_count: number;
-        sample_size?: number;
-        inspector_name?: string;
-        notes?: string;
-    }): Promise<{ data: any; error: any }> {
+    async createVarroaReading(input: VarroaReadingCreateInput): Promise<{ data: VarroaReading | null; error: any }> {
         try {
-            const payload = {
-                hive_id: input.hive_id,
-                reading_date: input.reading_date,
+            const data = normalizeVarroaReading(await apiPost<any>('/varroa/readings', {
+                ...input,
                 method: input.method || 'alcohol_wash',
-                mite_count: input.mite_count,
                 sample_size: input.sample_size || 300,
-                inspector_name: input.inspector_name,
-                notes: input.notes,
-            };
-            const data = await apiPost<any>('/measurements/varroa/readings', payload);
+            }));
             toast.success('Varroa reading recorded');
             return { data, error: null };
         } catch (error) {
             console.error('createVarroaReading:', error);
             toast.error('Failed to record varroa reading');
             return { data: null, error };
+        }
+    },
+
+    async updateVarroaReading(id: string, updates: Partial<VarroaReadingCreateInput>): Promise<{ data: VarroaReading | null; error: any }> {
+        try {
+            const data = normalizeVarroaReading(await apiPut<any>(`/varroa/readings/${id}`, updates));
+            toast.success('Varroa reading updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateVarroaReading:', error);
+            toast.error('Failed to update varroa reading');
+            return { data: null, error };
+        }
+    },
+
+    async deleteVarroaReading(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete(`/varroa/readings/${id}`);
+            toast.success('Varroa reading deleted');
+            return { error: null };
+        } catch (error) {
+            console.error('deleteVarroaReading:', error);
+            toast.error('Failed to delete varroa reading');
+            return { error };
         }
     },
 
@@ -2557,40 +2707,49 @@ export const beeyieldService = {
         }
     },
 
-    async getVarroaTreatments(hiveId?: string): Promise<any[]> {
+    async getVarroaTreatments(hiveId?: string): Promise<VarroaTreatment[]> {
         try {
-            return await apiGet<any[]>('/measurements/varroa/treatments', hiveId ? { hive_id: hiveId } : undefined);
+            const rows = await apiGet<any[]>('/varroa/treatments', hiveId ? { hive_id: hiveId } : undefined);
+            return (rows || []).map(normalizeVarroaTreatment);
         } catch (error) {
             console.error('getVarroaTreatments:', error);
             return [];
         }
     },
 
-    async createVarroaTreatment(input: {
-        hive_id: string;
-        treatment_type: string;
-        start_date: string;
-        end_date?: string;
-        dosage?: string;
-        effectiveness_percent?: number;
-        notes?: string;
-    }): Promise<{ data: any; error: any }> {
+    async createVarroaTreatment(input: VarroaTreatmentCreateInput): Promise<{ data: VarroaTreatment | null; error: any }> {
         try {
-            const data = await apiPost<any>('/measurements/varroa/treatments', {
-                hive_id: input.hive_id,
-                treatment_type: input.treatment_type,
-                start_date: input.start_date,
-                end_date: input.end_date,
-                dosage: input.dosage,
-                effectiveness_percent: input.effectiveness_percent,
-                notes: input.notes,
-            });
+            const data = normalizeVarroaTreatment(await apiPost<any>('/varroa/treatments', input));
             toast.success('Treatment recorded');
             return { data, error: null };
         } catch (error) {
             console.error('createVarroaTreatment:', error);
             toast.error('Failed to record treatment');
             return { data: null, error };
+        }
+    },
+
+    async updateVarroaTreatment(id: string, updates: Partial<VarroaTreatmentCreateInput>): Promise<{ data: VarroaTreatment | null; error: any }> {
+        try {
+            const data = normalizeVarroaTreatment(await apiPut<any>(`/varroa/treatments/${id}`, updates));
+            toast.success('Treatment updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateVarroaTreatment:', error);
+            toast.error('Failed to update treatment');
+            return { data: null, error };
+        }
+    },
+
+    async deleteVarroaTreatment(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete(`/varroa/treatments/${id}`);
+            toast.success('Treatment deleted');
+            return { error: null };
+        } catch (error) {
+            console.error('deleteVarroaTreatment:', error);
+            toast.error('Failed to delete treatment');
+            return { error };
         }
     },
 
@@ -3160,6 +3319,200 @@ export const beeyieldService = {
         } catch (error) {
             console.error('deleteForageZone:', error);
             toast.error('Failed to delete forage zone');
+            return { success: false, error };
+        }
+    },
+
+    async getOrchards(apiaryId?: string): Promise<Orchard[]> {
+        try {
+            return await apiGet<Orchard[]>('/forage/orchards', apiaryId ? { apiary_id: apiaryId } : undefined);
+        } catch (error) {
+            console.error('getOrchards:', error);
+            return [];
+        }
+    },
+
+    async getOrchard(id: string): Promise<Orchard | null> {
+        try {
+            return await apiGet<Orchard>(`/forage/orchards/${id}`);
+        } catch (error) {
+            console.error('getOrchard:', error);
+            return null;
+        }
+    },
+
+    async createOrchard(input: {
+        name: string;
+        apiary_id?: string;
+        location_name?: string;
+        boundary_geojson?: any;
+        acreage?: number;
+        crop_type?: string;
+        notes?: string;
+    }): Promise<{ data: Orchard | null; error: any }> {
+        try {
+            const data = await apiPost<Orchard>('/forage/orchards', input as any);
+            toast.success('Orchard saved');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createOrchard:', error);
+            toast.error('Failed to save orchard');
+            return { data: null, error };
+        }
+    },
+
+    async updateOrchard(id: string, patch: Partial<Orchard>): Promise<{ data: Orchard | null; error: any }> {
+        try {
+            const data = await apiPatch<Orchard>(`/forage/orchards/${id}`, patch as any);
+            toast.success('Orchard updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateOrchard:', error);
+            toast.error('Failed to update orchard');
+            return { data: null, error };
+        }
+    },
+
+    async deleteOrchard(id: string): Promise<{ success: boolean; error: any }> {
+        try {
+            await apiDelete<void>(`/forage/orchards/${id}`);
+            toast.success('Orchard deleted');
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteOrchard:', error);
+            toast.error('Failed to delete orchard');
+            return { success: false, error };
+        }
+    },
+
+    async getGeofences(apiaryId?: string): Promise<Geofence[]> {
+        try {
+            return await apiGet<Geofence[]>('/forage/geofences', apiaryId ? { apiary_id: apiaryId } : undefined);
+        } catch (error) {
+            console.error('getGeofences:', error);
+            return [];
+        }
+    },
+
+    async getGeofence(id: string): Promise<Geofence | null> {
+        try {
+            return await apiGet<Geofence>(`/forage/geofences/${id}`);
+        } catch (error) {
+            console.error('getGeofence:', error);
+            return null;
+        }
+    },
+
+    async createGeofence(input: {
+        name: string;
+        apiary_id?: string;
+        center_latitude?: number;
+        center_longitude?: number;
+        radius_meters?: number;
+        boundary_geojson?: any;
+        notes?: string;
+        alert_triggered?: boolean;
+    }): Promise<{ data: Geofence | null; error: any }> {
+        try {
+            const data = await apiPost<Geofence>('/forage/geofences', input as any);
+            toast.success('Geofence saved');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createGeofence:', error);
+            toast.error('Failed to save geofence');
+            return { data: null, error };
+        }
+    },
+
+    async updateGeofence(id: string, patch: Partial<Geofence>): Promise<{ data: Geofence | null; error: any }> {
+        try {
+            const data = await apiPatch<Geofence>(`/forage/geofences/${id}`, patch as any);
+            toast.success('Geofence updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateGeofence:', error);
+            toast.error('Failed to update geofence');
+            return { data: null, error };
+        }
+    },
+
+    async deleteGeofence(id: string): Promise<{ success: boolean; error: any }> {
+        try {
+            await apiDelete<void>(`/forage/geofences/${id}`);
+            toast.success('Geofence deleted');
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteGeofence:', error);
+            toast.error('Failed to delete geofence');
+            return { success: false, error };
+        }
+    },
+
+    async getMapViews(apiaryId?: string, viewType?: string): Promise<MapView[]> {
+        try {
+            const params: Record<string, string> = {};
+            if (apiaryId) params.apiary_id = apiaryId;
+            if (viewType) params.view_type = viewType;
+            return await apiGet<MapView[]>('/forage/map-views', Object.keys(params).length ? params : undefined);
+        } catch (error) {
+            console.error('getMapViews:', error);
+            return [];
+        }
+    },
+
+    async getMapView(id: string): Promise<MapView | null> {
+        try {
+            return await apiGet<MapView>(`/forage/map-views/${id}`);
+        } catch (error) {
+            console.error('getMapView:', error);
+            return null;
+        }
+    },
+
+    async createMapView(input: {
+        name: string;
+        apiary_id?: string;
+        description?: string;
+        view_type?: string;
+        center_latitude?: number;
+        center_longitude?: number;
+        zoom_level?: number;
+        active_layers?: string[];
+        filters?: Record<string, any>;
+        viewport_state?: Record<string, any>;
+        is_default?: boolean;
+    }): Promise<{ data: MapView | null; error: any }> {
+        try {
+            const data = await apiPost<MapView>('/forage/map-views', input as any);
+            toast.success('Map view saved');
+            return { data, error: null };
+        } catch (error) {
+            console.error('createMapView:', error);
+            toast.error('Failed to save map view');
+            return { data: null, error };
+        }
+    },
+
+    async updateMapView(id: string, patch: Partial<MapView>): Promise<{ data: MapView | null; error: any }> {
+        try {
+            const data = await apiPatch<MapView>(`/forage/map-views/${id}`, patch as any);
+            toast.success('Map view updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateMapView:', error);
+            toast.error('Failed to update map view');
+            return { data: null, error };
+        }
+    },
+
+    async deleteMapView(id: string): Promise<{ success: boolean; error: any }> {
+        try {
+            await apiDelete<void>(`/forage/map-views/${id}`);
+            toast.success('Map view deleted');
+            return { success: true, error: null };
+        } catch (error) {
+            console.error('deleteMapView:', error);
+            toast.error('Failed to delete map view');
             return { success: false, error };
         }
     },

@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from datetime import datetime, timedelta
-from app.db.supabase_db import db_select, db_insert
+from app.db.supabase_db import db_delete, db_insert, db_select, db_update
 from app.core import security
 
 router = APIRouter()
@@ -203,6 +203,60 @@ async def create_varroa_reading(
     return rows[0] if isinstance(rows, list) and rows else payload
 
 
+@router.put("/varroa/readings/{reading_id}")
+async def update_varroa_reading(
+    reading_id: str,
+    body: dict,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> Any:
+    payload = {
+        key: value
+        for key, value in {
+            "reading_date": body.get("reading_date"),
+            "method": body.get("method"),
+            "mite_count": int(body["mite_count"]) if body.get("mite_count") is not None else None,
+            "sample_size": int(body["sample_size"]) if body.get("sample_size") is not None else None,
+            "inspector_name": body.get("inspector_name"),
+            "notes": body.get("notes"),
+        }.items()
+        if value is not None
+    }
+
+    if not payload:
+        rows = await db_select("varroa_readings", filters={"id": reading_id, "user_id": user_id}, limit=1, token=token)
+        if not rows:
+            raise HTTPException(status_code=404, detail="Varroa reading not found")
+        return rows[0]
+
+    if "mite_count" in payload or "sample_size" in payload:
+        existing = await db_select("varroa_readings", filters={"id": reading_id, "user_id": user_id}, limit=1, token=token)
+        if not existing:
+            raise HTTPException(status_code=404, detail="Varroa reading not found")
+        current = existing[0]
+        mite_count = int(payload.get("mite_count", current.get("mite_count") or 0))
+        sample_size = int(payload.get("sample_size", current.get("sample_size") or 300))
+        payload["infestation_rate"] = round((mite_count / sample_size) * 100, 2) if sample_size > 0 else 0
+
+    res = await db_update("varroa_readings", payload, {"id": reading_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update Varroa reading"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+@router.delete("/varroa/readings/{reading_id}", status_code=204)
+async def delete_varroa_reading(
+    reading_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> None:
+    res = await db_delete("varroa_readings", {"id": reading_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete Varroa reading"))
+    return None
+
+
 @router.get("/varroa/treatments")
 async def get_varroa_treatments(
     hive_id: Optional[str] = None,
@@ -260,4 +314,49 @@ async def create_varroa_treatment(
         raise HTTPException(status_code=500, detail=res.get("error", "Failed to create Varroa treatment"))
     rows = res.get("data") or []
     return rows[0] if isinstance(rows, list) and rows else payload
+
+
+@router.put("/varroa/treatments/{treatment_id}")
+async def update_varroa_treatment(
+    treatment_id: str,
+    body: dict,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> Any:
+    payload = {
+        key: value
+        for key, value in {
+            "treatment_type": body.get("treatment_type"),
+            "start_date": body.get("start_date"),
+            "end_date": body.get("end_date"),
+            "dosage": body.get("dosage"),
+            "effectiveness_percent": body.get("effectiveness_percent"),
+            "notes": body.get("notes"),
+        }.items()
+        if value is not None
+    }
+
+    if not payload:
+        rows = await db_select("varroa_treatments", filters={"id": treatment_id, "user_id": user_id}, limit=1, token=token)
+        if not rows:
+            raise HTTPException(status_code=404, detail="Varroa treatment not found")
+        return rows[0]
+
+    res = await db_update("varroa_treatments", payload, {"id": treatment_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to update Varroa treatment"))
+    rows = res.get("data") or []
+    return rows[0] if isinstance(rows, list) and rows else payload
+
+
+@router.delete("/varroa/treatments/{treatment_id}", status_code=204)
+async def delete_varroa_treatment(
+    treatment_id: str,
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token),
+) -> None:
+    res = await db_delete("varroa_treatments", {"id": treatment_id, "user_id": user_id}, token=token)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=res.get("error", "Failed to delete Varroa treatment"))
+    return None
 

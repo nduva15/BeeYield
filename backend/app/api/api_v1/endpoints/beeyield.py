@@ -10,6 +10,7 @@ from app.services.traceability_batch_service import get_batch_views_for_user
 from pydantic import BaseModel, Field
 from datetime import date, datetime
 from uuid import UUID
+import json
 
 try:
     from beeyield_core import DashboardEngine  # type: ignore
@@ -132,21 +133,30 @@ class TaskCreate(BaseModel):
     description: Optional[str] = None
     status: Optional[str] = Field("pending", description="pending, in_progress, completed")
     priority: Optional[str] = Field("medium", description="low, medium, high")
+    type: Optional[str] = Field("Other", description="Inspection, Feeding, Harvest, Treatment, Other")
     category: Optional[str] = Field("General", description="Inspection, Feeding, Harvest, General")
-    due_date: Optional[datetime] = None
+    due_date: Optional[str] = None
     apiary_id: Optional[UUID] = None
     hive_id: Optional[UUID] = None
+    is_completed: Optional[bool] = None
+    completed_at: Optional[str] = None
+    recurrence: Optional[str] = None
+    recurrence_days: Optional[int] = Field(None, ge=1)
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     status: Optional[str] = None
     priority: Optional[str] = None
+    type: Optional[str] = None
     category: Optional[str] = None
-    due_date: Optional[datetime] = None
+    due_date: Optional[str] = None
     apiary_id: Optional[UUID] = None
     hive_id: Optional[UUID] = None
     is_completed: Optional[bool] = None
+    completed_at: Optional[str] = None
+    recurrence: Optional[str] = None
+    recurrence_days: Optional[int] = Field(None, ge=1)
 
 class InspectionCreate(BaseModel):
     apiary_id: UUID
@@ -208,6 +218,122 @@ def _process_apiary_output(a: dict) -> dict:
     if "status" not in a:
         a["status"] = "active" if a.get("is_active", True) else "inactive"
     return a
+
+
+def _dump_model(model: BaseModel, *, exclude_unset: bool = False) -> dict[str, Any]:
+    if hasattr(model, "model_dump"):
+        return model.model_dump(mode="json", exclude_unset=exclude_unset)
+    return model.dict(exclude_unset=exclude_unset)
+
+
+def _normalize_task_status(value: Optional[str]) -> str:
+    raw = str(value or "pending").strip().lower().replace(" ", "_")
+    if raw == "completed":
+        return "completed"
+    if raw in {"in_progress", "inprogress", "progress"}:
+        return "in_progress"
+    return "pending"
+
+
+def _normalize_task_priority(value: Optional[str]) -> str:
+    raw = str(value or "Medium").strip().lower()
+    if raw == "low":
+        return "Low"
+    if raw == "high":
+        return "High"
+    return "Medium"
+
+
+def _normalize_task_type(value: Optional[str]) -> str:
+    raw = str(value or "Other").strip().lower()
+    mapping = {
+        "inspection": "Inspection",
+        "feeding": "Feeding",
+        "harvest": "Harvest",
+        "treatment": "Treatment",
+        "other": "Other",
+    }
+    return mapping.get(raw, "Other")
+
+
+def _coerce_datetime_value(value: Any) -> Optional[str]:
+    if value in (None, ""):
+        return None
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, date):
+        return datetime.combine(value, datetime.min.time()).isoformat()
+
+    raw = str(value).strip()
+    if not raw:
+        return None
+
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00")).isoformat()
+    except ValueError:
+        pass
+
+    try:
+        return datetime.fromisoformat(f"{raw}T00:00:00").isoformat()
+    except ValueError:
+        return raw
+
+
+def _normalize_task_payload(payload: dict[str, Any], *, is_create: bool = False) -> dict[str, Any]:
+    normalized = dict(payload)
+    recurrence_days = normalized.pop("recurrence_days", None)
+
+    if is_create or "status" in normalized:
+        normalized["status"] = _normalize_task_status(normalized.get("status"))
+    if is_create or "priority" in normalized:
+        normalized["priority"] = _normalize_task_priority(normalized.get("priority"))
+    if is_create or "type" in normalized:
+        normalized["type"] = _normalize_task_type(normalized.get("type"))
+
+    if "apiary_id" in normalized and not normalized.get("apiary_id"):
+        normalized["apiary_id"] = None
+    if "hive_id" in normalized and not normalized.get("hive_id"):
+        normalized["hive_id"] = None
+
+    if is_create and not normalized.get("category"):
+        normalized["category"] = normalized.get("type") or "General"
+
+    due_date = _coerce_datetime_value(normalized.get("due_date"))
+    if due_date:
+        normalized["due_date"] = due_date
+    elif is_create:
+        normalized["due_date"] = datetime.utcnow().isoformat()
+    else:
+        normalized.pop("due_date", None)
+
+    if recurrence_days and not normalized.get("recurrence"):
+        normalized["recurrence"] = json.dumps({"days": int(recurrence_days)})
+    elif "recurrence" in normalized:
+        recurrence = normalized.get("recurrence")
+        if recurrence in (None, "", "None"):
+            normalized["recurrence"] = None
+        elif isinstance(recurrence, (dict, list)):
+            normalized["recurrence"] = json.dumps(recurrence)
+        else:
+            normalized["recurrence"] = str(recurrence)
+
+    if normalized.get("status") == "completed" and "is_completed" not in normalized:
+        normalized["is_completed"] = True
+    elif "status" in normalized and normalized.get("status") != "completed" and "is_completed" not in normalized:
+        normalized["is_completed"] = False
+
+    if normalized.get("is_completed") is True and "status" not in normalized:
+        normalized["status"] = "completed"
+
+    completed_at = _coerce_datetime_value(normalized.get("completed_at"))
+    if normalized.get("is_completed") is True or normalized.get("status") == "completed":
+        normalized["is_completed"] = True
+        normalized["status"] = "completed"
+        normalized["completed_at"] = completed_at or datetime.utcnow().isoformat()
+    elif "completed_at" in normalized or normalized.get("status") in {"pending", "in_progress"}:
+        normalized["completed_at"] = None
+
+    return normalized
 
 
 def _normalize_calculator_log(row: dict[str, Any]) -> dict[str, Any]:
@@ -1439,7 +1565,12 @@ async def get_user_tasks(
             tasks = await db_select("tasks", filters=t_filters, limit=1000, token=token)
             shared_tasks.extend(tasks)
             
-    all_tasks = owned_tasks + shared_tasks
+    unique_tasks: dict[str, dict[str, Any]] = {}
+    for task in owned_tasks + shared_tasks:
+        task_id = str(task.get("id"))
+        if task_id not in unique_tasks:
+            unique_tasks[task_id] = task
+    all_tasks = sorted(unique_tasks.values(), key=lambda task: str(task.get("due_date") or ""))
     
     # Enrich with apiary/hive names
     for task in all_tasks:
@@ -1500,7 +1631,7 @@ async def create_task(
     else:
         target_owner_id = user_id
 
-    data = task_in.dict()
+    data = _normalize_task_payload(_dump_model(task_in), is_create=True)
     data["user_id"] = target_owner_id
     
     result = await db_insert("tasks", data, token=token)
@@ -1533,7 +1664,7 @@ async def update_task(
     elif task.get("user_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     
-    data = task_in.dict(exclude_unset=True)
+    data = _normalize_task_payload(_dump_model(task_in, exclude_unset=True))
     if not data:
         raise HTTPException(status_code=400, detail="No data to update")
     

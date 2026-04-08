@@ -27,9 +27,33 @@ function getActiveClient() {
     return supabaseShop;
 }
 
-let cachedSession: any = null;
-let lastSessionFetch = 0;
-let sessionPromise: Promise<any> | null = null;
+type SessionCacheEntry = {
+    session: any | null;
+    lastSessionFetch: number;
+    sessionPromise: Promise<any> | null;
+};
+
+const sessionCache = new Map<string, SessionCacheEntry>();
+
+function getClientCacheKey() {
+    const activeClient = getActiveClient();
+    if (activeClient === supabaseBeeYield) return 'beeyield';
+    if (activeClient === supabaseCEBA) return 'ceba';
+    return 'shop';
+}
+
+function getSessionCacheEntry(cacheKey: string): SessionCacheEntry {
+    let entry = sessionCache.get(cacheKey);
+    if (!entry) {
+        entry = {
+            session: null,
+            lastSessionFetch: 0,
+            sessionPromise: null,
+        };
+        sessionCache.set(cacheKey, entry);
+    }
+    return entry;
+}
 
 /**
  * Get authentication headers from Supabase session with caching and concurrency protection
@@ -37,19 +61,21 @@ let sessionPromise: Promise<any> | null = null;
 export async function getAuthHeaders(): Promise<Record<string, string>> {
     const activeClient = getActiveClient();
     if (!activeClient) return {};
+    const cacheKey = getClientCacheKey();
+    const cacheEntry = getSessionCacheEntry(cacheKey);
 
     const now = Date.now();
     // Cache session for 60 seconds to reduce overhead on concurrent requests
-    if (cachedSession && (now - lastSessionFetch < 60000)) {
+    if (cacheEntry.session && (now - cacheEntry.lastSessionFetch < 60000)) {
         return {
-            'Authorization': `Bearer ${cachedSession.access_token}`
+            'Authorization': `Bearer ${cacheEntry.session.access_token}`
         };
     }
 
     // If a request is already in flight, wait for it
-    if (sessionPromise) {
+    if (cacheEntry.sessionPromise) {
         try {
-            const session = await sessionPromise;
+            const session = await cacheEntry.sessionPromise;
             if (session) return { 'Authorization': `Bearer ${session.access_token}` };
         } catch (e) {
             // If promise fails, fall through to create a new one
@@ -57,7 +83,7 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     }
 
     // Create a new session fetch promise
-    sessionPromise = (async () => {
+    cacheEntry.sessionPromise = (async () => {
         try {
             // 1. Try active client (e.g. BeeYield or CEBA)
             let { data: { session } } = await activeClient.auth.getSession();
@@ -71,8 +97,8 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
             }
 
             if (session?.access_token) {
-                cachedSession = session;
-                lastSessionFetch = Date.now();
+                cacheEntry.session = session;
+                cacheEntry.lastSessionFetch = Date.now();
                 return session;
             }
             return null;
@@ -80,19 +106,19 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
             console.error('Error getting auth headers:', error);
             return null;
         } finally {
-            sessionPromise = null;
+            cacheEntry.sessionPromise = null;
         }
     })();
 
-    const session = await sessionPromise;
+    const session = await cacheEntry.sessionPromise;
     if (session) {
         return { 'Authorization': `Bearer ${session.access_token}` };
     }
 
     // Fallback to previously cached session if available even if expired, to prevent blocking
-    if (cachedSession) {
+    if (cacheEntry.session) {
         return {
-            'Authorization': `Bearer ${cachedSession.access_token}`
+            'Authorization': `Bearer ${cacheEntry.session.access_token}`
         };
     }
 
