@@ -218,15 +218,17 @@ const FlightMapView: React.FC = () => {
     const [routePath, setRoutePath] = useState<RoutePoint[]>([]);
     const [planningRoute, setPlanningRoute] = useState(false);
     const hasPrivateApiaries = apiaries.length > 0;
+    const usePublicKibweziView = true;
+    const isPublicKibweziView = usePublicKibweziView || !hasPrivateApiaries;
 
     useEffect(() => {
-        if (!selectedApiaryId && apiaries.length > 0) setSelectedApiaryId(String(apiaries[0].id));
-    }, [apiaries, selectedApiaryId]);
+        if (!isPublicKibweziView && !selectedApiaryId && apiaries.length > 0) setSelectedApiaryId(String(apiaries[0].id));
+    }, [apiaries, isPublicKibweziView, selectedApiaryId]);
 
     const { data: publicFlightMap, isLoading: publicMapLoading } = useQuery({
         queryKey: ['public-flight-map', 'kibwezi-kenya'],
         queryFn: () => beeyieldService.getPublicLiveFlightMap('kibwezi-kenya'),
-        enabled: !apiariesLoading && !hasPrivateApiaries,
+        enabled: true,
         staleTime: 60000,
     });
 
@@ -239,12 +241,12 @@ const FlightMapView: React.FC = () => {
     const { data: privateFlightArea, isLoading: pageLoading, isFetching } = useQuery({
         queryKey: ['flight-area', selectedApiaryId, selectedLandTypeId || 'default'],
         queryFn: () => beeyieldService.getFlightAreaDashboard(selectedApiaryId, selectedLandTypeId || undefined),
-        enabled: hasPrivateApiaries && !!selectedApiaryId,
+        enabled: hasPrivateApiaries && !isPublicKibweziView && !!selectedApiaryId,
         staleTime: 60000,
     });
 
     const flightArea = React.useMemo(
-        () => privateFlightArea || buildPublicFlightArea(publicFlightMap || null, selectedLandTypeId),
+        () => buildPublicFlightArea(publicFlightMap || null, selectedLandTypeId) || privateFlightArea,
         [privateFlightArea, publicFlightMap, selectedLandTypeId],
     );
 
@@ -268,7 +270,9 @@ const FlightMapView: React.FC = () => {
         });
     }, [flightArea?.route_planner?.suggested_hives]);
 
-    const loading = apiariesLoading || publicMapLoading || (hasPrivateApiaries && !!selectedApiaryId && pageLoading && !flightArea);
+    const loading = isPublicKibweziView
+        ? publicMapLoading && !flightArea
+        : apiariesLoading || publicMapLoading || (hasPrivateApiaries && !!selectedApiaryId && pageLoading && !flightArea);
     const locationOptions = flightArea?.controls?.locations || apiaries.map((apiary) => ({
         id: String(apiary.id),
         name: apiary.name,
@@ -312,7 +316,7 @@ const FlightMapView: React.FC = () => {
         if (selectedHiveIds.length === 0) return toast.error('Select at least one hive to build a route.');
         setPlanningRoute(true);
         try {
-            if (!hasPrivateApiaries && publicFlightMap?.route_points?.length) {
+            if (isPublicKibweziView && publicFlightMap?.route_points?.length) {
                 setRoutePath([
                     {
                         id: String(publicFlightMap.apiary.id),
@@ -361,7 +365,7 @@ const FlightMapView: React.FC = () => {
         ['Forage potential', showForagePotential, setShowForagePotential],
     ] as const;
     const activeLayerCount = layerButtons.filter(([, active]) => active).length;
-    const primaryLocationLabel = String(flightArea?.apiary?.location_name || 'Kibwezi, Kenya');
+    const primaryLocationLabel = String(flightArea?.apiary?.location_name || 'Kibwezi, Makueni County, Kenya');
     const topStats = [
         {
             label: 'Forage potential',
@@ -410,7 +414,7 @@ const FlightMapView: React.FC = () => {
                 icon={Route}
                 label="Flight intelligence"
                 title="Bee Flight Area"
-                subtitle={hasPrivateApiaries ? 'Live forage, map, and route planning for your selected apiary.' : 'Live Kibwezi, Kenya map with backend weather and forage coverage.'}
+                subtitle={isPublicKibweziView ? 'Live Kibwezi, Makueni County, Kenya map with backend weather and forage coverage.' : 'Live forage, map, and route planning for your selected apiary.'}
                 actions={
                     <div className="flex items-center gap-2">
                         <div className={cn(glass.badge, 'border-[#1B9157]/20 bg-[#1B9157]/10 text-[#166534]')}>
@@ -426,7 +430,7 @@ const FlightMapView: React.FC = () => {
                     <div className="grid gap-4 xl:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)] xl:gap-5">
                         <div className="space-y-3 md:space-y-4">
                             <div className="space-y-1">
-                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">{hasPrivateApiaries ? 'My locations' : 'Live location'}</p>
+                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">{isPublicKibweziView ? 'Live location' : 'My locations'}</p>
                                 <Select value={selectedApiaryId} onValueChange={handleApiaryChange}>
                                     <SelectTrigger className="h-12 rounded-xl border-[#F4D03F]/30 bg-[#FFF9F0] text-sm font-semibold text-[#1A1A1A] shadow-sm">
                                         <SelectValue placeholder="Select an apiary" />
