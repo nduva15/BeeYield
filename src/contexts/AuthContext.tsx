@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useMe
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 import { Session, User, AuthError, AuthMFAEnrollResponse, AuthMFAChallengeResponse, AuthMFAVerifyResponse, Factor, SupabaseClient } from '@supabase/supabase-js';
+import { buildAuthCallbackUrl, readAuthCallbackState } from '@/lib/authRedirect';
 
 interface MFAEnrollResult {
     id: string;
@@ -29,8 +30,18 @@ interface AuthContextType {
 
     // Methods
     signIn: (email: string, password: string, backend?: AuthBackend) => Promise<{ error: AuthError | null; mfaRequired?: boolean }>;
-    signUp: (email: string, password: string, metadata?: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null; data?: { user: User | null; session: Session | null } }>;
-    signInWithGoogle: (metadata?: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
+    signUp: (
+        email: string,
+        password: string,
+        metadata?: Record<string, any>,
+        backend?: AuthBackend,
+        options?: { emailRedirectTo?: string }
+    ) => Promise<{ error: AuthError | null; data?: { user: User | null; session: Session | null } }>;
+    signInWithGoogle: (
+        metadata?: Record<string, any>,
+        backend?: AuthBackend,
+        options?: { redirectTo?: string }
+    ) => Promise<{ error: AuthError | null }>;
     signOut: (backend?: AuthBackend | 'all') => Promise<void>;
 
     // Password Reset Methods
@@ -94,10 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return 'beeyield';
         }
         if (lowerPath.includes('/auth/callback')) {
-            const stored = localStorage.getItem('authBackend') as AuthBackend;
-            if (stored && ['shop', 'beeyield', 'ceba'].includes(stored)) {
-                return stored;
-            }
+            return readAuthCallbackState().backend as AuthBackend;
         }
         return 'shop';
     };
@@ -235,23 +243,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email: string,
         password: string,
         metadata?: Record<string, any>,
-        backend?: AuthBackend
+        backend?: AuthBackend,
+        options?: { emailRedirectTo?: string }
     ) => {
         const client = getClient(backend);
         const { data, error } = await client.auth.signUp({
             email,
             password,
-            options: { data: metadata },
+            options: {
+                data: metadata,
+                emailRedirectTo: options?.emailRedirectTo,
+            },
         });
         return { error, data: { user: data.user, session: data.session } };
     };
 
-    const signInWithGoogle = async (metadata?: Record<string, any>, backend?: AuthBackend) => {
+    const signInWithGoogle = async (
+        metadata?: Record<string, any>,
+        backend?: AuthBackend,
+        options?: { redirectTo?: string }
+    ) => {
         const client = getClient(backend);
         const { error } = await client.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: options?.redirectTo
+                    || buildAuthCallbackUrl({ backend: backend || activeBackend, returnTo: '/' }),
                 queryParams: { access_type: 'offline', prompt: 'consent' },
             },
         });

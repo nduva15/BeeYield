@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User } from "lucide-react";
 import { ensureProfileForUser } from '@/lib/profileSync';
+import { buildAuthCallbackUrl } from '@/lib/authRedirect';
 
 interface RegisterFormProps {
     onSuccess?: () => void;
@@ -55,13 +56,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             'admin': 'ceba'
         };
         const activeBackend = backendMap[variant] || 'shop';
+        const returnPathMap: Record<string, string> = {
+            'shop': '/shop-dashboard',
+            'professional': '/beeyield-dashboard',
+            'admin': '/ceba'
+        };
+        const returnTo = returnPathMap[variant] || '/';
 
         const { data: signupData, error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: defaultRole,
             ...additionalMetadata
-        }, activeBackend);
+        }, activeBackend, {
+            emailRedirectTo: buildAuthCallbackUrl({ backend: activeBackend, returnTo }),
+        });
 
         if (error) {
             toast.error("Signup failed", { description: error.message });
@@ -120,11 +129,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             'admin': '/ceba'
         };
         const returnTo = returnPathMap[variant] || '/';
+        const redirectTo = buildAuthCallbackUrl({ backend: activeBackend, returnTo });
 
         localStorage.setItem('authReturnTo', returnTo);
         localStorage.setItem('authBackend', activeBackend);
 
-        const { error } = await signInWithGoogle(undefined, activeBackend);
+        const { error } = await signInWithGoogle(undefined, activeBackend, { redirectTo });
         if (error) {
             toast.error("Google signup failed", { description: error.message });
             setGoogleLoading(false);

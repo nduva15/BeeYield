@@ -7,6 +7,7 @@ import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { ensureProfileForUser } from '@/lib/profileSync';
 import { getBeeYieldPendingOnboardingPath } from '@/lib/beeyieldOnboarding';
+import { clearAuthRedirectState, getLoginPathForBackend, readAuthCallbackState } from '@/lib/authRedirect';
 
 /**
  * Auth Callback Page
@@ -20,9 +21,8 @@ const AuthCallback = () => {
     useEffect(() => {
         const handleAuthCallback = async () => {
             try {
-                // Determine which backend initiated the auth
-                const storedBackend = localStorage.getItem('authBackend') as 'shop' | 'beeyield' | 'ceba' || 'shop';
-                localStorage.removeItem('authBackend'); // Remove after reading
+                const { backend, returnTo: requestedReturnTo, requireMetadata } = readAuthCallbackState();
+                clearAuthRedirectState();
 
                 // Dynamically import clients to avoid circular deps if any
                 // Note: The initial import at the top of the file is still there,
@@ -34,10 +34,11 @@ const AuthCallback = () => {
                     beeyield: supabaseBeeYield,
                     ceba: supabaseCEBA
                 };
-                const activeClient = clients[storedBackend] || supabaseShop;
+                const activeClient = clients[backend] || supabaseShop;
+                const loginPath = getLoginPathForBackend(backend);
 
                 if (!activeClient) {
-                    navigate('/login?error=client_init_failed');
+                    navigate(`${loginPath}?error=client_init_failed`, { replace: true });
                     return;
                 }
 
@@ -47,7 +48,7 @@ const AuthCallback = () => {
 
                 if (error) {
                     console.error('Auth callback error:', error);
-                    navigate('/login?error=auth_failed');
+                    navigate(`${loginPath}?error=auth_failed`, { replace: true });
                     return;
                 }
 
@@ -59,11 +60,11 @@ const AuthCallback = () => {
                         try {
                             const { error: profileError } = await ensureProfileForUser(
                                 activeClient,
-                                storedBackend,
+                                backend,
                                 user,
                                 {
                                     onlyIfMissing: true,
-                                    role: storedBackend === 'ceba' ? 'admin' : undefined,
+                                    role: backend === 'ceba' ? 'admin' : undefined,
                                 },
                             );
 
@@ -75,10 +76,8 @@ const AuthCallback = () => {
                         }
                     }
 
-                    const requireMetadataStr = localStorage.getItem('authRequireMetadata');
-                    if (requireMetadataStr && user) {
+                    if (requireMetadata && user) {
                         try {
-                            const requireMetadata = JSON.parse(requireMetadataStr);
                             const missingMetadata: Record<string, any> = {};
 
                             Object.entries(requireMetadata).forEach(([key, value]) => {
@@ -99,7 +98,6 @@ const AuthCallback = () => {
                             console.error('Error handling requireMetadata:', e);
                         }
                     }
-                    localStorage.removeItem('authRequireMetadata');
 
                     const fullName = (user?.user_metadata?.full_name || user?.user_metadata?.name) ||
                         (user?.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name || ''}`.trim() : null) ||
@@ -108,11 +106,10 @@ const AuthCallback = () => {
                     toast.success(`Welcome back, ${fullName}! 🎉`);
 
                     // Successfully authenticated, redirect to intended destination
-                    const pendingBeeYieldReturnTo = storedBackend === 'beeyield'
+                    const pendingBeeYieldReturnTo = backend === 'beeyield'
                         ? getBeeYieldPendingOnboardingPath()
                         : null;
-                    const returnTo = localStorage.getItem('authReturnTo') || pendingBeeYieldReturnTo || '/';
-                    localStorage.removeItem('authReturnTo');
+                    const returnTo = pendingBeeYieldReturnTo || requestedReturnTo;
 
                     // Small delay to ensure session is fully propagated
                     setTimeout(() => {
@@ -122,11 +119,12 @@ const AuthCallback = () => {
                     // No session found in hash or storage
                     // It's possible the hash was cleared or invalid
                     console.warn('No session found after callback');
-                    navigate('/login', { replace: true });
+                    navigate(loginPath, { replace: true });
                 }
             } catch (err) {
                 console.error('Auth callback exception:', err);
-                navigate('/login?error=auth_exception', { replace: true });
+                const loginPath = getLoginPathForBackend(readAuthCallbackState().backend);
+                navigate(`${loginPath}?error=auth_exception`, { replace: true });
             }
         };
 

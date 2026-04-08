@@ -1,6 +1,8 @@
 -- Keep PostGIS system tables out of the public API schema when supported.
--- On hosted PostGIS builds that cannot move the extension schema, harden the
--- exposed extension table directly so it is no longer publicly accessible.
+-- Hosted Supabase projects may prevent moving PostGIS after install, and the
+-- extension-owned spatial_ref_sys table cannot be altered directly by app roles.
+-- In that case, this migration exits cleanly and the project must be fixed via
+-- the Extensions UI or by changing exposed API schemas.
 
 CREATE SCHEMA IF NOT EXISTS extensions;
 
@@ -25,22 +27,10 @@ BEGIN
             EXECUTE 'ALTER EXTENSION postgis SET SCHEMA extensions';
         EXCEPTION
             WHEN feature_not_supported THEN
-                RAISE NOTICE 'postgis cannot be moved to extensions on this host';
+                RAISE NOTICE 'postgis cannot be moved to extensions on this host; fix via Extensions UI or API schema settings';
+            WHEN insufficient_privilege THEN
+                RAISE NOTICE 'current role cannot move postgis; fix via Extensions UI or owner-level migration';
         END;
-    END IF;
-
-    IF EXISTS (
-        SELECT 1
-        FROM pg_class AS c
-        JOIN pg_namespace AS n
-          ON n.oid = c.relnamespace
-        WHERE n.nspname = 'public'
-          AND c.relname = 'spatial_ref_sys'
-          AND c.relkind = 'r'
-          AND c.relrowsecurity = false
-    ) THEN
-        EXECUTE 'ALTER TABLE public.spatial_ref_sys ENABLE ROW LEVEL SECURITY';
-        EXECUTE 'ALTER TABLE public.spatial_ref_sys FORCE ROW LEVEL SECURITY';
     END IF;
 END $$;
 

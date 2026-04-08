@@ -1,6 +1,17 @@
 -- Align mapping-related backend tables with the forage API contract.
 
+create extension if not exists "pgcrypto";
 create extension if not exists "uuid-ossp";
+
+create or replace function public.update_updated_at_column()
+returns trigger
+language plpgsql
+as $$
+begin
+    new.updated_at = now();
+    return new;
+end;
+$$;
 
 -- =========================
 -- FORAGE ZONES
@@ -69,6 +80,20 @@ for each row execute procedure update_updated_at_column();
 -- ORCHARDS
 -- =========================
 
+create table if not exists public.orchards (
+    id uuid primary key default uuid_generate_v4(),
+    grower_id uuid not null references auth.users(id) on delete cascade,
+    apiary_id uuid references public.apiaries(id) on delete set null,
+    name text not null,
+    location_name text,
+    boundary_geojson jsonb,
+    acreage numeric(10, 2),
+    crop_type text,
+    notes text,
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
+);
+
 alter table public.orchards
     add column if not exists apiary_id uuid references public.apiaries(id) on delete set null,
     add column if not exists location_name text,
@@ -89,16 +114,23 @@ on public.orchards for all
 using ((select auth.uid()) = grower_id)
 with check ((select auth.uid()) = grower_id);
 
-create policy "Beekeepers see contracted orchards"
-on public.orchards for select
-using (
-    exists (
-        select 1
-        from public.pollination_contracts
-        where pollination_contracts.orchard_id = orchards.id
-          and pollination_contracts.beekeeper_id = (select auth.uid())
-    )
-);
+do $$
+begin
+    if to_regclass('public.pollination_contracts') is not null then
+        execute $policy$
+            create policy "Beekeepers see contracted orchards"
+            on public.orchards for select
+            using (
+                exists (
+                    select 1
+                    from public.pollination_contracts
+                    where pollination_contracts.orchard_id = orchards.id
+                      and pollination_contracts.beekeeper_id = (select auth.uid())
+                )
+            )
+        $policy$;
+    end if;
+end $$;
 
 create index if not exists idx_orchards_grower_id on public.orchards(grower_id);
 create index if not exists idx_orchards_apiary_id on public.orchards(apiary_id);
@@ -111,6 +143,21 @@ for each row execute procedure update_updated_at_column();
 -- =========================
 -- GEOFENCES
 -- =========================
+
+create table if not exists public.geofences (
+    id uuid primary key default uuid_generate_v4(),
+    user_id uuid not null references auth.users(id) on delete cascade,
+    apiary_id uuid references public.apiaries(id) on delete cascade,
+    name text not null,
+    center_latitude double precision,
+    center_longitude double precision,
+    radius_meters double precision,
+    boundary_geojson jsonb,
+    notes text,
+    alert_triggered boolean not null default false,
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
+);
 
 alter table public.geofences
     add column if not exists center_latitude double precision,
