@@ -1,32 +1,43 @@
 import { motion } from "framer-motion";
 
 const partners = [
-  { 
-    name: "Apisense", 
-    url: "https://apisense.io", 
-    logo: "/partners/apisense.png" 
+  {
+    name: "Apisense",
+    url: "https://apisense.io",
+    logo: "/partners/apisense.png",
   },
-  { 
-    name: "Intelligent Hives", 
-    url: "https://intelligenthives.eu", 
-    logo: "/partners/intelligenthives.png" 
+  {
+    name: "Intelligent Hives",
+    url: "https://intelligenthives.eu",
+    logo: "/partners/intelligenthives.png",
   },
-  { 
-    name: "FarmersNow", 
-    url: "https://farmersnow.com", 
-    logo: "/partners/farmersnow.png" 
-  }
+  {
+    name: "FarmersNow",
+    url: "https://farmersnow.com",
+    logo: "/partners/farmersnow.png",
+  },
 ];
 
-export const PartnersMarquee = () => {
-  // Duplicate array significantly for seamless ultra-wide looping
-  const marqueeItems = [...partners, ...partners, ...partners, ...partners, ...partners, ...partners];
+const containerVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { staggerChildren: 0.08, duration: 0.5, ease: "easeOut" },
+  },
+};
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+};
+
+export const PartnersMarquee = () => {
   return (
-    <section className="relative w-full overflow-hidden border-y border-border bg-muted/20 py-10 sm:py-12">
+    <section className="relative w-full overflow-hidden border-y border-border/70 bg-gradient-to-b from-muted/40 via-muted/10 to-transparent py-12 sm:py-16">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(245,158,11,0.12),_transparent_55%)] pointer-events-none" />
       <div className="container mx-auto px-4 relative z-10">
-        <div className="flex flex-col items-center text-center gap-3 mb-8">
+        <div className="flex flex-col items-center text-center gap-3 mb-10 sm:mb-12">
           <span className="text-[10px] md:text-xs uppercase tracking-[0.35em] text-muted-foreground">
             Partners
           </span>
@@ -38,45 +49,37 @@ export const PartnersMarquee = () => {
           </p>
         </div>
 
-        <div className="w-full relative overflow-hidden">
-          <div className="absolute inset-y-0 left-0 w-12 md:w-28 bg-gradient-to-r from-muted/40 to-transparent z-20 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-12 md:w-28 bg-gradient-to-l from-muted/40 to-transparent z-20 pointer-events-none" />
-
-          <motion.div
-            className="flex items-center gap-8 sm:gap-12 whitespace-nowrap will-change-transform py-2"
-            animate={{
-              x: ["0%", "-50%"]
-            }}
-            transition={{
-              duration: 32,
-              ease: "linear",
-              repeat: Infinity,
-            }}
-          >
-            {marqueeItems.map((partner, idx) => (
+        <motion.ul
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {partners.map((partner) => (
+            <motion.li key={partner.name} variants={itemVariants}>
               <a
-                key={`${partner.name}-${idx}`}
                 href={partner.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Visit ${partner.name}`}
-                className="group inline-flex items-center gap-3 rounded-2xl border border-border bg-background/80 px-5 py-3 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="group flex h-full flex-col items-center justify-center gap-4 rounded-3xl border border-border/70 bg-background/80 px-6 py-8 text-center shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
               >
-                <div className="w-9 h-9 md:w-11 md:h-11 relative overflow-hidden rounded-xl flex-shrink-0 bg-primary/5 border border-primary/15 group-hover:border-primary/35 transition-colors">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/15 bg-primary/5 transition-colors group-hover:border-primary/35 md:h-16 md:w-16">
                   <img
                     src={partner.logo}
                     alt={`${partner.name} logo`}
-                    className="w-full h-full object-contain p-1.5 transition-all duration-300 group-hover:scale-105"
+                    className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                   />
                 </div>
-                <span className="font-semibold text-sm md:text-base text-foreground">
+                <span className="text-base font-semibold tracking-tight text-foreground">
                   {partner.name}
                 </span>
               </a>
-            ))}
-          </motion.div>
-        </div>
+            </motion.li>
+          ))}
+        </motion.ul>
       </div>
     </section>
   );

@@ -102,6 +102,10 @@ class PaymentMethod(PaymentMethodCreate):
     user_id: str
     created_at: datetime
 
+
+class PaymentMethodUpdate(PaymentMethodCreate):
+    pass
+
 # --- Wallet ---
 
 class WalletTransaction(BaseModel):
@@ -154,4 +158,23 @@ class CouponValidationResult(BaseModel):
     discount_percent: float = 0
     discount_amount: float = 0
     message: str
+
+
+class ShopDashboardStats(BaseModel):
+    total_orders: int
+    active_orders: int
+    completed_orders: int
+    total_spent_kes: float
+    wishlist_items: int
+    saved_addresses: int
+    saved_payment_methods: int
+
+
+class ShopDashboardSummary(BaseModel):
+    stats: ShopDashboardStats
+    recent_orders: list[Order]
+    addresses: list[Address]
+    payment_methods: list[PaymentMethod]
+    wishlist: list[WishlistItem]
+    recommendations: list[Product]
 

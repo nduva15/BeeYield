@@ -190,6 +190,25 @@ export interface TrackingInfo {
     events: TrackingEvent[];
 }
 
+export interface ShopDashboardStats {
+    total_orders: number;
+    active_orders: number;
+    completed_orders: number;
+    total_spent_kes: number;
+    wishlist_items: number;
+    saved_addresses: number;
+    saved_payment_methods: number;
+}
+
+export interface ShopDashboardSummary {
+    stats: ShopDashboardStats;
+    recent_orders: Order[];
+    addresses: Address[];
+    payment_methods: PaymentMethod[];
+    wishlist: WishlistItem[];
+    recommendations: Product[];
+}
+
 export interface CouponValidationResult {
     valid: boolean;
     code: string;
@@ -590,6 +609,53 @@ export const getUserOrders = async (_email?: string): Promise<Order[]> => {
     }
 };
 
+export const getShopDashboard = async (): Promise<ShopDashboardSummary> => {
+    try {
+        const data = await apiGet<any>("/shop/dashboard");
+        return {
+            stats: {
+                total_orders: toNumber(data?.stats?.total_orders),
+                active_orders: toNumber(data?.stats?.active_orders),
+                completed_orders: toNumber(data?.stats?.completed_orders),
+                total_spent_kes: toNumber(data?.stats?.total_spent_kes),
+                wishlist_items: toNumber(data?.stats?.wishlist_items),
+                saved_addresses: toNumber(data?.stats?.saved_addresses),
+                saved_payment_methods: toNumber(data?.stats?.saved_payment_methods),
+            },
+            recent_orders: sortOrders(toArray<any>(data?.recent_orders).map(normalizeOrder)),
+            addresses: toArray<any>(data?.addresses).map(normalizeAddress),
+            payment_methods: toArray<any>(data?.payment_methods).map(normalizePaymentMethod),
+            wishlist: toArray<any>(data?.wishlist).map(normalizeWishlistItem),
+            recommendations: toArray<any>(data?.recommendations).map(normalizeProduct),
+        };
+    } catch (error) {
+        console.error("Dashboard summary failed, rebuilding from individual endpoints:", error);
+        const [recent_orders, addresses, payment_methods, wishlist, recommendations] = await Promise.all([
+            getUserOrders(),
+            getAddresses(),
+            getPaymentMethods(),
+            getWishlist(),
+            getProducts(),
+        ]);
+        return {
+            stats: {
+                total_orders: recent_orders.length,
+                active_orders: recent_orders.filter((order) => ["pending", "processing", "shipped"].includes(order.status)).length,
+                completed_orders: recent_orders.filter((order) => ["completed", "delivered"].includes(order.status)).length,
+                total_spent_kes: recent_orders.reduce((sum, order) => sum + order.total_amount, 0),
+                wishlist_items: wishlist.length,
+                saved_addresses: addresses.length,
+                saved_payment_methods: payment_methods.length,
+            },
+            recent_orders: recent_orders.slice(0, 6),
+            addresses,
+            payment_methods,
+            wishlist,
+            recommendations: recommendations.slice(0, 4),
+        };
+    }
+};
+
 export const getAddresses = async (): Promise<Address[]> => {
     try {
         const data = await apiGet<any[]>("/shop/addresses");
@@ -715,6 +781,12 @@ export const deletePaymentMethod = async (paymentId: string) => {
     }
 };
 
+export const updatePaymentMethod = async (paymentId: string, paymentMethod: any): Promise<PaymentMethod> => {
+    const payload = buildPaymentMethodPayload(paymentMethod);
+    const data = await apiPut<any>(`/shop/payment-methods/${paymentId}`, payload);
+    return normalizePaymentMethod(data);
+};
+
 export const getOrderTracking = async (orderId: string): Promise<TrackingInfo> => {
     try {
         const data = await apiGet<any>(`/shop/orders/${orderId}/tracking`);
@@ -761,6 +833,11 @@ export const getOrder = async (orderId: string): Promise<Order> => {
         if (sbError) throw sbError;
         return normalizeOrder(data);
     }
+};
+
+export const cancelOrder = async (orderId: string): Promise<Order> => {
+    const data = await apiPost<any>(`/shop/orders/${orderId}/cancel`, {});
+    return normalizeOrder(data);
 };
 
 export const getWishlist = async (): Promise<WishlistItem[]> => {

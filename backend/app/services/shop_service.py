@@ -139,8 +139,11 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         "order_number": order_number,
         "total_kes": order_in.total_kes if not is_bypass else 0,
         "status": "pending",
+        "payment_status": "pending",
         "shipping_address": order_in.shipping_address,
         "payment_method": order_in.payment_method,
+        "delivery_method": getattr(order_in, "delivery_method", "delivery"),
+        "notes": getattr(order_in, "notes", None),
         "idempotency_key": id_key,
         "created_at": datetime.now().isoformat()
     }
@@ -168,6 +171,25 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             "price_at_purchase": price_val
         }
         await db_insert("order_items", item_data, token=settings.SUPABASE_SERVICE_ROLE_KEY)
+
+    tracking_event = {
+        "status": "pending",
+        "location": order_in.shipping_address.get("city"),
+        "description": "Order received and queued for fulfillment.",
+        "created_at": datetime.now().isoformat(),
+    }
+    await db_insert(
+        "order_tracking",
+        {
+            "order_id": order_id,
+            "status": "pending",
+            "estimated_delivery": "Within 24 hours",
+            "events": [tracking_event],
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat(),
+        },
+        token=settings.SUPABASE_SERVICE_ROLE_KEY,
+    )
 
     # 7. Financial Core — Payment Trigger
     payment_info = {}
@@ -267,15 +289,64 @@ async def get_product_by_id(product_id: str, token: Optional[str] = None) -> Opt
 
 async def get_user_orders(user_id: str, token: Optional[str] = None) -> list[dict[str, Any]]:
     from app.db.supabase_db import db_select
-    columns = "*,items:order_items(*,product:products(*))"
+    columns = "*,items:order_items(*,product:products(*,variants:product_variants(*)))"
     orders = await db_select("orders", columns=columns, filters={"user_id": user_id}, token=token)
     return sorted(orders, key=lambda row: row.get("created_at", ""), reverse=True)
 
 async def get_order(order_id: str, token: Optional[str] = None) -> Optional[dict]:
     from app.db.supabase_db import db_select
-    columns = "*,items:order_items(*,product:products(*))"
+    columns = "*,items:order_items(*,product:products(*,variants:product_variants(*)))"
     res = await db_select("orders", columns=columns, filters={"id": order_id}, token=token)
     return res[0] if res else None
+
+
+async def _append_tracking_event(
+    order_id: str,
+    *,
+    status: str,
+    description: str,
+    location: Optional[str] = None,
+    token: Optional[str] = None,
+) -> None:
+    from app.db.supabase_db import db_insert, db_select, db_update
+    from datetime import datetime
+
+    records = await db_select("order_tracking", filters={"order_id": order_id}, token=token)
+    new_event = {
+        "status": status,
+        "location": location,
+        "description": description,
+        "created_at": datetime.now().isoformat(),
+    }
+
+    if records:
+        record = records[0]
+        events = record.get("events") if isinstance(record.get("events"), list) else []
+        events.append(new_event)
+        await db_update(
+            "order_tracking",
+            {
+                "status": status,
+                "events": events,
+                "updated_at": datetime.now().isoformat(),
+            },
+            {"order_id": order_id},
+            token=token,
+        )
+        return
+
+    await db_insert(
+        "order_tracking",
+        {
+            "order_id": order_id,
+            "status": status,
+            "estimated_delivery": "Within 24 hours",
+            "events": [new_event],
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat(),
+        },
+        token=token,
+    )
 
 async def generate_invoice_pdf(order_id: str, token: Optional[str] = None):
     """
@@ -427,7 +498,9 @@ async def get_user_addresses(user_id: str, token: Optional[str] = None) -> List[
     return await db_select("addresses", filters={"user_id": user_id}, token=token)
 
 async def add_user_address(user_id: str, address_data: dict, token: Optional[str] = None) -> dict:
-    from app.db.supabase_db import db_insert
+    from app.db.supabase_db import db_insert, db_update
+    if address_data.get("is_default"):
+        await db_update("addresses", {"is_default": False}, {"user_id": user_id}, token=token)
     address_data["user_id"] = user_id
     res = await db_insert("addresses", address_data, token=token)
     if res.get("success") and res.get("data"):
@@ -440,6 +513,8 @@ async def delete_user_address(user_id: str, address_id: str, token: Optional[str
 
 async def update_user_address(user_id: str, address_id: str, address_data: dict, token: Optional[str] = None) -> dict:
     from app.db.supabase_db import db_update
+    if address_data.get("is_default"):
+        await db_update("addresses", {"is_default": False}, {"user_id": user_id}, token=token)
     res = await db_update("addresses", address_data, {"id": address_id, "user_id": user_id}, token=token)
     if res.get("success") and res.get("data"):
         return res["data"][0]
@@ -454,7 +529,9 @@ async def get_user_payment_methods(user_id: str, token: Optional[str] = None) ->
     return await db_select("payment_methods", filters={"user_id": user_id}, token=token)
 
 async def add_user_payment_method(user_id: str, method_data: dict, token: Optional[str] = None) -> dict:
-    from app.db.supabase_db import db_insert
+    from app.db.supabase_db import db_insert, db_update
+    if method_data.get("is_default"):
+        await db_update("payment_methods", {"is_default": False}, {"user_id": user_id}, token=token)
     method_data["user_id"] = user_id
     res = await db_insert("payment_methods", method_data, token=token)
     if res.get("success") and res.get("data"):
@@ -464,6 +541,16 @@ async def add_user_payment_method(user_id: str, method_data: dict, token: Option
 async def delete_user_payment_method(user_id: str, method_id: str, token: Optional[str] = None):
     from app.db.supabase_db import db_delete
     await db_delete("payment_methods", filters={"id": method_id, "user_id": user_id}, token=token)
+
+
+async def update_user_payment_method(user_id: str, method_id: str, method_data: dict, token: Optional[str] = None) -> dict:
+    from app.db.supabase_db import db_update
+    if method_data.get("is_default"):
+        await db_update("payment_methods", {"is_default": False}, {"user_id": user_id}, token=token)
+    res = await db_update("payment_methods", method_data, {"id": method_id, "user_id": user_id}, token=token)
+    if res.get("success") and res.get("data"):
+        return res["data"][0]
+    return {**method_data, "id": method_id}
 
 # ==========================================
 #  ORDER TRACKING SERVICE
@@ -541,3 +628,66 @@ async def get_order_tracking(order_id: str, token: Optional[str] = None) -> Opti
             ],
         }
     return None
+
+
+async def cancel_order(user_id: str, order_id: str, token: Optional[str] = None) -> dict:
+    from app.db.supabase_db import db_update
+
+    order = await get_order(order_id, token=token)
+    if not order or str(order.get("user_id")) != str(user_id):
+        raise ValueError("Order not found")
+
+    current_status = str(order.get("status", "pending")).lower()
+    if current_status not in {"pending", "processing"}:
+        raise ValueError("Only pending or processing orders can be cancelled")
+
+    await db_update(
+        "orders",
+        {"status": "cancelled", "payment_status": order.get("payment_status", "pending")},
+        {"id": order_id, "user_id": user_id},
+        token=token,
+    )
+    await _append_tracking_event(
+        order_id,
+        status="cancelled",
+        description="Order cancelled by customer from the shop dashboard.",
+        location=order.get("shipping_address", {}).get("city"),
+        token=token,
+    )
+
+    refreshed = await get_order(order_id, token=token)
+    if refreshed:
+        return refreshed
+
+    order["status"] = "cancelled"
+    return order
+
+
+async def get_dashboard_summary(user_id: str, token: Optional[str] = None) -> dict:
+    orders = await get_user_orders(user_id, token=token)
+    addresses = await get_user_addresses(user_id, token=token)
+    payment_methods = await get_user_payment_methods(user_id, token=token)
+    wishlist = await get_user_wishlist(user_id, token=token)
+    recommendations = (await get_products(token=token))[:4]
+
+    completed_statuses = {"completed", "delivered"}
+    active_statuses = {"pending", "processing", "shipped"}
+
+    stats = {
+        "total_orders": len(orders),
+        "active_orders": len([order for order in orders if str(order.get("status", "")).lower() in active_statuses]),
+        "completed_orders": len([order for order in orders if str(order.get("status", "")).lower() in completed_statuses]),
+        "total_spent_kes": sum(float(order.get("total_kes", 0) or 0) for order in orders if str(order.get("status", "")).lower() not in {"cancelled", "failed"}),
+        "wishlist_items": len(wishlist),
+        "saved_addresses": len(addresses),
+        "saved_payment_methods": len(payment_methods),
+    }
+
+    return {
+        "stats": stats,
+        "recent_orders": orders[:6],
+        "addresses": addresses,
+        "payment_methods": payment_methods,
+        "wishlist": wishlist,
+        "recommendations": recommendations,
+    }

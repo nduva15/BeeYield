@@ -73,6 +73,9 @@ class Settings(BaseSettings):
     MPESA_PASSKEY: Optional[str] = None
     MPESA_BUSINESS_SHORTCODE: Optional[str] = None
     MPESA_CALLBACK_URL: Optional[str] = None
+    MPESA_ALLOWED_SHORTCODES: List[str] = Field(default_factory=list)
+    MPESA_SAFARICOM_IP_ALLOWLIST: List[str] = Field(default_factory=list)
+    MPESA_TRUSTED_PROXY_IPS: List[str] = Field(default_factory=list)
     SIMULATE_MPESA: bool = False
 
     # ============ EMAIL (Resend) ============

@@ -4,7 +4,7 @@ from typing import Optional
 import random
 from app.core import security
 from app.schemas import shop as schemas
-from app.services import shop_service
+from app.services import mpesa_c2b, shop_service
 from app.db.supabase_db import db_select
 
 
@@ -80,6 +80,18 @@ async def mpesa_callback(payload: dict):
     """
     return await shop_service.process_mpesa_callback(payload)
 
+
+@router.post("/checkout/c2b/validation")
+async def mpesa_c2b_validation(request: Request, payload: dict):
+    """Validate incoming M-Pesa C2B webhooks before confirmation."""
+    return await mpesa_c2b.validate_c2b(request, payload)
+
+
+@router.post("/checkout/c2b/confirmation")
+async def mpesa_c2b_confirmation(request: Request, payload: dict):
+    """Persist and route M-Pesa C2B confirmations."""
+    return await mpesa_c2b.confirm_c2b(request, payload)
+
 @router.get("/checkout/status/{idempotency_key}")
 async def get_checkout_status(idempotency_key: str, token: Optional[str] = Depends(get_token)):
     """
@@ -108,6 +120,15 @@ async def get_user_orders(
     user_id = current_user.get("sub")
     orders = await shop_service.get_user_orders(user_id=user_id, token=token)
     return orders
+
+
+@router.get("/dashboard", response_model=schemas.ShopDashboardSummary)
+async def get_dashboard_summary(
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    user_id = current_user.get("sub")
+    return await shop_service.get_dashboard_summary(user_id, token=token)
 
 @router.get("/orders/{order_id}", response_model=schemas.Order)
 async def get_order_detail(
@@ -272,6 +293,32 @@ async def delete_payment_method(
     user_id = current_user.get("sub")
     await shop_service.delete_user_payment_method(user_id, method_id, token=token)
     return {"status": "success"}
+
+
+@router.put("/payment-methods/{method_id}", response_model=schemas.PaymentMethod)
+async def update_payment_method(
+    method_id: str,
+    method_in: schemas.PaymentMethodUpdate,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    user_id = current_user.get("sub")
+    return await shop_service.update_user_payment_method(user_id, method_id, method_in.dict(), token=token)
+
+
+@router.post("/orders/{order_id}/cancel", response_model=schemas.Order)
+async def cancel_order(
+    order_id: str,
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    user_id = current_user.get("sub")
+    try:
+        return await shop_service.cancel_order(user_id, order_id, token=token)
+    except ValueError as exc:
+        message = str(exc)
+        status_code = 404 if message == "Order not found" else 400
+        raise HTTPException(status_code=status_code, detail=message)
 
 # --- Invoice ---
 @router.get("/orders/{order_id}/invoice")
