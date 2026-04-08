@@ -187,24 +187,39 @@ async def create_request(
 
 @router.get("/", response_model=List[RequestResponse])
 async def get_my_requests(
-    user_id: str = Depends(get_user_id),
+    current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
     """
-    Get all requests submitted by the current user.
+    Get support requests.
+    - Regular users receive only their own requests.
+    - Admins receive the full support queue.
     """
-    return await db_select("requests", filters={"user_id": user_id}, order_by="created_at", ascending=False, token=token)
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    filters = None if _is_admin(current_user) else {"user_id": user_id}
+    return await db_select("requests", filters=filters, order_by="created_at", ascending=False, token=token)
 
 @router.get("/{request_id}", response_model=RequestResponse)
 async def get_request_details(
     request_id: str,
-    user_id: str = Depends(get_user_id),
+    current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
     """
     Get details of a specific request.
     """
-    requests = await db_select("requests", filters={"id": request_id, "user_id": user_id}, token=token)
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    filters: dict[str, Any] = {"id": request_id}
+    if not _is_admin(current_user):
+        filters["user_id"] = user_id
+
+    requests = await db_select("requests", filters=filters, token=token)
     
     if not requests:
         raise HTTPException(status_code=404, detail="Request not found")
@@ -312,14 +327,21 @@ async def delete_request(
 async def add_comment(
     request_id: str,
     comment_in: RequestCommentCreate,
-    user_id: str = Depends(get_user_id),
+    current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
     """
     Add a comment/reply to a request.
     """
-    # Verify request exists and belongs to user
-    requests = await db_select("requests", filters={"id": request_id, "user_id": user_id}, token=token)
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    filters: dict[str, Any] = {"id": request_id}
+    if not _is_admin(current_user):
+        filters["user_id"] = user_id
+
+    requests = await db_select("requests", filters=filters, token=token)
     if not requests:
         raise HTTPException(status_code=404, detail="Request not found")
         
@@ -342,14 +364,21 @@ async def add_comment(
 @router.get("/{request_id}/comments", response_model=List[CommentResponse])
 async def get_request_comments(
     request_id: str,
-    user_id: str = Depends(get_user_id),
+    current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
     """
     Get all comments for a specific request.
     """
-    # Verify request exists and belongs to user
-    requests = await db_select("requests", filters={"id": request_id, "user_id": user_id}, token=token)
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    filters: dict[str, Any] = {"id": request_id}
+    if not _is_admin(current_user):
+        filters["user_id"] = user_id
+
+    requests = await db_select("requests", filters=filters, token=token)
     if not requests:
         raise HTTPException(status_code=404, detail="Request not found")
         

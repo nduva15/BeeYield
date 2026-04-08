@@ -55,19 +55,22 @@ export const SupportRequestsTab: React.FC = () => {
         }
     });
 
+    const normalizeStatus = (value?: string) => String(value || '').toLowerCase().replace(/\s+/g, '_');
+    const normalizePriority = (value?: string) => String(value || '').toLowerCase();
+
     const filteredRequests = (requests || []).filter(req => {
         const matchesSearch =
             req.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            req.reference_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            String(req.reference_id || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
             req.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-        const matchesStatus = statusFilter === 'all' || req.status === statusFilter;
+        const matchesStatus = statusFilter === 'all' || normalizeStatus(req.status) === statusFilter;
 
         return matchesSearch && matchesStatus;
     });
 
     const getStatusIcon = (status: string) => {
-        switch (status) {
+        switch (normalizeStatus(status)) {
             case 'resolved': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
             case 'in_progress': return <Clock className="h-4 w-4 text-amber-500" />;
             case 'closed': return <CheckCircle2 className="h-4 w-4 text-gray-500" />;
@@ -76,7 +79,7 @@ export const SupportRequestsTab: React.FC = () => {
     };
 
     const getPriorityColor = (priority: string) => {
-        switch (priority) {
+        switch (normalizePriority(priority)) {
             case 'high': return 'bg-red-500/10 text-red-600 border-red-200';
             case 'medium': return 'bg-amber-500/10 text-amber-600 border-amber-200';
             default: return 'bg-blue-500/10 text-blue-600 border-blue-200';
@@ -150,7 +153,7 @@ export const SupportRequestsTab: React.FC = () => {
                                         <TableCell className="px-6">
                                             <div className="flex items-center gap-2">
                                                 {getStatusIcon(req.status)}
-                                                <span className="text-xs capitalize font-medium">{req.status.replace('_', ' ')}</span>
+                                                <span className="text-xs capitalize font-medium">{normalizeStatus(req.status).replace('_', ' ')}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="px-6 text-xs text-muted-foreground">
@@ -209,29 +212,32 @@ export const SupportRequestsTab: React.FC = () => {
                                                 No comments yet. Be the first to respond!
                                             </div>
                                         ) : (
-                                            comments?.map((comment) => (
+                                            comments?.map((comment) => {
+                                                const isInternal = comment.author_id !== selectedRequest?.user_id;
+                                                return (
                                                 <div
                                                     key={comment.id}
                                                     className={cn(
                                                         "flex flex-col gap-1 max-w-[85%]",
-                                                        comment.is_internal ? "ml-auto items-end" : "items-start"
+                                                        isInternal ? "ml-auto items-end" : "items-start"
                                                     )}
                                                 >
                                                     <div className={cn(
                                                         "rounded-2xl p-3 text-sm shadow-sm",
-                                                        comment.is_internal
+                                                        isInternal
                                                             ? "bg-primary text-primary-foreground rounded-tr-none"
                                                             : "bg-muted border border-border/50 rounded-tl-none"
                                                     )}>
-                                                        {comment.comment_text}
+                                                        {comment.message}
                                                     </div>
                                                     <div className="flex items-center gap-2 text-[10px] text-muted-foreground px-1">
-                                                        <span>{comment.is_internal ? 'BeeYield Support' : 'Farmer'}</span>
+                                                        <span>{isInternal ? 'BeeYield Support' : 'Farmer'}</span>
                                                         <span>•</span>
                                                         <span>{format(new Date(comment.created_at), 'p')}</span>
                                                     </div>
                                                 </div>
-                                            ))
+                                                );
+                                            })
                                         )}
                                     </div>
                                 </div>

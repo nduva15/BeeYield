@@ -1038,10 +1038,20 @@ export const beeyieldService = {
         }
     },
 
+    async getIntegrationConfig(platform: string): Promise<any | null> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any>(`/integrations/configs/${platform}`, undefined, { headers });
+        } catch (e) {
+            console.error('getIntegrationConfig:', e);
+            return null;
+        }
+    },
+
     async upsertIntegrationConfig(config: { platform: string; is_active: boolean; store_url?: string; kra_pin?: string; branch_code?: string; device_serial?: string; access_token?: string; config_json?: any }): Promise<any> {
         try {
             const headers = await getAuthHeaders();
-            const res = await apiPost<any>('/integrations/config', {
+            const res = await apiPost<any>('/integrations/configs', {
                 platform: config.platform,
                 is_active: config.is_active,
                 store_url: config.store_url,
@@ -1060,6 +1070,32 @@ export const beeyieldService = {
         } catch (e) {
             console.error('upsertIntegrationConfig:', e);
             return null;
+        }
+    },
+
+    async updateIntegrationConfig(platform: string, patch: Partial<{ is_active: boolean; store_url: string; kra_pin: string; branch_code: string; device_serial: string; company_name: string; access_token: string; config_json: any }>): Promise<any> {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiPatch<any>(`/integrations/configs/${platform}`, patch as any, { headers });
+            this._configsCache = null;
+            this._configsCacheTime = 0;
+            return res;
+        } catch (e) {
+            console.error('updateIntegrationConfig:', e);
+            return null;
+        }
+    },
+
+    async deleteIntegrationConfig(platform: string): Promise<{ success: boolean; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            await apiDelete(`/integrations/configs/${platform}`, { headers });
+            this._configsCache = null;
+            this._configsCacheTime = 0;
+            return { success: true, error: null };
+        } catch (e) {
+            console.error('deleteIntegrationConfig:', e);
+            return { success: false, error: e };
         }
     },
 
@@ -1766,12 +1802,80 @@ export const beeyieldService = {
     async updateSettings(settings: UserSettingsUpdate): Promise<{ data: any; error: any }> {
         try {
             const headers = await getAuthHeaders();
-            const res = await apiPut<any>('/settings/preferences', settings as any, { headers });
+            const preferencePayload: any = {};
+            const profilePayload: any = {};
+            const thresholdPayload: any = {};
+
+            if (settings.language !== undefined) profilePayload.language = settings.language;
+            if (settings.unit_system !== undefined) profilePayload.unit_system = String(settings.unit_system).toLowerCase();
+            if (settings.theme !== undefined) profilePayload.theme = String(settings.theme).toLowerCase() === 'system' ? 'auto' : String(settings.theme).toLowerCase();
+            if (settings.temp_threshold_high !== undefined) thresholdPayload.temp_high = settings.temp_threshold_high;
+            if (settings.temp_threshold_low !== undefined) thresholdPayload.temp_low = settings.temp_threshold_low;
+            if (settings.weight_drop_threshold !== undefined) thresholdPayload.weight_drop = settings.weight_drop_threshold;
+
+            const updates: Promise<any>[] = [];
+            if (Object.keys(preferencePayload).length > 0) updates.push(apiPut<any>('/settings/preferences', preferencePayload, { headers }));
+            if (Object.keys(profilePayload).length > 0) updates.push(apiPatch<any>('/settings/profile', profilePayload, { headers }));
+            if (Object.keys(thresholdPayload).length > 0) updates.push(apiPatch<any>('/settings/thresholds/global', thresholdPayload, { headers }));
+
+            const results = updates.length > 0 ? await Promise.all(updates) : [];
             toast.success('Preferences updated');
-            return { data: res?.data ?? res, error: null };
+            return { data: results, error: null };
         } catch (error) {
             console.error('updateSettings:', error);
             toast.error('Failed to update preferences');
+            return { data: null, error };
+        }
+    },
+
+    async getProfileSettings(): Promise<any | null> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any>('/settings/profile', undefined, { headers });
+        } catch (error) {
+            console.error('getProfileSettings:', error);
+            return null;
+        }
+    },
+
+    async getPreferenceSettings(): Promise<any | null> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any>('/settings/preferences', undefined, { headers });
+        } catch (error) {
+            console.error('getPreferenceSettings:', error);
+            return null;
+        }
+    },
+
+    async getGlobalThresholdSettings(): Promise<any | null> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any>('/settings/thresholds/global', undefined, { headers });
+        } catch (error) {
+            console.error('getGlobalThresholdSettings:', error);
+            return null;
+        }
+    },
+
+    async updateGlobalThresholdSettings(settings: { temp_high?: number; temp_low?: number; weight_drop?: number }): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiPatch<any>('/settings/thresholds/global', settings as any, { headers });
+            return { data: res?.data ?? res, error: null };
+        } catch (error) {
+            console.error('updateGlobalThresholdSettings:', error);
+            return { data: null, error };
+        }
+    },
+
+    async resetGlobalThresholdSettings(): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiDelete<any>('/settings/thresholds/global', { headers });
+            return { data: res, error: null };
+        } catch (error) {
+            console.error('resetGlobalThresholdSettings:', error);
             return { data: null, error };
         }
     },
@@ -1801,12 +1905,33 @@ export const beeyieldService = {
     async updateHiveThresholds(hiveId: string, thresholds: { temp_high?: number; temp_low?: number; weight_drop?: number }): Promise<{ data: any; error: any }> {
         try {
             const headers = await getAuthHeaders();
-            const res = await apiPost<any>(`/settings/hives/${hiveId}/thresholds`, thresholds as any, { headers });
+            const res = await apiPatch<any>(`/settings/hives/${hiveId}/thresholds`, thresholds as any, { headers });
             toast.success('Hive thresholds updated');
             return { data: res?.data ?? res, error: null };
         } catch (error) {
             console.error('updateHiveThresholds:', error);
             toast.error('Failed to update hive thresholds');
+            return { data: null, error };
+        }
+    },
+
+    async getHiveThresholds(hiveId: string): Promise<any | null> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any>(`/settings/hives/${hiveId}/thresholds`, undefined, { headers });
+        } catch (error) {
+            console.error('getHiveThresholds:', error);
+            return null;
+        }
+    },
+
+    async deleteHiveThresholds(hiveId: string): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiDelete<any>(`/settings/hives/${hiveId}/thresholds`, { headers });
+            return { data: res, error: null };
+        } catch (error) {
+            console.error('deleteHiveThresholds:', error);
             return { data: null, error };
         }
     },
@@ -1857,6 +1982,17 @@ export const beeyieldService = {
         }
     },
 
+    async resetNotificationSettings(): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiDelete<any>('/settings/notifications', { headers });
+            return { data: res, error: null };
+        } catch (error) {
+            console.error('resetNotificationSettings:', error);
+            return { data: null, error };
+        }
+    },
+
     async getIoTSettings(): Promise<IoTSettings | null> {
         try {
             const headers = await getAuthHeaders();
@@ -1878,6 +2014,17 @@ export const beeyieldService = {
         }
     },
 
+    async resetIoTSettings(): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const res = await apiDelete<any>('/settings/iot', { headers });
+            return { data: res, error: null };
+        } catch (error) {
+            console.error('resetIoTSettings:', error);
+            return { data: null, error };
+        }
+    },
+
     // ========== REPORTS ==========
     async getGeneratedReports(): Promise<GeneratedReport[]> {
         try {
@@ -1885,6 +2032,15 @@ export const beeyieldService = {
         } catch (error) {
             console.error("getGeneratedReports:", error);
             return [];
+        }
+    },
+
+    async getGeneratedReportById(id: string): Promise<GeneratedReport | null> {
+        try {
+            return await apiGet<GeneratedReport>(`/reports/${id}`);
+        } catch (error) {
+            console.error('getGeneratedReportById:', error);
+            return null;
         }
     },
 
@@ -2147,6 +2303,26 @@ export const beeyieldService = {
         }
     },
 
+    async updateGeneratedReport(id: string, input: Partial<ReportCreateInput & { status: string; file_url: string; file_name: string }>): Promise<{ data: GeneratedReport | null; error: any }> {
+        try {
+            const data = await apiPatch<GeneratedReport>(`/reports/${id}`, input as any);
+            return { data, error: null };
+        } catch (error) {
+            console.error('updateGeneratedReport:', error);
+            return { data: null, error };
+        }
+    },
+
+    async deleteGeneratedReport(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete<void>(`/reports/${id}`);
+            return { error: null };
+        } catch (error) {
+            console.error('deleteGeneratedReport:', error);
+            return { error };
+        }
+    },
+
     async waitForReport(jobId: string, opts?: { timeoutMs?: number; pollMs?: number }): Promise<GeneratedReport | null> {
         const timeoutMs = opts?.timeoutMs ?? 120_000;
         const pollMs = opts?.pollMs ?? 1500;
@@ -2202,6 +2378,15 @@ export const beeyieldService = {
         } catch (error) {
             console.error("getScheduledReports:", error);
             return [];
+        }
+    },
+
+    async getScheduledReportById(id: string): Promise<ScheduledReport | null> {
+        try {
+            return await apiGet<ScheduledReport>(`/reports/scheduled/${id}`);
+        } catch (error) {
+            console.error('getScheduledReportById:', error);
+            return null;
         }
     },
 
@@ -3248,38 +3433,16 @@ export const beeyieldService = {
         if (this._auditLogsCache[platform] && (now - (this._auditLogsCacheTime[platform] || 0) < CACHE_TTL)) {
             return this._auditLogsCache[platform];
         }
-
-        if (!sb) return [];
-        let logs: any[] = [];
         try {
-            // Primary: if a view/table exists, read it.
-            const { data, error } = await sb
-                .from('integration_audit_logs')
-                .select('*')
-                .eq('platform', platform)
-                .order('created_at', { ascending: false })
-                .limit(limit);
-            if (!error && data) logs = data;
-        } catch {
-            // ignore and fall through to RPC
+            const headers = await getAuthHeaders();
+            const logs = await apiGet<any[]>(`/integrations/${platform}/audit-logs`, { limit }, { headers });
+            this._auditLogsCache[platform] = logs || [];
+            this._auditLogsCacheTime[platform] = now;
+            return logs || [];
+        } catch (error) {
+            console.error('getIntegrationAuditLogs:', error);
+            return this._auditLogsCache[platform] || [];
         }
-
-        if (logs.length === 0) {
-            // Fallback: if only RPC exists (log_integration_event), try a paired fetch RPC.
-            try {
-                const { data, error } = await sb.rpc('get_integration_events', {
-                    p_platform: platform,
-                    p_limit: limit
-                });
-                if (!error && data) logs = data;
-            } catch {
-                // ignore
-            }
-        }
-
-        this._auditLogsCache[platform] = logs;
-        this._auditLogsCacheTime[platform] = now;
-        return logs;
     },
 
     // ========== FLIGHT & ROUTING (PRD v2) ==========
