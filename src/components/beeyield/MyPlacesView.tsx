@@ -72,6 +72,7 @@ import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 import { glass, GlassStatCard, GlassConfirmModal, GlassModal } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { useAuth } from '@/hooks/useAuth';
+import { setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -387,6 +388,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams 
     const createApiary = useCreateApiary();
     const updateApiary = useUpdateApiary();
     const deleteApiary = useDeleteApiary();
+    const { user, beeyieldUser } = useAuth();
 
     const apiaries = apiariesQuery.data || [];
     const isLoading = apiariesQuery.isLoading;
@@ -420,6 +422,10 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams 
         resetForm();
 
         if (shouldAdvanceOnboarding && newApiary?.id) {
+            setBeeYieldPendingOnboarding({
+                step: 'hive',
+                email: beeyieldUser?.email || user?.email,
+            });
             onTabChange('beeyield', undefined, `onboarding:add-hive:${newApiary.id}`);
         }
     };

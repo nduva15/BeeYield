@@ -1,83 +1,201 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
-    Volume2, Zap, AlertCircle, Activity, Timer, Database, ShieldAlert, BrainCircuit,
-    ChevronRight, Search, Settings, ShieldCheck, Play, Info, Loader2, Waves, Heart, ArrowRight
+    Activity,
+    AlertCircle,
+    ArrowRight,
+    BrainCircuit,
+    Heart,
+    Info,
+    Loader2,
+    ShieldAlert,
+    Thermometer,
+    Volume2,
+    Waves,
+    Zap,
 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
+    CartesianGrid,
+    Line,
+    LineChart,
+    ReferenceLine,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from 'recharts';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
+import { useApiaries, useHives } from '@/hooks/useApiaries';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { predictSwarmState, type SwarmPredictionResult, type SwarmTelemetryPoint } from '@/lib/swarmPrediction';
 
-const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
-    const [soundData, setSoundData] = React.useState<{ freq: number; db: number }[]>([]);
-    const [status, setStatus] = React.useState<'healthy' | 'missing-queen' | 'swarm-risk'>('healthy');
-    const [confidence, setConfidence] = React.useState<number | null>(null);
+const STATUS_MAP = {
+    healthy: {
+        label: 'Stable Homeostasis',
+        color: '#1B9157',
+        bg: 'bg-emerald-50',
+        border: 'border-emerald-200',
+        text: 'text-emerald-700',
+        icon: Heart,
+    },
+    'missing-queen': {
+        label: 'Queenlessness Watch',
+        color: '#F4D03F',
+        bg: 'bg-amber-50',
+        border: 'border-amber-200',
+        text: 'text-amber-700',
+        icon: AlertCircle,
+    },
+    'swarm-risk': {
+        label: 'Pre-Swarm Alert',
+        color: '#ef4444',
+        bg: 'bg-red-50',
+        border: 'border-red-200',
+        text: 'text-red-700',
+        icon: Zap,
+    },
+} as const;
+
+const EMPTY_ANALYSIS: SwarmPredictionResult = {
+    status: 'healthy',
+    stateLabel: 'Gathering Baseline Data',
+    probability: 0,
+    confidence: 0,
+    alert: false,
+    etaHours: null,
+    summary: 'No acoustic telemetry yet.',
+    recommendation: 'Connect a hive sensor or wait for telemetry sync.',
+    features: {
+        baselineFreqHz: 0,
+        recentFreqHz: 0,
+        freqShiftHz: 0,
+        highFreqHours: 0,
+        pipingHours: 0,
+        maxTempC: 0,
+        thermalSpikeHours: 0,
+        humidityDrop: 0,
+        acousticVolatility: 0,
+        queenlessnessRisk: 0,
+        swarmRisk: 0,
+    },
+    pollinationImpact: {
+        currentForagers: 0,
+        atRiskForagers: 0,
+        workforceLossPercent: 60,
+    },
+    drivers: [],
+};
+
+function getTimestamp(row: any) {
+    return row?.timestamp || row?.recorded_at || row?.created_at || row?.reading_time || row?.measured_at || new Date().toISOString();
+}
+
+function toTelemetryPoint(row: any): SwarmTelemetryPoint {
+    return {
+        timestamp: getTimestamp(row),
+        peakFreqHz: typeof row?.peak_freq_hz === 'number'
+            ? row.peak_freq_hz
+            : typeof row?.frequency_hz === 'number'
+                ? row.frequency_hz
+                : null,
+        tempC: typeof row?.temp_c === 'number'
+            ? row.temp_c
+            : typeof row?.temperature_c === 'number'
+                ? row.temperature_c
+                : typeof row?.brood_temperature_c === 'number'
+                    ? row.brood_temperature_c
+                    : null,
+        humidity: typeof row?.humidity === 'number'
+            ? row.humidity
+            : typeof row?.humidity_pct === 'number'
+                ? row.humidity_pct
+                : typeof row?.relative_humidity === 'number'
+                    ? row.relative_humidity
+                    : null,
+        amplitudeDb: typeof row?.amplitude_db === 'number' ? row.amplitude_db : null,
+        healthIndex: typeof row?.health_index === 'number' ? row.health_index : null,
+    };
+}
+
+const AcousticMoodTransformer: React.FC<{ onTabChange?: (tab: string) => void }> = ({ onTabChange }) => {
+    const { data: apiaries = [] } = useApiaries();
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState('all_apiaries');
+    const { data: allHives = [] } = useHives(selectedApiaryId === 'all_apiaries' ? undefined : selectedApiaryId);
+    const [selectedHiveId, setSelectedHiveId] = React.useState('');
+    const [telemetry, setTelemetry] = React.useState<SwarmTelemetryPoint[]>([]);
+    const [analysis, setAnalysis] = React.useState<SwarmPredictionResult>(EMPTY_ANALYSIS);
     const [loading, setLoading] = React.useState(true);
     const [isOffline, setIsOffline] = React.useState(false);
 
-    const LS_KEY = "beeyield_acoustic_mood_cache_v1";
+    const LS_KEY = 'beeyield_swarm_predictor_cache_v1';
+    const selectedHive = React.useMemo(() => allHives.find((hive) => hive.id === selectedHiveId) || null, [allHives, selectedHiveId]);
 
-    const readCache = React.useCallback(() => {
+    React.useEffect(() => {
+        if (!allHives.length) {
+            setSelectedHiveId('');
+            return;
+        }
+        if (!allHives.some((hive) => hive.id === selectedHiveId)) {
+            setSelectedHiveId(allHives[0].id);
+        }
+    }, [allHives, selectedHiveId]);
+
+    const readCache = React.useCallback((hiveId: string) => {
         try {
-            const raw = localStorage.getItem(LS_KEY);
+            const raw = localStorage.getItem(`${LS_KEY}:${hiveId}`);
             return raw ? JSON.parse(raw) : null;
-        } catch { return null; }
+        } catch {
+            return null;
+        }
     }, []);
 
-    const writeCache = React.useCallback((data: any) => {
+    const writeCache = React.useCallback((hiveId: string, data: { telemetry: SwarmTelemetryPoint[]; analysis: SwarmPredictionResult }) => {
         try {
-            localStorage.setItem(LS_KEY, JSON.stringify(data));
-        } catch { /* ignore */ }
+            localStorage.setItem(`${LS_KEY}:${hiveId}`, JSON.stringify(data));
+        } catch {
+            // ignore cache failures
+        }
     }, []);
 
     React.useEffect(() => {
         let mounted = true;
+
         const load = async () => {
+            if (!selectedHiveId) {
+                setTelemetry([]);
+                setAnalysis(EMPTY_ANALYSIS);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             setIsOffline(false);
+
             try {
-                const rows = await beeyieldService.getAcousticReadings(undefined, 14);
+                const rows = await beeyieldService.getAcousticReadings(selectedHiveId, 7);
                 if (!mounted) return;
 
-                // Convert latest readings into a simple spectral “shape”.
-                const points = (rows || [])
-                    .slice(0, 80)
-                    .map((r: any, idx: number) => ({
-                        freq: typeof r?.frequency_hz === 'number' ? r.frequency_hz : idx * 200,
-                        db: typeof r?.amplitude_db === 'number' ? r.amplitude_db : 0,
-                        health: typeof r?.health_index === 'number' ? r.health_index : null,
-                    }))
-                    .filter((p) => Number.isFinite(p.freq));
+                const mapped = (rows || [])
+                    .map(toTelemetryPoint)
+                    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-                if (points.length > 0) {
-                    const data = points.map(({ freq, db }) => ({ freq, db: Number(db || 0) }));
-                    setSoundData(data);
-                    const health = points.find((p) => typeof p.health === 'number')?.health as number | undefined;
-                    const conf = typeof health === 'number' ? Math.max(0, Math.min(100, health)) : null;
-                    setConfidence(conf);
-                    writeCache({ soundData: data, confidence: conf, timestamp: Date.now() });
-                } else {
-                    setSoundData([]);
-                    setConfidence(null);
-                }
-            } catch (e: any) {
-                console.error(e);
-                const cached = readCache();
+                const nextAnalysis = predictSwarmState(mapped, { frameCount: selectedHive?.frame_count });
+                setTelemetry(mapped);
+                setAnalysis(nextAnalysis);
+                writeCache(selectedHiveId, { telemetry: mapped, analysis: nextAnalysis });
+            } catch (error: any) {
+                const cached = readCache(selectedHiveId);
                 if (cached && mounted) {
-                    setSoundData(cached.soundData);
-                    setConfidence(cached.confidence);
+                    setTelemetry(cached.telemetry || []);
+                    setAnalysis(cached.analysis || EMPTY_ANALYSIS);
                     setIsOffline(true);
-                    toast.info("Offline: Showing last recorded acoustic signature");
+                    toast.info('Offline: showing cached swarm telemetry');
                 } else if (mounted) {
-                    toast.error(e?.message || 'Failed to load acoustic readings');
+                    setTelemetry([]);
+                    setAnalysis(EMPTY_ANALYSIS);
+                    toast.error(error?.message || 'Failed to load acoustic telemetry');
                 }
             } finally {
                 if (mounted) setLoading(false);
@@ -85,256 +203,66 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
         };
 
         load();
-        const interval = setInterval(load, 30_000);
+        const interval = setInterval(load, 60_000);
         return () => {
             mounted = false;
             clearInterval(interval);
         };
-    }, [readCache, writeCache]);
+    }, [readCache, selectedHive?.frame_count, selectedHiveId, writeCache]);
 
-    const STATUS_MAP = {
-        'healthy': {
-            label: 'Healthy & Stable',
-            desc: 'The queen is active and the hive is calm. Normal sound profile.',
-            color: '#1B9157',
-            bg: 'bg-emerald-50',
-            border: 'border-emerald-200',
-            text: 'text-emerald-700',
-            icon: Heart
-        },
-        'missing-queen': {
-            label: 'Queen Missing',
-            desc: 'Potential queen loss. Unusual distress sound detected.',
-            color: '#F4D03F',
-            bg: 'bg-amber-50',
-            border: 'border-amber-200',
-            text: 'text-amber-700',
-            icon: AlertCircle
-        },
-        'swarm-risk': {
-            label: 'Swarm Warning',
-            desc: 'High congestion. Swarm likely within 72 hours.',
-            color: '#ef4444',
-            bg: 'bg-red-50',
-            border: 'border-red-200',
-            text: 'text-red-700',
-            icon: Zap
-        }
-    };
+    const chartData = React.useMemo(
+        () =>
+            telemetry.slice(-48).map((point, index) => ({
+                hour: index + 1,
+                label: new Date(point.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                freqHz: point.peakFreqHz,
+                tempC: point.tempC,
+                humidity: point.humidity,
+            })),
+        [telemetry],
+    );
 
-    const StatusIcon = STATUS_MAP[status].icon;
+    const statusMeta = STATUS_MAP[analysis.status];
+    const StatusIcon = statusMeta.icon;
 
     return (
         <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
             <BeeYieldPageHeader
                 icon={BrainCircuit}
-                label="Sound Analysis"
-                title={<>Hive <span className="text-[#1B9157]">Status</span></>}
-                subtitle="Sound-based check to identify colony status and potential risks."
+                label="Swarm Prediction"
+                title={<>In-Hive <span className="text-[#1B9157]">Telemetry</span></>}
+                subtitle="Acoustic and thermal anomaly detection for pre-swarm intervention and pollination-force protection."
                 actions={
-                    <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
-                        <Activity className={cn("w-3 h-3", loading ? "text-[#F4D03F] animate-spin" : "text-[#1B9157] animate-pulse")} />
-                        <span className="text-xs font-bold text-gray-500 tracking-tight">
-                            Confidence:{' '}
-                            <span className="text-[#1A1A1A]">
-                                {typeof confidence === 'number' ? `${confidence.toFixed(1)}%` : (loading ? 'Analyzing…' : '—')}
-                            </span>
+                    <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 shadow-sm">
+                        {loading ? <Loader2 className="h-3 w-3 animate-spin text-[#F4D03F]" /> : <Activity className="h-3 w-3 text-[#1B9157]" />}
+                        <span className="text-xs font-bold text-gray-500">
+                            Confidence <span className="text-[#1A1A1A]">{analysis.confidence.toFixed(0)}%</span>
                         </span>
                     </div>
                 }
             />
 
-            {isOffline && (
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <Info className="w-5 h-5 text-amber-500" />
-                        <p className="text-sm font-semibold text-amber-700">Displaying cached acoustic data. Reconnect to see live frequency sweeps.</p>
-                    </div>
-                </div>
-            )}
-
-            <div className={cn(glass.card, "p-0 flex flex-col xl:flex-row overflow-hidden bg-white shadow-xl")}>
-                {/* Spectral View */}
-                <div className="flex-1 p-5 lg:p-6 space-y-6 border-b xl:border-b-0 xl:border-r border-gray-100 bg-gray-50/10">
-                    <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
-                        <Waves className="w-5 h-5 text-gray-500" />
-                    </div>
-                    <div>
-                        <h3 className="text-sm font-bold text-[#1A1A1A]">Sound pattern</h3>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Live sound display</p>
-                    </div>
-                </div>
-                        <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100 shadow-sm">
-                            <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)] animate-pulse" />
-                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Active</span>
-                        </div>
-                    </div>
-
-                    <div className="h-[300px] w-full p-2 relative bg-white rounded-xl border border-gray-100 shadow-inner">
-                         <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={soundData} margin={{ top: 10, right: 0, left: -40, bottom: 0 }}>
-                                <defs>
-                                    <linearGradient id="colorDb" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor={STATUS_MAP[status].color} stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor={STATUS_MAP[status].color} stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid vertical={false} stroke="#F3F4F6" strokeDasharray="3 3" />
-                                <XAxis dataKey="freq" hide />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 10, fontWeight: 600 }} />
-                                <Tooltip
-                                    content={({ active, payload }) => {
-                                        if (active && payload && payload.length) {
-                                            return (
-                                                <div className="bg-white p-3 rounded-xl shadow-2xl border border-gray-100">
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{payload[0].payload.freq} Hz</p>
-                                                    <div className="flex items-baseline gap-1">
-                                                        <p className="text-sm font-black text-[#1A1A1A] tabular-nums">{payload[0].value?.toFixed(1)}</p>
-                                                        <span className="text-[10px] font-medium text-gray-400">dB</span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        }
-                                        return null;
-                                    }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="db"
-                                    stroke={STATUS_MAP[status].color}
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorDb)"
-                                    isAnimationActive={false}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3">
-                        {[
-                            { label: 'Frequency', val: '225', unit: 'Hz', icon: Activity },
-                            { label: 'Intensity', val: 'Nominal', unit: '', icon: Zap },
-                            { label: 'Volume', val: '58.2', unit: 'dB', icon: Volume2 }
-                        ].map((stat, i) => (
-                            <div key={i} className="p-3 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center gap-1 group hover:border-[#1B9157]/30 transition-colors">
-                                <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-gray-600">{stat.label}</p>
-                                <div className="flex items-baseline gap-1">
-                                    <p className="text-base font-black text-[#1A1A1A] tracking-tighter">{stat.val}</p>
-                                    {stat.unit && <span className="text-[9px] font-medium text-gray-400">{stat.unit}</span>}
-                                </div>
-                            </div>
+            <section className={cn(glass.filterBar, 'flex flex-col gap-3 bg-white md:flex-row md:items-end')}>
+                <label className="min-w-[220px] flex-1">
+                    <div className={glass.microLabel}>Apiary</div>
+                    <select value={selectedApiaryId} onChange={(e) => setSelectedApiaryId(e.target.value)} className={glass.select}>
+                        <option value="all_apiaries">All apiaries</option>
+                        {apiaries.map((apiary) => (
+                            <option key={apiary.id} value={apiary.id}>{apiary.name}</option>
                         ))}
-                    </div>
+                    </select>
+                </label>
+                <label className="min-w-[240px] flex-1">
+                    <div className={glass.microLabel}>Hive</div>
+                    <select value={selectedHiveId} onChange={(e) => setSelectedHiveId(e.target.value)} className={glass.select}>
+                        {!allHives.length ? <option value="">No hives available</option> : null}
+                        {allHives.map((hive) => (
+                            <option key={hive.id} value={hive.id}>{hive.hive_code}</option>
+                        ))}
+                    </select>
+                </label>
+                <div className="rounded-xl border border-[#F4D03F]/20 bg-[#FFF9F0] px-4 py-3 text-sm text-gray-600">
+                    <div className="font-semibold text-[#1A1A1A]">{selectedHive?.hive_code || 'No hive selected'}</div>
+                    <div className="text-xs">Frames {selectedHive?.frame_count || 0} • Sensors {selectedHive?.has_sensors ? 'Online' : 'Unknown'}</div>
                 </div>
-
-                {/* Status Panel */}
-                <div className="w-full xl:w-[360px] p-5 lg:p-6 space-y-6 bg-[#FCFAF5]">
-                    <section className="space-y-3">
-                        <div className="flex items-center gap-2">
-                            <ShieldAlert className="w-4 h-4 text-gray-400" />
-                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Colony Analysis</h3>
-                        </div>
-
-                        <div className={cn(
-                            "p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden shadow-sm bg-white",
-                            STATUS_MAP[status].border
-                        )}>
-                            <div className="flex items-center gap-3 mb-3 relative z-10">
-                                <div className={cn("w-10 h-10 rounded-xl bg-white flex items-center justify-center border shadow-sm", STATUS_MAP[status].border)}>
-                                    <StatusIcon className={cn("w-5 h-5", STATUS_MAP[status].text)} />
-                                </div>
-                                <h4 className={cn("text-base font-black tracking-tight", STATUS_MAP[status].text)}>{STATUS_MAP[status].label}</h4>
-                            </div>
-                            <p className={cn("text-xs font-medium leading-relaxed", STATUS_MAP[status].text, "opacity-80")}>
-                                {STATUS_MAP[status].desc}
-                            </p>
-                        </div>
-                    </section>
-
-                    <Separator className="bg-gray-200/50" />
-
-                    <section className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Analysis Mode</h4>
-                            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center border border-gray-200">
-                                <Settings className="w-3.5 h-3.5 text-gray-400" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            {[
-                                { id: 'healthy', label: 'Colony Vitals', icon: ShieldCheck, color: '#1B9157' },
-                                { id: 'missing-queen', label: 'Stress Signals', icon: Zap, color: '#F4D03F' },
-                                { id: 'swarm-risk', label: 'Swarm Triggers', icon: Volume2, color: '#EF4444' }
-                            ].map((btn) => (
-                                <button
-                                    key={btn.id}
-                                    id={`acoustic-mode-${btn.id}`}
-                                    onClick={() => setStatus(btn.id as any)}
-                                    aria-label={`Switch to ${btn.label} analysis`}
-                                    className={cn(
-                                        "w-full h-11 rounded-xl px-4 text-xs font-bold border transition-all group flex items-center justify-between outline-none bg-white",
-                                        status === btn.id
-                                            ? "text-[#1A1A1A] border-gray-300 shadow-md scale-[1.02]"
-                                            : "border-transparent text-gray-400 hover:border-gray-200"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className={cn("w-2 h-2 rounded-full", status === btn.id ? "bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)]" : "bg-gray-200")} />
-                                        <span>{btn.label}</span>
-                                    </div>
-                                    <btn.icon className={cn("w-4 h-4", status === btn.id ? "text-gray-600" : "text-gray-300")} />
-                                </button>
-                            ))}
-                        </div>
-                    </section>
-
-                    <div className="p-4 bg-white rounded-xl border border-gray-200 shadow-inner">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-1.5 h-1.5 bg-[#1B9157] animate-pulse rounded-full" />
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#1B9157]">Processing</p>
-                        </div>
-                        <div className="font-mono text-[9px] text-gray-400 leading-relaxed">
-                            <p className="flex gap-2 font-bold"><span>&gt;</span> Data verified</p>
-                            <p className="text-[#1B9157] font-bold flex gap-2"><span>&gt;</span> Health confirmed</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Summary Banner */}
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-5 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden group shadow-lg")}
-            >
-                <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#F9F7F2] blur-3xl rounded-full" />
-                <div className="flex items-start sm:items-center gap-4 relative z-10 flex-1">
-                    <div className="w-12 h-12 rounded-xl bg-[#F9F7F2] flex items-center justify-center shrink-0 border border-gray-100 shadow-sm group-hover:bg-[#1B9157]/10 group-hover:border-[#1B9157]/20 transition-all">
-                        <Info className="w-5 h-5 text-[#1B9157]" />
-                    </div>
-                    <div className="space-y-1">
-                        <h5 className="text-sm font-black text-[#1A1A1A] tracking-tight">Status Update</h5>
-                        <p className="text-[11px] font-medium text-gray-500 leading-relaxed max-w-2xl border-l-2 border-[#1B9157] pl-3">
-                            The colony's acoustic profile is stable. Sensor data indicates normal foraging behavior and queen activity.
-                        </p>
-                    </div>
-                </div>
-                <button 
-                  id="view-report-button"
-                  onClick={() => onTabChange && onTabChange('reports-exports')}
-                  className={cn(glass.btnSecondary, "w-full sm:w-auto mt-2 sm:mt-0 h-10 px-6 relative z-10 text-xs font-bold shadow-sm")}
-                  aria-label="View detailed production report"
-                >
-                    View report
-                </button>
-            </motion.div>
-            </BeeYieldPageShell>
-    );
-};
-
-export default AcousticMoodTransformer;
+            </section>

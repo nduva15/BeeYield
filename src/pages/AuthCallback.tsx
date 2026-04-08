@@ -107,9 +107,9 @@ const AuthCallback = () => {
 
                     // Successfully authenticated, redirect to intended destination
                     const pendingBeeYieldReturnTo = backend === 'beeyield'
-                        ? getBeeYieldPendingOnboardingPath()
+                        ? getBeeYieldPendingOnboardingPath(user?.email)
                         : null;
-                    const returnTo = pendingBeeYieldReturnTo || requestedReturnTo;
+                    const returnTo = requestedReturnTo || pendingBeeYieldReturnTo;
 
                     // Small delay to ensure session is fully propagated
                     setTimeout(() => {

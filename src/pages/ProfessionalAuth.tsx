@@ -32,12 +32,13 @@ const ProfessionalAuth: React.FC = () => {
     const navigate = useNavigate();
     const { user, loading: authLoading, beeyieldUser } = useAuth();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
+    const activeEmail = beeyieldUser?.email || user?.email || null;
 
     useEffect(() => {
         if ((user || beeyieldUser) && !authLoading) {
-            navigate(getBeeYieldPendingOnboardingPath() || '/beeyield-dashboard');
+            navigate(getBeeYieldPendingOnboardingPath(activeEmail) || '/beeyield-dashboard');
         }
-    }, [user, beeyieldUser, authLoading, navigate]);
+    }, [activeEmail, user, beeyieldUser, authLoading, navigate]);
 
     if (authLoading) {
         return (
@@ -107,7 +108,7 @@ const ProfessionalAuth: React.FC = () => {
                                     {authMode === 'login' && (
                                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
                                             <BeeYieldLoginForm
-                                                onSuccess={() => navigate(getBeeYieldPendingOnboardingPath() || '/beeyield-dashboard')}
+                                                onSuccess={() => navigate(getBeeYieldPendingOnboardingPath(activeEmail) || '/beeyield-dashboard')}
                                                 onSwitchToRegister={() => setAuthMode('register')}
                                                 onForgotPassword={() => setAuthMode('forgot-password')}
                                             />

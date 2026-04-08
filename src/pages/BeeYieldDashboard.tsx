@@ -181,7 +181,7 @@ const BeeYieldDashboard: React.FC = () => {
         const params = new URLSearchParams(window.location.search);
         if (params.get('action')) return;
 
-        const pending = getBeeYieldPendingOnboarding();
+        const pending = getBeeYieldPendingOnboarding(beeyieldUser?.email);
         if (!pending) return;
 
         const target = getBeeYieldDashboardTarget(pending.step);
