@@ -23,7 +23,8 @@ import HiveDetailView from './HiveDetailView';
 import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import { glass, GlassStatCard } from './GlassTheme';
 import WeatherTelemetryPanel from './WeatherTelemetryPanel';
-import { buildBeeYieldOnboardingAction } from '@/lib/beeyieldOnboarding';
+import { buildBeeYieldOnboardingAction, setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
+import { useAuth } from '@/hooks/useAuth';
 
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -66,6 +67,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, init
     });
 
     // Data Hooks
+    const { user, beeyieldUser } = useAuth();
     const { data: hivesData, isLoading: hivesLoading } = useHives();
     const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
     const { data: harvestsData } = useHarvests();
@@ -198,6 +200,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, init
         setEditingHive(null);
 
         if (shouldAdvanceOnboarding && newHive?.id) {
+            setBeeYieldPendingOnboarding({
+                step: 'device',
+                email: beeyieldUser?.email || user?.email,
+            });
             onTabChange(
                 'devices',
                 undefined,

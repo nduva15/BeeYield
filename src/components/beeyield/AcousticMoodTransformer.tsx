@@ -266,3 +266,169 @@ const AcousticMoodTransformer: React.FC<{ onTabChange?: (tab: string) => void }>
                     <div className="text-xs">Frames {selectedHive?.frame_count || 0} • Sensors {selectedHive?.has_sensors ? 'Online' : 'Unknown'}</div>
                 </div>
             </section>
+
+            {isOffline ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-700 shadow-sm">
+                    Showing cached telemetry. Reconnect to refresh the live swarm predictor.
+                </div>
+            ) : null}
+
+            <div className={cn(glass.card, 'overflow-hidden bg-white p-0 shadow-xl')}>
+                <div className="grid xl:grid-cols-[1.45fr_0.85fr]">
+                    <div className="space-y-5 border-b border-gray-100 p-5 lg:p-6 xl:border-b-0 xl:border-r">
+                        <div className="flex flex-wrap items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm">
+                                    <Waves className="h-5 w-5 text-gray-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-[#1A1A1A]">48-hour telemetry window</h3>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Frequency and brood temperature</p>
+                                </div>
+                            </div>
+                            <div className={cn('rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider', statusMeta.bg, statusMeta.text, statusMeta.border, 'border')}>
+                                {statusMeta.label}
+                            </div>
+                        </div>
+
+                        <div className="h-[340px] rounded-2xl border border-gray-100 bg-white p-2 shadow-inner">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={chartData} margin={{ top: 12, right: 10, left: 0, bottom: 0 }}>
+                                    <CartesianGrid stroke="#F3F4F6" strokeDasharray="3 3" />
+                                    <XAxis dataKey="label" tick={{ fill: '#9CA3AF', fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={28} />
+                                    <YAxis yAxisId="left" tick={{ fill: '#9CA3AF', fontSize: 10 }} tickLine={false} axisLine={false} />
+                                    <YAxis yAxisId="right" orientation="right" tick={{ fill: '#9CA3AF', fontSize: 10 }} tickLine={false} axisLine={false} />
+                                    <Tooltip
+                                        content={({ active, payload }) => {
+                                            if (!active || !payload?.length) return null;
+                                            const freq = payload.find((entry) => entry.dataKey === 'freqHz')?.value;
+                                            const temp = payload.find((entry) => entry.dataKey === 'tempC')?.value;
+                                            return (
+                                                <div className="rounded-xl border border-gray-100 bg-white p-3 shadow-2xl">
+                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{payload[0]?.payload?.label}</p>
+                                                    <div className="mt-2 space-y-1 text-xs text-gray-600">
+                                                        <div>Frequency <span className="font-bold text-[#1A1A1A]">{typeof freq === 'number' ? `${freq.toFixed(0)} Hz` : 'n/a'}</span></div>
+                                                        <div>Temperature <span className="font-bold text-[#1A1A1A]">{typeof temp === 'number' ? `${temp.toFixed(1)}°C` : 'n/a'}</span></div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }}
+                                    />
+                                    <ReferenceLine yAxisId="left" y={300} stroke="#EF4444" strokeDasharray="5 5" />
+                                    <ReferenceLine yAxisId="right" y={34.5} stroke="#F59E0B" strokeDasharray="5 5" />
+                                    <Line yAxisId="left" type="monotone" dataKey="freqHz" stroke={statusMeta.color} strokeWidth={2.8} dot={false} connectNulls />
+                                    <Line yAxisId="right" type="monotone" dataKey="tempC" stroke="#F59E0B" strokeWidth={2.2} dot={false} connectNulls />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            {[
+                                { label: 'Baseline freq', value: `${analysis.features.baselineFreqHz.toFixed(0)} Hz`, icon: Activity },
+                                { label: 'Recent freq', value: `${analysis.features.recentFreqHz.toFixed(0)} Hz`, icon: Volume2 },
+                                { label: 'Max temperature', value: `${analysis.features.maxTempC.toFixed(1)}°C`, icon: Thermometer },
+                                { label: 'Piping hours', value: `${analysis.features.pipingHours}`, icon: Zap },
+                            ].map((stat) => (
+                                <div key={stat.label} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                                    <div className="mb-2 flex items-center gap-2">
+                                        <stat.icon className="h-4 w-4 text-gray-400" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{stat.label}</span>
+                                    </div>
+                                    <div className="text-lg font-black tracking-tight text-[#1A1A1A]">{stat.value}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="space-y-5 bg-[#FCFAF5] p-5 lg:p-6">
+                        <div className={cn('rounded-2xl border p-5 shadow-sm', statusMeta.border, statusMeta.bg)}>
+                            <div className="mb-3 flex items-center gap-3">
+                                <div className={cn('flex h-11 w-11 items-center justify-center rounded-xl border bg-white shadow-sm', statusMeta.border)}>
+                                    <StatusIcon className={cn('h-5 w-5', statusMeta.text)} />
+                                </div>
+                                <div>
+                                    <div className={cn('text-sm font-black tracking-tight', statusMeta.text)}>{analysis.stateLabel}</div>
+                                    <div className="text-[11px] font-semibold text-gray-500">Swarm probability {analysis.probability.toFixed(0)}%</div>
+                                </div>
+                            </div>
+                            <p className={cn('text-sm leading-relaxed', statusMeta.text)}>{analysis.summary}</p>
+                            <div className="mt-4 grid grid-cols-2 gap-3">
+                                <div className="rounded-xl border border-white/70 bg-white/70 p-3">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">ETA</div>
+                                    <div className="mt-1 text-lg font-black text-[#1A1A1A]">{analysis.etaHours === null ? 'n/a' : `< ${analysis.etaHours}h`}</div>
+                                </div>
+                                <div className="rounded-xl border border-white/70 bg-white/70 p-3">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Thermal spikes</div>
+                                    <div className="mt-1 text-lg font-black text-[#1A1A1A]">{analysis.features.thermalSpikeHours}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                            <div className="mb-3 flex items-center gap-2">
+                                <ShieldAlert className="h-4 w-4 text-gray-400" />
+                                <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pollination Impact</h4>
+                            </div>
+                            <div className="space-y-3">
+                                <div className="flex items-end justify-between gap-3">
+                                    <div>
+                                        <div className="text-xs text-gray-500">Current foragers</div>
+                                        <div className="text-xl font-black text-[#1A1A1A]">{analysis.pollinationImpact.currentForagers.toLocaleString()}</div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-xs text-gray-500">At risk if swarm leaves</div>
+                                        <div className="text-xl font-black text-red-500">{analysis.pollinationImpact.atRiskForagers.toLocaleString()}</div>
+                                    </div>
+                                </div>
+                                <p className="text-xs leading-relaxed text-gray-500">
+                                    A swarm event can remove about {analysis.pollinationImpact.workforceLossPercent}% of the working pollination force immediately.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                            <div className="mb-3 flex items-center gap-2">
+                                <Info className="h-4 w-4 text-gray-400" />
+                                <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Top Drivers</h4>
+                            </div>
+                            <div className="space-y-3">
+                                {analysis.drivers.slice(0, 4).map((driver) => (
+                                    <div key={driver.label} className="rounded-xl border border-gray-100 bg-[#FAFAFA] p-3">
+                                        <div className="flex items-center justify-between gap-3">
+                                            <div className="text-sm font-semibold text-[#1A1A1A]">{driver.label}</div>
+                                            <div className="rounded-full bg-[#F9F7F2] px-2.5 py-1 text-[10px] font-bold text-gray-600">{driver.score.toFixed(0)}</div>
+                                        </div>
+                                        <p className="mt-2 text-xs leading-relaxed text-gray-500">{driver.detail}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className={cn(glass.card, 'flex flex-col gap-4 bg-white p-5 shadow-lg sm:flex-row sm:items-center sm:justify-between')}>
+                <div className="flex flex-1 items-start gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-gray-100 bg-[#F9F7F2] shadow-sm">
+                        <Info className="h-5 w-5 text-[#1B9157]" />
+                    </div>
+                    <div>
+                        <h5 className="text-sm font-black tracking-tight text-[#1A1A1A]">Operational recommendation</h5>
+                        <p className="mt-1 text-sm leading-relaxed text-gray-500">{analysis.recommendation}</p>
+                    </div>
+                </div>
+                <button
+                    id="view-report-button"
+                    onClick={() => onTabChange && onTabChange('reports-exports')}
+                    className={cn(glass.btnSecondary, 'h-10 w-full px-6 text-xs font-bold shadow-sm sm:w-auto')}
+                    aria-label="View detailed production report"
+                >
+                    View report
+                    <ArrowRight className="h-4 w-4" />
+                </button>
+            </div>
+        </BeeYieldPageShell>
+    );
+};
+
+export default AcousticMoodTransformer;

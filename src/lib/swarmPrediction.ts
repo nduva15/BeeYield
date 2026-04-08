@@ -206,11 +206,11 @@ export function predictSwarmState(
             ? 'Pre-swarm signature detected: sustained high-frequency piping and elevated brood-zone heat are moving together.'
             : status === 'missing-queen'
                 ? 'The hive is acoustically stressed, but without the thermal flight-prep signature of a swarm.'
-                : 'Acoustic and thermal telemetry remain inside the colony’s normal homeostatic envelope.';
+                : 'Acoustic and thermal telemetry remain inside the colony\'s normal homeostatic envelope.';
 
     const recommendation =
         status === 'swarm-risk'
-            ? 'Dispatch a beekeeper for split/intervention now. If no action is taken, the orchard can lose roughly 60% of this hive’s pollination workforce within 24-48 hours.'
+            ? 'Dispatch a beekeeper for split/intervention now. If no action is taken, the orchard can lose roughly 60% of this hive\'s pollination workforce within 24-48 hours.'
             : status === 'missing-queen'
                 ? 'Inspect for queenlessness or severe agitation. Confirm brood pattern, queen presence, and congestion before assuming a swarm event.'
                 : 'Keep the hive closed and continue non-invasive monitoring. No swarm intervention is indicated from the latest telemetry window.';
@@ -229,7 +229,7 @@ export function predictSwarmState(
         {
             label: 'Thermoregulation',
             score: Number((clamp(thermalSpikeHours / 8, 0, 1.2) * 100).toFixed(1)),
-            detail: `${thermalSpikeHours} hours exceeded the ${thermalThreshold.toFixed(1)}°C pre-flight threshold.`,
+            detail: `${thermalSpikeHours} hours exceeded the ${thermalThreshold.toFixed(1)} C pre-flight threshold.`,
         },
         {
             label: 'Piping intensity',

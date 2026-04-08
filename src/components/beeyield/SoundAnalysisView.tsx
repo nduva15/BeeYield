@@ -24,6 +24,10 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
     const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
+    const holdCompletedProgress = React.useCallback(
+        () => new Promise<void>((resolve) => globalThis.setTimeout(resolve, 350)),
+        []
+    );
 
     React.useEffect(() => {
         let mounted = true;
@@ -54,13 +58,20 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
             if (analyzing) return;
             setResult(null);
             setAnalyzing(true);
-            setProgress(10);
+            setProgress(8);
             const tick = globalThis.setInterval(() => {
-                // UI-only progress; deterministic (no synthetic randomness).
-                setProgress((p) => (p >= 92 ? 92 : p + 4));
+                // Keep the indicator moving without claiming completion before the API responds.
+                setProgress((p) => {
+                    if (p >= 96) return 96;
+                    if (p < 40) return p + 8;
+                    if (p < 72) return p + 5;
+                    if (p < 88) return p + 3;
+                    return p + 1;
+                });
             }, 250);
 
-            const tid = toast.loading('Analyzing audio…');
+            const tid = toast.loading('Analyzing audio...');
+            let completed = false;
             try {
                 const resp = await beeyieldService.analyzeAcoustic(file, selectedHiveId || undefined);
                 const verdict = String(resp?.prediction || resp?.verdict || resp?.label || '').toLowerCase();
@@ -69,18 +80,23 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                     verdict.includes('healthy') || verdict.includes('normal') ? 'Healthy' : 'Warning';
 
                 setResult({ label, confidence });
+                completed = true;
                 toast.success(resp?.message || 'Analysis complete', { id: tid });
             } catch (e: any) {
                 console.error(e);
                 toast.error(e?.message || 'Analysis failed', { id: tid });
             } finally {
                 globalThis.clearInterval(tick);
-                setProgress(100);
+                if (completed) {
+                    setProgress(100);
+                    await holdCompletedProgress();
+                } else {
+                    setProgress(0);
+                }
                 setAnalyzing(false);
-                setProgress(0);
             }
         },
-        [analyzing, selectedHiveId]
+        [analyzing, holdCompletedProgress, selectedHiveId]
     );
 
     const handleRecord = async () => {
@@ -276,7 +292,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                             {result.label}
                                         </h4>
                                     </div>
-                                    <div className={cn(glass.badge, "border-none bg-white/20", result === 'Healthy' ? "text-[#1B9157]" : "text-red-500")}>
+                                    <div className={cn(glass.badge, "border-none bg-white/20", result.label === 'Healthy' ? "text-[#1B9157]" : "text-red-500")}>
                                         {result.label === 'Healthy' ? "Optimal" : "Critical"}
                                     </div>
                                 </div>

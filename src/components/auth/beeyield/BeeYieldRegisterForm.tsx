@@ -10,7 +10,7 @@ import { glass } from '@/components/beeyield/GlassTheme';
 import { ensureProfileForUser } from '@/lib/profileSync';
 import { useNavigate } from 'react-router-dom';
 import { clearBeeYieldPendingOnboarding, getBeeYieldDashboardPath, setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
-import { buildAuthCallbackUrl } from '@/lib/authRedirect';
+import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
 
 interface BeeYieldRegisterFormProps {
     onSuccess?: () => void;
@@ -87,9 +87,9 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
     const handleGoogleSignUp = async () => {
         setGoogleLoading(true);
         setBeeYieldPendingOnboarding({ step: 'apiary', email });
-        localStorage.setItem('authReturnTo', getBeeYieldDashboardPath('apiary'));
-        localStorage.setItem('authBackend', 'beeyield');
-        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo: getBeeYieldDashboardPath('apiary') });
+        const returnTo = getBeeYieldDashboardPath('apiary');
+        persistAuthRedirectState({ backend: 'beeyield', returnTo });
+        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo });
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield', { redirectTo });
         if (error) {
             toast.error("Google sign-up failed", { description: error.message });
