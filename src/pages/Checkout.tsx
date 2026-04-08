@@ -1,1385 +1,953 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useCart } from '@/contexts/CartContext';
-import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
-import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
-import { StripeCardForm } from '@/components/payments/StripeCardForm';
-import { initializeCheckout, CheckoutOrder, validateCoupon } from '@/services/shopService';
-import { adminService } from '@/services/adminService';
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-    ShoppingCart, Truck, MapPin, Tag, Minus, Plus, X, ArrowRight,
-    CheckCircle2, CreditCard, Smartphone, Shield, Loader2, ChevronRight,
-    Gift, Store, Package, Heart, ShieldCheck, FileText, Printer, User
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { useAnalytics } from '@/hooks/useAnalytics';
-import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  ChevronRight,
+  CreditCard,
+  Loader2,
+  MapPin,
+  Package,
+  ShieldCheck,
+  ShoppingCart,
+  Smartphone,
+  Store,
+  TicketPercent,
+  Truck,
+} from "lucide-react";
+import { toast } from "sonner";
 
-type CheckoutStep = 'cart' | 'payment-info' | 'delivery' | 'payment' | 'shipment' | 'receipt';
-type DeliveryMethod = 'delivery' | 'pickup';
+import { StripeCardForm } from "@/components/payments/StripeCardForm";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  getAddresses,
+  getPaymentMethods,
+  initializeCheckout,
+  validateCoupon,
+  waitForVaultedPaymentMethod,
+  type Address,
+  type CheckoutOrder,
+  type PaymentMethod,
+} from "@/services/shopService";
 
+type CheckoutStep = "review" | "details" | "confirm" | "success";
+type DeliveryMethod = "delivery" | "pickup";
+type PaymentChoice = "mpesa" | "card";
 
+const KENYAN_PICKUP_POINTS = [
+  "Westlands collection point",
+  "Karen collection point",
+  "Mombasa collection point",
+];
+
+const formatPrice = (amount: number) => `KES ${amount.toLocaleString()}`;
 
 const Checkout = () => {
-    const navigate = useNavigate();
-    const { user, loading: authLoading, session } = useAuth();
-    const {
-        items,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        getTotalItems,
-        getTotalPrice,
-        clearCart,
-    } = useCart();
-    const { trackEvent, trackConversion } = useAnalytics();
+  const { user } = useAuth();
+  const { items, updateQuantity, removeFromCart, clearCart, getTotalItems, getTotalPrice } = useCart();
 
-    // Auth modal state
-    const [showAuthModal, setShowAuthModal] = useState(false);
-    const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
+  const [currentStep, setCurrentStep] = useState<CheckoutStep>("review");
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("delivery");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentChoice>("mpesa");
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+  const [savedCards, setSavedCards] = useState<PaymentMethod[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+  const [selectedCardId, setSelectedCardId] = useState<string>("");
+  const [isLoadingAccountData, setIsLoadingAccountData] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [stripePaymentMethodId, setStripePaymentMethodId] = useState<string | null>(null);
+  const [orderConfirmation, setOrderConfirmation] = useState<{
+    orderId: string;
+    orderNumber: string;
+    totals: { subtotal: number; shipping: number; discount: number; total: number };
+    purchasedItems: typeof items;
+  } | null>(null);
+  const [shippingDetails, setShippingDetails] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    county: "",
+    postalCode: "",
+    notes: "",
+    pickupPoint: KENYAN_PICKUP_POINTS[0],
+  });
 
-    // Checkout state
-    const [currentStep, setCurrentStep] = useState<CheckoutStep>('cart');
-    const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>('delivery');
-    const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'card'>('mpesa');
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [orderNumber, setOrderNumber] = useState('');
-    const [orderId, setOrderId] = useState('');
-    const [orderTraceabilityBatches, setOrderTraceabilityBatches] = useState<string[]>([]);
-    const [orderedItems, setOrderedItems] = useState<any[]>([]);
-    const [orderedTotals, setOrderedTotals] = useState({ subtotal: 0, tax: 0, delivery: 0, total: 0 });
-
-    // Coupon state
-    const [couponCode, setCouponCode] = useState('');
-    const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
-    const [couponLoading, setCouponLoading] = useState(false);
-
-    // Tip state
-    const [selectedTip, setSelectedTip] = useState<number | null>(null);
-    const [customTipPercent, setCustomTipPercent] = useState('');
-
-    // Payment details
-    const [paymentDetails, setPaymentDetails] = useState({
-        mpesaNumber: '',
-        cardNumber: '',
-        cardExpiry: '',
-        cardCvc: '',
-        cardHolder: '',
-    });
-
-    // Stripe state
-    const [stripeCardReady, setStripeCardReady] = useState(false);
-    const [stripePaymentMethodId, setStripePaymentMethodId] = useState<string | null>(null);
-    const [savedCards, setSavedCards] = useState<any[]>([]);
-    const [loadCardsStatus, setLoadCardsStatus] = useState<'idle' | 'loading' | 'error'>('idle');
-
-    // Wishlist state (Real)
-    const { items: wishlistItems, removeFromWishlist } = useWishlist();
-
-    // Shipping details
-    const [shippingDetails, setShippingDetails] = useState({
-        fullName: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        county: '',
-        postalCode: '',
-        notes: '',
-    });
-
-    // Prefill shipping from user profile
-    useEffect(() => {
-        if (user) {
-            const meta = user.user_metadata || {};
-            setShippingDetails(prev => ({
-                ...prev,
-                fullName: `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || prev.fullName,
-                email: user.email || prev.email,
-                phone: meta.phone || prev.phone,
-                address: meta.address || prev.address,
-                city: meta.city || prev.city,
-                county: meta.county || prev.county,
-            }));
-
-            // Fetch saved cards
-            const fetchCards = async () => {
-                setLoadCardsStatus('loading');
-                try {
-                    const { getPaymentMethods } = await import('@/services/shopService');
-                    const methods = await getPaymentMethods();
-                    setSavedCards(methods.filter((m: any) => m.type === 'card'));
-                    setLoadCardsStatus('idle');
-                } catch (error) {
-                    console.error('Error fetching cards:', error);
-                    setLoadCardsStatus('error');
-                }
-            };
-            fetchCards();
-        }
-    }, [user]);
-
-    // Pricing calculations
-    const subtotal = getTotalPrice();
-    const deliveryCost = deliveryMethod === 'delivery' ? (subtotal >= 5000 ? 0 : 350) : 0;
-    const tipAmount = selectedTip || (customTipPercent ? (subtotal * parseFloat(customTipPercent) / 100) : 0);
-    const serviceFee = Math.round(subtotal * 0.025); // 2.5% service fee
-    const taxAmount = Math.round(subtotal * 0.16); // 16% VAT
-    const couponDiscount = appliedCoupon ? Math.round(subtotal * appliedCoupon.discount / 100) : 0;
-    const freeShippingGap = Math.max(0, 5000 - subtotal);
-    const isBypassActive = (shippingDetails.phone === '0742004187' || paymentDetails.mpesaNumber === '0742004187');
-    const totalPayable = isBypassActive ? 0 : (subtotal + deliveryCost + tipAmount + serviceFee + taxAmount - couponDiscount);
-
-    const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
-
-    const handleApplyCoupon = async () => {
-        if (!couponCode.trim()) {
-            toast.error('Please enter a coupon code');
-            return;
-        }
-        setCouponLoading(true);
-        try {
-            const result = await validateCoupon(couponCode, subtotal);
-            if (!result.valid) {
-                toast.error(result.message || 'Invalid coupon code');
-                return;
-            }
-
-            setAppliedCoupon({
-                code: result.code,
-                discount: result.discount_percent,
-            });
-            toast.success(result.message || `${result.code} applied successfully`);
-        } catch (error) {
-            toast.error('Invalid coupon code');
-        } finally {
-            setCouponLoading(false);
-        }
-    };
-
-    const handleRemoveCoupon = () => {
-        setAppliedCoupon(null);
-        setCouponCode('');
-        toast.info('Coupon removed');
-    };
-
-    const handleProceedToCheckout = () => {
-        setCurrentStep('payment-info');
-    };
-
-    const handleBackStep = () => {
-        if (currentStep === 'payment-info') setCurrentStep('cart');
-        else if (currentStep === 'delivery') setCurrentStep('payment-info');
-        else if (currentStep === 'payment') setCurrentStep('delivery');
-    };
-
-    const handlePaymentInfoNext = () => {
-        if (paymentMethod === 'mpesa' && !paymentDetails.mpesaNumber) {
-            toast.error('Please enter your M-Pesa number');
-            return;
-        }
-        if (paymentMethod === 'card' && !stripeCardReady) {
-            toast.error('Please verify your card using the secure form');
-            return;
-        }
-        setCurrentStep('delivery');
-    };
-
-    const handleDeliveryNext = () => {
-        if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address) {
-            toast.error('Please fill in all required shipping details');
-            return;
-        }
-        setCurrentStep('payment');
-    };
-
-    const handleAuthSuccess = () => {
-        setShowAuthModal(false);
-        toast.success('Information saved!');
-    };
-
-    const handlePlaceOrder = async () => {
-        if (!user && !isBypassActive) {
-            setShowAuthModal(true);
-            toast.error('Please sign in to complete your order');
-            return;
-        }
-
-        setIsProcessing(true);
-        try {
-            const orderData: CheckoutOrder = {
-                shipping_address: {
-                    first_name: shippingDetails.fullName.split(' ')[0] || '',
-                    last_name: shippingDetails.fullName.split(' ').slice(1).join(' ') || '',
-                    email: shippingDetails.email,
-                    phone: shippingDetails.phone,
-                    address: shippingDetails.address,
-                    city: shippingDetails.city,
-                    county: shippingDetails.county,
-                    postal_code: shippingDetails.postalCode,
-                },
-                payment_method: paymentMethod,
-                payment_method_id: paymentMethod === 'card' ? (stripePaymentMethodId || undefined) : undefined,
-                delivery_method: deliveryMethod,
-                items: items.map(item => ({
-                    product_id: item.productId.toString(),
-                    variant_id: item.variantId,
-                    quantity: item.quantity
-                })),
-                total_kes: totalPayable,
-                coupon_code: appliedCoupon?.code,
-                notes: shippingDetails.notes,
-                idempotency_key: (window as any)._checkoutId || crypto.randomUUID(),
-            };
-
-            // Persist the checkout ID for retry safety
-            (window as any)._checkoutId = orderData.idempotency_key;
-
-            const response = await initializeCheckout(orderData, session?.access_token);
-
-            // Use the actual UUID for functional calls and Pretty Number for display
-            const orderId = response.order_id;
-            const orderNum = response.order_number || `BY-${Date.now().toString(36).toUpperCase()}`;
-
-            setOrderNumber(orderNum);
-            setOrderId(orderId);
-            (window as any)._lastOrderId = orderId;
-
-            // Capture current cart state for receipt
-            setOrderedItems([...items]);
-            setOrderedTotals({
-                subtotal,
-                tax: taxAmount,
-                delivery: deliveryCost,
-                total: totalPayable
-            });
-
-            // Assign traceability batches
-            if (response.batches && response.batches.length > 0) {
-                setOrderTraceabilityBatches(response.batches);
-            } else if (items.some(item => item.category === 'honey') || isBypassActive) {
-                setOrderTraceabilityBatches(['KIB-ACACIAL-26']);
-            }
-
-            // Log payment for admin dashboard
-            adminService.logPayment({
-                order_number: orderNum,
-                payment_method: paymentMethod,
-                amount_kes: totalPayable,
-                status: 'completed',
-                customer_email: shippingDetails.email
-            }).catch(() => { });
-
-            // Log activity
-            adminService.logActivity({
-                activity_type: 'payment',
-                action: 'created',
-                entity_type: 'order',
-                entity_reference: orderNum,
-                user_email: shippingDetails.email,
-                metadata: { total: totalPayable, items_count: items.length }
-            }).catch(() => { });
-
-            // Simulate payment processing flow
-            await new Promise(r => setTimeout(r, 2000));
-
-            // Track dynamic conversion
-            trackConversion('purchase', totalPayable, 'KES');
-            trackEvent('order_completed', { order_number: orderNum, items_count: items.length });
-
-            setCurrentStep('shipment');
-            toast.success(isBypassActive ? 'Bypass Active: Order confirmed!' : 'Payment successful!');
-        } catch (error: any) {
-            console.error('Checkout error:', error);
-            toast.error(error.message || 'Payment failed. Please try again.');
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
-    const moveFromWishlistToCart = (item: WishlistItem) => {
-        if (!item.inStock) {
-            toast.error('Item is currently out of stock');
-            return;
-        }
-        addToCart({
-            productId: item.id,
-            variantId: 'default',
-            name: item.name,
-            description: 'Moved from wishlist',
-            size: 'Standard',
-            price: item.price,
-            quantity: 1,
-            image: item.image,
-            badge: null,
-            category: item.category as 'honey' | 'merch' | 'education' | 'hardware'
-        });
-        removeFromWishlist(item.id);
-        // toast handles in addToCart
-    };
-
-
-
-    const getCategoryEmoji = (category: string) => {
-        switch (category) {
-            case 'honey': return '🍯';
-            case 'merch': return '👕';
-            case 'education': return '📚';
-            case 'hardware': return '🔧';
-            default: return '📦';
-        }
-    };
-
-    // Loading state
-    if (authLoading) {
-        return (
-            <BeeYieldPageShell className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            </BeeYieldPageShell>
-        );
+  useEffect(() => {
+    if (!user) {
+      return;
     }
 
-    // Empty cart and wishlist check
-    if (items.length === 0 && wishlistItems.length === 0 && currentStep !== 'payment') {
-        return (
-            <BeeYieldPageShell className="min-h-screen bg-background p-0">
-                <div className="container max-w-6xl mx-auto px-4 py-12">
-                    <div className="text-center py-20">
-                        <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-                            <ShoppingCart className="h-12 w-12 text-muted-foreground/50" />
-                        </div>
-                        <h2 className="text-3xl font-black mb-4">Your Cart is Empty</h2>
-                        <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                            Discover our premium honey and sustainable beekeeping products
-                        </p>
-                        <Button onClick={() => navigate('/shop')} size="lg" className="rounded-full px-8">
-                            Start Shopping
-                        </Button>
-                    </div>
+    const metadata = user.user_metadata || {};
+    setShippingDetails((current) => ({
+      ...current,
+      fullName:
+        `${metadata.first_name || ""} ${metadata.last_name || ""}`.trim() || current.fullName,
+      email: user.email || current.email,
+      phone: metadata.phone || current.phone,
+      address: metadata.address || current.address,
+      city: metadata.city || current.city,
+      county: metadata.county || current.county,
+    }));
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      setSavedAddresses([]);
+      setSavedCards([]);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadAccountData = async () => {
+      setIsLoadingAccountData(true);
+      try {
+        const [addresses, paymentMethods] = await Promise.all([getAddresses(), getPaymentMethods()]);
+        if (cancelled) return;
+
+        const cards = paymentMethods.filter((method) => method.type === "card");
+        setSavedAddresses(addresses);
+        setSavedCards(cards);
+
+        const defaultAddress = addresses.find((address) => address.is_default) || addresses[0];
+        const defaultCard =
+          cards.find((method) => method.is_default) || cards.find((method) => method.status === "active") || cards[0];
+
+        if (defaultAddress) {
+          setSelectedAddressId(defaultAddress.id);
+          setShippingDetails((current) => ({
+            ...current,
+            fullName: defaultAddress.name || current.fullName,
+            email: defaultAddress.email || current.email,
+            phone: defaultAddress.phone || current.phone,
+            address: defaultAddress.street || current.address,
+            city: defaultAddress.city || current.city,
+            county: defaultAddress.county || current.county,
+            postalCode: defaultAddress.postal_code || current.postalCode,
+          }));
+        }
+
+        if (defaultCard) {
+          setSelectedCardId(defaultCard.id);
+        }
+      } catch (error) {
+        console.error("Failed to load checkout account data:", error);
+      } finally {
+        if (!cancelled) {
+          setIsLoadingAccountData(false);
+        }
+      }
+    };
+
+    void loadAccountData();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const subtotal = getTotalPrice();
+  const shippingCost = deliveryMethod === "delivery" ? (subtotal >= 5000 ? 0 : 350) : 0;
+  const discountAmount = appliedCoupon ? Math.round((subtotal * appliedCoupon.discountPercent) / 100) : 0;
+  const total = Math.max(0, subtotal + shippingCost - discountAmount);
+  const selectedCard = savedCards.find((method) => method.id === selectedCardId) || null;
+
+  const stepIndex = {
+    review: 0,
+    details: 1,
+    confirm: 2,
+    success: 3,
+  }[currentStep];
+
+  const orderStatusCopy = useMemo(() => {
+    if (deliveryMethod === "pickup") {
+      return "Pickup confirmation will be sent as soon as the order is packed.";
+    }
+    return "Dispatch status will update once the package is handed to the courier.";
+  }, [deliveryMethod]);
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error("Enter a coupon code");
+      return;
+    }
+
+    setCouponLoading(true);
+    try {
+      const result = await validateCoupon(couponCode, subtotal);
+      if (!result.valid) {
+        toast.error(result.message);
+        return;
+      }
+
+      setAppliedCoupon({ code: result.code, discountPercent: result.discount_percent });
+      toast.success(result.message);
+    } catch (error) {
+      toast.error("Coupon validation failed");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const validateDetailsStep = () => {
+    if (!shippingDetails.fullName || !shippingDetails.email || !shippingDetails.phone) {
+      toast.error("Complete your contact details");
+      return false;
+    }
+
+    if (deliveryMethod === "delivery" && (!shippingDetails.address || !shippingDetails.city || !shippingDetails.county)) {
+      toast.error("Add the delivery address to continue");
+      return false;
+    }
+
+    return true;
+  };
+
+  const validatePaymentStep = () => {
+    if (paymentMethod === "mpesa" && shippingDetails.phone.trim().length < 9) {
+      toast.error("Add a valid M-Pesa phone number");
+      return false;
+    }
+
+    if (paymentMethod === "card") {
+      if (!user) {
+        toast.error("Sign in before checking out with card");
+        return false;
+      }
+
+      if (!selectedCard && !stripePaymentMethodId) {
+        toast.error("Verify or choose a saved card");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const placeOrder = async () => {
+    if (!validateDetailsStep() || !validatePaymentStep()) {
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const orderData: CheckoutOrder = {
+        shipping_address: {
+          first_name: shippingDetails.fullName.split(" ")[0] || "",
+          last_name: shippingDetails.fullName.split(" ").slice(1).join(" "),
+          email: shippingDetails.email,
+          phone: shippingDetails.phone,
+          address: deliveryMethod === "pickup" ? shippingDetails.pickupPoint : shippingDetails.address,
+          city: shippingDetails.city || "Nairobi",
+          county: shippingDetails.county || "Nairobi",
+          postal_code: shippingDetails.postalCode,
+        },
+        payment_method: paymentMethod,
+        payment_method_id:
+          paymentMethod === "card"
+            ? selectedCard?.stripe_payment_method_id || selectedCard?.id || stripePaymentMethodId || undefined
+            : undefined,
+        delivery_method: deliveryMethod,
+        items: items.map((item) => ({
+          product_id: item.productId,
+          variant_id: item.variantId,
+          quantity: item.quantity,
+        })),
+        total_kes: total,
+        coupon_code: appliedCoupon?.code,
+        notes: shippingDetails.notes,
+        idempotency_key: crypto.randomUUID(),
+      };
+
+      const response = await initializeCheckout(orderData);
+
+      setOrderConfirmation({
+        orderId: response.order_id,
+        orderNumber: response.order_number || response.order_id,
+        totals: {
+          subtotal,
+          shipping: shippingCost,
+          discount: discountAmount,
+          total,
+        },
+        purchasedItems: items,
+      });
+      clearCart();
+      setCurrentStep("success");
+      toast.success("Order placed successfully");
+    } catch (error) {
+      console.error("Checkout failed:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to place order");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const applySavedAddress = (addressId: string) => {
+    const address = savedAddresses.find((entry) => entry.id === addressId);
+    if (!address) return;
+
+    setSelectedAddressId(addressId);
+    setShippingDetails((current) => ({
+      ...current,
+      fullName: address.name || current.fullName,
+      email: address.email || current.email,
+      phone: address.phone || current.phone,
+      address: address.street,
+      city: address.city,
+      county: address.county,
+      postalCode: address.postal_code || "",
+    }));
+  };
+
+  if (items.length === 0 && currentStep !== "success") {
+    return (
+      <BeeYieldPageShell className="bg-background">
+        <div className="mx-auto flex min-h-[70vh] max-w-4xl items-center justify-center px-4 py-12">
+          <div className="space-y-5 text-center">
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-muted">
+              <ShoppingCart className="h-11 w-11 text-muted-foreground/60" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-4xl font-black tracking-tight text-[#1A1A1A]">Your cart is empty</h1>
+              <p className="mx-auto max-w-lg text-sm leading-6 text-[#1B4332]/75">
+                Build a basket from the live store and return here for delivery, pickup, and payment confirmation.
+              </p>
+            </div>
+            <Button asChild className="h-12 rounded-full px-6 text-sm font-black shadow-glow">
+              <Link to="/shop">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Continue shopping
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </BeeYieldPageShell>
+    );
+  }
+
+  return (
+    <BeeYieldPageShell className="bg-background">
+      <section className="border-b border-border/40 bg-[linear-gradient(180deg,_rgba(255,249,240,0.96)_0%,_rgba(249,247,242,0.92)_100%)]">
+        <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+            <div className="space-y-4">
+              <Badge className="rounded-full border border-[#1B9157]/15 bg-white/90 px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#1B9157]">
+                Secure Checkout
+              </Badge>
+              <div className="space-y-3">
+                <h1 className="max-w-3xl text-4xl font-black tracking-[-0.05em] text-[#1A1A1A] md:text-5xl">
+                  Checkout built for verified honey orders, repeat customers, and clean fulfillment.
+                </h1>
+                <p className="max-w-2xl text-sm leading-6 text-[#1B4332]/76">
+                  Review the cart, confirm delivery or pickup, then place the order with M-Pesa or a saved card.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                { label: "Review", icon: ShoppingCart },
+                { label: "Details", icon: MapPin },
+                { label: "Payment", icon: CreditCard },
+                { label: "Complete", icon: CheckCircle2 },
+              ].map((step, index) => (
+                <div
+                  key={step.label}
+                  className={`rounded-[1.5rem] border px-4 py-4 ${
+                    index <= stepIndex ? "border-[#1A1A1A]/10 bg-[#1A1A1A] text-white" : "border-border/50 bg-white/80 text-[#1A1A1A]"
+                  }`}
+                >
+                  <step.icon className={`mb-4 h-5 w-5 ${index <= stepIndex ? "text-[#F4D03F]" : "text-[#1B9157]"}`} />
+                  <p className="text-[11px] font-black uppercase tracking-[0.16em]">{step.label}</p>
                 </div>
-            </BeeYieldPageShell>
-        );
-    }
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
-    // --- SUCCESS / RECEIPT VIEW ---
-    if ((currentStep === 'payment' || currentStep === 'shipment' || currentStep === 'receipt') && orderNumber) {
-        return (
-            <BeeYieldPageShell className="min-h-screen bg-muted/30 p-0">
-                <div className="container max-w-4xl mx-auto px-4 py-0 md:py-12">
-                    <Card className="border-none shadow-premium rounded-[3rem] overflow-hidden print-receipt">
-                        {/* Top Header Section */}
-                        <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-12 text-center relative">
-                            <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
-                                <img src="/logo.png" alt="BeeYield Logo" className="w-10 h-10 object-contain block" />
-                                <span className="font-black text-xl text-foreground">BeeYield</span>
-                            </div>
+      <section className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+        {currentStep === "success" && orderConfirmation ? (
+          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <Card className="overflow-hidden rounded-[2rem] border border-border/50 shadow-soft">
+              <div className="border-b border-border/40 bg-[#1A1A1A] px-6 py-8 text-white md:px-8">
+                <div className="flex items-start justify-between gap-6">
+                  <div className="space-y-3">
+                    <Badge className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white">
+                      Order confirmed
+                    </Badge>
+                    <h2 className="text-3xl font-black tracking-tight">Thank you. Your order is now in the queue.</h2>
+                    <p className="max-w-2xl text-sm leading-6 text-white/72">
+                      Reference <span className="font-bold text-white">{orderConfirmation.orderNumber}</span>. {orderStatusCopy}
+                    </p>
+                  </div>
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F4D03F] text-[#1A1A1A]">
+                    <CheckCircle2 className="h-8 w-8" />
+                  </div>
+                </div>
+              </div>
+              <CardContent className="space-y-6 px-6 py-6 md:px-8">
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="rounded-[1.5rem] border border-border/40 bg-[#f9f7f2] p-4">
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">Order number</p>
+                    <p className="mt-2 text-lg font-black text-[#1A1A1A]">{orderConfirmation.orderNumber}</p>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-border/40 bg-[#f9f7f2] p-4">
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">Fulfillment</p>
+                    <p className="mt-2 text-lg font-black text-[#1A1A1A] capitalize">{deliveryMethod}</p>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-border/40 bg-[#f9f7f2] p-4">
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">Total paid</p>
+                    <p className="mt-2 text-lg font-black text-[#1A1A1A]">{formatPrice(orderConfirmation.totals.total)}</p>
+                  </div>
+                </div>
 
-                            <div className="w-24 h-24 rounded-full bg-[#1B9157] flex items-center justify-center mx-auto mb-8 mt-4">
-                                <CheckCircle2 className="w-12 h-12 text-[#1B9157]" />
+                <div className="space-y-4">
+                  {orderConfirmation.purchasedItems.map((item) => (
+                    <div key={item.id} className="flex items-center gap-4 rounded-[1.5rem] border border-border/40 p-4">
+                      <div className="h-20 w-20 overflow-hidden rounded-2xl bg-muted">
+                        {item.image ? (
+                          <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-muted-foreground">
+                            <Package className="h-6 w-6" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-lg font-black text-[#1A1A1A]">{item.name}</p>
+                        <p className="text-sm text-[#1B4332]/74">
+                          {item.size} · Qty {item.quantity}
+                        </p>
+                      </div>
+                      <p className="text-base font-black text-[#1A1A1A]">{formatPrice(item.price * item.quantity)}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-6">
+              <Card className="rounded-[2rem] border border-border/50 shadow-soft">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-xl font-black text-[#1A1A1A]">Next steps</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    { icon: ShieldCheck, title: "Payment recorded", description: "Your order reference is available now and tied to the backend order record." },
+                    { icon: Package, title: "Fulfillment started", description: deliveryMethod === "pickup" ? "Pickup instructions will be sent once the order is packed." : "Dispatch will move to shipment after packing and courier handoff." },
+                    { icon: Truck, title: "Status visibility", description: "Track new and previous orders from the customer dashboard." },
+                  ].map((item) => (
+                    <div key={item.title} className="rounded-[1.5rem] border border-border/40 bg-[#f9f7f2] p-4">
+                      <item.icon className="mb-3 h-5 w-5 text-[#1B9157]" />
+                      <p className="font-black text-[#1A1A1A]">{item.title}</p>
+                      <p className="mt-1 text-sm leading-6 text-[#1B4332]/72">{item.description}</p>
+                    </div>
+                  ))}
+                  <Button asChild className="h-12 w-full rounded-full text-sm font-black shadow-glow">
+                    <Link to="/my-account">
+                      Go to dashboard
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="space-y-6">
+              {currentStep === "review" && (
+                <Card className="rounded-[2rem] border border-border/50 shadow-soft">
+                  <CardHeader className="border-b border-border/40">
+                    <CardTitle className="text-2xl font-black text-[#1A1A1A]">
+                      Review basket · {getTotalItems()} item{getTotalItems() === 1 ? "" : "s"}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4 p-6">
+                    {items.map((item) => (
+                      <div key={item.id} className="rounded-[1.75rem] border border-border/40 p-4">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                          <div className="h-24 w-24 overflow-hidden rounded-2xl bg-muted">
+                            {item.image ? (
+                              <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                            ) : null}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <div>
+                                <p className="text-xl font-black text-[#1A1A1A]">{item.name}</p>
+                                <p className="text-sm text-[#1B4332]/72">
+                                  {item.size} · {item.description}
+                                </p>
+                              </div>
+                              <p className="text-lg font-black text-[#1A1A1A]">{formatPrice(item.price * item.quantity)}</p>
                             </div>
-                            <h1 className="text-4xl font-black mb-4">Order Confirmed!</h1>
-                            <p className="text-muted-foreground text-lg max-w-md mx-auto">
-                                Thank you, <span className="text-foreground font-bold">{shippingDetails.fullName.split(' ')[0]}</span>! Your order has been placed and is being prepared for dispatch.
-                            </p>
+                            <div className="mt-4 flex flex-wrap items-center gap-3">
+                              <div className="flex items-center rounded-full border border-border/50">
+                                <button className="px-4 py-2 text-sm font-black" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                                  -
+                                </button>
+                                <span className="min-w-[48px] text-center text-sm font-black">{item.quantity}</span>
+                                <button className="px-4 py-2 text-sm font-black" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                                  +
+                                </button>
+                              </div>
+                              <Button variant="ghost" className="rounded-full text-sm font-semibold text-muted-foreground" onClick={() => removeFromCart(item.id)}>
+                                Remove
+                              </Button>
+                            </div>
+                          </div>
                         </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
 
-                        <CardContent className="p-8 md:p-12 space-y-10">
-                            {/* Meta Info */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-muted/40 rounded-[2rem] border border-border/50">
-                                <div>
-                                    <p className="text-xs font-black text-muted-foreground mb-1">Order Number</p>
-                                    <p className="text-xl font-black text-primary">{orderNumber}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs font-black text-muted-foreground mb-1">Date</p>
-                                    <p className="text-lg font-bold">{new Date().toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs font-black text-muted-foreground mb-1">Payment Method</p>
-                                    <p className="text-lg font-bold uppercase">{paymentMethod}</p>
-                                </div>
+              {currentStep === "details" && (
+                <Card className="rounded-[2rem] border border-border/50 shadow-soft">
+                  <CardHeader className="border-b border-border/40">
+                    <CardTitle className="text-2xl font-black text-[#1A1A1A]">Fulfillment details</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-8 p-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-lg font-black text-[#1A1A1A]">How should we fulfill this order?</p>
+                          <p className="text-sm text-[#1B4332]/72">Choose delivery or customer pickup before payment confirmation.</p>
+                        </div>
+                        {user && isLoadingAccountData && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                      </div>
+                      <RadioGroup
+                        value={deliveryMethod}
+                        onValueChange={(value) => setDeliveryMethod(value as DeliveryMethod)}
+                        className="grid gap-3 md:grid-cols-2"
+                      >
+                        <label className={`rounded-[1.5rem] border p-4 ${deliveryMethod === "delivery" ? "border-[#1B9157]/25 bg-[#eef7f1]" : "border-border/40 bg-white"}`}>
+                          <div className="flex items-start gap-3">
+                            <RadioGroupItem value="delivery" id="delivery" className="mt-1" />
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                <Truck className="h-4 w-4 text-[#1B9157]" />
+                                <span className="font-black">Courier delivery</span>
+                              </div>
+                              <p className="text-sm leading-6 text-[#1B4332]/72">Dispatch to the address on file. Free above KES 5,000.</p>
                             </div>
+                          </div>
+                        </label>
+                        <label className={`rounded-[1.5rem] border p-4 ${deliveryMethod === "pickup" ? "border-[#1B9157]/25 bg-[#eef7f1]" : "border-border/40 bg-white"}`}>
+                          <div className="flex items-start gap-3">
+                            <RadioGroupItem value="pickup" id="pickup" className="mt-1" />
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                <Store className="h-4 w-4 text-[#1B9157]" />
+                                <span className="font-black">Pickup point</span>
+                              </div>
+                              <p className="text-sm leading-6 text-[#1B4332]/72">Collect from the closest BeeYield point once we confirm packing.</p>
+                            </div>
+                          </div>
+                        </label>
+                      </RadioGroup>
+                    </div>
 
-                            {/* Order Details */}
-                            <div className="space-y-6">
-                                <h3 className="text-xl font-black flex items-center gap-2">
-                                    <Package className="w-6 h-6 text-primary" />
-                                    Items Summary
-                                </h3>
-                                <div className="space-y-4">
-                                    {orderedItems.map((item, idx) => (
-                                        <div key={idx} className="p-4 md:p-6 flex gap-4 hover:bg-muted/20 transition-colors">
-                                            {/* Product Image */}
-                                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border">
-                                                {item.image ? (
-                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <span className="text-4xl">{getCategoryEmoji(item.category)}</span>
-                                                )}
-                                            </div>
+                    {savedAddresses.length > 0 && deliveryMethod === "delivery" && (
+                      <div className="space-y-3">
+                        <p className="text-lg font-black text-[#1A1A1A]">Saved addresses</p>
+                        <div className="grid gap-3 md:grid-cols-2">
+                          {savedAddresses.map((address) => (
+                            <button
+                              type="button"
+                              key={address.id}
+                              onClick={() => applySavedAddress(address.id)}
+                              className={`rounded-[1.5rem] border p-4 text-left transition-all ${
+                                selectedAddressId === address.id ? "border-[#1B9157]/25 bg-[#eef7f1]" : "border-border/40 bg-white hover:border-[#1B9157]/20"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between gap-3">
+                                <p className="font-black text-[#1A1A1A]">{address.name}</p>
+                                {address.is_default && (
+                                  <Badge className="rounded-full border border-[#1B9157]/15 bg-white text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157]">
+                                    Default
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="mt-2 text-sm leading-6 text-[#1B4332]/72">
+                                {address.street}, {address.city}, {address.county}
+                              </p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-                                            {/* Product Details */}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-start justify-between gap-2">
-                                                    <div>
-                                                        <h3 className="font-bold text-foreground">{item.name}</h3>
-                                                        <p className="text-sm text-muted-foreground line-clamp-1">{item.description}</p>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            {item.badge && (
-                                                                <Badge variant="secondary" className="text-xs">{item.badge}</Badge>
-                                                            )}
-                                                            <span className="text-xs text-muted-foreground">Size: {item.size}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="checkout-name">Full name</Label>
+                        <Input id="checkout-name" value={shippingDetails.fullName} onChange={(event) => setShippingDetails((current) => ({ ...current, fullName: event.target.value }))} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="checkout-email">Email</Label>
+                        <Input id="checkout-email" type="email" value={shippingDetails.email} onChange={(event) => setShippingDetails((current) => ({ ...current, email: event.target.value }))} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="checkout-phone">Phone</Label>
+                        <Input id="checkout-phone" type="tel" value={shippingDetails.phone} onChange={(event) => setShippingDetails((current) => ({ ...current, phone: event.target.value }))} placeholder="07xx xxx xxx" />
+                      </div>
 
-                                                {/* Price and Quantity */}
-                                                <div className="flex items-center justify-between mt-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-primary text-lg">{formatPrice(item.price)}</span>
-                                                        {item.badge === 'Sale' && (
-                                                            <Badge variant="destructive" className="text-xs">20% OFF</Badge>
-                                                        )}
-                                                    </div>
+                      {deliveryMethod === "delivery" ? (
+                        <>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="checkout-address">Street address</Label>
+                            <Input id="checkout-address" value={shippingDetails.address} onChange={(event) => setShippingDetails((current) => ({ ...current, address: event.target.value }))} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="checkout-city">City</Label>
+                            <Input id="checkout-city" value={shippingDetails.city} onChange={(event) => setShippingDetails((current) => ({ ...current, city: event.target.value }))} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="checkout-county">County</Label>
+                            <Input id="checkout-county" value={shippingDetails.county} onChange={(event) => setShippingDetails((current) => ({ ...current, county: event.target.value }))} />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="space-y-2 md:col-span-2">
+                          <Label htmlFor="pickup-point">Pickup point</Label>
+                          <RadioGroup value={shippingDetails.pickupPoint} onValueChange={(value) => setShippingDetails((current) => ({ ...current, pickupPoint: value }))} className="grid gap-3 md:grid-cols-3">
+                            {KENYAN_PICKUP_POINTS.map((point) => (
+                              <label key={point} className={`rounded-[1.25rem] border p-4 ${shippingDetails.pickupPoint === point ? "border-[#1B9157]/25 bg-[#eef7f1]" : "border-border/40 bg-white"}`}>
+                                <div className="flex items-start gap-3">
+                                  <RadioGroupItem value={point} id={point} className="mt-1" />
+                                  <span className="text-sm font-semibold text-[#1A1A1A]">{point}</span>
+                                </div>
+                              </label>
+                            ))}
+                          </RadioGroup>
+                        </div>
+                      )}
 
-                                                    <div className="flex items-center gap-4">
-                                                        <span className="w-10 text-center font-semibold">Qty: {item.quantity}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="checkout-notes">Order notes</Label>
+                        <Textarea id="checkout-notes" rows={4} value={shippingDetails.notes} onChange={(event) => setShippingDetails((current) => ({ ...current, notes: event.target.value }))} placeholder="Delivery instructions, gate code, or pickup preference" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {currentStep === "confirm" && (
+                <Card className="rounded-[2rem] border border-border/50 shadow-soft">
+                  <CardHeader className="border-b border-border/40">
+                    <CardTitle className="text-2xl font-black text-[#1A1A1A]">Payment confirmation</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-8 p-6">
+                    <div className="space-y-4">
+                      <p className="text-lg font-black text-[#1A1A1A]">Choose payment method</p>
+                      <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as PaymentChoice)} className="grid gap-3 md:grid-cols-2">
+                        <label className={`rounded-[1.5rem] border p-4 ${paymentMethod === "mpesa" ? "border-[#1B9157]/25 bg-[#eef7f1]" : "border-border/40 bg-white"}`}>
+                          <div className="flex items-start gap-3">
+                            <RadioGroupItem value="mpesa" id="mpesa" className="mt-1" />
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                <Smartphone className="h-4 w-4 text-[#1B9157]" />
+                                <span className="font-black">M-Pesa</span>
+                              </div>
+                              <p className="text-sm leading-6 text-[#1B4332]/72">Push payment to the phone number on the order.</p>
+                            </div>
+                          </div>
+                        </label>
+                        <label className={`rounded-[1.5rem] border p-4 ${paymentMethod === "card" ? "border-[#1B9157]/25 bg-[#eef7f1]" : "border-border/40 bg-white"}`}>
+                          <div className="flex items-start gap-3">
+                            <RadioGroupItem value="card" id="card" className="mt-1" />
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                <CreditCard className="h-4 w-4 text-[#1B9157]" />
+                                <span className="font-black">Saved card</span>
+                              </div>
+                              <p className="text-sm leading-6 text-[#1B4332]/72">Available to signed-in customers with a vaulted Stripe card.</p>
+                            </div>
+                          </div>
+                        </label>
+                      </RadioGroup>
+                    </div>
+
+                    {paymentMethod === "mpesa" && (
+                      <div className="rounded-[1.5rem] border border-border/40 bg-[#f9f7f2] p-5">
+                        <p className="text-lg font-black text-[#1A1A1A]">M-Pesa confirmation</p>
+                        <p className="mt-2 text-sm leading-6 text-[#1B4332]/72">
+                          We will send the STK push request to <span className="font-bold text-[#1A1A1A]">{shippingDetails.phone || "your phone number"}</span> after the order is submitted.
+                        </p>
+                      </div>
+                    )}
+
+                    {paymentMethod === "card" && (
+                      <div className="space-y-4">
+                        {!user ? (
+                          <div className="rounded-[1.5rem] border border-dashed border-border p-5">
+                            <p className="text-lg font-black text-[#1A1A1A]">Sign in for card checkout</p>
+                            <p className="mt-2 text-sm leading-6 text-[#1B4332]/72">
+                              Saved cards are linked to your shop account. Continue with M-Pesa or sign in first.
+                            </p>
+                            <Button asChild variant="outline" className="mt-4 rounded-full">
+                              <Link to="/login">Sign in</Link>
+                            </Button>
+                          </div>
+                        ) : (
+                          <>
+                            {savedCards.length > 0 && (
+                              <div className="space-y-3">
+                                <p className="text-lg font-black text-[#1A1A1A]">Saved cards</p>
+                                <div className="grid gap-3">
+                                  {savedCards.map((card) => (
+                                    <button
+                                      type="button"
+                                      key={card.id}
+                                      onClick={() => {
+                                        setSelectedCardId(card.id);
+                                        setStripePaymentMethodId(card.stripe_payment_method_id || card.id);
+                                      }}
+                                      className={`rounded-[1.5rem] border p-4 text-left ${
+                                        selectedCardId === card.id ? "border-[#1B9157]/25 bg-[#eef7f1]" : "border-border/40 bg-white"
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between gap-3">
+                                        <div>
+                                          <p className="font-black text-[#1A1A1A]">
+                                            {card.provider || card.brand || "Card"} ending in {card.last4 || "0000"}
+                                          </p>
+                                          <p className="text-sm text-[#1B4332]/72">
+                                            {card.expiry_month && card.expiry_year
+                                              ? `Expires ${String(card.expiry_month).padStart(2, "0")}/${String(card.expiry_year).slice(-2)}`
+                                              : "Saved payment method"}
+                                          </p>
                                         </div>
-                                    ))}
+                                        {card.is_default && (
+                                          <Badge className="rounded-full border border-[#1B9157]/15 bg-white text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157]">
+                                            Default
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </button>
+                                  ))}
                                 </div>
-                            </div>
-
-                            {/* Financial Summary */}
-                            <div className="border-t border-border pt-8">
-                                <div className="max-w-xs ml-auto space-y-3">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Subtotal</span>
-                                        <span className="font-bold">{formatPrice(orderedTotals.subtotal)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Tax (VAT 16%)</span>
-                                        <span className="font-bold">{formatPrice(orderedTotals.tax)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Delivery</span>
-                                        <span className="font-bold">{orderedTotals.delivery === 0 ? 'Free' : formatPrice(orderedTotals.delivery)}</span>
-                                    </div>
-                                    <Separator />
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-xl font-black">Total Paid</span>
-                                        <span className="text-2xl font-black text-primary">{formatPrice(orderedTotals.total)}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Traceability Indicator */}
-                            {orderTraceabilityBatches.length > 0 && (
-                                <div className="p-6 bg-green-50 rounded-[2rem] border border-green-100 relative overflow-hidden">
-                                    <Tag className="absolute -right-4 -bottom-4 w-24 h-24 text-[#1B9157]/10 -rotate-12" />
-                                    <div className="flex items-start gap-4 mb-2">
-                                        <ShieldCheck className="w-6 h-6 text-[#1B9157] mt-1" />
-                                        <div className="w-full">
-                                            <h4 className="font-black text-[#1B9157]">
-                                                Honey History Verification {orderTraceabilityBatches.length > 1 ? 'Codes' : 'Code'}
-                                            </h4>
-                                            <p className="text-[#1B9157]/80 text-sm mb-4">
-                                                {orderTraceabilityBatches.length > 1
-                                                    ? 'These batches have been verified for authenticity.'
-                                                    : 'This batch has been verified for authenticity.'
-                                                }
-                                            </p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {orderTraceabilityBatches.map((batch, idx) => (
-                                                    <div key={idx} className="inline-flex items-center gap-3 px-4 py-2 bg-green-100 rounded-full border border-green-200">
-                                                        <span className="text-xs font-black text-[#1B9157] tracking-tighter">Trace ID:</span>
-                                                        <span className="font-mono font-bold text-[#1B9157]">{batch}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                              </div>
                             )}
 
-                            {/* Delivery Notice */}
-                            <div className="p-8 bg-blue-50 rounded-[2rem] border border-blue-100 text-center">
-                                <Truck className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-                                <h4 className="font-black text-blue-900">24 Hours Delivery Promise</h4>
-                                <p className="text-blue-700 text-sm">
-                                    Each delivery takes 24 hours for shipping dispatch and delivery. You will receive a SMS tracking link shortly.
-                                </p>
+                            <div className="rounded-[1.75rem] border border-border/40 bg-[#f9f7f2] p-5">
+                              <p className="mb-3 text-lg font-black text-[#1A1A1A]">Add a new card</p>
+                              <StripeCardForm
+                                mode="save"
+                                buttonText="Verify card"
+                                onSuccess={async (paymentMethodResult) => {
+                                  try {
+                                    const vaulted = await waitForVaultedPaymentMethod(
+                                      paymentMethodResult.paymentMethodId || paymentMethodResult.id,
+                                    );
+                                    if (vaulted) {
+                                      const refreshedMethods = await getPaymentMethods();
+                                      const cards = refreshedMethods.filter((method) => method.type === "card");
+                                      setSavedCards(cards);
+                                      setSelectedCardId(vaulted.id);
+                                      setStripePaymentMethodId(vaulted.stripe_payment_method_id || paymentMethodResult.paymentMethodId || paymentMethodResult.id);
+                                    } else {
+                                      setStripePaymentMethodId(paymentMethodResult.paymentMethodId || paymentMethodResult.id);
+                                    }
+                                    toast.success("Card verified and ready for checkout");
+                                  } catch (error) {
+                                    toast.error("Card verified, but saving it to your profile took too long");
+                                  }
+                                }}
+                                onError={(error) => {
+                                  toast.error(error instanceof Error ? error.message : String(error));
+                                }}
+                              />
                             </div>
+                          </>
+                        )}
+                      </div>
+                    )}
 
-                            {/* Actions */}
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 no-print">
-                                <Button
-                                    onClick={() => {
-                                        const id = (window as any)._lastOrderId || orderId || orderNumber;
-                                        navigate(`/receipt/${id}`);
-                                    }}
-                                    variant="outline"
-                                    className="rounded-full h-12 px-8 flex items-center gap-2 border-primary text-primary hover:bg-primary/5"
-                                >
-                                    <FileText className="w-4 h-4" />
-                                    View & Print Receipt
-                                </Button>
-                                <Button
-                                    onClick={() => navigate('/shop')}
-                                    className="rounded-full h-12 px-12 bg-primary font-bold shadow-premium"
-                                >
-                                    Continue Shopping
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <div className="mt-8 text-center no-print">
-                        <button
-                            onClick={() => navigate('/buyer-dashboard?tab=orders')}
-                            className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 mx-auto font-bold"
-                        >
-                            Track Your Order in Dashboard <ArrowRight className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-            </BeeYieldPageShell>
-        );
-    }
-
-    return (
-        <BeeYieldPageShell className="min-h-screen bg-background p-0">
-            {/* Header with Breadcrumb */}
-            <div className="border-b border-border bg-card no-print">
-                <div className="container max-w-6xl mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <button onClick={() => navigate('/')} className="hover:text-primary">Home</button>
-                            <ChevronRight className="w-4 h-4" />
-                            <button onClick={() => navigate('/shop')} className="hover:text-primary">Shop</button>
-                            <ChevronRight className="w-4 h-4" />
-                            <span className="text-foreground font-medium">Checkout</span>
+                    <div className="rounded-[1.5rem] border border-border/40 bg-[#f9f7f2] p-5">
+                      <p className="text-lg font-black text-[#1A1A1A]">Review before placing order</p>
+                      <div className="mt-4 grid gap-3 md:grid-cols-2">
+                        <div>
+                          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">Contact</p>
+                          <p className="mt-1 text-sm leading-6 text-[#1B4332]/72">
+                            {shippingDetails.fullName}
+                            <br />
+                            {shippingDetails.email}
+                            <br />
+                            {shippingDetails.phone}
+                          </p>
                         </div>
-                        <Link to="/my-account" className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
-                            <User className="h-4 w-4" />
-                            <span className="hidden sm:inline">My Account</span>
-                        </Link>
+                        <div>
+                          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">Fulfillment</p>
+                          <p className="mt-1 text-sm leading-6 text-[#1B4332]/72">
+                            {deliveryMethod === "pickup"
+                              ? shippingDetails.pickupPoint
+                              : `${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.county}`}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              <div className="flex flex-wrap gap-3">
+                {currentStep !== "review" && currentStep !== "success" && (
+                  <Button variant="outline" className="h-11 rounded-full px-5 font-black" onClick={() => setCurrentStep(currentStep === "confirm" ? "details" : "review")}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                  </Button>
+                )}
+
+                {currentStep === "review" && (
+                  <Button className="h-11 rounded-full px-5 font-black shadow-glow" onClick={() => setCurrentStep("details")}>
+                    Continue to details
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+
+                {currentStep === "details" && (
+                  <Button
+                    className="h-11 rounded-full px-5 font-black shadow-glow"
+                    onClick={() => {
+                      if (validateDetailsStep()) {
+                        setCurrentStep("confirm");
+                      }
+                    }}
+                  >
+                    Continue to payment
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+
+                {currentStep === "confirm" && (
+                  <Button className="h-11 rounded-full px-5 font-black shadow-glow" onClick={placeOrder} disabled={isProcessing}>
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Placing order
+                      </>
+                    ) : (
+                      <>
+                        Place order
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
 
-            {/* Progress Steps */}
-            <div className="border-b border-border bg-card no-print">
-                <div className="container max-w-6xl mx-auto px-4 py-6">
-                    <div className="flex items-center justify-center gap-4 md:gap-8">
-                        {[
-                            { id: 'cart', label: 'Cart', icon: ShoppingCart },
-                            { id: 'payment-info', label: 'Payment Info', icon: CreditCard },
-                            { id: 'delivery', label: 'Delivery', icon: Truck },
-                            { id: 'payment', label: 'Payment', icon: Smartphone },
-                            { id: 'shipment', label: 'Shipment', icon: Package },
-                            { id: 'receipt', label: 'Receipt', icon: CheckCircle2 },
-                        ].map((step, idx) => {
-                            const stepList: CheckoutStep[] = ['cart', 'payment-info', 'delivery', 'payment', 'shipment', 'receipt'];
-                            const isActive = step.id === currentStep;
-                            const isPast = stepList.indexOf(currentStep) > idx;
-                            return (
-                                <div key={step.id} className="flex items-center gap-2 md:gap-4">
-                                    <div className={`flex items-center gap-2 ${isActive ? 'text-primary' : isPast ? 'text-[#1B9157]' : 'text-muted-foreground'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isActive ? 'bg-primary text-[#1A1A1A]' : isPast ? 'bg-green-600 text-[#1A1A1A]' : 'bg-muted'}`}>
-                                            {isPast ? <CheckCircle2 className="w-5 h-5" /> : <step.icon className="w-4 h-4" />}
-                                        </div>
-                                        <span className="font-semibold hidden sm:inline">{step.label}</span>
-                                    </div>
-                                    {idx < 5 && (
-                                        <div className={`w-6 md:w-10 h-0.5 ${isPast ? 'bg-green-600' : 'bg-muted'}`} />
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
+            <div className="space-y-6">
+              <Card className="rounded-[2rem] border border-border/50 shadow-soft">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-xl font-black text-[#1A1A1A]">Order summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-5">
+                  <div className="space-y-4">
+                    {items.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3">
+                        <div className="h-16 w-16 overflow-hidden rounded-2xl bg-muted">
+                          {item.image ? <img src={item.image} alt={item.name} className="h-full w-full object-cover" /> : null}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-black text-[#1A1A1A]">{item.name}</p>
+                          <p className="text-sm text-[#1B4332]/72">
+                            {item.size} · Qty {item.quantity}
+                          </p>
+                        </div>
+                        <p className="text-sm font-black text-[#1A1A1A]">{formatPrice(item.price * item.quantity)}</p>
+                      </div>
+                    ))}
+                  </div>
 
-            {/* Main Content */}
-            <div className="container max-w-6xl mx-auto px-4 py-8">
-                <div className="mb-8 space-y-3">
-                    <h1 className="text-3xl md:text-4xl font-black">
-                    {currentStep === 'cart' && 'My Cart'}
-                    {currentStep === 'payment-info' && 'Payment Information'}
-                    {currentStep === 'delivery' && 'Delivery Details'}
-                    {currentStep === 'payment' && 'Confirm & Pay'}
-                    {currentStep === 'shipment' && 'Your Shipment'}
-                    {currentStep === 'receipt' && 'Order Receipt'}
-                    </h1>
-                    <p className="max-w-2xl text-sm text-muted-foreground">
-                        Secure ecommerce checkout with verified honey batches, saved payment methods, and 24-hour delivery dispatch across Kenya.
+                  <Separator />
+
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input value={couponCode} onChange={(event) => setCouponCode(event.target.value)} placeholder="Coupon code" />
+                      <Button variant="outline" className="shrink-0 rounded-full font-black" onClick={applyCoupon} disabled={couponLoading}>
+                        {couponLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <TicketPercent className="mr-2 h-4 w-4" />}
+                        Apply
+                      </Button>
+                    </div>
+                    {appliedCoupon && (
+                      <div className="rounded-full border border-[#1B9157]/15 bg-[#eef7f1] px-4 py-2 text-sm font-semibold text-[#1B9157]">
+                        {appliedCoupon.code} applied · {appliedCoupon.discountPercent}% off
+                      </div>
+                    )}
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center justify-between text-[#1B4332]/72">
+                      <span>Subtotal</span>
+                      <span>{formatPrice(subtotal)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-[#1B4332]/72">
+                      <span>{deliveryMethod === "pickup" ? "Pickup" : "Shipping"}</span>
+                      <span>{shippingCost === 0 ? "Free" : formatPrice(shippingCost)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-[#1B4332]/72">
+                      <span>Discount</span>
+                      <span>-{formatPrice(discountAmount)}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center justify-between text-lg font-black text-[#1A1A1A]">
+                      <span>Total</span>
+                      <span>{formatPrice(total)}</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-border/40 bg-[#f9f7f2] p-4">
+                    <div className="flex items-start gap-3">
+                      <ShieldCheck className="mt-0.5 h-5 w-5 text-[#1B9157]" />
+                      <div className="space-y-1">
+                        <p className="font-black text-[#1A1A1A]">Backend-verified totals</p>
+                        <p className="text-sm leading-6 text-[#1B4332]/72">
+                          Pricing is validated server-side against the active catalog before the order is created.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-border/40 bg-[#1A1A1A] p-4 text-white">
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-white/55">Free shipping rule</p>
+                    <p className="mt-2 text-sm leading-6 text-white/76">
+                      Orders above KES 5,000 ship free. Current cart gap:{" "}
+                      <span className="font-black text-white">
+                        {subtotal >= 5000 ? "Reached" : formatPrice(5000 - subtotal)}
+                      </span>
                     </p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Left Column - Cart Items or Shipping Form */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {currentStep === 'cart' && (
-                            <>
-                                <Card className="border border-border rounded-2xl overflow-hidden">
-                                    <CardHeader className="bg-muted/30 border-b border-border">
-                                        <CardTitle className="text-xl font-bold flex items-center gap-2">
-                                            <ShoppingCart className="w-5 h-5 text-primary" />
-                                            My Cart ({getTotalItems()})
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-0 divide-y divide-border">
-                                        {items.length === 0 ? (
-                                            <div className="p-8 text-center text-muted-foreground">
-                                                Your cart is currently empty.
-                                                {wishlistItems.length > 0 && (
-                                                    <span className="block mt-2 font-medium text-primary">
-                                                        Check your Wishlist below! 👇
-                                                    </span>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            items.map((item) => (
-                                                <div key={item.id} className="p-4 md:p-6 flex gap-4 hover:bg-muted/20 transition-colors">
-                                                    {/* Product Image */}
-                                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border">
-                                                        {item.image ? (
-                                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            <span className="text-4xl">{getCategoryEmoji(item.category)}</span>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Product Details */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-start justify-between gap-2">
-                                                            <div>
-                                                                <h3 className="font-bold text-foreground">{item.name}</h3>
-                                                                <p className="text-sm text-muted-foreground line-clamp-1">{item.description}</p>
-                                                                <div className="flex items-center gap-2 mt-1">
-                                                                    {item.badge && (
-                                                                        <Badge variant="secondary" className="text-xs">{item.badge}</Badge>
-                                                                    )}
-                                                                    <span className="text-xs text-muted-foreground">Size: {item.size}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Price and Quantity */}
-                                                        <div className="flex items-center justify-between mt-4">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="font-bold text-primary text-lg">{formatPrice(item.price)}</span>
-                                                                {item.badge === 'Sale' && (
-                                                                    <Badge variant="destructive" className="text-xs">20% OFF</Badge>
-                                                                )}
-                                                            </div>
-
-                                                            <div className="flex items-center gap-4">
-                                                                {/* Quantity Controls */}
-                                                                <div className="flex items-center gap-1 bg-muted rounded-lg border border-border">
-                                                                    <button
-                                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                                        className="p-2 hover:bg-primary/10 rounded-l-lg transition-colors"
-                                                                        aria-label="Decrease quantity"
-                                                                    >
-                                                                        <Minus className="w-4 h-4" />
-                                                                    </button>
-                                                                    <span className="w-10 text-center font-semibold">{item.quantity}</span>
-                                                                    <button
-                                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                                        className="p-2 hover:bg-primary/10 rounded-r-lg transition-colors"
-                                                                        aria-label="Increase quantity"
-                                                                    >
-                                                                        <Plus className="w-4 h-4" />
-                                                                    </button>
-                                                                </div>
-
-                                                                {/* Remove Button */}
-                                                                <button
-                                                                    onClick={() => removeFromCart(item.id)}
-                                                                    className="text-muted-foreground hover:text-destructive transition-colors"
-                                                                >
-                                                                    <X className="w-5 h-5" />
-                                                                    <span className="text-xs">Remove</span>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )))}
-                                    </CardContent>
-                                </Card>
-
-                                {/* Wishlist Section */}
-                                {wishlistItems.length > 0 && (
-                                    <Card className="border border-border rounded-2xl mt-8 shadow-sm">
-                                        <CardHeader className="bg-muted/30 border-b border-border">
-                                            <CardTitle className="text-xl font-bold flex items-center gap-2">
-                                                <Heart className="w-5 h-5 text-primary fill-primary/20" />
-                                                Your Wishlist ({wishlistItems.length})
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="p-0">
-                                            {/* Table Header for larger screens */}
-                                            <div className="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-border text-xs font-black tracking-wider text-muted-foreground bg-muted/10">
-                                                <div className="col-span-6 pl-2">Product</div>
-                                                <div className="col-span-2">Price</div>
-                                                <div className="col-span-2">Stock Status</div>
-                                                <div className="col-span-2 text-center">Action</div>
-                                            </div>
-
-                                            {/* Wishlist Items */}
-                                            <div className="divide-y divide-border">
-                                                {wishlistItems.map((item) => (
-                                                    <div key={item.id} className="p-4 flex flex-col md:grid md:grid-cols-12 gap-4 items-center group hover:bg-muted/10 transition-colors">
-                                                        {/* Product */}
-                                                        <div className="col-span-6 flex items-center gap-4 w-full">
-                                                            <button
-                                                                onClick={() => removeFromWishlist(item.id)}
-                                                                className="p-1 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                                                                aria-label="Remove from wishlist"
-                                                            >
-                                                                <X className="w-4 h-4" />
-                                                            </button>
-                                                            <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden border border-border">
-                                                                {item.image ? (
-                                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                                                ) : (
-                                                                    <span className="text-2xl">{getCategoryEmoji(item.category)}</span>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex flex-col">
-                                                                <span className="font-bold text-foreground line-clamp-2">{item.name}</span>
-                                                                <span className="text-xs text-muted-foreground md:hidden mt-1">
-                                                                    {item.inStock ? 'In Stock' : 'Out of Stock'} - {formatPrice(item.price)}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Price */}
-                                                        <div className="col-span-2 w-full md:w-auto hidden md:block">
-                                                            <span className="font-bold">{formatPrice(item.price)}</span>
-                                                        </div>
-
-                                                        {/* Stock Status */}
-                                                        <div className="col-span-2 w-full md:w-auto hidden md:block">
-                                                            {item.inStock ? (
-                                                                <Badge variant="outline" className="border-green-200 text-[#1B9157] bg-green-50">In Stock</Badge>
-                                                            ) : (
-                                                                <Badge variant="outline" className="border-red-200 text-red-700 bg-red-50">Out of Stock</Badge>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Action */}
-                                                        <div className="col-span-2 w-full md:w-auto mt-2 md:mt-0">
-                                                            <Button
-                                                                size="sm"
-                                                                disabled={!item.inStock}
-                                                                onClick={() => moveFromWishlistToCart(item)}
-                                                                className="w-full rounded-full bg-primary hover:bg-primary/90 text-[#1A1A1A] font-bold"
-                                                            >
-                                                                Add To Cart
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                )}
-                            </>
-                        )}
-
-                        {currentStep === 'payment-info' && (
-                            <Card className="border border-border rounded-2xl">
-                                <CardHeader className="bg-muted/30 border-b border-border">
-                                    <CardTitle className="text-xl font-bold flex items-center gap-2">
-                                        <CreditCard className="w-5 h-5 text-primary" />
-                                        Payment Method
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-6 space-y-6">
-                                    <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-4">
-                                        <div
-                                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`}
-                                            onClick={() => setPaymentMethod('mpesa')}
-                                        >
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 rounded-2xl bg-[#1B9157] flex items-center justify-center">
-                                                    <Smartphone className="text-[#1B9157] w-8 h-8" />
-                                                </div>
-                                                <div>
-                                                    <span className="font-bold text-lg">M-Pesa</span>
-                                                    <p className="text-sm text-muted-foreground">Pay securely via your mobile phone</p>
-                                                </div>
-                                            </div>
-                                            <RadioGroupItem value="mpesa" />
-                                        </div>
-
-                                        {paymentMethod === 'mpesa' && (
-                                            <div className="pl-20 pr-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                <Label htmlFor="checkout-mpesa" className="text-sm font-semibold mb-2 block">M-Pesa Phone Number</Label>
-                                                <Input
-                                                    id="checkout-mpesa"
-                                                    name="mpesa_phone"
-                                                    autoComplete="tel"
-                                                    value={paymentDetails.mpesaNumber}
-                                                    onChange={e => setPaymentDetails({ ...paymentDetails, mpesaNumber: e.target.value })}
-                                                    placeholder="07XX XXX XXX"
-                                                    className="max-w-xs"
-                                                />
-                                            </div>
-                                        )}
-
-                                        <div
-                                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`}
-                                            onClick={() => setPaymentMethod('card')}
-                                        >
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-                                                    <CreditCard className="text-blue-600 w-8 h-8" />
-                                                </div>
-                                                <div>
-                                                    <span className="font-bold text-lg">Bank Card</span>
-                                                    <p className="text-sm text-muted-foreground">Visa, Mastercard, or AMEX</p>
-                                                </div>
-                                            </div>
-                                            <RadioGroupItem value="card" />
-                                        </div>
-
-                                        {paymentMethod === 'card' && (
-                                            <div className="pl-6 pr-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                {savedCards.length > 0 && (
-                                                    <div className="grid gap-2 mb-4">
-                                                        <Label className="text-sm font-bold mb-2">Select a Saved Card</Label>
-                                                        {savedCards.map(card => (
-                                                            <div 
-                                                                key={card.id}
-                                                                onClick={() => {
-                                                                    setStripePaymentMethodId(card.stripe_payment_method_id);
-                                                                    setStripeCardReady(true);
-                                                                    setPaymentDetails({
-                                                                        ...paymentDetails,
-                                                                        cardNumber: `**** **** **** ${card.last4}`,
-                                                                        cardExpiry: `${card.expiry_month}/${card.expiry_year}`,
-                                                                    });
-                                                                }}
-                                                                className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${stripePaymentMethodId === card.stripe_payment_method_id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
-                                                            >
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                                                        <CreditCard className="w-5 h-5 text-primary" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="font-bold">{card.provider} card ending in {card.last4}</p>
-                                                                        <p className="text-xs text-muted-foreground">Expires {card.expiry_month}/{card.expiry_year}</p>
-                                                                    </div>
-                                                                </div>
-                                                                {stripePaymentMethodId === card.stripe_payment_method_id && <CheckCircle2 className="w-5 h-5 text-primary" />}
-                                                            </div>
-                                                        ))}
-                                                        <Button 
-                                                            variant="ghost" 
-                                                            size="sm" 
-                                                            onClick={() => {
-                                                                setStripePaymentMethodId(null);
-                                                                setStripeCardReady(false);
-                                                            }}
-                                                            className="text-primary hover:text-primary hover:bg-primary/5 w-fit"
-                                                        >
-                                                            + Use a different card
-                                                        </Button>
-                                                    </div>
-                                                )}
-
-                                                {!stripePaymentMethodId && (
-                                                    <div className="p-4 bg-muted/30 rounded-xl border border-border">
-                                                        <StripeCardForm
-                                                            mode="save"
-                                                            onSuccess={(pm) => {
-                                                                setStripePaymentMethodId(pm.id);
-                                                                setStripeCardReady(true);
-                                                                setPaymentDetails({
-                                                                    ...paymentDetails,
-                                                                    cardHolder: '',
-                                                                    cardNumber: `**** **** **** ${pm.last4}`,
-                                                                    cardExpiry: `${pm.exp_month}/${pm.exp_year}`,
-                                                                });
-                                                                toast.success('Card verified successfully!');
-                                                            }}
-                                                            onError={(error) => {
-                                                                setStripeCardReady(false);
-                                                                toast.error(error);
-                                                            }}
-                                                            buttonText="Verify Card"
-                                                        />
-                                                    </div>
-                                                )}
-                                                
-                                                {stripeCardReady && (
-                                                    <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                                                        <CheckCircle2 className="w-5 h-5 text-[#1B9157]" />
-                                                        <p className="text-sm text-[#1B9157] font-medium">
-                                                            Card ending in {paymentDetails.cardNumber.slice(-4)} selected
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </RadioGroup>
-
-                                    <div className="flex gap-4 pt-4">
-                                        <Button variant="outline" onClick={handleBackStep} className="rounded-full">
-                                            Back
-                                        </Button>
-                                        <Button
-                                            onClick={handlePaymentInfoNext}
-                                            className="flex-1 rounded-full h-12 text-lg font-bold bg-primary hover:bg-primary/90"
-                                        >
-                                            Continue to Delivery
-                                            <ArrowRight className="ml-2 w-5 h-5" />
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        {currentStep === 'delivery' && (
-                            <Card className="border border-border rounded-2xl">
-                                <CardHeader className="bg-muted/30 border-b border-border">
-                                    <CardTitle className="text-xl font-bold flex items-center gap-2">
-                                        <Truck className="w-5 h-5 text-primary" />
-                                        Delivery Information
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-6 space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="md:col-span-2 space-y-2">
-                                            <Label htmlFor="checkout-fullName">Full Name</Label>
-                                            <Input
-                                                id="checkout-fullName"
-                                                name="full_name"
-                                                autoComplete="name"
-                                                value={shippingDetails.fullName}
-                                                onChange={e => setShippingDetails({ ...shippingDetails, fullName: e.target.value })}
-                                                placeholder="John Doe"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="checkout-email">Email</Label>
-                                            <Input
-                                                id="checkout-email"
-                                                name="email"
-                                                type="email"
-                                                autoComplete="email"
-                                                value={shippingDetails.email}
-                                                onChange={e => setShippingDetails({ ...shippingDetails, email: e.target.value })}
-                                                placeholder="john@example.com"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="checkout-phone">Phone Number</Label>
-                                            <Input
-                                                id="checkout-phone"
-                                                name="phone"
-                                                type="tel"
-                                                autoComplete="tel"
-                                                value={shippingDetails.phone}
-                                                onChange={e => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
-                                                placeholder="+254 700 000 000"
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2 space-y-2">
-                                            <Label htmlFor="checkout-address">Address</Label>
-                                            <Input
-                                                id="checkout-address"
-                                                name="address"
-                                                autoComplete="street-address"
-                                                value={shippingDetails.address}
-                                                onChange={e => setShippingDetails({ ...shippingDetails, address: e.target.value })}
-                                                placeholder="123 Bee Street, Building A"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="checkout-city">City</Label>
-                                            <Input
-                                                id="checkout-city"
-                                                name="city"
-                                                autoComplete="address-level2"
-                                                value={shippingDetails.city}
-                                                onChange={e => setShippingDetails({ ...shippingDetails, city: e.target.value })}
-                                                placeholder="Nairobi"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="checkout-county">County</Label>
-                                            <Input
-                                                id="checkout-county"
-                                                name="county"
-                                                autoComplete="address-level1"
-                                                value={shippingDetails.county}
-                                                onChange={e => setShippingDetails({ ...shippingDetails, county: e.target.value })}
-                                                placeholder="Nairobi County"
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2 space-y-2">
-                                            <Label htmlFor="checkout-notes">Order Notes (Optional)</Label>
-                                            <Textarea
-                                                id="checkout-notes"
-                                                name="order_notes"
-                                                value={shippingDetails.notes}
-                                                onChange={e => setShippingDetails({ ...shippingDetails, notes: e.target.value })}
-                                                placeholder="Special delivery instructions..."
-                                                rows={3}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-4 pt-4">
-                                        <Button variant="outline" onClick={handleBackStep} className="rounded-full">
-                                            Back
-                                        </Button>
-                                        <Button
-                                            onClick={handleDeliveryNext}
-                                            className="flex-1 rounded-full h-12 text-lg font-bold bg-primary hover:bg-primary/90"
-                                        >
-                                            Review Order
-                                            <ArrowRight className="ml-2 w-5 h-5" />
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        {currentStep === 'payment' && (
-                            <Card className="border border-border rounded-2xl p-8 text-center space-y-6">
-                                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                                    <Smartphone className="w-10 h-10 text-primary" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-black">Final Confirmation</h2>
-                                    <p className="text-muted-foreground mt-2">
-                                        Everything is ready! Click below to complete your payment of
-                                        <span className="font-bold text-foreground"> {formatPrice(totalPayable)}</span>
-                                    </p>
-                                </div>
-                                <div className="bg-muted/30 p-4 rounded-xl text-left">
-                                    <p className="text-sm font-bold text-muted-foreground mb-2">Order Summary</p>
-                                    <div className="space-y-1">
-                                        <p className="text-sm flex justify-between"><span>Items:</span> <span>{getTotalItems()}</span></p>
-                                        <p className="text-sm flex justify-between"><span>Method:</span> <span>{paymentMethod.toUpperCase()}</span></p>
-                                        <p className="text-sm flex justify-between"><span>Delivery:</span> <span>{shippingDetails.city}, {shippingDetails.address}</span></p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-4">
-                                    <Button variant="outline" onClick={handleBackStep} className="rounded-full px-8">
-                                        Back
-                                    </Button>
-                                    <Button
-                                        onClick={handlePlaceOrder}
-                                        disabled={isProcessing}
-                                        className="flex-1 rounded-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-amber-600 shadow-glow"
-                                    >
-                                        {isProcessing ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                                Processing...
-                                            </>
-                                        ) : (
-                                            <>
-                                                Pay Now {formatPrice(totalPayable)}
-                                                <ArrowRight className="ml-2 w-5 h-5" />
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-                            </Card>
-                        )}
-
-                        {currentStep === 'shipment' && (
-                            <Card className="border border-border rounded-2xl p-8 space-y-8">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h2 className="text-2xl font-black">Shipment Status</h2>
-                                        <p className="text-muted-foreground">Order ID: {orderNumber}</p>
-                                    </div>
-                                    <div className="w-16 h-16 rounded-full bg-[#1B9157] flex items-center justify-center">
-                                        <Package className="w-8 h-8 text-[#1B9157]" />
-                                    </div>
-                                </div>
-
-                                <div className="relative pl-8 space-y-12">
-                                    <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-muted"></div>
-
-                                    <div className="relative">
-                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-green-600 border-4 border-background"></div>
-                                        <p className="font-bold">Payment Confirmed</p>
-                                        <p className="text-sm text-muted-foreground">Successfully paid via {paymentMethod.toUpperCase()}</p>
-                                    </div>
-
-                                    <div className="relative">
-                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-primary border-4 border-background"></div>
-                                        <p className="font-bold text-primary">Preparing Shipment</p>
-                                        <p className="text-sm text-muted-foreground">Our team is packing your items with care</p>
-                                    </div>
-
-                                    <div className="relative opacity-50">
-                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-muted border-4 border-background"></div>
-                                        <p className="font-bold">Out for Delivery</p>
-                                        <p className="text-sm text-muted-foreground">Coming to {shippingDetails.city}</p>
-                                    </div>
-                                </div>
-
-                                <Button
-                                    onClick={() => { clearCart(); setCurrentStep('receipt'); }}
-                                    className="w-full rounded-full h-12 font-bold text-lg"
-                                >
-                                    Get Receipt Instantly
-                                    <ChevronRight className="ml-2 w-5 h-5" />
-                                </Button>
-                            </Card>
-                        )}
-
-                        {/* The simplified receipt block below is removed to avoid confusion, 
-                            as we now use the premium one-page receipt above. */}
-                    </div>
-
-                    {/* Right Column - Order Summary */}
-                    <div className="space-y-6">
-                        {/* Coupons Section */}
-                        <Card className="border border-border rounded-2xl">
-                            <CardHeader className="pb-4">
-                                <CardTitle className="text-lg font-bold flex items-center gap-2">
-                                    <Tag className="w-5 h-5 text-primary" />
-                                    Coupons
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {appliedCoupon ? (
-                                    <div className="flex items-center justify-between p-3 bg-[#1B9157] rounded-xl border border-[#1B9157]">
-                                        <div className="flex items-center gap-2">
-                                            <CheckCircle2 className="w-5 h-5 text-[#1B9157]" />
-                                            <span className="font-bold text-[#1B9157]">{appliedCoupon.code}</span>
-                                            <Badge variant="secondary" className="text-[#1B9157] bg-green-100">
-                                                {appliedCoupon.discount}% OFF
-                                            </Badge>
-                                        </div>
-                                        <button onClick={handleRemoveCoupon} className="text-muted-foreground hover:text-destructive" aria-label="Remove coupon">
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="flex gap-2">
-                                        <Input
-                                            placeholder="Coupon code"
-                                            value={couponCode}
-                                            onChange={e => setCouponCode(e.target.value)}
-                                            className="flex-1"
-                                        />
-                                        <Button
-                                            onClick={handleApplyCoupon}
-                                            disabled={couponLoading}
-                                            className="bg-foreground text-background hover:bg-foreground/90 font-bold"
-                                        >
-                                            {couponLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'APPLY NOW'}
-                                        </Button>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
-                        {/* Your Order Summary */}
-                        <Card className="border border-border rounded-2xl">
-                            <CardHeader className="border-b border-border">
-                                <CardTitle className="text-lg font-bold">Your Order</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-6 space-y-4">
-                                {/* Subtotal */}
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Subtotal ({getTotalItems()} items)</span>
-                                    <span className="font-semibold">{formatPrice(subtotal)}</span>
-                                </div>
-
-                                <Separator />
-
-                                {/* Delivery Options */}
-                                <div className="space-y-3">
-                                    <Label className="text-sm font-semibold">Delivery</Label>
-                                    <RadioGroup value={deliveryMethod} onValueChange={v => setDeliveryMethod(v as DeliveryMethod)} className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <RadioGroupItem value="delivery" id="delivery" />
-                                                <Label htmlFor="delivery" className="flex items-center gap-2 cursor-pointer">
-                                                    <Truck className="w-4 h-4 text-primary" />
-                                                    Delivery
-                                                </Label>
-                                            </div>
-                                            <span className="font-semibold">{deliveryCost === 0 ? 'Free' : formatPrice(deliveryCost)}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <RadioGroupItem value="pickup" id="pickup" />
-                                                <Label htmlFor="pickup" className="flex items-center gap-2 cursor-pointer">
-                                                    <Store className="w-4 h-4 text-secondary" />
-                                                    Pick Up
-                                                </Label>
-                                            </div>
-                                            {deliveryMethod === 'pickup' && (
-                                                <Select defaultValue="nairobi">
-                                                    <SelectTrigger className="w-24 h-8">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="nairobi">Nairobi</SelectItem>
-                                                        <SelectItem value="mombasa">Mombasa</SelectItem>
-                                                        <SelectItem value="kisumu">Kisumu</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            )}
-                                        </div>
-                                    </RadioGroup>
-                                    <p className="text-xs text-muted-foreground">
-                                        {freeShippingGap > 0
-                                            ? `Add ${formatPrice(freeShippingGap)} more to unlock free delivery.`
-                                            : 'Free delivery unlocked for this order.'}
-                                    </p>
-                                </div>
-
-                                <Separator />
-
-                                {/* Tip Section */}
-                                <div className="space-y-3">
-                                    <Label className="text-sm font-semibold">Tip</Label>
-                                    <div className="flex gap-2">
-                                        {[200, 400, 700].map(amount => (
-                                            <button
-                                                key={amount}
-                                                onClick={() => { setSelectedTip(amount); setCustomTipPercent(''); }}
-                                                className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${selectedTip === amount ? 'bg-primary text-[#1A1A1A] border-primary' : 'border-border hover:border-primary'}`}
-                                            >
-                                                {formatPrice(amount)}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Input
-                                            placeholder="%"
-                                            value={customTipPercent}
-                                            onChange={e => { setCustomTipPercent(e.target.value); setSelectedTip(null); }}
-                                            className="w-16 text-center"
-                                        />
-                                        <Input
-                                            placeholder="KES"
-                                            value={tipAmount > 0 ? tipAmount.toString() : ''}
-                                            readOnly
-                                            className="flex-1"
-                                        />
-                                        <span className="text-sm text-muted-foreground">Total: {formatPrice(tipAmount)}</span>
-                                    </div>
-                                </div>
-
-                                <Separator />
-
-                                {/* Fees Breakdown */}
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Service Fee</span>
-                                        <span>{formatPrice(serviceFee)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Tax (VAT 16%)</span>
-                                        <span>{formatPrice(taxAmount)}</span>
-                                    </div>
-                                    {appliedCoupon && (
-                                        <div className="flex justify-between text-[#1B9157]">
-                                            <span>Coupon Discount</span>
-                                            <span>-{formatPrice(couponDiscount)}</span>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <Separator />
-
-                                {/* Total */}
-                                <div className="flex justify-between items-center pt-2">
-                                    <span className="text-lg font-bold">Total Payable</span>
-                                    <span className="text-2xl font-black text-primary">{formatPrice(totalPayable)}</span>
-                                </div>
-
-                                {/* Proceed Button */}
-                                {currentStep === 'cart' && (
-                                    <Button
-                                        onClick={handleProceedToCheckout}
-                                        className="w-full h-12 rounded-xl text-lg font-bold bg-gradient-to-r from-primary to-amber-600 hover:from-primary/90 hover:to-amber-600/90 shadow-glow"
-                                    >
-                                        Continue to Secure Checkout
-                                    </Button>
-                                )}
-
-                                {/* Security Badge */}
-                                <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/10">
-                                    <Shield className="w-5 h-5 text-primary" />
-                                    <p className="text-xs text-muted-foreground">
-                                        Your payment is secured with banking-grade encryption
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-
-            {/* Auth Modal */}
-            <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
-                <DialogContent className="sm:max-w-md rounded-3xl border-none shadow-premium p-0 overflow-hidden">
-                    <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-6 pb-4">
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-black text-center">
-                                Sign in to Checkout
-                            </DialogTitle>
-                            <p className="text-center text-muted-foreground text-sm">
-                                Create an account or sign in to complete your order
-                            </p>
-                        </DialogHeader>
-                    </div>
-                    <Tabs value={authTab} onValueChange={v => setAuthTab(v as 'login' | 'register')} className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 mx-6 mt-2" style={{ width: 'calc(100% - 48px)' }}>
-                            <TabsTrigger value="login" className="rounded-full">Sign In</TabsTrigger>
-                            <TabsTrigger value="register" className="rounded-full">Create Account</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="login" className="p-6 pt-4">
-                            <ShopLoginForm
-                                onSuccess={handleAuthSuccess}
-                                onSwitchToRegister={() => setAuthTab('register')}
-                            />
-                        </TabsContent>
-                        <TabsContent value="register" className="p-6 pt-4">
-                            <ShopRegisterForm
-                                onSuccess={handleAuthSuccess}
-                                onSwitchToLogin={() => setAuthTab('login')}
-                            />
-                        </TabsContent>
-                    </Tabs>
-                </DialogContent>
-            </Dialog>
-        </BeeYieldPageShell>
-    );
+          </div>
+        )}
+      </section>
+    </BeeYieldPageShell>
+  );
 };
 
 export default Checkout;

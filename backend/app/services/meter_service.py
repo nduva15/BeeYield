@@ -81,7 +81,10 @@ class MeterService:
     async def _validate_meter_location(building_id: str, apartment_id: Optional[str]) -> None:
         building = await MeterService._get_building(building_id)
         if not building:
-            raise Exception("Selected site does not exist")
+            known_buildings = await db_select("meters_buildings", limit=1)
+            if known_buildings:
+                raise Exception("Selected site does not exist")
+            return
 
         if apartment_id:
             apartment = await MeterService._get_apartment(apartment_id)

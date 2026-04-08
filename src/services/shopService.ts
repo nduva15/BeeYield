@@ -647,7 +647,7 @@ export const getShopDashboard = async (): Promise<ShopDashboardSummary> => {
                 saved_addresses: addresses.length,
                 saved_payment_methods: payment_methods.length,
             },
-            recent_orders: recent_orders.slice(0, 6),
+            recent_orders: recent_orders.slice(0, 20),
             addresses,
             payment_methods,
             wishlist,

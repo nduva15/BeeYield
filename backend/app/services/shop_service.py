@@ -287,17 +287,46 @@ async def get_product_by_id(product_id: str, token: Optional[str] = None) -> Opt
     res = await db_select("products", columns="*,variants:product_variants(*)", filters={"id": product_id}, token=token)
     return res[0] if res else None
 
+
+async def _hydrate_order_items(order: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
+    if "items" in order and isinstance(order.get("items"), list):
+        return order
+
+    from app.db.supabase_db import db_select
+
+    order_id = order.get("id")
+    if not order_id:
+        order["items"] = []
+        return order
+
+    items = await db_select("order_items", filters={"order_id": order_id}, token=token)
+    enriched_items: list[dict[str, Any]] = []
+    for item in items:
+        enriched_item = dict(item)
+        product_id = enriched_item.get("product_id")
+        if product_id and "product" not in enriched_item:
+            product = await get_product_by_id(product_id, token=token)
+            if product:
+                enriched_item["product"] = product
+        enriched_items.append(enriched_item)
+
+    order["items"] = enriched_items
+    return order
+
 async def get_user_orders(user_id: str, token: Optional[str] = None) -> list[dict[str, Any]]:
     from app.db.supabase_db import db_select
     columns = "*,items:order_items(*,product:products(*,variants:product_variants(*)))"
     orders = await db_select("orders", columns=columns, filters={"user_id": user_id}, token=token)
-    return sorted(orders, key=lambda row: row.get("created_at", ""), reverse=True)
+    hydrated_orders = [await _hydrate_order_items(dict(order), token=token) for order in orders]
+    return sorted(hydrated_orders, key=lambda row: row.get("created_at", ""), reverse=True)
 
 async def get_order(order_id: str, token: Optional[str] = None) -> Optional[dict]:
     from app.db.supabase_db import db_select
     columns = "*,items:order_items(*,product:products(*,variants:product_variants(*)))"
     res = await db_select("orders", columns=columns, filters={"id": order_id}, token=token)
-    return res[0] if res else None
+    if not res:
+        return None
+    return await _hydrate_order_items(dict(res[0]), token=token)
 
 
 async def _append_tracking_event(
@@ -685,7 +714,7 @@ async def get_dashboard_summary(user_id: str, token: Optional[str] = None) -> di
 
     return {
         "stats": stats,
-        "recent_orders": orders[:6],
+        "recent_orders": orders[:20],
         "addresses": addresses,
         "payment_methods": payment_methods,
         "wishlist": wishlist,

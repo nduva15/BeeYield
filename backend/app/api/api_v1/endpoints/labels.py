@@ -143,7 +143,6 @@ def _db_token(token: Optional[str]) -> Optional[str]:
 
 def _build_label_payload(design_data: dict, *, include_user_id: Optional[str] = None) -> dict:
     payload = {
-        "name": _resolve_label_name(design_data),
         "design_json": design_data,
         "harvest_batch_id": design_data.get("batchNumber") or design_data.get("harvestId"),
         "include_qr": design_data.get("showQRCode", False),
