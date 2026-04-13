@@ -112,8 +112,21 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             # 4b. Coupon Logic
             discount = 0.0
             if getattr(order_in, "coupon_code", None):
-                # Simple coupon validation — extend as needed
-                logger.info(f"Coupon code received: {order_in.coupon_code}")
+                coupon_result = await apply_coupon_code(order_in.coupon_code, subtotal)
+                if not coupon_result.get("valid"):
+                    return {
+                        "status": "error",
+                        "message": coupon_result.get("message", "Coupon validation failed."),
+                    }
+
+                discount = float(coupon_result.get("discount_amount", 0.0))
+                logger.info(
+                    "Coupon accepted for checkout",
+                    extra={
+                        "coupon_code": coupon_result.get("code"),
+                        "discount_amount": discount,
+                    },
+                )
                 
             # 4c. Shipping Logic
             delivery_method = getattr(order_in, "delivery_method", "delivery")
@@ -232,6 +245,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         "status": "success", 
         "order_id": order_id, 
         "order_number": order_number,
+        "message": "Order placed successfully.",
         "payment_info": payment_info
     }
 

@@ -51,6 +51,7 @@ class OrderItem(BaseModel):
 class OrderCreate(BaseModel):
     shipping_address: dict
     payment_method: str # mpesa, card
+    payment_method_id: Optional[str] = None
     delivery_method: str = "delivery" # delivery, pickup
     items: list[OrderItem]
     total_kes: float

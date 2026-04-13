@@ -76,7 +76,7 @@ async def analyze_audio_direct(
             "id": analysis_id,
             "hive_id": hive_id,
             "user_id": user_id,
-            "model_type": "embedded-heuristic-v1",
+            "model_type": "beesound-repo-v2",
             "status": "completed",
             "prediction": result["state"],
             "confidence": result["confidence"],
@@ -123,6 +123,11 @@ async def analyze_audio_direct(
             "signal_metrics": result.get("signal_metrics", {}),
             "recommended_actions": result.get("recommended_actions", []),
             "hissing_detected": result.get("hissing_detected", False),
+            "primary_species": result.get("primary_species"),
+            "species_summary": result.get("species_summary", {}),
+            "bee_coverage": result.get("bee_coverage"),
+            "osbh_summary": result.get("osbh_summary", {}),
+            "segment_timeline": result.get("segment_timeline", []),
             "persistence_warning": persistence_warning,
             "message": f"Colony Status: {result['state']}",
         }
@@ -206,6 +211,9 @@ async def trigger_acoustic_inference(
             "segments_analyzed": result.get("segments_analyzed", 0),
             "signal_metrics": result.get("signal_metrics", {}),
             "recommended_actions": result.get("recommended_actions", []),
+            "primary_species": result.get("primary_species"),
+            "bee_coverage": result.get("bee_coverage"),
+            "osbh_summary": result.get("osbh_summary", {}),
             "message": f"Analysis complete: {result['state']}",
         }
     except Exception as e:

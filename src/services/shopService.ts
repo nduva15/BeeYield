@@ -538,6 +538,7 @@ export const initializeCheckout = async (orderData: CheckoutOrder, _accessToken?
                 status: "pending",
                 shipping_address: orderData.shipping_address,
                 payment_method: orderData.payment_method,
+                delivery_method: orderData.delivery_method || "delivery",
                 notes: orderData.notes,
                 idempotency_key: orderData.idempotency_key,
             })
