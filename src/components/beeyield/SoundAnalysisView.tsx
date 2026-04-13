@@ -24,12 +24,6 @@ type AcousticMetrics = {
     signal_strength?: number;
     signal_quality?: string;
 };
-type OsbhSummary = {
-    state?: string;
-    activity_rms?: number;
-    alert_rms?: number;
-    ratio?: number;
-};
 type AcousticResult = {
     label: ResultLabel;
     verdict: string;
@@ -43,16 +37,15 @@ type AcousticResult = {
     signalMetrics: AcousticMetrics;
     recommendedActions: string[];
     classificationBreakdown: Record<string, BreakdownEntry>;
-    primarySpecies?: string;
-    beeCoverage?: number;
-    osbhSummary?: OsbhSummary;
 };
 
 const RECORDING_MIME_TYPES = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/webm'] as const;
+
 const pickRecordingMimeType = () => {
     if (typeof MediaRecorder === 'undefined' || typeof MediaRecorder.isTypeSupported !== 'function') return '';
     return RECORDING_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type)) || '';
 };
+
 const getFileExtension = (mimeType: string) => (mimeType.includes('ogg') ? 'ogg' : mimeType.includes('mp4') ? 'm4a' : 'webm');
 const formatMetric = (value?: number, unit = '', digits = 1) =>
     typeof value === 'number' && !Number.isNaN(value) ? `${value.toFixed(digits)}${unit}` : '—';
@@ -68,7 +61,10 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange: _onT
     const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
     const streamRef = React.useRef<MediaStream | null>(null);
 
-    const holdCompletedProgress = React.useCallback(() => new Promise<void>((resolve) => globalThis.setTimeout(resolve, 450)), []);
+    const holdCompletedProgress = React.useCallback(
+        () => new Promise<void>((resolve) => globalThis.setTimeout(resolve, 450)),
+        []
+    );
 
     React.useEffect(() => {
         let mounted = true;
@@ -95,66 +91,66 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange: _onT
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const analyzeFile = React.useCallback(async (file: File) => {
-        if (analyzing) return;
-        setResult(null);
-        setAnalyzing(true);
-        setProgress(6);
-        const tick = globalThis.setInterval(() => {
-            setProgress((current) => {
-                if (current >= 99) return 99;
-                if (current < 32) return current + 7;
-                if (current < 68) return current + 4;
-                if (current < 90) return current + 2;
-                return current + 1;
-            });
-        }, 240);
-        const toastId = toast.loading('Analyzing hive audio...');
-        let completed = false;
-        try {
-            const response = await beeyieldService.analyzeAcoustic(file, selectedHiveId || undefined);
-            const verdict = String(response?.verdict || response?.prediction || response?.label || 'Unknown');
-            const verdictLower = verdict.toLowerCase();
-            const confidence =
-                typeof response?.confidence === 'number'
-                    ? response.confidence
-                    : typeof response?.probability === 'number'
-                        ? response.probability
-                        : undefined;
-            setResult({
-                label: verdictLower.includes('healthy') || verdictLower.includes('normal') ? 'Healthy' : 'Warning',
-                verdict,
-                confidence,
-                alertLevel: String(response?.alert_level || 'NORMAL'),
-                message: String(response?.message || `Colony Status: ${verdict}`),
-                segmentsAnalyzed: Number(response?.segments_analyzed || 0),
-                pipingSegments: Number(response?.piping_segments || 0),
-                hissingDetected: Boolean(response?.hissing_detected),
-                persistenceWarning: response?.persistence_warning || null,
-                signalMetrics: response?.signal_metrics || {},
-                recommendedActions: Array.isArray(response?.recommended_actions) ? response.recommended_actions : [],
-                classificationBreakdown: response?.classification_breakdown || {},
-                primarySpecies: response?.primary_species || undefined,
-                beeCoverage: typeof response?.bee_coverage === 'number' ? response.bee_coverage : undefined,
-                osbhSummary: response?.osbh_summary || undefined,
-            });
-            completed = true;
-            toast.success(response?.message || 'Analysis complete', { id: toastId });
-            if (response?.persistence_warning) toast.warning(response.persistence_warning);
-        } catch (error: any) {
-            console.error(error);
-            toast.error(error?.message || 'Analysis failed', { id: toastId });
-        } finally {
-            globalThis.clearInterval(tick);
-            if (completed) {
-                setProgress(100);
-                await holdCompletedProgress();
-            } else {
-                setProgress(0);
+    const analyzeFile = React.useCallback(
+        async (file: File) => {
+            if (analyzing) return;
+            setResult(null);
+            setAnalyzing(true);
+            setProgress(6);
+            const tick = globalThis.setInterval(() => {
+                setProgress((current) => {
+                    if (current >= 99) return 99;
+                    if (current < 32) return current + 7;
+                    if (current < 68) return current + 4;
+                    if (current < 90) return current + 2;
+                    return current + 1;
+                });
+            }, 240);
+            const toastId = toast.loading('Analyzing hive audio...');
+            let completed = false;
+            try {
+                const response = await beeyieldService.analyzeAcoustic(file, selectedHiveId || undefined);
+                const verdict = String(response?.verdict || response?.prediction || response?.label || 'Unknown');
+                const verdictLower = verdict.toLowerCase();
+                const confidence =
+                    typeof response?.confidence === 'number'
+                        ? response.confidence
+                        : typeof response?.probability === 'number'
+                            ? response.probability
+                            : undefined;
+                setResult({
+                    label: verdictLower.includes('healthy') || verdictLower.includes('normal') ? 'Healthy' : 'Warning',
+                    verdict,
+                    confidence,
+                    alertLevel: String(response?.alert_level || 'NORMAL'),
+                    message: String(response?.message || `Colony Status: ${verdict}`),
+                    segmentsAnalyzed: Number(response?.segments_analyzed || 0),
+                    pipingSegments: Number(response?.piping_segments || 0),
+                    hissingDetected: Boolean(response?.hissing_detected),
+                    persistenceWarning: response?.persistence_warning || null,
+                    signalMetrics: response?.signal_metrics || {},
+                    recommendedActions: Array.isArray(response?.recommended_actions) ? response.recommended_actions : [],
+                    classificationBreakdown: response?.classification_breakdown || {},
+                });
+                completed = true;
+                toast.success(response?.message || 'Analysis complete', { id: toastId });
+                if (response?.persistence_warning) toast.warning(response.persistence_warning);
+            } catch (error: any) {
+                console.error(error);
+                toast.error(error?.message || 'Analysis failed', { id: toastId });
+            } finally {
+                globalThis.clearInterval(tick);
+                if (completed) {
+                    setProgress(100);
+                    await holdCompletedProgress();
+                } else {
+                    setProgress(0);
+                }
+                setAnalyzing(false);
             }
-            setAnalyzing(false);
-        }
-    }, [analyzing, holdCompletedProgress, selectedHiveId]);
+        },
+        [analyzing, holdCompletedProgress, selectedHiveId]
+    );
 
     const handleRecord = async () => {
         if (recording || analyzing) return;
@@ -207,12 +203,12 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange: _onT
         <div className={glass.page}>
             <PageHeader
                 title="Acoustic Audit"
-                subtitle="Record or upload hive audio, then run the BeeSound repo pipeline with signal, species, and OSBH diagnostics."
+                subtitle="Record or upload hive audio, then run a full acoustic health pass with signal-quality diagnostics."
                 icon={Zap}
                 color="text-[#F4D03F]"
                 bg="bg-[#F4D03F]/10"
                 borderColor="border-[#F4D03F]/20"
-                action={<div className={cn(glass.badge, 'px-3 py-1.5 border-[#F4D03F]/10 bg-[#F4D03F]/5 text-[#F4D03F]')}>REPO PIPELINE ACTIVE</div>}
+                action={<div className={cn(glass.badge, 'px-3 py-1.5 border-[#F4D03F]/10 bg-[#F4D03F]/5 text-[#F4D03F]')}>ANALYSIS WINDOW: 30S MAX</div>}
             />
 
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
@@ -240,10 +236,10 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange: _onT
                             </select>
                         </div>
                         <div className="space-y-2">
-                            <p className={glass.microLabel}>This pass now uses the repo cleaner, segmenter, species identifier, health classifier, event detector, and OSBH engine together.</p>
+                            <p className={glass.microLabel}>Capture about 5 seconds near the brood chamber for the strongest result. Weak recordings still analyze, but accuracy drops.</p>
                             <div className="flex items-center gap-2 text-[8px] font-black text-gray-400">
                                 <Activity className="h-3 w-3 text-[#F4D03F]/40" />
-                                <span>Capture about 5 seconds near the brood chamber for the strongest result.</span>
+                                <span>Decode, segment, classify, and persist are now handled separately so the run finishes cleanly.</span>
                             </div>
                         </div>
                         <div className="mt-auto flex flex-col gap-3 border-t border-[#F4D03F]/10 pt-6">
@@ -277,7 +273,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange: _onT
                                 <div className="mb-3 flex items-end justify-between">
                                     <div className="flex flex-col gap-1">
                                         <span className={cn(glass.microLabel, 'animate-pulse')}>Processing signal...</span>
-                                        <span className="text-[8px] font-black text-gray-400">Clean, segment, classify, OSBH, persist</span>
+                                        <span className="text-[8px] font-black text-gray-400">Decode, segment, classify, persist</span>
                                     </div>
                                     <span className="text-xl font-black leading-none tabular-nums text-[#F4D03F]">{progress}%</span>
                                 </div>
@@ -311,8 +307,8 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange: _onT
                                 <div className="relative z-10 grid grid-cols-2 gap-3">
                                     <div className="rounded-2xl border border-white/30 bg-white/40 p-3"><p className={glass.microLabel}>Signal quality</p><p className="mt-1 text-lg font-black text-[#1A1A1A]">{String(result.signalMetrics.signal_quality || 'unknown').toUpperCase()}</p></div>
                                     <div className="rounded-2xl border border-white/30 bg-white/40 p-3"><p className={glass.microLabel}>Segments analyzed</p><p className="mt-1 text-lg font-black text-[#1A1A1A]">{result.segmentsAnalyzed || '—'}</p></div>
-                                    <div className="rounded-2xl border border-white/30 bg-white/40 p-3"><p className={glass.microLabel}>Primary species</p><p className="mt-1 text-lg font-black text-[#1A1A1A]">{result.primarySpecies || 'Unknown'}</p></div>
-                                    <div className="rounded-2xl border border-white/30 bg-white/40 p-3"><p className={glass.microLabel}>Bee coverage</p><p className="mt-1 text-lg font-black text-[#1A1A1A]">{typeof result.beeCoverage === 'number' ? `${Math.round(result.beeCoverage * 100)}%` : '—'}</p></div>
+                                    <div className="rounded-2xl border border-white/30 bg-white/40 p-3"><p className={glass.microLabel}>Dominant frequency</p><p className="mt-1 text-lg font-black text-[#1A1A1A]">{formatMetric(result.signalMetrics.dominant_frequency_hz, ' Hz', 0)}</p></div>
+                                    <div className="rounded-2xl border border-white/30 bg-white/40 p-3"><p className={glass.microLabel}>Energy floor</p><p className="mt-1 text-lg font-black text-[#1A1A1A]">{formatMetric(result.signalMetrics.rms_db, ' dB', 1)}</p></div>
                                 </div>
                                 {result.recommendedActions.length > 0 && (
                                     <div className="relative z-10 space-y-2 border-t border-[#F4D03F]/10 pt-4">
@@ -353,18 +349,16 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange: _onT
                     <div className="grid grid-cols-1 gap-5 border-t border-[#F4D03F]/10 bg-white/30 p-5 md:grid-cols-3">
                         <div className="space-y-1"><UiLabel className={glass.microLabel}>Signal lock</UiLabel><p className="text-xl font-black tracking-tighter text-[#1A1A1A]">{result ? `${Math.round((result.signalMetrics.signal_strength || 0) * 100)}%` : '94.8%'}</p></div>
                         <div className="space-y-1"><UiLabel className={glass.microLabel}>Piping watch</UiLabel><p className="text-xl font-black tracking-tighter text-[#1A1A1A]">{result ? `${result.pipingSegments} segment(s)` : 'Standby'}</p></div>
-                        <div className="space-y-1"><UiLabel className={glass.microLabel}>OSBH verdict</UiLabel><p className="text-xl font-black tracking-tighter text-[#1A1A1A]">{result?.osbhSummary?.state || 'Awaiting sample'}</p></div>
+                        <div className="space-y-1"><UiLabel className={glass.microLabel}>Noise character</UiLabel><p className="text-xl font-black tracking-tighter text-[#1A1A1A]">{result?.hissingDetected ? 'Defensive hiss' : result ? 'Stable band' : 'Awaiting sample'}</p></div>
                     </div>
                     <div className="grid grid-cols-1 gap-4 border-t border-[#F4D03F]/10 bg-white/20 p-5 lg:grid-cols-2">
                         <div className="rounded-2xl border border-white/30 bg-white/40 p-4">
-                            <p className={glass.sectionTitle}>Signal + OSBH metrics</p>
+                            <p className={glass.sectionTitle}>Signal metrics</p>
                             <div className="mt-3 grid grid-cols-2 gap-3 text-[11px] font-semibold text-[#1A1A1A]">
                                 <div><p className={glass.microLabel}>Duration</p><p>{formatMetric(result?.signalMetrics.duration_seconds, 's', 1)}</p></div>
                                 <div><p className={glass.microLabel}>Centroid</p><p>{formatMetric(result?.signalMetrics.spectral_centroid_hz, ' Hz', 0)}</p></div>
                                 <div><p className={glass.microLabel}>Bandwidth</p><p>{formatMetric(result?.signalMetrics.spectral_bandwidth_hz, ' Hz', 0)}</p></div>
                                 <div><p className={glass.microLabel}>Harmonic ratio</p><p>{formatMetric(result?.signalMetrics.harmonic_ratio, '', 2)}</p></div>
-                                <div><p className={glass.microLabel}>OSBH activity</p><p>{formatMetric(result?.osbhSummary?.activity_rms, '', 0)}</p></div>
-                                <div><p className={glass.microLabel}>OSBH ratio</p><p>{formatMetric(result?.osbhSummary?.ratio, '', 2)}</p></div>
                             </div>
                         </div>
                         <div className="rounded-2xl border border-white/30 bg-white/40 p-4">
