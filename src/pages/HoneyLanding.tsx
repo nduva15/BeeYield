@@ -432,82 +432,6 @@ const TestimonialSection = () => {
 };
 
 // Heritage Section - "The Buzzz about our Honey!"
-const HeritageSection = () => {
-  return (
-    <section className="py-24 bg-neutral-50 overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Visual side */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="flex justify-center"
-          >
-            <div className="relative group">
-              {/* Main Lifestyle Image */}
-              <div className="w-64 h-80 md:w-80 md:h-[450px] rounded-[3.5rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] transform -rotate-3 group-hover:rotate-0 transition-transform duration-700 bg-[#FFF9F0]">
-                <img src="/images/products/beeyield_honey_1kg.png" alt="BeeYield Journey" className="w-full h-full object-cover p-8" />
-              </div>
-
-              {/* Overlapping Secondary Image */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotate: 12 }}
-                whileInView={{ opacity: 1, scale: 1, rotate: 6 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="absolute -bottom-10 -right-8 w-44 h-44 md:w-60 md:h-60 rounded-[2.5rem] overflow-hidden shadow-2xl border-[12px] border-white transform group-hover:rotate-0 transition-transform duration-700 bg-amber-50"
-              >
-                <img src="/images/products/beeyield_honey_250g.png" alt="Our Impact" className="w-full h-full object-cover p-6" />
-              </motion.div>
-
-              {/* Floating Badge */}
-              <motion.div
-                animate={{ rotate: [-12, -8, -12] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -top-8 -left-8 bg-beeyield-green text-[#1A1A1A] p-6 rounded-[2rem] shadow-2xl font-black text-sm leading-none text-center"
-              >
-                50 / 50<br />
-                <span className="text-[10px] opacity-70">Promise</span>
-              </motion.div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <Badge className="bg-beeyield-green/10 text-beeyield-green mb-6 hover:bg-beeyield-green/20 transition-colors font-black text-[10px] px-4 py-1">
-              Our Vision
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.9]">
-              The Most Trusted <span className="text-beeyield-green block">Honey in Makueni</span>
-            </h2>
-            <div className="space-y-6">
-              <p className="text-neutral-600 leading-relaxed text-base font-medium">
-                BeeYield was founded with a simple goal: to make beekeeping better through technology and honest reporting. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong className="text-beeyield-green">50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive.
-              </p>
-              <p className="text-neutral-600 leading-relaxed text-base font-medium">
-                Every jar you hold features <strong className="text-beeyield-gold">Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
-              </p>
-              <div className="pt-4">
-                <Button size="lg" variant="link" className="text-beeyield-green font-black p-0 h-auto gap-2 text-xs group" asChild>
-                  <Link to="/about">
-                    Learn Our Story <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
 // Features Section - 3 cards
 const FeaturesSection = () => {
   const navigate = useNavigate();
@@ -992,10 +916,8 @@ const HoneyLanding = () => {
       />
 
       <TestimonialSection />
-      <HeritageSection />
+      <HoneyProductCollection products={products} className="py-24 bg-neutral-50 overflow-hidden" />
       <FeaturesSection />
-
-      <HoneyProductCollection products={products} />
 
       <FlashSaleSection />
       <FAQSection />

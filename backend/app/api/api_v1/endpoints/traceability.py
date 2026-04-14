@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, BackgroundTasks, Depends
+from fastapi import APIRouter, HTTPException, Request, BackgroundTasks, Depends, Query
 from typing import Optional, Any
 from app.schemas import traceability as schemas
 from app.services import traceability_service
@@ -88,9 +88,46 @@ async def create_batch(batch_in: dict[str, Any], token: Optional[str] = Depends(
     return await traceability_service.create_batch(batch_in, token=token)
 
 @router.get("/batches", response_model=list[dict[str, Any]])
-async def get_batches(limit: int = 100, token: Optional[str] = Depends(get_token)):
+async def get_batches(
+    limit: int = 100,
+    beekeeper_name: Optional[str] = Query(None, description="Filter public batches by beekeeper/farmer name"),
+    apiary_name: Optional[str] = Query(None, description="Filter public batches by apiary name"),
+    verified_only: bool = Query(False, description="Return only verified batches"),
+    token: Optional[str] = Depends(get_token),
+):
     """Get all honey batches."""
-    return await traceability_service.get_all_batches(limit=limit, token=token)
+    batches = await traceability_service.get_all_batches(limit=max(limit, 250), token=token)
+
+    if beekeeper_name:
+        beekeeper_lookup = beekeeper_name.strip().lower()
+        batches = [
+            batch for batch in batches
+            if beekeeper_lookup in str(
+                batch.get("beekeeper_name")
+                or batch.get("farmer_name")
+                or batch.get("farmer", {}).get("name")
+                or ""
+            ).lower()
+        ]
+
+    if apiary_name:
+        apiary_lookup = apiary_name.strip().lower()
+        batches = [
+            batch for batch in batches
+            if apiary_lookup in str(
+                batch.get("apiary_name")
+                or batch.get("apiary", {}).get("name")
+                or ""
+            ).lower()
+        ]
+
+    if verified_only:
+        batches = [
+            batch for batch in batches
+            if bool(batch.get("blockchain_verified")) or str(batch.get("verification_status") or "").lower() == "verified"
+        ]
+
+    return batches[:limit]
 
 
 # ==================== POLYGON BLOCKCHAIN ENDPOINTS ====================
