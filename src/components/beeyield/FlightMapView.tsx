@@ -4,7 +4,7 @@ import { Circle, CircleMarker, MapContainer, Polyline, Popup, TileLayer, useMap 
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
-import { AlertTriangle, Check, CheckCircle2, CloudSun, Layers3, Loader2, MapPin, Radar, Route } from 'lucide-react';
+import { AlertTriangle, Check, CheckCircle2, CloudSun, Loader2, Route } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -12,13 +12,14 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { GlassStatCard, glass, PageHeader } from './GlassTheme';
 import { useApiaries } from '@/hooks/useApiaries';
 import { cn } from '@/lib/utils';
 import { beeyieldService, PublicFlightMapPayload } from '@/services/beeyieldService';
 
 type HeatPoint = { id: string; name: string; lat: number; lng: number; intensity: number; status: string };
 type RoutePoint = { id: string; name: string; latitude: number; longitude: number; type: string; status?: string };
+
+const card = 'rounded-[28px] border border-[#edd9b4] bg-[#fffaf1] shadow-[0_18px_40px_rgba(157,118,39,0.08)]';
 
 const HeatLayer = ({ points, visible }: { points: HeatPoint[]; visible: boolean }) => {
     const map = useMap();
@@ -360,192 +361,115 @@ const FlightMapView: React.FC = () => {
         ['Flight heatmap', showHeatmap, setShowHeatmap],
         ['Forage potential', showForagePotential, setShowForagePotential],
     ] as const;
-    const activeLayerCount = layerButtons.filter(([, active]) => active).length;
-    const primaryLocationLabel = String(flightArea?.apiary?.location_name || 'Kibwezi, Kenya');
-    const topStats = [
-        {
-            label: 'Forage potential',
-            value: `~${Math.round(Number(flightArea?.forage?.potential_pct || 0))}%`,
-            detail: `Share ${Math.round(Number(flightArea?.forage?.estimated_share_pct || 0))}%`,
-            icon: Radar,
-            color: 'text-[#1B9157]',
-        },
-        {
-            label: 'Effective radius',
-            value: formatMeters(effectiveRadiusKm),
-            detail: 'High-confidence flight zone',
-            icon: MapPin,
-            color: 'text-[#F4D03F]',
-        },
-        {
-            label: 'Maximum radius',
-            value: formatMeters(maxRadiusKm),
-            detail: 'Outer operating envelope',
-            icon: Route,
-            color: 'text-[#2563eb]',
-        },
-        {
-            label: 'Live layers',
-            value: activeLayerCount,
-            detail: showHeatmap ? 'Heatmap active' : 'Map overlays trimmed',
-            icon: Layers3,
-            color: 'text-[#a16207]',
-        },
-    ];
 
     if (loading) {
         return (
-            <div className={cn(glass.section, 'flex min-h-[620px] items-center justify-center')}>
+            <div className="flex min-h-[620px] items-center justify-center rounded-[30px] border border-[#eadbbc] bg-[#fffaf1]">
                 <div className="space-y-4 text-center">
-                    <Loader2 className="mx-auto h-12 w-12 animate-spin text-[#F4D03F]" />
-                    <p className="text-sm font-medium text-[#1A1A1A]/70">Loading bee flight area...</p>
+                    <Loader2 className="mx-auto h-12 w-12 animate-spin text-[#ca8a04]" />
+                    <p className="text-sm font-medium text-[#7f6b4e]">Loading bee flight area...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className={cn(glass.page, 'space-y-5 font-sans md:space-y-6')}>
-            <PageHeader
-                icon={Route}
-                label="Flight intelligence"
-                title="Bee Flight Area"
-                subtitle={hasPrivateApiaries ? 'Live forage, map, and route planning for your selected apiary.' : 'Live Kibwezi, Kenya map with backend weather and forage coverage.'}
-                actions={
-                    <div className="flex items-center gap-2">
-                        <div className={cn(glass.badge, 'border-[#1B9157]/20 bg-[#1B9157]/10 text-[#166534]')}>
-                            {primaryLocationLabel}
-                        </div>
-                        {isFetching ? <Loader2 className="h-4 w-4 animate-spin text-[#F4D03F]" /> : null}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="-m-4 min-h-screen space-y-7 bg-[#f4f6fb] px-4 py-6 md:-m-6 md:px-6 md:py-8">
+            <div className="space-y-2">
+                <h1 className="text-4xl font-bold tracking-tight text-[#142645]">Bee Flight Area</h1>
+                <p className="text-sm text-[#6f7b93]">
+                    {hasPrivateApiaries ? 'Live forage, map, and route planning for your selected apiary.' : 'Live Kibwezi, Kenya map with backend weather and forage coverage.'}
+                </p>
+            </div>
+
+            <section className={cn(card, 'p-5 md:p-6')}>
+                <div className="space-y-6">
+                    <div className="rounded-[22px] border border-[#d6c29f] bg-white/70 p-4">
+                        <div className="mb-2 text-sm font-medium text-[#9a7d45]">{hasPrivateApiaries ? 'My locations' : 'Live location'}</div>
+                        <Select value={selectedApiaryId} onValueChange={handleApiaryChange}>
+                            <SelectTrigger className="h-14 rounded-2xl border-[#c8b189] bg-white text-lg font-medium text-[#3f3426]">
+                                <SelectValue placeholder="Select an apiary" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-[#dbc7a3] bg-[#fffaf1]">
+                                {locationOptions.map((location: any) => (
+                                    <SelectItem key={location.id} value={location.id}>{location.label || location.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
-                }
-            />
 
-            <section className={cn(glass.section, 'overflow-hidden')}>
-                <div className="border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,249,240,0.98),rgba(249,247,242,0.98))] px-4 py-4 md:px-6 md:py-5">
-                    <div className="grid gap-4 xl:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)] xl:gap-5">
-                        <div className="space-y-3 md:space-y-4">
-                            <div className="space-y-1">
-                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">{hasPrivateApiaries ? 'My locations' : 'Live location'}</p>
-                                <Select value={selectedApiaryId} onValueChange={handleApiaryChange}>
-                                    <SelectTrigger className="h-12 rounded-xl border-[#F4D03F]/30 bg-[#FFF9F0] text-sm font-semibold text-[#1A1A1A] shadow-sm">
-                                        <SelectValue placeholder="Select an apiary" />
-                                    </SelectTrigger>
-                                    <SelectContent className={cn(glass.selectContent, 'rounded-xl')}>
-                                        {locationOptions.map((location: any) => (
-                                            <SelectItem key={location.id} value={location.id} className="rounded-lg text-sm font-semibold text-[#1A1A1A]">
-                                                {location.label || location.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                    <div className="grid gap-6 xl:grid-cols-[340px_minmax(0,1fr)_minmax(0,1fr)]">
+                        <div className="space-y-4">
+                            <div className="flex items-end justify-between">
+                                <div>
+                                    <div className="text-[1.05rem] font-semibold text-[#1f2f4d]">Forage potential</div>
+                                </div>
+                                <div className="text-3xl font-bold text-[#17335f]">~{Math.round(Number(flightArea?.forage?.potential_pct || 0))}%</div>
+                                {isFetching ? <Loader2 className="h-4 w-4 animate-spin text-[#ca8a04]" /> : null}
                             </div>
-
-                            <div className="rounded-[22px] border border-[#d28b3d] bg-[#fff7ef] p-4 shadow-[0_10px_25px_rgba(170,96,14,0.08)]">
-                                <div className="mb-3 text-sm font-medium text-[#b86a19]">Land type</div>
+                            <div className="rounded-[24px] border border-[#c7781a] bg-[#fff8f2] p-4 shadow-[0_10px_25px_rgba(170,96,14,0.08)]">
+                                <div className="mb-3 text-sm font-medium text-[#b45f0b]">Land type</div>
                                 <Select value={activeLandTypeId} onValueChange={setSelectedLandTypeId}>
-                                    <SelectTrigger className="h-[70px] rounded-[18px] border-2 border-[#b97726] bg-[#fffaf5] px-5 text-lg font-medium text-[#33281d] shadow-none focus:ring-0 focus:ring-offset-0">
+                                    <SelectTrigger className="h-[70px] rounded-[18px] border-2 border-[#b56a13] bg-[#fffdf9] px-5 text-lg font-medium text-[#3f3426] shadow-none focus:ring-0 focus:ring-offset-0">
                                         <SelectValue placeholder="Choose forage type" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-[24px] border-[#d28b3d] bg-[#fbefe6] p-0 shadow-[0_24px_40px_rgba(126,62,0,0.14)]">
+                                    <SelectContent className="rounded-[24px] border-[#c7781a] bg-[#fdf0e7] p-0 shadow-[0_24px_40px_rgba(126,62,0,0.16)]">
                                         {landTypes.map((option: any) => (
                                             <SelectItem
                                                 key={option.id}
                                                 value={option.id}
-                                                className="min-h-[68px] rounded-none border-b border-[#ead7ca] pl-5 pr-12 text-[1.05rem] font-medium text-[#2f2416] focus:bg-[#f4cfbc] focus:text-[#2f2416] data-[state=checked]:bg-[#f4cfbc] data-[state=checked]:text-[#2f2416] [&>span]:left-auto [&>span]:right-4"
+                                                className="min-h-[68px] rounded-none border-b border-[#efd9cf] pl-5 pr-12 text-[1.05rem] font-medium text-[#2f2416] focus:bg-[#f8cfb8] focus:text-[#2f2416] data-[state=checked]:bg-[#f8cfb8] data-[state=checked]:text-[#2f2416] [&>span]:left-auto [&>span]:right-4"
                                             >
                                                 {option.name}
                                             </SelectItem>
                                         ))}
                                         {landTypes.length === 0 ? (
-                                            <div className="px-5 py-4 text-sm font-medium text-[#8b6f57]">No land types available yet.</div>
+                                            <div className="px-5 py-4 text-sm font-medium text-[#8b6f57]">
+                                                No land types available yet.
+                                            </div>
                                         ) : null}
                                     </SelectContent>
                                 </Select>
                             </div>
-
-                            <div className="flex flex-wrap gap-2">
-                                {layerButtons.map(([label, active, setter]) => (
-                                    <button key={label} className={pill(active)} onClick={() => setter((value: boolean) => !value)} type="button">
-                                        <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[#a96600] bg-white text-[#a96600]"><Check className="h-4 w-4" /></span>
-                                        {label}
-                                    </button>
-                                ))}
+                            <div className="flex items-center gap-2 text-sm text-[#88724f]">
+                                <span className="h-3 w-3 rounded-full bg-[#f2b300]" />
+                                Estimated forage share: {Math.round(Number(flightArea?.forage?.estimated_share_pct || 0))}%
                             </div>
                         </div>
 
-                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                            {topStats.map((stat, index) => (
-                                <div key={stat.label} className="min-w-0">
-                                    <GlassStatCard
-                                        label={stat.label}
-                                        value={stat.value}
-                                        icon={stat.icon}
-                                        index={index}
-                                        color={stat.color}
-                                    />
-                                    <p className="mt-2 px-1 text-xs font-semibold text-[#1A1A1A]/55">{stat.detail}</p>
-                                </div>
-                            ))}
-                            <div className={cn(glass.section, 'bg-white/60 p-4 sm:col-span-2 xl:col-span-4')}>
-                                <div className="mb-3 flex items-center justify-between">
-                                    <div className="text-sm font-semibold text-[#1A1A1A]">Flight radius tuning</div>
-                                    <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[#1A1A1A]/45">Live controls</div>
-                                </div>
-                                <div className="grid gap-4 xl:grid-cols-2">
-                                    <div className="space-y-3">
-                                        <div className="flex items-end justify-between">
-                                            <div className="text-sm font-semibold text-[#1A1A1A]/75">Effective radius</div>
-                                            <div className="text-lg font-bold text-[#1A1A1A]">{formatMeters(effectiveRadiusKm)}</div>
-                                        </div>
-                                        <Slider value={[effectiveRadiusKm]} min={0.5} max={Math.max(5, maxRadiusKm)} step={0.1} onValueChange={([value]) => setEffectiveRadiusKm(value)} className="py-2" />
-                                    </div>
-                                    <div className="space-y-3">
-                                        <div className="flex items-end justify-between">
-                                            <div className="text-sm font-semibold text-[#1A1A1A]/75">Maximum radius</div>
-                                            <div className="text-lg font-bold text-[#1A1A1A]">{formatMeters(maxRadiusKm)}</div>
-                                        </div>
-                                        <Slider value={[maxRadiusKm]} min={effectiveRadiusKm} max={10} step={0.1} onValueChange={([value]) => setMaxRadiusKm(value)} className="py-2" />
-                                    </div>
-                                </div>
+                        <div className="space-y-4">
+                            <div className="flex items-end justify-between">
+                                <div className="text-sm font-semibold text-[#1f2f4d]">Effective radius</div>
+                                <div className="text-2xl font-semibold text-[#17335f]">{formatMeters(effectiveRadiusKm)}</div>
                             </div>
+                            <Slider value={[effectiveRadiusKm]} min={0.5} max={Math.max(5, maxRadiusKm)} step={0.1} onValueChange={([value]) => setEffectiveRadiusKm(value)} className="py-2" />
                         </div>
+
+                        <div className="space-y-4">
+                            <div className="flex items-end justify-between">
+                                <div className="text-sm font-semibold text-[#1f2f4d]">Maximum radius</div>
+                                <div className="text-2xl font-semibold text-[#17335f]">{formatMeters(maxRadiusKm)}</div>
+                            </div>
+                            <Slider value={[maxRadiusKm]} min={effectiveRadiusKm} max={10} step={0.1} onValueChange={([value]) => setMaxRadiusKm(value)} className="py-2" />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 rounded-[22px] border border-dashed border-[#e2be73] bg-[#fff4d6] p-3">
+                        {layerButtons.map(([label, active, setter]) => (
+                            <button key={label} className={pill(active)} onClick={() => setter((value: boolean) => !value)} type="button">
+                                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[#a96600] bg-white text-[#a96600]"><Check className="h-4 w-4" /></span>
+                                {label}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            <section className="grid gap-5 xl:grid-cols-[minmax(0,1.8fr)_340px] xl:gap-6">
-                <div className={cn(glass.section, 'overflow-hidden')}>
-                    <div className="flex items-center justify-between border-b border-[#F4D03F]/20 bg-[#F9F7F2] px-5 py-4">
-                        <div>
-                            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">Live route canvas</p>
-                            <h2 className="mt-1 text-lg font-bold tracking-tight text-[#1A1A1A]">Primary flight map</h2>
-                        </div>
-                        <div className={cn(glass.badge, 'border-[#F4D03F]/30 bg-[#F4D03F]/10 text-[#1A1A1A]')}>
-                            {primaryLocationLabel}
-                        </div>
-                    </div>
-                    <div className="relative h-[340px] overflow-hidden sm:h-[420px] lg:h-[520px]">
-                        <div className="pointer-events-none absolute left-3 top-3 z-[1000] flex max-w-[calc(100%-24px)] flex-wrap gap-2">
-                            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#f1d699] bg-[rgba(255,249,235,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[#7c5a14] shadow-sm backdrop-blur">
-                                <span className="h-2 w-2 rounded-full bg-[#f2a900]" />
-                                Core site
-                            </div>
-                            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#efcf94] bg-[rgba(255,247,226,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[#8a5a08] shadow-sm backdrop-blur">
-                                <span className="h-2 w-2 rounded-full bg-[#d8931c]" />
-                                Heatmap
-                            </div>
-                            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#cde2bf] bg-[rgba(244,251,241,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[#466d31] shadow-sm backdrop-blur">
-                                <span className="h-2 w-2 rounded-full bg-[#6da84d]" />
-                                Forage
-                            </div>
-                            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#cfe0fa] bg-[rgba(246,250,255,0.94)] px-2.5 py-1 text-[10px] font-semibold text-[#345c9d] shadow-sm backdrop-blur">
-                                <span className="block h-[2px] w-3 rounded-full bg-[#2563eb]" />
-                                Route
-                            </div>
-                        </div>
+            <section className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_340px]">
+                <div className={cn(card, 'overflow-hidden')}>
+                    <div className="h-[520px] overflow-hidden rounded-t-[28px]">
                         <MapContainer center={mapCenter} zoom={12} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
-                            <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; OpenStreetMap contributors &copy; CARTO' />
+                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
                             <HeatLayer points={heatmapPoints} visible={showHeatmap} />
                             <SetView center={mapCenter} />
                             {showMaximumRange ? <Circle center={mapCenter} radius={Math.round(maxRadiusKm * 1000)} pathOptions={{ color: '#d8931c', fillColor: '#f6c65b', fillOpacity: 0.08, weight: 2 }} /> : null}
@@ -566,8 +490,8 @@ const FlightMapView: React.FC = () => {
                             {routePath.length > 1 ? <Polyline positions={routePath.map((point) => [point.latitude, point.longitude])} pathOptions={{ color: '#2563eb', weight: 4, opacity: 0.9, dashArray: '10 10' }} /> : null}
                         </MapContainer>
                     </div>
-                    <div className="border-t border-[#F4D03F]/20 bg-[#FFF9F0] px-5 py-4 text-sm text-[#1A1A1A]/70">
-                        <div className="mb-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/45">Geographical position</div>
+                    <div className="border-t border-dashed border-[#e8d5b3] px-5 py-4 text-sm text-[#7a6a52]">
+                        <div className="mb-1 font-semibold uppercase tracking-[0.16em] text-[#9a7d45]">Geographical position</div>
                         <div className="flex flex-wrap gap-5">
                             <span>Longitude: {Number(flightArea?.apiary?.longitude || 0).toFixed(6)}</span>
                             <span>Latitude: {Number(flightArea?.apiary?.latitude || 0).toFixed(6)}</span>
@@ -575,14 +499,14 @@ const FlightMapView: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="space-y-4 md:space-y-5">
-                    <div className={cn(glass.section, 'p-5')}>
-                        <div className={cn('rounded-xl border px-4 py-3 text-sm font-semibold', flightArea?.weather?.available ? 'border-[#cfe9d4] bg-[#edf8ef] text-[#2f7a3d]' : 'border-[#f1c9c6] bg-[#fff0ef] text-[#c54e3d]')}>
+                <div className="space-y-5">
+                    <div className={cn(card, 'p-5')}>
+                        <div className={cn('rounded-[20px] border px-4 py-3 text-sm', flightArea?.weather?.available ? 'border-[#cfe9d4] bg-[#edf8ef] text-[#2f7a3d]' : 'border-[#f1c9c6] bg-[#fff0ef] text-[#c54e3d]')}>
                             {flightArea?.weather?.message || `Weather feed active for ${flightArea?.apiary?.location_name}.`}
                         </div>
                         <div className="mt-5 space-y-4">
-                            <h2 className="text-lg font-bold tracking-tight text-[#1A1A1A]">Education panel</h2>
-                            <ul className="space-y-3 text-sm leading-7 text-[#1A1A1A]/80">
+                            <h2 className="text-[2rem] font-bold tracking-tight text-[#132646]">Education panel</h2>
+                            <ul className="space-y-3 text-lg leading-8 text-[#20304d]">
                                 {(flightArea?.education_panel || []).map((tip: string) => (
                                     <li key={tip} className="flex gap-3"><span className="mt-3 h-2.5 w-2.5 rounded-full bg-[#2a5b9a]" /><span>{tip}</span></li>
                                 ))}
@@ -590,83 +514,79 @@ const FlightMapView: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className={cn(glass.section, 'p-5')}>
+                    <div className={cn(card, 'p-5')}>
                         <div className="flex items-start gap-3">
                             <div className="rounded-2xl bg-[#eef5ff] p-3 text-[#2a5b9a]">{flightArea?.weather?.available ? <CloudSun className="h-6 w-6" /> : <AlertTriangle className="h-6 w-6" />}</div>
-                            <div className="grid flex-1 grid-cols-2 gap-4 text-sm text-[#1A1A1A]/70">
-                                <div><div className="text-[11px] font-black uppercase tracking-wide text-[#1A1A1A]/45">Temp</div><div className="text-lg font-semibold text-[#1A1A1A]">{weatherCurrent.temperature_c != null ? `${Math.round(Number(weatherCurrent.temperature_c))} C` : 'N/A'}</div></div>
-                                <div><div className="text-[11px] font-black uppercase tracking-wide text-[#1A1A1A]/45">Humidity</div><div className="text-lg font-semibold text-[#1A1A1A]">{weatherCurrent.humidity_pct != null ? `${Math.round(Number(weatherCurrent.humidity_pct))}%` : 'N/A'}</div></div>
-                                <div><div className="text-[11px] font-black uppercase tracking-wide text-[#1A1A1A]/45">UV Index</div><div className="text-lg font-semibold text-[#1A1A1A]">{weatherCurrent.uv_index != null ? Number(weatherCurrent.uv_index).toFixed(1) : 'N/A'}</div></div>
-                                <div><div className="text-[11px] font-black uppercase tracking-wide text-[#1A1A1A]/45">Condition</div><div className="text-lg font-semibold text-[#1A1A1A]">{weatherCurrent.condition || 'Unavailable'}</div></div>
+                            <div className="grid flex-1 grid-cols-2 gap-4 text-sm text-[#42506a]">
+                                <div><div className="text-xs uppercase tracking-wide text-[#8f9ab0]">Temp</div><div className="text-lg font-semibold text-[#17335f]">{weatherCurrent.temperature_c != null ? `${Math.round(Number(weatherCurrent.temperature_c))} C` : 'N/A'}</div></div>
+                                <div><div className="text-xs uppercase tracking-wide text-[#8f9ab0]">Humidity</div><div className="text-lg font-semibold text-[#17335f]">{weatherCurrent.humidity_pct != null ? `${Math.round(Number(weatherCurrent.humidity_pct))}%` : 'N/A'}</div></div>
+                                <div><div className="text-xs uppercase tracking-wide text-[#8f9ab0]">UV Index</div><div className="text-lg font-semibold text-[#17335f]">{weatherCurrent.uv_index != null ? Number(weatherCurrent.uv_index).toFixed(1) : 'N/A'}</div></div>
+                                <div><div className="text-xs uppercase tracking-wide text-[#8f9ab0]">Condition</div><div className="text-lg font-semibold text-[#17335f]">{weatherCurrent.condition || 'Unavailable'}</div></div>
                             </div>
                         </div>
-                        <div className="mt-4 rounded-xl border border-[#F4D03F]/20 bg-white px-4 py-3 text-sm font-semibold text-[#1A1A1A]/70">{flightArea?.forage?.recommendation}</div>
+                        <div className="mt-4 rounded-2xl border border-[#e5d7b8] bg-white px-4 py-3 text-sm text-[#6d5a3a]">{flightArea?.forage?.recommendation}</div>
                     </div>
                 </div>
             </section>
 
-            <section className={cn(glass.section, 'p-4 md:p-6')}>
-                <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-                    <h2 className="text-lg font-bold tracking-tight text-[#1A1A1A]">Economic route planner</h2>
-                    <p className="max-w-md text-sm text-[#1A1A1A]/55 md:text-right">{flightArea?.route_planner?.helper_text || 'Choose a start point and hive status to build a simple visit order.'}</p>
+            <section className={cn(card, 'p-5 md:p-6')}>
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                    <h2 className="text-4xl font-bold tracking-tight text-[#142645]">Economic route planner</h2>
+                    <p className="max-w-md text-right text-sm text-[#7a879d]">{flightArea?.route_planner?.helper_text || 'Choose a start point and hive status to build a simple visit order.'}</p>
                 </div>
-                <div className="mt-4 grid gap-3 xl:grid-cols-2 xl:gap-5">
-                    <div className="rounded-xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-4 sm:p-5">
-                        <div className="text-base font-semibold text-[#1A1A1A] sm:text-lg">Start point</div>
-                        <div className="mt-4">
+                <div className="mt-6 grid gap-5 xl:grid-cols-2">
+                    <div className="rounded-[24px] border border-[#ecd8aa] bg-[#fff7e7] p-5">
+                        <div className="text-[2rem] font-semibold text-[#132646]">Start point</div>
+                        <div className="mt-5">
                             <Select value={startPointId || selectedApiaryId} onValueChange={setStartPointId}>
-                                <SelectTrigger className="h-12 rounded-xl border-[#F4D03F]/30 bg-white text-sm font-semibold text-[#1A1A1A]">
+                                <SelectTrigger className="h-14 rounded-2xl border-[#d4bd8e] bg-white text-lg font-medium text-[#3f3426]">
                                     <SelectValue placeholder="Select a start point" />
                                 </SelectTrigger>
-                                <SelectContent className={cn(glass.selectContent, 'rounded-xl')}>
+                                <SelectContent className="rounded-2xl border-[#dbc7a3] bg-[#fffaf1]">
                                     {(flightArea?.route_planner?.start_options || locationOptions).map((option: any) => (
-                                        <SelectItem key={option.id} value={option.id} className="rounded-lg text-sm font-semibold text-[#1A1A1A]">{option.label || option.name}</SelectItem>
+                                        <SelectItem key={option.id} value={option.id}>{option.label || option.name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
 
-                    <div className="rounded-xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-4 sm:p-5">
+                    <div className="rounded-[24px] border border-[#ecd8aa] bg-[#fff7e7] p-5">
                         <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div className="text-base font-semibold text-[#1A1A1A] sm:text-lg">Which hives to visit?</div>
-                            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                            <div className="text-[2rem] font-semibold text-[#132646]">Which hives to visit?</div>
+                            <div className="flex flex-wrap gap-2">
                                 {statusOptions.map((status) => (
-                                    <button key={status} type="button" onClick={() => setStatusFilter(status)} className={cn('rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors sm:px-3 sm:py-1.5 sm:text-xs', statusFilter === status ? 'border-[#F4D03F] bg-[#F4D03F]/15 text-[#1A1A1A]' : 'border-[#F4D03F]/20 bg-white text-[#1A1A1A]/60')}>
+                                    <button key={status} type="button" onClick={() => setStatusFilter(status)} className={cn('rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors', statusFilter === status ? 'border-[#ca8a04] bg-[#f9d882] text-[#7f4f00]' : 'border-[#e4d0aa] bg-white text-[#8c7a5b]')}>
                                         {status === 'all' ? 'All hives' : status}
                                     </button>
                                 ))}
                             </div>
                         </div>
-                        <div className="mt-3 max-h-[220px] space-y-2.5 overflow-auto pr-1 sm:mt-4 sm:max-h-[240px] sm:space-y-3">
+                        <div className="mt-4 max-h-[240px] space-y-3 overflow-auto pr-1">
                             {filteredHives.map((hive: any) => (
-                                <label key={hive.id} className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#F4D03F]/20 bg-white px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3">
-                                    <Checkbox
-                                        checked={selectedHiveIds.includes(hive.id)}
-                                        onCheckedChange={(value) => toggleHive(hive.id, Boolean(value))}
-                                        className="mt-0.5 h-3.5 w-3.5 rounded-[4px] border-[#d9b351] data-[state=checked]:border-[#d9b351] data-[state=checked]:bg-[#F4D03F] data-[state=checked]:text-[#1A1A1A]"
-                                    />
+                                <label key={hive.id} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#ead7b6] bg-white px-4 py-3">
+                                    <Checkbox checked={selectedHiveIds.includes(hive.id)} onCheckedChange={(value) => toggleHive(hive.id, Boolean(value))} />
                                     <div className="min-w-0 flex-1">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
-                                            <div className="text-sm font-semibold text-[#1A1A1A]">{hive.name}</div>
+                                            <div className="font-semibold text-[#20304d]">{hive.name}</div>
                                             <span className={cn('rounded-full border px-2.5 py-1 text-xs font-semibold', statusTone(hive.status))}>{hive.status}</span>
                                         </div>
-                                        <div className="mt-1 text-xs text-[#1A1A1A]/55 sm:text-sm">{Number(hive.latitude).toFixed(4)}, {Number(hive.longitude).toFixed(4)}</div>
+                                        <div className="mt-1 text-sm text-[#7c879c]">{Number(hive.latitude).toFixed(4)}, {Number(hive.longitude).toFixed(4)}</div>
                                     </div>
                                 </label>
                             ))}
-                            {filteredHives.length === 0 ? <div className="rounded-xl border border-dashed border-[#F4D03F]/30 bg-white/70 px-4 py-5 text-sm text-[#1A1A1A]/55">No hives match this status filter.</div> : null}
+                            {filteredHives.length === 0 ? <div className="rounded-2xl border border-dashed border-[#dfcda6] bg-white/70 px-4 py-6 text-sm text-[#8f7f66]">No hives match this status filter.</div> : null}
                         </div>
-                        <div className="mt-4 flex flex-wrap items-center gap-2.5 sm:mt-5 sm:gap-3">
-                            <Button onClick={handlePlanRoute} disabled={planningRoute} className={cn(glass.btnPrimary, 'h-11 rounded-xl px-5')}>
+                        <div className="mt-5 flex flex-wrap items-center gap-3">
+                            <Button onClick={handlePlanRoute} disabled={planningRoute} className="rounded-full bg-[#fffaf1] px-6 py-6 text-base font-semibold text-[#bd6a00] shadow-[0_6px_18px_rgba(157,118,39,0.12)] hover:bg-[#fff4dc]">
                                 {planningRoute ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Route className="mr-2 h-4 w-4" />}Route plan
                             </Button>
-                            <div className="text-sm text-[#1A1A1A]/55">{selectedHiveIds.length} hive(s) selected</div>
+                            <div className="text-sm text-[#7a879d]">{selectedHiveIds.length} hive(s) selected</div>
                         </div>
                         {routePath.length > 0 ? (
-                            <div className="mt-4 rounded-xl border border-[#dfe6f3] bg-[#f8fbff] p-3 sm:mt-5 sm:p-4">
+                            <div className="mt-5 rounded-[22px] border border-[#dfe6f3] bg-[#f8fbff] p-4">
                                 <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#5577ac]"><CheckCircle2 className="h-4 w-4" />Route summary</div>
-                                <div className="space-y-1.5 sm:space-y-2">
+                                <div className="space-y-2">
                                     {routePath.map((point, index) => (
                                         <div key={`${point.id}-${index}`} className="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-sm text-[#20304d]">
                                             <span>{index + 1}. {point.name}</span>
@@ -680,15 +600,15 @@ const FlightMapView: React.FC = () => {
                 </div>
             </section>
 
-            <section className={cn(glass.section, 'p-4 md:p-6')}>
+            <section className={cn(card, 'p-5 md:p-6')}>
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <h2 className="text-lg font-bold tracking-tight text-[#1A1A1A]">All apiaries map</h2>
-                    <p className="text-sm text-[#1A1A1A]/55">All locations from &quot;My locations&quot;</p>
+                    <h2 className="text-4xl font-bold tracking-tight text-[#142645]">All apiaries map</h2>
+                    <p className="text-sm text-[#7a879d]">All locations from &quot;My locations&quot;</p>
                 </div>
-                <div className="mt-5 overflow-hidden rounded-xl border border-[#d9e5f4]">
-                    <div className="h-[260px] sm:h-[320px] md:h-[360px]">
+                <div className="mt-6 overflow-hidden rounded-[24px] border border-[#d9e5f4]">
+                    <div className="h-[360px]">
                         <MapContainer center={allApiaries.length > 0 ? [Number(allApiaries[0].latitude), Number(allApiaries[0].longitude)] : mapCenter} zoom={6} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
-                            <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; OpenStreetMap contributors &copy; CARTO' />
+                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
                             <FitApiaries points={allApiaries} />
                             {allApiaries.map((apiary: any) => (
                                 <React.Fragment key={apiary.id}>
@@ -702,8 +622,8 @@ const FlightMapView: React.FC = () => {
                     </div>
                 </div>
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <Button variant="outline" onClick={() => setShowAllApiaryRadius((value) => !value)} className={cn(glass.btnSecondary, 'h-11 rounded-xl px-5')}>Draw effective flight radius for all apiaries</Button>
-                    <div className="text-sm text-[#1A1A1A]/55">If you do not see any apiary on the map, make sure &quot;My locations&quot; has a location assigned.</div>
+                    <Button variant="outline" onClick={() => setShowAllApiaryRadius((value) => !value)} className="rounded-full border-[#d1b07a] bg-white px-6 py-6 text-base font-medium text-[#b96d00] hover:bg-[#fff5e5]">Draw effective flight radius for all apiaries</Button>
+                    <div className="text-sm text-[#7a879d]">If you do not see any apiary on the map, make sure &quot;My locations&quot; has a location assigned.</div>
                 </div>
             </section>
         </motion.div>

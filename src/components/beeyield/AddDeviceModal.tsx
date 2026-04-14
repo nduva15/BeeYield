@@ -16,20 +16,9 @@ interface AddDeviceModalProps {
     apiaries: Apiary[];
     hives: Hive[];
     device?: IoTDevice | null;
-    defaultApiaryId?: string;
-    defaultHiveId?: string;
 }
 
-const AddDeviceModal: React.FC<AddDeviceModalProps> = ({
-    open,
-    onOpenChange,
-    onSubmit,
-    apiaries,
-    hives,
-    device,
-    defaultApiaryId,
-    defaultHiveId,
-}) => {
+const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onSubmit, apiaries, hives, device }) => {
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>("");
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>("");
     const [deviceCode, setDeviceCode] = React.useState("");
@@ -71,18 +60,11 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({
             return;
         }
         resetForm();
-        setSelectedApiaryId(defaultApiaryId || '');
-        setSelectedHiveId(defaultHiveId || '');
-    }, [defaultApiaryId, defaultHiveId, device, open, resetForm]);
+    }, [device, open, resetForm]);
 
     React.useEffect(() => {
-        if (defaultHiveId && hives.some((hive) => hive.id === defaultHiveId && hive.apiary_id === selectedApiaryId)) {
-            setSelectedHiveId(defaultHiveId);
-            return;
-        }
-
         setSelectedHiveId("");
-    }, [defaultHiveId, hives, selectedApiaryId]);
+    }, [selectedApiaryId]);
 
     const handleOpenChange = (nextOpen: boolean) => {
         if (!nextOpen && !isSubmitting) {

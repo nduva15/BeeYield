@@ -31,7 +31,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { useSettings } from '@/contexts/SettingsContext';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
-import { getBeeYieldDashboardTarget, getBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
@@ -165,29 +164,13 @@ const BeeYieldDashboard: React.FC = () => {
         const params = new URLSearchParams(window.location.search);
         const tab = params.get('tab');
         const message = params.get('message');
-        const action = params.get('action');
         if (tab) {
             setActiveTab(tab);
-            setViewParams({ message: message || undefined, action: action || undefined });
             if (message) {
                 setAiInitialMessage(message);
             }
         }
     }, []);
-
-    React.useEffect(() => {
-        if (authLoading || loading || !beeyieldUser) return;
-
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('action')) return;
-
-        const pending = getBeeYieldPendingOnboarding(beeyieldUser?.email);
-        if (!pending) return;
-
-        const target = getBeeYieldDashboardTarget(pending.step);
-        setActiveTab(target.tab);
-        setViewParams({ action: target.action });
-    }, [authLoading, loading, beeyieldUser]);
 
     // Derived Stats
     const totalDevices = devices.length;
@@ -435,9 +418,9 @@ const BeeYieldDashboard: React.FC = () => {
                 return <YardOperations onTabChange={handleTabChange} />;
 
             case 'places':
-                return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} />;
+                return <MyPlacesView onTabChange={handleTabChange} />;
             case 'beeyield':
-                return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} />;
+                return <BeeYieldHivesView onTabChange={handleTabChange} />;
             case 'inspections':
                 return <InspectionsView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'harvests':
@@ -472,7 +455,7 @@ const BeeYieldDashboard: React.FC = () => {
                 );
             }
             case 'devices':
-                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} initialParams={viewParams} />;
+                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
             case 'usb':
                 return <USBView onTabChange={handleTabChange} />;
             case 'notes':

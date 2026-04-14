@@ -20,7 +20,6 @@ import { toast } from 'sonner';
 import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
 import { useSelectedApiary } from '@/hooks/useSelectedApiary';
 import WeatherTelemetryPanel from './WeatherTelemetryPanel';
-import { clearBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
 
 interface MyDevicesViewProps {
     devices: IoTDevice[];
@@ -28,10 +27,9 @@ interface MyDevicesViewProps {
     apiaries: Apiary[];
     hives: Hive[];
     onTabChange: (tab: string, message?: string, action?: string) => void;
-    initialParams?: { message?: string; action?: string } | null;
 }
 
-const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, readings, apiaries, hives, onTabChange, initialParams }) => {
+const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, readings, apiaries, hives, onTabChange }) => {
     const queryClient = useQueryClient();
     const [localDevices, setLocalDevices] = React.useState<IoTDevice[]>(initialDevices);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -40,25 +38,11 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const [searchTerm, setSearchTerm] = React.useState('');
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('all');
     const [sharedApiaryId, setSharedApiaryId] = useSelectedApiary(apiaries[0]?.id);
-    const [onboardingDefaults, setOnboardingDefaults] = React.useState<{ apiaryId?: string; hiveId?: string }>({});
 
     React.useEffect(() => {
         setLocalDevices(initialDevices);
         localStorage.removeItem('beeyield_devices_cache_v1');
     }, [initialDevices]);
-
-    React.useEffect(() => {
-        const action = initialParams?.action || '';
-        if (!action.startsWith('onboarding:add-device')) return;
-
-        const [, , apiaryId = '', hiveId = ''] = action.split(':');
-        setEditingDevice(null);
-        setOnboardingDefaults({
-            apiaryId: apiaryId || undefined,
-            hiveId: hiveId || undefined,
-        });
-        setIsAddModalOpen(true);
-    }, [initialParams?.action]);
 
     const commitDevices = React.useCallback((nextDevices: IoTDevice[]) => {
         setLocalDevices(nextDevices);
@@ -87,9 +71,6 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
 
             const nextDevices = [data, ...localDevices.filter((device) => device.id !== data.id)];
             commitDevices(nextDevices);
-            if ((initialParams?.action || '').startsWith('onboarding:add-device')) {
-                clearBeeYieldPendingOnboarding();
-            }
             return data;
         } finally {
             setMutatingDeviceId(null);
@@ -393,8 +374,6 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 apiaries={apiaries}
                 hives={hives}
                 device={editingDevice}
-                defaultApiaryId={onboardingDefaults.apiaryId}
-                defaultHiveId={onboardingDefaults.hiveId}
             />
 
             <style>{`

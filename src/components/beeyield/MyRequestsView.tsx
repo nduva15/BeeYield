@@ -136,12 +136,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     );
 
     const getHiveName = React.useCallback(
-        (hiveId?: string) =>
-            (availableHives.find((hive) => hive.id === hiveId) as any)?.name ||
-            availableHives.find((hive) => hive.id === hiveId)?.hive_code ||
-            (hives.find((hive) => hive.id === hiveId) as any)?.name ||
-            hives.find((hive) => hive.id === hiveId)?.hive_code ||
-            'No hive linked',
+        (hiveId?: string) => availableHives.find((hive) => hive.id === hiveId)?.name || hives.find((hive) => hive.id === hiveId)?.name || 'No hive linked',
         [availableHives, hives]
     );
 
@@ -197,7 +192,6 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                 priority: form.priority,
                 apiary_id: form.apiary_id || undefined,
                 hive_id: form.hive_id || undefined,
-                status: form.status,
             });
             if (response.error || !response.data) return;
             setSelectedRequestId(response.data.id);
@@ -519,7 +513,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                 <SelectContent>
                                     <SelectItem value="none">No hive</SelectItem>
                                     {availableHives.map((hive) => (
-                                        <SelectItem key={hive.id} value={hive.id}>{(hive as any).name || hive.hive_code || hive.id}</SelectItem>
+                                        <SelectItem key={hive.id} value={hive.id}>{hive.name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>

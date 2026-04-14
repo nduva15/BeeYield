@@ -5,7 +5,7 @@ import json
 
 logger = logging.getLogger(__name__)
 
-# Defensive import: Rust engine is optional — backend works without it
+# Defensive import: Rust engine is optional - backend works without it
 try:
     from honey_rust import ShopEngine, MpesaEngine, InvoicingEngine, calc_yield as _rust_calc
     engine = ShopEngine(500000)
@@ -20,7 +20,7 @@ except ImportError:
     mpesa = None
     invoicer = None
     _RUST_SHOP_AVAILABLE = False
-    logger.warning("Oxidized Shop Engine: OFFLINE — run 'maturin develop' inside backend/beeyield_core")
+    logger.warning("Oxidized Shop Engine: OFFLINE - run 'maturin develop' inside backend/beeyield_core")
 
 async def create_order(order_in: Any, user_id: Optional[str] = None, token: Optional[str] = None) -> dict:
     """
@@ -33,7 +33,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
 
     id_key = getattr(order_in, 'idempotency_key', None)
     
-    # 1. Idempotent Recovery — check for existing order
+    # 1. Idempotent Recovery - check for existing order
     if id_key:
         existing = await db_select("orders", filters={"idempotency_key": id_key}, token=token)
         if existing:
@@ -100,7 +100,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         
         try:
             items_list = list(map(lambda x: x.dict(), order_in.items))
-            # 4a. Base Items Total — Python validation (Rust engine doesn't have this method)
+            # 4a. Base items total - Python validation (Rust engine doesn't have this method)
             subtotal = 0.0
             for item_dict in items_list:
                 vid = item_dict.get("variant_id")
@@ -112,9 +112,22 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             # 4b. Coupon Logic
             discount = 0.0
             if getattr(order_in, "coupon_code", None):
-                # Simple coupon validation — extend as needed
-                logger.info(f"Coupon code received: {order_in.coupon_code}")
-                
+                coupon_result = await apply_coupon_code(order_in.coupon_code, subtotal)
+                if not coupon_result.get("valid"):
+                    return {
+                        "status": "error",
+                        "message": coupon_result.get("message", "Coupon validation failed."),
+                    }
+
+                discount = float(coupon_result.get("discount_amount", 0.0))
+                logger.info(
+                    "Coupon accepted for checkout",
+                    extra={
+                        "coupon_code": coupon_result.get("code"),
+                        "discount_amount": discount,
+                    },
+                )
+
             # 4c. Shipping Logic
             delivery_method = getattr(order_in, "delivery_method", "delivery")
             shipping = 350.0 if delivery_method == "delivery" and subtotal < 5000 else 0.0
@@ -191,7 +204,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         token=settings.SUPABASE_SERVICE_ROLE_KEY,
     )
 
-    # 7. Financial Core — Payment Trigger
+    # 7. Financial Core - Payment Trigger
     payment_info = {}
 
     if is_bypass:
@@ -202,21 +215,22 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             phone = "254" + phone[1:]
         elif not phone.startswith("254"):
             phone = "254" + phone
-        
+
         if not mpesa:
             payment_info = {"success": False, "error": "M-Pesa engine not available (Rust core offline)"}
         else:
             try:
                 stk_res = mpesa.initiate_stk_push(phone, int(order_in.total_kes), order_number)
                 payment_info = stk_res
-                
+
                 checkout_id = stk_res.get("CheckoutRequestID")
                 if checkout_id and id_key:
-                    await db_update("billing_ledger", 
+                    await db_update(
+                        "billing_ledger",
                         {
                             "checkout_request_id": checkout_id,
                             "metadata": {"checkout_request_id": checkout_id, "order_id": order_id}
-                        }, 
+                        },
                         {"idempotency_key": id_key},
                         token=settings.SUPABASE_SERVICE_ROLE_KEY
                     )
@@ -229,9 +243,10 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
         payment_info = payment.init_stripe_payment(order_in.total_kes)
 
     return {
-        "status": "success", 
-        "order_id": order_id, 
+        "status": "success",
+        "order_id": order_id,
         "order_number": order_number,
+        "message": "Order placed successfully.",
         "payment_info": payment_info
     }
 

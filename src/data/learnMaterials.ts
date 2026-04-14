@@ -6,6 +6,7 @@ export interface LearnMaterial {
   formatLabel: string;
   teaser: string;
   fileName: string;
+  pdfPath: string;
 }
 
 export const LEARN_MATERIALS: LearnMaterial[] = [
@@ -17,6 +18,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     formatLabel: "12+ page PDF handbook",
     teaser: "Start with the right site, the right box, and a routine your bees can actually thrive in.",
     fileName: "beeyield-beekeeping-starter-guide.pdf",
+    pdfPath: "/learn-pdfs/beeyield-beekeeping-starter-guide.pdf",
   },
   {
     productId: "edu-2",
@@ -26,6 +28,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     formatLabel: "12+ page PDF handbook",
     teaser: "Move from hive counts to measurable pollination power with a frames-per-acre operating model.",
     fileName: "beeyield-precision-pollination-handbook.pdf",
+    pdfPath: "/learn-pdfs/beeyield-precision-pollination-handbook.pdf",
   },
   {
     productId: "edu-3",
@@ -35,6 +38,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     formatLabel: "12+ page PDF workbook",
     teaser: "Use the course alongside a field-ready workbook that keeps queen rearing disciplined and repeatable.",
     fileName: "beeyield-queen-rearing-masterclass-workbook.pdf",
+    pdfPath: "/learn-pdfs/beeyield-queen-rearing-masterclass-workbook.pdf",
   },
   {
     productId: "edu-4",
@@ -44,6 +48,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     formatLabel: "12+ page PDF manual",
     teaser: "Protect flavour, enzymes, and shelf life from the moment supers leave the yard.",
     fileName: "beeyield-honey-processing-manual.pdf",
+    pdfPath: "/learn-pdfs/beeyield-honey-processing-manual.pdf",
   },
   {
     productId: "edu-5",
@@ -53,6 +58,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     formatLabel: "12+ page PDF handbook",
     teaser: "Learn what each sensor means, what a healthy signal looks like, and when to walk to the hive.",
     fileName: "beeyield-hive-monitoring-course-handbook.pdf",
+    pdfPath: "/learn-pdfs/beeyield-hive-monitoring-course-handbook.pdf",
   },
   {
     productId: "edu-6",
@@ -62,6 +68,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     formatLabel: "12+ page PDF field guide",
     teaser: "Catch the signal early, sample properly, and respond with an integrated management plan.",
     fileName: "beeyield-disease-and-pest-management.pdf",
+    pdfPath: "/learn-pdfs/beeyield-disease-and-pest-management.pdf",
   },
   {
     productId: "edu-7",
@@ -71,6 +78,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     formatLabel: "12+ page PDF playbook",
     teaser: "Turn beekeeping into a disciplined enterprise with better numbers, packaging, and market timing.",
     fileName: "beeyield-business-of-beekeeping.pdf",
+    pdfPath: "/learn-pdfs/beeyield-business-of-beekeeping.pdf",
   },
   {
     productId: "edu-8",
@@ -80,6 +88,7 @@ export const LEARN_MATERIALS: LearnMaterial[] = [
     formatLabel: "12+ page PDF roadmap",
     teaser: "Use the full library as a system, not a stack of disconnected downloads.",
     fileName: "beeyield-complete-beekeeper-bundle-roadmap.pdf",
+    pdfPath: "/learn-pdfs/beeyield-complete-beekeeper-bundle-roadmap.pdf",
   },
 ];
 
