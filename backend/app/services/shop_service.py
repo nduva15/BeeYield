@@ -240,7 +240,15 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
 
     elif order_in.payment_method == "card":
         from app.services import payment
-        payment_info = payment.init_stripe_payment(order_in.total_kes)
+        payment_info = payment.init_stripe_payment(
+            order_in.total_kes,
+            metadata={
+                "order_id": order_id,
+                "order_number": order_number,
+                "user_id": user_id,
+                "payment_method_reference": getattr(order_in, "payment_method_id", None),
+            },
+        )
 
     return {
         "status": "success",

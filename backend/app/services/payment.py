@@ -1,3 +1,5 @@
+from typing import Any, Optional
+
 from app.core.config import settings
 import stripe
 
@@ -33,17 +35,30 @@ def init_mpesa_payment(phone_number: str, amount: float, reference: str):
         print(f"Oxidized M-Pesa Error: {e}")
         return {"error": str(e), "status": "failed", "success": False}
 
-def init_stripe_payment(amount: float, currency: str = "kes"):
+def init_stripe_payment(
+    amount: float,
+    currency: str = "kes",
+    metadata: Optional[dict[str, Any]] = None,
+):
     """
     Create Stripe PaymentIntent.
     """
     stripe.api_key = settings.STRIPE_SECRET_KEY
     try:
-        intent = stripe.PaymentIntent.create(
-            amount=int(amount * 100), # Stripe uses cents
-            currency=currency,
-        )
-        return {"client_secret": intent.client_secret}
+        intent_payload: dict[str, Any] = {
+            "amount": int(amount * 100),  # Stripe uses cents
+            "currency": currency,
+        }
+
+        if metadata:
+            intent_payload["metadata"] = {str(key): str(value) for key, value in metadata.items() if value is not None}
+
+        intent = stripe.PaymentIntent.create(**intent_payload)
+        return {
+            "client_secret": intent.client_secret,
+            "payment_intent_id": intent.id,
+            "status": intent.status,
+        }
     except Exception as e:
         print(f"Stripe Error: {e}")
         return {"error": str(e)}

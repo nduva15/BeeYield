@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
 import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
 import { StripeCardForm } from '@/components/payments/StripeCardForm';
-import { initializeCheckout, CheckoutOrder, downloadInvoice, createStripePaymentIntent } from '@/services/shopService';
+import { initializeCheckout, CheckoutOrder, validateCoupon } from '@/services/shopService';
 import { adminService } from '@/services/adminService';
 import {
     ShoppingCart, Truck, MapPin, Tag, Minus, Plus, X, ArrowRight,
@@ -60,16 +60,15 @@ const Checkout = () => {
     const [orderId, setOrderId] = useState('');
     const [orderTraceabilityBatches, setOrderTraceabilityBatches] = useState<string[]>([]);
     const [orderedItems, setOrderedItems] = useState<any[]>([]);
-    const [orderedTotals, setOrderedTotals] = useState({ subtotal: 0, tax: 0, delivery: 0, total: 0 });
+    const [orderedTotals, setOrderedTotals] = useState({ subtotal: 0, discount: 0, delivery: 0, total: 0 });
+    const [orderPaymentStatus, setOrderPaymentStatus] = useState<'confirmed' | 'pending' | 'action_required'>('pending');
+    const [orderPaymentTitle, setOrderPaymentTitle] = useState('Payment pending');
+    const [orderPaymentMessage, setOrderPaymentMessage] = useState('Your order is created and waiting for payment confirmation.');
 
     // Coupon state
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
     const [couponLoading, setCouponLoading] = useState(false);
-
-    // Tip state
-    const [selectedTip, setSelectedTip] = useState<number | null>(null);
-    const [customTipPercent, setCustomTipPercent] = useState('');
 
     // Payment details
     const [paymentDetails, setPaymentDetails] = useState({
@@ -135,12 +134,9 @@ const Checkout = () => {
     // Pricing calculations
     const subtotal = getTotalPrice();
     const deliveryCost = deliveryMethod === 'delivery' ? (subtotal >= 5000 ? 0 : 350) : 0;
-    const tipAmount = selectedTip || (customTipPercent ? (subtotal * parseFloat(customTipPercent) / 100) : 0);
-    const serviceFee = Math.round(subtotal * 0.025); // 2.5% service fee
-    const taxAmount = Math.round(subtotal * 0.16); // 16% VAT
     const couponDiscount = appliedCoupon ? Math.round(subtotal * appliedCoupon.discount / 100) : 0;
     const isBypassActive = (shippingDetails.phone === '0742004187' || paymentDetails.mpesaNumber === '0742004187');
-    const totalPayable = isBypassActive ? 0 : (subtotal + deliveryCost + tipAmount + serviceFee + taxAmount - couponDiscount);
+    const totalPayable = isBypassActive ? 0 : Math.max(0, subtotal + deliveryCost - couponDiscount);
 
     const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
@@ -151,12 +147,19 @@ const Checkout = () => {
         }
         setCouponLoading(true);
         try {
-            // In production, call backend API
-            // For now, since user said "delete all mock data", we'll just try to fetch it if API exists
-            // or return error if not found.
-            toast.error('Coupon system currently unavailable');
+            const result = await validateCoupon(couponCode, subtotal);
+            if (!result.valid) {
+                toast.error(result.message || 'Invalid coupon code');
+                return;
+            }
+
+            setAppliedCoupon({
+                code: result.code,
+                discount: result.discount_percent,
+            });
+            toast.success(result.message || 'Coupon applied');
         } catch (error) {
-            toast.error('Invalid coupon code');
+            toast.error('Coupon validation failed');
         } finally {
             setCouponLoading(false);
         }
@@ -225,12 +228,14 @@ const Checkout = () => {
                 },
                 payment_method: paymentMethod,
                 payment_method_id: paymentMethod === 'card' ? (stripePaymentMethodId || undefined) : undefined,
+                delivery_method: deliveryMethod,
                 items: items.map(item => ({
                     product_id: item.productId.toString(),
                     variant_id: item.variantId,
                     quantity: item.quantity
                 })),
                 total_kes: totalPayable,
+                coupon_code: appliedCoupon?.code,
                 notes: shippingDetails.notes,
                 idempotency_key: (window as any)._checkoutId || crypto.randomUUID(),
             };
@@ -239,20 +244,58 @@ const Checkout = () => {
             (window as any)._checkoutId = orderData.idempotency_key;
 
             const response = await initializeCheckout(orderData, session?.access_token);
+            const paymentInfo = (response.payment_info ?? {}) as Record<string, any>;
+
+            if (paymentInfo.error || paymentInfo.success === false) {
+                throw new Error(paymentInfo.error || 'Payment initialization failed. Please try again.');
+            }
 
             // Use the actual UUID for functional calls and Pretty Number for display
             const orderId = response.order_id;
             const orderNum = response.order_number || `BY-${Date.now().toString(36).toUpperCase()}`;
+            const mpesaPromptSent = Boolean(paymentInfo.CheckoutRequestID || paymentInfo.ResponseCode === '0');
+            const cardIntentCreated = Boolean(paymentInfo.client_secret || paymentInfo.payment_intent_id);
+
+            let nextPaymentStatus: 'confirmed' | 'pending' | 'action_required' = isBypassActive ? 'confirmed' : 'pending';
+            let nextPaymentTitle = isBypassActive ? 'Order confirmed' : 'Payment pending';
+            let nextPaymentMessage = isBypassActive
+                ? 'Bypass mode confirmed the order immediately.'
+                : 'Your order is waiting for payment confirmation.';
+
+            if (!isBypassActive && paymentMethod === 'mpesa') {
+                nextPaymentStatus = mpesaPromptSent ? 'pending' : 'pending';
+                nextPaymentTitle = mpesaPromptSent ? 'M-Pesa prompt sent' : 'M-Pesa initiation pending';
+                nextPaymentMessage = mpesaPromptSent
+                    ? `Complete the STK push on ${shippingDetails.phone || paymentDetails.mpesaNumber} to release fulfillment.`
+                    : 'We created the order, but the payment prompt has not been confirmed yet.';
+            }
+
+            if (!isBypassActive && paymentMethod === 'card') {
+                nextPaymentStatus = cardIntentCreated ? 'action_required' : 'pending';
+                nextPaymentTitle = cardIntentCreated ? 'Card confirmation required' : 'Card payment pending';
+                nextPaymentMessage = cardIntentCreated
+                    ? 'The payment intent is ready. Complete secure card confirmation before fulfillment starts.'
+                    : 'We created the order, but the card payment is still waiting for confirmation.';
+            }
+
+            if (paymentInfo.status === 'succeeded' || paymentInfo.status === 'completed') {
+                nextPaymentStatus = 'confirmed';
+                nextPaymentTitle = 'Payment confirmed';
+                nextPaymentMessage = `Payment confirmed via ${paymentMethod.toUpperCase()}. Fulfillment can proceed.`;
+            }
 
             setOrderNumber(orderNum);
             setOrderId(orderId);
+            setOrderPaymentStatus(nextPaymentStatus);
+            setOrderPaymentTitle(nextPaymentTitle);
+            setOrderPaymentMessage(nextPaymentMessage);
             (window as any)._lastOrderId = orderId;
 
             // Capture current cart state for receipt
             setOrderedItems([...items]);
             setOrderedTotals({
                 subtotal,
-                tax: taxAmount,
+                discount: couponDiscount,
                 delivery: deliveryCost,
                 total: totalPayable
             });
@@ -269,29 +312,38 @@ const Checkout = () => {
                 order_number: orderNum,
                 payment_method: paymentMethod,
                 amount_kes: totalPayable,
-                status: 'completed',
+                status: nextPaymentStatus === 'confirmed' ? 'completed' : nextPaymentStatus,
                 customer_email: shippingDetails.email
             }).catch(() => { });
 
             // Log activity
             adminService.logActivity({
                 activity_type: 'payment',
-                action: 'created',
+                action: nextPaymentStatus === 'confirmed' ? 'completed' : 'initiated',
                 entity_type: 'order',
                 entity_reference: orderNum,
                 user_email: shippingDetails.email,
-                metadata: { total: totalPayable, items_count: items.length }
+                metadata: { total: totalPayable, items_count: items.length, payment_status: nextPaymentStatus }
             }).catch(() => { });
 
-            // Simulate payment processing flow
-            await new Promise(r => setTimeout(r, 2000));
+            if (nextPaymentStatus === 'confirmed') {
+                trackConversion('purchase', totalPayable, 'KES');
+                trackEvent('order_completed', { order_number: orderNum, items_count: items.length });
+            } else {
+                trackEvent('order_created', { order_number: orderNum, items_count: items.length, payment_status: nextPaymentStatus });
+            }
 
-            // Track dynamic conversion
-            trackConversion('purchase', totalPayable, 'KES');
-            trackEvent('order_completed', { order_number: orderNum, items_count: items.length });
-
+            clearCart();
             setCurrentStep('shipment');
-            toast.success(isBypassActive ? 'Bypass Active: Order confirmed!' : 'Payment successful!');
+            toast.success(
+                isBypassActive
+                    ? 'Order confirmed.'
+                    : nextPaymentStatus === 'confirmed'
+                        ? 'Payment confirmed.'
+                        : nextPaymentStatus === 'action_required'
+                            ? 'Order created. Complete card confirmation to finalize payment.'
+                            : 'Order created. Complete the M-Pesa prompt to finalize payment.'
+            );
         } catch (error: any) {
             console.error('Checkout error:', error);
             toast.error(error.message || 'Payment failed. Please try again.');
@@ -463,8 +515,8 @@ const Checkout = () => {
                                         <span className="font-bold">{formatPrice(orderedTotals.subtotal)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Tax (VAT 16%)</span>
-                                        <span className="font-bold">{formatPrice(orderedTotals.tax)}</span>
+                                        <span className="text-muted-foreground">Discount</span>
+                                        <span className="font-bold">{orderedTotals.discount > 0 ? `-${formatPrice(orderedTotals.discount)}` : formatPrice(0)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-muted-foreground">Delivery</span>
@@ -472,7 +524,7 @@ const Checkout = () => {
                                     </div>
                                     <Separator />
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xl font-black">Total Paid</span>
+                                        <span className="text-xl font-black">{orderPaymentStatus === 'confirmed' ? 'Total Paid' : 'Order Total'}</span>
                                         <span className="text-2xl font-black text-primary">{formatPrice(orderedTotals.total)}</span>
                                     </div>
                                 </div>
@@ -613,7 +665,7 @@ const Checkout = () => {
                     {currentStep === 'payment-info' && 'Payment Information'}
                     {currentStep === 'delivery' && 'Delivery Details'}
                     {currentStep === 'payment' && 'Confirm & Pay'}
-                    {currentStep === 'shipment' && 'Your Shipment'}
+                    {currentStep === 'shipment' && 'Order Status'}
                     {currentStep === 'receipt' && 'Order Receipt'}
                 </h1>
 
@@ -1100,41 +1152,55 @@ const Checkout = () => {
                             <Card className="border border-border rounded-2xl p-8 space-y-8">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <h2 className="text-2xl font-black">Shipment Status</h2>
+                                        <h2 className="text-2xl font-black">Payment & Fulfillment</h2>
                                         <p className="text-muted-foreground">Order ID: {orderNumber}</p>
                                     </div>
-                                    <div className="w-16 h-16 rounded-full bg-[#1B9157] flex items-center justify-center">
-                                        <Package className="w-8 h-8 text-[#1B9157]" />
+                                    <div className={`w-16 h-16 rounded-full flex items-center justify-center ${orderPaymentStatus === 'confirmed' ? 'bg-[#1B9157]/10' : 'bg-amber-100'}`}>
+                                        <Package className={`w-8 h-8 ${orderPaymentStatus === 'confirmed' ? 'text-[#1B9157]' : 'text-amber-700'}`} />
                                     </div>
                                 </div>
+
+                                <Badge className={orderPaymentStatus === 'confirmed' ? 'w-fit bg-[#1B9157] text-white' : 'w-fit bg-amber-100 text-amber-900'}>
+                                    {orderPaymentStatus === 'confirmed' ? 'Payment confirmed' : orderPaymentStatus === 'action_required' ? 'Action required' : 'Payment pending'}
+                                </Badge>
 
                                 <div className="relative pl-8 space-y-12">
                                     <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-muted"></div>
 
                                     <div className="relative">
-                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-green-600 border-4 border-background"></div>
-                                        <p className="font-bold">Payment Confirmed</p>
-                                        <p className="text-sm text-muted-foreground">Successfully paid via {paymentMethod.toUpperCase()}</p>
+                                        <div className={`absolute -left-[29px] w-6 h-6 rounded-full border-4 border-background ${orderPaymentStatus === 'confirmed' ? 'bg-green-600' : 'bg-amber-500'}`}></div>
+                                        <p className="font-bold">{orderPaymentTitle}</p>
+                                        <p className="text-sm text-muted-foreground">{orderPaymentMessage}</p>
                                     </div>
 
                                     <div className="relative">
-                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-primary border-4 border-background"></div>
-                                        <p className="font-bold text-primary">Preparing Shipment</p>
-                                        <p className="text-sm text-muted-foreground">Our team is packing your items with care</p>
+                                        <div className={`absolute -left-[29px] w-6 h-6 rounded-full border-4 border-background ${orderPaymentStatus === 'confirmed' ? 'bg-primary' : 'bg-muted'}`}></div>
+                                        <p className={`font-bold ${orderPaymentStatus === 'confirmed' ? 'text-primary' : 'text-muted-foreground'}`}>
+                                            {orderPaymentStatus === 'confirmed' ? 'Preparing shipment' : 'Waiting for payment clearance'}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {orderPaymentStatus === 'confirmed'
+                                                ? 'Our team is packing your items with care.'
+                                                : 'Fulfillment starts automatically after payment confirmation.'}
+                                        </p>
                                     </div>
 
-                                    <div className="relative opacity-50">
+                                    <div className={`relative ${orderPaymentStatus === 'confirmed' ? 'opacity-50' : 'opacity-70'}`}>
                                         <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-muted border-4 border-background"></div>
-                                        <p className="font-bold">Out for Delivery</p>
-                                        <p className="text-sm text-muted-foreground">Coming to {shippingDetails.city}</p>
+                                        <p className="font-bold">{orderPaymentStatus === 'confirmed' ? 'Out for delivery' : 'Shipment unlocks after payment'}</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {orderPaymentStatus === 'confirmed'
+                                                ? `Coming to ${shippingDetails.city}`
+                                                : 'We will update this timeline as soon as payment is settled.'}
+                                        </p>
                                     </div>
                                 </div>
 
                                 <Button
-                                    onClick={() => { clearCart(); setCurrentStep('receipt'); }}
+                                    onClick={() => setCurrentStep('receipt')}
                                     className="w-full rounded-full h-12 font-bold text-lg"
                                 >
-                                    Get Receipt Instantly
+                                    View Order Receipt
                                     <ChevronRight className="ml-2 w-5 h-5" />
                                 </Button>
                             </Card>
@@ -1242,48 +1308,14 @@ const Checkout = () => {
 
                                 <Separator />
 
-                                {/* Tip Section */}
-                                <div className="space-y-3">
-                                    <Label className="text-sm font-semibold">Tip</Label>
-                                    <div className="flex gap-2">
-                                        {[200, 400, 700].map(amount => (
-                                            <button
-                                                key={amount}
-                                                onClick={() => { setSelectedTip(amount); setCustomTipPercent(''); }}
-                                                className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${selectedTip === amount ? 'bg-primary text-[#1A1A1A] border-primary' : 'border-border hover:border-primary'}`}
-                                            >
-                                                {formatPrice(amount)}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Input
-                                            placeholder="%"
-                                            value={customTipPercent}
-                                            onChange={e => { setCustomTipPercent(e.target.value); setSelectedTip(null); }}
-                                            className="w-16 text-center"
-                                        />
-                                        <Input
-                                            placeholder="KES"
-                                            value={tipAmount > 0 ? tipAmount.toString() : ''}
-                                            readOnly
-                                            className="flex-1"
-                                        />
-                                        <span className="text-sm text-muted-foreground">Total: {formatPrice(tipAmount)}</span>
-                                    </div>
-                                </div>
-
-                                <Separator />
-
-                                {/* Fees Breakdown */}
                                 <div className="space-y-2 text-sm">
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Service Fee</span>
-                                        <span>{formatPrice(serviceFee)}</span>
+                                        <span className="text-muted-foreground">Subtotal</span>
+                                        <span>{formatPrice(subtotal)}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Tax (VAT 16%)</span>
-                                        <span>{formatPrice(taxAmount)}</span>
+                                        <span className="text-muted-foreground">Delivery</span>
+                                        <span>{deliveryCost === 0 ? 'Free' : formatPrice(deliveryCost)}</span>
                                     </div>
                                     {appliedCoupon && (
                                         <div className="flex justify-between text-[#1B9157]">
@@ -1291,6 +1323,12 @@ const Checkout = () => {
                                             <span>-{formatPrice(couponDiscount)}</span>
                                         </div>
                                     )}
+                                </div>
+
+                                <Separator />
+
+                                <div className="rounded-2xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+                                    Totals are validated on the backend before payment is initiated.
                                 </div>
 
                                 <Separator />
