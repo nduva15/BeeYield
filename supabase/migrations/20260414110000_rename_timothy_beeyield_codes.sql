@@ -33,7 +33,7 @@ BEGIN
     FROM public.apiaries
     WHERE user_id = v_user_id
       AND name IN ('Kibwezi Main Apiary', 'BeeYield Apiary')
-    ORDER BY created_at NULLS FIRST, updated_at NULLS FIRST
+    ORDER BY created_at NULLS FIRST, name
     LIMIT 1;
 
     IF v_primary_apiary_id IS NULL THEN
@@ -41,7 +41,7 @@ BEGIN
         INTO v_primary_apiary_id
         FROM public.apiaries
         WHERE user_id = v_user_id
-        ORDER BY created_at NULLS FIRST, updated_at NULLS FIRST
+        ORDER BY created_at NULLS FIRST, name
         LIMIT 1;
     END IF;
 

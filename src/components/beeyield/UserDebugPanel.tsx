@@ -220,7 +220,7 @@ const UserDebugPanel: React.FC = () => {
                                         }}
                                         className="w-full bg-[#F4D03F] hover:bg-amber-600 text-[#1A1A1A] font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 tracking-wider text-[10px]"
                                     >
-                                        Claim Kibwezi Main Apiary
+                                        Claim BeeYield Apiary
                                     </Button>
                                 </div>
                             )}
