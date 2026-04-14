@@ -36,7 +36,7 @@ import {
     CheckCircle2,
     Clock,
 } from 'lucide-react';
-import { beeyieldService, Apiary, IoTDevice, SensorReading } from '@/services/beeyieldService';
+import { beeyieldService, Apiary, Hive, IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';
@@ -46,8 +46,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { jsPDF } from 'jspdf';
 import { beePollinationData } from '@/data/beePollinationData';
+import { useHives } from '@/hooks/useHives';
 
-import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle, CircleMarker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -145,6 +146,70 @@ const getCanonicalCropName = (raw: unknown) => {
     return CROP_NAME_ALIASES[key];
 };
 
+type PlacementSource = 'hive' | 'device' | 'optimized' | 'estimated';
+
+type HiveMapPlacement = {
+    hive: Hive;
+    placement: [number, number];
+    markerPosition: [number, number];
+    placementSource: PlacementSource;
+    placementLabel: string;
+    linkedDevice: IoTDevice | null;
+    optimizedPlacement: any | null;
+    clusterAdjusted: boolean;
+};
+
+const toFiniteNumber = (value: unknown) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : null;
+};
+
+const offsetCoordinateByMeters = (lat: number, lng: number, distanceMeters: number, angleDegrees: number): [number, number] => {
+    const angleRadians = (angleDegrees * Math.PI) / 180;
+    const latOffset = (distanceMeters * Math.cos(angleRadians)) / 111_320;
+    const lngDivisor = 111_320 * Math.cos((lat * Math.PI) / 180);
+    const lngOffset = lngDivisor === 0 ? 0 : (distanceMeters * Math.sin(angleRadians)) / lngDivisor;
+    return [lat + latOffset, lng + lngOffset];
+};
+
+const buildFallbackPlacement = (center: [number, number], index: number): [number, number] => {
+    const ring = Math.floor(index / 6);
+    const angle = (index * 137.5) % 360;
+    const distanceMeters = 32 + ring * 18;
+    return offsetCoordinateByMeters(center[0], center[1], distanceMeters, angle);
+};
+
+const spreadOverlappingPlacements = (placements: HiveMapPlacement[]) => {
+    const groups = new Map<string, HiveMapPlacement[]>();
+
+    placements.forEach((placement) => {
+        const key = `${placement.placement[0].toFixed(5)}:${placement.placement[1].toFixed(5)}`;
+        const group = groups.get(key);
+        if (group) {
+            group.push(placement);
+        } else {
+            groups.set(key, [placement]);
+        }
+    });
+
+    return Array.from(groups.values()).flatMap((group) => {
+        if (group.length === 1) {
+            return group.map((placement) => ({ ...placement, markerPosition: placement.placement }));
+        }
+
+        return group.map((placement, index) => ({
+            ...placement,
+            markerPosition: offsetCoordinateByMeters(
+                placement.placement[0],
+                placement.placement[1],
+                14 + Math.floor(index / 6) * 6,
+                (360 / group.length) * index,
+            ),
+            clusterAdjusted: true,
+        }));
+    });
+};
+
 const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     devices,
     readings,
@@ -170,6 +235,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     };
 
     const [selectedDeviceId, setSelectedDeviceId] = React.useState<string | null>(null);
+    const [selectedMapHiveId, setSelectedMapHiveId] = React.useState<string | null>(null);
     const [searchTerm, setSearchTerm] = React.useState('');
 
     // Calc Engine State
@@ -194,11 +260,30 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const [mapCenter, setMapCenter] = React.useState<[number, number]>([-2.42, 37.97]); // Active Sector
     const [zoom, setZoom] = React.useState(13);
 
-    const MapController = ({ center, zoom }: { center: [number, number], zoom: number }) => {
+    const MapController = ({
+        center,
+        zoom,
+        boundsPoints,
+    }: {
+        center: [number, number];
+        zoom: number;
+        boundsPoints: [number, number][];
+    }) => {
         const map = useMap();
         React.useEffect(() => {
+            if (boundsPoints.length > 1) {
+                const bounds = L.latLngBounds(boundsPoints.map(([lat, lng]) => L.latLng(lat, lng)));
+                map.fitBounds(bounds.pad(0.12), {
+                    animate: true,
+                    duration: 1.1,
+                    padding: [48, 48],
+                    maxZoom: 16,
+                });
+                return;
+            }
+
             map.flyTo(center, zoom, { duration: 1.5 });
-        }, [center, zoom, map]);
+        }, [boundsPoints, center, zoom, map]);
         return null;
     };
 
@@ -232,6 +317,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     const [selectedCrop, setSelectedCrop] = React.useState<string>('');
     const [pollinationDashboard, setPollinationDashboard] = React.useState<any | null>(null);
     const [dashboardLoading, setDashboardLoading] = React.useState(false);
+    const { data: apiaryHives = [], isLoading: apiaryHivesLoading } = useHives(selectedApiaryId || undefined);
 
     React.useEffect(() => {
         if (selectedCrop && crops.length > 0) {
@@ -275,6 +361,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     }, [selectedApiary, calcInputs.totalAcres]);
 
     const orchardGeoJSON = React.useMemo(() => polygonToGeoJSON(orchardPolygon), [orchardPolygon]);
+    const apiaryCenter = React.useMemo<[number, number]>(() => {
+        const latitude = toFiniteNumber(selectedApiary?.latitude) ?? mapCenter[0];
+        const longitude = toFiniteNumber(selectedApiary?.longitude) ?? mapCenter[1];
+        return [latitude, longitude];
+    }, [selectedApiary, mapCenter]);
 
     const fetchDeployments = async () => {
         setLoading(true);
@@ -604,11 +695,103 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         );
     }, [devices, searchTerm]);
 
+    const devicesByHiveId = React.useMemo(() => {
+        const index = new Map<string, IoTDevice>();
+        devices.forEach((device) => {
+            if (!device.hive_id || index.has(device.hive_id)) return;
+            const latitude = toFiniteNumber(device.latitude);
+            const longitude = toFiniteNumber(device.longitude);
+            if (latitude !== null && longitude !== null) {
+                index.set(device.hive_id, device);
+            }
+        });
+        return index;
+    }, [devices]);
+
+    const hiveMapPlacements = React.useMemo(() => {
+        if (!apiaryHives.length) return [];
+
+        const placements = apiaryHives.map((hive, index) => {
+            const hiveLatitude = toFiniteNumber(hive.latitude);
+            const hiveLongitude = toFiniteNumber(hive.longitude);
+            const linkedDevice = devicesByHiveId.get(hive.id) || null;
+            const deviceLatitude = toFiniteNumber(linkedDevice?.latitude);
+            const deviceLongitude = toFiniteNumber(linkedDevice?.longitude);
+            const optimizedPlacement = optimalPlacements[index] || null;
+            const optimizedLatitude = toFiniteNumber(optimizedPlacement?.lat);
+            const optimizedLongitude = toFiniteNumber(optimizedPlacement?.lng);
+
+            let placement: [number, number];
+            let placementSource: PlacementSource;
+            let placementLabel: string;
+
+            if (hiveLatitude !== null && hiveLongitude !== null) {
+                placement = [hiveLatitude, hiveLongitude];
+                placementSource = 'hive';
+                placementLabel = 'Saved hive GPS';
+            } else if (deviceLatitude !== null && deviceLongitude !== null) {
+                placement = [deviceLatitude, deviceLongitude];
+                placementSource = 'device';
+                placementLabel = 'Linked device GPS';
+            } else if (optimizedLatitude !== null && optimizedLongitude !== null) {
+                placement = [optimizedLatitude, optimizedLongitude];
+                placementSource = 'optimized';
+                placementLabel = 'Optimized precision placement';
+            } else {
+                placement = buildFallbackPlacement(apiaryCenter, index);
+                placementSource = 'estimated';
+                placementLabel = 'Estimated apiary spread';
+            }
+
+            return {
+                hive,
+                placement,
+                markerPosition: placement,
+                placementSource,
+                placementLabel,
+                linkedDevice,
+                optimizedPlacement,
+                clusterAdjusted: false,
+            };
+        });
+
+        return spreadOverlappingPlacements(placements);
+    }, [apiaryCenter, apiaryHives, devicesByHiveId, optimalPlacements]);
+
+    const selectedMapHive = React.useMemo(
+        () => hiveMapPlacements.find((placement) => placement.hive.id === selectedMapHiveId) || hiveMapPlacements[0] || null,
+        [hiveMapPlacements, selectedMapHiveId],
+    );
+
+    const mapBoundsPoints = React.useMemo<[number, number][]>(() => {
+        const orchardPoints = orchardPolygon.map((point) => [Number(point[0]), Number(point[1])] as [number, number]);
+        const optimizedPoints = optimalPlacements
+            .map((placement) => {
+                const latitude = toFiniteNumber(placement?.lat);
+                const longitude = toFiniteNumber(placement?.lng);
+                return latitude !== null && longitude !== null ? ([latitude, longitude] as [number, number]) : null;
+            })
+            .filter((point): point is [number, number] => point !== null);
+
+        return [apiaryCenter, ...orchardPoints, ...optimizedPoints, ...hiveMapPlacements.map((placement) => placement.markerPosition)];
+    }, [apiaryCenter, hiveMapPlacements, optimalPlacements, orchardPolygon]);
+
     React.useEffect(() => {
         if (filteredDevices.length > 0 && !selectedDeviceId) {
             setSelectedDeviceId(filteredDevices[0].id);
         }
     }, [filteredDevices, selectedDeviceId]);
+
+    React.useEffect(() => {
+        if (!hiveMapPlacements.length) {
+            setSelectedMapHiveId(null);
+            return;
+        }
+
+        if (!selectedMapHiveId || !hiveMapPlacements.some((placement) => placement.hive.id === selectedMapHiveId)) {
+            setSelectedMapHiveId(hiveMapPlacements[0].hive.id);
+        }
+    }, [hiveMapPlacements, selectedMapHiveId]);
 
     const selectedDevice = React.useMemo(() =>
         devices.find(d => d.id === selectedDeviceId),
@@ -1264,9 +1447,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 {zoom < 8 && <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png" opacity={0.3} />}
                                 {zoom >= 8 && <TileLayer url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" attribution="&copy; Google Maps Hybrid" />}
                                 
-                                <MapController center={mapCenter} zoom={zoom} />
+                                <MapController center={mapCenter} zoom={zoom} boundsPoints={mapBoundsPoints} />
                                 
-                                {zoom > 10 && <Polygon positions={orchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 4, fillOpacity: 0.1, dashArray: '10, 10' }} stroke={false} />}
+                                {zoom > 10 && <Polygon positions={orchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 3, fillOpacity: 0.1, dashArray: '10, 10' }} />}
                                 
                                 <Marker 
                                     position={mapCenter}
@@ -1283,13 +1466,56 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                 </Marker>
 
                                 {optimalPlacements.map((pos, idx) => (
-                                    <React.Fragment key={idx}>
-                                        <Marker position={[pos.lat, pos.lng] as any}>
-                                            <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1A1A1A]">Node #{idx+1}</p></Popup>
-                                        </Marker>
-                                        <Circle center={[pos.lat, pos.lng] as any} radius={pos.coverage_radius_km * 1000} pathOptions={{ color: '#F4D03F', weight: 1, fillOpacity: 0.1, dashArray: '5, 5' }} />
-                                    </React.Fragment>
+                                    <Circle
+                                        key={`placement-${idx}`}
+                                        center={[pos.lat, pos.lng] as any}
+                                        radius={pos.coverage_radius_km * 1000}
+                                        pathOptions={{ color: '#F4D03F', weight: 1, fillOpacity: 0.1, dashArray: '5, 5' }}
+                                    />
                                 ))}
+
+                                {hiveMapPlacements.map((placement, index) => {
+                                    const isSelected = placement.hive.id === selectedMapHive?.hive.id;
+                                    const markerStroke = isSelected ? '#1A1A1A' : placement.placementSource === 'optimized' ? '#F4D03F' : '#1B9157';
+                                    const markerFill = placement.placementSource === 'estimated' ? '#94A3B8' : placement.placementSource === 'optimized' ? '#F59E0B' : '#1B9157';
+
+                                    return (
+                                        <CircleMarker
+                                            key={placement.hive.id}
+                                            center={placement.markerPosition}
+                                            radius={isSelected ? 11 : 9}
+                                            pathOptions={{
+                                                color: markerStroke,
+                                                fillColor: markerFill,
+                                                fillOpacity: 0.92,
+                                                weight: isSelected ? 3 : 2,
+                                            }}
+                                            eventHandlers={{
+                                                click: () => setSelectedMapHiveId(placement.hive.id),
+                                            }}
+                                        >
+                                            <Popup className="custom-popup">
+                                                <div className="space-y-2 min-w-[200px]">
+                                                    <p className="text-[11px] font-black text-[#1A1A1A]">
+                                                        {placement.hive.hive_code || `Hive ${index + 1}`}
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-[#1B9157]">{placement.placementLabel}</p>
+                                                    <p className="text-[10px] text-gray-600">
+                                                        {placement.placement[0].toFixed(6)}, {placement.placement[1].toFixed(6)}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-500">
+                                                        Status: {placement.hive.status || 'Unspecified'}
+                                                    </p>
+                                                    {placement.optimizedPlacement?.score !== undefined && (
+                                                        <p className="text-[10px] text-gray-500">
+                                                            Placement score: {Math.round(Number(placement.optimizedPlacement.score) * 100)}%
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </Popup>
+                                        </CircleMarker>
+                                    );
+                                })}
                             </MapContainer>
 
                             {/* Location Manager UI Overlay */}
@@ -1328,6 +1554,73 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                         <span>Active Client Data Only</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div className="absolute bottom-8 left-8 z-[1000] w-[320px] rounded-[2rem] border border-white/50 bg-white/80 p-5 shadow-2xl backdrop-blur-3xl">
+                                <div className="flex items-start justify-between gap-3 border-b border-[#F4D03F]/15 pb-3">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#1B9157]">Precision Placement</p>
+                                        <h4 className="mt-1 text-sm font-black text-[#1A1A1A]">
+                                            {selectedMapHive?.hive.hive_code || 'No hive selected'}
+                                        </h4>
+                                    </div>
+                                    <div className="rounded-xl bg-[#1B9157]/10 px-3 py-1 text-[9px] font-black text-[#1B9157]">
+                                        {apiaryHivesLoading ? 'Syncing' : `${hiveMapPlacements.length} hives`}
+                                    </div>
+                                </div>
+
+                                {selectedMapHive ? (
+                                    <div className="mt-4 space-y-3">
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="rounded-2xl border border-[#F4D03F]/15 bg-white/70 p-3">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Placement source</p>
+                                                <p className="mt-1 text-[11px] font-black text-[#1A1A1A]">{selectedMapHive.placementLabel}</p>
+                                            </div>
+                                            <div className="rounded-2xl border border-[#F4D03F]/15 bg-white/70 p-3">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Hive status</p>
+                                                <p className="mt-1 text-[11px] font-black text-[#1A1A1A]">{selectedMapHive.hive.status || 'Unspecified'}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="rounded-2xl border border-[#F4D03F]/15 bg-white/70 p-3">
+                                            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Coordinates</p>
+                                            <p className="mt-1 text-[12px] font-black text-[#1A1A1A]">
+                                                {selectedMapHive.placement[0].toFixed(6)}, {selectedMapHive.placement[1].toFixed(6)}
+                                            </p>
+                                            {selectedMapHive.clusterAdjusted && (
+                                                <p className="mt-1 text-[9px] font-bold text-gray-500">
+                                                    Marker offset applied slightly on-map so overlapping hives remain clickable.
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="rounded-2xl border border-[#F4D03F]/15 bg-white/70 p-3">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Frames</p>
+                                                <p className="mt-1 text-[12px] font-black text-[#1A1A1A]">{selectedMapHive.hive.frame_count || calcInputs.averageFramesPerHive}</p>
+                                            </div>
+                                            <div className="rounded-2xl border border-[#F4D03F]/15 bg-white/70 p-3">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Optimized score</p>
+                                                <p className="mt-1 text-[12px] font-black text-[#1A1A1A]">
+                                                    {selectedMapHive.optimizedPlacement?.score !== undefined
+                                                        ? `${Math.round(Number(selectedMapHive.optimizedPlacement.score) * 100)}%`
+                                                        : 'N/A'}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {selectedMapHive.linkedDevice && (
+                                            <div className="rounded-2xl border border-[#F4D03F]/15 bg-white/70 p-3">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Linked device</p>
+                                                <p className="mt-1 text-[11px] font-black text-[#1A1A1A]">{selectedMapHive.linkedDevice.device_code}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <p className="mt-4 text-[11px] font-bold text-gray-500">
+                                        Select an apiary to inspect its hive placements.
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </motion.div>

@@ -121,12 +121,23 @@ export interface TraceResponse {
     batch_code: string;
     product_name: string;
     harvest_date?: string;
+    quantity_kg?: number;
+    quantity_left_for_bees_kg?: number;
+    extraction_method?: string;
+    nectar_source?: string;
+    weather_conditions?: string;
+    moisture_content_percent?: number;
     verified: boolean;
     blockchain_verified: boolean;
     verification_url: string;
     verification_status?: string;
     blockchain_status?: BlockchainStatus;
     completeness?: CompletenessSummary;
+    sustainability?: {
+        rule?: string;
+        ratio?: number;
+        status?: string;
+    };
 
     // Entities
     farmer?: Farmer;
@@ -172,9 +183,27 @@ export interface PublicTraceabilityBatch {
     harvest_date?: string;
     honey_type?: string;
     verification_status?: string;
+    blockchain_verified?: boolean;
     beekeeper_name?: string;
     farmer_name?: string;
     apiary_name?: string;
+    hive?: {
+        hive_code?: string;
+    };
+    sensor_snapshot?: {
+        avg_temp?: number;
+        avg_humidity?: number;
+    };
+    completeness?: {
+        present?: number;
+        missing?: number;
+    };
+    florage_type?: string;
+    quantity_left_for_bees_kg?: number;
+    sustainability?: {
+        ratio?: number;
+        status?: string;
+    };
     farmer?: {
         name?: string;
     };
@@ -210,9 +239,21 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
     }
 };
 
-export const getPublicTraceabilityBatches = async (limit = 12): Promise<PublicTraceabilityBatch[]> => {
+export const getPublicTraceabilityBatches = async (
+    limit = 12,
+    options?: {
+        verifiedOnly?: boolean;
+        beekeeperName?: string;
+        apiaryName?: string;
+    }
+): Promise<PublicTraceabilityBatch[]> => {
     try {
-        const response = await fetch(`${AI_API_URL}/traceability/batches?limit=${limit}`);
+        const params = new URLSearchParams({ limit: String(limit) });
+        if (options?.verifiedOnly) params.set("verified_only", "true");
+        if (options?.beekeeperName) params.set("beekeeper_name", options.beekeeperName);
+        if (options?.apiaryName) params.set("apiary_name", options.apiaryName);
+
+        const response = await fetch(`${AI_API_URL}/traceability/batches?${params.toString()}`);
         if (!response.ok) {
             throw new Error(`Connection Error: ${response.statusText}`);
         }

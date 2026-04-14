@@ -122,12 +122,19 @@ class TraceResponse(BaseModel):
     batch_code: str
     product_name: str
     harvest_date: Optional[str] = None
+    quantity_kg: Optional[float] = None
+    quantity_left_for_bees_kg: Optional[float] = None
+    extraction_method: Optional[str] = None
+    nectar_source: Optional[str] = None
+    weather_conditions: Optional[str] = None
+    moisture_content_percent: Optional[float] = None
     verified: bool
     blockchain_verified: bool
     verification_url: str
     verification_status: Optional[str] = None
     blockchain_status: Optional[dict[str, Any]] = None
     completeness: Optional[dict[str, Any]] = None
+    sustainability: Optional[dict[str, Any]] = None
     
     # Entities
     farmer: Optional[Farmer] = None

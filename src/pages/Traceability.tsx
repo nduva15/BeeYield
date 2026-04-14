@@ -67,6 +67,37 @@ const Traceability = () => {
     return date.toLocaleDateString("en-KE", { year: "numeric", month: "short", day: "numeric" });
   }, [hasValue]);
 
+  const getHarvestDate = useCallback((data: TraceResponse | null) => {
+    return data?.harvest_date || data?.timeline?.find((step) => step.title === "Harvest Day")?.date;
+  }, [getFlorage, getHarvestDate, getPromiseText, missingDataLabel]);
+
+  const getFlorage = useCallback((data: TraceResponse | null) => {
+    if (!data) return undefined;
+    if (hasValue(data.florage_type)) return String(data.florage_type);
+    if (data.apiary?.flora_types?.length) return data.apiary.flora_types.join(", ");
+    return data.nectar_source;
+  }, [hasValue]);
+
+  const getPromiseText = useCallback((data: TraceResponse | null) => {
+    if (!data) return missingDataLabel;
+
+    const harvestedKg = typeof data.quantity_kg === "number" ? data.quantity_kg : null;
+    const leftForBeesKg = typeof data.quantity_left_for_bees_kg === "number" ? data.quantity_left_for_bees_kg : null;
+
+    if (harvestedKg !== null && leftForBeesKg !== null) {
+      const total = harvestedKg + leftForBeesKg;
+      const ratio = total > 0 ? (leftForBeesKg / total) * 100 : null;
+      const ratioText = ratio !== null ? ` (${ratio.toFixed(0)}% left for bees)` : "";
+      return `${leftForBeesKg.toFixed(1)} kg kept in hive${ratioText}`;
+    }
+
+    if (typeof data.sustainability?.ratio === "number") {
+      return `${(data.sustainability.ratio * 100).toFixed(0)}% left for bees`;
+    }
+
+    return missingDataLabel;
+  }, [missingDataLabel]);
+
   const handleTrace = useCallback(async (code: string) => {
     if (!code.trim()) return;
 
@@ -164,7 +195,7 @@ const Traceability = () => {
     let active = true;
 
     const loadExampleCodes = async () => {
-      const batches = await getPublicTraceabilityBatches(24);
+      const batches = await getPublicTraceabilityBatches(60, { verifiedOnly: true });
       if (!active || batches.length === 0) return;
 
       const beeYieldBatches = batches
@@ -179,21 +210,69 @@ const Traceability = () => {
             batchCode.startsWith("BEE-") &&
             (beekeeperName.includes("timothy nduva") || apiaryName.includes("beeyield"))
           );
+        });
+
+      const scopedBatches = beeYieldBatches.length > 0 ? beeYieldBatches : batches;
+
+      const rankedCandidates = scopedBatches
+        .map((batch) => {
+          const present = typeof batch.completeness?.present === "number" ? batch.completeness.present : 0;
+          const missing = typeof batch.completeness?.missing === "number" ? batch.completeness.missing : 99;
+          const hasTelemetry = typeof batch.sensor_snapshot?.avg_temp === "number" && typeof batch.sensor_snapshot?.avg_humidity === "number";
+          const hasLinkFields = Boolean(
+            batch.apiary_name &&
+            (batch.beekeeper_name || batch.farmer_name || batch.farmer?.name) &&
+            (batch.hive?.hive_code || batch.florage_type || batch.quantity_left_for_bees_kg !== undefined)
+          );
+          const isVerified = Boolean(batch.blockchain_verified) || String(batch.verification_status || "").toLowerCase() === "verified";
+          const score =
+            (isVerified ? 1000 : 0) +
+            (hasTelemetry ? 200 : 0) +
+            (hasLinkFields ? 100 : 0) +
+            present * 10 -
+            missing * 5;
+
+          return { batch, score };
         })
-        .sort((left, right) => String(right.harvest_date || "").localeCompare(String(left.harvest_date || "")));
+        .sort((left, right) => {
+          if (right.score !== left.score) return right.score - left.score;
+          return String(right.batch.harvest_date || "").localeCompare(String(left.batch.harvest_date || ""));
+        });
 
-      const latestYear = beeYieldBatches
-        .map((batch) => Number.parseInt(String(batch.harvest_date || "").slice(0, 4), 10))
-        .find((year) => Number.isFinite(year));
+      const enriched = await Promise.all(
+        rankedCandidates.slice(0, 12).map(async ({ batch, score }) => {
+          try {
+            const trace = await traceBatch(batch.batch_code);
+            const hasRequiredFields = Boolean(
+              trace &&
+              getHarvestDate(trace) &&
+              trace.hive?.hive_code &&
+              trace.apiary?.name &&
+              trace.farmer?.name &&
+              getFlorage(trace) &&
+              getPromiseText(trace) !== missingDataLabel &&
+              typeof trace.sensor_snapshot?.avg_temp === "number" &&
+              typeof trace.sensor_snapshot?.avg_humidity === "number"
+            );
 
-      const currentBatches = latestYear
-        ? beeYieldBatches.filter((batch) => String(batch.harvest_date || "").startsWith(String(latestYear)))
-        : beeYieldBatches;
+            return {
+              code: batch.batch_code,
+              score: score + (hasRequiredFields ? 500 : 0),
+            };
+          } catch {
+            return {
+              code: batch.batch_code,
+              score,
+            };
+          }
+        })
+      );
 
       const liveCodes = Array.from(
         new Set(
-          currentBatches
-            .map((batch) => batch.batch_code)
+          enriched
+            .sort((left, right) => right.score - left.score)
+            .map((entry) => entry.code)
             .filter((code): code is string => typeof code === "string" && code.trim().length > 0)
         )
       ).slice(0, 3);
@@ -356,7 +435,7 @@ const Traceability = () => {
 
                       {(exampleCodes.length > 0) && (
                         <div className="mt-8 pt-8 border-t border-slate-100">
-                          <p className="text-xs font-black text-slate-400 mb-4">Latest verified Timothy batches</p>
+                          <p className="text-xs font-black text-slate-400 mb-4">Most complete verified BeeYield batches</p>
                           <div className="flex flex-wrap gap-2">
                             {exampleCodes.map(code => (
                               <Button
@@ -1021,7 +1100,11 @@ const Traceability = () => {
                         </div>
                         <div>
                           <p className="text-[10px] font-black text-slate-400 mb-1">Harvest Date</p>
-                          <p className="font-black text-[#1A1A1A]">{dateOrMissing(traceData?.timeline?.find(s => s.title === "Harvest Day")?.date || traceData?.extra_metadata?.harvest_window)}</p>
+                          <p className="font-black text-[#1A1A1A]">{dateOrMissing(getHarvestDate(traceData) || traceData?.extra_metadata?.harvest_window)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Hive</p>
+                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.hive?.hive_code)}</p>
                         </div>
                         <div>
                           <p className="text-[10px] font-black text-slate-400 mb-1">Apiary</p>
@@ -1032,8 +1115,8 @@ const Traceability = () => {
                           <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.location_name)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Flora</p>
-                          <p className="font-semibold text-[#1A1A1A]">{traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : missingDataLabel}</p>
+                          <p className="text-[10px] font-black text-slate-400 mb-1">Florage</p>
+                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(getFlorage(traceData))}</p>
                         </div>
                         <div>
                           <p className="text-[10px] font-black text-slate-400 mb-1">Water Source</p>
@@ -1046,6 +1129,10 @@ const Traceability = () => {
                         <div>
                           <p className="text-[10px] font-black text-slate-400 mb-1">Experience</p>
                           <p className="font-semibold text-[#1A1A1A]">{hasValue(traceData?.farmer?.experience_years) ? `${traceData?.farmer?.experience_years} years` : missingDataLabel}</p>
+                        </div>
+                        <div className="col-span-2">
+                          <p className="text-[10px] font-black text-slate-400 mb-1">50/50 Promise</p>
+                          <p className="font-semibold text-[#1A1A1A]">{getPromiseText(traceData)}</p>
                         </div>
                       </div>
                     </Card>
@@ -1075,6 +1162,14 @@ const Traceability = () => {
                           <p className="font-semibold">{numberOrMissing(traceData?.sensor_snapshot?.avg_humidity, "%", 1)}</p>
                         </div>
                         <div>
+                          <p className="text-[10px] font-black text-white/60 mb-1">Harvest Weight</p>
+                          <p className="font-semibold">{numberOrMissing(traceData?.quantity_kg, "kg", 1)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-white/60 mb-1">Moisture</p>
+                          <p className="font-semibold">{numberOrMissing(traceData?.moisture_content_percent, "%", 1)}</p>
+                        </div>
+                        <div>
                           <p className="text-[10px] font-black text-white/60 mb-1">Hive Weight</p>
                           <p className="font-semibold">{numberOrMissing(traceData?.sensor_snapshot?.weight_kg, "kg")}</p>
                         </div>
@@ -1093,6 +1188,52 @@ const Traceability = () => {
                       </div>
                     </Card>
                   </div>
+
+                  <Card className="border-none shadow-xl rounded-[2.5rem] p-8 bg-white/80 mb-12">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-2xl font-black text-neutral-900 tracking-tighter">Linked Harvest and Hive Record</h3>
+                      <Badge className="bg-amber-100 text-amber-900 border-amber-200 font-bold">
+                        Hive to Harvest Link
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-slate-600 mb-6">
+                      This certificate links the verified batch to the exact hive and harvest record used to produce it.
+                    </p>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+                      <div className="rounded-2xl bg-[#F9F7F2] p-4">
+                        <p className="text-[10px] font-black text-slate-400 mb-1">Harvest Date</p>
+                        <p className="font-bold text-[#1A1A1A]">{dateOrMissing(getHarvestDate(traceData))}</p>
+                      </div>
+                      <div className="rounded-2xl bg-[#F9F7F2] p-4">
+                        <p className="text-[10px] font-black text-slate-400 mb-1">Hive</p>
+                        <p className="font-bold text-[#1A1A1A]">{textOrMissing(traceData?.hive?.hive_code)}</p>
+                      </div>
+                      <div className="rounded-2xl bg-[#F9F7F2] p-4">
+                        <p className="text-[10px] font-black text-slate-400 mb-1">Apiary</p>
+                        <p className="font-bold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.name)}</p>
+                      </div>
+                      <div className="rounded-2xl bg-[#F9F7F2] p-4">
+                        <p className="text-[10px] font-black text-slate-400 mb-1">Farmer</p>
+                        <p className="font-bold text-[#1A1A1A]">{textOrMissing(traceData?.farmer?.name)}</p>
+                      </div>
+                      <div className="rounded-2xl bg-[#F9F7F2] p-4">
+                        <p className="text-[10px] font-black text-slate-400 mb-1">50/50 Promise</p>
+                        <p className="font-bold text-[#1A1A1A]">{getPromiseText(traceData)}</p>
+                      </div>
+                      <div className="rounded-2xl bg-[#F9F7F2] p-4">
+                        <p className="text-[10px] font-black text-slate-400 mb-1">Florage</p>
+                        <p className="font-bold text-[#1A1A1A]">{textOrMissing(getFlorage(traceData))}</p>
+                      </div>
+                      <div className="rounded-2xl bg-[#F9F7F2] p-4">
+                        <p className="text-[10px] font-black text-slate-400 mb-1">Hive Temperature</p>
+                        <p className="font-bold text-[#1A1A1A]">{numberOrMissing(traceData?.sensor_snapshot?.avg_temp, " C", 1)}</p>
+                      </div>
+                      <div className="rounded-2xl bg-[#F9F7F2] p-4">
+                        <p className="text-[10px] font-black text-slate-400 mb-1">Hive Humidity</p>
+                        <p className="font-bold text-[#1A1A1A]">{numberOrMissing(traceData?.sensor_snapshot?.avg_humidity, "%", 1)}</p>
+                      </div>
+                    </div>
+                  </Card>
 
                   {/* Journey Timeline */}
                   <div className="space-y-8 mb-8 bg-[#FFF9F0] rounded-[2.5rem] p-8 shadow-xl">

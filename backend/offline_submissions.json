@@ -576,5 +576,43 @@
       "additional_info": "We need 50 hives",
       "status": "pending"
     }
+  },
+  {
+    "timestamp": "2026-04-14T15:17:05.573854",
+    "type": "newsletter_subscription",
+    "data": {
+      "email": "codex-test-newsletter@example.com",
+      "source": "footer"
+    }
+  },
+  {
+    "timestamp": "2026-04-14T15:17:19.160001",
+    "type": "contact_submission",
+    "data": {
+      "inquiry_type": "general",
+      "first_name": "Codex",
+      "last_name": "Tester",
+      "email": "codex-contact@example.com",
+      "phone": "123456",
+      "city": "Nairobi",
+      "state": "Nairobi",
+      "country": "Kenya",
+      "topic": "Test topic",
+      "message": "Test message",
+      "name": "Codex Tester",
+      "subject": "GENERAL: Test topic",
+      "status": "new"
+    }
+  },
+  {
+    "timestamp": "2026-04-14T15:17:39.245355",
+    "type": "contact_message",
+    "data": {
+      "full_name": "Codex Tester",
+      "email": "codex-message@example.com",
+      "subject": "Testing",
+      "message": "Hello",
+      "status": "new"
+    }
   }
 ]

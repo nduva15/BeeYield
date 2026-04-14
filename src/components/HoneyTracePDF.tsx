@@ -307,6 +307,16 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
         minute: '2-digit',
     });
 
+    const harvestDate = traceData.harvest_date || traceData.timeline?.find((t: TraceJourneyStep) => t.title === 'Harvest Day')?.date || 'Unknown';
+    const florage = traceData.florage_type || traceData.apiary?.flora_types?.join(', ') || traceData.nectar_source || 'Unknown';
+    const leftForBeesKg = typeof traceData.quantity_left_for_bees_kg === 'number' ? traceData.quantity_left_for_bees_kg : null;
+    const harvestedKg = typeof traceData.quantity_kg === 'number' ? traceData.quantity_kg : null;
+    const promiseText = leftForBeesKg !== null && harvestedKg !== null && (leftForBeesKg + harvestedKg) > 0
+        ? `${leftForBeesKg.toFixed(1)} kg left for bees (${((leftForBeesKg / (leftForBeesKg + harvestedKg)) * 100).toFixed(0)}%)`
+        : typeof traceData.sustainability?.ratio === 'number'
+            ? `${(traceData.sustainability.ratio * 100).toFixed(0)}% left for bees`
+            : 'Missing backend data';
+
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -356,25 +366,34 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Harvest Date:</Text>
-                        <Text style={styles.value}>
-                            {traceData.timeline?.find((t: TraceJourneyStep) => t.title === 'Harvest Day')?.date || 'Unknown'}
-                        </Text>
+                        <Text style={styles.value}>{harvestDate}</Text>
                     </View>
 
                     <View style={styles.row}>
-                        <Text style={styles.label}>Flora Sources:</Text>
-                        <View style={styles.floraContainer}>
-                            {traceData.florage_type && (
-                                <Text style={[styles.floraTag, { backgroundColor: '#FDE68A' }]}>{traceData.florage_type} (Primary)</Text>
-                            )}
-                            {traceData.apiary?.flora_types && traceData.apiary.flora_types.length > 0 ? (
-                                traceData.apiary.flora_types.filter(f => f !== traceData.florage_type).map((flora: string, idx: number) => (
-                                    <Text key={idx} style={styles.floraTag}>{flora}</Text>
-                                ))
-                            ) : (
-                                !traceData.florage_type && <Text style={styles.value}>Acacia, Wildflower</Text>
-                            )}
-                        </View>
+                        <Text style={styles.label}>Hive Code:</Text>
+                        <Text style={styles.value}>{traceData.hive?.hive_code || 'Unknown Hive'}</Text>
+                    </View>
+
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Farmer:</Text>
+                        <Text style={styles.value}>{traceData.farmer?.name || 'Unknown Farmer'}</Text>
+                    </View>
+
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Florage:</Text>
+                        <Text style={styles.value}>{florage}</Text>
+                    </View>
+
+                    <View style={styles.row}>
+                        <Text style={styles.label}>50/50 Promise:</Text>
+                        <Text style={styles.value}>{promiseText}</Text>
+                    </View>
+
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Moisture:</Text>
+                        <Text style={styles.value}>
+                            {typeof traceData.moisture_content_percent === 'number' ? `${traceData.moisture_content_percent}%` : 'Unknown'}
+                        </Text>
                     </View>
                 </View>
 
@@ -439,13 +458,17 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                         <View style={styles.sensorItem}>
                             <Text style={styles.sensorLabel}>Temperature</Text>
-                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.avg_temp} C</Text>
+                            <Text style={styles.sensorValue}>
+                                {typeof traceData.sensor_snapshot.avg_temp === 'number' ? `${traceData.sensor_snapshot.avg_temp} C` : 'Unknown'}
+                            </Text>
                             <Text style={styles.sensorStatus}>OPTIMAL</Text>
                         </View>
 
                         <View style={styles.sensorItem}>
                             <Text style={styles.sensorLabel}>Humidity</Text>
-                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.avg_humidity}%</Text>
+                            <Text style={styles.sensorValue}>
+                                {typeof traceData.sensor_snapshot.avg_humidity === 'number' ? `${traceData.sensor_snapshot.avg_humidity}%` : 'Unknown'}
+                            </Text>
                             <Text style={styles.sensorStatus}>STABLE</Text>
                         </View>
 
