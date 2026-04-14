@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any, Optional
 
 from app.core.config import settings
@@ -45,6 +46,50 @@ def _resolve_field(*candidates: Any) -> tuple[Any, str]:
 
 def _lookup_token(token: Optional[str]) -> Optional[str]:
     return getattr(settings, "SUPABASE_SERVICE_ROLE_KEY", None) or token
+
+
+def _normalize_apiary_name(name: Any) -> Any:
+    if not isinstance(name, str):
+        return name
+    return "BeeYield Apiary" if name.strip().lower() == "kibwezi main apiary" else name
+
+
+def _normalize_bee_code(code: Any) -> Any:
+    if not isinstance(code, str):
+        return code
+
+    normalized = code.strip()
+    if normalized.startswith("BY-H"):
+        return re.sub(r"^BY-H", "BEE-H", normalized)
+    if normalized.startswith("BY-"):
+        return re.sub(r"^BY-", "BEE-", normalized)
+    if normalized.startswith("KBZ-"):
+        return re.sub(r"^KBZ-", "BEE-", normalized)
+    if normalized.startswith("KIB-"):
+        return re.sub(r"^KIB-", "BEE-", normalized)
+    return normalized
+
+
+def _candidate_batch_codes(batch_code: str) -> list[str]:
+    raw = batch_code.strip()
+    if not raw:
+        return []
+
+    variants = [
+        raw,
+        re.sub(r"^BEE-", "BY-", raw),
+        re.sub(r"^BEE-", "KBZ-", raw),
+        re.sub(r"^BEE-", "KIB-", raw),
+        re.sub(r"^BY-", "BEE-", raw),
+        re.sub(r"^KBZ-", "BEE-", raw),
+        re.sub(r"^KIB-", "BEE-", raw),
+    ]
+
+    deduped: list[str] = []
+    for value in variants:
+        if value and value not in deduped:
+            deduped.append(value)
+    return deduped
 
 
 async def _fetch_latest_sensor_snapshot(hive_id: Optional[str], token: Optional[str]) -> Optional[dict[str, Any]]:
@@ -278,6 +323,17 @@ async def build_batch_view(
     moisture_content, _ = _resolve_field(batch.get("moisture_content"), harvest.get("moisture_content_percent"))
     color_grade, _ = _resolve_field(batch.get("color_grade"), harvest.get("color_grade"))
     batch_status, _ = _resolve_field(batch.get("status"))
+    normalized_hive = dict(hive) if hive else {}
+    normalized_apiary = dict(apiary) if apiary else {}
+
+    normalized_batch_code = _normalize_bee_code(batch_code)
+    normalized_apiary_name = _normalize_apiary_name(apiary_name)
+    if normalized_hive.get("hive_code"):
+        normalized_hive["hive_code"] = _normalize_bee_code(normalized_hive.get("hive_code"))
+    if normalized_apiary:
+        normalized_apiary["name"] = _normalize_apiary_name(normalized_apiary.get("name"))
+        if normalized_apiary.get("apiary_code"):
+            normalized_apiary["apiary_code"] = _normalize_bee_code(normalized_apiary.get("apiary_code"))
 
     sensor_snapshot = harvest.get("sensor_snapshot") or harvest.get("iot_snapshot")
     health_snapshot = harvest.get("health_snapshot")
@@ -302,8 +358,8 @@ async def build_batch_view(
     verified = verification_status != "unverified"
 
     return {
-        "id": batch.get("id") or harvest.get("id") or batch_code,
-        "batch_code": batch_code,
+        "id": batch.get("id") or harvest.get("id") or normalized_batch_code,
+        "batch_code": normalized_batch_code,
         "honey_type": honey_type,
         "harvest_date": harvest_date,
         "quantity_kg": quantity_kg,
@@ -312,7 +368,7 @@ async def build_batch_view(
         "farmer_phone": farmer_phone,
         "beekeeper_name": batch.get("beekeeper_name") or farmer_name,
         "beekeeper_id": batch.get("beekeeper_id") or farmer.get("farmer_id") or farmer.get("id"),
-        "apiary_name": apiary_name,
+        "apiary_name": normalized_apiary_name,
         "location_county": location_county,
         "location_region": location_region,
         "latitude": latitude,
@@ -330,8 +386,8 @@ async def build_batch_view(
         or "",
         "completeness": completeness,
         "harvest": harvest or None,
-        "hive": hive or None,
-        "apiary": apiary or None,
+        "hive": normalized_hive or None,
+        "apiary": normalized_apiary or None,
         "farmer": farmer or None,
         "sensor_snapshot": sensor_snapshot,
         "health_snapshot": health_snapshot,
@@ -352,11 +408,13 @@ async def get_batch_view_by_code(
     include_live_snapshots: bool = True,
 ) -> Optional[dict[str, Any]]:
     lookup_token = _lookup_token(token)
-    batch_rows = await db_select("honey_batches", filters={"batch_code": batch_code}, limit=1, token=lookup_token)
+    candidate_codes = _candidate_batch_codes(batch_code)
+    code_filter: str | list[str] = candidate_codes if len(candidate_codes) > 1 else (candidate_codes[0] if candidate_codes else batch_code)
+    batch_rows = await db_select("honey_batches", filters={"batch_code": code_filter}, limit=1, token=lookup_token)
     harvest_rows = await db_select(
         "harvests",
         columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)",
-        filters={"batch_code": batch_code},
+        filters={"batch_code": code_filter},
         limit=1,
         token=lookup_token,
     )

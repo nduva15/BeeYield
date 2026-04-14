@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import HoneyProductCollection from "@/components/honey/HoneyProductCollection";
 import {
     Check, TrendingUp, Shield, BarChart3, ArrowRight,
     Cpu, Eye, Zap, Target, Leaf, Award, Clock, Users,
@@ -476,6 +477,15 @@ const PollinationServices = () => {
                     </div>
                 </div>
             </section>
+
+            <HoneyProductCollection
+                badgeLabel="Honey From Our Network"
+                title={<>Bring Home BeeYield <span className="text-beeyield-green">Honey</span></>}
+                description="The landing page now carries the full honey lineup from the dedicated Honey page, so visitors can move from pollination proof to product purchase without leaving the homepage."
+                className="py-24 bg-[#FFF9F0] border-y border-neutral-100"
+                ctaLabel="Explore Honey Page"
+                ctaTo="/honey"
+            />
 
             {/* FAQ Section */}
             <section className="py-24 bg-background relative overflow-hidden">

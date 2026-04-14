@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import LOGO from '@/assets/Logo.png';
 import PLACEHOLDER_SVG from '@/assets/placeholder.svg';
-import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
+import { getPublicTraceabilityBatches, traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
 import { adminService } from "@/services/adminService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
@@ -36,6 +36,7 @@ const Traceability = () => {
   const [traceData, setTraceData] = useState<TraceResponse | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [exampleCodes, setExampleCodes] = useState<string[]>([]);
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -158,6 +159,56 @@ const Traceability = () => {
       }
     };
   }, [showScanner, handleTrace]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadExampleCodes = async () => {
+      const batches = await getPublicTraceabilityBatches(24);
+      if (!active || batches.length === 0) return;
+
+      const beeYieldBatches = batches
+        .filter((batch) => {
+          const batchCode = String(batch.batch_code || "").toUpperCase();
+          const beekeeperName = String(
+            batch.beekeeper_name || batch.farmer_name || batch.farmer?.name || ""
+          ).toLowerCase();
+          const apiaryName = String(batch.apiary_name || batch.apiary?.name || "").toLowerCase();
+
+          return (
+            batchCode.startsWith("BEE-") &&
+            (beekeeperName.includes("timothy nduva") || apiaryName.includes("beeyield"))
+          );
+        })
+        .sort((left, right) => String(right.harvest_date || "").localeCompare(String(left.harvest_date || "")));
+
+      const latestYear = beeYieldBatches
+        .map((batch) => Number.parseInt(String(batch.harvest_date || "").slice(0, 4), 10))
+        .find((year) => Number.isFinite(year));
+
+      const currentBatches = latestYear
+        ? beeYieldBatches.filter((batch) => String(batch.harvest_date || "").startsWith(String(latestYear)))
+        : beeYieldBatches;
+
+      const liveCodes = Array.from(
+        new Set(
+          currentBatches
+            .map((batch) => batch.batch_code)
+            .filter((code): code is string => typeof code === "string" && code.trim().length > 0)
+        )
+      ).slice(0, 3);
+
+      if (active && liveCodes.length > 0) {
+        setExampleCodes(liveCodes);
+      }
+    };
+
+    void loadExampleCodes();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Scroll to results when trace data is loaded
   useEffect(() => {
@@ -288,7 +339,7 @@ const Traceability = () => {
                             name="qrCode"
                             value={qrCode}
                             onChange={(e) => setQrCode(e.target.value)}
-                            placeholder="e.g. BEE-ACACIAL-26"
+                            placeholder="Enter a live BeeYield batch code"
                             className="h-16 pl-12 pr-4 rounded-2xl border-2 border-slate-100 focus:border-amber-500 focus:ring-amber-500 transition-all text-lg font-bold"
                             disabled={loading}
                           />
@@ -303,29 +354,31 @@ const Traceability = () => {
                         </Button>
                       </form>
 
-                      <div className="mt-8 pt-8 border-t border-slate-100">
-                        <p className="text-xs font-black text-slate-400 mb-4">Try these example codes</p>
-                        <div className="flex flex-wrap gap-2">
-                          {["BEE-ACACIAL-26", "BEE-SAV-2026", "BEE-GOLD-2026"].map(code => (
-                            <Button
-                              key={code}
-                              variant="ghost"
-                              size="sm"
-                              className="text-[10px] font-bold bg-[#F9F7F2] hover:bg-amber-50 hover:text-[#F4D03F] rounded-full h-8"
-                              onClick={() => {
-                                setQrCode(code);
-                                handleTrace(code);
-                              }}
-                            >
-                              {code}
-                            </Button>
-                          ))}
+                      {(exampleCodes.length > 0) && (
+                        <div className="mt-8 pt-8 border-t border-slate-100">
+                          <p className="text-xs font-black text-slate-400 mb-4">Latest verified Timothy batches</p>
+                          <div className="flex flex-wrap gap-2">
+                            {exampleCodes.map(code => (
+                              <Button
+                                key={code}
+                                variant="ghost"
+                                size="sm"
+                                className="text-[10px] font-bold bg-[#F9F7F2] hover:bg-amber-50 hover:text-[#F4D03F] rounded-full h-8"
+                                onClick={() => {
+                                  setQrCode(code);
+                                  handleTrace(code);
+                                }}
+                              >
+                                {code}
+                              </Button>
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-2 mt-6">
+                            <ShieldCheck className="h-4 w-4 text-[#1B9157]" />
+                            <span className="text-xs font-bold text-muted-foreground italic">Every batch is permanently recorded and verified</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 mt-6">
-                          <ShieldCheck className="h-4 w-4 text-[#1B9157]" />
-                          <span className="text-xs font-bold text-muted-foreground italic">Every batch is permanently recorded and verified</span>
-                        </div>
-                      </div>
+                      )}
                     </div>
 
                     <div className="p-10 bg-gradient-to-br from-slate-50 to-white flex flex-col items-center justify-center text-center">

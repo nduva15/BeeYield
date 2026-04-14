@@ -40,6 +40,7 @@ const Checkout = lazy(() => import('@/pages/Checkout'))
 const Learn = lazy(() => import('@/pages/BeeLearn'))
 const Blogs = lazy(() => import('@/pages/Blogs'))
 const BlogPost = lazy(() => import('@/pages/BlogPost'))
+const About = lazy(() => import('@/pages/About'))
 const Team = lazy(() => import('@/pages/Team'))
 const Careers = lazy(() => import('@/pages/Careers'))
 const Impact = lazy(() => import('@/pages/Impact'))
@@ -130,6 +131,8 @@ root.render(
                                                 <Suspense fallback={<PageLoader />}>
                                                     <Routes>
                                                         <Route path="/" element={<PollinationServices />} />
+                                                        <Route path="/pollination-services" element={<PollinationServices />} />
+                                                        <Route path="/about" element={<About />} />
                                                         <Route path="/contact" element={<Contact />} />
                                                         <Route path="/honey" element={<Honey />} />
                                                         <Route path="/shop" element={<Shop />} />

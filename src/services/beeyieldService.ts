@@ -1341,10 +1341,21 @@ function normalizeVarroaTreatment(record: any): VarroaTreatment {
 
 function mapApiaryRecord(record: any, hiveCountByApiary: Record<string, number> = {}): Apiary {
     const apiaryId = String(record?.id ?? '');
+    const apiaryName = typeof record?.name === 'string' && record.name.trim().toLowerCase() === 'kibwezi main apiary'
+        ? 'BeeYield Apiary'
+        : record?.name;
+    const apiaryCode = typeof record?.apiary_code === 'string'
+        ? record.apiary_code
+            .replace(/^KBZ-/, 'BEE-')
+            .replace(/^KIB-/, 'BEE-')
+            .replace(/^BY-/, 'BEE-')
+        : record?.apiary_code;
 
     return {
         ...record,
         id: apiaryId,
+        name: apiaryName,
+        apiary_code: apiaryCode,
         type: record?.apiary_type || record?.type || 'Permanent',
         forage_type: record?.primary_forage || record?.forage_type || '',
         hive_count: record?.hive_count ?? hiveCountByApiary[apiaryId] ?? 0,
@@ -1352,10 +1363,32 @@ function mapApiaryRecord(record: any, hiveCountByApiary: Record<string, number> 
 }
 
 function mapHiveRecord(record: any): Hive {
+    const apiaryName = typeof record?.apiary?.name === 'string' && record.apiary.name.trim().toLowerCase() === 'kibwezi main apiary'
+        ? 'BeeYield Apiary'
+        : record?.apiary?.name || record?.apiary_name;
+
     return {
         ...record,
         id: String(record?.id ?? ''),
-        apiary_name: record?.apiary?.name || record?.apiary_name,
+        hive_code: typeof record?.hive_code === 'string'
+            ? record.hive_code
+                .replace(/^KBZ-/, 'BEE-')
+                .replace(/^KIB-/, 'BEE-')
+                .replace(/^BY-H/, 'BEE-H')
+            : record?.hive_code,
+        apiary_name: apiaryName,
+        apiary: record?.apiary
+            ? {
+                ...record.apiary,
+                name: apiaryName,
+                apiary_code: typeof record.apiary.apiary_code === 'string'
+                    ? record.apiary.apiary_code
+                        .replace(/^KBZ-/, 'BEE-')
+                        .replace(/^KIB-/, 'BEE-')
+                        .replace(/^BY-/, 'BEE-')
+                    : record.apiary.apiary_code,
+            }
+            : record?.apiary,
     };
 }
 
@@ -1377,14 +1410,62 @@ function mapHarvestRecord(record: any): Harvest {
     if (normalized.hive?.apiary && !normalized.apiary) {
         normalized.apiary = normalized.hive.apiary;
     }
+    if (typeof normalized.batch_code === 'string') {
+        normalized.batch_code = normalized.batch_code
+            .replace(/^KBZ-/, 'BEE-')
+            .replace(/^KIB-/, 'BEE-')
+            .replace(/^BY-/, 'BEE-');
+    }
+    if (typeof normalized.apiary?.name === 'string' && normalized.apiary.name.trim().toLowerCase() === 'kibwezi main apiary') {
+        normalized.apiary = { ...normalized.apiary, name: 'BeeYield Apiary' };
+    }
+    if (typeof normalized.hive?.hive_code === 'string') {
+        normalized.hive = {
+            ...normalized.hive,
+            hive_code: normalized.hive.hive_code
+                .replace(/^KBZ-/, 'BEE-')
+                .replace(/^KIB-/, 'BEE-')
+                .replace(/^BY-H/, 'BEE-H'),
+        };
+    }
 
     return normalized as Harvest;
 }
 
 function mapBatchRecord(record: any): BatchView {
+    const apiaryName = typeof record?.apiary_name === 'string' && record.apiary_name.trim().toLowerCase() === 'kibwezi main apiary'
+        ? 'BeeYield Apiary'
+        : record?.apiary_name;
+
     return {
         ...record,
         id: String(record?.id ?? record?.batch_code ?? ''),
+        batch_code: typeof record?.batch_code === 'string'
+            ? record.batch_code
+                .replace(/^KBZ-/, 'BEE-')
+                .replace(/^KIB-/, 'BEE-')
+                .replace(/^BY-/, 'BEE-')
+            : record?.batch_code,
+        apiary_name: apiaryName,
+        apiary: record?.apiary
+            ? {
+                ...record.apiary,
+                name: typeof record.apiary.name === 'string' && record.apiary.name.trim().toLowerCase() === 'kibwezi main apiary'
+                    ? 'BeeYield Apiary'
+                    : record.apiary.name,
+            }
+            : record?.apiary,
+        hive: record?.hive
+            ? {
+                ...record.hive,
+                hive_code: typeof record.hive.hive_code === 'string'
+                    ? record.hive.hive_code
+                        .replace(/^KBZ-/, 'BEE-')
+                        .replace(/^KIB-/, 'BEE-')
+                        .replace(/^BY-H/, 'BEE-H')
+                    : record.hive.hive_code,
+            }
+            : record?.hive,
         blockchain_verified: Boolean(record?.blockchain_verified ?? record?.block_hash),
         verification_status: record?.verification_status || record?.status,
     };

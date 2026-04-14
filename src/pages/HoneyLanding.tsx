@@ -14,25 +14,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  ShoppingCart,
   Leaf,
   Star,
   Heart,
   ArrowRight,
   ShieldCheck,
-  Loader2,
-  Play,
   Sparkles,
   Droplets,
-  Award,
-  ChevronRight,
   Mail,
   Zap
 } from "lucide-react";
@@ -42,10 +30,11 @@ import { submitNewsletterSubscription } from "@/services/contactService";
 import beeyieldService from "@/services/beeyieldService";
 import SEO from "@/components/SEO";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import HoneyProductCollection from "@/components/honey/HoneyProductCollection";
 
 // Reusing same product types and data from Shop.tsx for consistency
 import { initialHoneyProducts } from "@/data/Honey-Products";
-import { type Product, type ProductVariant } from "@/services/shopService";
+import { type Product } from "@/services/shopService";
 
 // Hero Section matching reference design
 const HeroSection = () => {
@@ -814,129 +803,6 @@ const NewsletterSection = () => {
   );
 };
 
-// All Products Grid - All 8 honey products
-const AllProductsSection = ({
-  selectedSizes,
-  setSelectedSizes,
-  handleAddToCart,
-  formatPrice,
-  products
-}: {
-  selectedSizes: Record<string, string>;
-  setSelectedSizes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-  handleAddToCart: (product: Product) => void;
-  formatPrice: (price: number) => string;
-  products: Product[];
-}) => {
-  const navigate = useNavigate();
-
-  return (
-    <section className="py-24 bg-neutral-50 border-t border-neutral-100">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
-          <Badge className="bg-beeyield-green/10 text-beeyield-green mb-4 hover:bg-beeyield-green/20 transition-colors font-black text-[10px] px-4 py-1.5 rounded-full border border-beeyield-green/20">
-            Pure Kibwezi Gold
-          </Badge>
-          <h2 className="text-4xl md:text-5xl font-black text-neutral-900 leading-none tracking-tighter mb-6">
-            Our Full <span className="text-beeyield-green">Honey</span> Collection
-          </h2>
-          <p className="text-neutral-500 text-base max-w-xl mx-auto font-medium leading-relaxed">
-            From medicinal Neem to delicate Acacia, discover our range of ethically harvested, 100% raw honey.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {(products.length > 0 ? products : initialHoneyProducts).map((product, idx) => {
-            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-            const variantSizeIndex = product.variants.findIndex((v) => v.size === selectedSize);
-            const variant = product.variants[variantSizeIndex] || product.variants[0];
-            const image = product.images[variantSizeIndex + 1] || product.images[0];
-
-            return (
-              <Card
-                key={product.id}
-                className="group bg-[#FFF9F0] border border-neutral-100 rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full hover:-translate-y-2"
-              >
-                <div className="relative aspect-square overflow-hidden bg-neutral-50 p-6 flex items-center justify-center group-hover:bg-amber-50/30 transition-colors">
-                  <BrandedProductImage
-                    src={image}
-                    alt={product.name}
-                    category="honey"
-                    className="w-full h-full object-contain drop-shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ease-out"
-                  />
-                  {product.badge && (
-                    <Badge className="absolute top-4 left-4 bg-beeyield-gold text-[#1A1A1A] font-black text-[9px] px-3 py-1 rounded-full shadow-lg border-none">
-                      {product.badge}
-                    </Badge>
-                  )}
-                </div>
-
-                <CardContent className="p-6 flex flex-col flex-grow">
-                  <div className="flex-grow space-y-3 mb-6">
-                    <h3 className="text-lg font-black text-neutral-900 leading-tight group-hover:text-beeyield-green transition-colors line-clamp-1">
-                      {product.name}
-                    </h3>
-                    <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed font-medium">
-                      {product.description}
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="bg-neutral-50 px-3 py-1 rounded-lg border border-neutral-100">
-                        <span className="text-beeyield-green font-black text-lg">{formatPrice(variant.price_kes)}</span>
-                      </div>
-                      <Select
-                        value={selectedSize}
-                        onValueChange={(val) => setSelectedSizes(prev => ({ ...prev, [product.id]: val }))}
-                      >
-                        <SelectTrigger className="w-[100px] h-9 text-xs font-bold border-neutral-200 rounded-lg hover:border-beeyield-gold/50 transition-colors">
-                          <SelectValue placeholder="Size" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {product.variants.map((v) => (
-                            <SelectItem key={v.id} value={v.size} className="text-xs font-bold">
-                              {v.size}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <Button
-                      size="sm"
-                      className="w-full bg-neutral-900 hover:bg-beeyield-green text-[#1A1A1A] rounded-xl h-11 text-[10px] font-black transition-all hover:shadow-lg shadow-neutral-900/10"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      <ShoppingCart className="h-3.5 w-3.5 mr-2" />
-                      Add to Cart
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* View All CTA */}
-        <div className="text-center mt-16">
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-full border-2 border-neutral-200 text-neutral-900 font-bold px-10 h-14 hover:border-beeyield-green hover:text-beeyield-green transition-all"
-            onClick={() => navigate("/shop")}
-          >
-            View Full Shop
-            <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-
-
 // Main HoneyLanding Component
 
 // Mission Statement Section - Tesla-style Premium Narrative
@@ -1009,7 +875,6 @@ const faqs_structured = [
 ];
 
 const HoneyLanding = () => {
-  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [products, setProducts] = useState<Product[]>([]);
   const { addToCart, openCart } = useCart();
 
@@ -1029,17 +894,15 @@ const HoneyLanding = () => {
   }, []);
 
   const handleAddToCart = async (product: Product) => {
-    const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-    const variantIndex = product.variants.findIndex((v) => v.size === selectedSize);
-    const variant = product.variants[variantIndex] || product.variants[0];
-    const image = product.images[variantIndex + 1] || product.images[1] || product.images[0];
+    const variant = product.variants[0];
+    const image = product.images[1] || product.images[0];
 
     const cartItem = {
       productId: product.id,
       variantId: variant.id,
       name: product.name,
       description: product.description,
-      size: selectedSize,
+      size: variant.size,
       price: variant.price_kes,
       quantity: 1,
       category: product.category as 'honey' | 'merch' | 'education' | 'hardware',
@@ -1132,13 +995,7 @@ const HoneyLanding = () => {
       <HeritageSection />
       <FeaturesSection />
 
-      <AllProductsSection
-        selectedSizes={selectedSizes}
-        setSelectedSizes={setSelectedSizes}
-        handleAddToCart={handleAddToCart}
-        formatPrice={formatPrice}
-        products={products}
-      />
+      <HoneyProductCollection products={products} />
 
       <FlashSaleSection />
       <FAQSection />

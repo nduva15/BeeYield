@@ -304,7 +304,7 @@ const Checkout = () => {
             if (response.batches && response.batches.length > 0) {
                 setOrderTraceabilityBatches(response.batches);
             } else if (items.some(item => item.category === 'honey') || isBypassActive) {
-                setOrderTraceabilityBatches(['KIB-ACACIAL-26']);
+                setOrderTraceabilityBatches(['BEE-20260105-0001']);
             }
 
             // Log payment for admin dashboard

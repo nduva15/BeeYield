@@ -166,6 +166,23 @@ export interface ImpactStats {
     harvested_hives?: string;
 }
 
+export interface PublicTraceabilityBatch {
+    id?: string;
+    batch_code: string;
+    harvest_date?: string;
+    honey_type?: string;
+    verification_status?: string;
+    beekeeper_name?: string;
+    farmer_name?: string;
+    apiary_name?: string;
+    farmer?: {
+        name?: string;
+    };
+    apiary?: {
+        name?: string;
+    };
+}
+
 // Strict Blockchain verification enabled. Mock data generation removed.
 
 export const traceBatch = async (code: string): Promise<TraceResponse | null> => {
@@ -190,6 +207,21 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
     } catch (error) {
         console.error("Traceability verification failed:", error);
         throw error; // Let the caller handle UI notification
+    }
+};
+
+export const getPublicTraceabilityBatches = async (limit = 12): Promise<PublicTraceabilityBatch[]> => {
+    try {
+        const response = await fetch(`${AI_API_URL}/traceability/batches?limit=${limit}`);
+        if (!response.ok) {
+            throw new Error(`Connection Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        console.error("Error fetching public traceability batches:", error);
+        return [];
     }
 };
 
