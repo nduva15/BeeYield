@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { Menu, X, ChevronDown, Shield } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/contexts/CartContext";
-import { useQueryClient } from "@tanstack/react-query";
-import { getProducts } from "@/services/shopService";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,19 +17,8 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
-  const { toggleCart, getTotalItems } = useCart();
-  const queryClient = useQueryClient();
 
   const isActive = (path: string) => location.pathname === path;
-
-  // Prefetch data helper
-  const prefetchShop = () => {
-    queryClient.prefetchQuery({
-      queryKey: ['products'],
-      queryFn: () => getProducts(),
-      staleTime: 1000 * 60 * 5,
-    });
-  };
 
 
 
@@ -96,17 +82,6 @@ const Header = () => {
           >
             Beekeeping Network
           </Link>
-
-          <Link
-            to="/shop"
-            onPrefetch={prefetchShop}
-            className={`text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 ${isActive("/shop") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80 hover:text-beeyield-green"
-              }`}
-          >
-            Shop
-          </Link>
-
-
         </div>
 
         {/* Right side - Traceability Button & Menu (all devices) */}
@@ -118,19 +93,6 @@ const Header = () => {
           >
             <Shield className="h-5 w-5 sm:h-5 sm:w-5 text-beeyield-green group-hover:text-beeyield-gold transition-colors" />
           </Link>
-
-          <button
-            onClick={toggleCart}
-            className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 group relative"
-            aria-label="View shopping cart"
-          >
-            <ShoppingBag className="h-5 w-5 sm:h-5 sm:w-5 text-beeyield-green group-hover:text-beeyield-gold transition-colors" />
-            {getTotalItems() > 0 && (
-              <span className="absolute -top-1 -right-1 bg-gradient-to-br from-beeyield-orange to-beeyield-gold text-white text-[10px] font-black h-5 w-5 flex items-center justify-center rounded-full shadow-lg animate-pulse">
-                {getTotalItems()}
-              </span>
-            )}
-          </button>
 
           <Button
             variant="default"
@@ -154,13 +116,12 @@ const Header = () => {
                   <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Main Navigation</span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  {[
+                  {[ 
                     { label: 'Professional Pollination', to: '/crops-we-pollinate' },
                     { label: 'In Land Pollination', to: '/in-land-pollination' },
                     { label: 'In Hive Pollination', to: '/precision-pollination' },
                     { label: 'Diseases', to: '/diseases' },
                     { label: 'Beekeeping Network', to: '/pollination-solutions' },
-                    { label: 'Shop', to: '/shop' },
                   ].map((item) => (
                     <DropdownMenuItem key={item.to} asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
                       <Link to={item.to} className="w-full cursor-pointer px-3 py-2.5 text-[13px] font-bold text-white hover:text-white transition-all">
@@ -264,14 +225,6 @@ const Header = () => {
                 className={`text-sm font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-3 transition-all ${isActive("/pollination-solutions") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"}`}
               >
                 Beekeeping Network
-              </Link>
-              <Link
-                to="/shop"
-                onPrefetch={prefetchShop}
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-sm font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-3 transition-all ${isActive("/shop") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"}`}
-              >
-                Shop
               </Link>
             </div>
 

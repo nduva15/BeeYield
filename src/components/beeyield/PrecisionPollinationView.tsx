@@ -146,6 +146,80 @@ const getCanonicalCropName = (raw: unknown) => {
     return CROP_NAME_ALIASES[key];
 };
 
+type PlacementSource = 'hive' | 'device' | 'optimized' | 'estimated';
+
+type HiveMapPlacement = {
+    hive: Hive;
+    placement: [number, number];
+    markerPosition: [number, number];
+    placementSource: PlacementSource;
+    placementLabel: string;
+    linkedDevice: IoTDevice | null;
+    optimizedPlacement: any | null;
+    clusterAdjusted: boolean;
+};
+
+const toFiniteNumber = (value: unknown) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : null;
+};
+
+const metersToOffset = (lat: number, distanceMeters: number, angleDegrees: number): [number, number] => {
+    const radians = (angleDegrees * Math.PI) / 180;
+    const latOffset = (distanceMeters * Math.cos(radians)) / 111_320;
+    const lngBase = 111_320 * Math.cos((lat * Math.PI) / 180);
+    const lngOffset = lngBase === 0 ? 0 : (distanceMeters * Math.sin(radians)) / lngBase;
+    return [latOffset, lngOffset];
+};
+
+const buildGridPlacement = (center: [number, number], acreage: number, index: number, total: number): [number, number] => {
+    const normalizedAcreage = Math.max(0.25, acreage);
+    const sideMeters = Math.sqrt(normalizedAcreage * 4046.8564224);
+    const columns = Math.max(1, Math.ceil(Math.sqrt(total)));
+    const rows = Math.max(1, Math.ceil(total / columns));
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+    const safeWidth = sideMeters * 0.68;
+    const safeHeight = sideMeters * 0.68;
+    const xRatio = columns === 1 ? 0.5 : column / (columns - 1);
+    const yRatio = rows === 1 ? 0.5 : row / (rows - 1);
+    const xMeters = (xRatio - 0.5) * safeWidth;
+    const yMeters = (yRatio - 0.5) * safeHeight;
+    const latOffset = yMeters / 111_320;
+    const lngBase = 111_320 * Math.cos((center[0] * Math.PI) / 180);
+    const lngOffset = lngBase === 0 ? 0 : xMeters / lngBase;
+    return [center[0] + latOffset, center[1] + lngOffset];
+};
+
+const spreadOverlaps = (placements: HiveMapPlacement[]) => {
+    const grouped = new Map<string, HiveMapPlacement[]>();
+
+    placements.forEach((placement) => {
+        const key = `${placement.placement[0].toFixed(5)}:${placement.placement[1].toFixed(5)}`;
+        const existing = grouped.get(key);
+        if (existing) {
+            existing.push(placement);
+        } else {
+            grouped.set(key, [placement]);
+        }
+    });
+
+    return Array.from(grouped.values()).flatMap((group) => {
+        if (group.length === 1) {
+            return group.map((placement) => ({ ...placement, markerPosition: placement.placement }));
+        }
+
+        return group.map((placement, index) => {
+            const [latOffset, lngOffset] = metersToOffset(placement.placement[0], 12 + index * 5, (360 / group.length) * index);
+            return {
+                ...placement,
+                markerPosition: [placement.placement[0] + latOffset, placement.placement[1] + lngOffset] as [number, number],
+                clusterAdjusted: true,
+            };
+        });
+    });
+};
+
 const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     devices,
     readings,
