@@ -107,6 +107,14 @@ class HarvestBatchInput(BaseModel):
     florage_type: str = Field("Multifloral", description="Acacia, Multifloral, Coffee, Avocado, Wildflower")
     harvest_date: Optional[date] = Field(None, description="Defaults to today if not provided")
     honey_type: Optional[str] = Field("Multi-flower", description="Honey variety")
+    quantity_left_for_bees_kg: Optional[float] = None
+    extraction_method: Optional[str] = None
+    nectar_source: Optional[str] = None
+    weather_conditions: Optional[str] = None
+    moisture_content_percent: Optional[float] = None
+    color_grade: Optional[str] = None
+    farmer_id: Optional[UUID] = None
+    is_verified: Optional[bool] = True
     notes: Optional[str] = None
 
 class HarvestUpdate(BaseModel):
@@ -1099,6 +1107,22 @@ async def log_harvest_batch(
     extra = {}
     if batch_in.honey_type:
         extra["honey_type"] = batch_in.honey_type
+    if batch_in.quantity_left_for_bees_kg is not None:
+        extra["quantity_left_for_bees_kg"] = batch_in.quantity_left_for_bees_kg
+    if batch_in.extraction_method:
+        extra["extraction_method"] = batch_in.extraction_method
+    if batch_in.nectar_source:
+        extra["nectar_source"] = batch_in.nectar_source
+    if batch_in.weather_conditions:
+        extra["weather_conditions"] = batch_in.weather_conditions
+    if batch_in.moisture_content_percent is not None:
+        extra["moisture_content_percent"] = batch_in.moisture_content_percent
+    if batch_in.color_grade:
+        extra["color_grade"] = batch_in.color_grade
+    if batch_in.farmer_id:
+        extra["farmer_id"] = str(batch_in.farmer_id)
+    if batch_in.is_verified is not None:
+        extra["is_verified"] = batch_in.is_verified
     if batch_in.notes:
         extra["notes"] = batch_in.notes
     
@@ -1193,6 +1217,8 @@ async def create_harvest(
             detail=result.get("error", "Failed to create harvest")
         )
     
+    from app.services.traceability_batch_service import sync_public_batch_from_harvest
+
     # Return enriched data so frontend has full hive/apiary/farmer objects
     new_id = result["data"][0]["id"] if result.get("data") else data.get("id")
     if new_id:
@@ -1215,9 +1241,18 @@ async def create_harvest(
                 h['hive_code'] = h['hive'].get('hive_code')
             if h.get('moisture_content') is not None:
                 h['moisture_content_percent'] = h['moisture_content']
+            try:
+                h["public_batch"] = await sync_public_batch_from_harvest(h, token=token)
+            except Exception:
+                pass
             return h
-            
-    return result["data"][0] if result.get("data") else data
+
+    record = result["data"][0] if result.get("data") else data
+    try:
+        record["public_batch"] = await sync_public_batch_from_harvest(record, token=token)
+    except Exception:
+        pass
+    return record
 
 @router.put("/harvests/{harvest_id}", response_model=dict)
 async def update_harvest(
@@ -1260,6 +1295,8 @@ async def update_harvest(
         )
     
     # Return enriched data
+    from app.services.traceability_batch_service import sync_public_batch_from_harvest
+
     enriched = await db_select("harvests", filters={"id": harvest_id}, columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)", token=token)
     if enriched:
         h = enriched[0]
@@ -1269,6 +1306,10 @@ async def update_harvest(
             h['quantity_kg'] = h['weight_kg']
         if h.get('floral_source'):
             h['nectar_source'] = h['floral_source']
+        try:
+            h["public_batch"] = await sync_public_batch_from_harvest(h, token=token)
+        except Exception:
+            pass
             
         if h.get('hive') and h['hive'].get('apiary'):
             h['apiary'] = h['hive']['apiary']

@@ -24,10 +24,16 @@ import {
 } from "@/components/ui/dialog";
 import LOGO from '@/assets/Logo.png';
 import PLACEHOLDER_SVG from '@/assets/placeholder.svg';
-import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
+import { getPublicTraceabilityBatches, traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
 import { adminService } from "@/services/adminService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
+
+const DEFAULT_EXAMPLE_CODES = [
+  "BEE-2026-01-0420",
+  "BEE-2026-01-0419",
+  "BEE-2026-01-0418",
+];
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
@@ -36,6 +42,7 @@ const Traceability = () => {
   const [traceData, setTraceData] = useState<TraceResponse | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [exampleCodes, setExampleCodes] = useState<string[]>(DEFAULT_EXAMPLE_CODES);
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -158,6 +165,46 @@ const Traceability = () => {
       }
     };
   }, [showScanner, handleTrace]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadExampleCodes = async () => {
+      const batches = await getPublicTraceabilityBatches(12);
+      if (!active || batches.length === 0) return;
+
+      const latestYear = batches
+        .map((batch) => Number.parseInt(String(batch.harvest_date || "").slice(0, 4), 10))
+        .find((year) => Number.isFinite(year));
+
+      const currentBatches = latestYear
+        ? batches.filter((batch) => String(batch.harvest_date || "").startsWith(String(latestYear)))
+        : batches;
+
+      const liveCodes = Array.from(
+        new Set(
+          currentBatches
+            .sort((left, right) => {
+              const dateCompare = String(right.harvest_date || "").localeCompare(String(left.harvest_date || ""));
+              if (dateCompare !== 0) return dateCompare;
+              return String(right.batch_code || "").localeCompare(String(left.batch_code || ""));
+            })
+            .map((batch) => batch.batch_code)
+            .filter((code): code is string => typeof code === "string" && code.trim().length > 0)
+        )
+      ).slice(0, 3);
+
+      if (active && liveCodes.length === 3) {
+        setExampleCodes(liveCodes);
+      }
+    };
+
+    void loadExampleCodes();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Scroll to results when trace data is loaded
   useEffect(() => {
@@ -288,7 +335,7 @@ const Traceability = () => {
                             name="qrCode"
                             value={qrCode}
                             onChange={(e) => setQrCode(e.target.value)}
-                            placeholder="e.g. BEE-ACACIAL-26"
+                            placeholder={`e.g. ${exampleCodes[0] ?? DEFAULT_EXAMPLE_CODES[0]}`}
                             className="h-16 pl-12 pr-4 rounded-2xl border-2 border-slate-100 focus:border-amber-500 focus:ring-amber-500 transition-all text-lg font-bold"
                             disabled={loading}
                           />
@@ -304,9 +351,9 @@ const Traceability = () => {
                       </form>
 
                       <div className="mt-8 pt-8 border-t border-slate-100">
-                        <p className="text-xs font-black text-slate-400 mb-4">Try these example codes</p>
+                        <p className="text-xs font-black text-slate-400 mb-4">Latest verified Timothy batches</p>
                         <div className="flex flex-wrap gap-2">
-                          {["BEE-ACACIAL-26", "BEE-SAV-2026", "BEE-GOLD-2026"].map(code => (
+                          {exampleCodes.map(code => (
                             <Button
                               key={code}
                               variant="ghost"

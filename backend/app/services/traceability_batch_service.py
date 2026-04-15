@@ -3,7 +3,10 @@ from __future__ import annotations
 from typing import Any, Optional
 
 from app.core.config import settings
-from app.db.supabase_db import db_select
+from app.db.supabase_db import db_select, db_upsert
+
+
+DEFAULT_PUBLIC_TRACEABILITY_OWNER = "Timothy Nduva"
 
 
 def _has_value(value: Any) -> bool:
@@ -45,6 +48,42 @@ def _resolve_field(*candidates: Any) -> tuple[Any, str]:
 
 def _lookup_token(token: Optional[str]) -> Optional[str]:
     return getattr(settings, "SUPABASE_SERVICE_ROLE_KEY", None) or token
+
+
+def _normalize_text(value: Any) -> str:
+    if not _has_value(value):
+        return ""
+    return " ".join(str(value).strip().lower().split())
+
+
+def _matches_owner(view: dict[str, Any], owner_name: Optional[str]) -> bool:
+    if not owner_name:
+        return True
+
+    owner = _normalize_text(owner_name)
+    candidates = (
+        view.get("beekeeper_name"),
+        view.get("farmer_name"),
+        (view.get("farmer") or {}).get("name"),
+        (view.get("harvest") or {}).get("harvester_name"),
+    )
+    return any(owner in _normalize_text(candidate) for candidate in candidates)
+
+
+def _is_publicly_verified(view: dict[str, Any]) -> bool:
+    status = _normalize_text(view.get("status"))
+    if status == "verified":
+        return True
+
+    harvest = view.get("harvest") or {}
+    if harvest.get("is_verified") is True:
+        return True
+
+    verification_status = _normalize_text(view.get("verification_status"))
+    if verification_status and verification_status != "unverified":
+        return True
+
+    return bool(view.get("blockchain_verified"))
 
 
 async def _fetch_latest_sensor_snapshot(hive_id: Optional[str], token: Optional[str]) -> Optional[dict[str, Any]]:
@@ -298,8 +337,11 @@ async def build_batch_view(
         sustainability_ratio = round(quantity_left / (quantity_left + quantity_kg), 4)
         sustainability_status = "pass" if sustainability_ratio >= 0.5 else "fail"
 
+    blockchain_verified = blockchain_status.get("overall", "unverified") != "unverified"
+    record_verified = _normalize_text(batch_status) == "verified" or harvest.get("is_verified") is True
     verification_status = blockchain_status.get("overall", "unverified")
-    verified = verification_status != "unverified"
+    if verification_status == "unverified" and record_verified:
+        verification_status = "verified"
 
     return {
         "id": batch.get("id") or harvest.get("id") or batch_code,
@@ -320,9 +362,9 @@ async def build_batch_view(
         "quality_grade": quality_grade,
         "moisture_content": moisture_content,
         "color_grade": color_grade,
-        "status": batch_status or "incomplete",
+        "status": batch_status or ("verified" if record_verified else "incomplete"),
         "block_hash": blockchain_status.get("block_hash"),
-        "blockchain_verified": verified,
+        "blockchain_verified": blockchain_verified,
         "verification_status": verification_status,
         "blockchain_status": blockchain_status,
         "verification_url": blockchain_status.get("polygon", {}).get("verification_url")
@@ -508,6 +550,150 @@ async def get_all_batch_views(
         views.append(view)
 
     views.sort(key=lambda row: row.get("harvest_date") or "", reverse=True)
+    return views[:limit]
+
+
+async def sync_public_batch_from_harvest(
+    harvest_row: Optional[dict[str, Any]],
+    token: Optional[str] = None,
+) -> Optional[dict[str, Any]]:
+    harvest = _normalize_harvest(harvest_row)
+    batch_code = harvest.get("batch_code")
+    if not batch_code:
+        return None
+
+    lookup_token = _lookup_token(token)
+
+    hive = harvest.get("hive") or {}
+    if not hive and harvest.get("hive_id"):
+        hive_rows = await db_select("hives", filters={"id": harvest.get("hive_id")}, limit=1, token=lookup_token)
+        hive = hive_rows[0] if hive_rows else {}
+        if hive:
+            harvest["hive"] = hive
+
+    apiary = harvest.get("apiary") or {}
+    apiary_id = harvest.get("apiary_id") or hive.get("apiary_id")
+    if not apiary and apiary_id:
+        apiary_rows = await db_select("apiaries", filters={"id": apiary_id}, limit=1, token=lookup_token)
+        apiary = apiary_rows[0] if apiary_rows else {}
+        if apiary:
+            harvest["apiary"] = apiary
+            if hive and not hive.get("apiary"):
+                harvest["hive"] = {**hive, "apiary": apiary}
+
+    farmer = harvest.get("farmer") or {}
+    if not farmer and harvest.get("farmer_id"):
+        farmer_rows = await db_select("farmers", filters={"id": harvest.get("farmer_id")}, limit=1, token=lookup_token)
+        farmer = farmer_rows[0] if farmer_rows else {}
+        if farmer:
+            harvest["farmer"] = farmer
+
+    batch_rows = await db_select("honey_batches", filters={"batch_code": batch_code}, limit=1, token=lookup_token)
+    existing_batch = batch_rows[0] if batch_rows else None
+    view = await build_batch_view(existing_batch, harvest, token=lookup_token, include_live_snapshots=False)
+
+    quality_grade = view.get("quality_grade")
+    if not quality_grade:
+        score = harvest.get("quality_score")
+        if isinstance(score, (int, float)):
+            quality_grade = "A" if score >= 90 else "B" if score >= 80 else "C"
+
+    payload = {
+        "batch_code": view.get("batch_code"),
+        "honey_type": (existing_batch or {}).get("honey_type")
+        or harvest.get("honey_type")
+        or harvest.get("florage_type")
+        or "BeeYield Harvest",
+        "harvest_date": view.get("harvest_date"),
+        "packaged_date": (existing_batch or {}).get("packaged_date") or view.get("harvest_date"),
+        "quantity_kg": view.get("quantity_kg"),
+        "processing_method": view.get("processing_method") or "Cold Extraction",
+        "block_hash": view.get("block_hash") or (existing_batch or {}).get("block_hash"),
+        "farmer_name": view.get("farmer_name"),
+        "farmer_phone": view.get("farmer_phone"),
+        "beekeeper_name": view.get("beekeeper_name") or view.get("farmer_name"),
+        "beekeeper_id": view.get("beekeeper_id"),
+        "apiary_name": view.get("apiary_name"),
+        "location_county": view.get("location_county"),
+        "location_region": view.get("location_region"),
+        "latitude": view.get("latitude"),
+        "longitude": view.get("longitude"),
+        "quality_grade": quality_grade,
+        "moisture_content": view.get("moisture_content"),
+        "color_grade": view.get("color_grade"),
+        "status": "verified" if _is_publicly_verified(view) else (existing_batch or {}).get("status") or "pending",
+    }
+
+    serialized = {key: value for key, value in payload.items() if value is not None}
+    result = await db_upsert("honey_batches", serialized, on_conflict="batch_code", token=lookup_token)
+    data = result.get("data") if isinstance(result, dict) else None
+    if isinstance(data, list) and data:
+        return data[0]
+    if isinstance(data, dict):
+        return data
+    return serialized
+
+
+async def get_public_batch_views(
+    token: Optional[str] = None,
+    owner_name: Optional[str] = DEFAULT_PUBLIC_TRACEABILITY_OWNER,
+    verified_only: bool = True,
+    limit: int = 100,
+) -> list[dict[str, Any]]:
+    lookup_token = _lookup_token(token)
+    fetch_limit = max(limit * 8, 250)
+
+    harvest_rows = await db_select(
+        "harvests",
+        columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)",
+        limit=fetch_limit,
+        order_by="harvest_date",
+        ascending=False,
+        token=lookup_token,
+    )
+    batch_rows = await db_select(
+        "honey_batches",
+        limit=fetch_limit,
+        order_by="harvest_date",
+        ascending=False,
+        token=lookup_token,
+    )
+
+    normalized_harvests = [_normalize_harvest(row) for row in harvest_rows]
+    harvest_by_code = {row.get("batch_code"): row for row in normalized_harvests if row.get("batch_code")}
+    batch_by_code = {row.get("batch_code"): row for row in batch_rows if row.get("batch_code")}
+
+    ordered_codes: list[str] = []
+    for row in batch_rows:
+        code = row.get("batch_code")
+        if code and code not in ordered_codes:
+            ordered_codes.append(code)
+    for row in normalized_harvests:
+        code = row.get("batch_code")
+        if code and code not in ordered_codes:
+            ordered_codes.append(code)
+
+    views: list[dict[str, Any]] = []
+    for code in ordered_codes:
+        view = await build_batch_view(
+            batch_by_code.get(code),
+            harvest_by_code.get(code),
+            token=lookup_token,
+            include_live_snapshots=False,
+        )
+        if owner_name and not _matches_owner(view, owner_name):
+            continue
+        if verified_only and not _is_publicly_verified(view):
+            continue
+        views.append(view)
+
+    views.sort(
+        key=lambda row: (
+            row.get("harvest_date") or "",
+            row.get("batch_code") or "",
+        ),
+        reverse=True,
+    )
     return views[:limit]
 
 

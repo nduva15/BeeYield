@@ -30,9 +30,9 @@ export const CATALOG: Product[] = [
   // --- HONEY (8 items) ---
   {
     id: "h1",
-    name: "BeeYield Premium Acacia",
+    name: "BeeYield Wildflower Gold",
     description:
-      "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+      "Balanced wildflower honey with floral depth, soft sweetness, and a clean finish from mixed forage landscapes.",
     category: "honey",
     badge: "Bestseller",
     images: [
@@ -52,9 +52,9 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h2",
-    name: "BeeYield Acacia",
+    name: "BeeYield Forest Reserve",
     description:
-      "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+      "Raw forest honey with deeper colour, richer aroma, and a bold mineral finish from woodland forage zones.",
     category: "honey",
     badge: "Premium",
     images: [
@@ -74,9 +74,9 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h3",
-    name: "BeeYield Acacia",
+    name: "BeeYield Raw Comb Honey",
     description:
-      "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+      "Unfiltered raw honey packed with natural enzymes and pollen, harvested with minimal handling for full flavour.",
     category: "honey",
     badge: "Rare",
     images: [
@@ -96,9 +96,9 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h4",
-    name: "BeeYield Acacia",
+    name: "BeeYield Citrus Bloom",
     description:
-      "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+      "Bright citrus blossom honey with a light body and lively aromatic top notes for everyday table use.",
     category: "honey",
     badge: "Limited Edition",
     images: [
@@ -118,9 +118,9 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h5",
-    name: "BeeYield Acacia",
+    name: "BeeYield Highlands Gold",
     description:
-      "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+      "Highland honey with crisp clarity and smooth sweetness, sourced from cooler elevated forage belts.",
     category: "honey",
     badge: "100% Raw",
     images: [
@@ -140,9 +140,9 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h6",
-    name: "BeeYield Acacia",
+    name: "BeeYield Moringa Bloom",
     description:
-      "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+      "Distinctive moringa blossom honey with herbal lift and a refined finish from drought-resilient bee forage.",
     category: "honey",
     badge: "New Arrival",
     images: [
@@ -162,9 +162,9 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h7",
-    name: "BeeYield Acacia",
+    name: "BeeYield Ginger Blossom",
     description:
-      "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+      "Warm-toned blossom honey with layered floral notes and a gently spiced aromatic profile.",
     category: "honey",
     badge: "Wellness",
     images: [
@@ -184,9 +184,9 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h8",
-    name: "BeeYield Acacia",
+    name: "BeeYield Mangrove Reserve",
     description:
-      "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+      "Coastal reserve honey with rich caramel depth and a rare savoury-sweet finish from mangrove forage.",
     category: "honey",
     badge: "Gold Label",
     images: [

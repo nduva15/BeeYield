@@ -11,83 +11,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { YouTubeEmbed } from "@/components/YouTubeEmbed";
-import { useToast } from "@/hooks/use-toast";
-import { submitContactForm } from "@/services/contactService";
 
 const PollinationSolutions = () => {
-  const { toast } = useToast();
   const [supportType, setSupportType] = useState("monthly");
-  const [networkForm, setNetworkForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-  });
-  const [isSubmittingNetwork, setIsSubmittingNetwork] = useState(false);
-  const [networkSubmitted, setNetworkSubmitted] = useState(false);
-
-  const handleNetworkChange = (field: "firstName" | "lastName" | "email", value: string) => {
-    setNetworkForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleNetworkSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const firstName = networkForm.firstName.trim();
-    const lastName = networkForm.lastName.trim();
-    const email = networkForm.email.trim();
-
-    if (!firstName || !lastName || !email) {
-      toast({
-        title: "Missing details",
-        description: "Please complete your name and email before submitting.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmittingNetwork(true);
-
-    try {
-      const response = await submitContactForm({
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        phone: "N/A",
-        city: "N/A",
-        state: "N/A",
-        country: "N/A",
-        inquiry_type: "general",
-        topic: "Pollination Network Signup",
-        message: "Interested in updates about bee health, pollination research, and agricultural innovations.",
-        form_specific_data: {
-          source: "pollination_solutions_network",
-          subscribe_to_updates: true,
-        },
-      });
-
-      toast({
-        title: "Network request received",
-        description: response?.message || "We have your details and will keep you updated.",
-      });
-
-      setNetworkForm({
-        firstName: "",
-        lastName: "",
-        email: "",
-      });
-      setNetworkSubmitted(true);
-      setTimeout(() => setNetworkSubmitted(false), 5000);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Submission failed",
-        description: "There was an error saving your details. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmittingNetwork(false);
-    }
-  };
 
   return (
     <BeeYieldPageShell className="pt-8 p-0">
@@ -374,9 +300,13 @@ const PollinationSolutions = () => {
 
       {/* Video Section */}
       <div className="relative w-full h-[70vh] bg-foreground">
-        <YouTubeEmbed
+        <iframe
+          className="absolute inset-0 w-full h-full"
+          src="https://www.youtube.com/embed/vV-m_k8E5Yc"
           title="About BeeYield"
-          wrapperClassName="h-full w-full rounded-none border-0 bg-foreground shadow-none"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
         />
       </div>
 
@@ -411,7 +341,7 @@ const PollinationSolutions = () => {
                 This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world.
               </p>
               <Button variant="secondary" className="gap-2" asChild>
-                <Link to="/ourstory">Learn More <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/about">Learn More <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>
           </div>
@@ -570,50 +500,23 @@ const PollinationSolutions = () => {
           </div>
           <Card className="border-none shadow-xl">
             <CardContent className="p-8">
-              <form onSubmit={handleNetworkSubmit} className="space-y-6">
+              <form className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name *</Label>
-                    <Input
-                      id="firstName"
-                      name="firstName"
-                      placeholder="John"
-                      required
-                      value={networkForm.firstName}
-                      onChange={(e) => handleNetworkChange("firstName", e.target.value)}
-                    />
+                    <Input id="firstName" placeholder="John" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name *</Label>
-                    <Input
-                      id="lastName"
-                      name="lastName"
-                      placeholder="Doe"
-                      required
-                      value={networkForm.lastName}
-                      onChange={(e) => handleNetworkChange("lastName", e.target.value)}
-                    />
+                    <Input id="lastName" placeholder="Doe" required />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="networkEmail">Email *</Label>
-                  <Input
-                    id="networkEmail"
-                    name="email"
-                    type="email"
-                    placeholder="info@beeyield.com"
-                    required
-                    value={networkForm.email}
-                    onChange={(e) => handleNetworkChange("email", e.target.value)}
-                  />
+                  <Input id="networkEmail" type="email" placeholder="info@beeyield.com" required />
                 </div>
-                {networkSubmitted && (
-                  <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700" aria-live="polite">
-                    Thanks. Your details were sent successfully.
-                  </p>
-                )}
-                <Button type="submit" className="w-full" disabled={isSubmittingNetwork}>
-                  <Mail className="h-4 w-4 mr-2" /> {isSubmittingNetwork ? "Submitting..." : "Submit"}
+                <Button type="submit" className="w-full">
+                  <Mail className="h-4 w-4 mr-2" /> Submit
                 </Button>
               </form>
             </CardContent>

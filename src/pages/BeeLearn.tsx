@@ -39,11 +39,11 @@ import { Product } from "@/services/shopService";
 import { toast } from "sonner";
 import { submitNewsletterSubscription } from "@/services/contactService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { getCatalogByCategory } from "@/data/catalog";
-import { getLearnMaterialByName } from "@/data/learnMaterials";
 
 // Education products from Shop
-const initialEducationProducts: Product[] = getCatalogByCategory("education") as Product[];
+const initialEducationProducts: Product[] = [
+  // ... existing products ...
+];
 
 // Stats data
 const stats = [
@@ -125,9 +125,7 @@ const BeeLearn = () => {
           finalData = await getProducts("learn");
         }
 
-        const hasMappedPdf = finalData?.every((item) => !!getLearnMaterialByName(item.name));
-
-        if (finalData && finalData.length > 0 && hasMappedPdf) {
+        if (finalData && finalData.length > 0) {
           setProducts(finalData);
         } else {
           setProducts(initialEducationProducts); // Fallback to hardcoded if no data
@@ -704,10 +702,7 @@ const BeeLearn = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {(products.length > 0 ? products : initialEducationProducts).map((product) => {
-                const material = getLearnMaterialByName(product.name);
-
-                return (
+              {(products.length > 0 ? products : initialEducationProducts).map((product) => (
                 <Card key={product.id} className="group border-none shadow-xl shadow-amber-900/5 bg-[#FFF9F0] rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-amber-900/10 transition-all duration-500 flex flex-col h-full">
                   <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
                     <img
@@ -756,52 +751,26 @@ const BeeLearn = () => {
                       <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed font-medium">
                         {product.description}
                       </p>
-                      {material && (
-                        <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-3">
-                          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1B9157]">
-                            {material.formatLabel}
-                          </p>
-                          <p className="mt-1 text-xs text-neutral-600 leading-relaxed">
-                            {material.teaser}
-                          </p>
-                        </div>
-                      )}
                     </div>
 
-                    <div className="mt-auto pt-6 border-t border-neutral-50 flex items-center justify-between gap-3">
+                    <div className="mt-auto pt-6 border-t border-neutral-50 flex items-center justify-between">
                       <div>
                         <p className="text-[10px] text-neutral-400 font-bold mb-0.5">Price</p>
                         <p className="text-xl font-black text-[#F4D03F]">
                           {formatPrice(product.variants[0].price_kes)}
                         </p>
                       </div>
-
-                      <div className="flex items-center gap-2">
-                        {material && (
-                          <Button
-                            asChild
-                            size="sm"
-                            variant="outline"
-                            className="h-10 rounded-2xl border-amber-200 bg-white px-4 text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157] hover:bg-amber-50"
-                          >
-                            <a href={material.pdfPath} target="_blank" rel="noreferrer">
-                              <Download className="mr-2 h-3.5 w-3.5" />
-                              Open PDF
-                            </a>
-                          </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          onClick={() => handleAddToCart(product)}
-                          className="h-10 w-10 p-0 rounded-2xl bg-neutral-900 hover:bg-amber-600 text-[#1A1A1A] shadow-lg shadow-neutral-900/10 transition-all duration-300"
-                        >
-                          <ShoppingCart className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => handleAddToCart(product)}
+                        className="h-10 w-10 p-0 rounded-2xl bg-neutral-900 hover:bg-amber-600 text-[#1A1A1A] shadow-lg shadow-neutral-900/10 transition-all duration-300"
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
-              )})}
+              ))}
             </div>
           )}
 

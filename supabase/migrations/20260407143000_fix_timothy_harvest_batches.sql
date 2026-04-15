@@ -101,7 +101,7 @@ BEGIN
     INTO v_apiary_id
     FROM public.apiaries
     WHERE user_id = v_user_id
-      AND name = 'Kibwezi Main Apiary'
+      AND name = 'BeeYield Apiary'
     LIMIT 1;
 
     IF v_apiary_id IS NULL THEN
@@ -125,7 +125,7 @@ BEGIN
         ) VALUES (
             v_user_id,
             v_farmer_id,
-            'Kibwezi Main Apiary',
+            'BeeYield Apiary',
             'Kibwezi',
             'Permanent',
             'Acacia',
@@ -138,7 +138,7 @@ BEGIN
     SET
         user_id = v_user_id,
         farmer_id = v_farmer_id,
-        name = 'Kibwezi Main Apiary',
+        name = 'BeeYield Apiary',
         location_name = COALESCE(location_name, 'Kibwezi')
     WHERE id = v_apiary_id;
 
@@ -158,7 +158,7 @@ BEGIN
             hive_type
         )
         SELECT
-            'KBZ-' || to_char(v_hive_count + seq, 'FM000'),
+            'BEE-' || to_char(v_hive_count + seq, 'FM000'),
             v_apiary_id,
             v_user_id,
             v_farmer_id,
@@ -202,13 +202,13 @@ BEGIN
        ) THEN
         EXECUTE $delete_batches$
             DELETE FROM public.honey_batches
-            WHERE batch_code LIKE 'BY-2020%'
-               OR batch_code LIKE 'BY-2021%'
-               OR batch_code LIKE 'BY-2022%'
-               OR batch_code LIKE 'BY-2023%'
-               OR batch_code LIKE 'BY-2024%'
-               OR batch_code LIKE 'BY-2025%'
-               OR batch_code LIKE 'BY-2026%'
+            WHERE batch_code LIKE 'BEE-2020%'
+               OR batch_code LIKE 'BEE-2021%'
+               OR batch_code LIKE 'BEE-2022%'
+               OR batch_code LIKE 'BEE-2023%'
+               OR batch_code LIKE 'BEE-2024%'
+               OR batch_code LIKE 'BEE-2025%'
+               OR batch_code LIKE 'BEE-2026%'
         $delete_batches$;
     END IF;
 
@@ -254,7 +254,7 @@ BEGIN
             v_hive_code := v_hive_codes[v_hive_idx];
 
             v_batch_code := format(
-                'BY-%s-%s',
+                'BEE-%s-%s',
                 to_char(v_batch_date, 'YYYYMMDD'),
                 right(upper(regexp_replace(v_hive_code, '[^A-Z0-9]', '', 'g')), 4)
             );
@@ -411,7 +411,7 @@ BEGIN
                     WHERE table_schema = 'public' AND table_name = 'honey_batches' AND column_name = 'apiary_name'
                 ) THEN
                     v_batch_cols := array_append(v_batch_cols, 'apiary_name');
-                    v_batch_vals := array_append(v_batch_vals, quote_nullable('Kibwezi Main Apiary'));
+                    v_batch_vals := array_append(v_batch_vals, quote_nullable('BeeYield Apiary'));
                 END IF;
                 IF EXISTS (
                     SELECT 1 FROM information_schema.columns

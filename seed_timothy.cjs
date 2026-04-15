@@ -59,7 +59,7 @@ async function main() {
     location_name: 'Kalakalya, Kibwezi',
     county: 'Makueni',
     region: 'Kibwezi East',
-    apiary_code: 'BY-MKN-001',
+    apiary_code: 'BEE-MKN-001',
     apiary_type: 'Permanent',
     primary_forage: 'Acacia, Wildflower, Sisal',
     size_acres: 5.0,
@@ -85,7 +85,7 @@ async function main() {
     const dy = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
     hivesToInsert.push({
       user_id: userId, apiary_id: apiary.id, farmer_id: farmer.id,
-      hive_code: 'BY-H' + num,
+      hive_code: 'BEE-H' + num,
       nickname: i <= 30 ? 'Pioneer ' + i : (i <= 80 ? 'Colony ' + i : 'Unit ' + i),
       hive_type: hiveTypes[i % hiveTypes.length],
       bee_type: beeTypes[i % beeTypes.length],

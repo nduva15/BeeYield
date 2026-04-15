@@ -54,24 +54,6 @@ type MyTaskViewProps = {
   onTabChange?: (tab: string, message?: string, action?: string) => void;
 };
 
-const TASK_TYPES = ['Inspection', 'Feeding', 'Harvest', 'Treatment', 'Other'] as const;
-
-const getRecurrenceDays = (recurrence?: string) => {
-  if (!recurrence || recurrence === 'None') return '';
-  if (/^\d+$/.test(recurrence)) return recurrence;
-
-  try {
-    const parsed = JSON.parse(recurrence);
-    if (parsed && typeof parsed.days === 'number') {
-      return String(parsed.days);
-    }
-  } catch {
-    return '';
-  }
-
-  return '';
-};
-
 const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
   const [viewMode, setViewMode] = useState<'day' | 'list' | 'week' | 'month'>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -93,10 +75,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
   const [newTaskForm, setNewTaskForm] = useState<Partial<Task>>({
     status: 'pending',
     priority: 'medium',
-    due_date: format(new Date(), 'yyyy-MM-dd'),
-    type: 'Other',
-    category: 'General',
-    recurrence: ''
+    due_date: format(new Date(), 'yyyy-MM-dd')
   });
 
   const filteredTasks = useMemo(() => {
@@ -127,33 +106,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
   const handleToggleStatus = (task: Task, e?: React.MouseEvent) => {
     e?.stopPropagation();
     const newStatus = task.status === 'completed' ? 'pending' : 'completed';
-    updateTask.mutate({
-      id: task.id,
-      updates: {
-        status: newStatus,
-        is_completed: newStatus === 'completed',
-        completed_at: newStatus === 'completed' ? new Date().toISOString() : undefined,
-      },
-    });
-  };
-
-  const buildTaskPayload = (task: Partial<Task>) => {
-    const status = (task.status || 'pending') as Task['status'];
-
-    return {
-      title: task.title?.trim(),
-      description: task.description?.trim() || undefined,
-      status,
-      priority: task.priority || 'medium',
-      type: task.type || 'Other',
-      category: task.category || task.type || 'General',
-      due_date: task.due_date || format(new Date(), 'yyyy-MM-dd'),
-      apiary_id: task.apiary_id || undefined,
-      hive_id: task.hive_id || undefined,
-      recurrence: task.recurrence || undefined,
-      is_completed: status === 'completed' || task.is_completed === true,
-      completed_at: status === 'completed' ? (task.completed_at || new Date().toISOString()) : undefined,
-    };
+    updateTask.mutate({ id: task.id, updates: { status: newStatus, is_completed: newStatus === 'completed' } });
   };
 
   const getPriorityColor = (priority: string) => {
@@ -197,19 +150,14 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
   };
 
   const handleCreateTask = () => {
-    const payload = buildTaskPayload(newTaskForm);
-    if (!payload.title) return;
-
-    createTask.mutate(payload as any, {
+    if (!newTaskForm.title) return;
+    createTask.mutate(newTaskForm as any, {
       onSuccess: () => {
         setIsTaskModalOpen(false);
         setNewTaskForm({
           status: 'pending',
           priority: 'medium',
-          due_date: format(new Date(), 'yyyy-MM-dd'),
-          type: 'Other',
-          category: 'General',
-          recurrence: ''
+          due_date: format(new Date(), 'yyyy-MM-dd')
         });
       }
     });
@@ -225,21 +173,6 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
         setEditingTask(null);
       },
     });
-  };
-
-  const modalApiaryId = editingTask ? editingTask.apiary_id : newTaskForm.apiary_id;
-  const modalHives = modalApiaryId
-    ? hives.filter((hive) => hive.apiary_id === modalApiaryId)
-    : hives;
-  const recurrenceDays = editingTask ? getRecurrenceDays(editingTask.recurrence) : getRecurrenceDays(newTaskForm.recurrence);
-
-  const setRecurrence = (days: string) => {
-    const recurrence = days.trim() ? JSON.stringify({ days: Number(days) }) : '';
-    if (editingTask) {
-      setEditingTask({ ...editingTask, recurrence });
-      return;
-    }
-    setNewTaskForm({ ...newTaskForm, recurrence });
   };
 
   const renderTaskCard = (task: Task) => (
@@ -646,62 +579,19 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className={cn(glass.microLabel)}>Task Type</Label>
-                <Select
-                  value={editingTask ? (editingTask.type || 'Other') : (newTaskForm.type || 'Other')}
-                  onValueChange={(val) => {
-                    if (editingTask) setEditingTask({ ...editingTask, type: val, category: editingTask.category || val });
-                    else setNewTaskForm({ ...newTaskForm, type: val, category: newTaskForm.category || val });
-                  }}
-                >
-                  <SelectTrigger className={cn(glass.select)}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className={glass.selectContent}>
-                    {TASK_TYPES.map((taskType) => (
-                      <SelectItem key={taskType} value={taskType}>{taskType}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
                 <Label className={cn(glass.microLabel)}>Target Location</Label>
                 <Select
-                  value={editingTask ? (editingTask.apiary_id || 'none') : (newTaskForm.apiary_id || 'none')}
+                  value={editingTask ? editingTask.apiary_id : newTaskForm.apiary_id}
                   onValueChange={(val) => {
-                    if (editingTask) setEditingTask({ ...editingTask, apiary_id: val === 'none' ? undefined : val, hive_id: undefined });
-                    else setNewTaskForm({ ...newTaskForm, apiary_id: val === 'none' ? undefined : val, hive_id: undefined });
+                    if (editingTask) setEditingTask({...editingTask, apiary_id: val});
+                    else setNewTaskForm({...newTaskForm, apiary_id: val});
                   }}
                 >
                   <SelectTrigger className={cn(glass.select)}>
                     <SelectValue placeholder="All/General" />
                   </SelectTrigger>
                   <SelectContent className={glass.selectContent}>
-                    <SelectItem value="none">All/General</SelectItem>
                     {apiaries.map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className={cn(glass.microLabel)}>Hive</Label>
-                <Select
-                  value={editingTask ? (editingTask.hive_id || 'none') : (newTaskForm.hive_id || 'none')}
-                  onValueChange={(val) => {
-                    if (editingTask) setEditingTask({ ...editingTask, hive_id: val === 'none' ? undefined : val });
-                    else setNewTaskForm({ ...newTaskForm, hive_id: val === 'none' ? undefined : val });
-                  }}
-                >
-                  <SelectTrigger className={cn(glass.select)}>
-                    <SelectValue placeholder="No hive linked" />
-                  </SelectTrigger>
-                  <SelectContent className={glass.selectContent}>
-                    <SelectItem value="none">No hive linked</SelectItem>
-                    {modalHives.map((hive) => (
-                      <SelectItem key={hive.id} value={hive.id}>{hive.hive_code}</SelectItem>
-                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -724,18 +614,6 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className={cn(glass.microLabel)}>Recurring every N days</Label>
-              <Input
-                type="number"
-                min="1"
-                value={recurrenceDays}
-                onChange={(e) => setRecurrence(e.target.value)}
-                className={cn(glass.input)}
-                placeholder="Leave blank for one-time task"
-              />
             </div>
 
             <div className="space-y-2">
@@ -771,10 +649,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
             </button>
             <button 
               onClick={editingTask ? () => {
-                updateTask.mutate(
-                  { id: editingTask.id, updates: buildTaskPayload(editingTask) as any },
-                  { onSuccess: () => setIsTaskModalOpen(false) }
-                );
+                updateTask.mutate({ id: editingTask.id, updates: editingTask as any }, { onSuccess: () => setIsTaskModalOpen(false) });
               } : handleCreateTask}
               className={cn(glass.btnPrimary, "flex-1 h-12 shadow-xl shadow-[#F4D03F]/20")}
             >

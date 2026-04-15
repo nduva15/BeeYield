@@ -9,10 +9,13 @@ from typing import Any, Optional
 from app.db.supabase_db import db_get_by_id, db_insert, db_rpc, db_select, db_upsert
 from app.schemas import traceability as schemas
 from app.services.traceability_batch_service import (
+    DEFAULT_PUBLIC_TRACEABILITY_OWNER,
     audit_account_traceability,
     build_batch_view,
     get_all_batch_views,
     get_batch_view_by_code,
+    get_public_batch_views,
+    sync_public_batch_from_harvest,
 )
 
 from beeyield_core import TraceabilityEngine as _RustEngine  # type: ignore
@@ -221,6 +224,13 @@ class TraceabilityService:
         except Exception as exc:
             record["_blockchain_error"] = str(exc)
 
+        try:
+            public_batch = await sync_public_batch_from_harvest(record, token=token)
+            if public_batch:
+                record["public_batch"] = public_batch
+        except Exception as exc:
+            record["_public_batch_error"] = str(exc)
+
         return record
 
     @staticmethod
@@ -260,6 +270,20 @@ class TraceabilityService:
     @staticmethod
     async def get_all_batches(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
         return await get_all_batch_views(token=token, limit=limit)
+
+    @staticmethod
+    async def get_public_batches(
+        owner_name: Optional[str] = DEFAULT_PUBLIC_TRACEABILITY_OWNER,
+        verified_only: bool = True,
+        limit: int = 100,
+        token: Optional[str] = None,
+    ) -> list[dict[str, Any]]:
+        return await get_public_batch_views(
+            token=token,
+            owner_name=owner_name,
+            verified_only=verified_only,
+            limit=limit,
+        )
 
     @staticmethod
     async def get_history(batch_code: str, token: Optional[str] = None) -> Optional[schemas.TraceResponse]:
@@ -303,3 +327,17 @@ TraceabilityService = TraceabilityService()
 
 async def get_trace_journey(batch_code: str, token: Optional[str] = None) -> Optional[schemas.TraceResponse]:
     return await TraceabilityService.get_trace_journey(batch_code, token=token)
+
+
+async def get_public_batches(
+    owner_name: Optional[str] = DEFAULT_PUBLIC_TRACEABILITY_OWNER,
+    verified_only: bool = True,
+    limit: int = 100,
+    token: Optional[str] = None,
+) -> list[dict[str, Any]]:
+    return await TraceabilityService.get_public_batches(
+        owner_name=owner_name,
+        verified_only=verified_only,
+        limit=limit,
+        token=token,
+    )

@@ -1,3 +1,4 @@
+import { Link as RouterLink } from "react-router-dom";
 import { QuickLink as Link } from "./QuickLink";
 import { MessageSquare } from "lucide-react";
 import Logo from "@/assets/Logo.png";
@@ -19,10 +20,10 @@ const LinkedinIcon = ({ className }: { className?: string }) => (
 const Footer = () => {
   return (
     <footer className="border-t border-border/40 bg-muted/30">
-      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-14 lg:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 sm:gap-12 lg:gap-14">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-12">
+        <div className="grid gap-8 sm:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {/* Logo & Tagline */}
-          <div className="space-y-5 text-center sm:text-left">
+          <div className="space-y-4 text-center sm:text-left">
             <div className="flex items-center space-x-2 justify-center sm:justify-start">
               <img
                 src={Logo}
@@ -34,17 +35,17 @@ const Footer = () => {
             <p className="text-sm text-muted-foreground max-w-xs mx-auto sm:mx-0">
               Your partner in pollination.
             </p>
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-5 pt-2">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground transition-colors hover:text-primary hover:border-primary/40">
+            <div className="flex space-x-4 justify-center sm:justify-start pt-4">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <FacebookIcon className="h-5 w-5" />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground transition-colors hover:text-primary hover:border-primary/40">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <InstagramIcon className="h-5 w-5" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="Twitter" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground transition-colors hover:text-primary hover:border-primary/40">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="Twitter" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <TwitterIcon className="h-5 w-5" />
               </a>
-              <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground transition-colors hover:text-primary hover:border-primary/40">
+              <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <LinkedinIcon className="h-5 w-5" />
               </a>
             </div>
@@ -69,6 +70,11 @@ const Footer = () => {
                   Traceability
                 </Link>
               </li>
+              <li>
+                <Link to="/shop" className="text-muted-foreground hover:text-primary transition-colors">
+                  Shop
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -90,7 +96,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-border/40 pt-8 flex flex-col sm:flex-row justify-between items-center gap-6 text-sm text-muted-foreground">
+        <div className="mt-8 border-t border-border/40 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} BeeYield. All rights reserved.</p>
           <div className="flex gap-6">
             <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>

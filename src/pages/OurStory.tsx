@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 import impactBeekeeping from "@/assets/impact-beekeeping.jpg";
 import Logo from "@/assets/Logo.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
 const OurStory = () => {
   return (
@@ -264,10 +263,13 @@ const OurStory = () => {
       </section>
       {/* Full-width Video Section - Before Footer */}
       <div className="relative w-full h-[70vh] bg-[#F0F7F0]">
-        <YouTubeEmbed
+        <iframe
+          className="absolute inset-0 w-full h-full opacity-60"
+          src="https://www.youtube.com/embed/vV-m_k8E5Yc"
           title="About BeeYield"
-          wrapperClassName="h-full w-full rounded-none border-0 bg-[#F0F7F0] shadow-none"
-          iframeClassName="opacity-60"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#F0F7F0] via-transparent to-transparent pointer-events-none" />
       </div>

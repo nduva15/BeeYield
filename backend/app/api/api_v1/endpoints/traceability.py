@@ -93,6 +93,22 @@ async def get_batches(limit: int = 100, token: Optional[str] = Depends(get_token
     return await traceability_service.get_all_batches(limit=limit, token=token)
 
 
+@router.get("/public-batches", response_model=list[dict[str, Any]])
+async def get_public_batches(
+    owner_name: str = "Timothy Nduva",
+    verified_only: bool = True,
+    limit: int = 3,
+    token: Optional[str] = Depends(get_token),
+):
+    """Get deterministic public traceability batches filtered to a named beekeeper."""
+    return await traceability_service.get_public_batches(
+        owner_name=owner_name,
+        verified_only=verified_only,
+        limit=limit,
+        token=token,
+    )
+
+
 # ==================== POLYGON BLOCKCHAIN ENDPOINTS ====================
 
 @router.get("/polygon/status", response_model=dict[str, Any])

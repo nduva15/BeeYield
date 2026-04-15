@@ -2128,9 +2128,9 @@ export const beeyieldService = {
                 quantity_kg: input.quantity_kg,
                 quantity_left_for_bees_kg: input.quantity_left_for_bees_kg,
                 extraction_method: input.extraction_method,
+                nectar_source: input.nectar_source,
                 honey_type: input.honey_type,
                 color_grade: input.color_grade,
-                batch_code: input.batch_code,
                 weather_conditions: input.weather_conditions,
                 moisture_content_percent: input.moisture_content_percent,
                 florage_type: input.florage_type,
@@ -2138,7 +2138,8 @@ export const beeyieldService = {
                 is_verified: input.is_verified,
             };
 
-            const data = await apiPost<Harvest>('/beeyield/harvests', payload as any, { headers });
+            const result = await apiPost<any>('/beeyield/harvests/log', payload as any, { headers });
+            const data = mapHarvestRecord(result?.record || result);
             return { data, error: null };
         } catch (error) {
             console.error('createHarvest:', error);

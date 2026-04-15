@@ -24,7 +24,6 @@ import {
 import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
 import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';
 import BeeYieldForgotPasswordForm from '@/components/auth/beeyield/BeeYieldForgotPasswordForm';
-import { getBeeYieldPendingOnboardingPath } from '@/lib/beeyieldOnboarding';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -32,13 +31,12 @@ const ProfessionalAuth: React.FC = () => {
     const navigate = useNavigate();
     const { user, loading: authLoading, beeyieldUser } = useAuth();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
-    const activeEmail = beeyieldUser?.email || user?.email || null;
 
     useEffect(() => {
         if ((user || beeyieldUser) && !authLoading) {
-            navigate(getBeeYieldPendingOnboardingPath(activeEmail) || '/beeyield-dashboard');
+            navigate('/beeyield-dashboard');
         }
-    }, [activeEmail, user, beeyieldUser, authLoading, navigate]);
+    }, [user, beeyieldUser, authLoading, navigate]);
 
     if (authLoading) {
         return (
@@ -108,7 +106,7 @@ const ProfessionalAuth: React.FC = () => {
                                     {authMode === 'login' && (
                                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
                                             <BeeYieldLoginForm
-                                                onSuccess={() => navigate(getBeeYieldPendingOnboardingPath(activeEmail) || '/beeyield-dashboard')}
+                                                onSuccess={() => navigate('/beeyield-dashboard')}
                                                 onSwitchToRegister={() => setAuthMode('register')}
                                                 onForgotPassword={() => setAuthMode('forgot-password')}
                                             />

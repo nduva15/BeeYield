@@ -13,51 +13,20 @@ import {
 } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import beeyieldService, { Apiary, Hive, Inspection, Harvest, Task } from '@/services/beeyieldService';
+import beeyieldService, { Apiary, Hive, Inspection, Harvest } from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 import { glass, GlassStatCard } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useHarvests } from '@/hooks/useHarvests';
 import { useInspections, useCreateInspection, useUpdateInspection, useDeleteInspection } from '@/hooks/useInspections';
 import { useTasks, useUpdateTask } from '@/hooks/useTasks';
-import { useCreateVarroaReading, useUpdateVarroaReading, useVarroaReadings } from '@/hooks/useVarroa';
 
 interface InspectionsViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
     initialParams?: { message?: string, action?: string } | null;
 }
-
-const createEmptyInspectionForm = () => ({
-    hive_id: '',
-    inspector_name: '',
-    inspection_date: new Date().toISOString().split('T')[0],
-    health_status: 'healthy',
-    temperament: 'calm',
-    honey_stores: 0,
-    pollen_stores: 0,
-    brood_pattern: 'solid',
-    eggs_seen: false,
-    queen_seen: false,
-    queen_cells_seen: false,
-    varroa_mite_count: 0,
-    small_hive_beetles_seen: 0,
-    weather_condition: 'sunny',
-    temperature_celsius: 25,
-    findings: '',
-    actions_taken: '',
-    notes: ''
-});
-
-const parseNonNegativeNumber = (value: string) => {
-    const parsed = Number(value);
-
-    if (!Number.isFinite(parsed) || parsed < 0) {
-        return 0;
-    }
-
-    return parsed;
-};
 
 const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialParams }) => {
     // UI State
@@ -76,8 +45,6 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     const deleteInspectionMutation = useDeleteInspection();
     const { data: tasksData, isLoading: tasksLoading } = useTasks();
     const updateTaskMutation = useUpdateTask();
-    const createVarroaReadingMutation = useCreateVarroaReading();
-    const updateVarroaReadingMutation = useUpdateVarroaReading();
 
     const apiaries = apiariesData || [];
     const hives = hivesData || [];
@@ -93,18 +60,56 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     const [selectedBatchCode, setSelectedBatchCode] = React.useState<string>('all_batches');
     const [searchQuery, setSearchQuery] = React.useState('');
 
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     // Task linked logic
     const [linkedTaskId, setLinkedTaskId] = React.useState<string | null>(null);
 
     // Form State
-    const [formData, setFormData] = React.useState(createEmptyInspectionForm);
-    const { data: varroaReadingsData } = useVarroaReadings(formData.hive_id || undefined);
-    const varroaReadings = varroaReadingsData || [];
+    const [formData, setFormData] = React.useState({
+        hive_id: '',
+        inspector_name: '',
+        inspection_date: new Date().toISOString().split('T')[0],
+        health_status: 'healthy',
+        temperament: 'calm',
+        honey_stores: 0,
+        pollen_stores: 0,
+        brood_pattern: 'solid',
+        eggs_seen: false,
+        queen_seen: false,
+        queen_cells_seen: false,
+        varroa_mite_count: 0,
+        small_hive_beetles_seen: 0,
+        weather_condition: 'sunny',
+        temperature_celsius: 25,
+        findings: '',
+        actions_taken: '',
+        notes: ''
+    });
 
     const resetForm = React.useCallback(() => {
-        setFormData(createEmptyInspectionForm());
+        setFormData({
+            hive_id: '',
+            inspector_name: '',
+            inspection_date: new Date().toISOString().split('T')[0],
+            health_status: 'healthy',
+            temperament: 'calm',
+            honey_stores: 0,
+            pollen_stores: 0,
+            brood_pattern: 'solid',
+            eggs_seen: false,
+            queen_seen: false,
+            queen_cells_seen: false,
+            varroa_mite_count: 0,
+            small_hive_beetles_seen: 0,
+            weather_condition: 'sunny',
+            temperature_celsius: 25,
+            findings: '',
+            actions_taken: '',
+            notes: ''
+        });
         setEditingId(null);
-        setLinkedTaskId(null);
     }, []);
 
     // Handle initial params for filtering or modals
@@ -125,90 +130,6 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     }, [initialParams, hives]);
 
     const isSaving = createInspectionMutation.isPending || updateInspectionMutation.isPending;
-    const pendingInspectionTasks = React.useMemo(
-        () => tasks.filter(t => t.category === 'inspection' && t.status === 'pending'),
-        [tasks],
-    );
-    const linkedTask = React.useMemo(
-        () => pendingInspectionTasks.find(task => task.id === linkedTaskId) || null,
-        [linkedTaskId, pendingInspectionTasks],
-    );
-    const selectedFormHive = React.useMemo(
-        () => hives.find(hive => hive.id === formData.hive_id) || null,
-        [formData.hive_id, hives],
-    );
-    const selectedFormApiary = React.useMemo(
-        () => apiaries.find(apiary => apiary.id === selectedFormHive?.apiary_id) || null,
-        [apiaries, selectedFormHive?.apiary_id],
-    );
-    const latestVarroaReading = React.useMemo(() => {
-        if (varroaReadings.length === 0) {
-            return null;
-        }
-
-        return [...varroaReadings].sort((left, right) => {
-            return new Date(right.reading_date).getTime() - new Date(left.reading_date).getTime();
-        })[0];
-    }, [varroaReadings]);
-    const syncedVisualReading = React.useMemo(
-        () => varroaReadings.find(reading => reading.reading_date === formData.inspection_date && reading.method === 'visual') || null,
-        [formData.inspection_date, varroaReadings],
-    );
-    const varroaStatus = React.useMemo(() => {
-        const count = Number(formData.varroa_mite_count || 0);
-
-        if (count <= 0) {
-            return {
-                label: 'Clear visual check',
-                tone: 'text-[#1B9157]',
-                badge: 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20',
-                guidance: 'No mites recorded in this inspection.'
-            };
-        }
-
-        if (count <= 3) {
-            return {
-                label: 'Monitor closely',
-                tone: 'text-[#7A5D00]',
-                badge: 'bg-[#F4D03F]/10 text-[#7A5D00] border-[#F4D03F]/20',
-                guidance: 'Low mite activity. Re-check this colony soon.'
-            };
-        }
-
-        if (count <= 9) {
-            return {
-                label: 'Action window open',
-                tone: 'text-orange-600',
-                badge: 'bg-orange-500/10 text-orange-700 border-orange-500/20',
-                guidance: 'Rising pressure. Review treatment timing and follow-up sampling.'
-            };
-        }
-
-        return {
-            label: 'Immediate follow-up',
-            tone: 'text-red-500',
-            badge: 'bg-red-500/10 text-red-600 border-red-500/20',
-            guidance: 'High mite pressure. Pair this inspection with a dedicated treatment plan.'
-        };
-    }, [formData.varroa_mite_count]);
-
-    const openTaskInspection = React.useCallback((task: Task) => {
-        const nextForm = createEmptyInspectionForm();
-        const taskHive = hives.find(hive => hive.id === task.hive_id);
-        const dueDate = task.due_date ? task.due_date.slice(0, 10) : nextForm.inspection_date;
-
-        setFormData({
-            ...nextForm,
-            hive_id: task.hive_id || '',
-            inspection_date: dueDate,
-            findings: `Required Inspection for: ${task.title}`
-        });
-        setEditingId(null);
-        setLinkedTaskId(task.id);
-        setSelectedPlaceId(task.apiary_id || taskHive?.apiary_id || 'all_places');
-        setSelectedHiveId(task.hive_id || 'all_hives');
-        setIsAddingInspection(true);
-    }, [hives]);
 
     const handleSave = React.useCallback(async () => {
         if (!formData.hive_id || formData.hive_id === 'all_hives') {
@@ -217,67 +138,25 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
         }
 
         try {
-            let savedInspection: Inspection | null = null;
-
             if (editingId) {
-                const response = await updateInspectionMutation.mutateAsync({ id: editingId, data: formData });
-                savedInspection = response?.data || null;
+                await updateInspectionMutation.mutateAsync({ id: editingId, data: formData });
             } else {
                 const response = await createInspectionMutation.mutateAsync(formData);
-                savedInspection = response?.data || null;
-            }
-
-            if (savedInspection && linkedTaskId) {
-                await updateTaskMutation.mutateAsync({
-                    id: linkedTaskId,
-                    updates: { status: 'completed', completed_at: new Date().toISOString() }
-                });
-            }
-
-            if (savedInspection && (Number(formData.varroa_mite_count) > 0 || syncedVisualReading)) {
-                const syncNotes = ['Auto-synced from inspection log.', formData.findings].filter(Boolean).join(' ');
-
-                if (syncedVisualReading) {
-                    await updateVarroaReadingMutation.mutateAsync({
-                        id: syncedVisualReading.id,
-                        data: {
-                            hive_id: formData.hive_id,
-                            reading_date: formData.inspection_date,
-                            mite_count: Number(formData.varroa_mite_count),
-                            inspector_name: formData.inspector_name || undefined,
-                            notes: syncNotes || undefined,
-                        }
-                    });
-                } else {
-                    await createVarroaReadingMutation.mutateAsync({
-                        hive_id: formData.hive_id,
-                        reading_date: formData.inspection_date,
-                        method: 'visual',
-                        mite_count: Number(formData.varroa_mite_count),
-                        sample_size: 0,
-                        inspector_name: formData.inspector_name || undefined,
-                        notes: syncNotes || undefined,
+                // If this was linked to a task, mark task as complete
+                if (linkedTaskId && response?.data) {
+                    await updateTaskMutation.mutateAsync({ 
+                        id: linkedTaskId, 
+                        updates: { status: 'completed', completed_at: new Date().toISOString() } 
                     });
                 }
             }
-
             setIsAddingInspection(false);
+            setLinkedTaskId(null);
             resetForm();
         } catch (error: any) {
             console.error('Error saving inspection:', error);
         }
-    }, [
-        formData,
-        editingId,
-        linkedTaskId,
-        syncedVisualReading,
-        createInspectionMutation,
-        updateInspectionMutation,
-        updateTaskMutation,
-        createVarroaReadingMutation,
-        updateVarroaReadingMutation,
-        resetForm,
-    ]);
+    }, [formData, editingId, linkedTaskId, createInspectionMutation, updateInspectionMutation, updateTaskMutation, resetForm]);
 
     const handleEdit = React.useCallback((inspection: Inspection) => {
         setEditingId(inspection.id);
@@ -301,7 +180,6 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
             actions_taken: inspection.actions_taken || '',
             notes: inspection.notes || ''
         });
-        setLinkedTaskId(null);
         setIsAddingInspection(true);
     }, []);
 
@@ -358,7 +236,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     }, [harvests]);
 
     const stats = (() => {
-        const pending = pendingInspectionTasks.length;
+        const pending = tasks.filter(t => t.category === 'inspection' && t.status === 'pending').length;
         return {
             total: inspections.length,
             healthy: inspections.filter(i => i.health_status === 'healthy').length,
@@ -493,37 +371,6 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                         />
                                     </div>
                                 </div>
-
-                                {linkedTask && (
-                                    <div className="rounded-2xl border border-[#F4D03F]/20 bg-[#F4D03F]/10 p-4 space-y-3 shadow-sm">
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="space-y-1">
-                                                <p className="text-[9px] font-black uppercase tracking-[0.22em] text-[#7A5D00]">Linked task</p>
-                                                <p className="text-sm font-black text-[#1A1A1A]">{linkedTask.title}</p>
-                                            </div>
-                                            <Badge className="border-[#F4D03F]/20 bg-white/70 text-[#7A5D00] shadow-none">
-                                                Pending
-                                            </Badge>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2 text-[10px] font-black text-gray-500">
-                                            {selectedFormApiary && <span>{selectedFormApiary.name}</span>}
-                                            {selectedFormHive && <span>Hive {selectedFormHive.hive_code}</span>}
-                                            {linkedTask.due_date && (
-                                                <span>Due {new Date(linkedTask.due_date).toLocaleDateString()}</span>
-                                            )}
-                                        </div>
-                                        <p className="text-[10px] font-semibold text-gray-500">
-                                            Saving this inspection will complete the linked task and keep the colony timeline clean.
-                                        </p>
-                                        <button
-                                            type="button"
-                                            onClick={() => setLinkedTaskId(null)}
-                                            className="text-[10px] font-black text-[#7A5D00] hover:text-[#1A1A1A] transition-colors"
-                                        >
-                                            Remove task link
-                                        </button>
-                                    </div>
-                                )}
                             </div>
                         </motion.div>
 
@@ -537,34 +384,6 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                     <p className="text-[8px] font-black text-gray-400 leading-relaxed">
                                         Powering Collective Hive Intelligence
                                     </p>
-                                </div>
-                                <div className="rounded-2xl border border-white/40 bg-white/60 p-4 space-y-3">
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="space-y-1">
-                                            <p className="text-[9px] font-black uppercase tracking-[0.22em] text-gray-400">Varroa sync</p>
-                                            <p className={cn("text-sm font-black", varroaStatus.tone)}>{varroaStatus.label}</p>
-                                        </div>
-                                        <Badge className={cn("border shadow-none", varroaStatus.badge)}>
-                                            {Number(formData.varroa_mite_count) || 0} mites
-                                        </Badge>
-                                    </div>
-                                    <p className="text-[10px] font-semibold text-gray-500">
-                                        {varroaStatus.guidance}
-                                    </p>
-                                    {latestVarroaReading ? (
-                                        <div className="text-[10px] font-black text-gray-500 space-y-1">
-                                            <p>Latest saved reading: {latestVarroaReading.mite_count} mites on {new Date(latestVarroaReading.reading_date).toLocaleDateString()}.</p>
-                                            <p>
-                                                {syncedVisualReading
-                                                    ? 'Saving will update the existing same-day visual reading.'
-                                                    : 'Saving a non-zero count will create a same-day visual reading for the Varroa simulator.'}
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        <p className="text-[10px] font-semibold text-gray-500">
-                                            The first non-zero inspection count will create a dedicated visual varroa reading for this hive.
-                                        </p>
-                                    )}
                                 </div>
                             </div>
                         </div>
@@ -735,15 +554,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                         autoComplete="off"
                                                         type="number"
                                                         value={formData.varroa_mite_count}
-                                                        onChange={(e) => setFormData({ ...formData, varroa_mite_count: parseNonNegativeNumber(e.target.value) })}
+                                                        onChange={(e) => setFormData({ ...formData, varroa_mite_count: parseInt(e.target.value) })}
                                                         className={cn(glass.input, "h-10 pl-10 border-red-500/20 bg-red-500/5 focus:bg-white")}
                                                     />
-                                                </div>
-                                                <div className="flex items-center justify-between gap-3 text-[10px]">
-                                                    <span className="font-semibold text-gray-500">{varroaStatus.guidance}</span>
-                                                    <Badge className={cn("border shadow-none", varroaStatus.badge)}>
-                                                        {syncedVisualReading ? 'Updates saved reading' : 'Syncs to Varroa log'}
-                                                    </Badge>
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
@@ -756,7 +569,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                                         autoComplete="off"
                                                         type="number"
                                                         value={formData.small_hive_beetles_seen}
-                                                        onChange={(e) => setFormData({ ...formData, small_hive_beetles_seen: parseNonNegativeNumber(e.target.value) })}
+                                                        onChange={(e) => setFormData({ ...formData, small_hive_beetles_seen: parseInt(e.target.value) })}
                                                         className={cn(glass.input, "h-10 pl-10 border-white/40 bg-white/50 focus:bg-white")}
                                                     />
                                                 </div>
@@ -918,14 +731,14 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
             {/* List */}
             <div className="relative z-10 space-y-8">
                 {/* Pending Inspections Section */}
-                {!isLoading && pendingInspectionTasks.length > 0 && (
+                {!isLoading && tasks.some(t => t.category === 'inspection' && t.status === 'pending') && (
                     <div className="space-y-4">
                         <div className="flex items-center gap-4 border-l-4 border-l-[#F4D03F] pl-4">
                             <h2 className="text-[11px] font-black text-[#1A1A1A] leading-none uppercase tracking-widest">Required <span className="text-[#F4D03F]">Inspections</span></h2>
                             <div className="h-px flex-1 bg-gradient-to-r from-[#F4D03F]/10 to-transparent" />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {pendingInspectionTasks.map(task => {
+                            {tasks.filter(t => t.category === 'inspection' && t.status === 'pending').map(task => {
                                 const hive = hives.find(h => h.id === task.hive_id);
                                 const apiary = apiaries.find(a => a.id === task.apiary_id);
                                 return (
@@ -948,7 +761,16 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
                                             </div>
                                         </div>
                                         <button
-                                            onClick={() => openTaskInspection(task)}
+                                            onClick={() => {
+                                                resetForm();
+                                                setFormData({
+                                                    ...formData,
+                                                    hive_id: task.hive_id || '',
+                                                    findings: `Required Inspection for: ${task.title}`
+                                                });
+                                                setLinkedTaskId(task.id);
+                                                setIsAddingInspection(true);
+                                            }}
                                             className="w-8 h-8 rounded-lg bg-[#F4D03F] flex items-center justify-center text-[#1A1A1A] hover:scale-110 transition-transform shadow-md"
                                         >
                                             <Plus className="w-4 h-4" />
@@ -1042,13 +864,12 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
 
                                             {/* Content Section */}
                                             <div className="flex-1 space-y-3 min-w-0 relative">
-                                                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                                                     {[
                                                         { l: 'Temp', v: `${inspection.temperature_celsius}°C`, i: Thermometer, c: 'text-red-500', b: 'bg-red-500/10' },
                                                         { l: 'Honey', v: `${inspection.honey_stores}kg`, i: Zap, c: 'text-[#F4D03F]', b: 'bg-[#F4D03F]/10' },
                                                         { l: 'Brood', v: (inspection.brood_pattern || 'Solid'), i: Target, c: 'text-[#1B9157]', b: 'bg-[#1B9157]/10' },
-                                                        { l: 'Weather', v: (inspection.weather_condition || 'Sunny'), i: Sun, c: 'text-[#F4D03F]', b: 'bg-orange-400/10' },
-                                                        { l: 'Varroa', v: `${inspection.varroa_mite_count || 0} mites`, i: Microscope, c: 'text-red-500', b: 'bg-red-500/10' }
+                                                        { l: 'Weather', v: (inspection.weather_condition || 'Sunny'), i: Sun, c: 'text-[#F4D03F]', b: 'bg-orange-400/10' }
                                                     ].map((s, idx) => {
                                                         const Icon = s.i;
                                                         return (

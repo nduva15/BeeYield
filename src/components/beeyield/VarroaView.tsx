@@ -1,1116 +1,463 @@
 import React from 'react';
-import { CalendarDays, ChevronRight, FlaskConical, Leaf, Search, Settings, Sparkles, ThumbsUp, Trash2, Wand2 } from 'lucide-react';
+import {
+    AlertTriangle,
+    BarChart3,
+    CalendarClock,
+    ChevronRight,
+    History,
+    Microscope,
+    RefreshCw,
+    ShieldCheck,
+    ShieldPlus,
+    Syringe,
+    TrendingDown,
+    TrendingUp,
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
-import { useApiaries, useHives } from '@/hooks/useApiaries';
-import {
-    useCreateVarroaReading,
-    useCreateVarroaTreatment,
-    useDeleteVarroaReading,
-    useDeleteVarroaTreatment,
-    useUpdateVarroaReading,
-    useUpdateVarroaTreatment,
-    useVarroaReadings,
-    useVarroaTreatments,
-} from '@/hooks/useVarroa';
-import {
-    type BroodMode,
-    type ColonyStrength,
-    type HygieneProfile,
-    type ReinvasionPressure,
-    type StartMode,
-    simulateVarroaModel,
-} from '@/lib/varroaModel';
-import {
-    Area,
-    AreaChart,
-    CartesianGrid,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from 'recharts';
+import beeyieldService from '@/services/beeyieldService';
+import { glass, PageHeader } from './GlassTheme';
 
-const pageClass = cn(glass.page, 'space-y-4 pb-10');
-const shellClass = 'mx-auto max-w-[1120px] space-y-5';
-const cardClass = cn(glass.section, 'rounded-[18px] border-[#f4d03f]/20 bg-white shadow-[0_10px_30px_rgba(26,26,26,0.05)]');
-const softCardClass = 'rounded-[16px] border border-[#f4d03f]/18 bg-[#fffdf8]';
-const labelClass = 'text-[11px] font-medium uppercase tracking-[0.05em] text-[#64748b]';
-const titleClass = 'text-[18px] font-semibold tracking-[-0.02em] text-[#1a1a1a]';
-const inputClass = 'h-11 w-full rounded-[12px] border border-[#f4d03f]/30 bg-[#fff9f0] px-4 text-[15px] text-[#1a1a1a] outline-none transition focus:border-[#f4d03f] focus:ring-2 focus:ring-[#f4d03f]/30';
-const chipClass = 'rounded-full border border-[#f4d03f]/25 bg-[#fff9f0] px-4 py-2.5 text-[13px] font-medium text-[#4b5563] transition hover:bg-[#f4d03f]/8';
-const activeChipClass = 'rounded-full border border-[#dfab27] bg-[#f6bc3a] px-4 py-2.5 text-[13px] font-medium text-[#1f2937] shadow-[0_10px_20px_rgba(245,185,56,0.24)]';
-const okPillClass = 'inline-flex items-center gap-2 rounded-full border border-[#7ed8a2] bg-[#dff7e8] px-4 py-2 text-[13px] font-semibold text-[#13794a]';
-const warningPillClass = 'inline-flex items-center gap-2 rounded-full border border-[#dfab27] bg-[#f6bc3a] px-4 py-2 text-[13px] font-medium text-[#1f2937] shadow-[0_10px_20px_rgba(245,185,56,0.24)]';
+type RiskStatus = 'safe' | 'warning' | 'critical';
+type HiveTrend = 'up' | 'down' | 'stable';
 
-const faqItems = [
-    'Is this a veterinary diagnosis?',
-    'Why can results differ from my hive?',
-    'Can I compare different treatment plans?',
-    'Where does collapse risk come from?',
-    'What is reinvasion and why does it break plans?',
-];
+interface VarroaHiveCard {
+    id: string;
+    infestation: number;
+    status: RiskStatus;
+    trend: HiveTrend;
+    trendDelta: number;
+    method: string;
+    date: string;
+    sampleSize: number;
+    miteCount: number;
+    notes: string;
+}
 
-const quickLinks = [
-    'Add planned treatment',
-    'My devices',
-    'Measurement data',
-    'Support Center',
-    'BeeHUB Agro Intelligence',
-    'Settings',
-];
-
-const treatmentLabels: Record<string, string> = {
-    oxalic_acid: 'Oxalic acid',
-    formic_acid: 'Formic acid',
-    thymol: 'Thymol',
-    amitraz: 'Amitraz',
-    fluvalinate: 'Fluvalinate',
-    biotechnical: 'Biotechnical',
-    other: 'Other',
-};
-
-const treatmentTypeToModel = (value: string) => value.replace(/_/g, ' ');
-
-const defaultReadingForm = (today: string, hiveId: string) => ({
-    hive_id: hiveId,
-    reading_date: today,
-    method: 'alcohol_wash' as const,
-    mite_count: 0,
-    sample_size: 300,
-    inspector_name: '',
-    notes: '',
-});
-
-const defaultTreatmentForm = (today: string, hiveId: string) => ({
-    hive_id: hiveId,
-    treatment_type: 'amitraz' as const,
-    start_date: today,
-    end_date: '',
-    dosage: '',
-    effectiveness_percent: 95,
-    notes: '',
-});
-
-const formatDate = (value: string) => {
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleDateString('en-GB');
-};
-
-const StatTile = ({ label, value }: { label: string; value: string }) => (
-    <div className="rounded-[12px] border border-[#f4d03f]/20 bg-[#fff9f0] px-4 py-3 shadow-sm">
-        <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-[#6b7280]">{label}</div>
-        <div className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-[#1a1a1a]">{value}</div>
-    </div>
-);
-
-const MiniChartCard = ({
-    title,
-    dataKey,
-    color,
-    data,
-    secondaryKey,
-    secondaryColor,
-}: {
+interface TreatmentCard {
+    id: string;
     title: string;
-    dataKey: string;
-    color: string;
-    data: Array<Record<string, number | string>>;
-    secondaryKey?: string;
-    secondaryColor?: string;
-}) => (
-    <div className={cn(softCardClass, 'p-3')}>
-        <div className="mb-2 text-[12px] font-semibold text-[#1a1a1a]">{title}</div>
-        <div className="h-[160px]">
-            <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-                    <CartesianGrid stroke="#f2e9cf" />
-                    <XAxis dataKey="dayLabel" tick={{ fontSize: 10, fill: '#6b7280' }} tickLine={false} axisLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: '#6b7280' }} tickLine={false} axisLine={false} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} dot={false} />
-                    {secondaryKey && secondaryColor ? <Line type="monotone" dataKey={secondaryKey} stroke={secondaryColor} strokeWidth={2} dot={false} /> : null}
-                </LineChart>
-            </ResponsiveContainer>
-        </div>
-    </div>
-);
+    note: string;
+    status: string;
+    date: string;
+}
 
-const Field = ({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) => (
-    <label className={cn('space-y-2.5', className)}>
-        <div className={labelClass}>{label}</div>
-        {children}
-    </label>
-);
+const humanize = (value?: string | null) =>
+    String(value || '')
+        .replace(/_/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, (char) => char.toUpperCase()) || 'Not specified';
 
-const ToggleChip = ({
-    active,
-    children,
-    onClick,
-    className,
-}: {
-    active: boolean;
-    children: React.ReactNode;
-    onClick: () => void;
-    className?: string;
-}) => (
-    <button type="button" onClick={onClick} className={cn(active ? activeChipClass : chipClass, className)}>
-        {children}
-    </button>
-);
+const formatDate = (value?: string | null, full = false) => {
+    if (!value) return full ? 'Unscheduled' : 'No date';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString(undefined, full
+        ? { month: 'short', day: 'numeric', year: 'numeric' }
+        : { month: 'short', day: 'numeric' });
+};
+
+const getStatus = (infestation: number): RiskStatus => infestation >= 5 ? 'critical' : infestation >= 3 ? 'warning' : 'safe';
+const getTrend = (delta: number): HiveTrend => delta > 0.2 ? 'up' : delta < -0.2 ? 'down' : 'stable';
+
+const statusStyles: Record<RiskStatus, string> = {
+    safe: 'bg-[#1B9157]/10 text-[#1B9157]',
+    warning: 'bg-[#F4D03F]/18 text-[#B98A00]',
+    critical: 'bg-red-500/10 text-red-500',
+};
 
 const VarroaView: React.FC = () => {
-    const today = React.useMemo(() => new Date().toISOString().slice(0, 10), []);
-    const { data: apiaries = [] } = useApiaries();
-    const { data: hives = [] } = useHives();
-    const [selectedApiaryId, setSelectedApiaryId] = React.useState('all_apiaries');
-    const [selectedHiveId, setSelectedHiveId] = React.useState('');
-    const [startMode, setStartMode] = React.useState<StartMode>('default');
-    const [startDate, setStartDate] = React.useState(today);
-    const [initialMiteCount, setInitialMiteCount] = React.useState(120);
-    const [adultBeePopulation, setAdultBeePopulation] = React.useState(20000);
-    const [simulationDays, setSimulationDays] = React.useState(180);
-    const [collapseThreshold, setCollapseThreshold] = React.useState(3000);
-    const [measurementType, setMeasurementType] = React.useState('Daily mite fall');
-    const [mitesPerDay, setMitesPerDay] = React.useState(5);
-    const [colonyMultiplier, setColonyMultiplier] = React.useState(120);
-    const [region, setRegion] = React.useState('Central Europe');
-    const [colonyStrength, setColonyStrength] = React.useState<ColonyStrength>('Medium');
-    const [broodMode, setBroodMode] = React.useState<BroodMode>('Seasonal (auto)');
-    const [reinvasionPressure, setReinvasionPressure] = React.useState<ReinvasionPressure>('Medium');
-    const [hygieneProfile, setHygieneProfile] = React.useState<HygieneProfile>('Standard');
-    const [treatmentMode, setTreatmentMode] = React.useState('Profile');
-    const [treatmentDay, setTreatmentDay] = React.useState(0);
-    const [treatmentType, setTreatmentType] = React.useState('amitraz');
-    const [temperature, setTemperature] = React.useState(20);
-    const [searchQuery, setSearchQuery] = React.useState('Search apiaries, tools');
-    const [language, setLanguage] = React.useState('English');
-    const [manualTemperature, setManualTemperature] = React.useState(true);
-    const [treatmentAdvisorTemp, setTreatmentAdvisorTemp] = React.useState(20);
-    const [oaTemperature, setOaTemperature] = React.useState(10);
-    const [hasBrood, setHasBrood] = React.useState(true);
-    const [editingReadingId, setEditingReadingId] = React.useState<string | null>(null);
-    const [editingTreatmentId, setEditingTreatmentId] = React.useState<string | null>(null);
-    const [readingForm, setReadingForm] = React.useState(() => defaultReadingForm(today, ''));
-    const [treatmentForm, setTreatmentForm] = React.useState(() => defaultTreatmentForm(today, ''));
+    const [hives, setHives] = React.useState<VarroaHiveCard[]>([]);
+    const [treatments, setTreatments] = React.useState<TreatmentCard[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [refreshing, setRefreshing] = React.useState(false);
 
-    const filteredHives = React.useMemo(
-        () => hives.filter((hive) => selectedApiaryId === 'all_apiaries' || hive.apiary_id === selectedApiaryId),
-        [hives, selectedApiaryId],
-    );
+    const fetchData = async (mode: 'initial' | 'refresh' = 'initial') => {
+        if (mode === 'initial') setLoading(true);
+        if (mode === 'refresh') setRefreshing(true);
 
-    React.useEffect(() => {
-        if (!filteredHives.length) {
-            setSelectedHiveId('');
-            return;
+        try {
+            const [readings, treatmentData] = await Promise.all([
+                beeyieldService.getVarroaReadings(),
+                beeyieldService.getVarroaTreatments(),
+            ]);
+
+            const sorted = [...(readings || [])].sort((a: any, b: any) =>
+                new Date(b?.reading_date || b?.created_at || 0).getTime() -
+                new Date(a?.reading_date || a?.created_at || 0).getTime()
+            );
+
+            const byHive = new Map<string, any[]>();
+            sorted.forEach((reading: any) => {
+                const hiveId = String(reading?.hive_id || reading?.id || 'Unknown');
+                byHive.set(hiveId, [...(byHive.get(hiveId) || []), reading]);
+            });
+
+            const mappedHives = Array.from(byHive.entries()).map(([rawId, rows]) => {
+                const latest = rows[0] || {};
+                const previous = rows[1] || {};
+                const infestation = Number(latest?.infestation_rate ?? latest?.infestation ?? latest?.rate ?? 0);
+                const previousInfestation = Number(previous?.infestation_rate ?? previous?.infestation ?? previous?.rate ?? infestation);
+                const trendDelta = Number((infestation - previousInfestation).toFixed(1));
+
+                return {
+                    id: rawId.slice(0, 8).toUpperCase(),
+                    infestation,
+                    status: getStatus(infestation),
+                    trend: getTrend(trendDelta),
+                    trendDelta,
+                    method: humanize(latest?.method || latest?.detection_method || 'Alcohol wash'),
+                    date: latest?.reading_date || latest?.created_at || '',
+                    sampleSize: Number(latest?.sample_size ?? latest?.sample ?? 300),
+                    miteCount: Number(latest?.mite_count ?? latest?.count ?? 0),
+                    notes: latest?.notes || latest?.observation || '',
+                } satisfies VarroaHiveCard;
+            }).sort((a, b) => b.infestation - a.infestation);
+
+            const mappedTreatments = (treatmentData || [])
+                .sort((a: any, b: any) =>
+                    new Date(b?.inspection_date || b?.created_at || 0).getTime() -
+                    new Date(a?.inspection_date || a?.created_at || 0).getTime()
+                )
+                .slice(0, 4)
+                .map((t: any, index: number) => ({
+                    id: String(t?.id || index),
+                    title: humanize(t?.treatment_type || t?.actions_taken || t?.health_status || 'Treatment recorded'),
+                    note: t?.notes || t?.apiary_name || 'Field note pending',
+                    status: humanize(t?.health_status || 'treated'),
+                    date: t?.inspection_date || t?.start_date || t?.created_at || '',
+                }));
+
+            setHives(mappedHives);
+            setTreatments(mappedTreatments);
+        } catch (err) {
+            console.error('Error loading varroa data:', err);
+            setHives([]);
+            setTreatments([]);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
         }
-        if (!filteredHives.some((hive) => hive.id === selectedHiveId)) {
-            setSelectedHiveId(filteredHives[0].id);
-        }
-    }, [filteredHives, selectedHiveId]);
-
-    React.useEffect(() => {
-        setReadingForm((current) => ({ ...current, hive_id: selectedHiveId }));
-        setTreatmentForm((current) => ({ ...current, hive_id: selectedHiveId }));
-    }, [selectedHiveId]);
-
-    const { data: varroaReadings = [], isLoading: readingsLoading } = useVarroaReadings(selectedHiveId || undefined);
-    const { data: varroaTreatments = [], isLoading: treatmentsLoading } = useVarroaTreatments(selectedHiveId || undefined);
-    const createReadingMutation = useCreateVarroaReading();
-    const updateReadingMutation = useUpdateVarroaReading();
-    const deleteReadingMutation = useDeleteVarroaReading();
-    const createTreatmentMutation = useCreateVarroaTreatment();
-    const updateTreatmentMutation = useUpdateVarroaTreatment();
-    const deleteTreatmentMutation = useDeleteVarroaTreatment();
-
-    const applyReadingToSimulation = React.useCallback((miteCount: number, readingDate: string, method: string) => {
-        setStartMode('observed');
-        setStartDate(readingDate);
-        setMeasurementType(method);
-        setMitesPerDay(miteCount);
-        setInitialMiteCount(Math.max(miteCount * colonyMultiplier, miteCount));
-    }, [colonyMultiplier]);
-
-    const applyTreatmentToSimulation = React.useCallback((type: string, date?: string) => {
-        setTreatmentType(treatmentTypeToModel(type));
-        if (date) setStartDate(date);
-        setTreatmentDay(0);
-    }, []);
-
-    const resetReadingForm = React.useCallback(() => {
-        setEditingReadingId(null);
-        setReadingForm(defaultReadingForm(today, selectedHiveId));
-    }, [selectedHiveId, today]);
-
-    const resetTreatmentForm = React.useCallback(() => {
-        setEditingTreatmentId(null);
-        setTreatmentForm(defaultTreatmentForm(today, selectedHiveId));
-    }, [selectedHiveId, today]);
-
-    React.useEffect(() => {
-        if (startMode === 'observed') setInitialMiteCount(mitesPerDay * colonyMultiplier);
-    }, [startMode, mitesPerDay, colonyMultiplier]);
-
-    React.useEffect(() => {
-        if (editingReadingId || !varroaReadings.length) return;
-        const latestReading = varroaReadings[0];
-        applyReadingToSimulation(latestReading.mite_count, latestReading.reading_date, latestReading.method);
-    }, [applyReadingToSimulation, editingReadingId, varroaReadings]);
-
-    React.useEffect(() => {
-        if (editingTreatmentId || !varroaTreatments.length) return;
-        const latestTreatment = varroaTreatments[0];
-        setTreatmentType(treatmentTypeToModel(latestTreatment.treatment_type));
-    }, [editingTreatmentId, varroaTreatments]);
-
-    const handleSaveReading = React.useCallback(async () => {
-        if (!readingForm.hive_id) return;
-        const payload = {
-            ...readingForm,
-            mite_count: Number(readingForm.mite_count) || 0,
-            sample_size: Number(readingForm.sample_size) || 300,
-        };
-
-        if (editingReadingId) {
-            await updateReadingMutation.mutateAsync({ id: editingReadingId, data: payload });
-        } else {
-            await createReadingMutation.mutateAsync(payload);
-        }
-
-        applyReadingToSimulation(payload.mite_count, payload.reading_date, payload.method);
-        resetReadingForm();
-    }, [applyReadingToSimulation, createReadingMutation, editingReadingId, readingForm, resetReadingForm, updateReadingMutation]);
-
-    const handleSaveTreatment = React.useCallback(async () => {
-        if (!treatmentForm.hive_id) return;
-        const payload = {
-            ...treatmentForm,
-            end_date: treatmentForm.end_date || undefined,
-            dosage: treatmentForm.dosage || undefined,
-            effectiveness_percent: Number(treatmentForm.effectiveness_percent),
-            notes: treatmentForm.notes || undefined,
-        };
-
-        if (editingTreatmentId) {
-            await updateTreatmentMutation.mutateAsync({ id: editingTreatmentId, data: payload });
-        } else {
-            await createTreatmentMutation.mutateAsync(payload);
-        }
-
-        applyTreatmentToSimulation(payload.treatment_type, payload.start_date);
-        resetTreatmentForm();
-    }, [applyTreatmentToSimulation, createTreatmentMutation, editingTreatmentId, resetTreatmentForm, treatmentForm, updateTreatmentMutation]);
-
-    const simulation = React.useMemo(
-        () =>
-            simulateVarroaModel({
-                startDate,
-                startMode,
-                measurementType,
-                region,
-                initialMiteCount,
-                adultBeePopulation,
-                simulationDays,
-                collapseThreshold,
-                colonyStrength,
-                broodMode,
-                reinvasionPressure,
-                hygieneProfile,
-                treatmentType,
-                treatmentDay,
-                temperature,
-                mitesPerDay,
-                colonyMultiplier,
-                hasBrood,
-            }),
-        [
-            adultBeePopulation,
-            broodMode,
-            collapseThreshold,
-            colonyMultiplier,
-            colonyStrength,
-            hasBrood,
-            hygieneProfile,
-            initialMiteCount,
-            measurementType,
-            mitesPerDay,
-            region,
-            reinvasionPressure,
-            simulationDays,
-            startDate,
-            startMode,
-            temperature,
-            treatmentDay,
-            treatmentType,
-        ],
-    );
-
-    const simulationData = simulation.timeline;
-    const modelSummary = simulation.summary;
-    const treatmentWindows = simulation.windows;
-    const treatmentInsight = simulation.treatmentInsight;
-
-    const recentRows = React.useMemo(
-        () =>
-            simulationData.slice(-7).reverse().map((row) => ({
-                day: row.day,
-                totalPopulation: row.totalMites.toLocaleString(),
-                phoretic: row.phoretic.toLocaleString(),
-                dailyMiteFall: row.dailyMiteFall.toLocaleString(),
-                infestation: `${row.infectionPer100.toFixed(2)}%`,
-                risk: row.scenarioRisk.toFixed(1),
-            })),
-        [simulationData],
-    );
-
-    const estimatedMiteCount = modelSummary.estimatedMiteCount;
-    const latestReading = varroaReadings[0];
-    const latestTreatment = varroaTreatments[0];
-    const lastPoint = simulationData[simulationData.length - 1] ?? {
-        population: 0,
-        phoretic: 0,
-        mitesInBrood: 0,
-        dailyMiteFall: 0,
-        infectionPer100: 0,
-        scenarioRisk: 0,
-        treatmentEffect: 0,
-        reinvasionLoad: 0,
-        ambientTemperature: temperature,
-        dailyPopulationChange: 0,
-        brood: 0,
-        alcoholWash: 0,
-        allBrood: 0,
-        cappedBrood: 0,
-        cumulativeMiteFall: 0,
-        broodlessPhoretic: 0,
-        adultBees: 0,
-        totalMites: 0,
-        broodIndex: 0,
-        day: 0,
-        dayLabel: '0',
     };
 
+    React.useEffect(() => {
+        void fetchData();
+    }, []);
+
+    const stats = React.useMemo(() => {
+        const safe = hives.filter((hive) => hive.status === 'safe').length;
+        const warning = hives.filter((hive) => hive.status === 'warning').length;
+        const critical = hives.filter((hive) => hive.status === 'critical').length;
+        const avg = hives.length ? Number((hives.reduce((sum, hive) => sum + hive.infestation, 0) / hives.length).toFixed(1)) : 0;
+        const sampledThisWeek = hives.filter((hive) => {
+            const time = new Date(hive.date).getTime();
+            return !Number.isNaN(time) && (Date.now() - time) / 86400000 <= 7;
+        }).length;
+        return { total: hives.length, safe, warning, critical, avg, sampledThisWeek };
+    }, [hives]);
+
+    const priorityHive = hives[0];
+    const risingHives = hives.filter((hive) => hive.trend === 'up').length;
+    const trendSeries = hives.slice(0, 6);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <RefreshCw className="w-6 h-6 animate-spin text-[#F4D03F]" />
+            </div>
+        );
+    }
+
     return (
-        <div className={pageClass}>
-            <div className={shellClass}>
-                <section className="relative overflow-hidden rounded-[18px] border border-[#f4d03f]/20 bg-gradient-to-r from-[#f4d03f]/8 via-[#fff9f0] to-[#fffdf8] px-5 py-4 shadow-sm">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                        <div className="space-y-1">
-                            <div className="text-[15px] font-semibold text-[#1a1a1a]">First steps</div>
-                            <div className="text-[13px] text-[#6b7280]">Start here to set up your apiaries, devices, and measurements.</div>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                                {quickLinks.map((item) => (
-                                    <span key={item} className="rounded-full border border-[#f4d03f]/20 bg-[#fff9f0] px-3 py-1.5 text-[11px] font-medium text-[#1f2937] shadow-sm">
-                                        {item}
-                                    </span>
-                                ))}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn(glass.page, 'p-4 lg:p-6 space-y-6 pb-20')}>
+            <PageHeader
+                icon={Microscope}
+                label="Hive health"
+                title="Varroa Command Center"
+                subtitle="Track infestation pressure, isolate the most vulnerable colonies, and keep treatment timing visible at a glance."
+                actions={(
+                    <button type="button" onClick={() => void fetchData('refresh')} className={cn(glass.btnPrimary, 'h-10 px-5 rounded-xl font-black text-[10px]')}>
+                        <RefreshCw className={cn('w-4 h-4', refreshing && 'animate-spin')} />
+                        <span>{refreshing ? 'Refreshing' : 'Refresh board'}</span>
+                    </button>
+                )}
+            />
+
+            <section className="grid grid-cols-1 xl:grid-cols-[1.45fr_0.95fr] gap-4">
+                <div className={cn(glass.card, 'p-5 md:p-6 border-[#F4D03F]/35 shadow-[0_24px_80px_-48px_rgba(212,172,13,0.65)]')}>
+                    <div className="flex flex-col gap-5">
+                        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                            <div className="space-y-3">
+                                <div className="inline-flex items-center gap-2 rounded-full border border-red-500/15 bg-red-500/[0.08] px-3 py-1 text-[10px] font-black tracking-[0.18em] text-red-500 uppercase">
+                                    <AlertTriangle className="w-3.5 h-3.5" />
+                                    Priority Hive Signal
+                                </div>
+                                <div className="space-y-2">
+                                    <h2 className="text-3xl md:text-[2.4rem] font-black tracking-[-0.06em] text-[#1A1A1A]">
+                                        {priorityHive ? `${priorityHive.infestation}% pressure in hive ${priorityHive.id}` : 'No varroa readings available'}
+                                    </h2>
+                                    <p className="max-w-2xl text-sm md:text-[15px] leading-7 text-[#1A1A1A]/65">
+                                        {priorityHive
+                                            ? `Latest ${priorityHive.method.toLowerCase()} sample was logged ${formatDate(priorityHive.date, true)}. The page now uses a stronger hero, grouped risk counts, and dedicated reading and treatment sections to match the shared design more closely.`
+                                            : 'Once readings start coming in, this board will show the highest-risk colony, the latest sampling window, and the treatment queue.'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="min-w-[220px] rounded-[28px] border border-white/70 bg-white/80 p-4 shadow-[0_18px_50px_-40px_rgba(26,26,26,0.55)]">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/45">Response window</span>
+                                    <span className="rounded-full bg-[#F9F7F2] px-2.5 py-1 text-[10px] font-black text-[#1A1A1A]/60">{stats.critical > 0 ? '48h' : 'Routine'}</span>
+                                </div>
+                                <div className="space-y-3">
+                                    <div className="flex items-end gap-2">
+                                        <span className="text-4xl font-black tracking-[-0.08em] text-[#1A1A1A]">{stats.avg}%</span>
+                                        <span className="pb-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/45">avg infestation</span>
+                                    </div>
+                                    <div className="h-2 rounded-full bg-[#F9F2D7] overflow-hidden">
+                                        <div className="h-full rounded-full bg-gradient-to-r from-[#1B9157] via-[#F4D03F] to-red-500" style={{ width: `${Math.min(100, Math.max(8, stats.avg * 12))}%` }} />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2.5">
+                                        <div className="rounded-2xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-3">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">Sampled this week</p>
+                                            <p className="mt-1 text-2xl font-black tracking-[-0.05em] text-[#1A1A1A]">{stats.sampledThisWeek}</p>
+                                        </div>
+                                        <div className="rounded-2xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-3">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">Rising signals</p>
+                                            <p className="mt-1 text-2xl font-black tracking-[-0.05em] text-[#1A1A1A]">{risingHives}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button type="button" className="self-start rounded-lg border border-[#f4d03f]/20 bg-[#fff9f0] px-3 py-1 text-[11px] text-[#6b7280] transition hover:bg-[#f4d03f]/10">
-                            Hide
-                        </button>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            {[
+                                { label: 'Low risk colonies', value: stats.safe, icon: ShieldCheck, tone: 'border-[#1B9157]/15 bg-[#1B9157]/10 text-[#1B9157]' },
+                                { label: 'Monitor closely', value: stats.warning, icon: BarChart3, tone: 'border-[#F4D03F]/20 bg-[#F4D03F]/12 text-[#B98A00]' },
+                                { label: 'Treatment queue', value: treatments.length, icon: Syringe, tone: 'border-red-500/15 bg-red-500/10 text-red-500' },
+                            ].map((item) => (
+                                <div key={item.label} className="rounded-[26px] border border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.88),rgba(249,247,242,0.72))] p-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className={cn('flex h-11 w-11 items-center justify-center rounded-2xl border', item.tone)}>
+                                            <item.icon className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">{item.label}</p>
+                                            <p className="text-2xl font-black tracking-[-0.05em] text-[#1A1A1A]">{item.value}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </section>
+                </div>
 
-                <header className="space-y-1 px-1">
-                    <h1 className="text-[32px] font-semibold tracking-[-0.04em] text-[#1a1a1a]">Varroa Modeling</h1>
-                </header>
+                <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-1 gap-4">
+                    {(['critical', 'warning', 'safe'] as RiskStatus[]).map((status) => {
+                        const count = hives.filter((hive) => hive.status === status).length;
+                        const percent = hives.length ? Math.round((count / hives.length) * 100) : 0;
+                        return (
+                            <div key={status} className={cn(glass.card, 'p-4 md:p-5', status === 'critical' ? 'border-red-500/25 bg-red-500/[0.07]' : status === 'warning' ? 'border-[#F4D03F]/30 bg-[#F4D03F]/[0.12]' : 'border-[#1B9157]/20 bg-[#1B9157]/[0.06]')}>
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">{humanize(status)} band</p>
+                                        <p className="mt-1 text-3xl font-black tracking-[-0.08em] text-[#1A1A1A]">{count}</p>
+                                    </div>
+                                    <span className="rounded-full bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/55">{percent}%</span>
+                                </div>
+                                <div className="mt-4 h-2 rounded-full bg-white/70 overflow-hidden">
+                                    <div className={cn('h-full rounded-full', status === 'critical' ? 'bg-red-500' : status === 'warning' ? 'bg-[#F4D03F]' : 'bg-[#1B9157]')} style={{ width: `${Math.max(percent, count > 0 ? 12 : 0)}%` }} />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
 
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="space-y-6">
+            <section className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-4">
+                <div className={cn(glass.card, 'p-5 md:p-6')}>
+                    <div className="flex items-center justify-between gap-3 mb-5">
                         <div>
-                            <h2 className={titleClass}>Field records</h2>
-                            <p className="mt-1 text-[13px] text-[#6b7280]">Capture dedicated mite readings and treatments for a hive, then reuse them in the simulator.</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Hive watchlist</p>
+                            <h3 className="mt-1 text-2xl font-black tracking-[-0.06em] text-[#1A1A1A]">Field readings by colony</h3>
                         </div>
-
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <Field label="Apiary">
-                                <select value={selectedApiaryId} onChange={(e) => setSelectedApiaryId(e.target.value)} className={inputClass}>
-                                    <option value="all_apiaries">All apiaries</option>
-                                    {apiaries.map((apiary) => (
-                                        <option key={apiary.id} value={apiary.id}>{apiary.name}</option>
-                                    ))}
-                                </select>
-                            </Field>
-                            <Field label="Hive">
-                                <select value={selectedHiveId} onChange={(e) => setSelectedHiveId(e.target.value)} className={inputClass}>
-                                    <option value="">Select hive</option>
-                                    {filteredHives.map((hive) => (
-                                        <option key={hive.id} value={hive.id}>{hive.hive_code}</option>
-                                    ))}
-                                </select>
-                            </Field>
-                        </div>
-
-                        <div className="grid gap-4 xl:grid-cols-2">
-                            <div className={cn(softCardClass, 'p-4')}>
-                                <div className="flex items-center justify-between gap-3">
-                                    <div>
-                                        <div className="text-[14px] font-semibold text-[#1a1a1a]">Varroa readings</div>
-                                        <div className="text-[12px] text-[#6b7280]">The latest saved reading becomes your observed-start input.</div>
-                                    </div>
-                                    {editingReadingId ? <button type="button" onClick={resetReadingForm} className={chipClass}>Cancel edit</button> : null}
-                                </div>
-
-                                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                                    <Field label="Reading date">
-                                        <input type="date" value={readingForm.reading_date} onChange={(e) => setReadingForm((current) => ({ ...current, reading_date: e.target.value }))} className={inputClass} />
-                                    </Field>
-                                    <Field label="Method">
-                                        <select value={readingForm.method} onChange={(e) => setReadingForm((current) => ({ ...current, method: e.target.value as typeof current.method }))} className={inputClass}>
-                                            <option value="alcohol_wash">Alcohol wash</option>
-                                            <option value="sticky_board">Sticky board</option>
-                                            <option value="sugar_roll">Sugar roll</option>
-                                            <option value="visual">Visual</option>
-                                            <option value="other">Other</option>
-                                        </select>
-                                    </Field>
-                                    <Field label="Mite count">
-                                        <input type="number" value={readingForm.mite_count} onChange={(e) => setReadingForm((current) => ({ ...current, mite_count: Number(e.target.value) || 0 }))} className={inputClass} />
-                                    </Field>
-                                    <Field label="Sample size">
-                                        <input type="number" value={readingForm.sample_size} onChange={(e) => setReadingForm((current) => ({ ...current, sample_size: Number(e.target.value) || 300 }))} className={inputClass} />
-                                    </Field>
-                                    <Field label="Inspector">
-                                        <input value={readingForm.inspector_name} onChange={(e) => setReadingForm((current) => ({ ...current, inspector_name: e.target.value }))} className={inputClass} />
-                                    </Field>
-                                    <Field label="Notes">
-                                        <input value={readingForm.notes} onChange={(e) => setReadingForm((current) => ({ ...current, notes: e.target.value }))} className={inputClass} />
-                                    </Field>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    disabled={!selectedHiveId || createReadingMutation.isPending || updateReadingMutation.isPending}
-                                    onClick={handleSaveReading}
-                                    className="mt-4 h-11 w-full rounded-full bg-[#f5b938] text-[14px] font-medium text-[#1f2937] shadow-[0_10px_22px_rgba(245,185,56,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    {editingReadingId ? 'Update reading' : 'Save reading'}
-                                </button>
-
-                                <div className="mt-4 space-y-3">
-                                    {readingsLoading ? (
-                                        <div className="text-[13px] text-[#6b7280]">Loading readings...</div>
-                                    ) : varroaReadings.length === 0 ? (
-                                        <div className="text-[13px] text-[#6b7280]">No readings recorded for this hive yet.</div>
-                                    ) : (
-                                        varroaReadings.slice(0, 4).map((reading) => (
-                                            <div key={reading.id} className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
-                                                <div className="flex flex-wrap items-start justify-between gap-3">
-                                                    <div>
-                                                        <div className="text-[14px] font-semibold text-[#1a1a1a]">{formatDate(reading.reading_date)} · {reading.method.replace(/_/g, ' ')}</div>
-                                                        <div className="mt-1 text-[12px] text-[#6b7280]">{reading.mite_count} mites / {reading.sample_size} bees · {reading.infestation_rate.toFixed(2)}%</div>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <button type="button" onClick={() => applyReadingToSimulation(reading.mite_count, reading.reading_date, reading.method)} className={chipClass}>Use</button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setEditingReadingId(reading.id);
-                                                                setReadingForm({
-                                                                    hive_id: reading.hive_id,
-                                                                    reading_date: reading.reading_date,
-                                                                    method: reading.method,
-                                                                    mite_count: reading.mite_count,
-                                                                    sample_size: reading.sample_size,
-                                                                    inspector_name: reading.inspector_name || '',
-                                                                    notes: reading.notes || '',
-                                                                });
-                                                            }}
-                                                            className={chipClass}
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={async () => {
-                                                                if (!window.confirm('Delete this varroa reading?')) return;
-                                                                await deleteReadingMutation.mutateAsync(reading.id);
-                                                                if (editingReadingId === reading.id) resetReadingForm();
-                                                            }}
-                                                            className={chipClass}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
+                        <div className="rounded-full border border-[#F4D03F]/20 bg-[#F9F7F2] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/50">Latest samples first</div>
+                    </div>
+                    <div className="space-y-3">
+                        {hives.length > 0 ? hives.map((hive) => (
+                            <div key={hive.id} className="rounded-[28px] border border-[#F4D03F]/18 bg-white/75 p-4 md:p-5 shadow-[0_22px_60px_-48px_rgba(26,26,26,0.4)]">
+                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                    <div className="space-y-3">
+                                        <div className="flex flex-wrap items-center gap-2.5">
+                                            <span className="rounded-full border border-[#F4D03F]/15 bg-[#F9F7F2] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">Hive {hive.id}</span>
+                                            <span className={cn('rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em]', statusStyles[hive.status])}>{hive.status}</span>
+                                            <span className="text-[11px] font-bold text-[#1A1A1A]/45">{formatDate(hive.date, true)}</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-3 md:gap-6 items-end">
+                                            <div>
+                                                <p className="text-[42px] leading-none font-black tracking-[-0.08em] text-[#1A1A1A]">{hive.infestation}%</p>
+                                                <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/40">Infestation rate</p>
+                                            </div>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                                <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] px-3 py-3">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/38">Method</p>
+                                                    <p className="mt-1 text-sm font-black text-[#1A1A1A]">{hive.method}</p>
+                                                </div>
+                                                <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] px-3 py-3">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/38">Mites</p>
+                                                    <p className="mt-1 text-sm font-black text-[#1A1A1A]">{hive.miteCount}</p>
+                                                </div>
+                                                <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] px-3 py-3 col-span-2 md:col-span-1">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/38">Sample size</p>
+                                                    <p className="mt-1 text-sm font-black text-[#1A1A1A]">{hive.sampleSize} bees</p>
                                                 </div>
                                             </div>
-                                        ))
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className={cn(softCardClass, 'p-4')}>
-                                <div className="flex items-center justify-between gap-3">
-                                    <div>
-                                        <div className="text-[14px] font-semibold text-[#1a1a1a]">Treatments</div>
-                                        <div className="text-[12px] text-[#6b7280]">Saved treatments can be pushed into the active simulation.</div>
+                                        </div>
                                     </div>
-                                    {editingTreatmentId ? <button type="button" onClick={resetTreatmentForm} className={chipClass}>Cancel edit</button> : null}
-                                </div>
-
-                                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                                    <Field label="Treatment type">
-                                        <select value={treatmentForm.treatment_type} onChange={(e) => setTreatmentForm((current) => ({ ...current, treatment_type: e.target.value as typeof current.treatment_type }))} className={inputClass}>
-                                            {Object.entries(treatmentLabels).map(([value, label]) => (
-                                                <option key={value} value={value}>{label}</option>
-                                            ))}
-                                        </select>
-                                    </Field>
-                                    <Field label="Start date">
-                                        <input type="date" value={treatmentForm.start_date} onChange={(e) => setTreatmentForm((current) => ({ ...current, start_date: e.target.value }))} className={inputClass} />
-                                    </Field>
-                                    <Field label="End date">
-                                        <input type="date" value={treatmentForm.end_date} onChange={(e) => setTreatmentForm((current) => ({ ...current, end_date: e.target.value }))} className={inputClass} />
-                                    </Field>
-                                    <Field label="Effectiveness (%)">
-                                        <input type="number" value={treatmentForm.effectiveness_percent} onChange={(e) => setTreatmentForm((current) => ({ ...current, effectiveness_percent: Number(e.target.value) || 0 }))} className={inputClass} />
-                                    </Field>
-                                    <Field label="Dosage">
-                                        <input value={treatmentForm.dosage} onChange={(e) => setTreatmentForm((current) => ({ ...current, dosage: e.target.value }))} className={inputClass} />
-                                    </Field>
-                                    <Field label="Notes">
-                                        <input value={treatmentForm.notes} onChange={(e) => setTreatmentForm((current) => ({ ...current, notes: e.target.value }))} className={inputClass} />
-                                    </Field>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    disabled={!selectedHiveId || createTreatmentMutation.isPending || updateTreatmentMutation.isPending}
-                                    onClick={handleSaveTreatment}
-                                    className="mt-4 h-11 w-full rounded-full bg-[#f5b938] text-[14px] font-medium text-[#1f2937] shadow-[0_10px_22px_rgba(245,185,56,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    {editingTreatmentId ? 'Update treatment' : 'Save treatment'}
-                                </button>
-
-                                <div className="mt-4 space-y-3">
-                                    {treatmentsLoading ? (
-                                        <div className="text-[13px] text-[#6b7280]">Loading treatments...</div>
-                                    ) : varroaTreatments.length === 0 ? (
-                                        <div className="text-[13px] text-[#6b7280]">No treatments recorded for this hive yet.</div>
-                                    ) : (
-                                        varroaTreatments.slice(0, 4).map((treatment) => (
-                                            <div key={treatment.id} className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
-                                                <div className="flex flex-wrap items-start justify-between gap-3">
-                                                    <div>
-                                                        <div className="text-[14px] font-semibold text-[#1a1a1a]">{treatmentLabels[treatment.treatment_type] || treatment.treatment_type}</div>
-                                                        <div className="mt-1 text-[12px] text-[#6b7280]">
-                                                            {formatDate(treatment.start_date)}
-                                                            {treatment.end_date ? ` to ${formatDate(treatment.end_date)}` : ''}
-                                                            {treatment.effectiveness_percent !== undefined ? ` · ${treatment.effectiveness_percent}%` : ''}
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <button type="button" onClick={() => applyTreatmentToSimulation(treatment.treatment_type, treatment.start_date)} className={chipClass}>Use</button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setEditingTreatmentId(treatment.id);
-                                                                setTreatmentForm({
-                                                                    hive_id: treatment.hive_id,
-                                                                    treatment_type: treatment.treatment_type,
-                                                                    start_date: treatment.start_date,
-                                                                    end_date: treatment.end_date || '',
-                                                                    dosage: treatment.dosage || '',
-                                                                    effectiveness_percent: treatment.effectiveness_percent ?? 0,
-                                                                    notes: treatment.notes || '',
-                                                                });
-                                                            }}
-                                                            className={chipClass}
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={async () => {
-                                                                if (!window.confirm('Delete this varroa treatment?')) return;
-                                                                await deleteTreatmentMutation.mutateAsync(treatment.id);
-                                                                if (editingTreatmentId === treatment.id) resetTreatmentForm();
-                                                            }}
-                                                            className={chipClass}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
+                                    <div className="flex flex-col gap-3 lg:min-w-[240px]">
+                                        <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] p-3.5">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl border', hive.trend === 'up' ? 'border-red-500/15 bg-red-500/10' : hive.trend === 'down' ? 'border-[#1B9157]/15 bg-[#1B9157]/10' : 'border-[#F4D03F]/15 bg-[#FFF6D9]')}>
+                                                    {hive.trend === 'up' ? <TrendingUp className="w-4 h-4 text-red-500" /> : hive.trend === 'down' ? <TrendingDown className="w-4 h-4 text-[#1B9157]" /> : <History className="w-4 h-4 text-[#B98A00]" />}
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">Trend</p>
+                                                    <p className="text-sm font-black text-[#1A1A1A]">{hive.trend === 'up' ? `Up ${Math.abs(hive.trendDelta)} pts` : hive.trend === 'down' ? `Down ${Math.abs(hive.trendDelta)} pts` : 'Stable'}</p>
                                                 </div>
                                             </div>
-                                        ))
-                                    )}
+                                        </div>
+                                        <div className="rounded-2xl border border-[#F4D03F]/15 bg-white px-3.5 py-3">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">Field note</p>
+                                            <p className="mt-1 text-sm leading-6 text-[#1A1A1A]/68">{hive.notes || 'No technician note attached to this reading yet.'}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        {selectedHiveId && latestReading ? (
-                            <div className="grid gap-3 md:grid-cols-3">
-                                <StatTile label="Latest infestation" value={`${latestReading.infestation_rate.toFixed(2)}%`} />
-                                <StatTile label="Latest sample" value={`${latestReading.mite_count}/${latestReading.sample_size}`} />
-                                <StatTile label="Latest treatment" value={latestTreatment ? (treatmentLabels[latestTreatment.treatment_type] || latestTreatment.treatment_type) : 'None'} />
+                        )) : (
+                            <div className={cn(glass.emptyState, 'min-h-[240px]')}>
+                                <Microscope className="w-8 h-8 text-[#F4D03F]" />
+                                <div className="space-y-1">
+                                    <p className="text-lg font-black text-[#1A1A1A]">No readings yet</p>
+                                    <p className="text-sm text-[#1A1A1A]/55">Add a mite count and this board will populate automatically.</p>
+                                </div>
                             </div>
-                        ) : null}
+                        )}
                     </div>
-                </section>
+                </div>
 
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="space-y-4">
-                        <h2 className={titleClass}>How to use the model</h2>
-                        <div className="text-[13px] leading-6 text-[#6b7280]">
-                            <p>A few steps to get a useful forecast quickly.</p>
-                            <ol className="mt-3 space-y-1.5 text-[#4b5563]">
-                                <li>1. Choose a starting point: your mite fall/alcohol data or a default scenario.</li>
-                                <li>2. Set colony parameters (strength and brood mode).</li>
-                                <li>3. Add planned treatments and temperatures if you want to include them.</li>
-                                <li>4. Review the charts and highlighted best treatment windows.</li>
-                                <li>5. Compare scenarios and pick the one with the lowest collapse risk.</li>
-                            </ol>
-                            <p className="mt-3">This is a decision-support model, not a veterinary diagnosis.</p>
+                <div className="space-y-4">
+                    <div className={cn(glass.card, 'p-5 md:p-6')}>
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#F4D03F]/15 bg-[#FFF3C7]">
+                                <BarChart3 className="w-5 h-5 text-[#B98A00]" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Trend strip</p>
+                                <h3 className="text-xl font-black tracking-[-0.05em] text-[#1A1A1A]">Pressure snapshot</h3>
+                            </div>
                         </div>
-                        <button type="button" className={chipClass}>Show quick tour</button>
+                        <div className="space-y-3">
+                            {trendSeries.length > 0 ? trendSeries.map((hive) => (
+                                <div key={hive.id} className="space-y-1.5">
+                                    <div className="flex items-center justify-between gap-3 text-sm">
+                                        <span className="font-black text-[#1A1A1A]">Hive {hive.id}</span>
+                                        <span className="font-black text-[#1A1A1A]/55">{hive.infestation}%</span>
+                                    </div>
+                                    <div className="h-2.5 rounded-full bg-[#F9F2D7] overflow-hidden">
+                                        <div className={cn('h-full rounded-full', hive.status === 'safe' ? 'bg-[#1B9157]' : hive.status === 'warning' ? 'bg-[#F4D03F]' : 'bg-red-500')} style={{ width: `${Math.max(8, Math.min(100, hive.infestation * 12))}%` }} />
+                                    </div>
+                                </div>
+                            )) : (
+                                <p className="text-sm text-[#1A1A1A]/55">Trend bars will appear once readings are available.</p>
+                            )}
+                        </div>
                     </div>
-                </section>
 
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <h2 className={titleClass}>Mini FAQ</h2>
-                    <div className="mt-4 space-y-3">
-                        {faqItems.map((item) => (
-                            <details key={item} className="group">
-                                <summary className="list-none cursor-pointer text-[14px] font-medium text-[#1a1a1a]">
-                                    <span className="inline-flex items-center gap-2">
-                                        <ChevronRight className="h-4 w-4 transition group-open:rotate-90" />
-                                        {item}
-                                    </span>
-                                </summary>
-                            </details>
+                    <div className={cn(glass.card, 'p-5 md:p-6')}>
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#1B9157]/15 bg-[#1B9157]/10">
+                                <CalendarClock className="w-5 h-5 text-[#1B9157]" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Treatment activity</p>
+                                <h3 className="text-xl font-black tracking-[-0.05em] text-[#1A1A1A]">Recent interventions</h3>
+                            </div>
+                        </div>
+                        <div className="space-y-3">
+                            {treatments.length > 0 ? treatments.map((treatment) => (
+                                <div key={treatment.id} className="rounded-[24px] border border-[#F4D03F]/15 bg-white/80 p-4">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="space-y-1.5">
+                                            <p className="text-sm font-black text-[#1A1A1A]">{treatment.title}</p>
+                                            <p className="text-sm leading-6 text-[#1A1A1A]/62">{treatment.note}</p>
+                                        </div>
+                                        <ChevronRight className="w-4 h-4 text-[#1A1A1A]/28 shrink-0 mt-0.5" />
+                                    </div>
+                                    <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                                        <span className="rounded-full bg-[#F9F7F2] px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/48">{treatment.status}</span>
+                                        <span className="text-[11px] font-bold text-[#1A1A1A]/45">{formatDate(treatment.date, true)}</span>
+                                    </div>
+                                </div>
+                            )) : (
+                                <div className="rounded-[24px] border border-dashed border-[#F4D03F]/30 bg-[#F9F7F2]/80 p-4 text-sm leading-6 text-[#1A1A1A]/58">
+                                    No treatment events are recorded yet. As entries appear, this panel will mirror the intervention queue more clearly.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className={cn(glass.card, 'p-5 md:p-6 lg:col-span-2')}>
+                    <div className="flex items-center gap-3 mb-5">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-red-500/15 bg-red-500/10">
+                            <ShieldPlus className="w-5 h-5 text-red-500" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Page changes</p>
+                            <h3 className="text-xl font-black tracking-[-0.05em] text-[#1A1A1A]">What changed on this screen</h3>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {[
+                            'The top of the page is now a proper hero section with one dominant message instead of several equal-weight cards.',
+                            'Risk distribution has been pulled into a tight side stack so critical, warning, and safe counts are visible immediately.',
+                            'The lower half now separates readings, pressure bars, and treatment history into clearer blocks that read closer to a polished reference layout.',
+                        ].map((item) => (
+                            <div key={item} className="rounded-[24px] border border-[#F4D03F]/15 bg-white/80 p-4 text-sm leading-6 text-[#1A1A1A]/68">
+                                {item}
+                            </div>
                         ))}
                     </div>
-                </section>
+                </div>
 
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="flex flex-col gap-5">
-                        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                            <div>
-                                <h2 className={titleClass}>Where do we start?</h2>
-                                <p className="mt-1 text-[13px] text-[#8a97aa]">Set the starting point and basic colony parameters.</p>
-                            </div>
-                            <button type="button" className={warningPillClass}>Live update</button>
+                <div className={cn(glass.card, 'p-5 md:p-6')}>
+                    <div className="flex items-center gap-3 mb-5">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#F4D03F]/15 bg-[#FFF3C7]">
+                            <History className="w-5 h-5 text-[#B98A00]" />
                         </div>
-
-                        <div className="flex flex-wrap gap-3">
-                            <ToggleChip active={startMode === 'observed'} onClick={() => setStartMode('observed')}>
-                                I have mite fall / alcohol wash data
-                            </ToggleChip>
-                            <ToggleChip active={startMode === 'default'} onClick={() => setStartMode('default')}>
-                                I don&apos;t know - use a default scenario
-                            </ToggleChip>
-                        </div>
-
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <Field label="Start date">
-                                <div className="relative">
-                                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={cn(inputClass, 'pr-10')} />
-                                    <CalendarDays className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#7d8ca2]" />
-                                </div>
-                            </Field>
-                            <Field label="Initial mite count">
-                                <input type="number" value={initialMiteCount} onChange={(e) => setInitialMiteCount(Number(e.target.value) || 0)} className={inputClass} />
-                            </Field>
-                            <Field label="Adult bee population">
-                                <input type="number" value={adultBeePopulation} onChange={(e) => setAdultBeePopulation(Number(e.target.value) || 0)} className={inputClass} />
-                            </Field>
-                            <Field label="Simulation days">
-                                <input type="number" value={simulationDays} onChange={(e) => setSimulationDays(Number(e.target.value) || 0)} className={inputClass} />
-                            </Field>
-                            <Field label="Collapse threshold">
-                                <input type="number" value={collapseThreshold} onChange={(e) => setCollapseThreshold(Number(e.target.value) || 0)} className={inputClass} />
-                            </Field>
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Sampling cadence</p>
+                            <h3 className="text-xl font-black tracking-[-0.05em] text-[#1A1A1A]">Next focus</h3>
                         </div>
                     </div>
-                </section>
-
-                {startMode === 'observed' ? (
-                    <section className={cn(cardClass, 'p-5 md:p-6')}>
-                        <div className="space-y-5">
-                            <h2 className={titleClass}>Mite fall / alcohol calculator</h2>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <Field label="Measurement type">
-                                    <input value={measurementType} onChange={(e) => setMeasurementType(e.target.value)} className={inputClass} />
-                                </Field>
-                                <Field label="Mites per day">
-                                    <input type="number" value={mitesPerDay} onChange={(e) => setMitesPerDay(Number(e.target.value) || 0)} className={inputClass} />
-                                </Field>
-                                <Field label="Colony multiplier">
-                                    <input type="number" value={colonyMultiplier} onChange={(e) => setColonyMultiplier(Number(e.target.value) || 0)} className={inputClass} />
-                                </Field>
+                    <div className="space-y-3">
+                        {[
+                            `Critical hives: ${stats.critical > 0 ? 'retest within 48 hours' : 'none flagged right now'}`,
+                            `Warning band: ${stats.warning > 0 ? 'schedule a follow-up wash this week' : 'stable across the current board'}`,
+                            `Coverage: ${stats.sampledThisWeek}/${stats.total || 0} hives sampled in the last 7 days`,
+                        ].map((item) => (
+                            <div key={item} className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] px-3.5 py-3 text-sm font-medium leading-6 text-[#1A1A1A]/68">
+                                {item}
                             </div>
-                            <div className="text-[14px] text-[#7d8ca2]">
-                                Estimated mite count: <span className="font-semibold text-[#182235]">{estimatedMiteCount}</span>
-                            </div>
-                        </div>
-                    </section>
-                ) : null}
-
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="space-y-6">
-                        <h2 className={titleClass}>Colony</h2>
-                        <div className="max-w-[300px]">
-                            <Field label="Region">
-                                <input value={region} onChange={(e) => setRegion(e.target.value)} className={inputClass} />
-                            </Field>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className={labelClass}>Colony strength</div>
-                            <div className="grid gap-3 md:grid-cols-2">
-                                {(['Weak', 'Medium', 'Strong'] as ColonyStrength[]).map((item) => (
-                                    <ToggleChip key={item} active={colonyStrength === item} onClick={() => setColonyStrength(item)} className="h-[36px] text-center">
-                                        {item}
-                                    </ToggleChip>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className={labelClass}>Brood</div>
-                            <div className="grid gap-3 md:grid-cols-2">
-                                {(['Seasonal (auto)', 'Manual (advanced)', 'Broodless'] as BroodMode[]).map((item) => (
-                                    <ToggleChip key={item} active={broodMode === item} onClick={() => setBroodMode(item)} className="h-[36px] text-center">
-                                        {item}
-                                    </ToggleChip>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className={labelClass}>Reinvasion pressure</div>
-                            <div className="grid gap-3 md:grid-cols-3">
-                                {(['Low', 'Medium', 'High'] as ReinvasionPressure[]).map((item) => (
-                                    <ToggleChip key={item} active={reinvasionPressure === item} onClick={() => setReinvasionPressure(item)} className="h-[36px] text-center">
-                                        {item}
-                                    </ToggleChip>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className={labelClass}>Hygienic behavior</div>
-                            <div className="grid gap-3 md:grid-cols-3">
-                                {(['Standard', 'VSH', 'Resistant'] as HygieneProfile[]).map((item) => (
-                                    <ToggleChip key={item} active={hygieneProfile === item} onClick={() => setHygieneProfile(item)} className="h-[36px] text-center">
-                                        {item}
-                                    </ToggleChip>
-                                ))}
-                            </div>
-                        </div>
+                        ))}
                     </div>
-                </section>
-
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="space-y-6">
-                        <h2 className={titleClass}>Treatments</h2>
-                        <div className="grid gap-4 md:grid-cols-3">
-                            <Field label="Mode">
-                                <input value={treatmentMode} onChange={(e) => setTreatmentMode(e.target.value)} className={inputClass} />
-                            </Field>
-                            <Field label="Day">
-                                <input type="number" value={treatmentDay} onChange={(e) => setTreatmentDay(Number(e.target.value) || 0)} className={inputClass} />
-                            </Field>
-                            <Field label="Type">
-                                <input value={treatmentType} onChange={(e) => setTreatmentType(e.target.value)} className={inputClass} />
-                            </Field>
-                            <Field label="Temperature (C)" className="md:col-span-2">
-                                <input type="number" value={temperature} onChange={(e) => setTemperature(Number(e.target.value) || 0)} className={inputClass} />
-                            </Field>
-                        </div>
-                        <button
-                            type="button"
-                            disabled={!latestTreatment}
-                            onClick={() => latestTreatment && applyTreatmentToSimulation(latestTreatment.treatment_type, latestTreatment.start_date)}
-                            className="h-11 w-full rounded-full bg-[#f5b938] text-[14px] font-medium text-[#1f2937] shadow-[0_10px_22px_rgba(245,185,56,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            {latestTreatment ? `Use latest saved treatment (${treatmentLabels[latestTreatment.treatment_type] || latestTreatment.treatment_type})` : 'Save a treatment record to reuse it here'}
-                        </button>
-                    </div>
-                </section>
-
-                <section className={cn(cardClass, 'px-4 py-4 md:px-5')}>
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-                        <button type="button" className="h-11 rounded-full bg-[#f5b938] px-7 text-[14px] font-medium text-[#1f2937] shadow-[0_10px_22px_rgba(245,185,56,0.25)]">
-                            Run simulation
-                        </button>
-                        <button type="button" className="h-11 rounded-full border border-[#d6dfeb] bg-white px-6 text-[14px] font-medium text-[#24324a]">
-                            Get weather from BeeHUB Weather
-                        </button>
-                        <div className="text-[12px] text-[#8a97aa]">Changes in fields recalculate the simulation automatically.</div>
-                    </div>
-                </section>
-
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="space-y-5">
-                        <h2 className={titleClass}>Simulation</h2>
-
-                        <div className="grid gap-3 lg:grid-cols-[1.3fr_0.9fr]">
-                            <div className={cn(softCardClass, 'p-4')}>
-                                <div className="flex flex-wrap items-start justify-between gap-3">
-                                    <div>
-                                        <div className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#6b7280]">Forecast intelligence</div>
-                                        <div className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-[#1a1a1a]">
-                                            {modelSummary.riskBand === 'critical' ? 'Critical pressure' : modelSummary.riskBand === 'watch' ? 'Rising pressure' : 'Stable trajectory'}
-                                        </div>
-                                    </div>
-                                    <div className={cn(modelSummary.riskBand === 'critical' ? 'bg-[#fff1ef] text-[#b45309]' : modelSummary.riskBand === 'watch' ? 'bg-[#fff7de] text-[#a16207]' : 'bg-[#eefaf0] text-[#166534]', 'rounded-full px-3 py-1 text-[12px] font-semibold')}>
-                                        Risk {modelSummary.peakRisk.toFixed(1)}
-                                    </div>
-                                </div>
-                                <p className="mt-3 text-[13px] leading-6 text-[#6b7280]">{modelSummary.recommendation}</p>
-                                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                                    <div className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
-                                        <div className="text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">Peak infestation</div>
-                                        <div className="mt-2 text-[20px] font-semibold text-[#1a1a1a]">{modelSummary.peakInfestation.toFixed(1)}%</div>
-                                    </div>
-                                    <div className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
-                                        <div className="text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">Forecast confidence</div>
-                                        <div className="mt-2 text-[20px] font-semibold text-[#1a1a1a]">{modelSummary.confidence.toFixed(0)}%</div>
-                                    </div>
-                                    <div className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
-                                        <div className="text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">Collapse day</div>
-                                        <div className="mt-2 text-[20px] font-semibold text-[#1a1a1a]">{modelSummary.collapseDay === null ? 'None' : modelSummary.collapseDay}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={cn(softCardClass, 'p-4')}>
-                                <div className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#6b7280]">Best treatment windows</div>
-                                <div className="mt-3 space-y-3">
-                                    {treatmentWindows.map((window, index) => (
-                                        <div key={`${window.day}-${window.score}`} className="rounded-[12px] border border-[#f4d03f]/18 bg-white px-3 py-3">
-                                            <div className="flex items-center justify-between gap-3">
-                                                <div className="text-[14px] font-semibold text-[#1a1a1a]">Window {index + 1}: day {window.day}</div>
-                                                <div className="rounded-full bg-[#fff4db] px-2.5 py-1 text-[11px] font-semibold text-[#a16207]">{window.score.toFixed(0)}</div>
-                                            </div>
-                                            <p className="mt-2 text-[12px] leading-5 text-[#6b7280]">{window.rationale}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className={cn(softCardClass, 'p-4')}>
-                            <div className="space-y-4">
-                                <h3 className="text-[14px] font-semibold text-[#1a1a1a]">Season overview</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    <span className="rounded-[6px] bg-[#2ea7e0] px-3 py-2 text-[12px] font-medium text-white">Alcohol wash</span>
-                                    <span className="rounded-[6px] bg-[#c92020] px-3 py-2 text-[12px] font-medium text-white">Mites x10</span>
-                                    <span className="rounded-[6px] bg-[#ff7b19] px-3 py-2 text-[12px] font-medium text-[#1f2937]">Capped brood with mites (approx.)</span>
-                                    <span className="rounded-[6px] bg-[#f9c916] px-3 py-2 text-[12px] font-medium text-[#1f2937]">All brood</span>
-                                    <span className="rounded-[6px] bg-[#fde179] px-3 py-2 text-[12px] font-medium text-[#1f2937]">Adult bees</span>
-                                </div>
-                                <div className="h-[360px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={simulationData} margin={{ top: 12, right: 12, left: 12, bottom: 0 }}>
-                                            <CartesianGrid stroke="#f2e9cf" />
-                                            <XAxis dataKey="dayLabel" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
-                                            <YAxis yAxisId="left" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
-                                            <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
-                                            <Tooltip />
-                                            <Line yAxisId="right" type="monotone" dataKey="alcoholWash" stroke="#2ea7e0" strokeWidth={2.5} dot={false} />
-                                            <Line yAxisId="right" type="monotone" dataKey="phoretic" stroke="#d81f26" strokeWidth={2.5} dot={false} strokeDasharray="3 3" />
-                                            <Line yAxisId="left" type="monotone" dataKey="cappedBrood" stroke="#ff7b19" strokeWidth={2.5} dot={false} />
-                                            <Line yAxisId="left" type="monotone" dataKey="allBrood" stroke="#f9c916" strokeWidth={2.5} dot={false} />
-                                            <Line yAxisId="left" type="monotone" dataKey="adultBees" stroke="#e5c75a" strokeWidth={2.5} dot={false} />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className={cn(softCardClass, 'p-4')}>
-                            <div className="space-y-3">
-                                <h3 className="text-[14px] font-semibold text-[#1a1a1a]">Scenario comparison</h3>
-                                <div className="h-[220px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={simulationData} margin={{ top: 8, right: 10, left: 0, bottom: 0 }}>
-                                            <CartesianGrid stroke="#f2e9cf" />
-                                            <XAxis dataKey="dayLabel" tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
-                                            <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} tickLine={false} axisLine={false} />
-                                            <Tooltip />
-                                            <Area type="monotone" dataKey="scenarioRisk" stroke="#2f63e1" fill="#2f63e1" fillOpacity={0.12} strokeWidth={2.5} />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
-                            <StatTile label="Total mite load" value={modelSummary.totalPopulation.toLocaleString()} />
-                            <StatTile label="Phoretic" value={lastPoint.phoretic.toLocaleString()} />
-                            <StatTile label="Mites in brood" value={modelSummary.brood.toLocaleString()} />
-                            <StatTile label="Daily mite fall" value={lastPoint.dailyMiteFall.toLocaleString()} />
-                            <StatTile label="Alcohol wash" value={lastPoint.alcoholWash.toFixed(1)} />
-                            <StatTile label="Treatment effect" value={`${lastPoint.treatmentEffect.toFixed(0)}%`} />
-                        </div>
-
-                        <div className="grid gap-3 md:grid-cols-3">
-                            <MiniChartCard title="Varroa population" dataKey="phoretic" color="#eb6a2d" data={simulationData} secondaryKey="broodlessPhoretic" secondaryColor="#334155" />
-                            <MiniChartCard title="Mites in brood (R)" dataKey="mitesInBrood" color="#dca90f" data={simulationData} secondaryKey="brood" secondaryColor="#f59e0b" />
-                            <MiniChartCard title="Phoretic vs brood" dataKey="phoretic" color="#0ea5a8" data={simulationData} secondaryKey="brood" secondaryColor="#86c06a" />
-                            <MiniChartCard title="Daily mite fall" dataKey="dailyMiteFall" color="#94a3b8" data={simulationData} secondaryKey="phoretic" secondaryColor="#cbd5e1" />
-                            <MiniChartCard title="Cumulative mite fall" dataKey="cumulativeMiteFall" color="#334155" data={simulationData} />
-                            <MiniChartCard title="Daily population change" dataKey="dailyPopulationChange" color="#7c3aed" data={simulationData} />
-                            <MiniChartCard title="Infestation per 100 bees" dataKey="infectionPer100" color="#0ea5ff" data={simulationData} />
-                            <MiniChartCard title="Treatment suppression" dataKey="treatmentEffect" color="#16a34a" data={simulationData} />
-                            <MiniChartCard title="Reinvasion pressure" dataKey="reinvasionLoad" color="#f97316" data={simulationData} />
-                        </div>
-
-                        <div className="flex flex-wrap gap-4 text-[12px] text-[#607086]">
-                            <label className="inline-flex items-center gap-2">
-                                <input type="radio" name="advice-mode" defaultChecked />
-                                Project a brood
-                            </label>
-                            <label className="inline-flex items-center gap-2">
-                                <input type="radio" name="advice-mode" />
-                                Why OA needs broodless periods
-                            </label>
-                            <label className="inline-flex items-center gap-2">
-                                <input type="radio" name="advice-mode" />
-                                Auto reinvasion
-                            </label>
-                        </div>
-
-                        <div className={cn(softCardClass, 'overflow-hidden')}>
-                            <div className="border-b border-[#f4d03f]/20 px-4 py-3 text-[14px] font-semibold text-[#1a1a1a]">Recent days</div>
-                            <table className="w-full text-left">
-                                <thead className="bg-[#fff9f0] text-[11px] uppercase tracking-[0.05em] text-[#6b7280]">
-                                    <tr>
-                                        <th className="px-4 py-3 font-medium">Day</th>
-                                        <th className="px-4 py-3 font-medium">Total mite load</th>
-                                        <th className="px-4 py-3 font-medium">Phoretic</th>
-                                        <th className="px-4 py-3 font-medium">Daily mite fall</th>
-                                        <th className="px-4 py-3 font-medium">Infestation</th>
-                                        <th className="px-4 py-3 font-medium">Risk</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="text-[13px] text-[#1f2937]">
-                                    {recentRows.map((row) => (
-                                        <tr key={row.day} className="border-t border-[#f4d03f]/12">
-                                            <td className="px-4 py-3">{row.day}</td>
-                                            <td className="px-4 py-3">{row.totalPopulation}</td>
-                                            <td className="px-4 py-3">{row.phoretic}</td>
-                                            <td className="px-4 py-3">{row.dailyMiteFall}</td>
-                                            <td className="px-4 py-3">{row.infestation}</td>
-                                            <td className="px-4 py-3">{row.risk}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="space-y-4">
-                        <h2 className={titleClass}>What does this treatment really do?</h2>
-                        <p className="text-[13px] text-[#6b7280]">Choose the treatment to review its procedure, strengths, and limits.</p>
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <Field label="Choose treatment">
-                                <input value={treatmentType} onChange={(e) => setTreatmentType(e.target.value)} className={inputClass} />
-                            </Field>
-                            <Field label="Best used (day)">
-                                <input value={modelSummary.bestWindow ? `Day ${modelSummary.bestWindow.day}` : 'No clear window'} readOnly className={inputClass} />
-                            </Field>
-                        </div>
-                        <div className="grid gap-3 md:grid-cols-3">
-                            <div className={cn(softCardClass, 'p-4')}>
-                                <div className="text-[12px] font-semibold text-[#1a1a1a]">What happens to Varroa</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">{treatmentInsight.varroaEffect}</p>
-                            </div>
-                            <div className={cn(softCardClass, 'p-4')}>
-                                <div className="text-[12px] font-semibold text-[#1a1a1a]">What happens to bees</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">{treatmentInsight.beeEffect}</p>
-                            </div>
-                            <div className={cn(softCardClass, 'p-4')}>
-                                <div className="text-[12px] font-semibold text-[#1a1a1a]">What does NOT do</div>
-                                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">{treatmentInsight.limitation}</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section className={cn(cardClass, 'p-4 md:px-5 md:py-4')}>
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#6b7280]">
-                            <span className="rounded-full bg-[#fff4db] px-2 py-1 text-[#a06a00]">BeeHUB Plus</span>
-                            <span>{formatDate(startDate)}</span>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2">
-                            <div className="relative min-w-[260px]">
-                                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
-                                <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={cn(inputClass, 'h-10 pl-9 text-[13px]')} />
-                            </div>
-                            <button type="button" className={chipClass}>{language}</button>
-                            <button type="button" className={chipClass}>
-                                <Sparkles className="h-4 w-4" />
-                            </button>
-                            <button type="button" className={chipClass}>
-                                <Wand2 className="h-4 w-4" />
-                            </button>
-                            <button type="button" className={chipClass}>
-                                <Settings className="h-4 w-4" />
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="space-y-4">
-                        <h2 className={cn(titleClass, 'flex items-center gap-2')}>
-                            <FlaskConical className="h-4 w-4 text-[#f59e0b]" />
-                            Is the temperature favorable for treatment?
-                        </h2>
-                        <div className="grid gap-4 md:grid-cols-3">
-                            <Field label="Treatment">
-                                <input value="Formic acid" readOnly className={inputClass} />
-                            </Field>
-                            <Field label="Temperature (C)">
-                                <input type="number" value={treatmentAdvisorTemp} onChange={(e) => setTreatmentAdvisorTemp(Number(e.target.value) || 0)} className={inputClass} />
-                            </Field>
-                        </div>
-                        <button type="button" onClick={() => setManualTemperature((value) => !value)} className={warningPillClass}>
-                            {manualTemperature ? 'Use manual temperature' : 'Use weather-linked temperature'}
-                        </button>
-                        <div className={okPillClass}>
-                            <ThumbsUp className="h-4 w-4" />
-                            OK
-                        </div>
-                        <p className="text-[13px] text-[#6b7280]">Efficacy and safety depend on how fast the substance evaporates.</p>
-                    </div>
-                </section>
-
-                <section className={cn(cardClass, 'p-5 md:p-6')}>
-                    <div className="space-y-4">
-                        <h2 className={cn(titleClass, 'flex items-center gap-2')}>
-                            <Leaf className="h-4 w-4 text-[#84cc16]" />
-                            Does oxalic acid (OA) make sense?
-                        </h2>
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <Field label="Temperature (C)">
-                                <input type="number" value={oaTemperature} onChange={(e) => setOaTemperature(Number(e.target.value) || 0)} className={inputClass} />
-                            </Field>
-                        </div>
-                        <button type="button" onClick={() => setHasBrood((value) => !value)} className={chipClass}>
-                            Is there brood in the hive?
-                        </button>
-                        <div className={okPillClass}>
-                            <ThumbsUp className="h-4 w-4" />
-                            {hasBrood ? 'YES' : 'NO'}
-                        </div>
-                        <p className="text-[14px] font-medium text-[#1f2937]">OA is very effective against phoretic mites.</p>
-                        <p className="text-[13px] text-[#7d8ca2]">This tool is not veterinary advice.</p>
-                    </div>
-                </section>
-            </div>
-        </div>
+                </div>
+            </section>
+        </motion.div>
     );
 };
 

@@ -166,7 +166,10 @@ export async function apiRequest<T>(
             } catch (e) {
                 errorData = { detail: `API Error ${response.status}: ${response.statusText}` };
             }
-            throw new Error(errorData.detail || errorData.message || `API Error: ${response.status}`);
+            const err = new Error(errorData.detail || errorData.message || `API Error: ${response.status}`);
+            (err as Error & { status?: number; responseBody?: unknown }).status = response.status;
+            (err as Error & { status?: number; responseBody?: unknown }).responseBody = errorData;
+            throw err;
         }
 
         const responseText = await response.text();
