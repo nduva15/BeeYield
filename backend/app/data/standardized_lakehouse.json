@@ -5,7 +5,7 @@
       "id": "node_74259153",
       "content": "Est. 2020 \u2022 Kibwezi, Kenya. Supporting. Sustainable. Agriculture. Read Our Full Story. Partner With Us. Our Roots & Growth. From a humble half-acre plot to a leader in beekeeping.. BeeYield is born on a half-acre plot in Kibwezi with just 4 hives. Timothy Nduva sees an opportunity where others saw crisis.. The Family Unites. Sisters Agatha and Carole bring their expertise in web development and IoT, turning a beekeeping project into a tech-driven family legacy.. Expansion & Impact. Growth to 184 hives across a 5-acre apiary. 2,500+ trees planted, restoring local ecosystems and pollinating 25 acres of farmland.. Growing as a beekeeping leader using technology and research to support pollination.. Explore Our Ecosystem. Dive deeper into the people, technology, and initiatives driving BeeYield forward.. Meet The Team. Get to know the founding family\u2014three Strathmore graduates combining tech, business, and beekeeping.. Meet the Founders. Our Impact.",
       "metadata": {
-        "source": "About.tsx",
+        "source": "OurStory.tsx",
         "subtopic": "Detailed Narrative",
         "continent": "Africa",
         "source_type": "General_Research",
@@ -19,7 +19,7 @@
       "id": "node_33645028",
       "content": "From 4 to 184 hives, protecting ecosystems and planting 2,500+ trees. See our environmental footprint.. View Impact Report. Global Hive Network. Join our effort to save pollinators. Support our beekeeping initiatives, partner with farmers, and be part of the solution.. Join the Network. HoneyChain\u2122 Traceability. Track every drop of honey from hive to jar. Verify our 50/50 harvest promise and meet the beekeeper.. Trace Your Honey. Pollination Services. Boost crop yields with our precision pollination services. Custom solutions for mango, bean, and sisal farmers.. Services for Farmers. Our Commitment. Our Promise. See the BeeYield Difference. About BeeYield. mx-auto max-w-3xl text-center mb-16. text-3xl font-bold mb-4 flex items-center justify-center gap-2. text-center text-neutral-900 p-4.",
       "metadata": {
-        "source": "About.tsx",
+        "source": "OurStory.tsx",
         "subtopic": "Detailed Narrative",
         "continent": "Europe",
         "source_type": "General_Research",

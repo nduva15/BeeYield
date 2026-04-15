@@ -18,9 +18,10 @@ interface AddDeviceModalProps {
     device?: IoTDevice | null;
     initialApiaryId?: string;
     initialHiveId?: string;
+    preventClose?: boolean;
 }
 
-const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onSubmit, apiaries, hives, device, initialApiaryId, initialHiveId }) => {
+const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onSubmit, apiaries, hives, device, initialApiaryId, initialHiveId, preventClose = false }) => {
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>("");
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>("");
     const [deviceCode, setDeviceCode] = React.useState("");
@@ -124,7 +125,18 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-w-4xl border border-[#F4D03F]/20 bg-[#FFF9F0] p-0 overflow-hidden rounded-[2rem] shadow-2xl outline-none">
+            <DialogContent
+                className="max-w-4xl border border-[#F4D03F]/20 bg-[#FFF9F0] p-0 overflow-hidden rounded-[2rem] shadow-2xl outline-none"
+                onEscapeKeyDown={(event) => {
+                    if (preventClose) event.preventDefault();
+                }}
+                onPointerDownOutside={(event) => {
+                    if (preventClose) event.preventDefault();
+                }}
+                onInteractOutside={(event) => {
+                    if (preventClose) event.preventDefault();
+                }}
+            >
                 <div className="border-b border-[#F4D03F]/10 bg-gradient-to-br from-[#F4D03F]/5 to-transparent px-8 py-7">
                     <DialogHeader className="space-y-3 pr-8">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F4D03F]/10 rounded-xl border border-[#F4D03F]/20 w-fit">
@@ -316,6 +328,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                             type="button"
                             onClick={() => handleOpenChange(false)}
                             className={cn(glass.btnSecondary, "h-11 px-6 text-[11px] font-black")}
+                            disabled={preventClose}
                         >
                             Cancel
                         </button>

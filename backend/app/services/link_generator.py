@@ -107,7 +107,7 @@ PAGE_LINKS = {
     "research hub": "/research-hub",
     
     # Company
-    "about beeyield": "/about",
+    "about beeyield": "/ourstory",
     "contact": "/contact",
     "careers": "/careers",
     "shop": "/shop",

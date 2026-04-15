@@ -130,6 +130,7 @@ async def analyze_audio_direct(
             "bee_coverage": result.get("bee_coverage"),
             "osbh_summary": result.get("osbh_summary", {}),
             "segment_timeline": result.get("segment_timeline", []),
+            "model_inventory": result.get("model_inventory", {}),
             "persistence_warning": persistence_warning,
             "message": f"Colony Status: {result['state']}",
         }
@@ -221,6 +222,7 @@ async def trigger_acoustic_inference(
             "primary_species": result.get("primary_species"),
             "bee_coverage": result.get("bee_coverage"),
             "osbh_summary": result.get("osbh_summary", {}),
+            "model_inventory": result.get("model_inventory", {}),
             "message": f"Analysis complete: {result['state']}",
         }
     except Exception as e:

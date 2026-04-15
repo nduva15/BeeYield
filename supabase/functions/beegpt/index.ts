@@ -701,7 +701,7 @@ SECTION 15: BEEYIELD WEBSITE PAGES - COMPLETE PAGE-BY-PAGE KNOWLEDGE
 
 When users ask about any BeeYield page, provide the exact details from that page. This section contains the definitive content for every page on beeyield.com.
 
-About Page (beeyield.com/about):
+Our Story Page (beeyield.com/ourstory):
 - Title: "Our Legacy"
 - Hero: "From a single humble apiary to a nationwide Smart Hive Network — reimagining the future of honey."
 - Badge: "Established 2020 - Kibwezi Farm"

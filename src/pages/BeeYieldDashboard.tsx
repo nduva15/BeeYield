@@ -147,6 +147,11 @@ const BeeYieldDashboard: React.FC = () => {
     }), [rawApiaries, rawHives, rawDevices, rawReadings]);
 
     const loading = apiariesLoading || hivesLoading || devicesLoading || readingsLoading;
+    const onboardingStep = React.useMemo(() => resolveBeeYieldOnboardingStep({
+        apiaries: apiaries.length,
+        hives: hives.length,
+        devices: devices.length,
+    }), [apiaries.length, hives.length, devices.length]);
 
     const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
@@ -184,11 +189,7 @@ const BeeYieldDashboard: React.FC = () => {
     React.useEffect(() => {
         if (authLoading || loading) return;
 
-        const requiredStep = resolveBeeYieldOnboardingStep({
-            apiaries: apiaries.length,
-            hives: hives.length,
-            devices: devices.length,
-        });
+        const requiredStep = onboardingStep;
 
         if (!requiredStep) {
             clearBeeYieldPendingOnboarding();
@@ -220,7 +221,7 @@ const BeeYieldDashboard: React.FC = () => {
             params.set('action', target.action);
             window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
         }
-    }, [authLoading, loading, apiaries.length, hives.length, devices.length, user?.email, activeTab, viewParams?.action]);
+    }, [authLoading, loading, onboardingStep, user?.email, activeTab, viewParams?.action]);
 
     // Derived Stats
     const totalDevices = devices.length;
@@ -468,9 +469,9 @@ const BeeYieldDashboard: React.FC = () => {
                 return <YardOperations onTabChange={handleTabChange} />;
 
             case 'places':
-                return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} />;
+                return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield':
-                return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} />;
+                return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
             case 'inspections':
                 return <InspectionsView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'harvests':
@@ -505,7 +506,7 @@ const BeeYieldDashboard: React.FC = () => {
                 );
             }
             case 'devices':
-                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} initialParams={viewParams} />;
+                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'device'} />;
             case 'usb':
                 return <USBView onTabChange={handleTabChange} />;
             case 'notes':
@@ -629,6 +630,9 @@ const BeeYieldDashboard: React.FC = () => {
             onTabChange={handleTabChange}
             onLogout={handleLogout}
             navItems={navItems}
+            hideHeader={!!onboardingStep}
+            hideSidebar={!!onboardingStep}
+            hideBanner={!!onboardingStep}
         >
             {renderContent()}
         </DashboardLayout>

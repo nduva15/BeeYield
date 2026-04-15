@@ -10,8 +10,9 @@ import math
 import tempfile
 import logging
 import importlib.util
+import glob
 from pathlib import Path
-from typing import Dict, Optional, List, Tuple, Type
+from typing import Dict, Optional, List, Tuple, Type, Any
 
 import librosa
 import numpy as np
@@ -51,14 +52,37 @@ class AcousticAnalyzer:
     SAMPLE_RATE = 22050
     MAX_ANALYSIS_SECONDS = 30
 
-    def __init__(self, model_path: Optional[Path] = None):
+    def __init__(self):
         self.cleaner = AudioCleaner(sample_rate=self.SAMPLE_RATE)
         self.segmenter = AudioSegmenter(window_size=2.0, overlap=0.5, sample_rate=self.SAMPLE_RATE)
         self.species_identifier = SpeciesIdentifier()
         self.health_classifier = HealthStateClassifier()
         self.event_detector = EventDetector()
         self.osbh_engine = OSBHEngine()
-        self.model_path = model_path
+        self.model_inventory = self._build_model_inventory()
+
+    def _build_model_inventory(self) -> Dict[str, Any]:
+        backend_root = Path(__file__).parent.parent.parent
+        expected_backend_checkpoint = backend_root / "brain" / "beesound_best.pth"
+        species_weights_glob = REPO_PATH / "modules" / "models" / "species_id" / "weights" / "*" / "*" / "*" / "*.pth"
+        local_species_checkpoints = sorted(glob.glob(str(species_weights_glob)))
+
+        return {
+            "runtime_mode": "heuristic_repo_wrappers",
+            "expected_backend_checkpoint": str(expected_backend_checkpoint),
+            "expected_backend_checkpoint_present": expected_backend_checkpoint.exists(),
+            "local_species_checkpoint_count": len(local_species_checkpoints),
+            "local_species_checkpoints": local_species_checkpoints[:10],
+            "repo_assets": {
+                "cleaner": str(REPO_PATH / "pipeline" / "cleaner.py"),
+                "segmenter": str(REPO_PATH / "pipeline" / "segmenter.py"),
+                "health_classifier": str(REPO_PATH / "models" / "health_state.py"),
+                "event_detector": str(REPO_PATH / "models" / "event_detector.py"),
+                "species_identifier": str(REPO_PATH / "models" / "species_id.py"),
+                "osbh_engine": str(REPO_PATH / "modules" / "osbh_engine.py"),
+                "species_training_root": str(REPO_PATH / "modules" / "models" / "species_id"),
+            },
+        }
 
     def _resolve_suffix(self, filename: Optional[str], content_type: Optional[str]) -> str:
         extension = Path(filename or "").suffix.lower()
@@ -387,6 +411,7 @@ class AcousticAnalyzer:
                 "bee_coverage": round(bee_coverage, 3),
                 "osbh_summary": osbh_summary,
                 "segment_timeline": timeline,
+                "model_inventory": self.model_inventory,
             }
         except Exception as e:
             logger.error("Analysis failed: %s", e)
@@ -399,10 +424,14 @@ _analyzer_instance: Optional[AcousticAnalyzer] = None
 def get_analyzer() -> AcousticAnalyzer:
     global _analyzer_instance
     if _analyzer_instance is None:
-        model_path = Path(__file__).parent.parent.parent / "brain" / "beesound_best.pth"
-        if not model_path.exists():
-            logger.warning("Expected trained model not found at %s; using heuristic BeeSound wrappers", model_path)
-        _analyzer_instance = AcousticAnalyzer(model_path if model_path.exists() else None)
+        _analyzer_instance = AcousticAnalyzer()
+        if not _analyzer_instance.model_inventory["expected_backend_checkpoint_present"]:
+            logger.warning(
+                "Expected trained model not found at %s; using heuristic BeeSound wrappers. "
+                "Species-id training code expects weights under %s",
+                _analyzer_instance.model_inventory["expected_backend_checkpoint"],
+                REPO_PATH / "modules" / "models" / "species_id" / "weights",
+            )
     return _analyzer_instance
 
 

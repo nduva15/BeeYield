@@ -21,7 +21,7 @@ Routes originate from [src/routeTree.gen.ts](src/routeTree.gen.ts).
 
 ### Public Content Routes
 - / -> Home [src/pages/Index.tsx](src/pages/Index.tsx)
-- /about -> About [src/pages/About.tsx](src/pages/About.tsx)
+- /ourstory -> OurStory [src/pages/OurStory.tsx](src/pages/OurStory.tsx)
 - /impact -> Impact [src/pages/Impact.tsx](src/pages/Impact.tsx)
 - /esg -> ESG [src/pages/ESG.tsx](src/pages/ESG.tsx)
 - /team -> Team [src/pages/Team.tsx](src/pages/Team.tsx)

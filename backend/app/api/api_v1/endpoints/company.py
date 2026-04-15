@@ -1,5 +1,5 @@
 """
-Company Endpoints - About, Story, Team, Stats
+Company Endpoints - Story, Team, Stats
 """
 from fastapi import APIRouter, HTTPException, Request, Depends
 from typing import Optional
@@ -20,7 +20,7 @@ def get_token(request: Request) -> Optional[str]:
 @router.get("/info", response_model=schemas.CompanyInfo)
 async def company_info(token: Optional[str] = Depends(get_token)):
     """
-    Returns general company info, values, and stats for the About Us page.
+    Returns general company info, values, and stats for the company story pages.
     """
     # Fetch values from DB
     db_values = await db_select("company_values", filters={"is_active": True}, order_by="display_order", token=token)
@@ -161,12 +161,12 @@ async def get_company_stats(category: Optional[str] = None, token: Optional[str]
     return stats
 
 
-# ============ ABOUT PAGE (Combined) ============
+# ============ COMPANY STORY PAGE (Combined) ============
 
-@router.get("/about", response_model=schemas.AboutPageResponse)
-async def get_about_page(token: Optional[str] = Depends(get_token)):
+@router.get("/ourstory", response_model=schemas.AboutPageResponse)
+async def get_our_story_page(token: Optional[str] = Depends(get_token)):
     """
-    Get complete about page data including company info, story, stats, and leadership.
+    Get complete company story page data including company info, story, stats, and leadership.
     """
     info = await company_info(token=token)
     story = await get_company_story(token=token)

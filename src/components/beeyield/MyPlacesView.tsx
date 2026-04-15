@@ -374,9 +374,10 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
 interface MyPlacesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
     initialParams?: { message?: string; action?: string } | null;
+    onboardingMode?: boolean;
 }
 
-const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams }) => {
+const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams, onboardingMode = false }) => {
     // UI State
     const [isAddingPlace, setIsAddingPlace] = React.useState(false);
     const [editingApiary, setEditingApiary] = React.useState<Apiary | null>(null);
@@ -440,8 +441,38 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams 
         }
     };
 
-    if (viewingApiary) {
+    if (viewingApiary && !onboardingMode) {
         return <ApiaryDetailView apiary={viewingApiary} setViewingApiary={setViewingApiary} onTabChange={onTabChange} />;
+    }
+
+    if (onboardingMode) {
+        return (
+            <GlassModal
+                isOpen={isAddingPlace || !!editingApiary}
+                onClose={resetForm}
+                title={editingApiary ? 'Edit Location' : 'Add New Location'}
+                subtitle="Register your first apiary before entering the dashboard."
+                maxWidth="max-w-4xl"
+                hideClose
+                preventClose
+            >
+                <ApiaryForm
+                    apiary={editingApiary}
+                    onSuccess={(newApiary) => {
+                        resetForm();
+                        if (!editingApiary && newApiary?.id) {
+                            setBeeYieldPendingOnboarding({
+                                step: 'hive',
+                                email: user?.email || undefined,
+                                apiaryId: newApiary.id,
+                            });
+                            onTabChange('beeyield', undefined, `onboarding:add-hive:${newApiary.id}`);
+                        }
+                    }}
+                    onCancel={resetForm}
+                />
+            </GlassModal>
+        );
     }
 
     return (

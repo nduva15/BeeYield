@@ -84,7 +84,7 @@ export interface AboutPageData {
     story: CompanyStory;
     stats: CompanyStat[];
     leadership_team: TeamMember[];
-    info?: AboutPageInfo; // For fallback compatibility in About.tsx
+    info?: AboutPageInfo;
 }
 
 export interface TeamData {

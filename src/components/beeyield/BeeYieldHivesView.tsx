@@ -29,12 +29,13 @@ import { useAuth } from '@/hooks/useAuth';
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
     initialParams?: { message?: string; action?: string } | null;
+    onboardingMode?: boolean;
 }
 
 const HIVES_CACHE_KEY = 'beeyield_hives_cache_v1';
 const APIARIES_CACHE_KEY = 'beeyield_apiaries_cache_v1';
 
-const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, initialParams }) => {
+const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, initialParams, onboardingMode = false }) => {
     const { user } = useAuth();
     // UI State
     const [selectedPlace, setSelectedPlace] = React.useState('all');
@@ -294,6 +295,28 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, init
                 hiveId={selectedHiveId}
                 onBack={() => setSelectedHiveId(null)}
                 onTabChange={onTabChange}
+            />
+        );
+    }
+
+    if (onboardingMode) {
+        return (
+            <HiveFormModal
+                isOpen={isHiveModalOpen}
+                onClose={() => setIsHiveModalOpen(false)}
+                editingHive={editingHive}
+                preventClose
+                onSuccess={(newHive) => {
+                    if (!editingHive && newHive?.id) {
+                        setBeeYieldPendingOnboarding({
+                            step: 'device',
+                            email: user?.email || undefined,
+                            apiaryId: newHive.apiary_id,
+                            hiveId: newHive.id,
+                        });
+                        onTabChange('devices', undefined, `onboarding:add-device:${newHive.apiary_id || ''}:${newHive.id}`);
+                    }
+                }}
             />
         );
     }

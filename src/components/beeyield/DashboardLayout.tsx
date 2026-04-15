@@ -15,6 +15,8 @@ interface DashboardLayoutProps {
     navItems: NavItem[];
     isAdmin?: boolean;
     hideHeader?: boolean;
+    hideSidebar?: boolean;
+    hideBanner?: boolean;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -24,22 +26,29 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     onLogout,
     navItems,
     isAdmin = false,
-    hideHeader = false
+    hideHeader = false,
+    hideSidebar = false,
+    hideBanner = false
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
 
     return (
         <div className="flex h-screen w-full bg-[#F9F7F2] overflow-hidden font-sans text-[#1A1A1A] selection:bg-[#F4D03F]/30 selection:text-[#1A1A1A]">
             {/* Sidebar */}
-            <GlassSidebar
-                activeTab={activeTab}
-                onTabChange={onTabChange}
-                onLogout={onLogout}
-                navItems={navItems}
-            />
+            {!hideSidebar && (
+                <GlassSidebar
+                    activeTab={activeTab}
+                    onTabChange={onTabChange}
+                    onLogout={onLogout}
+                    navItems={navItems}
+                />
+            )}
 
             {/* Main content */}
-            <main className="flex-1 flex flex-col h-full overflow-hidden relative md:pl-[280px] transition-all duration-300">
+            <main className={cn(
+                "flex-1 flex flex-col h-full overflow-hidden relative transition-all duration-300",
+                hideSidebar ? "md:pl-0" : "md:pl-[280px]"
+            )}>
                 {!hideHeader && (
                     <DashboardHeader
                         onLogout={onLogout}
@@ -59,7 +68,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 {/* Content area */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar relative">
                     <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-4 md:py-6 relative z-10">
-                        {!isAdmin && <FirstStepsBanner onTabChange={onTabChange} />}
+                        {!isAdmin && !hideBanner && <FirstStepsBanner onTabChange={onTabChange} />}
                         <motion.div
                             key={activeTab}
                             initial={{ opacity: 0, y: 6 }}

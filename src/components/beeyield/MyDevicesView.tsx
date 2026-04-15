@@ -29,9 +29,10 @@ interface MyDevicesViewProps {
     hives: Hive[];
     onTabChange: (tab: string, message?: string, action?: string) => void;
     initialParams?: { message?: string; action?: string } | null;
+    onboardingMode?: boolean;
 }
 
-const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, readings, apiaries, hives, onTabChange, initialParams }) => {
+const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, readings, apiaries, hives, onTabChange, initialParams, onboardingMode = false }) => {
     const queryClient = useQueryClient();
     const [localDevices, setLocalDevices] = React.useState<IoTDevice[]>(initialDevices);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -168,6 +169,26 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
         setEditingDevice(null);
         setIsAddModalOpen(true);
     }, [initialParams?.action]);
+
+    if (onboardingMode) {
+        return (
+            <AddDeviceModal
+                open={isAddModalOpen}
+                onOpenChange={(open) => {
+                    if (!open) return;
+                    setIsAddModalOpen(open);
+                    if (!open) setEditingDevice(null);
+                }}
+                onSubmit={handleSubmitDevice}
+                apiaries={apiaries}
+                hives={hives}
+                device={editingDevice}
+                initialApiaryId={editingDevice ? undefined : onboardingApiaryId}
+                initialHiveId={editingDevice ? undefined : onboardingHiveId}
+                preventClose
+            />
+        );
+    }
 
     return (
         <BeeYieldPageShell className={glass.page}>

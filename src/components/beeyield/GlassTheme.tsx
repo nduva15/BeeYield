@@ -173,6 +173,7 @@ interface GlassModalProps {
     children: React.ReactNode;
     maxWidth?: string;
     hideClose?: boolean;
+    preventClose?: boolean;
 }
 
 export const GlassModal: React.FC<GlassModalProps> = ({
@@ -182,12 +183,18 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     subtitle,
     children,
     maxWidth = 'max-w-md',
-    hideClose = false
+    hideClose = false,
+    preventClose = false
 }) => {
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className={cn(glass.modalOverlay)} onClick={(e) => e.target === e.currentTarget && onClose()}>
+                <div
+                    className={cn(glass.modalOverlay)}
+                    onClick={(e) => {
+                        if (!preventClose && e.target === e.currentTarget) onClose();
+                    }}
+                >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
