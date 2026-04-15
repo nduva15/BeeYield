@@ -9,6 +9,7 @@ import { Loader2, Mail, Lock as LockIcon, Hexagon, Zap, Activity, LogIn, ShieldC
 import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
 import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
+import { getBeeYieldPendingOnboardingPath } from '@/lib/beeyieldOnboarding';
 
 interface BeeYieldLoginFormProps {
     onSuccess?: () => void;
@@ -70,8 +71,9 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
-        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo: '/beeyield-dashboard' });
-        persistAuthRedirectState({ backend: 'beeyield', returnTo: '/beeyield-dashboard' });
+        const returnTo = getBeeYieldPendingOnboardingPath(email) || '/beeyield-dashboard';
+        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo });
+        persistAuthRedirectState({ backend: 'beeyield', returnTo });
 
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield', { redirectTo });
         if (error) {

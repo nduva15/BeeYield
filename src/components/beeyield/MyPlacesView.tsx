@@ -72,6 +72,7 @@ import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 import { glass, GlassStatCard, GlassConfirmModal, GlassModal } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { useAuth } from '@/hooks/useAuth';
+import { setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -372,14 +373,16 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
 
 interface MyPlacesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
+    initialParams?: { message?: string; action?: string } | null;
 }
 
-const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
+const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams }) => {
     // UI State
     const [isAddingPlace, setIsAddingPlace] = React.useState(false);
     const [editingApiary, setEditingApiary] = React.useState<Apiary | null>(null);
     const [viewingApiary, setViewingApiary] = React.useState<Apiary | null>(null);
     const [deletingApiaryId, setDeletingApiaryId] = React.useState<string | null>(null);
+    const { user } = useAuth();
 
     // Hooks
     const apiariesQuery = useApiaries();
@@ -416,6 +419,13 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         e.stopPropagation();
         setDeletingApiaryId(id);
     };
+
+    React.useEffect(() => {
+        if (initialParams?.action === 'onboarding:add-apiary') {
+            setEditingApiary(null);
+            setIsAddingPlace(true);
+        }
+    }, [initialParams?.action]);
 
     const confirmDelete = async () => {
         if (!deletingApiaryId) return;
@@ -632,7 +642,17 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
             >
                 <ApiaryForm
                     apiary={editingApiary}
-                    onSuccess={resetForm}
+                    onSuccess={(newApiary) => {
+                        resetForm();
+                        if (!editingApiary && newApiary?.id) {
+                            setBeeYieldPendingOnboarding({
+                                step: 'hive',
+                                email: user?.email || undefined,
+                                apiaryId: newApiary.id,
+                            });
+                            onTabChange('beeyield', undefined, `onboarding:add-hive:${newApiary.id}`);
+                        }
+                    }}
                     onCancel={resetForm}
                 />
             </GlassModal>

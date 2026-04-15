@@ -31,6 +31,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { useSettings } from '@/contexts/SettingsContext';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
+import {
+    clearBeeYieldPendingOnboarding,
+    getBeeYieldDashboardTarget,
+    getBeeYieldPendingOnboarding,
+    resolveBeeYieldOnboardingStep,
+    setBeeYieldPendingOnboarding,
+} from '@/lib/beeyieldOnboarding';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
@@ -164,13 +171,56 @@ const BeeYieldDashboard: React.FC = () => {
         const params = new URLSearchParams(window.location.search);
         const tab = params.get('tab');
         const message = params.get('message');
+        const action = params.get('action');
         if (tab) {
             setActiveTab(tab);
-            if (message) {
-                setAiInitialMessage(message);
-            }
+            setViewParams({ message: message || undefined, action: action || undefined });
+        }
+        if (message) {
+            setAiInitialMessage(message);
         }
     }, []);
+
+    React.useEffect(() => {
+        if (authLoading || loading) return;
+
+        const requiredStep = resolveBeeYieldOnboardingStep({
+            apiaries: apiaries.length,
+            hives: hives.length,
+            devices: devices.length,
+        });
+
+        if (!requiredStep) {
+            clearBeeYieldPendingOnboarding();
+            return;
+        }
+
+        const pendingState = getBeeYieldPendingOnboarding(user?.email);
+        const nextStep = pendingState?.step || requiredStep;
+        const target = getBeeYieldDashboardTarget(nextStep, {
+            apiaryId: pendingState?.apiaryId,
+            hiveId: pendingState?.hiveId,
+        });
+
+        setBeeYieldPendingOnboarding({
+            step: nextStep,
+            email: user?.email || undefined,
+            apiaryId: pendingState?.apiaryId,
+            hiveId: pendingState?.hiveId,
+        });
+
+        const shouldRedirect =
+            activeTab !== target.tab ||
+            viewParams?.action !== target.action;
+
+        if (shouldRedirect) {
+            handleTabChange(target.tab, undefined, target.action);
+            const params = new URLSearchParams(window.location.search);
+            params.set('tab', target.tab);
+            params.set('action', target.action);
+            window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+        }
+    }, [authLoading, loading, apiaries.length, hives.length, devices.length, user?.email, activeTab, viewParams?.action]);
 
     // Derived Stats
     const totalDevices = devices.length;
@@ -418,9 +468,9 @@ const BeeYieldDashboard: React.FC = () => {
                 return <YardOperations onTabChange={handleTabChange} />;
 
             case 'places':
-                return <MyPlacesView onTabChange={handleTabChange} />;
+                return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'beeyield':
-                return <BeeYieldHivesView onTabChange={handleTabChange} />;
+                return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'inspections':
                 return <InspectionsView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'harvests':
@@ -455,7 +505,7 @@ const BeeYieldDashboard: React.FC = () => {
                 );
             }
             case 'devices':
-                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
+                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'usb':
                 return <USBView onTabChange={handleTabChange} />;
             case 'notes':

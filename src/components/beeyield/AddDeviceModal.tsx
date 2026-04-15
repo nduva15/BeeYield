@@ -16,9 +16,11 @@ interface AddDeviceModalProps {
     apiaries: Apiary[];
     hives: Hive[];
     device?: IoTDevice | null;
+    initialApiaryId?: string;
+    initialHiveId?: string;
 }
 
-const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onSubmit, apiaries, hives, device }) => {
+const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onSubmit, apiaries, hives, device, initialApiaryId, initialHiveId }) => {
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>("");
     const [selectedHiveId, setSelectedHiveId] = React.useState<string>("");
     const [deviceCode, setDeviceCode] = React.useState("");
@@ -59,8 +61,12 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
             setDeviceType(device.device_type || 'inland');
             return;
         }
-        resetForm();
-    }, [device, open, resetForm]);
+        setSelectedApiaryId(initialApiaryId || "");
+        setSelectedHiveId(initialHiveId || "");
+        setDeviceCode("");
+        setDeviceName("");
+        setDeviceType('inland');
+    }, [device, initialApiaryId, initialHiveId, open, resetForm]);
 
     React.useEffect(() => {
         setSelectedHiveId("");

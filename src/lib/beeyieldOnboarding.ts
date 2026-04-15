@@ -4,6 +4,8 @@ export interface BeeYieldOnboardingState {
     step: BeeYieldOnboardingStep;
     email?: string;
     createdAt?: string;
+    apiaryId?: string;
+    hiveId?: string;
 }
 
 export interface BeeYieldDashboardTarget {
@@ -117,5 +119,19 @@ export const clearBeeYieldPendingOnboarding = () => {
 export const getBeeYieldPendingOnboardingPath = (userEmail?: string | null): string | null => {
     const state = getBeeYieldPendingOnboarding(userEmail);
     if (!state) return null;
-    return getBeeYieldDashboardPath(state.step);
+    return getBeeYieldDashboardPath(state.step, {
+        apiaryId: state.apiaryId,
+        hiveId: state.hiveId,
+    });
+};
+
+export const resolveBeeYieldOnboardingStep = (counts: {
+    apiaries: number;
+    hives: number;
+    devices: number;
+}): BeeYieldOnboardingStep | null => {
+    if (counts.apiaries === 0) return 'apiary';
+    if (counts.hives === 0) return 'hive';
+    if (counts.devices === 0) return 'device';
+    return null;
 };

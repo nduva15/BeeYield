@@ -1669,27 +1669,31 @@ export const beeyieldService = {
     },
 
     async getDashboardStats(): Promise<DashboardStats> {
-        if (!sb) throw new Error('No client');
-        const [devRes, readRes, hiveRes] = await Promise.all([
-            sb.from('devices').select('device_code, status'),
-            sb.from('sensor_readings').select('*').order('recorded_at', { ascending: false }).limit(50),
-            sb.from('hives').select('id'),
-        ]);
-        const devices = devRes.data || [];
-        const readings = readRes.data || [];
-        const avgTemp = readings.length ? readings.reduce((s, r: any) => s + (r.temperature || r.readings?.temperature || 0), 0) / readings.length : 0;
-        const avgHum = readings.length ? readings.reduce((s, r: any) => s + (r.humidity || r.readings?.humidity || 0), 0) / readings.length : 0;
-        const avgWt = readings.length ? readings.reduce((s, r: any) => s + (r.weight || r.readings?.hive_weight || 0), 0) / readings.length : 0;
-        return {
-            totalDevices: devices.length,
-            activeDevices: devices.filter((d: any) => d.status === 'online').length,
-            totalReadings: readings.length,
-            lastUpdate: new Date().toISOString(),
-            avgTemperature: parseFloat(avgTemp.toFixed(1)),
-            avgHumidity: parseFloat(avgHum.toFixed(1)),
-            avgHiveWeight: parseFloat(avgWt.toFixed(1)),
-            healthScore: 85, // TODO: compute from real data
-        };
+        try {
+            const data = await apiGet<any>('beeyield/stats');
+            return {
+                totalDevices: Number(data?.devices ?? 0),
+                activeDevices: Number(data?.active_devices ?? data?.devices_active ?? 0),
+                totalReadings: Number(data?.readings ?? data?.total_readings ?? 0),
+                lastUpdate: new Date().toISOString(),
+                avgTemperature: Number(data?.avg_temperature ?? 0),
+                avgHumidity: Number(data?.avg_humidity ?? 0),
+                avgHiveWeight: Number(data?.avg_hive_weight ?? 0),
+                healthScore: Number(data?.health_score ?? 0),
+            };
+        } catch (error) {
+            console.error('getDashboardStats:', error);
+            return {
+                totalDevices: 0,
+                activeDevices: 0,
+                totalReadings: 0,
+                lastUpdate: new Date().toISOString(),
+                avgTemperature: 0,
+                avgHumidity: 0,
+                avgHiveWeight: 0,
+                healthScore: 0,
+            };
+        }
     },
 
     async getTelemetryLatest(): Promise<SensorReading[]> {
@@ -1743,36 +1747,13 @@ export const beeyieldService = {
     async getApiaries(): Promise<Apiary[]> {
         try {
             const data = await apiGet<Apiary[]>('beeyield/apiaries');
-            if (Array.isArray(data) && data.length > 0) {
+            if (Array.isArray(data)) {
                 return data.map((record: any) => mapApiaryRecord(record));
             }
         } catch (error) {
             console.error('getApiaries:', error);
         }
-
-        if (!sb) return [];
-
-        try {
-            const [{ data: apiaries, error: apiariesError }, { data: hives, error: hivesError }] = await Promise.all([
-                sb.from('apiaries').select('*, farmer:farmers(*)').order('created_at', { ascending: false }),
-                sb.from('hives').select('id, apiary_id'),
-            ]);
-
-            if (apiariesError) throw apiariesError;
-            if (hivesError) throw hivesError;
-
-            const hiveCountByApiary = (hives || []).reduce<Record<string, number>>((acc, hive: any) => {
-                const apiaryId = String(hive?.apiary_id ?? '');
-                if (!apiaryId) return acc;
-                acc[apiaryId] = (acc[apiaryId] || 0) + 1;
-                return acc;
-            }, {});
-
-            return (apiaries || []).map((record: any) => mapApiaryRecord(record, hiveCountByApiary));
-        } catch (fallbackError) {
-            console.error('getApiaries fallback:', fallbackError);
-            return [];
-        }
+        return [];
     },
 
     async createApiary(input: any): Promise<{ data: Apiary | null; error: any }> {
@@ -1868,33 +1849,13 @@ export const beeyieldService = {
     async getHives(apiaryId?: string): Promise<Hive[]> {
         try {
             const data = await apiGet<Hive[]>('beeyield/hives', apiaryId ? { apiary_id: apiaryId } : undefined);
-            if (Array.isArray(data) && data.length > 0) {
+            if (Array.isArray(data)) {
                 return data.map((record: any) => mapHiveRecord(record));
             }
         } catch (error) {
             console.error('getHives:', error);
         }
-
-        if (!sb) return [];
-
-        try {
-            let query = sb
-                .from('hives')
-                .select('*, apiary:apiaries(*), farmer:farmers(*)')
-                .order('created_at', { ascending: false });
-
-            if (apiaryId) {
-                query = query.eq('apiary_id', apiaryId);
-            }
-
-            const { data, error } = await query;
-            if (error) throw error;
-
-            return (data || []).map((record: any) => mapHiveRecord(record));
-        } catch (fallbackError) {
-            console.error('getHives fallback:', fallbackError);
-            return [];
-        }
+        return [];
     },
 
     async createHive(input: HiveCreateInput): Promise<{ data: Hive | null; error: any }> {
@@ -1938,45 +1899,13 @@ export const beeyieldService = {
     async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
         try {
             const data = await apiGet<Harvest[]>('beeyield/harvests', filters as any);
-            if (Array.isArray(data) && data.length > 0) {
+            if (Array.isArray(data)) {
                 return data.map((record: any) => mapHarvestRecord(record));
             }
         } catch (error) {
             console.error('getHarvests:', error);
         }
-
-        if (!sb) return [];
-
-        try {
-            let query = sb
-                .from('harvests')
-                .select('*, hive:hives(*, apiary:apiaries(*)), farmer:farmers(*)')
-                .order('harvest_date', { ascending: false })
-                .limit(2000);
-
-            if (filters?.hive_id) {
-                query = query.eq('hive_id', filters.hive_id);
-            }
-            if (filters?.apiary_id) {
-                query = query.eq('apiary_id', filters.apiary_id);
-            }
-            if (filters?.farmer_id) {
-                query = query.eq('farmer_id', filters.farmer_id);
-            }
-            if (filters?.year) {
-                query = query
-                    .gte('harvest_date', `${filters.year}-01-01`)
-                    .lt('harvest_date', `${filters.year + 1}-01-01`);
-            }
-
-            const { data, error } = await query;
-            if (error) throw error;
-
-            return (data || []).map((record: any) => mapHarvestRecord(record));
-        } catch (fallbackError) {
-            console.error('getHarvests fallback:', fallbackError);
-            return [];
-        }
+        return [];
     },
 
     async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<BatchView[]> {
@@ -1986,54 +1915,13 @@ export const beeyieldService = {
             if (filters?.year) params.year = filters.year;
             if (filters?.limit) params.limit = filters.limit;
             const data = await apiGet<BatchView[]>('beeyield/batches', params);
-            if (Array.isArray(data) && data.length > 0) {
+            if (Array.isArray(data)) {
                 return data.map((record: any) => mapBatchRecord(record));
             }
         } catch (error) {
             console.error('getBatches:', error);
         }
-
-        const deriveFromHarvests = async () => {
-            let derived = deriveBatchViewsFromHarvests(await this.getHarvests(filters?.year ? { year: filters.year } : undefined));
-            if (filters?.honey_type) {
-                derived = derived.filter((batch) => batch.honey_type === filters.honey_type);
-            }
-            if (filters?.limit) {
-                derived = derived.slice(0, filters.limit);
-            }
-            return derived;
-        };
-
-        if (!sb) return deriveFromHarvests();
-
-        try {
-            let query = sb
-                .from('honey_batches')
-                .select('*')
-                .order('harvest_date', { ascending: false })
-                .limit(filters?.limit || 1000);
-
-            if (filters?.honey_type) {
-                query = query.eq('honey_type', filters.honey_type);
-            }
-            if (filters?.year) {
-                query = query
-                    .gte('harvest_date', `${filters.year}-01-01`)
-                    .lt('harvest_date', `${filters.year + 1}-01-01`);
-            }
-
-            const { data, error } = await query;
-            if (error) throw error;
-
-            if (data && data.length > 0) {
-                return data.map((record: any) => mapBatchRecord(record));
-            }
-
-            return deriveFromHarvests();
-        } catch (fallbackError) {
-            console.error('getBatches fallback:', fallbackError);
-            return deriveFromHarvests();
-        }
+        return [];
     },
 
     // ========== REAL-TIME SUBSCRIPTIONS (PULSE) ==========
@@ -3886,28 +3774,35 @@ export const beeyieldService = {
         pending_tasks: number;
         active_apiaries: number;
     }> {
-        if (!sb) return { total_apiaries: 0, total_hives: 0, active_hives: 0, total_harvests: 0, total_honey_kg: 0, total_acres: 0, total_tasks: 0, pending_tasks: 0, active_apiaries: 0 };
-        const [apiaries, hives, harvests, tasks] = await Promise.all([
-            sb.from('apiaries').select('id, status', { count: 'exact' }),
-            sb.from('hives').select('id, status', { count: 'exact' }),
-            sb.from('harvests').select('quantity_kg'),
-            sb.from('tasks').select('id, status, is_completed', { count: 'exact' }),
-        ]);
-        const harvestData = harvests.data || [];
-        const hiveData = hives.data || [];
-        const taskData = tasks.data || [];
-        const apiaryData = apiaries.data || [];
-        return {
-            total_apiaries: apiaries.count || 0,
-            total_hives: hives.count || 0,
-            active_hives: hiveData.filter((h: any) => h.status === 'active' || !h.status).length,
-            total_harvests: harvestData.length,
-            total_honey_kg: harvestData.reduce((s, h: any) => s + (h.quantity_kg || 0), 0),
+        const emptyStats = {
+            total_apiaries: 0,
+            total_hives: 0,
+            active_hives: 0,
+            total_harvests: 0,
+            total_honey_kg: 0,
             total_acres: 0,
-            total_tasks: tasks.count || 0,
-            pending_tasks: taskData.filter((t: any) => !t.is_completed && t.status !== 'completed').length,
-            active_apiaries: apiaryData.filter((a: any) => a.status === 'active' || !a.status).length,
+            total_tasks: 0,
+            pending_tasks: 0,
+            active_apiaries: 0,
         };
+
+        try {
+            const data = await apiGet<any>('beeyield/stats');
+            return {
+                total_apiaries: Number(data?.apiaries ?? 0),
+                total_hives: Number(data?.hives ?? 0),
+                active_hives: Number(data?.active_hives ?? 0),
+                total_harvests: Number(data?.harvests ?? 0),
+                total_honey_kg: Number(data?.total_honey_kg ?? 0),
+                total_acres: Number(data?.total_acres ?? 0),
+                total_tasks: Number(data?.tasks ?? 0),
+                pending_tasks: Number(data?.pending_tasks ?? 0),
+                active_apiaries: Number(data?.active_apiaries ?? 0),
+            };
+        } catch (error) {
+            console.error('getStats:', error);
+            return emptyStats;
+        }
     },
 
     // ========== ANALYTICS ==========
@@ -3917,17 +3812,35 @@ export const beeyieldService = {
         apiary_id?: string;
         user_id?: string;
     }): Promise<any[]> {
-        if (!sb) return [];
-        let query = sb.from('sensor_readings').select('*').order('recorded_at', { ascending: false }).limit(100);
-        if (params.apiary_id) {
-            const { data: hives } = await sb.from('hives').select('id').eq('apiary_id', params.apiary_id);
-            if (hives?.length) {
-                query = query.in('hive_id', hives.map(h => h.id));
+        try {
+            const hives = await this.getHives(params.apiary_id);
+            if (!hives.length) {
+                return [];
             }
+
+            const readingsByHive = await Promise.all(
+                hives.map(async (hive) => {
+                    try {
+                        return await this.getReadings(hive.id, 50);
+                    } catch (error) {
+                        console.error(`getComparisonData:getReadings:${hive.id}`, error);
+                        return [];
+                    }
+                })
+            );
+
+            return readingsByHive
+                .flat()
+                .sort((left: any, right: any) =>
+                    String(right.recorded_at || right.timestamp || '').localeCompare(
+                        String(left.recorded_at || left.timestamp || '')
+                    )
+                )
+                .slice(0, 100);
+        } catch (error) {
+            console.error('getComparisonData:', error);
+            return [];
         }
-        const { data, error } = await query;
-        if (error) { console.error('getComparisonData:', error); return []; }
-        return (data || []) as any[];
     },
 
     // ========== REAL-TIME SUBSCRIPTIONS (PULSE) ==========

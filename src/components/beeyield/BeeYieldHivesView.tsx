@@ -23,15 +23,19 @@ import HiveDetailView from './HiveDetailView';
 import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import { glass, GlassStatCard } from './GlassTheme';
 import WeatherTelemetryPanel from './WeatherTelemetryPanel';
+import { setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
+import { useAuth } from '@/hooks/useAuth';
 
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
+    initialParams?: { message?: string; action?: string } | null;
 }
 
 const HIVES_CACHE_KEY = 'beeyield_hives_cache_v1';
 const APIARIES_CACHE_KEY = 'beeyield_apiaries_cache_v1';
 
-const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) => {
+const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, initialParams }) => {
+    const { user } = useAuth();
     // UI State
     const [selectedPlace, setSelectedPlace] = React.useState('all');
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -136,6 +140,19 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             setSelectedApiaryId(selectedPlace);
         }
     }, [selectedPlace, setSelectedApiaryId]);
+
+    React.useEffect(() => {
+        if (!initialParams?.action?.startsWith('onboarding:add-hive')) return;
+
+        const [, , apiaryId] = initialParams.action.split(':');
+        if (apiaryId) {
+            setSelectedPlace(apiaryId);
+            setSelectedApiaryId(apiaryId);
+        }
+
+        setEditingHive(null);
+        setIsHiveModalOpen(true);
+    }, [initialParams?.action, setSelectedApiaryId]);
 
     // Filtering
     const filteredHives = React.useMemo(() => {
@@ -534,6 +551,17 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 isOpen={isHiveModalOpen}
                 onClose={() => setIsHiveModalOpen(false)}
                 editingHive={editingHive}
+                onSuccess={(newHive) => {
+                    if (!editingHive && newHive?.id) {
+                        setBeeYieldPendingOnboarding({
+                            step: 'device',
+                            email: user?.email || undefined,
+                            apiaryId: newHive.apiary_id,
+                            hiveId: newHive.id,
+                        });
+                        onTabChange('devices', undefined, `onboarding:add-device:${newHive.apiary_id || ''}:${newHive.id}`);
+                    }
+                }}
             />
 
             {/* Inspection Request */}

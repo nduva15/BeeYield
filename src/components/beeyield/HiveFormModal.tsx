@@ -8,9 +8,10 @@ interface HiveFormModalProps {
     onClose: () => void;
     editingHive?: Hive | null;
     preselectedApiaryId?: string;
+    onSuccess?: (hive?: Hive) => void;
 }
 
-const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingHive, preselectedApiaryId }) => {
+const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingHive, preselectedApiaryId, onSuccess }) => {
     return (
         <GlassModal
             isOpen={isOpen}
@@ -22,7 +23,10 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
             <HiveForm 
                 editingHive={editingHive} 
                 preselectedApiaryId={preselectedApiaryId} 
-                onSuccess={onClose} 
+                onSuccess={(hive) => {
+                    onSuccess?.(hive);
+                    onClose();
+                }}
                 onCancel={onClose} 
             />
         </GlassModal>
