@@ -33,6 +33,8 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
         status: 'Active',
         installation_date: new Date().toISOString().split('T')[0],
         has_sensors: false,
+        latitude: undefined,
+        longitude: undefined,
     });
 
     const formatDateForInput = (dateStr?: string) => {
@@ -58,6 +60,8 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 status: editingHive.status || 'Active',
                 installation_date: formatDateForInput(editingHive.installation_date),
                 has_sensors: editingHive.has_sensors || false,
+                latitude: editingHive.latitude ?? undefined,
+                longitude: editingHive.longitude ?? undefined,
             });
         } else {
             setFormData({
@@ -70,6 +74,8 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 status: 'Active',
                 installation_date: new Date().toISOString().split('T')[0],
                 has_sensors: false,
+                latitude: undefined,
+                longitude: undefined,
             });
         }
     }, [editingHive, preselectedApiaryId, apiaries]);
@@ -237,6 +243,42 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                         onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })}
                         className={cn(glass.input, "h-10 text-[11px] font-black tabular-nums")}
                     />
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="hive-form-latitude" className="text-[9px] font-black text-gray-400 ml-2">Latitude</Label>
+                    <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
+                        <Input
+                            id="hive-form-latitude"
+                            name="latitude"
+                            autoComplete="off"
+                            type="number"
+                            step="any"
+                            value={formData.latitude ?? ''}
+                            onChange={(e) => setFormData({ ...formData, latitude: e.target.value === '' ? undefined : Number(e.target.value) })}
+                            placeholder="-2.417230"
+                            className={cn(glass.input, "pl-10 h-10 text-[11px] font-black tabular-nums")}
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="hive-form-longitude" className="text-[9px] font-black text-gray-400 ml-2">Longitude</Label>
+                    <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
+                        <Input
+                            id="hive-form-longitude"
+                            name="longitude"
+                            autoComplete="off"
+                            type="number"
+                            step="any"
+                            value={formData.longitude ?? ''}
+                            onChange={(e) => setFormData({ ...formData, longitude: e.target.value === '' ? undefined : Number(e.target.value) })}
+                            placeholder="37.969870"
+                            className={cn(glass.input, "pl-10 h-10 text-[11px] font-black tabular-nums")}
+                        />
+                    </div>
                 </div>
             </div>
 

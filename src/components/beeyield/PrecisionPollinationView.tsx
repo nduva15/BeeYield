@@ -36,7 +36,7 @@ import {
     CheckCircle2,
     Clock,
 } from 'lucide-react';
-import { beeyieldService, Apiary, IoTDevice, SensorReading } from '@/services/beeyieldService';
+import { beeyieldService, Apiary, Hive, IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';
@@ -46,8 +46,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { jsPDF } from 'jspdf';
 import { beePollinationData } from '@/data/beePollinationData';
+import { useHives } from '@/hooks/useHives';
 
-import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Circle, CircleMarker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 

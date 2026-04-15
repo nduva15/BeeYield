@@ -786,6 +786,8 @@ export interface HiveCreateInput {
     installation_date?: string;
     has_sensors?: boolean;
     notes?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 // ========== HARVEST TYPES ==========
