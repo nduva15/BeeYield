@@ -66,7 +66,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
         updateHarvest({ id: selectedHarvest.id, data: sanitized }, {
             onSuccess: () => {
                 setIsEditing(false);
-                setSelectedHarvest({ ...selectedHarvest, ...editForm } as Harvest);
+                setSelectedHarvest(sanitizeHarvest({ ...selectedHarvest, ...editForm } as Harvest));
             }
         });
     };
@@ -167,7 +167,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                 harvest.honey_type?.toLowerCase().includes(searchQuery.toLowerCase());
 
             const matchesYear = filterYear === 'all' ||
-                new Date(harvest.harvest_date).getFullYear().toString() === filterYear;
+                getSafeDate(harvest.harvest_date)?.getFullYear().toString() === filterYear;
 
             const matchesApiary = !filterApiaryId || filterApiaryId === 'all' || 
                                  (harvest as any).apiary_id === filterApiaryId || 
@@ -179,7 +179,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
 
             return matchesSearch && matchesYear && matchesApiary && matchesHive;
         });
-    }, [harvests, searchQuery, filterYear, filterApiaryId, filterHiveId]);
+    }, [filterApiaryId, filterHiveId, filterYear, getSafeDate, harvests, searchQuery]);
 
     const exportHarvestsCsv = React.useCallback(() => {
         const rows = filteredHarvests.map((h) => ({
@@ -236,6 +236,27 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
         };
         return styles[grade || ''] || 'bg-foreground/5 text-foreground/40 border-border/50';
     };
+
+    const getSafeDate = React.useCallback((value?: string | null) => {
+        if (!value) return null;
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date;
+    }, []);
+
+    const formatHarvestDate = React.useCallback((value?: string | null) => {
+        const date = getSafeDate(value);
+        return date ? format(date, 'MMM dd, yyyy') : '—';
+    }, [getSafeDate]);
+
+    const formatKg = React.useCallback((value?: number | null) => {
+        return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(1) : '0.0';
+    }, []);
+
+    const sanitizeHarvest = React.useCallback((harvest: Harvest): Harvest => ({
+        ...harvest,
+        harvest_date: getSafeDate(harvest.harvest_date)?.toISOString() ?? '',
+        quantity_kg: typeof harvest.quantity_kg === 'number' && Number.isFinite(harvest.quantity_kg) ? harvest.quantity_kg : 0,
+    }), [getSafeDate]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -451,7 +472,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                 key={h.id}
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
-                                                onClick={() => setSelectedHarvest(h)}
+                                                onClick={() => setSelectedHarvest(sanitizeHarvest(h))}
                                                 className="hover:bg-white/50 transition-colors group cursor-pointer"
                                             >
                                                 <td className="px-4 py-3">
@@ -461,7 +482,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <span className="text-[10px] font-bold text-gray-500 tabular-nums">
-                                                        {format(new Date(h.harvest_date), 'MMM dd, yyyy')}
+                                                        {formatHarvestDate(h.harvest_date)}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
@@ -487,7 +508,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
                                                     <span className="text-[11px] font-black text-[#1B9157] tabular-nums">
-                                                        {h.quantity_kg.toFixed(1)} <span className="text-[9px] font-medium opacity-50">Kg</span>
+                                                        {formatKg(h.quantity_kg)} <span className="text-[9px] font-medium opacity-50">Kg</span>
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
@@ -641,7 +662,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="text-[10px] font-bold text-gray-500 tabular-nums">
-                                                {format(new Date(batch.harvest_date), 'MMM dd, yyyy')}
+                                                {formatHarvestDate(batch.harvest_date)}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-[10px] font-semibold text-gray-600">
