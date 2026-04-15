@@ -159,6 +159,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
         };
     }, [harvests]);
 
+    const getSafeDate = React.useCallback((value?: string | null) => {
+        if (!value) return null;
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date;
+    }, []);
+
     // Filter harvests
     const filteredHarvests = React.useMemo(() => {
         return harvests.filter(harvest => {
@@ -236,12 +242,6 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
         };
         return styles[grade || ''] || 'bg-foreground/5 text-foreground/40 border-border/50';
     };
-
-    const getSafeDate = React.useCallback((value?: string | null) => {
-        if (!value) return null;
-        const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? null : date;
-    }, []);
 
     const formatHarvestDate = React.useCallback((value?: string | null) => {
         const date = getSafeDate(value);

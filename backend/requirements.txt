@@ -4,13 +4,20 @@ fastapi>=0.104.1
 uvicorn[standard]>=0.24.0
 python-multipart>=0.0.6
 pydantic>=2.5.0
+pydantic-settings
+email-validator
+python-jose[cryptography]
+passlib[bcrypt]
 
 # Database
 supabase>=2.0.3
 asyncpg>=0.29.0
+sqlmodel
+sqlalchemy
 
 # HTTP Client  
 httpx>=0.25.1
+requests
 
 # Audio Processing (BEE-SOUND-ANALYSIS dependencies)
 librosa>=0.10.1
@@ -18,10 +25,21 @@ numpy>=1.26.4
 soundfile>=0.12.1
 scipy>=1.10.1
 
+# Data, Graph, and Geo
+pandas
+networkx
+shapely
+web3
+
 # Utilities
 python-dotenv>=1.0.0
+pillow
+google-genai
+resend
+qrcode
 
 # Report Generation
 reportlab>=4.0.0
 openpyxl>=3.1.0
+stripe
 

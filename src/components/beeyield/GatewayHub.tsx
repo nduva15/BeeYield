@@ -9,16 +9,24 @@ import { glass, PageHeader } from './GlassTheme';
 
 const GatewayHub: React.FC = () => {
     const { data: devices = [], isLoading } = useDevices();
+    const [currentTime, setCurrentTime] = React.useState<number | null>(null);
+
+    React.useEffect(() => {
+        setCurrentTime(Date.now());
+        const timer = window.setInterval(() => setCurrentTime(Date.now()), 60_000);
+        return () => window.clearInterval(timer);
+    }, []);
 
     const formatLastPing = React.useCallback((lastPing?: string) => {
         if (!lastPing) return 'Never';
+        if (currentTime === null) return 'Checking...';
 
         const pingedAt = new Date(lastPing);
         if (Number.isNaN(pingedAt.getTime())) {
             return 'Unknown';
         }
 
-        const diffMs = Date.now() - pingedAt.getTime();
+        const diffMs = currentTime - pingedAt.getTime();
         const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
         if (diffMinutes < 1) return 'Just now';
@@ -28,7 +36,7 @@ const GatewayHub: React.FC = () => {
         if (diffHours < 24) return `${diffHours}h ago`;
 
         return `${Math.floor(diffHours / 24)}d ago`;
-    }, []);
+    }, [currentTime]);
 
     const gateways = React.useMemo(
         () => devices.filter((device) => device.device_type === 'inland'),
@@ -38,14 +46,15 @@ const GatewayHub: React.FC = () => {
     const staleGateways = React.useMemo(
         () =>
             gateways.filter((gateway) => {
+                if (currentTime === null) return false;
                 if (!gateway.last_ping) return true;
 
                 const pingedAt = new Date(gateway.last_ping);
                 if (Number.isNaN(pingedAt.getTime())) return true;
 
-                return Date.now() - pingedAt.getTime() > 30 * 24 * 60 * 60 * 1000;
+                return currentTime - pingedAt.getTime() > 30 * 24 * 60 * 60 * 1000;
             }),
-        [gateways],
+        [currentTime, gateways],
     );
 
     const networkLoadLabel = React.useMemo(() => {

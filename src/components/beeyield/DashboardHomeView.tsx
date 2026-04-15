@@ -23,6 +23,11 @@ interface DashboardHomeViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
+const EMPTY_APIARIES: Apiary[] = [];
+const EMPTY_HIVES: Hive[] = [];
+const EMPTY_HARVESTS: Harvest[] = [];
+const EMPTY_BATCHES: BatchView[] = [];
+
 const DEG = '\u00B0';
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
@@ -42,10 +47,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const harvestsQuery = useHarvests();
     const batchesQuery = useBatches({ limit: 50 });
 
-    const apiaries = apiariesQuery.data || [];
-    const hives = hivesQuery.data || [];
-    const harvests = harvestsQuery.data || [];
-    const batches = batchesQuery.data || [];
+    const apiaries = apiariesQuery.data ?? EMPTY_APIARIES;
+    const hives = hivesQuery.data ?? EMPTY_HIVES;
+    const harvests = harvestsQuery.data ?? EMPTY_HARVESTS;
+    const batches = batchesQuery.data ?? EMPTY_BATCHES;
     const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
     const primaryApiary = apiaries.find((apiary) => apiary.id === selectedApiaryId) || apiaries[0] || null;
     const { data: weatherSummary, isLoading: isWeatherLoading } = useApiaryWeatherSummary(primaryApiary?.id);

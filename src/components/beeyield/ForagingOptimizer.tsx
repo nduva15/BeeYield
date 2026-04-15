@@ -32,6 +32,9 @@ interface ForagingOptimizerProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
 }
 
+const EMPTY_APIARIES: any[] = [];
+const EMPTY_HARVESTS: any[] = [];
+
 const offsetPoint = (lat: number, lng: number, distanceKm: number, bearingDeg: number): [number, number] => {
     const earthRadiusKm = 6371;
     const bearingRad = bearingDeg * Math.PI / 180;
@@ -61,8 +64,8 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
     const { data: harvestsData, isLoading: harvestsLoading } = useHarvests();
     const { data: potentialData, isLoading: potentialLoading } = useFlightPotential(selectedApiaryId || undefined);
 
-    const apiaries = apiariesData || [];
-    const harvests = harvestsData || [];
+    const apiaries = apiariesData ?? EMPTY_APIARIES;
+    const harvests = harvestsData ?? EMPTY_HARVESTS;
     const loading = apiariesLoading || harvestsLoading || potentialLoading;
 
     React.useEffect(() => {
@@ -190,7 +193,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                 toast.error('Could not commit shift');
             }
         })();
-    }, [forageInsight.score, selectedApiary?.name, selectedApiaryId]);
+    }, [forageInsight.score, selectedApiary, selectedApiaryId]);
 
     React.useEffect(() => () => {
         if (shiftTimeoutRef.current) window.clearTimeout(shiftTimeoutRef.current);
