@@ -1,11 +1,27 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { useCart } from "@/contexts/CartContext";
-import { useWishlist } from "@/contexts/WishlistContext";
+import { motion } from "framer-motion";
+import {
+  BookOpen,
+  Container,
+  Cpu,
+  Download,
+  Heart,
+  Loader2,
+  ShieldCheck,
+  ShoppingBag,
+  ShoppingCart,
+  Sparkles,
+  Star,
+  User,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import { BrandedProductImage } from "@/components/BrandedProductImage";
+import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -13,413 +29,379 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import {
-  ShoppingCart,
-  Star,
-  Heart,
-  ShieldCheck,
-  ShoppingBag,
-  User,
-  Cpu,
-  Radio,
-  Activity,
-  Container,
-  BookOpen,
-  Download
-} from "lucide-react";
-import { toast } from "sonner";
-import { BrandedProductImage } from "@/components/BrandedProductImage";
-import { type Product, type ProductVariant } from "@/services/shopService";
-import { CATALOG } from "@/data/catalog";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { getLearnMaterialByName } from "@/data/learnMaterials";
+import { CATALOG } from "@/data/catalog";
+import { cn } from "@/lib/utils";
+import { getProducts, type Product } from "@/services/shopService";
 
 const STATIC_PRODUCTS: Product[] = CATALOG as Product[];
-const CATEGORY_CONTENT: Record<string, { eyebrow: string; title: string; description: string; pills: string[] }> = {
+
+const CATEGORY_META = {
   honey: {
-    eyebrow: "Traceable Honey",
-    title: "Pure honey with verified origin and seasonal harvest batches.",
-    description: "Single-origin BeeYield honey with transparent batch handling, clean packaging, and everyday staples for gifting or home use.",
-    pills: ["3 jar sizes", "Batch-linked stock", "Verified quality"]
+    label: "Honey products",
+    eyebrow: "Traceable harvests",
+    title: "Single-origin jars and gifting formats with verified batch handling.",
+    description:
+      "Production-ready inventory for everyday orders, gifting moments, and repeat household buying.",
+    icon: Container,
   },
   hardware: {
-    eyebrow: "Apiary Technology",
-    title: "Sensors, gateways, and monitoring tools built for productive hives.",
-    description: "BeeHUB devices and accessories for climate telemetry, weight tracking, solar power, security, and acoustic monitoring.",
-    pills: ["Live monitoring", "Solar-ready kits", "Commercial apiaries"]
+    label: "Sensors & tech",
+    eyebrow: "Apiary systems",
+    title: "Field devices and monitoring hardware for serious hive operations.",
+    description:
+      "BeeYield hardware for telemetry, security, solar deployment, and remote observation.",
+    icon: Cpu,
   },
   merch: {
-    eyebrow: "BeeYield Merch Drop",
-    title: "Eight branded merch materials designed as one coherent BeeYield collection.",
-    description: "Logo-led apparel and fieldwear for beekeepers, partners, and fans of the brand. The range covers beanies, tees, hoodies, carry gear, and a pro bee suit.",
-    pills: ["8-piece collection", "Brand-first graphics", "Fieldwear and lifestyle"]
+    label: "Brand merch",
+    eyebrow: "Fieldwear collection",
+    title: "BeeYield apparel and utility pieces built around the core identity system.",
+    description:
+      "Wearable brand assets for partners, teams, retail drops, and beekeeper communities.",
+    icon: ShoppingBag,
   },
   education: {
-    eyebrow: "Bee Academy",
-    title: "Guides, courses, and operational playbooks for modern beekeeping.",
-    description: "Downloadable learning materials and training products for beginners, commercial operators, and BeeYield technology users.",
-    pills: ["PDF guides", "Video learning", "Professional toolkits"]
-  }
-};
+    label: "Bee academy",
+    eyebrow: "Operator knowledge",
+    title: "Downloadable guides, training packs, and commercial playbooks.",
+    description:
+      "Learning materials for first-time keepers, field teams, and digital hive operators.",
+    icon: BookOpen,
+  },
+} as const;
+
+const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
 const Shop = () => {
-  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const [activeCategory, setActiveCategory] = useState<string>("honey");
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  const handleSizeChange = (productId: string, size: string) => {
-    const product = STATIC_PRODUCTS.find(p => p.id === productId);
-    if (!product) return;
+  const [products, setProducts] = useState<Product[]>(STATIC_PRODUCTS);
+  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<keyof typeof CATEGORY_META>("honey");
+  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
 
-    if (product.category === 'honey') {
-      const newSizes = { ...selectedSizes };
-      STATIC_PRODUCTS.forEach(p => {
-        if (p.category === 'honey') {
-          const hasSize = p.variants.some(v => v.size === size);
-          if (hasSize) {
-            newSizes[p.id] = size;
-          }
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadProducts = async () => {
+      setLoading(true);
+      try {
+        const liveProducts = await getProducts();
+        if (!cancelled && liveProducts.length > 0) {
+          setProducts(liveProducts.filter((product) => product.is_active));
         }
-      });
-      setSelectedSizes(newSizes);
-    } else {
-      setSelectedSizes({ ...selectedSizes, [productId]: size });
-    }
+      } catch (error) {
+        console.error("Failed to load live products, using fallback catalog:", error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadProducts();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const visibleProducts = useMemo(
+    () => products.filter((product) => product.category === activeCategory),
+    [activeCategory, products],
+  );
+
+  const categoryMeta = CATEGORY_META[activeCategory];
+  const categoryCounts = useMemo(() => {
+    return Object.keys(CATEGORY_META).reduce<Record<string, number>>((acc, key) => {
+      acc[key] = products.filter((product) => product.category === key).length;
+      return acc;
+    }, {});
+  }, [products]);
+
+  const selectVariant = (product: Product) => {
+    const chosenSize = selectedSizes[product.id] || product.variants[0]?.size;
+    return product.variants.find((variant) => variant.size === chosenSize) || product.variants[0];
+  };
+
+  const handleSizeChange = (product: Product, size: string) => {
+    setSelectedSizes((current) => ({ ...current, [product.id]: size }));
   };
 
   const handleAddToCart = (product: Product) => {
-    const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
-    const variant = product.variants && product.variants.length > 0
-      ? (product.variants.find((v) => v.size === selectedSize) || product.variants[0])
-      : null;
-
+    const variant = selectVariant(product);
     if (!variant || !variant.is_available || variant.stock_quantity <= 0) {
-      toast.error("This product is currently out of stock");
+      toast.error("This item is currently unavailable");
       return;
     }
 
-    const variantIndex = variant ? product.variants.indexOf(variant) : -1;
-    const image = (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
-      ? product.images[variantIndex + 1]
-      : (product.images && product.images[0]) || "/placeholder.svg";
+    const variantIndex = product.variants.findIndex((entry) => entry.id === variant.id);
+    const image = product.images[variantIndex + 1] || product.images[0] || "/placeholder.svg";
 
     addToCart({
       productId: product.id,
       variantId: variant.id,
       name: product.name,
       description: product.description,
-      size: selectedSize,
+      size: variant.size,
       price: variant.price_kes,
       quantity: 1,
       category: product.category,
       badge: product.badge,
-      image: image
+      image,
     });
-
-    toast.success(`Added ${product.name} to cart`);
   };
-
-  const formatPrice = (price: number, category?: string) => {
-    return `KES ${price.toLocaleString()}`;
-  };
-
-  const renderStars = (rating: number, count: number) => {
-    return (
-      <div className="flex items-center gap-1">
-        <div className="flex items-center">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={`h-3 w-3 ${i < Math.floor(rating) ? "fill-primary text-primary" : "text-muted-foreground/30"}`}
-            />
-          ))}
-        </div>
-        <span className="text-xs text-muted-foreground font-medium ml-1">{rating} ({count})</span>
-      </div>
-    );
-  };
-
-  const visibleProducts = STATIC_PRODUCTS.filter(p => p.category === activeCategory);
-  const categoryContent = CATEGORY_CONTENT[activeCategory] || CATEGORY_CONTENT.honey;
 
   return (
     <BeeYieldPageShell className="bg-background">
-      {/* Shop */}
-      <section className="container mx-auto px-4 py-10">
-        <div className="flex items-end justify-between gap-6 flex-wrap mb-8">
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-muted-foreground">Shop</p>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
-              BeeYield <span className="text-[#F4D03F]">Store</span>
-            </h1>
-            <p className="text-sm text-muted-foreground max-w-xl">
-              BeeYield honey, merch, technology, and learning materials in one curated store.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 flex-wrap">
-            <Button
-              variant="outline"
-              className="h-11 rounded-xl px-4 border-border/50 bg-card hover:bg-muted/50 transition-all font-semibold text-sm gap-2"
-              asChild
-            >
-              <Link to="/my-account">
-                <User className="h-4 w-4 text-primary" />
-                <span>My Account</span>
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Category Tabs */}
-        <div className="flex items-center gap-4 mb-12 overflow-x-auto pb-4 scrollbar-hide">
-          {[
-            { id: "honey", label: "Honey products", icon: <Container className="h-4 w-4" /> },
-            { id: "hardware", label: "Sensors & Tech", icon: <Cpu className="h-4 w-4" /> },
-            { id: "merch", label: "Brand Merch", icon: <ShoppingBag className="h-4 w-4" /> },
-            { id: "education", label: "Bee Academy", icon: <BookOpen className="h-4 w-4" /> }
-          ].map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={cn(
-                "flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-xs transition-all duration-300 border whitespace-nowrap",
-                activeCategory === cat.id
-                  ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105"
-                  : "bg-card text-muted-foreground border-border/50 hover:bg-muted/50"
-              )}
-            >
-              {cat.icon}
-              {cat.label}
-            </button>
-          ))}
-        </div>
-
-        <section className="mb-10 overflow-hidden rounded-[2rem] border border-border/50 bg-gradient-to-br from-[#FFF9F0] via-white to-[#F4D03F]/15 p-6 shadow-sm">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl space-y-3">
-              <p className="text-[11px] font-black uppercase tracking-[0.28em] text-[#1B9157]">
-                {categoryContent.eyebrow}
-              </p>
-              <h2 className="text-2xl font-black tracking-tight text-[#1A1A1A] md:text-3xl">
-                {categoryContent.title}
-              </h2>
-              <p className="max-w-2xl text-sm leading-6 text-[#1B4332]/75">
-                {categoryContent.description}
+      <section className="border-b border-border/40 bg-[radial-gradient(circle_at_top_left,_rgba(244,208,63,0.22),_transparent_32%),linear-gradient(135deg,_#fff9f0_0%,_#f9f7f2_48%,_#eef7f1_100%)]">
+        <div className="mx-auto flex max-w-7xl flex-col gap-12 px-4 py-10 md:px-6 lg:flex-row lg:items-end lg:justify-between lg:py-16">
+          <div className="max-w-3xl space-y-5">
+            <Badge className="rounded-full border border-[#1B9157]/15 bg-white/85 px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#1B9157]">
+              BeeYield Commerce
+            </Badge>
+            <div className="space-y-3">
+              <h1 className="max-w-3xl text-4xl font-black tracking-[-0.05em] text-[#1A1A1A] md:text-6xl">
+                Shop honey, hardware, fieldwear, and education in one clean buying flow.
+              </h1>
+              <p className="max-w-2xl text-sm leading-6 text-[#1B4332]/78 md:text-base">
+                Real product inventory, stored customer preferences, and checkout-ready ordering across Kenya.
               </p>
             </div>
-
             <div className="flex flex-wrap gap-3">
-              {categoryContent.pills.map((pill) => (
-                <Badge
-                  key={pill}
-                  className="rounded-full border border-[#1B9157]/15 bg-white/90 px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157] shadow-sm"
-                >
-                  {pill}
-                </Badge>
-              ))}
+              <Button asChild className="h-12 rounded-full px-6 text-sm font-black shadow-glow">
+                <Link to="/checkout">
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Review Cart
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="h-12 rounded-full border-border/50 bg-white/80 px-6 text-sm font-black">
+                <Link to="/my-account">
+                  <User className="mr-2 h-4 w-4" />
+                  My Account
+                </Link>
+              </Button>
             </div>
           </div>
-        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {visibleProducts.map((product) => {
-            const material = product.category === "education" ? getLearnMaterialByName(product.name) : undefined;
+          <div className="grid w-full max-w-xl grid-cols-2 gap-3 sm:grid-cols-4">
+            {Object.entries(CATEGORY_META).map(([key, meta], index) => (
+              <motion.button
+                key={key}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 * index }}
+                onClick={() => setActiveCategory(key as keyof typeof CATEGORY_META)}
+                className={cn(
+                  "rounded-[1.75rem] border px-4 py-4 text-left transition-all",
+                  activeCategory === key
+                    ? "border-[#1A1A1A]/10 bg-[#1A1A1A] text-white shadow-diffuse"
+                    : "border-border/50 bg-white/75 text-[#1A1A1A] hover:border-[#1B9157]/20 hover:bg-white",
+                )}
+              >
+                <meta.icon className={cn("mb-5 h-5 w-5", activeCategory === key ? "text-[#F4D03F]" : "text-[#1B9157]")} />
+                <p className="text-[11px] font-black uppercase tracking-[0.16em]">
+                  {meta.label}
+                </p>
+                <p className={cn("mt-2 text-2xl font-black tracking-tight", activeCategory === key ? "text-white" : "text-[#1A1A1A]")}>
+                  {categoryCounts[key] || 0}
+                </p>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            return (
-            <Card
-              key={product.id}
-              className={cn(
-                "group relative overflow-hidden border-none transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]",
-                "bg-card hover:bg-[#F9F7F2]0"
-              )}
-            >
-                      <div className="relative">
-                        <BrandedProductImage
-                          src={(() => {
-                            if (!product.variants || product.variants.length === 0) return (product.images && product.images[0]) || "/placeholder.svg";
-                            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-                            const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                            // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                            return (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
-                              ? product.images[variantIndex + 1]
-                              : (product.images && product.images[0]) || "/placeholder.svg";
-                          })()}
-                          alt={product.name}
-                          category={product.category}
-                          badge={product.badge}
-                          className={cn(
-                            "aspect-square m-2 rounded-[2rem] transition-all duration-700 group-hover:scale-105 group-hover:rotate-1",
-                            "bg-muted"
-                          )}
-                        />
+      <section className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+        <div className="mb-8 overflow-hidden rounded-[2rem] border border-border/50 bg-white shadow-soft">
+          <div className="grid gap-0 lg:grid-cols-[1.3fr_0.7fr]">
+            <div className="space-y-5 px-6 py-7 md:px-8 md:py-9">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#1B9157]">
+                {categoryMeta.eyebrow}
+              </p>
+              <div className="space-y-3">
+                <h2 className="max-w-3xl text-3xl font-black tracking-tight text-[#1A1A1A] md:text-4xl">
+                  {categoryMeta.title}
+                </h2>
+                <p className="max-w-2xl text-sm leading-6 text-[#1B4332]/75">
+                  {categoryMeta.description}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col justify-between border-l border-border/40 bg-[#1A1A1A] px-6 py-7 text-white md:px-8 md:py-9">
+              <div className="space-y-2">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-white/55">
+                  Store promise
+                </p>
+                <p className="text-lg font-black leading-tight">
+                  Verified stock, fast reorder paths, and direct handoff into checkout.
+                </p>
+              </div>
+              <div className="mt-10 flex items-center gap-2 text-sm text-white/70">
+                <Sparkles className="h-4 w-4 text-[#F4D03F]" />
+                Every category feeds the same cart and account flow.
+              </div>
+            </div>
+          </div>
+        </div>
 
-                        <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
-                          <Badge className="bg-[#FFF9F0]/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-[#FFF9F0] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] tracking-wider">
-                            <ShieldCheck className="h-3.5 w-3.5" />
-                            Verified Quality
-                          </Badge>
-                        </div>
+        {loading ? (
+          <div className="flex min-h-[40vh] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {visibleProducts.map((product, index) => {
+              const variant = selectVariant(product);
+              const variantIndex = product.variants.findIndex((entry) => entry.id === variant?.id);
+              const material = product.category === "education" ? getLearnMaterialByName(product.name) : undefined;
+              const inStock = Boolean(variant?.is_available && (variant?.stock_quantity || 0) > 0);
 
-                        {/* Availability badge */}
-                        {(() => {
-                          const selectedSize = selectedSizes[product.id] || (product.variants?.[0]?.size ?? "");
-                          const v = product.variants?.find((vv) => vv.size === selectedSize) || product.variants?.[0];
-                          const inStock = !!v && v.is_available && (v.stock_quantity ?? 0) > 0;
-                          const label = inStock ? 'In Stock' : 'Out of stock';
-                          return (
-                            <div className="absolute bottom-8 right-8 z-30">
-                              <Badge
-                                className={cn(
-                                  "backdrop-blur-sm shadow-sm font-black text-[10px] tracking-wider px-3 py-1.5 rounded-full border",
-                                  inStock
-                                    ? "bg-emerald-50/90 text-emerald-700 border-emerald-200"
-                                    : "bg-red-50/90 text-red-700 border-red-200"
-                                )}
-                              >
-                                {label}
-                              </Badge>
-                            </div>
-                          );
-                        })()}
-
-
-                      </div>
-
+              return (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.04 }}
+                >
+                  <Card className="group overflow-hidden rounded-[2rem] border border-border/50 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-diffuse">
+                    <div className="relative">
                       <button
-                        aria-label="Add to wishlist"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click if any
-                          const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
-                          const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                          const variant = variantIndex !== -1 ? product.variants[variantIndex] : (product.variants[0] || null);
-
-                          // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                          const image = (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
-                            ? product.images[variantIndex + 1]
-                            : (product.images && product.images[0]) || "/placeholder.svg";
-
+                        aria-label="Toggle wishlist"
+                        onClick={() => {
                           toggleWishlist({
                             id: product.id,
                             name: product.name,
                             description: product.description,
                             price: variant?.price_kes || 0,
-                            image: image,
+                            image: product.images[variantIndex + 1] || product.images[0],
                             category: product.category,
                             badge: product.badge,
-                            inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                            inStock: product.variants.some((entry) => entry.is_available && entry.stock_quantity > 0),
                           });
                         }}
-                        className={`absolute top-6 left-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
-                          ? "bg-primary text-primary-foreground shadow-primary/25"
-                          : "bg-[#FFF9F0] text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-sm border border-border/10"
-                          }`}
+                        className={cn(
+                          "absolute left-5 top-5 z-20 rounded-full border p-2.5 transition-all",
+                          isInWishlist(product.id)
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-white/70 bg-white/90 text-muted-foreground hover:border-primary/30 hover:text-primary",
+                        )}
                       >
-                        <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
+                        <Heart className={cn("h-4 w-4", isInWishlist(product.id) && "fill-current")} />
                       </button>
 
-                      <CardContent className="p-8 pt-4">
-                        <div className="flex justify-between items-start mb-2">
-                          {renderStars(product.rating, product.review_count)}
-                        </div>
+                      <div className="absolute right-5 top-5 z-20 flex gap-2">
+                        <Badge className="rounded-full border border-white/65 bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#1B9157]">
+                          <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />
+                          Verified
+                        </Badge>
+                      </div>
 
-                        <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1 flex items-center gap-2">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10">
-                          {product.description}
-                        </p>
+                      <BrandedProductImage
+                        src={product.images[variantIndex + 1] || product.images[0] || "/placeholder.svg"}
+                        alt={product.name}
+                        category={product.category}
+                        badge={product.badge}
+                        className="aspect-[1.04] bg-muted"
+                      />
+                    </div>
 
-                        <div className="space-y-4">
-                          {!product.variants || product.variants.length === 0 ? (
-                            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
-                              <span className="text-[10px] font-black text-muted-foreground">No variants available</span>
-                            </div>
-                          ) : product.variants.length > 1 ? (
-                            <Select
-                              value={selectedSizes[product.id] || product.variants[0].size}
-                              onValueChange={(value) => handleSizeChange(product.id, value)}
-                            >
-                              <SelectTrigger className="w-full h-12 bg-muted/30 border-none rounded-xl font-black text-[10px]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="rounded-xl border-none shadow-glow">
-                                {product.variants.map((v) => (
-                                  <SelectItem key={v.id} value={v.size} className="font-black text-[10px] focus:bg-primary focus:text-primary-foreground">
-                                    {v.size} — {formatPrice(v.price_kes)}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
-                              <span className="text-[10px] font-black text-muted-foreground mr-2">Edition:</span>
-                              <span className="text-xs font-black">{product.variants[0]?.size}</span>
-                            </div>
-                          )}
-
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1">
-                              <p className="text-[10px] font-black text-muted-foreground mb-0.5">Price</p>
-                              <p className="text-2xl font-black text-foreground">
-                                {formatPrice(
-                                  product.variants?.find(
-                                    (v) => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size)
-                                  )?.price_kes || product.variants?.[0]?.price_kes || 0,
-                                  product.category
-                                )}
-                              </p>
-                              {material && (
-                                <p className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157]">
-                                  {material.formatLabel}
-                                </p>
-                              )}
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                              {material && (
-                                <Button
-                                  asChild
-                                  variant="outline"
-                                  className="w-full h-11 rounded-2xl border-amber-200 bg-white px-4 text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157] hover:bg-amber-50"
-                                >
-                                  <a href={material.pdfPath} target="_blank" rel="noreferrer">
-                                    <Download className="h-3.5 w-3.5" />
-                                    Open PDF
-                                  </a>
-                                </Button>
-                              )}
-                              <Button
-                                className={cn(
-                                  "w-full h-12 rounded-2xl font-black text-[10px] transition-all duration-300 shadow-lg px-6",
-                                  (!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0)
-                                    ? "bg-[#F9F7F2] text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
-                                    : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
-                                )}
-                                onClick={() => handleAddToCart(product)}
-                                disabled={!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0}
-                              >
-                                {(!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0) ? (
-                                  <span className="flex items-center gap-2">
-                                    <ShoppingBag className="h-3.5 w-3.5 opacity-50" />
-                                    Sold Out
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center gap-2">
-                                    <ShoppingCart className="h-3.5 w-3.5" />
-                                    Add to Cart
-                                  </span>
-                                )}
-                              </Button>
-                            </div>
+                    <CardContent className="space-y-5 p-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Star className="h-3.5 w-3.5 fill-primary text-primary" />
+                            <span className="font-semibold">
+                              {product.rating.toFixed(1)} · {product.review_count} reviews
+                            </span>
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-black tracking-tight text-[#1A1A1A]">
+                              {product.name}
+                            </h3>
+                            <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#1B4332]/75">
+                              {product.description}
+                            </p>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-            );
-          })}
-        </div>
+                        <Badge
+                          className={cn(
+                            "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em]",
+                            inStock
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                              : "border-red-200 bg-red-50 text-red-700",
+                          )}
+                        >
+                          {inStock ? "In stock" : "Sold out"}
+                        </Badge>
+                      </div>
+
+                      {product.variants.length > 1 ? (
+                        <Select
+                          value={variant?.size}
+                          onValueChange={(value) => handleSizeChange(product, value)}
+                        >
+                          <SelectTrigger className="h-12 rounded-2xl border-border/50 bg-[#f9f7f2] font-semibold">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-2xl">
+                            {product.variants.map((item) => (
+                              <SelectItem key={item.id} value={item.size}>
+                                {item.size} · {formatPrice(item.price_kes)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="rounded-2xl border border-border/40 bg-[#f9f7f2] px-4 py-3 text-sm font-semibold text-[#1A1A1A]">
+                          {variant?.size || "Standard"}
+                        </div>
+                      )}
+
+                      <div className="flex items-end justify-between gap-4">
+                        <div>
+                          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">
+                            Price
+                          </p>
+                          <p className="mt-1 text-3xl font-black tracking-tight text-[#1A1A1A]">
+                            {formatPrice(variant?.price_kes || 0)}
+                          </p>
+                          {material && (
+                            <p className="mt-2 text-[11px] font-black uppercase tracking-[0.18em] text-[#1B9157]">
+                              {material.formatLabel}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          {material && (
+                            <Button asChild variant="outline" className="rounded-full border-[#1B9157]/15 bg-white text-xs font-black">
+                              <a href={material.pdfPath} target="_blank" rel="noreferrer">
+                                <Download className="mr-2 h-3.5 w-3.5" />
+                                Open PDF
+                              </a>
+                            </Button>
+                          )}
+                          <Button
+                            onClick={() => handleAddToCart(product)}
+                            disabled={!inStock}
+                            className="h-12 rounded-full px-5 text-xs font-black uppercase tracking-[0.16em] shadow-glow"
+                          >
+                            <ShoppingCart className="mr-2 h-4 w-4" />
+                            {inStock ? "Add to cart" : "Unavailable"}
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </BeeYieldPageShell>
   );

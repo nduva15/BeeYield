@@ -4,6 +4,8 @@ import { MessageSquare } from "lucide-react";
 import Logo from "@/assets/Logo.png";
 import { Newsletter } from "@/components/Newsletter";
 
+const footerSectionClassName = "flex h-full flex-col items-center gap-5 text-center sm:items-start sm:text-left";
+
 const FacebookIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
 );
@@ -21,9 +23,9 @@ const Footer = () => {
   return (
     <footer className="border-t border-border/40 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-14 lg:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 sm:gap-12 lg:gap-14">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-12 lg:grid-cols-4 lg:gap-x-12">
           {/* Logo & Tagline */}
-          <div className="space-y-5 text-center sm:text-left">
+          <div className={footerSectionClassName}>
             <div className="flex items-center space-x-2 justify-center sm:justify-start">
               <img
                 src={Logo}
@@ -35,25 +37,25 @@ const Footer = () => {
             <p className="text-sm text-muted-foreground max-w-xs mx-auto sm:mx-0">
               Your partner in pollination.
             </p>
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-5 pt-2">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground transition-colors hover:text-primary hover:border-primary/40">
+            <div className="flex flex-wrap items-center justify-center gap-5 sm:justify-start sm:gap-6 pt-1">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook" className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-border/60 bg-background/80 text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:text-primary hover:border-primary/40">
                 <FacebookIcon className="h-5 w-5" />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground transition-colors hover:text-primary hover:border-primary/40">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram" className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-border/60 bg-background/80 text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:text-primary hover:border-primary/40">
                 <InstagramIcon className="h-5 w-5" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="Twitter" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground transition-colors hover:text-primary hover:border-primary/40">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="Twitter" className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-border/60 bg-background/80 text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:text-primary hover:border-primary/40">
                 <TwitterIcon className="h-5 w-5" />
               </a>
-              <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-background/70 text-muted-foreground transition-colors hover:text-primary hover:border-primary/40">
+              <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-border/60 bg-background/80 text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:text-primary hover:border-primary/40">
                 <LinkedinIcon className="h-5 w-5" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="text-center sm:text-left">
-            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Solutions</h3>
+          <div className={footerSectionClassName}>
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Solutions</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/honey" className="text-muted-foreground hover:text-primary transition-colors">
@@ -79,8 +81,8 @@ const Footer = () => {
           </div>
 
           {/* Contact & Location */}
-          <div className="text-center sm:text-left">
-            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Contact & Location</h3>
+          <div className={footerSectionClassName}>
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Contact & Location</h3>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground">
                 <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
@@ -90,8 +92,8 @@ const Footer = () => {
           </div>
 
           {/* Stay Connected / Newsletter */}
-          <div className="text-center sm:text-left">
-            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Stay Updated</h3>
+          <div className={footerSectionClassName}>
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Stay Updated</h3>
             <Newsletter />
           </div>
         </div>

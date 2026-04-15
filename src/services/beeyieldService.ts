@@ -3834,19 +3834,32 @@ export const beeyieldService = {
 
             const { getBaseUrl } = await import('./api');
             const baseUrl = getBaseUrl('/acoustic/analyze');
+            const controller = new AbortController();
+            const timeoutId = globalThis.setTimeout(() => controller.abort(), 90000);
 
-            const response = await fetch(`${baseUrl}/acoustic/analyze`, {
-                method: 'POST',
-                headers: headers as any,
-                body: formData
-            });
+            let response: Response;
+            try {
+                response = await fetch(`${baseUrl}/acoustic/analyze`, {
+                    method: 'POST',
+                    headers: headers as any,
+                    body: formData,
+                    signal: controller.signal,
+                });
+            } finally {
+                globalThis.clearTimeout(timeoutId);
+            }
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
+                const errorData = await response.json().catch(async () => ({
+                    detail: await response.text().catch(() => 'Analysis failed'),
+                }));
                 throw new Error(errorData.detail || 'Analysis failed');
             }
             return await response.json();
         } catch (error) {
+            if ((error as Error).name === 'AbortError') {
+                throw new Error('Audio analysis timed out before the server returned a result.');
+            }
             console.error('Error analyzing acoustic data:', error);
             throw error;
         }
