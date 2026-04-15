@@ -59,7 +59,7 @@ const ContentEditor = () => {
 
             if (!postData) {
                 toast.error("Post not found");
-                navigate('/ceba/content');
+                navigate('/ceba?tab=content');
                 return;
             }
 
@@ -266,7 +266,7 @@ const ContentEditor = () => {
             {/* Top Bar */}
             <div className="border-b px-4 py-2 flex items-center justify-between bg-card">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/ceba/content')}>
+                    <Button variant="ghost" size="icon" onClick={() => navigate('/ceba?tab=content')}>
                         <ArrowLeft className="w-4 h-4" />
                     </Button>
                     <div>

@@ -341,7 +341,7 @@ const PollinationSolutions = () => {
                 This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world.
               </p>
               <Button variant="secondary" className="gap-2" asChild>
-                <Link to="/about">Learn More <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/ourstory">Learn More <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>
           </div>

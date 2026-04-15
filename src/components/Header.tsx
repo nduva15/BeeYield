@@ -175,7 +175,6 @@ const Header = () => {
                 </div>
                 <div className="flex flex-col gap-1">
                   {[
-                    { label: 'About Us', to: '/about' },
                     { label: 'Bee Learn', to: '/learn' },
                     { label: 'Blogs', to: '/blogs' },
                     { label: 'Careers', to: '/careers' },
@@ -293,7 +292,6 @@ const Header = () => {
             <div className="flex flex-col space-y-1 pt-4">
               <span className="text-[10px] uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black">Company</span>
               {[
-                { label: 'About Us', to: '/about' },
                 { label: 'Bee Learn', to: '/learn' },
                 { label: 'Impact', to: '/impact' },
                 { label: 'ESG', to: '/esg' },

@@ -3867,7 +3867,7 @@ export const beeyieldService = {
             }
             console.error('Error analyzing acoustic data:', error);
             if (error instanceof Error) {
-                throw new Error('Analysis failed', { cause: error });
+                throw new Error(error.message || 'Analysis failed', { cause: error });
             }
             throw new Error(`Analysis failed: ${String(error)}`, { cause: error });
         }

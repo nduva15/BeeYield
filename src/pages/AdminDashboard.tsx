@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
     adminService,
     HoneyBatchInput,
@@ -51,6 +51,7 @@ import { motion } from 'framer-motion';
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Role check
     const userRole = user?.user_metadata?.role || 'user';
@@ -178,6 +179,14 @@ const AdminDashboard: React.FC = () => {
             initDashboard();
         }
     }, [user, authLoading, navigate, isAdmin]);
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const tab = params.get('tab');
+        if (tab) {
+            setActiveTab(tab);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         if (isAdmin && activeTab !== 'overview' && !loadedTabs.has(activeTab)) {

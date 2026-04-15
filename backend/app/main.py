@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.concurrency import run_in_threadpool
 from starlette.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.api.api_v1.api import api_router
 from app.db.supabase_db import init_db_client, close_db_client
+from app.services.acoustic_analyzer import initialize_analyzer
 
 # Import and apply DNS Patch if needed (Fixes [Errno 11001] getaddrinfo failed on some Windows/Network setups)
 try:
@@ -40,6 +42,7 @@ async def lifespan(app: FastAPI):
     ensure_rust_core()
     # Startup: Initialize shared DB client
     init_db_client()
+    await run_in_threadpool(initialize_analyzer)
     
     # Start the persistent background worker for task recurrence
     from app.services.task_worker import chrono_worker

@@ -9,6 +9,7 @@ import uuid
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status, Request, UploadFile, File
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
 from app.core import security
@@ -63,10 +64,11 @@ async def analyze_audio_direct(
         logger.info("Received acoustic file %s (%s bytes)", file.filename, len(audio_bytes))
 
         analyzer = get_analyzer()
-        result = analyzer.analyze_audio_file(
+        result = await run_in_threadpool(
+            analyzer.analyze_audio_file,
             audio_bytes,
-            filename=file.filename,
-            content_type=file.content_type,
+            file.filename,
+            file.content_type,
         )
 
         analysis_id = str(uuid.uuid4())
@@ -174,7 +176,12 @@ async def trigger_acoustic_inference(
         await db_update("acoustic_inferences", {"status": "analyzing"}, {"id": job_id}, token=token)
 
         analyzer = get_analyzer()
-        result = analyzer.analyze_audio_file(audio_bytes, filename=trigger.audio_url)
+        result = await run_in_threadpool(
+            analyzer.analyze_audio_file,
+            audio_bytes,
+            trigger.audio_url,
+            None,
+        )
 
         await db_update(
             "acoustic_inferences",

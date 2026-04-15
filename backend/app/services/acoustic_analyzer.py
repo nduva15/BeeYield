@@ -9,8 +9,9 @@ import os
 import math
 import tempfile
 import logging
+import importlib.util
 from pathlib import Path
-from typing import Dict, Optional, List, Tuple
+from typing import Dict, Optional, List, Tuple, Type
 
 import librosa
 import numpy as np
@@ -22,16 +23,28 @@ logger = logging.getLogger(__name__)
 REPO_PATH = Path(__file__).parent.parent.parent.parent / "beeyield-sound-analysis" / "BeeSound_Analysis"
 sys.path.insert(0, str(REPO_PATH))
 
+
+def _load_module_attr(module_name: str, relative_path: str, attr_name: str) -> Type:
+    module_path = REPO_PATH / relative_path
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not create import spec for {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return getattr(module, attr_name)
+
+
 try:
-    from pipeline.cleaner import AudioCleaner
-    from pipeline.segmenter import AudioSegmenter
-    from models.health_state import HealthStateClassifier
-    from models.event_detector import EventDetector
-    from models.species_id import SpeciesIdentifier
-    from modules.osbh_engine import OSBHEngine
+    AudioCleaner = _load_module_attr("beesound_cleaner", "pipeline/cleaner.py", "AudioCleaner")
+    AudioSegmenter = _load_module_attr("beesound_segmenter", "pipeline/segmenter.py", "AudioSegmenter")
+    HealthStateClassifier = _load_module_attr("beesound_health_state", "models/health_state.py", "HealthStateClassifier")
+    EventDetector = _load_module_attr("beesound_event_detector", "models/event_detector.py", "EventDetector")
+    SpeciesIdentifier = _load_module_attr("beesound_species_id", "models/species_id.py", "SpeciesIdentifier")
+    OSBHEngine = _load_module_attr("beesound_osbh", "modules/osbh_engine.py", "OSBHEngine")
     logger.info("Using BEE-SOUND-ANALYSIS repository code")
-except ImportError:
-    logger.error("Failed to import BEE-SOUND-ANALYSIS repository")
+except Exception as exc:
+    logger.exception("Failed to import BEE-SOUND-ANALYSIS repository: %s", exc)
+    raise
 
 
 class AcousticAnalyzer:
@@ -387,6 +400,8 @@ def get_analyzer() -> AcousticAnalyzer:
     global _analyzer_instance
     if _analyzer_instance is None:
         model_path = Path(__file__).parent.parent.parent / "brain" / "beesound_best.pth"
+        if not model_path.exists():
+            logger.warning("Expected trained model not found at %s; using heuristic BeeSound wrappers", model_path)
         _analyzer_instance = AcousticAnalyzer(model_path if model_path.exists() else None)
     return _analyzer_instance
 

@@ -504,13 +504,6 @@ const HeritageSection = () => {
               <p className="text-neutral-600 leading-relaxed text-base font-medium">
                 Every jar you hold features <strong className="text-beeyield-gold">Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
               </p>
-              <div className="pt-4">
-                <Button size="lg" variant="link" className="text-beeyield-green font-black p-0 h-auto gap-2 text-xs group" asChild>
-                  <Link to="/about">
-                    Learn Our Story <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-              </div>
             </div>
           </motion.div>
         </div>

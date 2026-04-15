@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
 
 import ScrollToTop from './components/ScrollToTop'
 import { BeeYieldQueryProvider } from './components/QueryClientProvider'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useEffect } from 'react'
 import { Toaster } from '@/components/ui/toaster'
@@ -130,6 +130,8 @@ root.render(
                                                 <Suspense fallback={<PageLoader />}>
                                                     <Routes>
                                                         <Route path="/" element={<PollinationServices />} />
+                                                        <Route path="/pollination-services" element={<PollinationServices />} />
+                                                        <Route path="/about" element={<Navigate to="/ourstory" replace />} />
                                                         <Route path="/contact" element={<Contact />} />
                                                         <Route path="/honey" element={<Honey />} />
                                                         <Route path="/shop" element={<Shop />} />

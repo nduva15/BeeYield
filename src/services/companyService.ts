@@ -158,30 +158,6 @@ export const getCompanyStats = async (category?: string): Promise<CompanyStat[]>
     }
 };
 
-export const getAboutPageData = async (): Promise<AboutPageData | null> => {
-    try {
-        const response = await fetch(`${API_V1_URL}/company/about`);
-        if (!response.ok) throw new Error("Failed to fetch about page data");
-        const data = await response.json();
-
-        // Add compatibility mapping for About.tsx
-        return {
-            ...data,
-            info: {
-                name: data.company_info.name,
-                description: data.company_info.description,
-                mission: data.company_info.mission,
-                location: data.company_info.headquarters,
-                origin_story: [data.story.intro],
-                stats: data.stats.map((s: CompanyStat) => ({ value: s.stat_value, label: s.stat_label })),
-                values: data.company_info.values || []
-            }
-        };
-    } catch (error) {
-        console.error("Error fetching about page data:", error);
-        return null;
-    }
-};
 
 export const getImpactStories = async (): Promise<ImpactStory[]> => {
     try {
