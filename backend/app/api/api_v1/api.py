@@ -1,6 +1,8 @@
 """
 API Router - Registers all API endpoints
 """
+import logging
+
 from fastapi import APIRouter
 from app.api.api_v1.endpoints import (
     company, auth, traceability, contact,
@@ -13,8 +15,21 @@ from app.api.api_v1.endpoints import (
 )
 
 
+logger = logging.getLogger(__name__)
 
 api_router = APIRouter()
+
+
+def _include_router_if_available(module, *, prefix: str, tags: list[str]) -> None:
+    """
+    Guard bootstrap against optional endpoint modules that were left without a
+    FastAPI router, so core APIs like contact/newsletter keep booting.
+    """
+    router = getattr(module, "router", None)
+    if router is None:
+        logger.warning("Skipping endpoint module without router: %s", getattr(module, "__name__", module))
+        return
+    api_router.include_router(router, prefix=prefix, tags=tags)
 
 # Labels endpoint
 api_router.include_router(labels.router, prefix="/labels", tags=["Labels"])
@@ -91,7 +106,7 @@ api_router.include_router(settings.router, prefix="/settings", tags=["Settings"]
 api_router.include_router(image_analysis.router, prefix="/image", tags=["Image Analysis"])
 
 # Acoustic Analysis (Kaggle Remote Brain)
-api_router.include_router(acoustic.router, prefix="/acoustic", tags=["Acoustic Analysis"])
+_include_router_if_available(acoustic, prefix="/acoustic", tags=["Acoustic Analysis"])
 
 # Economic Routing Planner
 api_router.include_router(routing.router, prefix="/routing", tags=["Routing"])

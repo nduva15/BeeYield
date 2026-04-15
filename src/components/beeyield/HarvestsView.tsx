@@ -59,14 +59,22 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
 
     const handleSaveEdit = () => {
         if (!selectedHarvest) return;
+        const normalizedEditForm: Partial<Harvest> = { ...editForm };
+        if (
+            !(typeof normalizedEditForm.quantity_left_for_bees_kg === 'number' && normalizedEditForm.quantity_left_for_bees_kg > 0) &&
+            typeof normalizedEditForm.quantity_kg === 'number' &&
+            normalizedEditForm.quantity_kg > 0
+        ) {
+            normalizedEditForm.quantity_left_for_bees_kg = normalizedEditForm.quantity_kg;
+        }
         // Strip null values: HarvestCreateInput uses `string | undefined`, not `string | null`
         const sanitized = Object.fromEntries(
-            Object.entries(editForm).filter(([, v]) => v !== null)
+            Object.entries(normalizedEditForm).filter(([, v]) => v !== null)
         ) as Partial<import('@/services/beeyieldService').HarvestCreateInput>;
         updateHarvest({ id: selectedHarvest.id, data: sanitized }, {
             onSuccess: () => {
                 setIsEditing(false);
-                setSelectedHarvest({ ...selectedHarvest, ...editForm } as Harvest);
+                setSelectedHarvest({ ...selectedHarvest, ...normalizedEditForm } as Harvest);
             }
         });
     };
@@ -252,6 +260,33 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
         return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(1) : '0.0';
     }, []);
 
+    const resolveLeftForBeesKg = React.useCallback((harvest?: Partial<Harvest> | null) => {
+        const leftForBees = harvest?.quantity_left_for_bees_kg;
+        if (typeof leftForBees === 'number' && Number.isFinite(leftForBees) && leftForBees > 0) {
+            return leftForBees;
+        }
+
+        const harvested = harvest?.quantity_kg;
+        if (typeof harvested === 'number' && Number.isFinite(harvested) && harvested > 0) {
+            return harvested;
+        }
+
+        return null;
+    }, []);
+
+    const getPromiseNarrative = React.useCallback((harvest?: Partial<Harvest> | null) => {
+        const harvested = typeof harvest?.quantity_kg === 'number' && Number.isFinite(harvest.quantity_kg)
+            ? harvest.quantity_kg
+            : null;
+        const leftForBees = resolveLeftForBeesKg(harvest);
+
+        if (harvested === null || leftForBees === null) {
+            return '50/50 promise pending harvest weights.';
+        }
+
+        return `${formatKg(harvested)} KG harvested for people, ${formatKg(leftForBees)} KG left for our bees.`;
+    }, [formatKg, resolveLeftForBeesKg]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!formApiaryId) {
@@ -268,7 +303,13 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
         }
 
         const toastId = toast.loading('Saving harvest information...');
-        createHarvest({ ...(formData as any), apiary_id: formApiaryId, hive_id: formHiveId } as any, {
+        const quantityLeftForBees = resolveLeftForBeesKg(formData);
+        createHarvest({
+            ...(formData as any),
+            apiary_id: formApiaryId,
+            hive_id: formHiveId,
+            quantity_left_for_bees_kg: quantityLeftForBees ?? 0,
+        } as any, {
             onSuccess: () => {
                 setIsAddingHarvest(false);
                 setFormApiaryId('');
@@ -276,6 +317,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                 setFormData({
                     harvest_date: format(new Date(), 'yyyy-MM-dd'),
                     quantity_kg: 0,
+                    quantity_left_for_bees_kg: 0,
                     honey_type: 'Acacia',
                     nectar_source: 'Floral',
                     extraction_method: 'Cold Extraction',
@@ -420,6 +462,15 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
 
             {/* Harvest table */}
             <div className="mt-4 relative z-10">
+                <div className="mb-4 rounded-2xl border border-[#F4D03F]/20 bg-[#F4D03F]/5 px-4 py-3">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#F4D03F]">50/50 Promise</p>
+                    <p className="mt-1 text-sm font-bold text-[#1A1A1A]">
+                        Every harvest shows the people&apos;s 50% and the bees&apos; matching 50%.
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                        Example: if 843 KG is harvested for sale, another 843 KG is left in the hive for the bees.
+                    </p>
+                </div>
                 <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
@@ -432,8 +483,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Farmer</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Type</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Florage</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Net Yield</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Left for Bees</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Harvested 50%</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Bees&apos; 50%</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Grade</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Moisture</th>
                                     <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Extraction</th>
@@ -507,7 +558,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
                                                     <span className="text-[10px] font-bold text-gray-500 tabular-nums">
-                                                        {h.quantity_left_for_bees_kg != null ? `${h.quantity_left_for_bees_kg} Kg` : '—'}
+                                                        {resolveLeftForBeesKg(h) != null ? `${formatKg(resolveLeftForBeesKg(h))} Kg` : '—'}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
@@ -723,7 +774,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Net Yield (KG)</Label>
+                                        <Label className={glass.microLabel}>Harvested 50% (KG)</Label>
                                         <Input
                                             type="number"
                                             step="0.1"
@@ -733,7 +784,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className={glass.microLabel}>Left for Bees (KG)</Label>
+                                        <Label className={glass.microLabel}>Bees&apos; 50% (KG)</Label>
                                         <Input
                                             type="number"
                                             step="0.1"
@@ -741,6 +792,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                             onChange={e => setEditForm({ ...editForm, quantity_left_for_bees_kg: parseFloat(e.target.value) })}
                                             className={cn(glass.input, "h-10")}
                                         />
+                                        <p className="text-[10px] font-medium text-gray-500">
+                                            Leave this blank to mirror the harvested 50% for the bees&apos; 50%.
+                                        </p>
                                     </div>
                                     <div className="space-y-2">
                                         <Label className={glass.microLabel}>Honey Type</Label>
@@ -835,12 +889,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                     <div className="text-sm font-bold">{selectedHarvest.hive?.hive_code || '—'}</div>
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className={glass.microLabel}>Net Yield</Label>
+                                    <Label className={glass.microLabel}>Harvested 50%</Label>
                                     <div className="text-sm font-bold text-[#1B9157]">{selectedHarvest.quantity_kg?.toFixed(1)} KG</div>
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className={glass.microLabel}>Left for Bees</Label>
-                                    <div className="text-sm font-bold">{selectedHarvest.quantity_left_for_bees_kg != null ? `${selectedHarvest.quantity_left_for_bees_kg} KG` : '—'}</div>
+                                    <Label className={glass.microLabel}>Bees&apos; 50%</Label>
+                                    <div className="text-sm font-bold">{resolveLeftForBeesKg(selectedHarvest) != null ? `${formatKg(resolveLeftForBeesKg(selectedHarvest))} KG` : '—'}</div>
                                 </div>
                                 <div className="space-y-1">
                                     <Label className={glass.microLabel}>Honey Type</Label>
@@ -864,6 +918,13 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         <p className="text-xs font-medium text-gray-600 leading-relaxed">{selectedHarvest.notes}</p>
                                     </div>
                                 )}
+                                <div className="col-span-2 rounded-2xl border border-[#F4D03F]/20 bg-[#F4D03F]/5 p-4">
+                                    <Label className={glass.microLabel}>50/50 Promise</Label>
+                                    <p className="mt-2 text-sm font-bold text-[#1A1A1A]">{getPromiseNarrative(selectedHarvest)}</p>
+                                    <p className="mt-1 text-xs text-gray-500">
+                                        Example: if 843 KG was harvested, another 843 KG was left in the hive for the bees.
+                                    </p>
+                                </div>
                             </div>
                         )}
 
@@ -960,7 +1021,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label className={glass.microLabel}>Yield (KG)*</Label>
+                            <Label className={glass.microLabel}>Harvested 50% (KG)*</Label>
                             <Input
                                 type="number"
                                 step="0.1"
@@ -1004,7 +1065,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <Label className={glass.microLabel}>Left for Bees (KG)</Label>
+                            <Label className={glass.microLabel}>Bees&apos; 50% (KG)</Label>
                             <Input
                                 type="number"
                                 step="0.1"
@@ -1013,6 +1074,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                 onChange={(e) => setFormData({ ...formData, quantity_left_for_bees_kg: parseFloat(e.target.value) || 0 })}
                                 className={cn(glass.input, "h-10")}
                             />
+                            <p className="text-[10px] font-medium text-gray-500">
+                                For the 50/50 promise, this defaults to the same KG as the harvested half.
+                            </p>
                         </div>
                         <div className="space-y-2">
                             <Label className={glass.microLabel}>Moisture (%)</Label>
