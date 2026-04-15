@@ -2,21 +2,18 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, Shield } from "lucide-react";
 import { Button } from "./ui/button";
-import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Separator } from "./ui/separator";
 import Logo from "@/assets/Logo.png";
 import { QuickLink as Link } from "./QuickLink";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const { user, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 

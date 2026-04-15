@@ -8,6 +8,7 @@ export const BEEYIELD_YOUTUBE_EMBED_URL =
 
 type YouTubeEmbedProps = {
   title: string;
+  embedUrl?: string;
   loading?: "eager" | "lazy";
   wrapperClassName?: string;
   iframeClassName?: string;
@@ -15,6 +16,7 @@ type YouTubeEmbedProps = {
 
 export function YouTubeEmbed({
   title,
+  embedUrl = BEEYIELD_YOUTUBE_EMBED_URL,
   loading = "lazy",
   wrapperClassName,
   iframeClassName,
@@ -28,7 +30,7 @@ export function YouTubeEmbed({
     >
       <iframe
         className={cn("absolute inset-0 h-full w-full border-0", iframeClassName)}
-        src={BEEYIELD_YOUTUBE_EMBED_URL}
+        src={embedUrl}
         title={title}
         loading={loading}
         referrerPolicy="strict-origin-when-cross-origin"

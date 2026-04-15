@@ -44,6 +44,7 @@ const getNumeric = (...values: Array<number | string | null | undefined>) => {
 const SpatialCoverageView: React.FC = () => {
   const [viewMode, setViewMode] = React.useState<'kernel' | 'nodes'>('kernel');
   const [selectedApiaryId, setSelectedApiaryId] = React.useState('');
+  const [selectedHiveId, setSelectedHiveId] = React.useState<string | null>(null);
   const [cropRequirements, setCropRequirements] = React.useState<CropPollinationRequirement[]>([]);
 
   const apiariesQuery = useApiaries();
@@ -106,6 +107,7 @@ const SpatialCoverageView: React.FC = () => {
       return {
         id: hive.id,
         label: hive.hive_code,
+        hive,
         x,
         y,
         radius: 34 + Math.min(24, (Number(hive.frame_count) || 8) * 2),
@@ -113,6 +115,22 @@ const SpatialCoverageView: React.FC = () => {
       };
     });
   }, [hives]);
+
+  const selectedNode = React.useMemo(
+    () => nodePositions.find((node) => node.id === selectedHiveId) || nodePositions[0] || null,
+    [nodePositions, selectedHiveId],
+  );
+
+  React.useEffect(() => {
+    if (!nodePositions.length) {
+      setSelectedHiveId(null);
+      return;
+    }
+
+    if (!selectedHiveId || !nodePositions.some((node) => node.id === selectedHiveId)) {
+      setSelectedHiveId(nodePositions[0].id);
+    }
+  }, [nodePositions, selectedHiveId]);
 
   const weatherTemperature = getNumeric(
     weatherSummary?.current?.temperature_c,
@@ -268,14 +286,42 @@ const SpatialCoverageView: React.FC = () => {
                         ))}
 
                       {nodePositions.map((node) => (
-                        <g key={node.id}>
+                        <g
+                          key={node.id}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setSelectedHiveId(node.id)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              setSelectedHiveId(node.id);
+                            }
+                          }}
+                          className="cursor-pointer"
+                        >
                           <circle
                             cx={node.x}
                             cy={node.y}
-                            r="8"
+                            r={Math.max(22, node.radius * 0.42)}
+                            fill="transparent"
+                          />
+                          {selectedNode?.id === node.id && (
+                            <circle
+                              cx={node.x}
+                              cy={node.y}
+                              r="15"
+                              fill="rgba(244, 208, 63, 0.18)"
+                              stroke="#F4D03F"
+                              strokeWidth="1.5"
+                            />
+                          )}
+                          <circle
+                            cx={node.x}
+                            cy={node.y}
+                            r={selectedNode?.id === node.id ? '10' : '8'}
                             fill={node.active ? '#1B9157' : '#EF4444'}
                             stroke="#1A1A1A"
-                            strokeWidth="1"
+                            strokeWidth={selectedNode?.id === node.id ? '2' : '1'}
                           />
                           <text
                             x={node.x + 12}
@@ -302,6 +348,40 @@ const SpatialCoverageView: React.FC = () => {
                           Hive needs attention
                         </div>
                       </div>
+                    </div>
+
+                    <div className="absolute bottom-5 right-5 max-w-[280px] rounded-2xl border border-[#F4D03F]/15 bg-white/85 p-4 shadow-lg">
+                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157]">Selected hive</p>
+                      {selectedNode ? (
+                        <div className="mt-3 space-y-2">
+                          <div>
+                            <p className="text-sm font-black text-[#1A1A1A]">{selectedNode.hive.hive_code}</p>
+                            <p className="text-[10px] font-bold text-gray-500">{selectedNode.hive.status || 'Unspecified status'}</p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Frames</p>
+                              <p className="text-[11px] font-black text-[#1A1A1A]">{selectedNode.hive.frame_count || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Placement</p>
+                              <p className="text-[11px] font-black text-[#1A1A1A]">
+                                {selectedNode.hive.latitude != null && selectedNode.hive.longitude != null ? 'Saved GPS' : 'Coverage node'}
+                              </p>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Precision coordinates</p>
+                            <p className="text-[11px] font-black text-[#1A1A1A]">
+                              {selectedNode.hive.latitude != null && selectedNode.hive.longitude != null
+                                ? `${Number(selectedNode.hive.latitude).toFixed(6)}, ${Number(selectedNode.hive.longitude).toFixed(6)}`
+                                : 'No saved hive coordinates yet'}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="mt-3 text-[11px] font-bold text-gray-500">Select a node to inspect hive placement.</p>
+                      )}
                     </div>
                   </>
                 )}

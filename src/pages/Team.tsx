@@ -6,7 +6,9 @@ import {
   CheckCircle2,
   Cpu,
   Globe,
+  Lock,
   Mail,
+  PlayCircle,
   Phone,
   ShieldCheck,
   Users,
@@ -20,8 +22,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import {
+  BEEYIELD_YOUTUBE_EMBED_URL,
+  BEEYIELD_YOUTUBE_VIDEO_URL,
+  YouTubeEmbed,
+} from "@/components/YouTubeEmbed";
 import { useToast } from "@/hooks/use-toast";
-import { submitContactForm } from "@/services/contactService";
+import { submitContactMessage } from "@/services/contactService";
 
 import BEEYIELD_LOGO from "@/assets/beeyield-logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -182,6 +189,23 @@ const teamStats = [
   { label: "Operating base", value: "Kibwezi" },
 ];
 
+const teamVideos = [
+  {
+    title: "BeeYield platform overview",
+    description:
+      "A quick walkthrough of the BeeYield platform and the field systems supporting hive visibility.",
+    embedUrl: BEEYIELD_YOUTUBE_EMBED_URL,
+    watchUrl: BEEYIELD_YOUTUBE_VIDEO_URL,
+  },
+  {
+    title: "BeeYield story",
+    description:
+      "A second story-led video that adds context on the team, mission, and beekeeping roots behind the product.",
+    embedUrl: "https://www.youtube.com/embed/vV-m_k8E5Yc?rel=0",
+    watchUrl: "https://www.youtube.com/watch?v=vV-m_k8E5Yc",
+  },
+];
+
 function MemberPortrait({
   member,
   large = false,
@@ -191,11 +215,25 @@ function MemberPortrait({
 }) {
   if (member.portraitStyle === "photo") {
     return (
-      <img
-        src={member.image}
-        alt={member.name}
-        className="h-full w-full object-cover"
-      />
+      <div className="relative flex h-full w-full items-end justify-center overflow-hidden bg-[linear-gradient(150deg,#133926_0%,#1b9157_58%,#f4d03f_100%)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.28),transparent_42%)]" />
+        <div className="absolute left-5 top-5 rounded-full border border-white/20 bg-white/12 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/90 backdrop-blur">
+          Approved photo
+        </div>
+        <img
+          src={BEEYIELD_LOGO}
+          alt="BeeYield logo"
+          className="absolute right-5 top-5 h-10 w-10 rounded-full border border-white/15 bg-white/10 p-2 object-contain backdrop-blur"
+        />
+        <div className={large ? "relative z-10 h-full w-full px-8 pt-20" : "relative z-10 h-full w-full px-4 pt-16"}>
+          <img
+            src={member.image}
+            alt={member.name}
+            className="h-full w-full object-contain object-bottom"
+          />
+        </div>
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/35 to-transparent" />
+      </div>
     );
   }
 
@@ -302,29 +340,21 @@ const Team = () => {
     setLoading(true);
 
     try {
-      const nameParts = formData.name.trim().split(/\s+/);
-      const first_name = nameParts[0] || "";
-      const last_name =
-        nameParts.length > 1 ? nameParts.slice(1).join(" ") : "Unknown";
-
-      const response = await submitContactForm({
-        first_name,
-        last_name,
-        email: formData.email,
-        phone: formData.phone,
-        city: "Nairobi",
-        state: "Nairobi",
-        country: "Kenya",
-        inquiry_type: "general",
-        topic: "Team Inquiry",
-        message: formData.message,
+      const normalizedPhone = formData.phone.trim();
+      const response = await submitContactMessage({
+        full_name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: "Team page secure message",
+        message: normalizedPhone
+          ? `${formData.message.trim()}\n\nPreferred phone: ${normalizedPhone}`
+          : formData.message.trim(),
       });
 
       toast({
-        title: "Message sent",
+        title: "Secure message sent",
         description:
           response?.message ||
-          "We've received your inquiry and will get back to you soon.",
+          "Your message is in the BeeYield team inbox and we will get back to you soon.",
       });
 
       setFormData({
@@ -336,8 +366,9 @@ const Team = () => {
     } catch (error) {
       console.error(error);
       toast({
-        title: "Submission failed",
-        description: "There was an error sending your message. Please try again.",
+        title: "Secure message failed",
+        description:
+          "There was an error sending your secure message. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -476,6 +507,67 @@ const Team = () => {
         </div>
       </section>
 
+      <section className="bg-muted/20 py-24">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/10">
+                Team video briefings
+              </Badge>
+              <h2 className="text-3xl font-bold tracking-tight">
+                Two BeeYield videos, side by side
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                The team page now carries a dedicated media block so visitors can understand the company story and product direction without leaving the page flow.
+              </p>
+            </div>
+            <div className="rounded-3xl border border-border bg-background/80 px-5 py-4 shadow-sm backdrop-blur">
+              <p className="text-sm font-medium text-foreground">
+                Video-first context
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Product overview on one side, founder story on the other.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-8 xl:grid-cols-2">
+            {teamVideos.map((video, index) => (
+              <div
+                key={video.title}
+                className="overflow-hidden rounded-[2rem] border border-border bg-background shadow-xl"
+              >
+                <YouTubeEmbed
+                  title={video.title}
+                  embedUrl={video.embedUrl}
+                  wrapperClassName="aspect-video rounded-none border-0 shadow-none"
+                  loading={index === 0 ? "eager" : "lazy"}
+                />
+                <div className="space-y-4 p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-full bg-primary/10 p-2 text-primary">
+                      <PlayCircle className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-xl font-semibold">{video.title}</h3>
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {video.description}
+                  </p>
+                  <a
+                    href={video.watchUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-primary"
+                  >
+                    Watch on YouTube <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="team-members" className="bg-primary py-24 text-primary-foreground">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-16 max-w-3xl text-center">
@@ -594,7 +686,17 @@ const Team = () => {
 
             <div id="contact">
               <div className="rounded-2xl border border-border bg-background p-8">
-                <h3 className="mb-6 text-2xl font-bold">Send a message</h3>
+                <div className="mb-6 flex items-start gap-4 rounded-2xl bg-primary/5 p-4">
+                  <div className="rounded-full bg-primary/10 p-2 text-primary">
+                    <Lock className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">Send a secure message</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      This form now routes directly to BeeYield&apos;s secure message inbox for team, partnership, and governance inquiries.
+                    </p>
+                  </div>
+                </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <Label htmlFor="name">Full name</Label>
@@ -643,7 +745,7 @@ const Team = () => {
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Sending..." : "Send message"}
+                    {loading ? "Sending secure message..." : "Send secure message"}
                   </Button>
                 </form>
               </div>

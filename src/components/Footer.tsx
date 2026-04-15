@@ -1,4 +1,3 @@
-import { Link as RouterLink } from "react-router-dom";
 import { QuickLink as Link } from "./QuickLink";
 import { MessageSquare } from "lucide-react";
 import Logo from "@/assets/Logo.png";
@@ -68,11 +67,6 @@ const Footer = () => {
               <li>
                 <Link to="/traceability" className="text-muted-foreground hover:text-primary transition-colors">
                   Traceability
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop" className="text-muted-foreground hover:text-primary transition-colors">
-                  Shop
                 </Link>
               </li>
             </ul>
