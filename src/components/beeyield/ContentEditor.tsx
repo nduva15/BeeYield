@@ -79,7 +79,7 @@ const ContentEditor = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [navigate]);
 
     React.useEffect(() => {
         if (id) loadPost(id);

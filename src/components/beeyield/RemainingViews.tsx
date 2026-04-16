@@ -273,7 +273,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                 setSelectedHive('');
             }
         }
-    }, [selectedPlace, hives]);
+    }, [selectedHive, selectedPlace, hives]);
 
     React.useEffect(() => {
         const fetchLatest = async () => {

@@ -156,7 +156,7 @@ const BeeYieldDashboard: React.FC = () => {
     }), [apiaries.length, hives.length, devices.length]);
     const pendingOnboarding = React.useMemo(
         () => (effectiveEmail ? getBeeYieldPendingOnboarding(effectiveEmail) : null),
-        [effectiveEmail, apiaries.length, hives.length, devices.length, activeTab, viewParams?.action]
+        [effectiveEmail]
     );
     const onboardingStep = pendingOnboarding ? requiredOnboardingStep : null;
 

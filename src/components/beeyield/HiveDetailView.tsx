@@ -233,9 +233,8 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
         const day = new Date(year, month, 1).getDay();
         return day === 0 ? 6 : day - 1; // Monday-first
     };
-    const today = new Date();
-
     const calendarDays = React.useMemo(() => {
+        const today = new Date();
         const daysInMonth = getDaysInMonth(calMonth, calYear);
         const firstDay = getFirstDayOfMonth(calMonth, calYear);
         const prevMonthDays = getDaysInMonth(calMonth === 0 ? 11 : calMonth - 1, calMonth === 0 ? calYear - 1 : calYear);
@@ -256,7 +255,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
             cells.push({ day: d, current: false, isToday: false });
         }
         return cells;
-    }, [calMonth, calYear, today]);
+    }, [calMonth, calYear]);
 
     if (loading) {
         return (
