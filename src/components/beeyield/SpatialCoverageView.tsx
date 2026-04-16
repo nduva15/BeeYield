@@ -41,6 +41,9 @@ const getNumeric = (...values: Array<number | string | null | undefined>) => {
   return null;
 };
 
+const EMPTY_APIARIES: any[] = [];
+const EMPTY_ALERTS: any[] = [];
+
 const SpatialCoverageView: React.FC = () => {
   const [viewMode, setViewMode] = React.useState<'kernel' | 'nodes'>('kernel');
   const [selectedApiaryId, setSelectedApiaryId] = React.useState('');
@@ -49,7 +52,7 @@ const SpatialCoverageView: React.FC = () => {
 
   const apiariesQuery = useApiaries();
   const alertsQuery = useSensorAlerts(false);
-  const apiaries = apiariesQuery.data || [];
+  const apiaries = apiariesQuery.data ?? EMPTY_APIARIES;
   const selectedApiary = React.useMemo(
     () => apiaries.find((apiary) => apiary.id === selectedApiaryId) || null,
     [apiaries, selectedApiaryId],
@@ -58,7 +61,7 @@ const SpatialCoverageView: React.FC = () => {
   const { hives, isLoading: hivesLoading, refetch: refetchHives } = useHivesWithTelemetry(selectedApiaryId || undefined);
   const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(selectedApiary?.id);
   const activeAlerts = React.useMemo(
-    () => filterAlertsByApiary(alertsQuery.data || [], selectedApiaryId, hives),
+    () => filterAlertsByApiary(alertsQuery.data ?? EMPTY_ALERTS, selectedApiaryId, hives),
     [alertsQuery.data, hives, selectedApiaryId],
   );
 

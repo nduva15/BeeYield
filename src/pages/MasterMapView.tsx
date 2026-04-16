@@ -27,6 +27,8 @@ import 'leaflet/dist/leaflet.css';
 import { useApiaries } from '@/hooks/useApiaries';
 import { useHivesWithTelemetry } from '@/hooks/useHives';
 
+const EMPTY_APIARIES: any[] = [];
+
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -51,7 +53,7 @@ const MasterMapView: React.FC = () => {
     const [isSearching, setIsSearching] = React.useState(false);
 
     const { data: apiariesData } = useApiaries();
-    const apiaries = apiariesData || [];
+    const apiaries = apiariesData ?? EMPTY_APIARIES;
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
     const { hives, isLoading: hivesLoading } = useHivesWithTelemetry(selectedApiaryId || undefined);
     const hiveCoverageRadiusMeters = 1200;

@@ -18,6 +18,10 @@ import {
     Upload, Link as LinkIcon, Activity
 } from 'lucide-react';
 import QRCode from 'qrcode';
+
+const EMPTY_APIARIES: any[] = [];
+const EMPTY_HIVES: any[] = [];
+const EMPTY_HARVESTS: any[] = [];
 import beeyieldService from '@/services/beeyieldService';
 import { labelService, LabelDesign as ILabelDesign } from '@/services/labelService';
 import { Loader2 } from 'lucide-react';
@@ -229,9 +233,9 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
     const { data: hivesData } = useHives();
     const { data: harvestsData } = useHarvests();
 
-    const apiaries = (apiariesData as any[]) || [];
-    const hives = hivesData || [];
-    const harvests = harvestsData || [];
+    const apiaries = (apiariesData as any[]) ?? EMPTY_APIARIES;
+    const hives = hivesData ?? EMPTY_HIVES;
+    const harvests = harvestsData ?? EMPTY_HARVESTS;
 
     const [honeyBatches, setHoneyBatches] = React.useState<any[]>([]);
     const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');

@@ -47,6 +47,13 @@ interface PollinationIntelligenceProps {
   onTabChange?: (tab: string, message?: string, action?: string) => void;
 }
 
+const EMPTY_APIARIES: any[] = [];
+const EMPTY_HIVES: any[] = [];
+const EMPTY_DEVICES: any[] = [];
+const EMPTY_READINGS: any[] = [];
+const EMPTY_ALERTS: any[] = [];
+const EMPTY_TASKS: any[] = [];
+
 const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTabChange }) => {
   const [activeHub, setActiveHub] = React.useState<string>('');
   const [exporting, setExporting] = React.useState(false);
@@ -58,12 +65,12 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
   const alertsQuery = useSensorAlerts(false);
   const tasksQuery = useTasks();
 
-  const apiaries = apiariesQuery.data || [];
-  const hives = hivesQuery.data || [];
-  const devices = devicesQuery.data || [];
-  const readings = readingsQuery.data || [];
-  const alerts = alertsQuery.data || [];
-  const tasks = tasksQuery.data || [];
+  const apiaries = apiariesQuery.data ?? EMPTY_APIARIES;
+  const hives = hivesQuery.data ?? EMPTY_HIVES;
+  const devices = devicesQuery.data ?? EMPTY_DEVICES;
+  const readings = readingsQuery.data ?? EMPTY_READINGS;
+  const alerts = alertsQuery.data ?? EMPTY_ALERTS;
+  const tasks = tasksQuery.data ?? EMPTY_TASKS;
 
   React.useEffect(() => {
     if (!activeHub && apiaries.length > 0) {

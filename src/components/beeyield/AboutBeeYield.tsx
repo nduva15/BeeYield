@@ -51,7 +51,7 @@ export const AboutBeeYield: React.FC<AboutBeeYieldProps> = ({ onClose }) => {
                         <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 p-2 flex items-center justify-center">
                             <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                         </div>
-                        <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter leading-none">About BeeYield</h2>
+                        <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter leading-none">Our Story</h2>
                     </div>
                     <p className="text-sm text-[#1A1A1A]/60 leading-relaxed font-semibold italic">
                         BeeYield is a knowledge platform for apiculture research. Utilizing over 750,000 curated research datasets, we provide accurate diagnostics, support tools, and global economic metrics for the modern beekeeper.

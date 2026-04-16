@@ -46,6 +46,9 @@ type NetworkNode = {
     signal: 'stable' | 'watch' | 'surge';
 };
 
+const EMPTY_APIARIES: any[] = [];
+const EMPTY_HIVES: any[] = [];
+
 const fallbackNodes: NetworkNode[] = [
     {
         id: 'nairobi-demo',
@@ -94,8 +97,8 @@ const GlobalHiveNetwork = () => {
     const { data: hivesData } = useHives();
     const [selectedNodeId, setSelectedNodeId] = React.useState<string>('');
 
-    const hives = hivesData || [];
-    const apiaries = apiariesData || [];
+    const hives = hivesData ?? EMPTY_HIVES;
+    const apiaries = apiariesData ?? EMPTY_APIARIES;
 
     const liveNodes = React.useMemo<NetworkNode[]>(() => {
         const mapped = apiaries

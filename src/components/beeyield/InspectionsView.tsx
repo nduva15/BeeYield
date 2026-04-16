@@ -23,6 +23,12 @@ import { useHarvests } from '@/hooks/useHarvests';
 import { useInspections, useCreateInspection, useUpdateInspection, useDeleteInspection } from '@/hooks/useInspections';
 import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 
+const EMPTY_APIARIES: Apiary[] = [];
+const EMPTY_HIVES: Hive[] = [];
+const EMPTY_HARVESTS: Harvest[] = [];
+const EMPTY_INSPECTIONS: Inspection[] = [];
+const EMPTY_TASKS: any[] = [];
+
 interface InspectionsViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
     initialParams?: { message?: string, action?: string } | null;
@@ -46,11 +52,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange, initialP
     const { data: tasksData, isLoading: tasksLoading } = useTasks();
     const updateTaskMutation = useUpdateTask();
 
-    const apiaries = apiariesData || [];
-    const hives = hivesData || [];
-    const harvests = harvestsData || [];
-    const inspections = inspectionsData || [];
-    const tasks = tasksData || [];
+    const apiaries = apiariesData ?? EMPTY_APIARIES;
+    const hives = hivesData ?? EMPTY_HIVES;
+    const harvests = harvestsData ?? EMPTY_HARVESTS;
+    const inspections = inspectionsData ?? EMPTY_INSPECTIONS;
+    const tasks = tasksData ?? EMPTY_TASKS;
 
     const isLoading = apiariesLoading || hivesLoading || harvestsLoading || inspectionsLoading || tasksLoading;
 

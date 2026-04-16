@@ -29,6 +29,9 @@ const framesByGrade: Record<ColonyGrade, number> = {
   'Grade C': 6,
 };
 
+const EMPTY_APIARIES: any[] = [];
+const EMPTY_HIVES: any[] = [];
+
 const HpaOptimizer: React.FC = () => {
   const [selectedApiaryId, setSelectedApiaryId] = React.useState('');
   const [acreage, setAcreage] = React.useState(1);
@@ -39,13 +42,13 @@ const HpaOptimizer: React.FC = () => {
   const [cropRequirements, setCropRequirements] = React.useState<CropPollinationRequirement[]>([]);
 
   const apiariesQuery = useApiaries();
-  const apiaries = apiariesQuery.data || [];
+  const apiaries = apiariesQuery.data ?? EMPTY_APIARIES;
   const activeApiary = React.useMemo(
     () => apiaries.find((apiary) => apiary.id === selectedApiaryId) || null,
     [apiaries, selectedApiaryId],
   );
   const hivesQuery = useHives(selectedApiaryId || undefined);
-  const hives = hivesQuery.data || [];
+  const hives = hivesQuery.data ?? EMPTY_HIVES;
 
   React.useEffect(() => {
     if (!selectedApiaryId && apiaries.length > 0) {

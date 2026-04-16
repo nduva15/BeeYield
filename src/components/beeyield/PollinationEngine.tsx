@@ -42,6 +42,9 @@ interface Scenario {
   colonyGrade: 'A' | 'B' | 'C';
 }
 
+const EMPTY_APIARIES: any[] = [];
+const EMPTY_APIARY_HIVES: any[] = [];
+
 const CircularGauge: React.FC<{ value: number; max: number; label: string; accent: string }> = ({
   value,
   max,
@@ -108,14 +111,14 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
   });
 
   const apiariesQuery = useApiaries();
-  const apiaries = apiariesQuery.data || [];
+  const apiaries = apiariesQuery.data ?? EMPTY_APIARIES;
   const activeApiary = React.useMemo(
     () => apiaries.find((apiary) => apiary.id === selectedApiaryId) || null,
     [apiaries, selectedApiaryId],
   );
 
   const hivesQuery = useHives(selectedApiaryId || undefined);
-  const apiaryHives = hivesQuery.data || [];
+  const apiaryHives = hivesQuery.data ?? EMPTY_APIARY_HIVES;
   const flightPotentialQuery = useFlightPotential(selectedApiaryId || undefined);
   const flightPotential = flightPotentialQuery.data;
 

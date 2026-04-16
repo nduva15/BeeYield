@@ -175,7 +175,7 @@ const Header = () => {
                 </div>
                 <div className="flex flex-col gap-1">
                   {[
-                    { label: 'About Us', to: '/about' },
+                    { label: 'Our Story', to: '/about' },
                     { label: 'Bee Learn', to: '/learn' },
                     { label: 'Blogs', to: '/blogs' },
                     { label: 'Careers', to: '/careers' },
@@ -185,7 +185,6 @@ const Header = () => {
                     { label: 'Global Network', to: '/global-hive-network' },
                     { label: 'Impact', to: '/impact' },
                     { label: 'Media', to: '/media' },
-                    { label: 'Our Story', to: '/ourstory' },
                     { label: 'Team', to: '/team' },
                   ].map((item) => (
                     <DropdownMenuItem key={item.to} asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
@@ -293,11 +292,10 @@ const Header = () => {
             <div className="flex flex-col space-y-1 pt-4">
               <span className="text-[10px] uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black">Company</span>
               {[
-                { label: 'About Us', to: '/about' },
+                { label: 'Our Story', to: '/about' },
                 { label: 'Bee Learn', to: '/learn' },
                 { label: 'Impact', to: '/impact' },
                 { label: 'ESG', to: '/esg' },
-                { label: 'Our Story', to: '/ourstory' },
                 { label: 'Commitment', to: '/commitment' },
                 { label: 'Global Network', to: '/global-hive-network' },
                 { label: 'Team', to: '/team' },

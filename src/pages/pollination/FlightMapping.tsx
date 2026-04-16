@@ -24,6 +24,8 @@ import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
 import { useSelectedApiary } from '@/hooks/useSelectedApiary';
 import beeyieldService, { PublicFlightMapPayload } from '@/services/beeyieldService';
 
+const EMPTY_HIVES: any[] = [];
+
 const DefaultIcon = L.icon({
     iconUrl: markerIcon,
     iconRetinaUrl: markerIconRetina,
@@ -123,8 +125,14 @@ const FlightMapping: React.FC = () => {
 
     const selectedApiary = privateSelectedApiary || publicFlightMap?.apiary || null;
     const isUsingPublicMap = !privateSelectedApiary && !!publicFlightMap;
-    const resolvedHives = isUsingPublicMap ? publicFlightMap?.hives || [] : hives;
-    const resolvedWeatherSummary = isUsingPublicMap ? publicFlightMap?.weather_summary || null : weatherSummary;
+    const resolvedHives = React.useMemo(
+        () => (isUsingPublicMap ? (publicFlightMap?.hives ?? EMPTY_HIVES) : hives),
+        [hives, isUsingPublicMap, publicFlightMap],
+    );
+    const resolvedWeatherSummary = React.useMemo(
+        () => (isUsingPublicMap ? (publicFlightMap?.weather_summary ?? null) : weatherSummary),
+        [isUsingPublicMap, publicFlightMap, weatherSummary],
+    );
     const locationOptions = privateSelectedApiary ? apiaries : selectedApiary ? [selectedApiary] : [];
     const mapModeDescription = isUsingPublicMap
         ? 'Public live map centered on Kibwezi, Kenya with backend weather enrichment'
@@ -139,7 +147,7 @@ const FlightMapping: React.FC = () => {
 
     const positionedHives = React.useMemo(
         () =>
-            (resolvedHives || []).filter(
+            resolvedHives.filter(
                 (hive) => typeof hive.latitude === 'number' && typeof hive.longitude === 'number',
             ),
         [resolvedHives],
@@ -211,7 +219,7 @@ const FlightMapping: React.FC = () => {
             tone: 'text-[#475569] bg-[#e2e8f0] border-[#cbd5e1]',
             detail: 'Waiting for stronger telemetry and weather alignment.',
         };
-    }, [flightPotential?.score, resolvedWeatherSummary?.current]);
+    }, [flightPotential?.score, resolvedWeatherSummary]);
 
     const activeSources = flightPotential?.active_sources || [];
     const linkedDevices = resolvedWeatherSummary?.linked_device_meta || [];
