@@ -15,6 +15,10 @@ export const API_BASE_URL = API_V1_URL;
 export const AI_API_URL = API_V1_URL;
 export const DATA_API_URL = API_V1_URL;
 
+const PUBLIC_API_PATH_PREFIXES = [
+    "/contact/",
+];
+
 /**
  * Get the active Supabase client based on URL path
  */
@@ -169,6 +173,11 @@ function shouldUseRustApi(endpoint: string): boolean {
     return false;
 }
 
+function isPublicApiEndpoint(endpoint: string): boolean {
+    const path = normalizeEndpointPath(endpoint);
+    return PUBLIC_API_PATH_PREFIXES.some((prefix) => path.startsWith(prefix) || path.startsWith(`/api/v1${prefix}`));
+}
+
 export function getBaseUrl(endpoint: string): string {
     return shouldUseRustApi(endpoint) ? RUST_API_V1_URL : API_V1_URL;
 }
@@ -187,7 +196,7 @@ export async function apiRequest<T>(
         url = `${baseUrl}${path}`;
     }
 
-    const authHeaders = await getAuthHeaders();
+    const authHeaders = isPublicApiEndpoint(endpoint) ? {} : await getAuthHeaders();
 
     try {
         const response = await fetch(url, {

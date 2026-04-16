@@ -18,6 +18,7 @@ import {
     useScheduledReports,
     useUpdateScheduledReport,
 } from '@/hooks/useReports';
+import { getApiaryDisplayName, getHiveDisplayName } from '@/lib/beeyieldDisplay';
 
 const ReportsExportsView: React.FC = () => {
     const { user, beeyieldUser } = useAuth();
@@ -54,6 +55,10 @@ const ReportsExportsView: React.FC = () => {
 
     const filteredReports = reports.filter((report) => !report.user_id || report.user_id === userId);
     const filteredSchedules = schedules.filter((schedule) => !schedule.user_id || schedule.user_id === userId);
+    const availableHives = React.useMemo(
+        () => hives.filter((hive) => selectedPlace === 'all' || hive.apiary_id === selectedPlace),
+        [hives, selectedPlace]
+    );
 
     const selectedSections = Object.entries(sections)
         .filter(([, enabled]) => enabled)
@@ -219,7 +224,7 @@ const ReportsExportsView: React.FC = () => {
                                     <SelectContent>
                                         <SelectItem value="all">All apiaries</SelectItem>
                                         {apiaries.map((apiary) => (
-                                            <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
+                                            <SelectItem key={apiary.id} value={apiary.id}>{getApiaryDisplayName(apiary)}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
@@ -228,18 +233,18 @@ const ReportsExportsView: React.FC = () => {
 
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-[#1A1A1A]/60">Hive</label>
-                            <Select value={selectedHive} onValueChange={setSelectedHive}>
-                                <SelectTrigger className={glass.input}>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All hives</SelectItem>
-                                    {hives.map((hive) => (
-                                        <SelectItem key={hive.id} value={hive.id}>{hive.hive_code || hive.hive_name || hive.id}</SelectItem>
+                                <Select value={selectedHive} onValueChange={setSelectedHive}>
+                                    <SelectTrigger className={glass.input}>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All hives</SelectItem>
+                                    {availableHives.map((hive) => (
+                                        <SelectItem key={hive.id} value={hive.id}>{getHiveDisplayName(hive)}</SelectItem>
                                     ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {Object.entries(sections).map(([key, enabled]) => (

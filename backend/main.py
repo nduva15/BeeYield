@@ -4,15 +4,27 @@
 # except ImportError:
 #     print("Could not load DNS patch")
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.api_v1.api import api_router
+from app.db.supabase_db import close_db_client, init_db_client
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db_client()
+    try:
+        yield
+    finally:
+        await close_db_client()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    description="Backend API for BeeYield - Honey Traceability and E-commerce Platform"
+    description="Backend API for BeeYield - Honey Traceability and E-commerce Platform",
+    lifespan=lifespan,
 )
 
 # Set all CORS enabled origins

@@ -397,6 +397,7 @@ async def db_upsert(
     table: str,
     data: dict[str, Any],
     on_conflict: str = "id",
+    merge_duplicates: bool = True,
     token: Optional[str] = None,
 ) -> dict[str, Any]:
     """Upsert a record via direct REST API."""
@@ -410,7 +411,7 @@ async def db_upsert(
         "apikey": apikey,
         "Authorization": f"Bearer {token or apikey}",
         "Content-Type": "application/json",
-        "Prefer": "return=representation,resolution=merge-duplicates",
+        "Prefer": f"return=representation,resolution={'merge-duplicates' if merge_duplicates else 'ignore-duplicates'}",
     }
     
     # Ensure data is serialized

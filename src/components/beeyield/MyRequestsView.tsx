@@ -24,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { BeeYieldEmptyState, BeeYieldFormField, BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { GlassConfirmModal, GlassStatCard, glass } from './GlassTheme';
+import { getApiaryDisplayName, getHiveDisplayName } from '@/lib/beeyieldDisplay';
 
 const CATEGORIES = [
     { id: 'Hardware', label: 'Hardware' },
@@ -131,12 +132,21 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
     );
 
     const getApiaryName = React.useCallback(
-        (apiaryId?: string) => apiaries.find((apiary) => apiary.id === apiaryId)?.name || 'No apiary linked',
+        (apiaryId?: string) => {
+            if (!apiaryId) return 'No apiary linked';
+            return getApiaryDisplayName(apiaries.find((apiary) => apiary.id === apiaryId));
+        },
         [apiaries]
     );
 
     const getHiveName = React.useCallback(
-        (hiveId?: string) => availableHives.find((hive) => hive.id === hiveId)?.name || hives.find((hive) => hive.id === hiveId)?.name || 'No hive linked',
+        (hiveId?: string) => {
+            if (!hiveId) return 'No hive linked';
+            return getHiveDisplayName(
+                availableHives.find((hive) => hive.id === hiveId) ||
+                hives.find((hive) => hive.id === hiveId)
+            );
+        },
         [availableHives, hives]
     );
 
@@ -496,7 +506,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                 <SelectContent>
                                     <SelectItem value="none">No apiary</SelectItem>
                                     {apiaries.map((apiary) => (
-                                        <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
+                                        <SelectItem key={apiary.id} value={apiary.id}>{getApiaryDisplayName(apiary)}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -513,7 +523,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                 <SelectContent>
                                     <SelectItem value="none">No hive</SelectItem>
                                     {availableHives.map((hive) => (
-                                        <SelectItem key={hive.id} value={hive.id}>{hive.name}</SelectItem>
+                                        <SelectItem key={hive.id} value={hive.id}>{getHiveDisplayName(hive)}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>

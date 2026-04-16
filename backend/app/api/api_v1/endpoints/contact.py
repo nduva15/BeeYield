@@ -6,7 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request, Depends
 from app.schemas import contact as schemas
 from app.services import email
-from app.db.supabase_db import db_insert, db_select, db_update
+from app.db.supabase_db import db_insert, db_select, db_update, db_upsert
 
 router = APIRouter()
 
@@ -296,24 +296,24 @@ async def subscribe_newsletter(
     except Exception:
         pass
 
-    success = False
     db_data = request_in.dict(exclude_unset=True)
 
     try:
-        existing = await db_select("newsletter_subscribers", filters={"email": request_in.email}, limit=1, token=token)
-        if existing:
+        result = await db_upsert(
+            "newsletter_subscribers",
+            db_data,
+            on_conflict="email",
+            merge_duplicates=False,
+            token=token,
+        )
+        if not result.get("success"):
+            print(f"[WARNING] Newsletter DB Upsert failed: {result.get('error')}")
+            raise RuntimeError(result.get("error", "newsletter upsert failed"))
+        if not result.get("data"):
             return {"status": "success", "message": "You're already subscribed! Check your inbox for our latest updates."}
-
-        result = await db_insert("newsletter_subscribers", db_data, token=token)
-        if result.get("success"):
-            success = True
-            print(f"[SUCCESS] Newsletter Sub DB Successful: {request_in.email}")
-        else:
-            print(f"[WARNING] Newsletter DB Insert failed: {result.get('error')}")
+        print(f"[SUCCESS] Newsletter Sub DB Successful: {request_in.email}")
     except Exception as e:
         print(f"[WARNING] DB Connection Failed (Newsletter): {e}")
-
-    if not success:
         success = await _save_offline("newsletter_subscription", db_data)
         if not success:
             raise HTTPException(status_code=500, detail="Failed to subscribe.")

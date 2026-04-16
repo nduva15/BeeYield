@@ -27,6 +27,7 @@ import WeightDynamicsChart from '@/components/telemetry/WeightDynamicsChart';
 import AcousticWaveform from '@/components/telemetry/AcousticWaveform';
 import { GlassModal, GlassStatCard, glass } from './GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSectionHeader } from '@/components/beeyield/BeeYieldUI';
+import { getHiveDisplayName } from '@/lib/beeyieldDisplay';
 
 interface WeightData {
   time: string;
@@ -157,7 +158,7 @@ const HiveTelemetryView: React.FC = () => {
   }, [loadSeries]);
 
   React.useEffect(() => {
-    const hiveName = (selectedHive?.hive_code || selectedHive?.name || 'hive').toString().replace(/\s+/g, '-').toLowerCase();
+    const hiveName = getHiveDisplayName(selectedHive).replace(/\s+/g, '-').toLowerCase();
     setExportFileName(`beeyield-${hiveName}-telemetry`);
   }, [selectedHive]);
 
@@ -318,7 +319,7 @@ const HiveTelemetryView: React.FC = () => {
                     <SelectContent className={cn(glass.selectContent, 'rounded-2xl')}>
                       {hives.map((hive) => (
                         <SelectItem key={hive.id} value={hive.id} className="font-black text-[11px]">
-                          {(hive.hive_code || hive.name || hive.id).toString()}
+                          {getHiveDisplayName(hive)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -346,7 +347,7 @@ const HiveTelemetryView: React.FC = () => {
                     <div className="grid min-w-[220px] gap-3 sm:grid-cols-2">
                       <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#FFF9F0] p-4">
                         <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Linked hive</p>
-                        <p className="mt-2 text-sm font-black text-[#1A1A1A]">{selectedHive?.hive_code || selectedHive?.name || 'No hive selected'}</p>
+                        <p className="mt-2 text-sm font-black text-[#1A1A1A]">{selectedHive ? getHiveDisplayName(selectedHive) : 'No hive selected'}</p>
                         <p className="mt-1 text-[11px] font-medium text-slate-500">Last seen {lastSeen}</p>
                       </div>
                       <div className="rounded-2xl border border-[#1B9157]/15 bg-white p-4">
