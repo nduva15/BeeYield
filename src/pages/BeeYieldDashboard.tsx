@@ -128,6 +128,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     // Auth State
     const [authMode, setAuthMode] = React.useState<AuthMode>('login');
+    const [dashboardOpenedAt] = React.useState(() => Date.now());
 
     // Dashboard state (UI only)
     const [activeTab, setActiveTab] = React.useState('home');
@@ -165,8 +166,8 @@ const BeeYieldDashboard: React.FC = () => {
         const createdAtMs = new Date(effectiveUser.created_at).getTime();
         if (Number.isNaN(createdAtMs)) return false;
 
-        return (Date.now() - createdAtMs) <= NEW_ACCOUNT_ONBOARDING_WINDOW_MS;
-    }, [pendingOnboarding, effectiveUser?.created_at]);
+        return (dashboardOpenedAt - createdAtMs) <= NEW_ACCOUNT_ONBOARDING_WINDOW_MS;
+    }, [dashboardOpenedAt, pendingOnboarding, effectiveUser?.created_at]);
     const onboardingStep = shouldForceOnboarding ? requiredOnboardingStep : null;
 
     const handleTabChange = (tab: string, message?: string, action?: string) => {

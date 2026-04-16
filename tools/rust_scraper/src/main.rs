@@ -1,6 +1,7 @@
 use reqwest::Client;
 use scraper::{Html, Selector};
 use serde::Serialize;
+use std::sync::Arc;
 use std::time::Duration;
 use regex::Regex;
 use tokio::sync::Semaphore;
@@ -38,8 +39,9 @@ async fn allowed_by_robots(client: &Client, site_url: &str) -> bool {
                 let l = line.trim().to_lowercase();
                 if l.starts_with("user-agent:") && l.contains("*") { ua_star = true; }
                 if ua_star && l.starts_with("disallow:") {
-                    if l.contains("/") && !l.contains("disallow: "/) {
-                        // conservative: if disallow contains / then block
+                    let path = l.trim_start_matches("disallow:").trim();
+                    if path == "/" {
+                        return false;
                     }
                 }
             }
@@ -108,7 +110,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let txt = tokio::fs::read_to_string(cfg_path).await?;
     let seeds: Vec<String> = txt.lines().map(|l| l.trim().to_string()).filter(|l| !l.is_empty()).collect();
 
-    let sem = Semaphore::new(8);
+    let sem = Arc::new(Semaphore::new(8));
     let mut futs = FuturesUnordered::new();
 
     for url in seeds.into_iter() {
@@ -126,7 +128,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let j = serde_json::to_string(&rec).unwrap_or_default();
                 let fn_safe = site.replace("/", "_").replace(":", "_");
                 let out_file = out_dir.join(format!("{}.jsonl", fn_safe));
-                let _ = tokio::fs::write(&out_file, j + "\n").await;
+                let _ = tokio::fs::write(&out_file, format!("{j}\n")).await;
                 // attempt to download first PDF (if any)
                 for p in pdfs.iter().take(2) {
                     let pdf_url = if p.starts_with("http") { p.clone() } else { format!("{}{}", site, p) };
