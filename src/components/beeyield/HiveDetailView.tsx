@@ -256,7 +256,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
             cells.push({ day: d, current: false, isToday: false });
         }
         return cells;
-    }, [calMonth, calYear]);
+    }, [calMonth, calYear, today]);
 
     if (loading) {
         return (

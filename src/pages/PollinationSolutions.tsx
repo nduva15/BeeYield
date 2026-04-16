@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
 const PollinationSolutions = () => {
   const [supportType, setSupportType] = useState("monthly");
@@ -299,16 +300,11 @@ const PollinationSolutions = () => {
       </section>
 
       {/* Video Section */}
-      <div className="relative w-full h-[70vh] bg-foreground">
-        <iframe
-          className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed/vV-m_k8E5Yc"
-          title="About BeeYield"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
+      <YouTubeEmbed
+        title="About BeeYield"
+        wrapperClassName="h-[70vh] w-full rounded-none border-0 bg-foreground shadow-none"
+        iframeClassName="opacity-100"
+      />
 
       {/* Crisis Section */}
       <section className="py-24 bg-foreground text-background">

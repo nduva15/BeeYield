@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import impactBeekeeping from "@/assets/impact-beekeeping.jpg";
 import Logo from "@/assets/Logo.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
 const OurStory = () => {
   return (
@@ -261,18 +262,33 @@ const OurStory = () => {
           </Card>
         </div>
       </section>
-      {/* Full-width Video Section - Before Footer */}
-      <div className="relative w-full h-[70vh] bg-[#F0F7F0]">
-        <iframe
-          className="absolute inset-0 w-full h-full opacity-60"
-          src="https://www.youtube.com/embed/vV-m_k8E5Yc"
-          title="About BeeYield"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#F0F7F0] via-transparent to-transparent pointer-events-none" />
-      </div>
+      {/* About Videos */}
+      <section className="bg-[#F0F7F0] py-16 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <Badge variant="outline" className="mb-4">
+              Watch BeeYield
+            </Badge>
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+              Our Story In Motion
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Two key videos covering BeeYield's story and the field reality behind our work.
+            </p>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-2">
+            <YouTubeEmbed
+              title="About BeeYield"
+              wrapperClassName="aspect-video"
+            />
+            <YouTubeEmbed
+              title="BeeYield Video"
+              wrapperClassName="aspect-video"
+            />
+          </div>
+        </div>
+      </section>
     </BeeYieldPageShell>
   );
 };

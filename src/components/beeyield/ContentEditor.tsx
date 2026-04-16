@@ -45,11 +45,7 @@ const ContentEditor = () => {
     const [publishing, setPublishing] = React.useState(false);
     const [aiContext, setAiContext] = React.useState('');
 
-    React.useEffect(() => {
-        if (id) loadPost(id);
-    }, [id]);
-
-    const loadPost = async (postId: string) => {
+    const loadPost = React.useCallback(async (postId: string) => {
         setLoading(true);
         try {
             const [postData, chaptersData] = await Promise.all([
@@ -83,7 +79,11 @@ const ContentEditor = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    React.useEffect(() => {
+        if (id) loadPost(id);
+    }, [id, loadPost]);
 
     const runAnalysis = async (currentPost: ContentPost, currentChapters: BlogChapter[]) => {
         // Combine all chapters for full context

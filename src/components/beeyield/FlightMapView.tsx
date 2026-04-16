@@ -249,13 +249,15 @@ const FlightMapView: React.FC = () => {
         [privateFlightArea, publicFlightMap, selectedLandTypeId],
     );
 
+    const flightApiary = flightArea?.apiary;
+
     useEffect(() => {
-        if (!flightArea?.apiary) return;
-        setEffectiveRadiusKm(Number(flightArea.apiary.effective_radius_km || 2));
-        setMaxRadiusKm(Number(flightArea.apiary.max_radius_km || 5));
-        setStartPointId((value) => value || String(flightArea.apiary.id));
+        if (!flightApiary) return;
+        setEffectiveRadiusKm(Number(flightApiary.effective_radius_km || 2));
+        setMaxRadiusKm(Number(flightApiary.max_radius_km || 5));
+        setStartPointId((value) => value || String(flightApiary.id));
         setRoutePath([]);
-    }, [flightArea?.apiary?.id]);
+    }, [flightApiary]);
 
     useEffect(() => {
         const suggestions = flightArea?.route_planner?.suggested_hives || [];

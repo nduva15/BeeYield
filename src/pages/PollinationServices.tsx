@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/accordion";
 import SEO from "@/components/SEO";
 import { beePollinationData } from "@/data/beePollinationData";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
 const PollinationServices = () => {
     const pollinationCrops = Object.values(beePollinationData);
@@ -287,28 +288,16 @@ const PollinationServices = () => {
 
                     <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                         {/* Swanson Farms Video */}
-                        <div className="group relative overflow-hidden rounded-[2.5rem] bg-neutral-100 shadow-premium aspect-video border border-neutral-100">
-                            <iframe
-                                className="absolute inset-0 w-full h-full border-0"
-                                src="https://www.youtube.com/embed/3n_bI6L_Dk8"
-                                title="Pollination Partnerships: Swanson Farms' Growth Story"
-                                loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
+                        <YouTubeEmbed
+                            title="BeeYield Video"
+                            wrapperClassName="aspect-video"
+                        />
 
                         {/* BeeYield Platform Video */}
-                        <div className="group relative overflow-hidden rounded-[2.5rem] bg-neutral-100 shadow-premium aspect-video border border-neutral-100">
-                            <iframe
-                                className="absolute inset-0 w-full h-full border-0"
-                                src="https://www.youtube.com/embed/Lq21C8u9m0o"
-                                title="BeeYield Pollination Insight Platform"
-                                loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
+                        <YouTubeEmbed
+                            title="BeeYield Pollination Insight Platform"
+                            wrapperClassName="aspect-video"
+                        />
                     </div>
                 </div>
             </section>

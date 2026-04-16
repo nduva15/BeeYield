@@ -77,11 +77,11 @@ const IntegrationsView: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [activeTab, configs.length, auditLogs]);
+    }, [activeTab, auditLogs, configs]);
 
     React.useEffect(() => {
         fetchConfigs();
-    }, [activeTab]);
+    }, [fetchConfigs]);
 
     const handleSyncNow = async (platform: string) => {
         const tid = toast.loading(`Synchronizing ${platform} records...`);

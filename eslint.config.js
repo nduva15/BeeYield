@@ -20,6 +20,7 @@ export default tseslint.config(
       "venv",
       ".venv",
       "backend/venv",
+      "src/routeTree.gen.ts",
     ],
   },
   {

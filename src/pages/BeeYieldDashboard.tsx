@@ -122,6 +122,8 @@ const BeeYieldDashboard: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useLanguage();
     const { moduleFlags } = useSettings();
+    const effectiveUser = user || beeyieldUser;
+    const effectiveEmail = user?.email || beeyieldUser?.email;
 
     // Auth State
     const [authMode, setAuthMode] = React.useState<AuthMode>('login');
@@ -147,11 +149,16 @@ const BeeYieldDashboard: React.FC = () => {
     }), [rawApiaries, rawHives, rawDevices, rawReadings]);
 
     const loading = apiariesLoading || hivesLoading || devicesLoading || readingsLoading;
-    const onboardingStep = React.useMemo(() => resolveBeeYieldOnboardingStep({
+    const requiredOnboardingStep = React.useMemo(() => resolveBeeYieldOnboardingStep({
         apiaries: apiaries.length,
         hives: hives.length,
         devices: devices.length,
     }), [apiaries.length, hives.length, devices.length]);
+    const pendingOnboarding = React.useMemo(
+        () => (effectiveEmail ? getBeeYieldPendingOnboarding(effectiveEmail) : null),
+        [effectiveEmail, apiaries.length, hives.length, devices.length, activeTab, viewParams?.action]
+    );
+    const onboardingStep = pendingOnboarding ? requiredOnboardingStep : null;
 
     const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
@@ -189,23 +196,30 @@ const BeeYieldDashboard: React.FC = () => {
     React.useEffect(() => {
         if (authLoading || loading) return;
 
-        const requiredStep = onboardingStep;
+        const pendingState = effectiveEmail ? getBeeYieldPendingOnboarding(effectiveEmail) : null;
+        if (!pendingState) {
+            return;
+        }
+
+        const requiredStep = resolveBeeYieldOnboardingStep({
+            apiaries: apiaries.length,
+            hives: hives.length,
+            devices: devices.length,
+        });
 
         if (!requiredStep) {
             clearBeeYieldPendingOnboarding();
             return;
         }
 
-        const pendingState = getBeeYieldPendingOnboarding(user?.email);
-        const nextStep = pendingState?.step || requiredStep;
-        const target = getBeeYieldDashboardTarget(nextStep, {
+        const target = getBeeYieldDashboardTarget(requiredStep, {
             apiaryId: pendingState?.apiaryId,
             hiveId: pendingState?.hiveId,
         });
 
         setBeeYieldPendingOnboarding({
-            step: nextStep,
-            email: user?.email || undefined,
+            step: requiredStep,
+            email: effectiveEmail || undefined,
             apiaryId: pendingState?.apiaryId,
             hiveId: pendingState?.hiveId,
         });
@@ -221,7 +235,7 @@ const BeeYieldDashboard: React.FC = () => {
             params.set('action', target.action);
             window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
         }
-    }, [authLoading, loading, onboardingStep, user?.email, activeTab, viewParams?.action]);
+    }, [authLoading, loading, effectiveEmail, apiaries.length, hives.length, devices.length, activeTab, viewParams?.action]);
 
     // Derived Stats
     const totalDevices = devices.length;
@@ -580,11 +594,11 @@ const BeeYieldDashboard: React.FC = () => {
     }
 
     // Check if user has initialized BeeYield access
-    const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || ['timothynduva349@gmail.com', SUPER_ADMIN_EMAIL.toLowerCase()].includes(user?.email?.toLowerCase() || '') || !!beeyieldUser;
+    const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || ['timothynduva349@gmail.com', SUPER_ADMIN_EMAIL.toLowerCase()].includes(effectiveEmail?.toLowerCase() || '') || !!beeyieldUser;
 
 
 
-    if (!user || !isBeeYieldActive) {
+    if (!effectiveUser || !isBeeYieldActive) {
         return (
             <BeeYieldPageShell className="bg-[#FFF9F0] flex flex-col items-center justify-center p-8 font-sans text-[#064e3b] antialiased">
                 <div className="max-w-lg w-full text-center space-y-8">

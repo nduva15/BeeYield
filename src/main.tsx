@@ -144,6 +144,7 @@ root.render(
                                                         <Route path="/esg" element={<ESG />} />
                                                         <Route path="/commitment" element={<Commitment />} />
                                                         <Route path="/ourstory" element={<OurStory />} />
+                                                        <Route path="/about" element={<OurStory />} />
                                                         <Route path="/global-hive-network" element={<GlobalHiveNetwork />} />
 
                                                         <Route path="/traceability" element={<Traceability />} />

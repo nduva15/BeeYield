@@ -12,7 +12,7 @@ import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedire
 import { getBeeYieldPendingOnboardingPath } from '@/lib/beeyieldOnboarding';
 
 interface BeeYieldLoginFormProps {
-    onSuccess?: () => void;
+    onSuccess?: (email?: string) => void;
     onForgotPassword?: () => void;
     onSwitchToRegister?: () => void;
 }
@@ -48,7 +48,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
             toast.success('Signed in');
             if (rememberMe) localStorage.setItem('savedEmail_beeyield', email);
             else localStorage.removeItem('savedEmail_beeyield');
-            onSuccess?.();
+            onSuccess?.(email);
         }
         setLoading(false);
     };
@@ -64,7 +64,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
         } else {
             toast.success('Verified');
             setShowMFAInput(false);
-            onSuccess?.();
+            onSuccess?.(email);
         }
         setLoading(false);
     };

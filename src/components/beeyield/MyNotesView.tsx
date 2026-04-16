@@ -71,7 +71,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
             setIsAddingNote(true);
             onInitialActionConsumed?.();
         }
-    }, [initialAction]);
+    }, [initialAction, onInitialActionConsumed]);
 
     // Handle initial state for editing
     React.useEffect(() => {
@@ -88,15 +88,18 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
     }, [isEditingNote]);
 
     // Debounced Auto-save for content
-    const debouncedSave = React.useCallback(
+    const debouncedSave = React.useMemo(() =>
         debounce(async (id: string, content: string) => {
             await updateNoteMutation.mutateAsync({
                 id,
                 data: { content }
             });
         }, 1000),
-        []
-    );
+    [updateNoteMutation]);
+
+    React.useEffect(() => () => {
+        debouncedSave.cancel();
+    }, [debouncedSave]);
 
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const val = e.target.value;
