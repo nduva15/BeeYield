@@ -60,6 +60,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { submitContactForm } from "@/services/contactService";
 import { useToast } from "@/hooks/use-toast";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import LOGO from "@/assets/Logo.png";
@@ -361,6 +362,33 @@ const Team = () => {
                                 </p>
                             </motion.div>
                         ))}
+                    </div>
+                </div>
+            </section>
+
+            <section className="py-24 sm:py-28 bg-white border-b border-neutral-100">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-3xl mx-auto text-center mb-12">
+                        <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-4 py-1.5 font-black text-[10px]">
+                            Directorate Broadcast
+                        </Badge>
+                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4 italic">
+                            Watch The Team Story
+                        </h2>
+                        <p className="text-lg text-neutral-500 font-medium leading-relaxed">
+                            The same BeeYield video link is embedded here in a side-by-side layout as requested.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-8 lg:grid-cols-2 max-w-6xl mx-auto">
+                        <YouTubeEmbed
+                            title="BeeYield Team Video One"
+                            wrapperClassName="aspect-video"
+                        />
+                        <YouTubeEmbed
+                            title="BeeYield Team Video Two"
+                            wrapperClassName="aspect-video"
+                        />
                     </div>
                 </div>
             </section>

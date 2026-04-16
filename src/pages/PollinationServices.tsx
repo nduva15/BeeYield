@@ -183,21 +183,22 @@ const PollinationServices = () => {
                             transition={{ duration: 1, delay: 0.3 }}
                             className="relative"
                         >
-                            <div className="relative aspect-square rounded-[3rem] bg-neutral-900 overflow-hidden shadow-2xl group">
-                                <img
-                                    src="https://images.unsplash.com/photo-159742324403d-11424eb0429f?q=80&w=1000&auto=format&fit=crop"
-                                    alt="Sunflower Pollination"
-                                    className="w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
+                            <div className="relative aspect-[4/5] sm:aspect-video lg:aspect-square rounded-[3rem] overflow-hidden shadow-2xl group bg-white">
+                                <YouTubeEmbed
+                                    title="BeeYield Hero Video"
+                                    loading="eager"
+                                    wrapperClassName="h-full w-full rounded-[3rem] border border-neutral-200 bg-white shadow-none"
+                                    iframeClassName="opacity-100"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent opacity-90" />
+                                <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-neutral-950/55 via-neutral-950/10 to-transparent pointer-events-none" />
 
                                 {/* Floating Overlay Info */}
-                                <div className="absolute bottom-10 left-10 text-[#1A1A1A]">
+                                <div className="absolute bottom-10 left-10 text-white pointer-events-none">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] font-black text-[#1B9157]">Live data</span>
+                                        <span className="text-[10px] font-black text-[#F4D03F]">Live video</span>
                                     </div>
-                                    <p className="text-2xl font-black tracking-tighter">Site: KIB-01</p>
+                                    <p className="text-2xl font-black tracking-tighter">BeeYield In Motion</p>
                                 </div>
                             </div>
 

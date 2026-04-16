@@ -116,14 +116,15 @@ import BloomPhenology from '@/pages/BloomPhenology';
 
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
+const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
 
 const BeeYieldDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut, beeyieldUser } = useAuth();
     const navigate = useNavigate();
     const { t } = useLanguage();
     const { moduleFlags } = useSettings();
-    const effectiveUser = user || beeyieldUser;
-    const effectiveEmail = user?.email || beeyieldUser?.email;
+    const effectiveUser = beeyieldUser || user;
+    const effectiveEmail = beeyieldUser?.email || user?.email;
 
     // Auth State
     const [authMode, setAuthMode] = React.useState<AuthMode>('login');
@@ -158,7 +159,15 @@ const BeeYieldDashboard: React.FC = () => {
         () => (effectiveEmail ? getBeeYieldPendingOnboarding(effectiveEmail) : null),
         [effectiveEmail]
     );
-    const onboardingStep = pendingOnboarding ? requiredOnboardingStep : null;
+    const shouldForceOnboarding = React.useMemo(() => {
+        if (!pendingOnboarding || !effectiveUser?.created_at) return false;
+
+        const createdAtMs = new Date(effectiveUser.created_at).getTime();
+        if (Number.isNaN(createdAtMs)) return false;
+
+        return (Date.now() - createdAtMs) <= NEW_ACCOUNT_ONBOARDING_WINDOW_MS;
+    }, [pendingOnboarding, effectiveUser?.created_at]);
+    const onboardingStep = shouldForceOnboarding ? requiredOnboardingStep : null;
 
     const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
@@ -201,6 +210,17 @@ const BeeYieldDashboard: React.FC = () => {
             return;
         }
 
+        if (!effectiveUser?.created_at) {
+            clearBeeYieldPendingOnboarding();
+            return;
+        }
+
+        const accountCreatedAtMs = new Date(effectiveUser.created_at).getTime();
+        if (Number.isNaN(accountCreatedAtMs) || (Date.now() - accountCreatedAtMs) > NEW_ACCOUNT_ONBOARDING_WINDOW_MS) {
+            clearBeeYieldPendingOnboarding();
+            return;
+        }
+
         const requiredStep = resolveBeeYieldOnboardingStep({
             apiaries: apiaries.length,
             hives: hives.length,
@@ -235,7 +255,7 @@ const BeeYieldDashboard: React.FC = () => {
             params.set('action', target.action);
             window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
         }
-    }, [authLoading, loading, effectiveEmail, apiaries.length, hives.length, devices.length, activeTab, viewParams?.action]);
+    }, [authLoading, loading, effectiveEmail, effectiveUser?.created_at, apiaries.length, hives.length, devices.length, activeTab, viewParams?.action]);
 
     // Derived Stats
     const totalDevices = devices.length;

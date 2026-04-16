@@ -24,23 +24,18 @@ import {
 import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
 import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';
 import BeeYieldForgotPasswordForm from '@/components/auth/beeyield/BeeYieldForgotPasswordForm';
-import { getBeeYieldPendingOnboardingPath } from '@/lib/beeyieldOnboarding';
-
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
 const ProfessionalAuth: React.FC = () => {
     const navigate = useNavigate();
     const { user, loading: authLoading, beeyieldUser } = useAuth();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
-    const effectiveEmail = user?.email || beeyieldUser?.email;
-    const resolvePostAuthPath = (email?: string | null) =>
-        (email ? getBeeYieldPendingOnboardingPath(email) : null) || '/beeyield-dashboard';
 
     useEffect(() => {
-        if ((user || beeyieldUser) && !authLoading) {
-            navigate(resolvePostAuthPath(effectiveEmail));
+        if (beeyieldUser && !authLoading) {
+            navigate('/beeyield-dashboard');
         }
-    }, [user, beeyieldUser, authLoading, navigate, effectiveEmail]);
+    }, [beeyieldUser, authLoading, navigate]);
 
     if (authLoading) {
         return (
@@ -110,7 +105,7 @@ const ProfessionalAuth: React.FC = () => {
                                     {authMode === 'login' && (
                                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
                                             <BeeYieldLoginForm
-                                                onSuccess={(email) => navigate(resolvePostAuthPath(email))}
+                                                onSuccess={() => navigate('/beeyield-dashboard')}
                                                 onSwitchToRegister={() => setAuthMode('register')}
                                                 onForgotPassword={() => setAuthMode('forgot-password')}
                                             />
