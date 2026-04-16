@@ -143,6 +143,8 @@ class TraceResponse(BaseModel):
     
     # Sensor Snapshot (at harvest time or realtime)
     sensor_snapshot: Optional[dict[str, Any]] = None
+    weather: Optional[dict[str, Any]] = None
+    sustainability: Optional[dict[str, Any]] = None
     
     # Health Snapshot
     health_snapshot: Optional[dict[str, Any]] = None

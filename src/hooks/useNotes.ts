@@ -23,8 +23,12 @@ export const useCreateNote = () => {
     const userId = beeyieldUser?.id || user?.id;
     return useMutation({
         mutationFn: (input: NoteCreateInput) => beeyieldService.createNote(input),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes', userId] });
+        onSuccess: (result) => {
+            if (!result.data) return;
+            queryClient.setQueryData<Note[]>(['notes', userId], (current = []) => [
+                result.data as Note,
+                ...current.filter((note) => note.id !== result.data?.id),
+            ]);
         },
     });
 };
@@ -36,8 +40,13 @@ export const useUpdateNote = () => {
     return useMutation({
         mutationFn: ({ id, data }: { id: string; data: Partial<NoteCreateInput> }) =>
             beeyieldService.updateNote(id, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes', userId] });
+        onSuccess: (result, variables) => {
+            if (!result.data) return;
+            queryClient.setQueryData<Note[]>(['notes', userId], (current = []) =>
+                current.map((note) =>
+                    note.id === variables.id ? { ...note, ...result.data } : note
+                )
+            );
         },
     });
 };
@@ -73,7 +82,7 @@ export const useDeleteNote = () => {
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes', userId] });
+            queryClient.invalidateQueries({ queryKey: ['notes', userId], refetchType: 'inactive' });
         },
     });
 };

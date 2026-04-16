@@ -30,6 +30,7 @@ import {
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
 import { type Product, type ProductVariant } from "@/services/shopService";
+import { getCatalogByCategory } from "@/data/catalog";
 
 const STATIC_PRODUCTS: Product[] = [
   // --- HONEY (8 Items) ---
@@ -456,6 +457,14 @@ const STATIC_PRODUCTS: Product[] = [
     variants: [{ id: "vl8", size: "E-Book", price_kes: 1400, stock_quantity: 999, is_available: true }]
   }
 ];
+
+const SHOP_PRODUCTS: Product[] = [
+  ...getCatalogByCategory("honey"),
+  ...getCatalogByCategory("hardware"),
+  ...getCatalogByCategory("merch"),
+  ...getCatalogByCategory("education"),
+];
+
 const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [activeCategory, setActiveCategory] = useState<string>("honey");
@@ -463,12 +472,12 @@ const Shop = () => {
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const handleSizeChange = (productId: string, size: string) => {
-    const product = STATIC_PRODUCTS.find(p => p.id === productId);
+    const product = SHOP_PRODUCTS.find(p => p.id === productId);
     if (!product) return;
 
     if (product.category === 'honey') {
       const newSizes = { ...selectedSizes };
-      STATIC_PRODUCTS.forEach(p => {
+      SHOP_PRODUCTS.forEach(p => {
         if (p.category === 'honey') {
           const hasSize = p.variants.some(v => v.size === size);
           if (hasSize) {
@@ -534,7 +543,7 @@ const Shop = () => {
     );
   };
 
-  const visibleProducts = STATIC_PRODUCTS.filter(p => p.category === activeCategory);
+  const visibleProducts = SHOP_PRODUCTS.filter(p => p.category === activeCategory);
 
   return (
     <BeeYieldPageShell className="bg-background">

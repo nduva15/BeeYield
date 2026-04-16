@@ -46,8 +46,12 @@ export function useCreateRequest() {
 
     return useMutation({
         mutationFn: (input: RequestCreateInput) => beeyieldService.createRequest(input),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: requestKeys.list(userId) });
+        onSuccess: (result) => {
+            if (!result.data) return;
+            queryClient.setQueryData<SupportRequest[]>(requestKeys.list(userId), (current = []) => [
+                result.data as SupportRequest,
+                ...current.filter((request) => request.id !== result.data?.id),
+            ]);
         },
     });
 }
@@ -58,9 +62,14 @@ export function useUpdateRequest() {
 
     return useMutation({
         mutationFn: ({ id, data }: { id: string; data: Partial<SupportRequest> }) => beeyieldService.updateRequest(id, data),
-        onSuccess: (_response, variables) => {
-            queryClient.invalidateQueries({ queryKey: requestKeys.list(userId) });
-            queryClient.invalidateQueries({ queryKey: requestKeys.detail(variables.id, userId) });
+        onSuccess: (response, variables) => {
+            if (!response.data) return;
+            queryClient.setQueryData<SupportRequest[]>(requestKeys.list(userId), (current = []) =>
+                current.map((request) =>
+                    request.id === variables.id ? { ...request, ...response.data } : request
+                )
+            );
+            queryClient.setQueryData(requestKeys.detail(variables.id, userId), response.data);
         },
     });
 }
@@ -94,7 +103,7 @@ export function useDeleteRequest() {
             }
         },
         onSettled: (_data, _error, id) => {
-            queryClient.invalidateQueries({ queryKey: requestKeys.list(userId) });
+            queryClient.invalidateQueries({ queryKey: requestKeys.list(userId), refetchType: 'inactive' });
             if (id) {
                 queryClient.removeQueries({ queryKey: requestKeys.detail(id, userId) });
             }
@@ -124,8 +133,8 @@ export function useAddRequestComment() {
         mutationFn: ({ requestId, message }: { requestId: string; message: string }) =>
             beeyieldService.addRequestComment(requestId, message),
         onSuccess: (_response, variables) => {
-            queryClient.invalidateQueries({ queryKey: requestKeys.comments(variables.requestId, userId) });
-            queryClient.invalidateQueries({ queryKey: requestKeys.detail(variables.requestId, userId) });
+            queryClient.invalidateQueries({ queryKey: requestKeys.comments(variables.requestId, userId), refetchType: 'active' });
+            queryClient.invalidateQueries({ queryKey: requestKeys.detail(variables.requestId, userId), refetchType: 'active' });
         },
     });
 }

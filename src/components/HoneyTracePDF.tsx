@@ -1,510 +1,374 @@
-import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
-import BEEYIELD_LOGO from '@/assets/Logo.png';
-import TIMOTHY_PHOTO from '@/assets/timothy-nduva.png';
-import { TraceResponse, TraceJourneyStep } from '@/services/traceabilityService';
+import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import BEEYIELD_LOGO from "@/assets/Logo.png";
+import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
+import { TraceResponse } from "@/services/traceabilityService";
+import {
+  buildConservationFacts,
+  buildDeepTraceabilityStory,
+  buildHarvestFacts,
+  buildSensorFacts,
+  buildWeatherFacts,
+  formatTraceDate,
+  formatTraceText,
+  hasTraceValue,
+} from "@/lib/traceabilityNarrative";
+import { ApiaryWeatherSummary } from "@/services/beeyieldService";
 
-// Font registration disabled for safe mode compatibility
-
-// Create styles
 const styles = StyleSheet.create({
-    page: {
-        flexDirection: 'column',
-        backgroundColor: '#FFFFFF',
-        padding: 40,
-        fontFamily: 'Helvetica',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 30,
-        paddingBottom: 20,
-        borderBottomWidth: 3,
-        borderBottomColor: '#F59E0B',
-    },
-    headerLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    logoImage: {
-        width: 50,
-        height: 50,
-        marginRight: 12,
-    },
-    logoTextContainer: {
-        flexDirection: 'column',
-    },
-    logo: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#F59E0B',
-    },
-    logoSubtext: {
-        fontSize: 10,
-        color: '#6B7280',
-        marginTop: 2,
-    },
-    badge: {
-        backgroundColor: '#10B981',
-        color: '#FFFFFF',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1F2937',
-        marginBottom: 8,
-        textAlign: 'center',
-    },
-    subtitle: {
-        fontSize: 12,
-        color: '#6B7280',
-        textAlign: 'center',
-        marginBottom: 30,
-    },
-    section: {
-        marginBottom: 24,
-        padding: 16,
-        backgroundColor: '#FEF3C7',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#F59E0B',
-    },
-    sectionTitle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#92400E',
-        marginBottom: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#FCD34D',
-        paddingBottom: 6,
-    },
-    row: {
-        flexDirection: 'row',
-        marginBottom: 8,
-    },
-    label: {
-        width: '40%',
-        fontSize: 11,
-        color: '#6B7280',
-        fontWeight: 'bold',
-    },
-    value: {
-        width: '60%',
-        fontSize: 11,
-        color: '#1F2937',
-    },
-    beekeeperSection: {
-        marginBottom: 24,
-        padding: 16,
-        backgroundColor: '#064E3B',
-        borderRadius: 8,
-        color: '#FFFFFF',
-    },
-    beekeeperHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    beekeeperPhoto: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        marginRight: 16,
-        borderWidth: 3,
-        borderColor: '#F59E0B',
-    },
-    beekeeperInfo: {
-        flex: 1,
-    },
-    beekeeperName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        marginBottom: 4,
-    },
-    beekeeperTitle: {
-        fontSize: 10,
-        color: '#FCD34D',
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-    },
-    beekeeperLocation: {
-        fontSize: 10,
-        color: '#D1FAE5',
-        marginTop: 4,
-    },
-    beekeeperStory: {
-        fontSize: 10,
-        color: '#D1FAE5',
-        fontStyle: 'normal',
-        lineHeight: 1.5,
-        marginTop: 10,
-    },
-    sensorGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginBottom: 24,
-        padding: 16,
-        backgroundColor: '#065F46',
-        borderRadius: 8,
-    },
-    sensorItem: {
-        width: '50%',
-        marginBottom: 12,
-    },
-    sensorLabel: {
-        fontSize: 9,
-        color: '#9CA3AF',
-        textTransform: 'uppercase',
-        marginBottom: 2,
-    },
-    sensorValue: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-    },
-    sensorStatus: {
-        fontSize: 8,
-        color: '#10B981',
-        marginTop: 2,
-    },
-    timelineSection: {
-        marginBottom: 24,
-        padding: 16,
-        backgroundColor: '#F9FAFB',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-    },
-    timelineItem: {
-        flexDirection: 'row',
-        marginBottom: 16,
-        paddingLeft: 12,
-        borderLeftWidth: 3,
-        borderLeftColor: '#F59E0B',
-    },
-    timelineContent: {
-        flex: 1,
-    },
-    timelineTitle: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#1F2937',
-        marginBottom: 4,
-    },
-    timelineDate: {
-        fontSize: 9,
-        color: '#6B7280',
-        marginBottom: 2,
-    },
-    timelineDesc: {
-        fontSize: 10,
-        color: '#4B5563',
-        lineHeight: 1.4,
-    },
-    timelineLocation: {
-        fontSize: 9,
-        color: '#9CA3AF',
-        marginTop: 4,
-    },
-    timelineHash: {
-        fontSize: 7,
-        color: '#9CA3AF',
-        fontFamily: 'Helvetica',
-        marginTop: 2,
-    },
-    floraTag: {
-        backgroundColor: '#D1FAE5',
-        color: '#065F46',
-        fontSize: 9,
-        paddingVertical: 3,
-        paddingHorizontal: 8,
-        borderRadius: 10,
-        marginRight: 5,
-    },
-    floraContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginTop: 6,
-    },
-    footer: {
-        position: 'absolute',
-        bottom: 30,
-        left: 40,
-        right: 40,
-        textAlign: 'center',
-        paddingTop: 20,
-        borderTopWidth: 1,
-        borderTopColor: '#E5E7EB',
-    },
-    footerText: {
-        fontSize: 9,
-        color: '#9CA3AF',
-        marginBottom: 4,
-    },
-    footerHighlight: {
-        fontSize: 10,
-        color: '#F59E0B',
-        fontWeight: 'bold',
-        marginBottom: 4,
-    },
-    footerContact: {
-        fontSize: 8,
-        color: '#6B7280',
-        marginBottom: 2,
-    },
-    qrNote: {
-        fontSize: 8,
-        color: '#6B7280',
-        textAlign: 'center',
-        marginTop: 10,
-    },
-    impactSection: {
-        marginBottom: 24,
-        padding: 16,
-        backgroundColor: '#FEF9C3',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#EAB308',
-    },
-    impactGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    impactItem: {
-        width: '50%',
-        marginBottom: 8,
-    },
-    impactLabel: {
-        fontSize: 8,
-        color: '#78350F',
-        textTransform: 'uppercase',
-    },
-    impactValue: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#92400E',
-    },
+  page: {
+    padding: 32,
+    backgroundColor: "#fffdf8",
+    fontFamily: "Helvetica",
+    fontSize: 10,
+    color: "#1f2937",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: "#f59e0b",
+    paddingBottom: 14,
+    marginBottom: 18,
+  },
+  brand: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  logo: {
+    width: 42,
+    height: 42,
+  },
+  brandTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#b45309",
+  },
+  brandSub: {
+    fontSize: 9,
+    color: "#6b7280",
+  },
+  badge: {
+    backgroundColor: "#065f46",
+    color: "#ecfdf5",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    fontSize: 9,
+    fontWeight: "bold",
+  },
+  heroTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  heroSub: {
+    color: "#6b7280",
+    marginBottom: 16,
+  },
+  grid: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 14,
+  },
+  col: {
+    flex: 1,
+  },
+  section: {
+    backgroundColor: "#fff7ed",
+    borderWidth: 1,
+    borderColor: "#fed7aa",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+  },
+  darkSection: {
+    backgroundColor: "#052e2b",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: "#92400e",
+  },
+  darkTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: "#fef3c7",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+    paddingVertical: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ffedd5",
+  },
+  darkRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+    paddingVertical: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: "#134e4a",
+  },
+  label: {
+    width: "42%",
+    color: "#78716c",
+    fontSize: 9,
+    fontWeight: "bold",
+  },
+  value: {
+    width: "58%",
+    textAlign: "right",
+    fontSize: 9,
+  },
+  darkLabel: {
+    width: "42%",
+    color: "#99f6e4",
+    fontSize: 9,
+    fontWeight: "bold",
+  },
+  darkValue: {
+    width: "58%",
+    textAlign: "right",
+    fontSize: 9,
+    color: "#f9fafb",
+  },
+  beekeeperWrap: {
+    flexDirection: "row",
+    gap: 12,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  beekeeperPhoto: {
+    width: 64,
+    height: 64,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#f59e0b",
+  },
+  beekeeperName: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
+  beekeeperMeta: {
+    fontSize: 9,
+    color: "#ccfbf1",
+    marginTop: 2,
+  },
+  paragraph: {
+    fontSize: 9,
+    lineHeight: 1.5,
+    marginBottom: 6,
+  },
+  darkParagraph: {
+    fontSize: 9,
+    lineHeight: 1.5,
+    marginBottom: 6,
+    color: "#ecfeff",
+  },
+  timelineItem: {
+    marginBottom: 8,
+    paddingLeft: 10,
+    borderLeftWidth: 3,
+    borderLeftColor: "#f59e0b",
+  },
+  timelineTitle: {
+    fontSize: 10,
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  timelineMeta: {
+    fontSize: 8,
+    color: "#6b7280",
+    marginBottom: 2,
+  },
+  footer: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+  },
+  footerText: {
+    fontSize: 8,
+    color: "#6b7280",
+    textAlign: "center",
+    marginBottom: 2,
+  },
 });
 
 interface HoneyTracePDFProps {
-    traceData: TraceResponse;
+  traceData: TraceResponse;
+  weatherSummary?: ApiaryWeatherSummary | null;
 }
 
-const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
-    if (!traceData) return null;
+const renderRows = (
+  rows: Array<{ label: string; value: string }>,
+  dark = false,
+) =>
+  rows.map((item) => (
+    <View key={item.label} style={dark ? styles.darkRow : styles.row}>
+      <Text style={dark ? styles.darkLabel : styles.label}>{item.label}</Text>
+      <Text style={dark ? styles.darkValue : styles.value}>{item.value}</Text>
+    </View>
+  ));
 
-    const generatedDate = new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
+const HoneyTracePDF = ({ traceData, weatherSummary }: HoneyTracePDFProps) => {
+  const generatedDate = formatTraceDate(new Date().toISOString());
+  const storyParagraphs = buildDeepTraceabilityStory(traceData);
+  const harvestFacts = buildHarvestFacts(traceData);
+  const conservationFacts = buildConservationFacts(traceData);
+  const sensorFacts = buildSensorFacts(traceData);
+  const weatherFacts = buildWeatherFacts(traceData, weatherSummary);
+  const beekeeperPhoto = traceData.farmer?.photo_url || TIMOTHY_PHOTO;
 
-    return (
-        <Document>
-            <Page size="A4" style={styles.page}>
-                {/* Header with BeeYield Logo */}
-                <View style={styles.header}>
-                    <View style={styles.headerLeft}>
-                        <Image src={BEEYIELD_LOGO} style={styles.logoImage} />
-                        <View style={styles.logoTextContainer}>
-                            <Text style={styles.logo}>BeeYield</Text>
-                            <Text style={styles.logoSubtext}>Origin & Authenticity Certificate</Text>
-                        </View>
-                    </View>
-                    <Text style={styles.badge}>VERIFIED</Text>
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <View style={styles.brand}>
+            <Image src={BEEYIELD_LOGO} style={styles.logo} />
+            <View>
+              <Text style={styles.brandTitle}>BeeYield</Text>
+              <Text style={styles.brandSub}>Traceability and Conservation Certificate</Text>
+            </View>
+          </View>
+          <Text style={styles.badge}>{formatTraceText(traceData.verification_status, "Verified")}</Text>
+        </View>
+
+        <Text style={styles.heroTitle}>Honey Traceability Scan Document</Text>
+        <Text style={styles.heroSub}>
+          Batch {formatTraceText(traceData.batch_code)} | Generated {generatedDate}
+        </Text>
+
+        <View style={styles.grid}>
+          <View style={styles.col}>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Specific Harvest Record</Text>
+              {renderRows(harvestFacts)}
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Sensor Readings</Text>
+              {renderRows(sensorFacts)}
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Weather Record</Text>
+              {renderRows(weatherFacts)}
+            </View>
+          </View>
+
+          <View style={styles.col}>
+            <View style={styles.darkSection}>
+              <Text style={styles.darkTitle}>Farmer and Apiary Steward</Text>
+              <View style={styles.beekeeperWrap}>
+                <Image src={beekeeperPhoto} style={styles.beekeeperPhoto} />
+                <View>
+                  <Text style={styles.beekeeperName}>{formatTraceText(traceData.farmer?.name, "Timothy Nduva")}</Text>
+                  <Text style={styles.beekeeperMeta}>
+                    Apiary: {formatTraceText(traceData.apiary?.name)}
+                  </Text>
+                  <Text style={styles.beekeeperMeta}>
+                    Hive: {formatTraceText(traceData.hive?.hive_code)}
+                  </Text>
+                  <Text style={styles.beekeeperMeta}>
+                    Location: {formatTraceText(traceData.apiary?.location_name || traceData.farmer?.location_name)}
+                  </Text>
                 </View>
+              </View>
+              <Text style={styles.darkParagraph}>
+                {formatTraceText(traceData.farmer?.story || traceData.story_content)}
+              </Text>
+            </View>
 
-                {/* Title */}
-                <Text style={styles.title}>Honey Traceability Certificate</Text>
-                <Text style={styles.subtitle}>
-                    Batch Code: {traceData.batch_code} | Generated: {generatedDate}
-                </Text>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>50/50 Journey and ESG</Text>
+              {renderRows(conservationFacts)}
+            </View>
+          </View>
+        </View>
 
-                {/* Origin Details */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Origin Details</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Honey Journey Timeline</Text>
+          {traceData.timeline.map((step) => (
+            <View key={`${step.title}-${step.date}`} style={styles.timelineItem}>
+              <Text style={styles.timelineTitle}>{step.title}</Text>
+              <Text style={styles.timelineMeta}>
+                {formatTraceText(step.location)} | {formatTraceText(step.date)}
+              </Text>
+              <Text style={styles.paragraph}>{formatTraceText(step.description)}</Text>
+            </View>
+          ))}
+        </View>
 
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Batch Identifier:</Text>
-                        <Text style={styles.value}>{traceData.batch_code}</Text>
-                    </View>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>BeeYield | Kibwezi, Makueni County, Kenya</Text>
+          <Text style={styles.footerText}>This certificate shows actual batch-linked fields and live weather only when available from backend or provider sources.</Text>
+        </View>
+      </Page>
 
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Product Name:</Text>
-                        <Text style={styles.value}>{traceData.product_name}</Text>
-                    </View>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <View style={styles.brand}>
+            <Image src={BEEYIELD_LOGO} style={styles.logo} />
+            <View>
+              <Text style={styles.brandTitle}>BeeYield Story</Text>
+              <Text style={styles.brandSub}>Conservation, restoration, and transparent harvesting</Text>
+            </View>
+          </View>
+          <Text style={styles.badge}>ESG</Text>
+        </View>
 
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Apiary Name:</Text>
-                        <Text style={styles.value}>{traceData.apiary?.name || 'Unknown Apiary'}</Text>
-                    </View>
+        <View style={styles.darkSection}>
+          <Text style={styles.darkTitle}>Our Story in Depth</Text>
+          {storyParagraphs.map((paragraph) => (
+            <Text key={paragraph} style={styles.darkParagraph}>
+              {paragraph}
+            </Text>
+          ))}
+        </View>
 
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Location:</Text>
-                        <Text style={styles.value}>
-                            {traceData.apiary?.location_name || traceData.apiary?.county || 'Unknown'}, {traceData.apiary?.county ? 'Kenya' : ''}
-                        </Text>
-                    </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Specific Traceability Notes</Text>
+          <Text style={styles.paragraph}>
+            Farmer: {formatTraceText(traceData.farmer?.name)}. Apiary: {formatTraceText(traceData.apiary?.name)}. Hive: {formatTraceText(traceData.hive?.hive_code)}. Harvest date: {formatTraceDate(traceData.harvest_date)}.
+          </Text>
+          <Text style={styles.paragraph}>
+            Florage: {formatTraceText(traceData.apiary?.flora_types?.join(", ") || traceData.florage_type)}. Verification status: {formatTraceText(traceData.verification_status)}. Completeness: {formatTraceText(traceData.completeness?.status)}.
+          </Text>
+          <Text style={styles.paragraph}>
+            Sensor source time: {formatTraceDate(traceData.sensor_snapshot?.sync_time)}. Weather observation time: {formatTraceDate(weatherSummary?.current?.last_observed_at)}.
+          </Text>
+        </View>
 
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Harvest Date:</Text>
-                        <Text style={styles.value}>
-                            {traceData.timeline?.find((t: TraceJourneyStep) => t.title === 'Harvest Day')?.date || 'Unknown'}
-                        </Text>
-                    </View>
+        {hasTraceValue(weatherSummary?.daily_summary) && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Apiary Weather Summary</Text>
+            {renderRows([
+              { label: "Condition", value: formatTraceText(weatherSummary?.daily_summary?.condition) },
+              { label: "High", value: formatTraceText((weatherSummary?.daily_summary as Record<string, unknown> | undefined)?.temp_max_c) },
+              { label: "Low", value: formatTraceText((weatherSummary?.daily_summary as Record<string, unknown> | undefined)?.temp_min_c) },
+              { label: "Sunrise", value: formatTraceDate((weatherSummary?.daily_summary as Record<string, unknown> | undefined)?.sunrise_at) },
+              { label: "Sunset", value: formatTraceDate((weatherSummary?.daily_summary as Record<string, unknown> | undefined)?.sunset_at) },
+            ])}
+          </View>
+        )}
 
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Flora Sources:</Text>
-                        <View style={styles.floraContainer}>
-                            {traceData.florage_type && (
-                                <Text style={[styles.floraTag, { backgroundColor: '#FDE68A' }]}>{traceData.florage_type} (Primary)</Text>
-                            )}
-                            {traceData.apiary?.flora_types && traceData.apiary.flora_types.length > 0 ? (
-                                traceData.apiary.flora_types.filter(f => f !== traceData.florage_type).map((flora: string, idx: number) => (
-                                    <Text key={idx} style={styles.floraTag}>{flora}</Text>
-                                ))
-                            ) : (
-                                !traceData.florage_type && <Text style={styles.value}>Acacia, Wildflower</Text>
-                            )}
-                        </View>
-                    </View>
-                </View>
-
-                {/* Beekeeper Section with Photo */}
-                <View style={styles.beekeeperSection}>
-                    <Text style={[styles.sectionTitle, { color: '#FCD34D' }]}>Master Beekeeper</Text>
-                    <View style={styles.beekeeperHeader}>
-                        {(traceData.farmer?.photo_url || TIMOTHY_PHOTO) && (
-                            <Image src={traceData.farmer?.photo_url || TIMOTHY_PHOTO} style={styles.beekeeperPhoto} />
-                        )}
-                        <View style={styles.beekeeperInfo}>
-                            <Text style={styles.beekeeperName}>{traceData.farmer?.name || 'Beekeeper'}</Text>
-                            <Text style={styles.beekeeperTitle}>{(traceData.farmer as any)?.certification || 'Certified Beekeeper'}</Text>
-                            <Text style={styles.beekeeperLocation}>Location: {traceData.farmer?.location_name || traceData.apiary?.location_name || 'Kenya'}</Text>
-                            <Text style={styles.beekeeperLocation}>{traceData.farmer?.experience_years || ''}+ Years Experience</Text>
-                        </View>
-                    </View>
-                    <Text style={styles.beekeeperStory}>
-                        "{traceData.farmer?.story || 'Dedicated to sustainable beekeeping and protecting local ecosystems.'}"
-                    </Text>
-                </View>
-
-                {/* Impact Stats - 50/50 Promise & Sustainability */}
-                {traceData.impact_stats && (
-                    <View style={styles.impactSection}>
-                        <Text style={styles.sectionTitle}>Environmental Impact & Ethics</Text>
-                        <View style={styles.impactGrid}>
-                            <View style={styles.impactItem}>
-                                <Text style={styles.impactLabel}>Trees Planted</Text>
-                                <Text style={styles.impactValue}>
-                                    {(traceData.impact_stats as any).trees_planted || '2,500+'}
-                                </Text>
-                            </View>
-                            <View style={styles.impactItem}>
-                                <Text style={styles.impactLabel}>Bees Protected (50/50 Promise)</Text>
-                                <Text style={styles.impactValue}>
-                                    {(traceData.impact_stats as any).bees_protected || 'Yes - 50% Left'}
-                                </Text>
-                            </View>
-                            <View style={styles.impactItem}>
-                                <Text style={styles.impactLabel}>Sanctuary Size</Text>
-                                <Text style={styles.impactValue}>
-                                    {(traceData.impact_stats as any).acres_pollinated || '5 Acres'}
-                                </Text>
-                            </View>
-                            <View style={styles.impactItem}>
-                                <Text style={styles.impactLabel}>Fair Trade Status</Text>
-                                <Text style={styles.impactValue}>
-                                    {(traceData.impact_stats as any).farmer_fair_pay || '100% Certified'}
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                )}
-
-                {/* Sensor Data */}
-                {traceData.sensor_snapshot && (
-                    <View style={styles.sensorGrid}>
-                        <Text style={[styles.sectionTitle, { color: '#FFFFFF', width: '100%' }]}>
-                            Hive Conditions (at Harvest)
-                        </Text>
-
-                        <View style={styles.sensorItem}>
-                            <Text style={styles.sensorLabel}>Temperature</Text>
-                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.avg_temp} C</Text>
-                            <Text style={styles.sensorStatus}>OPTIMAL</Text>
-                        </View>
-
-                        <View style={styles.sensorItem}>
-                            <Text style={styles.sensorLabel}>Humidity</Text>
-                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.avg_humidity}%</Text>
-                            <Text style={styles.sensorStatus}>STABLE</Text>
-                        </View>
-
-                        <View style={styles.sensorItem}>
-                            <Text style={styles.sensorLabel}>Acoustic Health</Text>
-                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.colony_acoustics || traceData.sensor_snapshot.acoustic_health} Hz</Text>
-                            <Text style={styles.sensorStatus}>{traceData.sensor_snapshot.acoustics_status || "Normal Activity"}</Text>
-                        </View>
-
-                        <View style={styles.sensorItem}>
-                            <Text style={styles.sensorLabel}>Hive Weight</Text>
-                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.weight_kg}kg</Text>
-                            <Text style={styles.sensorStatus}>Harvest Ready</Text>
-                        </View>
-                    </View>
-                )}
-
-                {/* Journey Timeline */}
-                {traceData.timeline && traceData.timeline.length > 0 && (
-                    <View style={styles.timelineSection}>
-                        <Text style={styles.sectionTitle}>The Honey Journey</Text>
-
-                        {traceData.timeline.map((step: TraceJourneyStep, idx: number) => (
-                            <View key={idx} style={styles.timelineItem}>
-                                <View style={styles.timelineContent}>
-                                    <Text style={styles.timelineTitle}>{step.title}</Text>
-                                    <Text style={styles.timelineDate}>{step.date}</Text>
-                                    <Text style={styles.timelineDesc}>{step.description}</Text>
-                                    <Text style={styles.timelineLocation}>Location: {step.location}</Text>
-                                    {step.hash && (
-                                        <Text style={styles.timelineHash}>Hash: {step.hash.substring(0, 24)}...</Text>
-                                    )}
-                                </View>
-                            </View>
-                        ))}
-                    </View>
-                )}
-
-                {/* Footer with BeeYield Contact Info */}
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>
-                        This certificate verifies the authenticity and origin of your honey.
-                    </Text>
-                    <Text style={styles.footerHighlight}>
-                        BeeYield - Champions for Saving Bees | 50% Ethical Harvest Promise
-                    </Text>
-                    <Text style={styles.footerContact}>
-                        Email: info@beeyield.com | Phone: +1 (800) 123-4567 | Web: www.beeyield.com
-                    </Text>
-                    <Text style={styles.footerContact}>
-                        Kibwezi, Makueni County, Kenya
-                    </Text>
-                    <Text style={styles.qrNote}>
-                        Scan the QR code on your jar or visit beeyield.com/trace to verify anytime
-                    </Text>
-                </View>
-            </Page>
-        </Document>
-    );
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>BeeYield commitment: trace every jar, protect every colony, and document conservation work with accountable records.</Text>
+          <Text style={styles.footerText}>www.beeyield.com/trace</Text>
+        </View>
+      </Page>
+    </Document>
+  );
 };
 
 export default HoneyTracePDF;

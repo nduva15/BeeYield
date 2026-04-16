@@ -4,6 +4,7 @@ from typing import Any, Optional
 
 from app.core.config import settings
 from app.db.supabase_db import db_select, db_upsert
+from app.services.weather_summary_service import fetch_provider_weather
 
 
 DEFAULT_PUBLIC_TRACEABILITY_OWNER = "Timothy Nduva"
@@ -343,6 +344,38 @@ async def build_batch_view(
     if verification_status == "unverified" and record_verified:
         verification_status = "verified"
 
+    weather_payload = None
+    if include_live_snapshots:
+        provider_weather = None
+        if latitude is not None and longitude is not None:
+            try:
+                provider_weather = await fetch_provider_weather(float(latitude), float(longitude))
+            except Exception:
+                provider_weather = None
+
+        harvest_conditions = harvest.get("weather_conditions")
+        if provider_weather or _has_value(harvest_conditions):
+            weather_payload = {
+                "available": bool(provider_weather or _has_value(harvest_conditions)),
+                "harvest_conditions": harvest_conditions,
+                "current": (provider_weather or {}).get("current") or {},
+                "daily_summary": (provider_weather or {}).get("daily_summary") or {},
+                "hourly_forecast": (provider_weather or {}).get("hourly_forecast") or [],
+                "source": (provider_weather or {}).get("provider"),
+            }
+
+    extra_metadata = {
+        **(harvest.get("extra_metadata") or {}),
+    }
+    if _has_value(harvest.get("weather_conditions")):
+        extra_metadata.setdefault("weather_conditions", harvest.get("weather_conditions"))
+    if _has_value(harvest.get("nectar_source")):
+        extra_metadata.setdefault("nectar_source", harvest.get("nectar_source"))
+    if _has_value(harvest.get("quantity_left_for_bees_kg")):
+        extra_metadata.setdefault("quantity_left_for_bees_kg", harvest.get("quantity_left_for_bees_kg"))
+    if _has_value(harvest.get("harvester_name")):
+        extra_metadata.setdefault("harvester_name", harvest.get("harvester_name"))
+
     return {
         "id": batch.get("id") or harvest.get("id") or batch_code,
         "batch_code": batch_code,
@@ -376,14 +409,17 @@ async def build_batch_view(
         "apiary": apiary or None,
         "farmer": farmer or None,
         "sensor_snapshot": sensor_snapshot,
+        "weather": weather_payload,
         "health_snapshot": health_snapshot,
         "florage_type": harvest.get("florage_type"),
-        "extra_metadata": harvest.get("extra_metadata") or {},
+        "extra_metadata": extra_metadata,
         "quantity_left_for_bees_kg": quantity_left,
         "sustainability": {
             "rule": "50_percent_left_for_bees",
             "ratio": sustainability_ratio,
             "status": sustainability_status,
+            "left_for_bees_kg": quantity_left,
+            "harvested_kg": quantity_kg,
         },
     }
 

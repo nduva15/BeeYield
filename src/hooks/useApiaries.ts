@@ -40,7 +40,6 @@ export function useApiaries() {
         },
         enabled: !!userId,
         staleTime: 1000 * 30, // Consider data fresh for 30 seconds
-        refetchInterval: 1000 * 30, // Background refetch every 30 seconds per PRD
         refetchOnWindowFocus: true,
         retry: 2,
     });
@@ -134,9 +133,14 @@ export function useCreateApiary() {
                 queryClient.setQueryData(apiaryKeys.lists(), context.previousApiaries);
             }
         },
+        onSuccess: (created) => {
+            queryClient.setQueriesData<Apiary[]>(
+                { queryKey: apiaryKeys.lists() },
+                (current = []) => [created, ...current.filter((apiary) => apiary.id !== created.id)]
+            );
+        },
         onSettled: () => {
-            // Always refetch after mutation
-            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
+            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists(), refetchType: 'inactive' });
         },
     });
 }
@@ -174,8 +178,17 @@ export function useUpdateApiary() {
                 queryClient.setQueryData(apiaryKeys.lists(), context.previousApiaries);
             }
         },
+        onSuccess: (updated, variables) => {
+            queryClient.setQueriesData<Apiary[]>(
+                { queryKey: apiaryKeys.lists() },
+                (current = []) =>
+                    current.map((apiary) =>
+                        apiary.id === variables.id ? { ...apiary, ...updated } : apiary
+                    )
+            );
+        },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
+            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists(), refetchType: 'inactive' });
         },
     });
 }
@@ -212,7 +225,7 @@ export function useDeleteApiary() {
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
+            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists(), refetchType: 'inactive' });
         },
     });
 }

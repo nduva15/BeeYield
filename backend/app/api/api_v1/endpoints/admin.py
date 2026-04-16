@@ -4,11 +4,47 @@ from typing import Any, Optional
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_upsert, get_supabase
 from app.services.account_relink_service import relink_beeyield_account
 from app.services import traceability_service
-from app.services.traceability_batch_service import get_all_batch_views
+from app.services.traceability_batch_service import get_all_batch_views, sync_public_batch_from_harvest
 from app.core import security
 from pydantic import BaseModel
 
 router = APIRouter()
+
+
+def _normalize_admin_harvest_row(row: dict[str, Any]) -> dict[str, Any]:
+    if row.get("date") and not row.get("harvest_date"):
+        row["harvest_date"] = row["date"]
+    if row.get("weight_kg") is not None and row.get("quantity_kg") is None:
+        row["quantity_kg"] = row["weight_kg"]
+    if row.get("floral_source") and not row.get("nectar_source"):
+        row["nectar_source"] = row["floral_source"]
+    if row.get("moisture_content") is not None and row.get("moisture_content_percent") is None:
+        row["moisture_content_percent"] = row["moisture_content"]
+    if row.get("hive"):
+        row["hive_code"] = row["hive"].get("hive_code")
+        if row["hive"].get("apiary") and not row.get("apiary"):
+            row["apiary"] = row["hive"]["apiary"]
+    return row
+
+
+async def _get_admin_harvest_by_id(harvest_id: str, token: Optional[str]) -> Optional[dict[str, Any]]:
+    rows = await db_select(
+        "harvests",
+        filters={"id": harvest_id},
+        columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)",
+        limit=1,
+        token=token,
+    )
+    if not rows:
+        return None
+    return _normalize_admin_harvest_row(rows[0])
+
+
+async def _resolve_admin_hive_context(hive_id: str, token: Optional[str]) -> dict[str, Any]:
+    hives = await db_select("hives", filters={"id": hive_id}, limit=1, token=token)
+    if not hives:
+        raise HTTPException(status_code=404, detail="Hive not found")
+    return hives[0]
 
 # --- Security Helpers ---
 
@@ -522,9 +558,11 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
         orders = await db_select("orders", token=token)
         products = await db_select("products", token=token)
         users = await db_select("profiles", token=token)
-        batches = await db_select("honey_batches", token=token)
+        farmers = await db_select("farmers", token=token)
+        harvests = await db_select("harvests", token=token)
         apiaries = await db_select("apiaries", token=token)
         hives = await db_select("hives", token=token)
+        batches = await get_all_batch_views(token=token, limit=5000)
         
         # Fetch pollination contracts with farmer name
         supabase = get_supabase()
@@ -540,11 +578,6 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
                 item["farmer_name"] = item["farmer"].get("name")
             del item["farmer"] # Remove the nested farmer object
 
-        # Blockchain counts if DB empty
-        if not batches or len(batches) == 0:
-            from app.blockchain.honey_chain import honey_blockchain
-            batches = [b["data"] for b in honey_blockchain.search_by_type(honey_blockchain.BlockType.BATCH_CREATION)]
-            
         if not apiaries or len(apiaries) == 0:
             from app.blockchain.honey_chain import honey_blockchain
             apiaries = [b["data"] for b in honey_blockchain.search_by_type(honey_blockchain.BlockType.APIARY_REGISTRATION)]
@@ -554,7 +587,14 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
             hives = [b["data"] for b in honey_blockchain.search_by_type(honey_blockchain.BlockType.HIVE_REGISTRATION)]
 
         total_revenue = sum(float(o.get("total_amount", 0)) for o in orders if o.get("status") != "cancelled")
-        total_honey_kg = sum(float(b.get("quantity_kg", 0) or b.get("total_quantity_kg", 0)) for b in batches)
+        total_honey_kg = sum(
+            float(
+                b.get("quantity_kg", 0)
+                or b.get("total_quantity_kg", 0)
+                or b.get("weight_kg", 0)
+            )
+            for b in (batches if batches else harvests)
+        )
         total_acres = sum(float(p.get("farm_size_acres", 0)) for p in pollination)
         
         return {
@@ -564,6 +604,8 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
             "total_batches": len(batches),
             "total_apiaries": len(apiaries),
             "total_hives": len(hives),
+            "total_farmers": len(farmers),
+            "total_harvests": len(harvests),
             "total_pollination": len(pollination),
             "total_revenue_kes": total_revenue,
             "total_honey_kg": total_honey_kg,
@@ -795,7 +837,7 @@ async def delete_farmer_admin(
 async def get_all_apiaries(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     data = []
     try:
-        data = await db_select("apiaries", order_by="created_at", ascending=False, token=token)
+        data = await db_select("apiaries", columns="*,farmers:farmers(*)", order_by="created_at", ascending=False, token=token)
     except Exception:
         pass
     
@@ -829,7 +871,7 @@ async def create_apiary_admin(
 async def get_all_hives(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     data = []
     try:
-        data = await db_select("hives", order_by="created_at", ascending=False, token=token)
+        data = await db_select("hives", columns="*,apiaries:apiaries(*),farmer:farmers(*)", order_by="created_at", ascending=False, token=token)
     except Exception:
         pass
     
@@ -846,6 +888,144 @@ async def create_hive_admin(
     token: Optional[str] = Depends(get_token)
 ):
     return await traceability_service.register_hive(hive_in, token=token)
+
+
+# --- Harvests ---
+
+@router.get("/harvests", response_model=list[dict[str, Any]])
+async def get_all_harvests(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
+    try:
+        rows = await db_select(
+            "harvests",
+            columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)",
+            order_by="date",
+            ascending=False,
+            limit=5000,
+            token=token,
+        )
+        return [_normalize_admin_harvest_row(row) for row in rows]
+    except Exception as exc:
+        print(f"Harvest Fetch Error: {exc}")
+        return []
+
+
+@router.post("/harvests", response_model=dict[str, Any])
+async def create_harvest_admin(
+    harvest_in: dict[str, Any],
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token),
+):
+    data = dict(harvest_in)
+    hive_id = data.get("hive_id")
+    if not hive_id:
+        raise HTTPException(status_code=400, detail="hive_id is required")
+
+    hive = await _resolve_admin_hive_context(str(hive_id), token)
+    data["apiary_id"] = data.get("apiary_id") or hive.get("apiary_id")
+
+    if not data.get("apiary_id"):
+        raise HTTPException(status_code=400, detail="apiary_id could not be resolved from hive")
+
+    if "harvest_date" in data:
+        data["date"] = data.pop("harvest_date")
+    if "quantity_kg" in data:
+        data["weight_kg"] = data.pop("quantity_kg")
+    if "nectar_source" in data:
+        data["floral_source"] = data.pop("nectar_source")
+    if "moisture_content_percent" in data and "moisture_content" not in data:
+        data["moisture_content"] = data.pop("moisture_content_percent")
+
+    if not data.get("user_id"):
+        if data.get("farmer_id"):
+            farmers = await db_select("farmers", filters={"id": data["farmer_id"]}, limit=1, token=token)
+            if farmers and farmers[0].get("user_id"):
+                data["user_id"] = farmers[0]["user_id"]
+        if not data.get("user_id"):
+            apiaries = await db_select("apiaries", filters={"id": data["apiary_id"]}, limit=1, token=token)
+            if apiaries and apiaries[0].get("user_id"):
+                data["user_id"] = apiaries[0]["user_id"]
+
+    if "harvest_code" not in data or not data.get("harvest_code"):
+        import uuid
+        data["harvest_code"] = f"HRV-{str(uuid.uuid4()).split('-')[0].upper()}"
+
+    if not data.get("batch_code"):
+        hive_code = hive.get("hive_code", "HIVE")
+        flora_raw = data.get("florage_type") or data.get("honey_type") or data.get("floral_source") or "MFL"
+        flora_tag = str(flora_raw).replace(" ", "")[:3].upper()
+        try:
+            date_tag = datetime.fromisoformat(str(data.get("date") or datetime.utcnow().date().isoformat())).strftime("%y%m%d")
+        except Exception:
+            date_tag = datetime.utcnow().strftime("%y%m%d")
+        data["batch_code"] = f"BTCH-{hive_code}-{flora_tag}-{date_tag}"
+
+    result = await db_insert("harvests", data, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to create harvest"))
+
+    harvest_id = (result.get("data") or [{}])[0].get("id")
+    if harvest_id:
+        enriched = await _get_admin_harvest_by_id(harvest_id, token)
+        if enriched:
+            try:
+                enriched["public_batch"] = await sync_public_batch_from_harvest(enriched, token=token)
+            except Exception:
+                pass
+            return enriched
+
+    return (result.get("data") or [data])[0]
+
+
+@router.put("/harvests/{harvest_id}", response_model=dict[str, Any])
+async def update_harvest_admin(
+    harvest_id: str,
+    harvest_in: dict[str, Any],
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token),
+):
+    existing = await db_select("harvests", filters={"id": harvest_id}, limit=1, token=token)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Harvest not found")
+
+    data = dict(harvest_in)
+    hive_id = data.get("hive_id") or existing[0].get("hive_id")
+    if hive_id and not data.get("apiary_id"):
+        hive = await _resolve_admin_hive_context(str(hive_id), token)
+        data["apiary_id"] = hive.get("apiary_id")
+
+    if "harvest_date" in data:
+        data["date"] = data.pop("harvest_date")
+    if "quantity_kg" in data:
+        data["weight_kg"] = data.pop("quantity_kg")
+    if "nectar_source" in data:
+        data["floral_source"] = data.pop("nectar_source")
+    if "moisture_content_percent" in data and "moisture_content" not in data:
+        data["moisture_content"] = data.pop("moisture_content_percent")
+
+    result = await db_update("harvests", data, {"id": harvest_id}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to update harvest"))
+
+    enriched = await _get_admin_harvest_by_id(harvest_id, token)
+    if enriched:
+        try:
+            enriched["public_batch"] = await sync_public_batch_from_harvest(enriched, token=token)
+        except Exception:
+            pass
+        return enriched
+    return (result.get("data") or [data])[0]
+
+
+@router.delete("/harvests/{harvest_id}")
+async def delete_harvest_admin(
+    harvest_id: str,
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token),
+):
+    result = await db_delete("harvests", {"id": harvest_id}, token=token)
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error", "Failed to delete harvest"))
+    return {"status": "success"}
 
 # --- Database Cleanup (Danger Zone) ---
 

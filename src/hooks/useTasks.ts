@@ -22,7 +22,13 @@ export function useCreateTask() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (task: any) => beeyieldService.createTask(task),
+        mutationFn: async (task: any) => {
+            const response = await beeyieldService.createTask(task);
+            if (response.error || !response.data) {
+                throw response.error || new Error('Failed to create task');
+            }
+            return response;
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
             toast.success('Task created');
@@ -38,7 +44,13 @@ export function useUpdateTask() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id, updates }: { id: string; updates: any }) => beeyieldService.updateTask(id, updates),
+        mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
+            const response = await beeyieldService.updateTask(id, updates);
+            if (response.error || !response.data) {
+                throw response.error || new Error('Failed to update task');
+            }
+            return response;
+        },
         onSuccess: (response) => {
             if (response.data) {
                 queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
@@ -53,7 +65,13 @@ export function useDeleteTask() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (id: string) => beeyieldService.deleteTask(id),
+        mutationFn: async (id: string) => {
+            const response = await beeyieldService.deleteTask(id);
+            if (response.error) {
+                throw response.error;
+            }
+            return id;
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
             toast.success('Task removed');

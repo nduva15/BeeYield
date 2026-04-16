@@ -143,6 +143,14 @@ export interface TraceResponse {
 
     // Sensor Snapshot
     sensor_snapshot?: SensorSnapshot;
+    weather?: Record<string, any>;
+    sustainability?: {
+        rule?: string;
+        ratio?: number;
+        status?: string;
+        left_for_bees_kg?: number | string;
+        harvested_kg?: number | string;
+    };
 
     // Health Snapshot
     health_snapshot?: Record<string, any>;

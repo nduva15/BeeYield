@@ -922,47 +922,72 @@ async def get_user_harvests(
     year: Optional[int] = Query(None, description="Filter by year")
 ):
     """Get all harvests (owned + shared) for the current user"""
-    # 1. Owned harvests
-    relevant_ids = await get_user_and_farmer_ids(user_id, token)
-    filters: dict[str, Any] = {"user_id": relevant_ids}
-    if apiary_id:
-        filters["apiary_id"] = apiary_id
-    if hive_id:
-        filters["hive_id"] = hive_id
-    
     columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
-    owned = await db_select("harvests", filters=filters, columns=columns, order_by="date", ascending=False, limit=2000, token=token)
-    
-    if not owned and len(relevant_ids) > 1:
-        try:
-            h_filters = {"farmer_id": relevant_ids[1]}
-            if apiary_id:
-                h_filters["apiary_id"] = apiary_id
-            if hive_id:
-                h_filters["hive_id"] = hive_id
-            owned = await db_select("harvests", filters=h_filters, columns=columns, order_by="date", ascending=False, limit=2000, token=token)
-        except Exception:
-            pass
-    
-    
-    # 2. Shared harvests
-    shared = []
-    # If filtering by apiary_id, simply check if shared
+    all_harvests: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+
+    # Prefer apiary-scoped harvests so records remain visible even when user/farmer IDs were relinked.
+    scope_apiaries: list[str] = []
+    try:
+        from app.services.traceability_batch_service import _get_user_scope
+
+        scope = await _get_user_scope(user_id, token)
+        scope_apiaries = [str(row["id"]) for row in scope.get("apiaries", []) if row.get("id")]
+    except Exception:
+        scope_apiaries = []
+
     if apiary_id:
-        shares = await db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id}, token=token)
-        if shares:
-            h_filters = {"apiary_id": apiary_id}
-            if hive_id:
-                h_filters["hive_id"] = hive_id
-            shared = await db_select("harvests", filters=h_filters, columns=columns, limit=1000, token=token)
-    elif not hive_id:
-        # Fetch all shared apiaries, then harvests
-        shares = await db_select("apiary_shares", filters={"shared_with_user_id": user_id}, token=token)
-        for share in shares:
-            shared.extend(await db_select("harvests", filters={"apiary_id": share["apiary_id"]}, columns=columns, limit=1000, token=token))
-    
-    
-    all_harvests = owned + shared
+        scope_apiaries = [aid for aid in scope_apiaries if aid == apiary_id] or ([apiary_id] if apiary_id else [])
+
+    if scope_apiaries:
+        scoped_filters: dict[str, Any] = {"apiary_id": scope_apiaries}
+        if hive_id:
+            scoped_filters["hive_id"] = hive_id
+        all_harvests.extend(
+            await db_select(
+                "harvests",
+                filters=scoped_filters,
+                columns=columns,
+                order_by="date",
+                ascending=False,
+                limit=3000,
+                token=token,
+            )
+        )
+    else:
+        # Fallback to legacy direct ownership lookups.
+        relevant_ids = await get_user_and_farmer_ids(user_id, token)
+        filters: dict[str, Any] = {"user_id": relevant_ids}
+        if apiary_id:
+            filters["apiary_id"] = apiary_id
+        if hive_id:
+            filters["hive_id"] = hive_id
+
+        owned = await db_select("harvests", filters=filters, columns=columns, order_by="date", ascending=False, limit=2000, token=token)
+        all_harvests.extend(owned)
+
+        if not owned and len(relevant_ids) > 1:
+            try:
+                h_filters = {"farmer_id": relevant_ids[1]}
+                if apiary_id:
+                    h_filters["apiary_id"] = apiary_id
+                if hive_id:
+                    h_filters["hive_id"] = hive_id
+                all_harvests.extend(
+                    await db_select("harvests", filters=h_filters, columns=columns, order_by="date", ascending=False, limit=2000, token=token)
+                )
+            except Exception:
+                pass
+
+    deduped_harvests: list[dict[str, Any]] = []
+    for harvest in all_harvests:
+        row_id = str(harvest.get("id") or harvest.get("batch_code") or len(deduped_harvests))
+        if row_id in seen_ids:
+            continue
+        seen_ids.add(row_id)
+        deduped_harvests.append(harvest)
+
+    all_harvests = deduped_harvests
     
     # Filter by year if provided
     if year:

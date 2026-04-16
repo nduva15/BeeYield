@@ -30,7 +30,6 @@ export function useHives(apiaryId?: string) {
         },
         enabled: !!userId,
         staleTime: 1000 * 30,
-        refetchInterval: 1000 * 30, // 30s poll
         refetchOnWindowFocus: true,
     });
 }
@@ -98,8 +97,11 @@ export function useCreateHive() {
             if (error) throw error;
             return data as Hive;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: hiveKeys.lists() });
+        onSuccess: (created) => {
+            queryClient.setQueriesData<Hive[]>(
+                { queryKey: hiveKeys.lists() },
+                (current = []) => [created, ...current.filter((hive) => hive.id !== created.id)]
+            );
             toast.success('Hive deployed successfully');
         },
         onError: () => toast.error('Failed to create hive'),
@@ -115,8 +117,14 @@ export function useUpdateHive() {
             if (error) throw error;
             return updated as Hive;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: hiveKeys.lists() });
+        onSuccess: (updated, variables) => {
+            queryClient.setQueriesData<Hive[]>(
+                { queryKey: hiveKeys.lists() },
+                (current = []) =>
+                    current.map((hive) =>
+                        hive.id === variables.id ? { ...hive, ...updated } : hive
+                    )
+            );
             toast.success('Hive updated');
         },
         onError: () => toast.error('Failed to update hive'),
@@ -132,8 +140,11 @@ export function useDeleteHive() {
             if (error) throw error;
             return id;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: hiveKeys.lists() });
+        onSuccess: (deletedId) => {
+            queryClient.setQueriesData<Hive[]>(
+                { queryKey: hiveKeys.lists() },
+                (current = []) => current.filter((hive) => hive.id !== deletedId)
+            );
             toast.success('Hive deleted');
         },
         onError: () => toast.error('Failed to delete hive'),

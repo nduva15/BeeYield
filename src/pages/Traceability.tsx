@@ -24,10 +24,21 @@ import {
 } from "@/components/ui/dialog";
 import LOGO from '@/assets/Logo.png';
 import PLACEHOLDER_SVG from '@/assets/placeholder.svg';
+import TIMOTHY_PHOTO from '@/assets/timothy-nduva.png';
 import { getPublicTraceabilityBatches, traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
 import { adminService } from "@/services/adminService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
+import { beeyieldService, ApiaryWeatherSummary } from "@/services/beeyieldService";
+import { getCompanyStory, getCompanyStats, CompanyStory, CompanyStat } from "@/services/companyService";
+import { getESGMetrics, ESGMetric } from "@/services/servicesService";
+import {
+  buildConservationFacts,
+  buildDeepTraceabilityStory,
+  buildHarvestFacts,
+  buildSensorFacts,
+  buildWeatherFacts,
+} from "@/lib/traceabilityNarrative";
 
 const DEFAULT_EXAMPLE_CODES = [
   "BEE-2026-01-0420",
@@ -43,6 +54,10 @@ const Traceability = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [exampleCodes, setExampleCodes] = useState<string[]>(DEFAULT_EXAMPLE_CODES);
+  const [apiaryWeather, setApiaryWeather] = useState<ApiaryWeatherSummary | null>(null);
+  const [companyStory, setCompanyStory] = useState<CompanyStory | null>(null);
+  const [companyStats, setCompanyStats] = useState<CompanyStat[]>([]);
+  const [esgMetrics, setEsgMetrics] = useState<ESGMetric[]>([]);
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -71,6 +86,24 @@ const Traceability = () => {
     const date = new Date(String(value));
     if (Number.isNaN(date.getTime())) return String(value);
     return date.toLocaleDateString("en-KE", { year: "numeric", month: "short", day: "numeric" });
+  }, [hasValue]);
+
+  const renderMetricValue = useCallback((value: unknown, suffix = "") => {
+    if (!hasValue(value)) return missingDataLabel;
+    return `${String(value)}${suffix}`;
+  }, [hasValue]);
+
+  const formatSyncTime = useCallback((value: unknown) => {
+    if (!hasValue(value)) return missingDataLabel;
+    const date = new Date(String(value));
+    if (Number.isNaN(date.getTime())) return String(value);
+    return date.toLocaleString("en-KE", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }, [hasValue]);
 
   const handleTrace = useCallback(async (code: string) => {
@@ -206,6 +239,50 @@ const Traceability = () => {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+
+    const loadContext = async () => {
+      const [story, stats, metrics] = await Promise.all([
+        getCompanyStory(),
+        getCompanyStats(),
+        getESGMetrics(),
+      ]);
+
+      if (!active) return;
+      setCompanyStory(story);
+      setCompanyStats(stats);
+      setEsgMetrics(metrics);
+    };
+
+    void loadContext();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadWeather = async () => {
+      if (!traceData?.apiary?.apiary_id) {
+        setApiaryWeather(null);
+        return;
+      }
+
+      const summary = await beeyieldService.getApiaryWeatherSummary(traceData.apiary.apiary_id);
+      if (!active) return;
+      setApiaryWeather(summary);
+    };
+
+    void loadWeather();
+
+    return () => {
+      active = false;
+    };
+  }, [traceData?.apiary?.apiary_id]);
+
   // Scroll to results when trace data is loaded
   useEffect(() => {
     if (traceData) {
@@ -224,6 +301,20 @@ const Traceability = () => {
     { icon: MapPin, label: "Geographic Origin", description: "GPS coordinates of every harvest" },
     { icon: Calendar, label: "Harvest Date", description: "Know when your honey was collected" },
   ];
+
+  const growthMilestone = companyStory?.milestones?.find((milestone) => /hives/i.test(milestone.title) || /hives/i.test(milestone.description));
+  const treeMetric = companyStats.find((stat) => /tree/i.test(stat.stat_key) || /tree/i.test(stat.stat_label));
+  const carbonMetric = companyStats.find((stat) => /carbon|co2|climate/i.test(stat.stat_key) || /carbon|co2|climate/i.test(stat.stat_label));
+  const communityMetric = companyStats.find((stat) => /farmer|beekeeper|community/i.test(stat.stat_key) || /farmer|beekeeper|community/i.test(stat.stat_label));
+  const esgHighlights = esgMetrics.slice(0, 3);
+  const traceStoryParagraphs = buildDeepTraceabilityStory(traceData);
+  const harvestFacts = buildHarvestFacts(traceData);
+  const conservationFacts = buildConservationFacts(traceData);
+  const sensorFacts = buildSensorFacts(traceData);
+  const weatherFacts = buildWeatherFacts(traceData, apiaryWeather).map((item) => {
+    if (item.value !== missingDataLabel) return item;
+    return item;
+  });
 
   return (
     <BeeYieldPageShell className="bg-background">
@@ -525,7 +616,7 @@ const Traceability = () => {
                       <div className="relative">
                         <div className="absolute -inset-3 bg-gradient-to-r from-amber-400 to-green-500 rounded-full blur-xl opacity-20"></div>
                         <img
-                          src={traceData?.farmer?.photo_url || PLACEHOLDER_SVG}
+                          src={traceData?.farmer?.photo_url || TIMOTHY_PHOTO || PLACEHOLDER_SVG}
                           alt={traceData?.farmer?.name || "Beekeeper image unavailable"}
                           className="h-32 w-32 md:h-40 md:w-40 rounded-full object-cover border-4 border-white relative z-10 shadow-2xl bg-white"
                         />
@@ -562,11 +653,36 @@ const Traceability = () => {
                     </div>
 
                     <div className="space-y-4 text-lg text-neutral-800 leading-relaxed font-medium">
-                      <p>{textOrMissing(traceData?.story_content)}</p>
+                      {traceStoryParagraphs.map((paragraph) => (
+                        <p key={paragraph}>{paragraph}</p>
+                      ))}
                       <p className="text-neutral-600 font-normal">
-                        Completeness status: <span className="font-black text-[#1B9157]">{textOrMissing(traceData?.completeness?.status)}</span>.
-                        Missing backend fields remain visible until the source tables are filled.
+                        {growthMilestone?.description || "Every reported batch is tied back to the beekeeper, apiary, hive, harvest date, and conservation promise so the story stays attached to the product."}
                       </p>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-3 pt-6 border-t border-slate-200 mt-6 md:mt-8">
+                      <div className="rounded-3xl border border-emerald-200 bg-white/80 p-5">
+                        <p className="text-[10px] font-black tracking-[0.18em] text-[#1B9157] uppercase mb-2">50/50 Harvest</p>
+                        <p className="text-sm text-slate-700 leading-relaxed">
+                          {conservationFacts.find((item) => item.label === "50/50 reserve left for bees")?.value !== missingDataLabel
+                            ? `${conservationFacts.find((item) => item.label === "50/50 reserve left for bees")?.value} was recorded as the reserve left in the hive for colony nutrition on this harvest.`
+                            : "BeeYield documents the 50/50 harvest commitment and shows reserve values whenever the backend provides them."}
+                        </p>
+                      </div>
+                      <div className="rounded-3xl border border-amber-200 bg-white/80 p-5">
+                        <p className="text-[10px] font-black tracking-[0.18em] text-[#A16207] uppercase mb-2">Tree Planting</p>
+                        <p className="text-2xl font-black text-[#1A1A1A]">{treeMetric?.stat_value || conservationFacts.find((item) => item.label === "Trees planted")?.value || missingDataLabel}</p>
+                        <p className="text-xs font-semibold text-slate-500">{treeMetric?.stat_label || "Tree restoration metric"}</p>
+                      </div>
+                      <div className="rounded-3xl border border-sky-200 bg-white/80 p-5">
+                        <p className="text-[10px] font-black tracking-[0.18em] text-sky-700 uppercase mb-2">ESG Commitment</p>
+                        <p className="text-sm text-slate-700 leading-relaxed">
+                          {esgHighlights.length
+                            ? esgHighlights.map((metric) => `${metric.metric_name}: ${metric.metric_value} ${metric.metric_unit}`.trim()).join(" | ")
+                            : "Environmental, social, and governance metrics will appear here as soon as the backend ESG tables are populated."}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="flex flex-wrap gap-3 pt-6 border-t border-slate-200 mt-6 md:mt-8">
@@ -590,7 +706,7 @@ const Traceability = () => {
                           <Thermometer className="h-5 w-5 text-orange-600" />
                         </div>
                         <p className="text-2xl font-black text-[#1A1A1A]">
-                          {typeof traceData?.sensor_snapshot?.avg_temp === 'number' ? traceData.sensor_snapshot.avg_temp.toFixed(1) : "34.5"}°C
+                          {typeof traceData?.sensor_snapshot?.avg_temp === 'number' ? `${traceData.sensor_snapshot.avg_temp.toFixed(1)}°C` : missingDataLabel}
                         </p>
                         <p className="text-xs font-bold text-slate-500">Temperature</p>
                       </Card>
@@ -599,7 +715,7 @@ const Traceability = () => {
                           <Droplets className="h-5 w-5 text-blue-600" />
                         </div>
                         <p className="text-2xl font-black text-[#1A1A1A]">
-                          {typeof traceData?.sensor_snapshot?.avg_humidity === 'number' ? traceData.sensor_snapshot.avg_humidity.toFixed(1) : "42.0"}%
+                          {typeof traceData?.sensor_snapshot?.avg_humidity === 'number' ? `${traceData.sensor_snapshot.avg_humidity.toFixed(1)}%` : missingDataLabel}
                         </p>
                         <p className="text-xs font-bold text-slate-500">Humidity</p>
                       </Card>
@@ -607,14 +723,14 @@ const Traceability = () => {
                         <div className="mx-auto h-10 w-10 bg-amber-100 rounded-full flex items-center justify-center mb-2">
                           <Box className="h-5 w-5 text-[#F4D03F]" />
                         </div>
-                        <p className="text-2xl font-black text-[#1A1A1A]">{traceData?.sensor_snapshot?.weight_kg || "24.8"}kg</p>
+                        <p className="text-2xl font-black text-[#1A1A1A]">{typeof traceData?.sensor_snapshot?.weight_kg === 'number' ? `${traceData.sensor_snapshot.weight_kg}kg` : missingDataLabel}</p>
                         <p className="text-xs font-bold text-slate-500">Hive Weight</p>
                       </Card>
                       <Card className="border-none bg-indigo-50/50 shadow-sm p-4 text-center">
                         <div className="mx-auto h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center mb-2">
                           <Zap className="h-5 w-5 text-indigo-600" />
                         </div>
-                        <p className="text-2xl font-black text-[#1A1A1A]">Active</p>
+                        <p className="text-2xl font-black text-[#1A1A1A]">{textOrMissing(traceData?.sensor_snapshot?.acoustics_status)}</p>
                         <p className="text-xs font-bold text-slate-500">Colony Status</p>
                       </Card>
                     </div>
@@ -646,7 +762,7 @@ const Traceability = () => {
                         <div className="col-span-2 sm:col-span-1">
                           <p className="text-[10px] font-black text-slate-400 mb-1">Harvest Date</p>
                           <p className="text-xl font-black text-[#1A1A1A] leading-none">
-                            {traceData?.timeline?.find(s => s.title === "Harvest Day")?.date || traceData?.extra_metadata?.harvest_window?.split('-')[0] || "Jan 5, 2026"}
+                            {textOrMissing(traceData?.timeline?.find(s => s.title === "Harvest Day")?.date || traceData?.harvest_date)}
                           </p>
                         </div>
 
@@ -661,23 +777,23 @@ const Traceability = () => {
                               <div>
                                 <p className="text-[10px] font-bold text-slate-400">Selected Hives</p>
                                 <p className="text-lg font-black text-[#1A1A1A]">
-                                  <span className="text-[#1B9157]">{traceData?.impact_stats?.harvested_hives || "—"}</span> <span className="text-slate-400 text-sm">/ {traceData?.impact_stats?.hive_count?.replace(/\D/g, '') || "—"}</span>
+                                  <span className="text-[#1B9157]">{textOrMissing(traceData?.impact_stats?.harvested_hives, "—")}</span> <span className="text-slate-400 text-sm">/ {textOrMissing(traceData?.impact_stats?.hive_count?.replace(/\D/g, ''), "—")}</span>
                                 </p>
                               </div>
                               <div>
                                 <p className="text-[10px] font-bold text-slate-400">Total Harvest</p>
                                 <p className="text-lg font-black text-[#1A1A1A]">
-                                  {traceData?.impact_stats?.total_honey_kg || "—"} kg
+                                  {textOrMissing(traceData?.impact_stats?.total_honey_kg, "—")} kg
                                 </p>
                               </div>
                               <div className="col-span-2 md:col-span-1 border-t md:border-t-0 md:border-l border-slate-200 pt-3 md:pt-0 md:pl-4">
                                 <p className="text-[10px] font-bold text-primary">Your Jar</p>
-                                <p className="text-lg font-black text-[#1A1A1A]">{traceData?.extra_metadata?.production_lot_size || "4 jars of 500g"}</p>
+                                <p className="text-lg font-black text-[#1A1A1A]">{textOrMissing(traceData?.extra_metadata?.production_lot_size)}</p>
                               </div>
                             </div>
                             <div className="mt-3 pt-3 border-t border-slate-200">
                               <p className="text-[10px] text-slate-500 font-medium italic">
-                                {traceData?.extra_metadata?.harvest_context || "Only 30 hives met our peak maturity strict standards for this harvest."}
+                                {textOrMissing(traceData?.extra_metadata?.harvest_context)}
                               </p>
                             </div>
                           </div>
@@ -686,8 +802,8 @@ const Traceability = () => {
                         {/* Apiary Site */}
                         <div className="col-span-2">
                           <p className="text-[10px] font-black text-slate-400 mb-1">Apiary Location</p>
-                          <p className="text-lg font-black text-[#1A1A1A] leading-tight mb-0.5">{traceData?.apiary?.name || "BeeYield Apiary"}</p>
-                          <p className="text-xs font-semibold text-slate-500">{traceData?.apiary?.location_name || "Makueni"}, Kenya</p>
+                          <p className="text-lg font-black text-[#1A1A1A] leading-tight mb-0.5">{textOrMissing(traceData?.apiary?.name)}</p>
+                          <p className="text-xs font-semibold text-slate-500">{textOrMissing(traceData?.apiary?.location_name)}, Kenya</p>
                         </div>
 
                         {/* Flora Sources */}
@@ -699,10 +815,7 @@ const Traceability = () => {
                                 {flora}
                               </Badge>
                             )) : (
-                              <>
-                                <Badge className="bg-green-100 text-[#1B9157] border-green-200 text-xs font-bold px-3 py-1 rounded-lg">Acacia</Badge>
-                                <Badge className="bg-green-100 text-[#1B9157] border-green-200 text-xs font-bold px-3 py-1 rounded-lg">Wildflower</Badge>
-                              </>
+                              <span className="text-sm font-semibold text-slate-500">{missingDataLabel}</span>
                             )}
                           </div>
                         </div>
@@ -712,7 +825,7 @@ const Traceability = () => {
                           <p className="text-[10px] font-black text-slate-400 mb-1">Water Source</p>
                           <div className="flex items-center gap-2">
                             <Droplets className="h-4 w-4 text-blue-500" />
-                            <span className="font-bold text-[#1A1A1A]">{traceData?.apiary?.water_source || "Natural Spring"}</span>
+                            <span className="font-bold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.water_source)}</span>
                           </div>
                         </div>
 
@@ -724,7 +837,7 @@ const Traceability = () => {
                                 <Zap className="h-3 w-3" /> Hive Sensor Data
                               </p>
                               <Badge variant="outline" className="border-emerald-200 text-[#1B9157] text-[10px] font-bold px-2 py-0.5 bg-emerald-50 flex items-center gap-1">
-                                <Activity className="h-2.5 w-2.5" /> Updated: {traceData.sensor_snapshot?.sync_time || "7m ago"}
+                                <Activity className="h-2.5 w-2.5" /> Updated: {formatSyncTime(traceData.sensor_snapshot?.sync_time)}
                               </Badge>
                             </div>
 
@@ -778,8 +891,8 @@ const Traceability = () => {
                                   </div>
                                   <div className="text-right glass-panel p-2 rounded-xl bg-[#1B9157] border border-[#1B9157]">
                                     <p className="text-[8px] font-black text-[#1B9157] mb-0.5">GPS Location</p>
-                                    <p className="text-[10px] font-mono font-bold text-[#1A1A1A] mb-0.5">{traceData.sensor_snapshot?.latitude || "-1.2870"}</p>
-                                    <p className="text-[10px] font-mono font-bold text-[#1A1A1A]">{traceData.sensor_snapshot?.longitude || "36.8252"}</p>
+                                    <p className="text-[10px] font-mono font-bold text-[#1A1A1A] mb-0.5">{textOrMissing(traceData.sensor_snapshot?.latitude)}</p>
+                                    <p className="text-[10px] font-mono font-bold text-[#1A1A1A]">{textOrMissing(traceData.sensor_snapshot?.longitude)}</p>
                                   </div>
                                 </div>
 
@@ -789,8 +902,8 @@ const Traceability = () => {
                                   <div className="space-y-1">
                                     <p className="text-[10px] font-bold text-[#1B9157] tracking-wide">Hive Sound Level</p>
                                     <div className="flex items-baseline gap-2">
-                                      <span className="text-xl font-black">{traceData.sensor_snapshot?.colony_acoustics || "246"}Hz</span>
-                                      <span className="text-[10px] text-[#1B9157] font-bold flex items-center">• {traceData.sensor_snapshot?.acoustics_status || "Stable"}</span>
+                                      <span className="text-xl font-black">{renderMetricValue(traceData.sensor_snapshot?.colony_acoustics, "Hz")}</span>
+                                      <span className="text-[10px] text-[#1B9157] font-bold flex items-center">• {textOrMissing(traceData.sensor_snapshot?.acoustics_status)}</span>
                                     </div>
                                   </div>
 
@@ -798,8 +911,8 @@ const Traceability = () => {
                                   <div className="space-y-1">
                                     <p className="text-[10px] font-bold text-[#1B9157] tracking-wide">Bee Activity</p>
                                     <div className="flex items-baseline gap-2">
-                                      <span className="text-xl font-black">{traceData.sensor_snapshot?.flight_activity || "27.2"} visits/min</span>
-                                      <span className="text-[10px] text-[#1B9157] font-bold flex items-center">• {traceData.sensor_snapshot?.activity_status || "Stable"}</span>
+                                      <span className="text-xl font-black">{renderMetricValue(traceData.sensor_snapshot?.flight_activity, " visits/min")}</span>
+                                      <span className="text-[10px] text-[#1B9157] font-bold flex items-center">• {textOrMissing(traceData.sensor_snapshot?.activity_status)}</span>
                                     </div>
                                   </div>
 
@@ -807,10 +920,10 @@ const Traceability = () => {
                                   <div className="space-y-1">
                                     <p className="text-[10px] font-bold text-[#1B9157] tracking-wide">Nursery Temperature</p>
                                     <div className="flex items-baseline gap-2">
-                                      <span className="text-xl font-black">{traceData.sensor_snapshot?.brood_temp || "36"}°C</span>
+                                      <span className="text-xl font-black">{renderMetricValue(traceData.sensor_snapshot?.brood_temp, "°C")}</span>
                                       <div className="flex items-center gap-1.5">
                                         <span className="text-[10px] text-[#F4D03F] font-bold flex items-center italic">Live</span>
-                                        <span className="text-[10px] text-[#F4D03F] font-bold flex items-center">▲ {traceData.sensor_snapshot?.temp_trend || "+0.9%"}</span>
+                                        <span className="text-[10px] text-[#F4D03F] font-bold flex items-center">▲ {textOrMissing(traceData.sensor_snapshot?.temp_trend)}</span>
                                       </div>
                                     </div>
                                   </div>
@@ -819,10 +932,10 @@ const Traceability = () => {
                                   <div className="space-y-1">
                                     <p className="text-[10px] font-bold text-[#1B9157] tracking-wide">Inside Humidity</p>
                                     <div className="flex items-baseline gap-2">
-                                      <span className="text-xl font-black">{traceData.sensor_snapshot?.nest_humidity || "75"}%</span>
+                                      <span className="text-xl font-black">{renderMetricValue(traceData.sensor_snapshot?.nest_humidity, "%")}</span>
                                       <div className="flex items-center gap-1.5">
                                         <span className="text-[10px] text-[#F4D03F] font-bold flex items-center italic">Live</span>
-                                        <span className="text-[10px] text-[#F4D03F] font-bold flex items-center">▲ {traceData.sensor_snapshot?.humidity_trend || "+5.2%"}</span>
+                                        <span className="text-[10px] text-[#F4D03F] font-bold flex items-center">▲ {textOrMissing(traceData.sensor_snapshot?.humidity_trend)}</span>
                                       </div>
                                     </div>
                                   </div>
@@ -831,8 +944,8 @@ const Traceability = () => {
                                   <div className="space-y-1">
                                     <p className="text-[10px] font-bold text-[#1B9157] tracking-wide">Hive Movement</p>
                                     <div className="flex items-baseline gap-2">
-                                      <span className="text-xl font-black">{traceData.sensor_snapshot?.vibration_index || "2.4"}m/s²</span>
-                                      <span className="text-[10px] text-[#1B9157] font-bold flex items-center">• {traceData.sensor_snapshot?.vibration_status || "Optimal"}</span>
+                                      <span className="text-xl font-black">{renderMetricValue(traceData.sensor_snapshot?.vibration_index, "m/s²")}</span>
+                                      <span className="text-[10px] text-[#1B9157] font-bold flex items-center">• {textOrMissing(traceData.sensor_snapshot?.vibration_status)}</span>
                                     </div>
                                   </div>
 
@@ -841,67 +954,84 @@ const Traceability = () => {
                                     <div className="space-y-1">
                                       <p className="text-[10px] font-bold text-[#1B9157] tracking-wide">Queen Health Signal</p>
                                       <div className="flex items-baseline gap-2">
-                                        <span className="text-xl font-black">{traceData.sensor_snapshot?.queen_pheromone || "High"}</span>
-                                        <span className="text-[10px] text-[#F4D03F] font-bold flex items-center">▲ {traceData.sensor_snapshot?.pheromone_trend || "Strong"}</span>
+                                        <span className="text-xl font-black">{textOrMissing(traceData.sensor_snapshot?.queen_pheromone)}</span>
+                                        <span className="text-[10px] text-[#F4D03F] font-bold flex items-center">▲ {textOrMissing(traceData.sensor_snapshot?.pheromone_trend)}</span>
                                       </div>
                                     </div>
                                   </div>
 
-                                  {/* Flight Territory Map */}
                                   <div className="space-y-2">
-                                    <p className="text-[10px] font-black text-[#1B9157]">Foraging Range (5km Radius)</p>
-                                    <div className="aspect-[4/3] md:aspect-square rounded-2xl bg-[#022c22]/50 relative overflow-hidden border border-[#1B9157] flex items-center justify-center">
-                                      {/* Grid Overlays */}
-                                      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #34d399 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                                      {/* Concentric Circles */}
-                                      <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                                        {[100, 75, 50, 25].map((size) => (
-                                          <div key={size} className="absolute border border-[#1B9157] rounded-full" style={{ width: `${size}%`, height: `${size}%` }} />
-                                        ))}
+                                    <p className="text-[10px] font-black text-[#1B9157]">Forage and Weather</p>
+                                    <div className="rounded-2xl bg-[#022c22]/50 border border-[#1B9157] p-4 space-y-4">
+                                      <div>
+                                        <p className="text-[10px] font-bold text-[#1B9157] tracking-wide mb-2">Specific Florage</p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.map((flora: string) => (
+                                            <Badge key={`forage-${flora}`} className="bg-[#1B9157]/15 text-white border border-[#1B9157]/40 text-[10px] font-bold px-2.5 py-1 rounded-full">
+                                              {flora}
+                                            </Badge>
+                                          )) : (
+                                            <span className="text-xs text-slate-300">{missingDataLabel}</span>
+                                          )}
+                                        </div>
                                       </div>
-                                      {/* Floral Pins (Simulated - Deterministic) */}
-                                      <div className="absolute top-[25%] left-[35%] h-1.5 w-1.5 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-                                      <div className="absolute top-[65%] left-[75%] h-1.5 w-1.5 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-                                      {/* Apiary Center */}
-                                      <div className="relative z-10 p-2.5 bg-[#145A32] rounded-xl shadow-2xl border border-[#F4D03F]/40">
-                                        <MapPin className="h-4 w-4 text-[#1A1A1A]" />
-                                      </div>
-                                      <div className="absolute bottom-3 left-3 text-[9px] font-black text-[#1B9157] bg-[#1B9157] px-2 py-1 rounded-lg backdrop-blur-md border border-[#F4D03F]/20">
-                                        {traceData?.apiary?.environment_type || "Savanna Wooded"}
+                                      <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                          <p className="text-[10px] font-black text-[#1B9157] mb-1">Weather Status</p>
+                                          <p className="font-semibold text-white">{textOrMissing(apiaryWeather?.weather_summary?.status || traceData?.extra_metadata?.weather_conditions)}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-[10px] font-black text-[#1B9157] mb-1">Apiary Terrain</p>
+                                          <p className="font-semibold text-white">{textOrMissing(traceData?.apiary?.environment_type)}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-[10px] font-black text-[#1B9157] mb-1">Air Temperature</p>
+                                          <p className="font-semibold text-white">{numberOrMissing(apiaryWeather?.current?.temperature_c, "°C", 1)}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-[10px] font-black text-[#1B9157] mb-1">Humidity</p>
+                                          <p className="font-semibold text-white">{numberOrMissing(apiaryWeather?.current?.humidity_pct, "%", 0)}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-[10px] font-black text-[#1B9157] mb-1">Wind Speed</p>
+                                          <p className="font-semibold text-white">{numberOrMissing(apiaryWeather?.current?.wind_speed_kph, " kph", 1)}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-[10px] font-black text-[#1B9157] mb-1">Rainfall</p>
+                                          <p className="font-semibold text-white">{numberOrMissing(apiaryWeather?.daily_summary?.precipitation_mm, " mm", 1)}</p>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
 
-                                  {/* Record Integrity Block - Simplified */}
                                   <div className="space-y-2 flex flex-col">
                                     <p className="text-[10px] font-black text-[#1B9157]">Record Integrity</p>
                                     <div className="bg-[#022c22]/40 rounded-2xl p-5 border border-[#1B9157] flex-1 flex flex-col justify-between">
                                       <div className="space-y-4">
-                                        <div>
-                                          <p className="text-[9px] font-black text-[#1B9157] mb-2 tracking-tighter">Safe & Verified</p>
-                                          <div className="flex items-center gap-3 p-3 bg-[#1B9157] rounded-xl border border-[#1B9157]">
-                                            <div className="h-8 w-8 rounded-full bg-[#1B9157] flex items-center justify-center">
-                                              <ShieldCheck className="h-4 w-4 text-[#1B9157]" />
-                                            </div>
-                                            <div>
-                                              <p className="text-[10px] font-bold text-[#1A1A1A] leading-tight">Batch Fingerprint</p>
-                                              <p className="text-[9px] font-medium text-[#1B9157]/80">Authorized by BeeYield</p>
-                                            </div>
+                                        <div className="flex items-center gap-3 p-3 bg-[#1B9157] rounded-xl border border-[#1B9157]">
+                                          <div className="h-8 w-8 rounded-full bg-[#1B9157] flex items-center justify-center">
+                                            <ShieldCheck className="h-4 w-4 text-[#1B9157]" />
+                                          </div>
+                                          <div>
+                                            <p className="text-[10px] font-bold text-[#1A1A1A] leading-tight">Batch Fingerprint</p>
+                                            <p className="text-[9px] font-medium text-[#1B9157]/80">{textOrMissing(traceData?.blockchain_status?.overall, "verification pending")}</p>
                                           </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
-                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">Verified by</p>
-                                            <div className="flex items-center gap-2">
-                                              <div className="h-2 w-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                                              <p className="text-xl font-black text-[#1A1A1A]">{(traceData.batch_code.length * 314 + 1024).toLocaleString()}</p>
-                                            </div>
+                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">HoneyChain</p>
+                                            <p className="text-sm font-black text-white">{traceData?.blockchain_status?.honeychain?.verified ? "Verified" : "Not verified"}</p>
                                           </div>
                                           <div className="text-right">
-                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">System</p>
-                                            <Badge className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 text-xs font-semibold px-2 py-0.5 whitespace-nowrap">BeeYield</Badge>
+                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">Polygon</p>
+                                            <p className="text-sm font-black text-white">{traceData?.blockchain_status?.polygon?.verified ? "Verified" : "Not verified"}</p>
                                           </div>
+                                        </div>
+
+                                        <div>
+                                          <p className="text-xs font-semibold text-[#1B9157] mb-1">Block Hash</p>
+                                          <p className="text-[11px] font-mono text-slate-200 break-all">{textOrMissing(traceData?.blockchain_status?.block_hash)}</p>
                                         </div>
                                       </div>
 
@@ -910,7 +1040,7 @@ const Traceability = () => {
                                           <LockIcon className="h-3 w-3 text-[#1B9157]" />
                                           <span className="text-xs font-semibold text-[#1B9157]">Secure record</span>
                                         </div>
-                                        <span className="text-xs font-semibold text-[#D4AC0D]">Tamper-resistant</span>
+                                        <span className="text-xs font-semibold text-[#D4AC0D]">{textOrMissing(traceData?.verification_status)}</span>
                                       </div>
                                     </div>
                                   </div>
@@ -920,14 +1050,14 @@ const Traceability = () => {
                                   <div className="flex items-center gap-6 pt-5 border-t border-[#F4D03F]/20">
                                   <div className="flex items-center gap-2 bg-[#F9F7F2] px-3 py-1.5 rounded-full border border-[#F4D03F]/10">
                                     <span className="text-[11px] font-semibold text-[#1B9157]">Hive quality:</span>
-                                    <span className="text-xs font-black text-[#1A1A1A]">{traceData.sensor_snapshot?.fob || "7"}/10</span>
+                                    <span className="text-xs font-black text-[#1A1A1A]">{renderMetricValue(traceData.sensor_snapshot?.fob, "/10")}</span>
                                   </div>
                                   <div className="flex items-center gap-2 bg-[#F9F7F2] px-3 py-1.5 rounded-full border border-[#F4D03F]/10">
                                     <span className="text-[11px] font-semibold text-[#1B9157]">Tracking:</span>
                                     <span className="text-xs font-black text-[#1B9157]">Hive to Jar</span>
                                   </div>
                                   <div className="flex-1 text-right">
-                                    <p className="text-[11px] font-semibold text-[#D4AC0D]">Hive: {traceData.batch_code.split('-')[2] || 'H000'}</p>
+                                    <p className="text-[11px] font-semibold text-[#D4AC0D]">Hive: {textOrMissing(traceData?.hive?.hive_code)}</p>
                                   </div>
                                 </div>
                               </div>
@@ -944,11 +1074,11 @@ const Traceability = () => {
                       <div className="flex gap-6 items-start relative z-10 mb-8">
                         {/* Photo & Logo */}
                         <div className="shrink-0 relative">
-                          {/* Timothy's Photo (Always for Demo) */}
+                          {/* Farmer photo */}
                           <div className="flex items-center gap-8">
                             <div className="relative group">
                               <div className="absolute -inset-2 bg-gradient-to-tr from-amber-400 to-green-500 rounded-[1.8rem] blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                              <img src={PLACEHOLDER_SVG} alt="Beekeeper image unavailable" className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-[#F4D03F]/40 shadow-2xl relative z-10" />
+                              <img src={traceData?.farmer?.photo_url || TIMOTHY_PHOTO || PLACEHOLDER_SVG} alt={traceData?.farmer?.name || "Beekeeper"} className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-[#F4D03F]/40 shadow-2xl relative z-10" />
                             </div>
                             <div className="relative flex flex-col items-center gap-2 group">
                               <img src={LOGO} alt="BeeYield" className="h-20 w-20 md:h-24 md:w-24 object-contain transition-transform group-hover:scale-110 duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
@@ -986,13 +1116,21 @@ const Traceability = () => {
                             </div>
                             <p className="font-bold text-lg text-[#1A1A1A]">50% Harvest Promise</p>
                           </div>
-                          <p className="text-xs text-[#1B9157] leading-relaxed">We strictly ensure half of every harvest remains in the hive to nourish the colony through dry seasons.</p>
+                          <p className="text-xs text-[#1B9157] leading-relaxed">
+                            {conservationFacts.find((item) => item.label === "50/50 reserve left for bees")?.value !== missingDataLabel
+                              ? `${conservationFacts.find((item) => item.label === "50/50 reserve left for bees")?.value} is recorded as the portion left in the hive for colony resilience.`
+                              : "We strictly ensure half of every harvest remains in the hive to nourish the colony through dry seasons."}
+                          </p>
                         </div>
 
                         <p className="text-[10px] font-black text-[#1B9157] mb-4">Our Story</p>
-                        <p className="text-sm font-medium text-[#1B9157] italic leading-relaxed">
-                          " {traceData?.farmer?.story || "Dedicated to sustainable beekeeping and protecting our local ecosystems. Every jar tells the story of our commitment to the bees and the land we share with them."} "
-                        </p>
+                        <div className="space-y-3">
+                          {traceStoryParagraphs.slice(0, 2).map((paragraph) => (
+                            <p key={paragraph} className="text-sm font-medium text-[#1B9157] italic leading-relaxed">
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
                       </div>
 
                       {/* Decorative BG Blob */}
@@ -1009,38 +1147,16 @@ const Traceability = () => {
                         </Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Batch Identifier</p>
-                          <p className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.batch_code)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Harvest Date</p>
-                          <p className="font-black text-[#1A1A1A]">{dateOrMissing(traceData?.timeline?.find(s => s.title === "Harvest Day")?.date || traceData?.extra_metadata?.harvest_window)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Apiary</p>
-                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.name)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Location</p>
-                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.location_name)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Flora</p>
-                          <p className="font-semibold text-[#1A1A1A]">{traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : missingDataLabel}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Water Source</p>
-                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.water_source)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Beekeeper</p>
-                          <p className="font-semibold text-[#1A1A1A]">{textOrMissing(traceData?.farmer?.name)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 mb-1">Experience</p>
-                          <p className="font-semibold text-[#1A1A1A]">{hasValue(traceData?.farmer?.experience_years) ? `${traceData?.farmer?.experience_years} years` : missingDataLabel}</p>
-                        </div>
+                        {[
+                          ...harvestFacts,
+                          { label: "Water source", value: textOrMissing(traceData?.apiary?.water_source) },
+                          { label: "Experience", value: hasValue(traceData?.farmer?.experience_years) ? `${traceData?.farmer?.experience_years} years` : missingDataLabel },
+                        ].map((item) => (
+                          <div key={item.label}>
+                            <p className="text-[10px] font-black text-slate-400 mb-1">{item.label}</p>
+                            <p className="font-semibold text-[#1A1A1A]">{item.value}</p>
+                          </div>
+                        ))}
                       </div>
                     </Card>
 
@@ -1052,38 +1168,62 @@ const Traceability = () => {
                         </Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-[10px] font-black text-white/60 mb-1">Blockchain</p>
-                          <p className="font-semibold">{textOrMissing(traceData?.blockchain_status?.overall)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-white/60 mb-1">Verification URL</p>
-                          <p className="font-semibold break-all">{textOrMissing(traceData?.verification_url)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-white/60 mb-1">Temperature</p>
-                          <p className="font-semibold">{numberOrMissing(traceData?.sensor_snapshot?.avg_temp, " C", 1)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-white/60 mb-1">Humidity</p>
-                          <p className="font-semibold">{numberOrMissing(traceData?.sensor_snapshot?.avg_humidity, "%", 1)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-white/60 mb-1">Hive Weight</p>
-                          <p className="font-semibold">{numberOrMissing(traceData?.sensor_snapshot?.weight_kg, "kg")}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-white/60 mb-1">Health Status</p>
-                          <p className="font-semibold">{textOrMissing(traceData?.health_snapshot?.status)}</p>
-                        </div>
-                        <div className="col-span-2">
-                          <p className="text-[10px] font-black text-white/60 mb-1">Completeness</p>
-                          <p className="font-semibold">
-                            {traceData?.completeness
+                        {[
+                          { label: "Blockchain", value: textOrMissing(traceData?.blockchain_status?.overall) },
+                          { label: "Verification URL", value: textOrMissing(traceData?.verification_url) },
+                          ...sensorFacts,
+                          ...weatherFacts,
+                          { label: "Health status", value: textOrMissing(traceData?.health_snapshot?.status) },
+                          {
+                            label: "Completeness",
+                            value: traceData?.completeness
                               ? `${traceData.completeness.present} present, ${traceData.completeness.derivable} derivable, ${traceData.completeness.missing} missing`
-                              : missingDataLabel}
-                          </p>
-                        </div>
+                              : missingDataLabel,
+                          },
+                        ].map((item) => (
+                          <div key={item.label} className={item.label === "Verification URL" || item.label === "Completeness" ? "col-span-2" : ""}>
+                            <p className="text-[10px] font-black text-white/60 mb-1">{item.label}</p>
+                            <p className="font-semibold break-all">{item.value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+
+                  <div className="grid gap-8 mb-12 md:grid-cols-2">
+                    <Card className="border-none shadow-xl rounded-[2.5rem] p-8 bg-[#FFF9F0]">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-2xl font-black text-neutral-900 tracking-tighter">Conservation and ESG</h3>
+                        <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 font-bold">BeeYield Commitment</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        {conservationFacts.map((item) => (
+                          <div key={item.label}>
+                            <p className="text-[10px] font-black text-slate-400 mb-1">{item.label}</p>
+                            <p className="font-semibold text-[#1A1A1A]">{item.value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+
+                    <Card className="border-none shadow-xl rounded-[2.5rem] p-8 bg-[#FFF9F0]">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-2xl font-black text-neutral-900 tracking-tighter">Specific Chain of Custody</h3>
+                        <Badge className="bg-amber-100 text-amber-700 border-amber-200 font-bold">Field to Jar</Badge>
+                      </div>
+                      <div className="space-y-4 text-sm text-slate-700">
+                        <p>
+                          Farmer <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.farmer?.name)}</span> harvested batch <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.batch_code)}</span> from hive <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.hive?.hive_code)}</span> at apiary <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.name)}</span> on <span className="font-black text-[#1A1A1A]">{dateOrMissing(traceData?.harvest_date || traceData?.timeline?.find(s => s.title === "Harvest Day")?.date)}</span>.
+                        </p>
+                        <p>
+                          Florage recorded for this lot: <span className="font-black text-[#1A1A1A]">{traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : textOrMissing(traceData?.florage_type)}</span>.
+                        </p>
+                        <p>
+                          Weather record: <span className="font-black text-[#1A1A1A]">{weatherFacts.find((item) => item.label === "Recorded harvest weather")?.value || missingDataLabel}</span>.
+                        </p>
+                        <p>
+                          Latest sensor sync tied to this trace: <span className="font-black text-[#1A1A1A]">{sensorFacts.find((item) => item.label === "Last sensor sync")?.value || missingDataLabel}</span>.
+                        </p>
                       </div>
                     </Card>
                   </div>
@@ -1190,7 +1330,7 @@ const Traceability = () => {
                             <Badge className="bg-beeyield-gold text-[#1A1A1A] border-none font-black text-[10px] px-3 py-1 shadow-lg">50/50 PROMISE</Badge>
                           </div>
                           <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium mb-4">
-                            Precision harvest of <span className="text-[#1A1A1A] font-black">{traceData?.impact_stats?.total_honey_kg || "60"}kg</span>. Exactly half remains for colony vitality.
+                            Precision harvest of <span className="text-[#1A1A1A] font-black">{hasValue(traceData?.impact_stats?.total_honey_kg) ? `${traceData?.impact_stats?.total_honey_kg}kg` : missingDataLabel}</span>. Exactly half remains for colony vitality.
                           </p>
                           <div className="inline-flex items-center gap-2 p-3 bg-[#FFF9F0] rounded-2xl border border-beeyield-gold/30 shadow-glow-amber-small">
                             <div className="relative">
@@ -1244,7 +1384,7 @@ const Traceability = () => {
                   <div className="pt-6 flex flex-col sm:flex-row gap-4">
                     {traceData && (
                       <PDFDownloadLink
-                        document={<HoneyTracePDF traceData={traceData} />}
+                        document={<HoneyTracePDF traceData={traceData} weatherSummary={apiaryWeather} />}
                         fileName={`BeeYield-Trace-${traceData.batch_code}.pdf`}
                         className="w-full sm:flex-1"
                       >

@@ -55,6 +55,16 @@ type MyTaskViewProps = {
 };
 
 const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
+  const emptyTaskForm = React.useCallback((): Partial<Task> => ({
+    status: 'pending',
+    priority: 'medium',
+    due_date: format(new Date(), 'yyyy-MM-dd'),
+    apiary_id: '',
+    hive_id: '',
+    description: '',
+    title: '',
+  }), []);
+
   const [viewMode, setViewMode] = useState<'day' | 'list' | 'week' | 'month'>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -72,11 +82,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
   const createTask = useCreateTask();
   const deleteTask = useDeleteTask();
 
-  const [newTaskForm, setNewTaskForm] = useState<Partial<Task>>({
-    status: 'pending',
-    priority: 'medium',
-    due_date: format(new Date(), 'yyyy-MM-dd')
-  });
+  const [newTaskForm, setNewTaskForm] = useState<Partial<Task>>(emptyTaskForm);
 
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
@@ -151,14 +157,49 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
 
   const handleCreateTask = () => {
     if (!newTaskForm.title) return;
-    createTask.mutate(newTaskForm as any, {
+    createTask.mutate({
+      ...newTaskForm,
+      title: String(newTaskForm.title || '').trim(),
+      description: String(newTaskForm.description || '').trim() || undefined,
+      apiary_id: newTaskForm.apiary_id || undefined,
+      hive_id: newTaskForm.hive_id || undefined,
+    } as any, {
       onSuccess: () => {
         setIsTaskModalOpen(false);
-        setNewTaskForm({
-          status: 'pending',
-          priority: 'medium',
-          due_date: format(new Date(), 'yyyy-MM-dd')
-        });
+        setEditingTask(null);
+        setNewTaskForm(emptyTaskForm());
+      }
+    });
+  };
+
+  const handleSaveTask = () => {
+    if (!editingTask) return;
+    if (!editingTask.title?.trim()) return;
+
+    updateTask.mutate({
+      id: editingTask.id,
+      updates: {
+        title: editingTask.title.trim(),
+        description: editingTask.description?.trim() || undefined,
+        status: editingTask.status,
+        priority: editingTask.priority,
+        type: editingTask.type,
+        category: editingTask.category,
+        due_date: editingTask.due_date || undefined,
+        apiary_id: editingTask.apiary_id || undefined,
+        hive_id: editingTask.hive_id || undefined,
+        is_completed: editingTask.status === 'completed',
+        completed_at: editingTask.status === 'completed'
+          ? (editingTask.completed_at || new Date().toISOString())
+          : undefined,
+        recurrence_days: editingTask.recurrence_days,
+        recurrence_status: editingTask.recurrence_status,
+        recurrence: editingTask.recurrence,
+      },
+    }, {
+      onSuccess: () => {
+        setIsTaskModalOpen(false);
+        setEditingTask(null);
       }
     });
   };
@@ -524,7 +565,11 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
       {/* Task Creation/Editing Modal */}
       <GlassModal
         isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
+        onClose={() => {
+          setIsTaskModalOpen(false);
+          setEditingTask(null);
+          setNewTaskForm(emptyTaskForm());
+        }}
         title={editingTask ? "Update Task" : "Quick Task Entry"}
         subtitle={editingTask ? `Refining ${editingTask.title}` : "Outline your next operational move."}
       >
@@ -581,17 +626,43 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
               <div className="space-y-2">
                 <Label className={cn(glass.microLabel)}>Target Location</Label>
                 <Select
-                  value={editingTask ? editingTask.apiary_id : newTaskForm.apiary_id}
+                  value={editingTask ? (editingTask.apiary_id || 'none') : (newTaskForm.apiary_id || 'none')}
                   onValueChange={(val) => {
-                    if (editingTask) setEditingTask({...editingTask, apiary_id: val});
-                    else setNewTaskForm({...newTaskForm, apiary_id: val});
+                    const nextApiaryId = val === 'none' ? '' : val;
+                    if (editingTask) setEditingTask({...editingTask, apiary_id: nextApiaryId, hive_id: ''});
+                    else setNewTaskForm({...newTaskForm, apiary_id: nextApiaryId, hive_id: ''});
                   }}
                 >
                   <SelectTrigger className={cn(glass.select)}>
                     <SelectValue placeholder="All/General" />
                   </SelectTrigger>
                   <SelectContent className={glass.selectContent}>
+                    <SelectItem value="none">All/General</SelectItem>
                     {apiaries.map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className={cn(glass.microLabel)}>Target Hive</Label>
+                <Select
+                  value={editingTask ? (editingTask.hive_id || 'none') : (newTaskForm.hive_id || 'none')}
+                  onValueChange={(val) => {
+                    const nextHiveId = val === 'none' ? '' : val;
+                    if (editingTask) setEditingTask({...editingTask, hive_id: nextHiveId});
+                    else setNewTaskForm({...newTaskForm, hive_id: nextHiveId});
+                  }}
+                >
+                  <SelectTrigger className={cn(glass.select)}>
+                    <SelectValue placeholder="All/General" />
+                  </SelectTrigger>
+                  <SelectContent className={glass.selectContent}>
+                    <SelectItem value="none">All/General</SelectItem>
+                    {hives
+                      .filter((hive) => {
+                        const activeApiaryId = editingTask ? editingTask.apiary_id : newTaskForm.apiary_id;
+                        return !activeApiaryId || hive.apiary_id === activeApiaryId;
+                      })
+                      .map(h => <SelectItem key={h.id} value={h.id}>{h.hive_code}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -642,16 +713,19 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
               </button>
             )}
             <button 
-              onClick={() => setIsTaskModalOpen(false)}
+              onClick={() => {
+                setIsTaskModalOpen(false);
+                setEditingTask(null);
+                setNewTaskForm(emptyTaskForm());
+              }}
               className={cn(glass.btnSecondary, "flex-1 h-12")}
             >
               Cancel
             </button>
             <button 
-              onClick={editingTask ? () => {
-                updateTask.mutate({ id: editingTask.id, updates: editingTask as any }, { onSuccess: () => setIsTaskModalOpen(false) });
-              } : handleCreateTask}
+              onClick={editingTask ? handleSaveTask : handleCreateTask}
               className={cn(glass.btnPrimary, "flex-1 h-12 shadow-xl shadow-[#F4D03F]/20")}
+              disabled={createTask.isPending || updateTask.isPending}
             >
               <Check className="w-4 h-4" />
               {editingTask ? 'Save Updates' : 'Schedule Move'}

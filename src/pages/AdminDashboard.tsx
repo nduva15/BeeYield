@@ -172,6 +172,37 @@ const AdminDashboard: React.FC = () => {
     const [selectedBatch, setSelectedBatch] = useState<any | null>(null);
     const [isBatchDetailsOpen, setIsBatchDetailsOpen] = useState(false);
 
+    const enrichAndSortBatches = React.useCallback((batchRows: any[], harvestRows: any[]) => {
+        const harvestByCode = new Map(
+            harvestRows
+                .filter((row) => row?.batch_code)
+                .map((row) => [row.batch_code, row])
+        );
+
+        return batchRows
+            .map((batch) => {
+                const harvest = harvestByCode.get(batch.batch_code);
+                const harvestDate = harvest?.harvest_date || harvest?.date || batch.harvest_date;
+                return {
+                    ...batch,
+                    hive_code: batch.hive_code || harvest?.hive?.hive_code || harvest?.hive_code || 'N/A',
+                    harvest_year: harvestDate ? new Date(harvestDate).getFullYear() : null,
+                    h_date: harvestDate,
+                };
+            })
+            .sort((left, right) => new Date(right.h_date || 0).getTime() - new Date(left.h_date || 0).getTime());
+    }, []);
+
+    const farmerNameById = React.useMemo(
+        () => Object.fromEntries(farmers.filter((row) => row?.id).map((row) => [row.id, row.name])),
+        [farmers]
+    );
+
+    const apiaryNameById = React.useMemo(
+        () => Object.fromEntries(apiaries.filter((row) => row?.id).map((row) => [row.id, row.name])),
+        [apiaries]
+    );
+
     useEffect(() => {
         if (!authLoading && !user) {
             navigate('/ceba/login');
@@ -219,23 +250,9 @@ const AdminDashboard: React.FC = () => {
             ]);
             
             // Enrich batches with Hive info from harvests (linked by batch_code)
-            const enrichedBatches = batchesData.map((b: any) => {
-                const h = harvestsData.find((hv: any) => hv.batch_code === b.batch_code);
-                return {
-                    ...b,
-                    hive_code: h?.hive?.hive_code || 'N/A',
-                    harvest_year: h?.harvest_date ? new Date(h.harvest_date).getFullYear() : (b.harvest_date ? new Date(b.harvest_date).getFullYear() : null),
-                    // Ensure harvest_date is consistent for sorting
-                    h_date: h?.harvest_date || b.harvest_date
-                };
-            });
-
-            // Sort by harvest_date descending to show newest first
-            enrichedBatches.sort((a: any, b: any) => new Date(b.h_date).getTime() - new Date(a.h_date).getTime());
-
             setOrders(ordersData);
             setProducts(productsData);
-            setBatches(enrichedBatches);
+            setBatches(enrichAndSortBatches(batchesData, harvestsData));
             setApiaries(apiariesData);
             setHives(hivesData);
             setHarvests(harvestsData);
@@ -291,8 +308,12 @@ const AdminDashboard: React.FC = () => {
                     break;
                 }
                 case 'batches': {
-                    const batchesData = await adminService.getBatches();
-                    setBatches(batchesData.reverse());
+                    const [batchesData, harvestsData] = await Promise.all([
+                        adminService.getBatches(),
+                        adminService.getHarvests()
+                    ]);
+                    setHarvests(harvestsData);
+                    setBatches(enrichAndSortBatches(batchesData, harvestsData));
                     break;
                 }
                 case 'farmers': {
@@ -333,7 +354,7 @@ const AdminDashboard: React.FC = () => {
                     setHarvests(harvestsData);
                     setHives(hivesData);
                     setFarmers(farmersData);
-                    setBatches(batchesData);
+                    setBatches(enrichAndSortBatches(batchesData, harvestsData));
                     setLoadedTabs(prev => {
                         const next = new Set(prev);
                         next.add('harvests');
@@ -2533,7 +2554,7 @@ const AdminDashboard: React.FC = () => {
                                                 <TableRow key={apiary.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
                                                     <TableCell className="px-6 font-black text-primary tracking-tight">{apiary.name}</TableCell>
                                                     <TableCell className="px-6">
-                                                        <div className="font-semibold text-sm">{apiaries.find(a => a.id === apiary.id)?.farmers?.name || 'Assigned Partner'}</div>
+                                                        <div className="font-semibold text-sm">{apiary.farmers?.name || apiary.farmer?.name || farmerNameById[apiary.farmer_id] || 'Assigned Partner'}</div>
                                                     </TableCell>
                                                     <TableCell className="px-6">
                                                         <div className="text-sm font-bold">{apiary.location_name || apiary.county}</div>
@@ -2699,7 +2720,7 @@ const AdminDashboard: React.FC = () => {
                                             hives.map((hive) => (
                                                 <TableRow key={hive.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
                                                     <TableCell className="px-6 font-mono font-black text-primary tracking-tighter">{hive.hive_code}</TableCell>
-                                                    <TableCell className="px-6 font-semibold">{hive.apiaries?.name || 'Assigned Site'}</TableCell>
+                                                    <TableCell className="px-6 font-semibold">{hive.apiaries?.name || hive.apiary?.name || apiaryNameById[hive.apiary_id] || 'Assigned Site'}</TableCell>
                                                     <TableCell className="px-6">
                                                         <Badge variant="outline" className="rounded-lg text-[10px] font-black">{hive.type || 'Standard'}</Badge>
                                                     </TableCell>
@@ -2864,8 +2885,8 @@ const AdminDashboard: React.FC = () => {
                                             harvests.map((harvest) => (
                                                 <TableRow key={harvest.id} className="hover:bg-muted/10 transition-colors border-b border-[#F4D03F]/10">
                                                     <TableCell className="px-6 font-mono font-black text-primary tabular-nums">{new Date(harvest.harvest_date || harvest.date).toLocaleDateString()}</TableCell>
-                                                    <TableCell className="px-6 font-semibold">{harvest.hive?.hive_code || 'N/A'}</TableCell>
-                                                    <TableCell className="px-6 font-medium opacity-80">{harvest.farmer?.name || harvest.harvester_name || 'N/A'}</TableCell>
+                                                    <TableCell className="px-6 font-semibold">{harvest.hive?.hive_code || harvest.hive_code || 'N/A'}</TableCell>
+                                                    <TableCell className="px-6 font-medium opacity-80">{harvest.farmer?.name || farmerNameById[harvest.farmer_id] || harvest.harvester_name || 'N/A'}</TableCell>
                                                     <TableCell className="px-6 text-right font-black text-primary">{harvest.quantity_kg || harvest.weight_kg} KG</TableCell>
                                                     <TableCell className="px-6">
                                                         <Badge className={cn(

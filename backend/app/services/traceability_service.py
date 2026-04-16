@@ -134,6 +134,8 @@ class TraceabilityService:
             story_content=(farmer_data.get("story") or "").strip(),
             impact_stats=await _get_impact_stats(token),
             sensor_snapshot=view.get("sensor_snapshot"),
+            weather=view.get("weather"),
+            sustainability=view.get("sustainability"),
             health_snapshot=view.get("health_snapshot"),
             florage_type=view.get("florage_type"),
             extra_metadata=view.get("extra_metadata") or {},

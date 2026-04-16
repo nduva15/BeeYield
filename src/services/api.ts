@@ -1,11 +1,16 @@
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 
 const RAW_API_URL = import.meta.env.VITE_API_URL || "http://localhost:9091";
+const RAW_RUST_API_URL = import.meta.env.VITE_RUST_API_URL || "http://localhost:9091";
 const NORMALIZED_API_URL = RAW_API_URL.endsWith('/api/v1')
     ? RAW_API_URL.slice(0, -7)
     : RAW_API_URL.replace(/\/$/, '');
+const NORMALIZED_RUST_API_URL = RAW_RUST_API_URL.endsWith('/api/v1')
+    ? RAW_RUST_API_URL.slice(0, -7)
+    : RAW_RUST_API_URL.replace(/\/$/, '');
 
 export const API_V1_URL = `${NORMALIZED_API_URL}/api/v1`;
+export const RUST_API_V1_URL = `${NORMALIZED_RUST_API_URL}/api/v1`;
 export const API_BASE_URL = API_V1_URL;
 export const AI_API_URL = API_V1_URL;
 export const DATA_API_URL = API_V1_URL;
@@ -128,8 +133,44 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
 /**
  * Get the appropriate base URL based on the endpoint
  */
+function normalizeEndpointPath(endpoint: string): string {
+    if (endpoint.startsWith('http')) {
+        try {
+            return new URL(endpoint).pathname;
+        } catch {
+            return endpoint;
+        }
+    }
+    return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+}
+
+function shouldUseRustApi(endpoint: string): boolean {
+    const path = normalizeEndpointPath(endpoint).replace(/\/+$/, '');
+
+    if (
+        path === '/api/v1/beeyield/apiaries' ||
+        path.startsWith('/api/v1/beeyield/apiaries/') ||
+        path === '/api/v1/beeyield/hives' ||
+        path.startsWith('/api/v1/beeyield/hives/') ||
+        path === '/api/v1/beeyield/notes' ||
+        path.startsWith('/api/v1/beeyield/notes/')
+    ) {
+        return true;
+    }
+
+    if (path === '/api/v1/beeyield/requests') {
+        return true;
+    }
+
+    if (path.startsWith('/api/v1/beeyield/requests/')) {
+        return !path.endsWith('/comments');
+    }
+
+    return false;
+}
+
 export function getBaseUrl(endpoint: string): string {
-    return API_V1_URL;
+    return shouldUseRustApi(endpoint) ? RUST_API_V1_URL : API_V1_URL;
 }
 
 // Helper function for API calls with error handling

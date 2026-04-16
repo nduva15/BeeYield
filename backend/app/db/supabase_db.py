@@ -329,10 +329,68 @@ async def db_update(
 async def db_delete(
     table: str, filters: dict[str, Any], token: Optional[str] = None
 ) -> dict[str, Any]:
-    """Delete records via the Rust/Go gateway."""
+    """Delete records via the Rust/Go gateway, with direct REST and SDK fallbacks."""
     str_filters = {k: str(v) for k, v in filters.items()}
     payload = {"table": table, "filters": str_filters}
-    return await _request_gateway("/db/delete", payload, token)
+    res = await _request_gateway("/db/delete", payload, token)
+
+    if not res.get("success"):
+        url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+        params: dict[str, str] = {}
+        for k, v in filters.items():
+            if v is None:
+                params[k] = "is.null"
+            elif isinstance(v, (list, tuple)):
+                v_clean = [i for i in v if i is not None]
+                if v_clean:
+                    params[k] = f"in.({','.join([str(i) for i in v_clean])})"
+                else:
+                    params[k] = "is.null"
+            else:
+                params[k] = f"eq.{v}"
+
+        apikey = settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY
+        headers = {
+            "apikey": apikey,
+            "Authorization": f"Bearer {token or apikey}",
+            "Prefer": "return=representation",
+        }
+
+        try:
+            response = await _execute_request("DELETE", url, params=params, headers=headers)
+            response.raise_for_status()
+            try:
+                data = response.json()
+            except Exception:
+                data = []
+            return {"success": True, "data": data}
+        except httpx.HTTPStatusError as e:
+            print(f"[ERROR] REST delete fallback failed: {e.response.status_code} - {e.response.text}")
+        except Exception as e:
+            print(f"[ERROR] REST delete fallback failed: {str(e)}")
+
+        supabase = get_supabase()
+        if supabase:
+            try:
+                query = supabase.table(table).delete()
+                for k, v in filters.items():
+                    if isinstance(v, (list, tuple)):
+                        v_clean = [i for i in v if i is not None]
+                        if v_clean:
+                            query = query.in_(k, v_clean)
+                        else:
+                            query = query.is_(k, "null")
+                    elif v is None:
+                        query = query.is_(k, "null")
+                    else:
+                        query = query.eq(k, v)
+                response = query.execute()
+                return {"success": True, "data": response.data}
+            except Exception as e:
+                print(f"[ERROR] SDK delete fallback failed: {str(e)}")
+                return {"success": False, "error": f"Gateway and SDK delete failed: {str(e)}"}
+
+    return res
 
 
 async def db_upsert(
