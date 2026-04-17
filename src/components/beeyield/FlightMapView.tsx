@@ -329,7 +329,7 @@ const FlightMapView: React.FC = () => {
                     .filter((h) => selectedHiveIds.includes(String(h.id)))
                     .map((h) => ({
                         id: String(h.id),
-                        name: h.hive_code || h.name || 'Kibwezi anchor',
+                        name: h.hive_code || 'Kibwezi anchor',
                         latitude: Number(h.latitude || 0),
                         longitude: Number(h.longitude || 0),
                         type: 'stop' as const,
