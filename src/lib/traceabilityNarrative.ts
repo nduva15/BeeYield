@@ -77,19 +77,19 @@ export const buildConservationFacts = (traceData: TraceResponse | null) => [
   {
     label: "50/50 reserve left for bees",
     value: typeof traceData?.extra_metadata?.quantity_left_for_bees_kg === "number"
-      ? `${traceData.extra_metadata.quantity_left_for_bees_kg}kg`
+      ? `${traceData?.extra_metadata?.quantity_left_for_bees_kg}kg`
       : formatTraceText(traceData?.extra_metadata?.quantity_left_for_bees_kg),
   },
   {
     label: "Harvested volume",
     value: typeof traceData?.impact_stats?.total_honey_kg === "number"
-      ? `${traceData.impact_stats.total_honey_kg}kg`
+      ? `${traceData?.impact_stats?.total_honey_kg}kg`
       : formatTraceText(traceData?.impact_stats?.total_honey_kg),
   },
   { label: "50/50 rule status", value: formatTraceText(traceData?.sustainability?.status) },
   {
     label: "Trees planted",
-    value: BEEYIELD_TRACEABILITY_STORY.treesPlanted,
+    value: formatTraceText(traceData?.impact_stats?.trees_planted || traceData?.impact_stats?.tree_count, BEEYIELD_TRACEABILITY_STORY.treesPlanted),
   },
   {
     label: "Hive growth story",

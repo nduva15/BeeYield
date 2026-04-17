@@ -47,34 +47,34 @@ async def plan_route(
         if not hives:
             raise HTTPException(status_code=404, detail="Selected hives not found")
 
-    # Build graph
+    # Fetch apiaries in batch for coordinate fallback
+    apiary_ids = list(set(str(h.get("apiary_id")) for h in hives if h.get("apiary_id")))
+    apiaries_data = await db_select("apiaries", filters={"id": apiary_ids}, token=token) if apiary_ids else []
+    apiaries_map = {str(a["id"]): a for a in apiaries_data if a.get("id")}
+
+    # Build graph nodes from valid hives
     G = nx.Graph()
-    
-    # Starting point
     G.add_node("start", pos=(request_data.start_point.lat, request_data.start_point.lng))
     
-    # Hives
     valid_hives = []
     for hive in hives:
-        # Check coordinates in the hive itself or its apiary
+        # Try hive level coordinates first
         lat = hive.get("latitude")
         lng = hive.get("longitude")
         
-        # If not in hive, check linked apiary
+        # Fallback to parent apiary coordinates if hive level is missing
         if (lat is None or lng is None) and hive.get("apiary_id"):
-            apiaries = await db_select("apiaries", filters={"id": hive["apiary_id"]}, token=token)
-            if apiaries:
-                lat = apiaries[0].get("latitude")
-                lng = apiaries[0].get("longitude")
+            apiary = apiaries_map.get(str(hive["apiary_id"]))
+            if apiary:
+                lat = apiary.get("latitude")
+                lng = apiary.get("longitude")
         
         if lat is not None and lng is not None:
             try:
-                # Ensure they are floats
-                lat = float(lat)
-                lng = float(lng)
-                G.add_node(hive["id"], pos=(lat, lng))
+                lat_f, lng_f = float(lat), float(lng)
+                G.add_node(str(hive["id"]), pos=(lat_f, lng_f))
                 valid_hives.append(hive)
-            except ValueError:
+            except (ValueError, TypeError):
                 continue
             
     if not valid_hives:

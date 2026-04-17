@@ -315,26 +315,28 @@ const FlightMapView: React.FC = () => {
         if (selectedHiveIds.length === 0) return toast.error('Select at least one hive to build a route.');
         setPlanningRoute(true);
         try {
-            if (!hasPrivateApiaries && publicFlightMap?.route_points?.length) {
-                setRoutePath([
-                    {
-                        id: String(publicFlightMap.apiary.id),
-                        name: publicFlightMap.apiary.name,
-                        latitude: Number(publicFlightMap.apiary.latitude || 0),
-                        longitude: Number(publicFlightMap.apiary.longitude || 0),
-                        type: 'origin',
-                    },
-                    ...publicFlightMap.hives
-                        .filter((hive) => selectedHiveIds.includes(String(hive.id)))
-                        .map((hive) => ({
-                            id: String(hive.id),
-                            name: hive.hive_code || 'Kibwezi anchor',
-                            latitude: Number(hive.latitude || 0),
-                            longitude: Number(hive.longitude || 0),
-                            type: 'stop',
-                            status: hive.status || 'Active',
-                        })),
-                ]);
+            const isPublicMode = !hasPrivateApiaries || (publicFlightMap && 'site_mode' in publicFlightMap);
+            if (isPublicMode && publicFlightMap) {
+                const apiaryNode = {
+                    id: String(publicFlightMap.apiary.id),
+                    name: publicFlightMap.apiary.name,
+                    latitude: Number(publicFlightMap.apiary.latitude || 0),
+                    longitude: Number(publicFlightMap.apiary.longitude || 0),
+                    type: 'origin' as const,
+                };
+
+                const selectedHivesData = publicFlightMap.hives
+                    .filter((h) => selectedHiveIds.includes(String(h.id)))
+                    .map((h) => ({
+                        id: String(h.id),
+                        name: h.hive_code || h.name || 'Kibwezi anchor',
+                        latitude: Number(h.latitude || 0),
+                        longitude: Number(h.longitude || 0),
+                        type: 'stop' as const,
+                        status: h.status || 'Active',
+                    }));
+
+                setRoutePath([apiaryNode, ...selectedHivesData]);
                 toast.success('Kibwezi route preview ready.');
                 return;
             }

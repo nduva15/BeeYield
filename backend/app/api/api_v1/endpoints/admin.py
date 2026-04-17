@@ -839,7 +839,7 @@ async def delete_farmer_admin(
 async def get_all_apiaries(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     data = []
     try:
-        data = await db_select("apiaries", columns="*,farmers:farmers(*)", order_by="created_at", ascending=False, token=token)
+        data = await db_select("apiaries", columns="*,farmer:farmers(*)", order_by="created_at", ascending=False, token=token)
     except Exception:
         pass
     

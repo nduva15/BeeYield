@@ -172,6 +172,8 @@ export interface ImpactStats {
     farmers_served: string;
     acres_pollinated: string;
     harvested_hives?: string;
+    trees_planted?: number | string;
+    tree_count?: number | string;
 }
 
 export interface PublicTraceabilityBatch {
