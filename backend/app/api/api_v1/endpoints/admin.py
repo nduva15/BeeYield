@@ -421,6 +421,8 @@ async def delete_user(
     Delete user. Requires admin.
     """
     supabase = get_supabase()
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Database connection failed")
     try:
         supabase.auth.admin.delete_user(user_id)
         await db_delete("profiles", {"id": user_id}, token=token)
@@ -576,7 +578,7 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
         for item in pollination:
             if item.get("farmer"):
                 item["farmer_name"] = item["farmer"].get("name")
-            del item["farmer"] # Remove the nested farmer object
+                del item["farmer"]  # Remove the nested farmer object
 
         if not apiaries or len(apiaries) == 0:
             from app.blockchain.honey_chain import honey_blockchain
@@ -871,7 +873,7 @@ async def create_apiary_admin(
 async def get_all_hives(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     data = []
     try:
-        data = await db_select("hives", columns="*,apiaries:apiaries(*),farmer:farmers(*)", order_by="created_at", ascending=False, token=token)
+        data = await db_select("hives", columns="*,apiary:apiaries(*),farmer:farmers(*)", order_by="created_at", ascending=False, token=token)
     except Exception:
         pass
     

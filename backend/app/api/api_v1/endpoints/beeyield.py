@@ -954,7 +954,9 @@ async def get_user_harvests(
                 token=token,
             )
         )
-    else:
+
+    # Fallback to legacy ownership/farmer lookups when scope resolution returns no rows.
+    if not all_harvests:
         # Fallback to legacy direct ownership lookups.
         relevant_ids = await get_user_and_farmer_ids(user_id, token)
         filters: dict[str, Any] = {"user_id": relevant_ids}

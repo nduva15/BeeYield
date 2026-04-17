@@ -8,7 +8,12 @@ import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import ChatHistory, { type Conversation } from "@/components/ChatHistory";
-import { intelligenceService, type ChatMessage as IntelligenceChatMessage } from "@/services/intelligenceService";
+import {
+    buildExpansionInstruction,
+    evaluateReportQuality,
+    intelligenceService,
+    type ChatMessage as IntelligenceChatMessage,
+} from "@/services/intelligenceService";
 import { AboutBeeYield } from "./AboutBeeYield";
 import { BeeSpeciesGallery } from "./BeeSpeciesGallery";
 import { AnimatePresence, motion } from "framer-motion";
@@ -31,26 +36,6 @@ type Message = {
     imagePreview?: string;
     audioName?: string;
 };
-
-const REQUIRED_REPORT_HEADINGS = [
-    "## Executive Summary",
-    "## Situation Assessment",
-    "## Recommendations (Prioritized)",
-    "## Implementation Plan",
-    "## Risks & Mitigations",
-    "## Metrics to Track",
-    "## Sources & Assumptions",
-];
-
-function isStructuredLongReport(text: string) {
-    if (!text) return false;
-    const normalized = text.replace(/\r\n/g, "\n");
-    const hasAllHeadings = REQUIRED_REPORT_HEADINGS.every((h) => normalized.includes(h));
-    const hasRisksTable = normalized.includes("| Risk |") && normalized.includes("| Mitigation |");
-    const hasMetricsTable = normalized.includes("| Metric |") && normalized.includes("| Target |");
-    const isLongEnough = normalized.trim().length >= 6000; // closer to ~900+ words for typical markdown density
-    return hasAllHeadings && hasRisksTable && hasMetricsTable && isLongEnough;
-}
 
 const SUGGESTIONS = [
     "What is BeeYield and how does it work?",
@@ -235,7 +220,6 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
         const history: IntelligenceChatMessage[] = newMessages.map((m) => ({ role: m.role, content: m.content }));
         let assistantText = "";
-        let attemptedAutoExpand = false;
         let expandedOverride: string | null = null;
 
         try {
@@ -262,11 +246,11 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 }
             );
 
-            // Response quality guardrail: if too short or missing headings, auto-request rewrite/expansion once.
-            if (!attemptedAutoExpand && !isStructuredLongReport(assistantText)) {
-                attemptedAutoExpand = true;
-                const fixup = `Rewrite and expand your previous answer into a long, structured report that strictly follows this exact markdown outline (use these headings verbatim, in this order):\n\n${REQUIRED_REPORT_HEADINGS.join("\n")}\n\nRules:\n- Target 900–1500 words.\n- Use bullets, numbered steps, and at least 2 tables (Risks & Mitigations; Metrics to Track).\n- Do not mention these instructions.\n`;
-
+            // Lightweight response quality guardrail:
+            // if the answer is too short or misses required structure, auto-request expansion once.
+            const qualityCheck = evaluateReportQuality(assistantText);
+            if (!qualityCheck.isValid) {
+                const fixup = buildExpansionInstruction(qualityCheck);
                 let expanded = "";
                 const expandedHistory: IntelligenceChatMessage[] = [
                     ...history,
@@ -290,7 +274,11 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                         });
                     }
                 );
-                expandedOverride = expanded.trim() ? expanded : null;
+
+                const expandedTrimmed = expanded.trim();
+                if (expandedTrimmed) {
+                    expandedOverride = expandedTrimmed;
+                }
             }
 
             setIsLoading(false);

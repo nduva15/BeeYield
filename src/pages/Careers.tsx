@@ -57,31 +57,8 @@ const Careers = () => {
       setJobs(data || []);
     } catch (error) {
       console.error('Error fetching jobs:', error);
-      // Fallback to static data if DB fails (for demo purposes if migration failed)
-      setJobs([
-        {
-          id: "1",
-          title: "Senior Agronomist",
-          department: "Operations",
-          location: "Nairobi, Kenya",
-          type: "Full-time",
-          description_html: "<p>Lead field operations and ensure hive health across our apiary network.</p><h3>Responsibilities</h3><ul><li>Monitor 50+ hives</li><li>Data collection</li></ul>",
-          salary_range: "KES 150,000 - 200,000",
-          is_active: true,
-          posted_at: new Date().toISOString()
-        },
-        {
-          id: "2",
-          title: "Software Engineer",
-          department: "Tech",
-          location: "Nairobi (Remote)",
-          type: "Full-time",
-          description_html: "<p>Build the future of agri-tech with React and Python.</p>",
-          salary_range: "KES 120,000 - 180,000",
-          is_active: true,
-          posted_at: new Date().toISOString()
-        }
-      ]);
+      // If the API is unavailable, do not show placeholder openings.
+      setJobs([]);
     } finally {
       setLoading(false);
     }
@@ -331,16 +308,16 @@ const Careers = () => {
       <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
           <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
-            Join the Hive
+            Careers at BeeYield
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight text-foreground">
-            Join Us to Make <br /> an Impact
+            Build Better Agriculture <br /> With Us
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-8">
-            We're a team on a mission to help protect the global food supply.
+            We are creating technology that improves pollination outcomes, supports beekeeper livelihoods, and strengthens food systems.
           </p>
           <Button size="lg" className="shadow-xl h-14 text-lg" onClick={() => document.getElementById('openings')?.scrollIntoView({ behavior: 'smooth' })}>
-            View Openings
+            View Career Updates
           </Button>
         </div>
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
@@ -351,22 +328,22 @@ const Careers = () => {
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid md:grid-cols-2 gap-16 items-start">
             <div>
-              <h2 className="text-6xl font-bold mb-6 text-primary">Hi!</h2>
+              <h2 className="text-6xl font-bold mb-6 text-primary">Work that matters</h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                We get it. Choosing your next job is one of the most important decisions you get to make. After all there's a ton of companies to choose from. All with different cultures and vibes, different levels of compensation, different missions, so in the end it comes down to this — what matters to you, is what matters.
+                Career choices are personal, and the right team should align with your values. At BeeYield, we care deeply about practical impact, continuous learning, and building products that work for real farmers and beekeepers.
               </p>
             </div>
             <div className="bg-secondary/30 p-8 rounded-2xl border border-secondary">
-              <h3 className="text-2xl font-bold mb-4 text-foreground">So why choose us?</h3>
+              <h3 className="text-2xl font-bold mb-4 text-foreground">Why BeeYield</h3>
               <p className="text-muted-foreground mb-6">
-                Well for one thing we're one of the fastest-growing ag-tech companies with a genuine mission: BeeYield combines a passion for technology to improve pollination and crop outcomes, while ensuring beekeepers and their bees continue to thrive.
+                We combine field insight, data, and software to improve pollination quality and crop outcomes while protecting bee welfare. Our mission guides product decisions and how we collaborate every day.
               </p>
               <div className="flex items-center gap-3 font-medium text-foreground">
                 <Heart className="h-5 w-5 text-primary" />
-                <span>Balance is key</span>
+                <span>Mission with balance</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2 ml-8">
-                We keep things fun and lighthearted, but our commitment to our mission is unwavering.
+                We move with focus, support one another, and keep quality high without losing sight of people.
               </p>
             </div>
           </div>
@@ -377,7 +354,7 @@ const Careers = () => {
       <section className="py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-foreground">What to know about our story</h2>
+            <h2 className="text-3xl font-bold mb-4 text-foreground">How we work</h2>
             <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
           </div>
 
@@ -389,7 +366,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Pioneers</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We aim to improve pollination by using technology to deliver predictability and precision to the process.
+                  We tackle hard agricultural problems and look for practical, measurable improvements.
                 </p>
               </CardContent>
             </Card>
@@ -401,7 +378,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Technologists</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We believe in the power of technology to improve crop yields and support the food supply.
+                  We use software, data, and field operations together to build better outcomes.
                 </p>
               </CardContent>
             </Card>
@@ -413,7 +390,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Optimists</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We believe pollination does not have to be a zero-sum game. All stakeholders can benefit from our solution.
+                  We believe grower success, beekeeper prosperity, and pollinator health can advance together.
                 </p>
               </CardContent>
             </Card>
@@ -425,7 +402,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Bridge Builders</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Our work positions us to be leaders in the field of pollinator health and welfare. We embrace this responsibility.
+                  We connect farmers, beekeepers, and partners through trusted relationships and clear communication.
                 </p>
               </CardContent>
             </Card>
@@ -437,7 +414,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Data-Driven</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  At BeeYield, we like to say, "If you can measure it, you can monitor it." A science-based approach guides all our decision-making.
+                  We rely on evidence and continuous measurement to guide product, operations, and impact.
                 </p>
               </CardContent>
             </Card>
@@ -449,7 +426,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">Knowledge Hub</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We're building a bee knowledge hub so beekeepers can manage hives from their phones.
+                  We share practical insights so teams and partners can make faster, smarter decisions.
                 </p>
               </CardContent>
             </Card>
@@ -462,10 +439,10 @@ const Careers = () => {
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-3xl font-bold mb-6">Built for Progress</h2>
           <p className="text-lg opacity-90 leading-relaxed mb-8">
-            Using data analytics, we're studying colony behavior to better understand and support bee health. At the same time, growers are using our advanced pollination platform to boost crop outcomes.
+            We study colony behavior and pollination performance to improve decision-making in the field. Every release helps growers increase confidence while helping beekeepers protect strong, healthy colonies.
           </p>
           <Button variant="secondary" className="gap-2 font-bold">
-            Check out The Buzz Blog <ArrowRight className="h-4 w-4" />
+            Explore The Buzz Blog <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </section>
@@ -474,9 +451,9 @@ const Careers = () => {
       <section id="openings" className="py-24 bg-background">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 text-foreground">Make Your Next Choice</h2>
+            <h2 className="text-4xl font-bold mb-4 text-foreground">Open Positions</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-              If you're seeking a new role, one that truly aligns with your goals, we'd love to be part of your journey! Check out the list of openings below.
+              We are not actively hiring at the moment. New opportunities will be published here as soon as they open.
             </p>
 
             <div className="inline-flex items-center bg-secondary/50 rounded-full px-4 py-2 text-sm font-medium">
@@ -495,7 +472,7 @@ const Careers = () => {
               </div>
             ) : jobs.length === 0 ? (
               <div className="text-center py-12 border border-dashed rounded-xl">
-                <p className="text-muted-foreground">No open positions at the moment. Check back later!</p>
+                <p className="text-muted-foreground">No open positions right now. Please check back soon for future roles.</p>
               </div>
             ) : (
               jobs.map((job) => (
@@ -528,7 +505,7 @@ const Careers = () => {
 
           <div className="mt-12 text-center">
             <p className="text-sm text-muted-foreground bg-secondary/30 inline-block px-6 py-3 rounded-lg">
-              BeeYield careers are currently available only in <strong>Kenya (Makueni)</strong>.
+              Hiring updates are currently focused on <strong>Kenya (Makueni)</strong>.
             </p>
           </div>
         </div>

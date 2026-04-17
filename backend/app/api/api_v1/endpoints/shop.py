@@ -217,7 +217,10 @@ async def add_address(
     token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    return await shop_service.add_user_address(user_id, address_in.dict(), token=token)
+    try:
+        return await shop_service.add_user_address(user_id, address_in.dict(), token=token)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 @router.delete("/addresses/{address_id}")
 async def delete_address(
@@ -237,7 +240,10 @@ async def update_address(
     token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    return await shop_service.update_user_address(user_id, address_id, address_in.dict(), token=token)
+    try:
+        return await shop_service.update_user_address(user_id, address_id, address_in.dict(), token=token)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 # --- Tracking ---
 @router.get("/orders/{order_id}/tracking", response_model=schemas.TrackingInfo)

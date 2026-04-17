@@ -3,18 +3,16 @@ import { motion } from "framer-motion";
 const partners = [
   {
     name: "Apisense",
-    url: "https://apisense.io",
+    url: "https://apisense.ai/en",
     logo: "/partners/apisense.png",
   },
   {
     name: "Intelligent Hives",
-    url: "https://intelligenthives.eu",
+    url: "https://intelligenthives.eu/",
     logo: "/partners/intelligenthives.png",
   },
   {
-    name: "FarmersNow",
-    url: "https://farmersnow.com",
-    logo: "/partners/farmersnow.png",
+    name: "Farmers",
   },
 ];
 
@@ -58,25 +56,35 @@ export const PartnersMarquee = () => {
         >
           {partners.map((partner) => (
             <motion.li key={partner.name} variants={itemVariants}>
-              <a
-                href={partner.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Visit ${partner.name}`}
-                className="group flex h-full flex-col items-center justify-center gap-4 rounded-3xl border border-border/70 bg-background/80 px-6 py-8 text-center shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
-              >
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/15 bg-primary/5 transition-colors group-hover:border-primary/35 md:h-16 md:w-16">
-                  <img
-                    src={partner.logo}
-                    alt={`${partner.name} logo`}
-                    className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
+              {partner.url ? (
+                <a
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit ${partner.name}`}
+                  className="group flex h-full flex-col items-center justify-center gap-4 rounded-3xl border border-border/70 bg-background/80 px-6 py-8 text-center shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
+                >
+                  {partner.logo ? (
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/15 bg-primary/5 transition-colors group-hover:border-primary/35 md:h-16 md:w-16">
+                      <img
+                        src={partner.logo}
+                        alt={`${partner.name} logo`}
+                        className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : null}
+                  <span className="text-base font-semibold tracking-tight text-foreground">
+                    {partner.name}
+                  </span>
+                </a>
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-4 rounded-3xl border border-border/70 bg-background/80 px-6 py-8 text-center shadow-sm backdrop-blur">
+                  <span className="text-base font-semibold tracking-tight text-foreground">
+                    {partner.name}
+                  </span>
                 </div>
-                <span className="text-base font-semibold tracking-tight text-foreground">
-                  {partner.name}
-                </span>
-              </a>
+              )}
             </motion.li>
           ))}
         </motion.ul>

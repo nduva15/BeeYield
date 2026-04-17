@@ -1,7 +1,7 @@
 /**
  * Traceability Service - Powered by BeeYield Honey Trail
  */
-import { AI_API_URL } from "./api";
+import { apiGet } from "./api";
 
 export interface Location {
     latitude: number;
@@ -195,24 +195,21 @@ export interface PublicTraceabilityBatch {
 
 export const traceBatch = async (code: string): Promise<TraceResponse | null> => {
     try {
-        const response = await fetch(`${AI_API_URL}/traceability/code/${code}`);
-        if (!response.ok) {
-            if (response.status === 404) {
-                return null;
-            }
-            throw new Error(`Connection Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const normalizedCode = code.trim();
+        if (!normalizedCode) return null;
+        const data = await apiGet<TraceResponse>(`/traceability/code/${encodeURIComponent(normalizedCode)}`);
 
         // Ensure we have at least the core journey data
         if (!data.timeline || data.timeline.length === 0) {
-            console.warn("Retrieved data incomplete for code:", code);
+            console.warn("Retrieved data incomplete for code:", normalizedCode);
             return null;
         }
 
         return data;
-    } catch (error) {
+    } catch (error: any) {
+        if (error?.status === 404) {
+            return null;
+        }
         console.error("Traceability verification failed:", error);
         throw error; // Let the caller handle UI notification
     }
@@ -220,17 +217,11 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
 
 export const getPublicTraceabilityBatches = async (limit = 12): Promise<PublicTraceabilityBatch[]> => {
     try {
-        const params = new URLSearchParams({
-            limit: String(limit),
+        const data = await apiGet<PublicTraceabilityBatch[]>("/traceability/public-batches", {
+            limit,
             owner_name: "Timothy Nduva",
-            verified_only: "true",
+            verified_only: true,
         });
-        const response = await fetch(`${AI_API_URL}/traceability/public-batches?${params.toString()}`);
-        if (!response.ok) {
-            throw new Error(`Connection Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
         return Array.isArray(data) ? data : [];
     } catch (error) {
         console.error("Error fetching public traceability batches:", error);
@@ -240,11 +231,7 @@ export const getPublicTraceabilityBatches = async (limit = 12): Promise<PublicTr
 
 export const getImpactStats = async (): Promise<ImpactStats | null> => {
     try {
-        const response = await fetch(`${AI_API_URL}/stats/impact`);
-        if (!response.ok) {
-            throw new Error("Failed to fetch impact stats");
-        }
-        return await response.json();
+        return await apiGet<ImpactStats>("/stats/impact");
     } catch (error) {
         console.error("Error fetching impact stats:", error);
         return null;
@@ -253,11 +240,7 @@ export const getImpactStats = async (): Promise<ImpactStats | null> => {
 
 export const getBlockchainStatus = async (): Promise<unknown> => {
     try {
-        const response = await fetch(`${AI_API_URL}/traceability/chain`);
-        if (!response.ok) {
-            throw new Error("Failed to fetch blockchain status");
-        }
-        return await response.json();
+        return await apiGet<unknown>("/traceability/chain");
     } catch (error) {
         console.error("Error fetching blockchain status:", error);
         return null;

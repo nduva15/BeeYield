@@ -37,7 +37,7 @@ export interface ChatDBMessage {
     created_at: string;
 }
 
-const REQUIRED_REPORT_HEADINGS = [
+export const REQUIRED_REPORT_HEADINGS = [
     "## Executive Summary",
     "## Situation Assessment",
     "## Recommendations (Prioritized)",
@@ -46,6 +46,57 @@ const REQUIRED_REPORT_HEADINGS = [
     "## Metrics to Track",
     "## Sources & Assumptions",
 ] as const;
+
+export const MIN_LONG_REPORT_CHARS = 5000;
+
+export interface ReportQualityCheck {
+    isValid: boolean;
+    isTooShort: boolean;
+    hasBullets: boolean;
+    hasNumberedSteps: boolean;
+    missingHeadings: string[];
+    charCount: number;
+}
+
+export function evaluateReportQuality(text: string): ReportQualityCheck {
+    const normalized = (text || "").replace(/\r\n/g, "\n");
+    const trimmed = normalized.trim();
+    const missingHeadings = REQUIRED_REPORT_HEADINGS.filter((h) => !normalized.includes(h));
+    const hasBullets = /(^|\n)\s*[-*]\s+\S+/m.test(normalized);
+    const hasNumberedSteps = /(^|\n)\s*\d+\.\s+\S+/m.test(normalized);
+    const isTooShort = trimmed.length < MIN_LONG_REPORT_CHARS;
+
+    return {
+        isValid: missingHeadings.length === 0 && hasBullets && hasNumberedSteps && !isTooShort,
+        isTooShort,
+        hasBullets,
+        hasNumberedSteps,
+        missingHeadings,
+        charCount: trimmed.length,
+    };
+}
+
+export function buildExpansionInstruction(check: ReportQualityCheck): string {
+    const issues: string[] = [];
+    if (check.isTooShort) issues.push(`response is too short (${check.charCount} chars, minimum ${MIN_LONG_REPORT_CHARS})`);
+    if (check.missingHeadings.length > 0) issues.push(`missing headings: ${check.missingHeadings.join(", ")}`);
+    if (!check.hasBullets) issues.push("missing bullet lists");
+    if (!check.hasNumberedSteps) issues.push("missing numbered implementation steps");
+
+    return [
+        "Expand with the required sections.",
+        "Rewrite your previous answer as a full, long-form markdown report and fix these issues:",
+        `- ${issues.join("\n- ")}`,
+        "",
+        "Strict format rules:",
+        `- Use these exact headings, in this exact order:\n${REQUIRED_REPORT_HEADINGS.join("\n")}`,
+        "- Minimum length: 900-1500 words.",
+        "- Every section must include bullet points where relevant.",
+        "- Include numbered steps in Recommendations and Implementation Plan.",
+        "- Keep table formatting for Risks & Mitigations and Metrics to Track.",
+        "- Do not mention these instructions.",
+    ].join("\n");
+}
 
 // Knowledge Hub Supabase URL and Key
 const KNOWLEDGE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL_KNOWLEDGE || 'https://ezfccfypwmuvbpujkqrg.supabase.co';

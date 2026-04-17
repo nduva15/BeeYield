@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote, Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code, Loader2, Download, ShieldCheck, Zap, Scale } from "lucide-react";
+import { Heart, Globe, Quote, Users, TreePine, Bug, Package, MapPin, Cpu, Code, Loader2, Download, ShieldCheck, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -145,7 +145,7 @@ const ESG = () => {
     {
       title: "Hive Health",
       icon: Cpu,
-      color: "from-emerald-950 to-emerald-900 border-[#1B9157]",
+      color: "bg-muted/40 border-border",
       initiatives: [
         "Sound pattern checks to flag early disease risk",
         "Real-time hive condition snapshots (Temp, Humidity, Mass)",
@@ -158,7 +158,7 @@ const ESG = () => {
     {
       title: "Traceability",
       icon: ShieldCheck,
-      color: "from-slate-950 to-slate-900 border-amber-500/20",
+      color: "bg-muted/40 border-border",
       initiatives: [
         "Verification checks for each batch",
         "Verifiable records for each harvest event",
@@ -171,7 +171,7 @@ const ESG = () => {
     {
       title: "The 50/50 Anchor",
       icon: Scale,
-      color: "from-amber-950 to-amber-900 border-amber-500/20",
+      color: "bg-muted/40 border-border",
       initiatives: [
         "Strict adherence to the 50% ethical harvest threshold",
         "No artificial supplements: Bees sustain on native flora",
@@ -184,7 +184,7 @@ const ESG = () => {
     {
       title: "Women-Led Engineering",
       icon: Code,
-      color: "from-indigo-950 to-indigo-900 border-indigo-500/20",
+      color: "bg-muted/40 border-border",
       initiatives: [
         "Co-Founded by Agatha Nduva (IT Architecture) & Carole Nduva (Growth)",
         "Diversity-first engineering and strategic leadership teams",
@@ -197,32 +197,32 @@ const ESG = () => {
   ];
 
   return (
-    <BeeYieldPageShell className="bg-[#fdfbf6]">
+    <BeeYieldPageShell className="min-h-screen bg-background text-foreground p-0">
       {/* Hero Section */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
+      <section className="relative py-24 lg:py-32 bg-gradient-to-br from-amber-500/10 via-background to-background overflow-hidden">
         <div className="container relative z-10 mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto text-center"
           >
-            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-semibold text-sm">
+            <Badge className="mb-6 bg-primary text-primary-foreground hover:bg-primary/90">
               <Globe className="w-3 h-3 mr-2" />
               ESG overview
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-black text-[#1A1A1A] mb-8 tracking-tighter leading-[0.95]">
-              Governance <br /><span className="text-beeyield-gold">by Integrity.</span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+              Governance <br /><span className="text-primary">by Integrity.</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
+            <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
               BeeYield focuses on measurable impact: healthier hives, better pollination, and traceable harvests.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-[#FFF9F0] text-[#1A1A1A] rounded-2xl h-16 px-10 font-black shadow-2xl hover:bg-slate-800" onClick={handleDownloadReport} disabled={downloading}>
+              <Button size="lg" className="gap-2" onClick={handleDownloadReport} disabled={downloading}>
                 {downloading ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Download className="w-5 h-5 mr-3" />}
                 {downloading ? "Downloading…" : "Download 2026 ESG report"}
               </Button>
-              <Button size="lg" variant="outline" asChild className="rounded-2xl h-16 px-10 border-2 font-black border-slate-100 hover:bg-[#F9F7F2]">
+              <Button size="lg" variant="outline" asChild>
                 <Link to="/commitment">Vision & Purpose</Link>
               </Button>
             </div>
@@ -230,11 +230,11 @@ const ESG = () => {
         </div>
 
         {/* Background Decor */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-beeyield-green/5 rounded-full blur-[140px] -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none" />
       </section>
 
       {/* Impact Metrics */}
-      <section className="py-20 bg-[#FFF9F0]">
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {impactStats.map((stat, index) => (
@@ -243,13 +243,13 @@ const ESG = () => {
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="text-center p-6 rounded-[2rem] bg-[#fdfbf6] border border-slate-50 shadow-soft group hover:-translate-y-1 transition-all"
+                className="text-center p-6 rounded-2xl bg-background border border-border shadow-sm group hover:-translate-y-1 transition-all"
               >
-                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-[#FFF9F0] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                  <stat.icon className="w-6 h-6 text-beeyield-green" />
+                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <stat.icon className="w-6 h-6 text-primary" />
                 </div>
-                <div className="text-2xl font-black text-[#1A1A1A] mb-1 tracking-tighter">{stat.value}</div>
-                <div className="text-sm font-semibold text-slate-500 mb-1">{stat.label}</div>
+                <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
+                <div className="text-sm font-semibold text-muted-foreground mb-1">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -268,27 +268,27 @@ const ESG = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                 >
-                  <Card className={`overflow-hidden border-2 h-full rounded-[2.5rem] bg-gradient-to-br ${pillar.color} shadow-2xl`}>
+                  <Card className={`overflow-hidden border h-full rounded-3xl ${pillar.color} shadow-lg hover:shadow-xl transition-shadow`}>
                     <CardContent className="p-10 flex flex-col h-full">
                       <div className="flex items-center gap-4 mb-8">
-                        <div className="w-16 h-16 rounded-[1.5rem] bg-[#F4D03F]/10 backdrop-blur-md flex items-center justify-center border border-[#F4D03F]/40">
-                          <pillar.icon className="w-8 h-8 text-[#1A1A1A] shadow-lg" />
+                        <div className="w-16 h-16 rounded-2xl bg-background flex items-center justify-center border border-border shadow-sm">
+                          <pillar.icon className="w-8 h-8 text-primary" />
                         </div>
-                        <h3 className="text-2xl font-black text-[#1A1A1A] tracking-tight">{pillar.title}</h3>
+                        <h3 className="text-2xl font-bold text-foreground tracking-tight">{pillar.title}</h3>
                       </div>
 
                       <div className="space-y-4 mb-10 flex-1">
                         {pillar.initiatives.map((initiative, i) => (
                           <div key={i} className="flex items-start gap-4">
-                            <div className="mt-1.5 h-1 w-1 rounded-full bg-beeyield-gold shadow-[0_0_8px_rgba(217,119,6,0.8)] flex-shrink-0" />
-                            <span className="text-sm text-[#1A1A1A] font-medium leading-relaxed">{initiative}</span>
+                            <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                            <span className="text-sm text-muted-foreground font-medium leading-relaxed">{initiative}</span>
                           </div>
                         ))}
                       </div>
 
-                      <div className="pt-8 border-t border-[#F4D03F]/20">
-                        <p className="text-sm font-semibold text-beeyield-gold mb-2">Measured impact</p>
-                        <p className="text-lg font-bold text-[#1A1A1A] leading-tight">
+                      <div className="pt-8 border-t border-border">
+                        <p className="text-sm font-semibold text-primary mb-2">Measured impact</p>
+                        <p className="text-lg font-bold text-foreground leading-tight">
                           {pillar.impact}
                         </p>
                       </div>
@@ -302,41 +302,41 @@ const ESG = () => {
       </section>
 
       {/* Food Security / Hunger Focus */}
-      <section className="py-24 bg-[#FFF9F0] text-[#1A1A1A] relative overflow-hidden">
+      <section className="py-24 bg-muted/20 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
-              <Badge variant="outline" className="mb-6 border-beeyield-gold/40 text-beeyield-gold font-semibold text-sm">
+              <Badge variant="outline" className="mb-6 border-primary/40 text-primary font-semibold text-sm">
                 Strategic Focus: SDG 2
               </Badge>
-              <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter">Data-Driven <br />Food Security.</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed mb-10 max-w-xl">
+              <h2 className="text-4xl md:text-6xl font-bold mb-8 tracking-tight">Data-Driven <br />Food Security.</h2>
+              <p className="text-muted-foreground text-lg font-medium leading-relaxed mb-10 max-w-xl">
                 In semi-arid Makueni, pollination isn't just a service?it's survival. We deploy monitored hives to support mango and avocado smallholders during flowering and document what happens in the field.
               </p>
 
               <div className="grid grid-cols-2 gap-10">
                 <div className="space-y-2">
-                  <p className="text-4xl font-black text-beeyield-gold">25+</p>
-                  <p className="text-sm font-semibold text-slate-600">Acres supported</p>
+                  <p className="text-4xl font-bold text-primary">25+</p>
+                  <p className="text-sm font-semibold text-muted-foreground">Acres supported</p>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-4xl font-black text-beeyield-green">100%</p>
-                  <p className="text-sm font-semibold text-slate-600">Pesticide-free baseline</p>
+                  <p className="text-4xl font-bold text-primary">100%</p>
+                  <p className="text-sm font-semibold text-muted-foreground">Pesticide-free baseline</p>
                 </div>
               </div>
             </div>
 
             <div className="relative group">
-              <div className="absolute -inset-4 bg-gradient-to-r from-beeyield-gold to-beeyield-green rounded-[3rem] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity" />
-              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-[#F4D03F]/20">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-primary/10 rounded-[3rem] blur-2xl opacity-30 group-hover:opacity-50 transition-opacity" />
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-border">
                 <img src="/pollination-farmers.png" alt="Participatory Ag" className="w-full aspect-square object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60" />
                 <div className="absolute bottom-10 left-10 right-10">
-                  <Quote className="w-10 h-10 text-beeyield-gold mb-4 opacity-50" />
+                  <Quote className="w-10 h-10 text-primary mb-4 opacity-70" />
                   <p className="text-xl font-medium italic text-slate-100 mb-4">
                     "Through precision pollination, we're not just harvesting honey?we're creating local abundance."
                   </p>
-                  <p className="text-sm font-semibold text-beeyield-gold">Timothy Nduva, CEO</p>
+                  <p className="text-sm font-semibold text-primary-foreground">Timothy Nduva, CEO</p>
                 </div>
               </div>
             </div>
@@ -345,21 +345,21 @@ const ESG = () => {
       </section>
 
       {/* Partner/Trust Footprint */}
-      <section className="py-24 bg-[#FFF9F0] border-b border-slate-100">
+      <section className="py-24 bg-background border-b border-border">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-2xl mx-auto space-y-10">
-            <div className="w-24 h-24 bg-[#F9F7F2] rounded-[2rem] flex items-center justify-center mx-auto shadow-inner">
-              <ShieldCheck className="w-12 h-12 text-[#1A1A1A]" />
+            <div className="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+              <ShieldCheck className="w-12 h-12 text-primary" />
             </div>
-            <h3 className="text-3xl md:text-5xl font-black text-[#1A1A1A] tracking-tighter">Verified by Design.</h3>
-            <p className="text-slate-500 text-lg font-medium">
+            <h3 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight">Verified by Design.</h3>
+            <p className="text-muted-foreground text-lg font-medium">
               Every jar tracked. Every hive monitored. Every community supported. Partner with us to improve traceability and pollinator health.
             </p>
             <div className="flex flex-wrap justify-center gap-6 pt-4">
-              <Link to="/contact" className="px-10 py-5 bg-[#FFF9F0] text-[#1A1A1A] rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all">
+              <Link to="/contact" className="px-10 py-5 bg-primary text-primary-foreground rounded-2xl font-semibold shadow-xl hover:bg-primary/90 transition-all">
                 Partner Engagement
               </Link>
-              <Link to="/media" className="px-10 py-5 bg-[#FFF9F0] text-[#1A1A1A] border-2 border-slate-100 rounded-2xl font-black hover:bg-[#F9F7F2] transition-all">
+              <Link to="/media" className="px-10 py-5 bg-background text-foreground border border-border rounded-2xl font-semibold hover:bg-muted transition-all">
                 Impact Media Room
               </Link>
             </div>

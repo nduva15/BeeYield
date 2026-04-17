@@ -70,7 +70,7 @@ export const buildHarvestFacts = (traceData: TraceResponse | null) => [
   { label: "Apiary", value: formatTraceText(traceData?.apiary?.name) },
   { label: "Hive", value: formatTraceText(traceData?.hive?.hive_code) },
   { label: "Farmer", value: formatTraceText(traceData?.farmer?.name) },
-  { label: "Florage", value: traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : formatTraceText(traceData?.florage_type) },
+  { label: "Florage", value: traceData?.apiary?.flora_types?.length ? traceData?.apiary?.flora_types?.join(", ") ?? formatTraceText(traceData?.florage_type) : formatTraceText(traceData?.florage_type) },
 ];
 
 export const buildConservationFacts = (traceData: TraceResponse | null) => [
@@ -89,11 +89,7 @@ export const buildConservationFacts = (traceData: TraceResponse | null) => [
   { label: "50/50 rule status", value: formatTraceText(traceData?.sustainability?.status) },
   {
     label: "Trees planted",
-    value: formatTraceText(
-      traceData?.impact_stats?.trees_planted ||
-      traceData?.impact_stats?.tree_count ||
-      BEEYIELD_TRACEABILITY_STORY.treesPlanted
-    ),
+    value: BEEYIELD_TRACEABILITY_STORY.treesPlanted,
   },
   {
     label: "Hive growth story",

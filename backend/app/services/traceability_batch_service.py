@@ -496,7 +496,7 @@ async def get_batch_views_for_user(
         harvest_rows.extend(
             await db_select("harvests", columns=columns, filters={"apiary_id": scope["apiary_ids"]}, limit=2000, token=lookup_token)
         )
-    else:
+    if not harvest_rows:
         harvest_rows.extend(
             await db_select("harvests", columns=columns, filters={"user_id": [user_id]}, limit=2000, token=lookup_token)
         )

@@ -152,7 +152,7 @@ const Team = () => {
             role: "Technical Director",
             department: "Operations",
             description: "Co-architect of BeeYield's strategic operations. Carole leads the integration of operational technology with large-scale apiary management, scaling our impact to hundreds of commercial partners.",
-            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
+            image: LOGO,
             linkedin: "#",
             email: "info@beeyield.com",
             achievements: ["Operations Scalability", "Partner Ecosystem", "Logistics Architecture"]
@@ -162,7 +162,7 @@ const Team = () => {
             role: "Technical Director",
             department: "Engineering",
             description: "Agatha leads our engineering work—building reliable systems for data collection, reporting, and traceability.",
-            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
+            image: LOGO,
             linkedin: "#",
             email: "info@beeyield.com",
             achievements: ["Product engineering", "Data reliability", "Security & privacy"]
@@ -175,7 +175,7 @@ const Team = () => {
             role: "VP Technology",
             department: "Engineering",
             description: "Expert software architect focused on building resilient, user-centric mobile and web platforms for beekeepers. Leading our specialist technical unit to deliver high-fidelity data visualizations.",
-            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
+            image: LOGO,
             linkedin: "#",
             email: "info@beeyield.com",
             achievements: ["IoT Dashboard Architect", "Mobile Latency Optimization", "UI/UX Technical Lead"]
@@ -185,7 +185,7 @@ const Team = () => {
             role: "Board Member",
             department: "Governance",
             description: "Seasoned advisor providing strategic oversight and ensuring BeeYield maintains the highest standards of corporate governance and environmental stewardship.",
-            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
+            image: LOGO,
             linkedin: "#",
             email: "info@beeyield.com",
             achievements: ["Seed Funding Oversight", "Sustainability Roadmap", "Legal Compliance"]
@@ -285,7 +285,7 @@ const Team = () => {
                                       <div className="h-0.5 w-12 bg-beeyield-green" />
                                       <span className="text-[10px] font-black text-beeyield-green">Est. 2020</span>
                                    </div>
-                                   <p className="text-white text-xl md:text-2xl font-black italic leading-tight tracking-tighter">
+                                   <p className="text-white text-xl md:text-2xl font-black leading-tight tracking-tighter">
                                      "Rural courage and family unity are the core sensors of our mission."
                                    </p>
                                 </div>
@@ -339,7 +339,7 @@ const Team = () => {
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] pointer-events-none" />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-24">
-                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4 italic">Core Directives</h2>
+                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4">Core Directives</h2>
                         <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
                         <p className="text-neutral-400 font-medium text-xs">The underlying code of the Directorate</p>
                     </div>
@@ -356,7 +356,7 @@ const Team = () => {
                                 <div className="mb-10 inline-flex items-center justify-center p-6 bg-neutral-50 rounded-3xl group-hover:bg-beeyield-green/10 transition-colors">
                                     {value.icon}
                                 </div>
-                                <h3 className="text-2xl font-black text-neutral-900 mb-6 italic tracking-tight leading-none">{value.title}</h3>
+                                <h3 className="text-2xl font-black text-neutral-900 mb-6 tracking-tight leading-none">{value.title}</h3>
                                 <p className="text-neutral-400 leading-relaxed font-medium">
                                     {value.description}
                                 </p>
@@ -372,7 +372,7 @@ const Team = () => {
                         <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-4 py-1.5 font-black text-[10px]">
                             Directorate Broadcast
                         </Badge>
-                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4 italic">
+                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4">
                             Watch The Team Story
                         </h2>
                         <p className="text-lg text-neutral-500 font-medium leading-relaxed">
@@ -400,7 +400,7 @@ const Team = () => {
                         <Badge className="bg-neutral-100 text-neutral-400 border-none mb-8 px-5 py-2 font-black text-[10px] rounded-full">
                             Strategic Command Unit
                         </Badge>
-                        <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-8 italic leading-none">The Directorate</h2>
+                        <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-8 leading-none">The Directorate</h2>
                         <p className="text-xl text-neutral-500 font-medium leading-relaxed">
                             A unified specialist unit engineering the precision protocols and distributed infrastructure of BeeYield.
                         </p>
@@ -434,7 +434,7 @@ const Team = () => {
                                 </div>
                                 <div className="text-center space-y-3">
                                     <span className="text-[9px] font-black text-neutral-300">Technical Directorate</span>
-                                    <h4 className="text-4xl font-black text-neutral-900 italic tracking-tight leading-none">{member.name}</h4>
+                                    <h4 className="text-4xl font-black text-neutral-900 tracking-tight leading-none">{member.name}</h4>
                                     <div className="flex items-center justify-center gap-2">
                                        <div className="h-1 w-1 bg-beeyield-green rounded-full animate-pulse" />
                                        <p className="text-[10px] font-black text-beeyield-green">{member.role}</p>
@@ -474,7 +474,7 @@ const Team = () => {
                                  </div>
                                  <div className="text-center space-y-3">
                                      <span className="text-[9px] font-black text-neutral-300">Operations Unit</span>
-                                     <h4 className="text-4xl font-black text-neutral-900 italic tracking-tight leading-none">{member.name}</h4>
+                                     <h4 className="text-4xl font-black text-neutral-900 tracking-tight leading-none">{member.name}</h4>
                                      <div className="flex items-center justify-center gap-2">
                                         <div className="h-1 w-1 bg-beeyield-green rounded-full animate-pulse" />
                                         <p className="text-[10px] font-black text-beeyield-green">{member.role}</p>
@@ -497,7 +497,7 @@ const Team = () => {
                                    <div className="h-2 w-2 bg-beeyield-green rounded-full animate-pulse" />
                                    <span className="text-[10px] font-black text-beeyield-green">Status: Active</span>
                                 </div>
-                                <h2 className="text-4xl lg:text-5xl font-black italic tracking-tighter leading-none">Meet the <span className="text-beeyield-green">team</span></h2>
+                                <h2 className="text-4xl lg:text-5xl font-black tracking-tighter leading-none">Meet the <span className="text-beeyield-green">team</span></h2>
                                 <p className="text-neutral-400 font-medium leading-relaxed">
                                     Our leadership team focuses on practical work: healthier hives, reliable data, and clear traceability from hive to jar.
                                 </p>
@@ -532,7 +532,7 @@ const Team = () => {
                             <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-5 py-2 font-black text-[10px] rounded-full">
                                 Strategic Ecosystem
                             </Badge>
-                            <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-10 italic leading-none">Global <span className="text-beeyield-green">Partners</span></h2>
+                            <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-10 leading-none">Global <span className="text-beeyield-green">Partners</span></h2>
                             <p className="text-xl text-neutral-400 font-medium mb-16 leading-relaxed">
                                 BeeYield collaborates with planetary-scale partners to advance beekeeping technology that secures global biodiversity and rural prosperity.
                             </p>
@@ -558,7 +558,7 @@ const Team = () => {
                         <div id="contact">
                             <div className="bg-white p-12 lg:p-16 rounded-[3.5rem] border border-neutral-100 shadow-soft relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-48 h-48 bg-beeyield-green/[0.02] rounded-full -translate-x-20 -translate-y-20 border border-beeyield-green/5" />
-                                <h3 className="text-4xl font-black text-neutral-900 italic tracking-tight mb-10 leading-none">Direct Inquiry</h3>
+                                <h3 className="text-4xl font-black text-neutral-900 tracking-tight mb-10 leading-none">Direct Inquiry</h3>
                                 <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
@@ -624,7 +624,7 @@ const Team = () => {
                                          <Badge className="bg-beeyield-green text-black border-none mb-4 px-4 py-2 font-black text-[10px] rounded-lg">
                                             {selectedMember.department}
                                          </Badge>
-                                         <h3 className="text-white text-4xl font-black italic tracking-tighter leading-tight">{selectedMember.name}</h3>
+                                         <h3 className="text-white text-4xl font-black tracking-tighter leading-tight">{selectedMember.name}</h3>
                                       </div>
                                    </div>
 
@@ -632,7 +632,7 @@ const Team = () => {
                                       <div className="absolute top-0 right-0 w-32 h-32 bg-beeyield-green/[0.02] rounded-full translate-x-12 -translate-y-12 border border-beeyield-green/10" />
                                       <div className="mb-10">
                                          <span className="text-[12px] font-semibold text-beeyield-green block mb-4">Team member</span>
-                                         <h2 className="text-4xl font-black text-neutral-900 italic leading-[0.9] tracking-tighter">{selectedMember.role}</h2>
+                                         <h2 className="text-4xl font-black text-neutral-900 leading-[0.9] tracking-tighter">{selectedMember.role}</h2>
                                       </div>
                                       <p className="text-neutral-500 text-xl leading-relaxed font-medium mb-10">
                                          {selectedMember.description}

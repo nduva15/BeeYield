@@ -536,19 +536,64 @@ async def top_up_wallet(user_id: str, amount: float, reference: str, token: Opti
 #  ADDRESS SERVICES
 # ==========================================
 
+_ADDRESS_CORE_FIELDS = {"name", "email", "phone", "street", "city", "county", "is_default"}
+_ADDRESS_OPTIONAL_FIELDS = {"apartment", "building", "floor", "postal_code"}
+
+
+def _normalize_address_payload(address_data: dict) -> dict:
+    """Keep address payload clean so CRUD works across mixed schemas."""
+    payload: dict[str, Any] = {}
+    for key in _ADDRESS_CORE_FIELDS.union(_ADDRESS_OPTIONAL_FIELDS):
+        if key not in address_data:
+            continue
+        value = address_data.get(key)
+        if isinstance(value, str):
+            value = value.strip()
+            if value == "":
+                value = None
+        payload[key] = value
+
+    return payload
+
+
+def _extract_address_error(res: Optional[dict]) -> str:
+    if not isinstance(res, dict):
+        return ""
+    return str(res.get("error", "") or "")
+
+
+def _address_fallback_payload(payload: dict) -> dict:
+    """Drop non-core fields for older DB schemas and keep defaults."""
+    fallback = {key: payload.get(key) for key in _ADDRESS_CORE_FIELDS if key in payload}
+    if "name" not in fallback:
+        fallback["name"] = "Address"
+    if "is_default" not in fallback:
+        fallback["is_default"] = False
+    return fallback
+
+
 async def get_user_addresses(user_id: str, token: Optional[str] = None) -> List[dict]:
     from app.db.supabase_db import db_select
     return await db_select("addresses", filters={"user_id": user_id}, token=token)
 
 async def add_user_address(user_id: str, address_data: dict, token: Optional[str] = None) -> dict:
     from app.db.supabase_db import db_insert, db_update
-    if address_data.get("is_default"):
+    payload = _normalize_address_payload(address_data)
+    if payload.get("is_default"):
         await db_update("addresses", {"is_default": False}, {"user_id": user_id}, token=token)
-    address_data["user_id"] = user_id
-    res = await db_insert("addresses", address_data, token=token)
+    payload["user_id"] = user_id
+    res = await db_insert("addresses", payload, token=token)
+
+    if not res.get("success"):
+        error_msg = _extract_address_error(res)
+        if "column" in error_msg and "does not exist" in error_msg:
+            fallback_payload = _address_fallback_payload(payload)
+            fallback_payload["user_id"] = user_id
+            res = await db_insert("addresses", fallback_payload, token=token)
+
     if res.get("success") and res.get("data"):
         return res["data"][0]
-    return address_data
+    raise ValueError(_extract_address_error(res) or "Failed to add address")
 
 async def delete_user_address(user_id: str, address_id: str, token: Optional[str] = None):
     from app.db.supabase_db import db_delete
@@ -556,12 +601,20 @@ async def delete_user_address(user_id: str, address_id: str, token: Optional[str
 
 async def update_user_address(user_id: str, address_id: str, address_data: dict, token: Optional[str] = None) -> dict:
     from app.db.supabase_db import db_update
-    if address_data.get("is_default"):
+    payload = _normalize_address_payload(address_data)
+    if payload.get("is_default"):
         await db_update("addresses", {"is_default": False}, {"user_id": user_id}, token=token)
-    res = await db_update("addresses", address_data, {"id": address_id, "user_id": user_id}, token=token)
+    res = await db_update("addresses", payload, {"id": address_id, "user_id": user_id}, token=token)
+
+    if not res.get("success"):
+        error_msg = _extract_address_error(res)
+        if "column" in error_msg and "does not exist" in error_msg:
+            fallback_payload = _address_fallback_payload(payload)
+            res = await db_update("addresses", fallback_payload, {"id": address_id, "user_id": user_id}, token=token)
+
     if res.get("success") and res.get("data"):
         return res["data"][0]
-    return {**address_data, "id": address_id}
+    raise ValueError(_extract_address_error(res) or "Failed to update address")
 
 # ==========================================
 #  PAYMENT METHOD SERVICES
