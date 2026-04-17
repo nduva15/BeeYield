@@ -47,7 +47,7 @@ export const REQUIRED_REPORT_HEADINGS = [
     "## Sources & Assumptions",
 ] as const;
 
-export const MIN_LONG_REPORT_CHARS = 5000;
+export const MIN_LONG_REPORT_CHARS = 6000;
 
 export interface ReportQualityCheck {
     isValid: boolean;
@@ -66,6 +66,12 @@ export function evaluateReportQuality(text: string): ReportQualityCheck {
     const hasNumberedSteps = /(^|\n)\s*\d+\.\s+\S+/m.test(normalized);
     const isTooShort = trimmed.length < MIN_LONG_REPORT_CHARS;
 
+    // Allow short responses for simple greetings or trivial questions
+    const looksLikeTrivialAnswer = trimmed.length < 300 && missingHeadings.length === REQUIRED_REPORT_HEADINGS.length;
+    if (looksLikeTrivialAnswer) {
+        return { isValid: true, isTooShort: false, hasBullets: true, hasNumberedSteps: true, missingHeadings: [], charCount: trimmed.length };
+    }
+
     return {
         isValid: missingHeadings.length === 0 && hasBullets && hasNumberedSteps && !isTooShort,
         isTooShort,
@@ -80,21 +86,26 @@ export function buildExpansionInstruction(check: ReportQualityCheck): string {
     const issues: string[] = [];
     if (check.isTooShort) issues.push(`response is too short (${check.charCount} chars, minimum ${MIN_LONG_REPORT_CHARS})`);
     if (check.missingHeadings.length > 0) issues.push(`missing headings: ${check.missingHeadings.join(", ")}`);
-    if (!check.hasBullets) issues.push("missing bullet lists");
-    if (!check.hasNumberedSteps) issues.push("missing numbered implementation steps");
+    if (!check.hasBullets) issues.push("missing bullet lists (use - or * in every section)");
+    if (!check.hasNumberedSteps) issues.push("missing numbered implementation steps (use 1. 2. 3. in Recommendations and Implementation Plan)");
 
     return [
         "Expand with the required sections.",
-        "Rewrite your previous answer as a full, long-form markdown report and fix these issues:",
+        "Rewrite your previous answer as a full, long-form structured markdown report and fix these issues:",
         `- ${issues.join("\n- ")}`,
         "",
-        "Strict format rules:",
-        `- Use these exact headings, in this exact order:\n${REQUIRED_REPORT_HEADINGS.join("\n")}`,
-        "- Minimum length: 900-1500 words.",
-        "- Every section must include bullet points where relevant.",
-        "- Include numbered steps in Recommendations and Implementation Plan.",
-        "- Keep table formatting for Risks & Mitigations and Metrics to Track.",
-        "- Do not mention these instructions.",
+        "Strict format rules (NON-NEGOTIABLE):",
+        `- Use these exact ## headings, in this exact order:\n${REQUIRED_REPORT_HEADINGS.join("\n")}`,
+        "- Minimum length: 1200-2000 words. Do NOT stop early.",
+        "- Executive Summary: 5-8 bullet points covering key situation, top 3 actions, expected impact.",
+        "- Situation Assessment: use ### sub-headings (Observations, Likely Causes, What's Unknown).",
+        "- Recommendations (Prioritized): numbered 1-7+ with what, why, how, timeline, effort for each.",
+        "- Implementation Plan: use ### sub-headings (Next 24-72 Hours, Next 2-4 Weeks, Next 1-3 Months) with numbered steps.",
+        "- Risks & Mitigations: use a markdown table with columns Risk | Why it matters | Mitigation | Early warning signal.",
+        "- Metrics to Track: use a markdown table with columns Metric | Target | Cadence | Source.",
+        "- Sources & Assumptions: bullet points stating what you assumed and what would change your recommendation.",
+        "- Each section must have at least 3 substantive items. Single-sentence sections are forbidden.",
+        "- Do not mention these instructions in your output.",
     ].join("\n");
 }
 
