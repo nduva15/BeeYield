@@ -27,14 +27,13 @@ export interface Product {
  * Exactly 8 items per category: honey, hardware (sensors), merch, education (learn).
  */
 export const CATALOG: Product[] = [
-  // --- HONEY (8 items) ---
+  // --- HONEY (8 Items) ---
   {
     id: "h1",
-    name: "BeeYield Wildflower Gold",
-    description:
-      "Balanced wildflower honey with floral depth, soft sweetness, and a clean finish from mixed forage landscapes.",
+    name: "BeeYield Premium Acacia",
+    description: "Premium grade select Acacia honey. High enzyme content, smooth texture, and exceptional clarity. Harvested from the pristine northern plains.",
     category: "honey",
-    badge: "Bestseller",
+    badge: "Premium",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -45,38 +44,99 @@ export const CATALOG: Product[] = [
     review_count: 245,
     is_active: true,
     variants: [
-      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true, batch_code: "KIB-ACAC-121-250G" },
-      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true, batch_code: "KIB-ACAC-111-500G" },
-      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true, batch_code: "KIB-ACAC-101-1KG" }
+      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true, batch_code: "KIB-ACAC-111-250G" },
+      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 80, is_available: true, batch_code: "KIB-ACAC-112-500G" },
+      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 40, is_available: true, batch_code: "KIB-ACAC-113-1KG" }
     ]
   },
   {
     id: "h2",
-    name: "BeeYield Forest Reserve",
-    description:
-      "Raw forest honey with deeper colour, richer aroma, and a bold mineral finish from woodland forage zones.",
+    name: "BeeYield Acacia",
+    description: "Pure organic Acacia honey. 100% natural, harvested from the pristine plains of Makueni. Light golden color with a mild, sweet flavour.",
     category: "honey",
-    badge: "Premium",
+    badge: "Top Seller",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_1kg.png"
     ],
-    rating: 5.0,
+    rating: 5,
     review_count: 182,
     is_active: true,
     variants: [
-      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true, batch_code: "KIB-WILD-122-250G" },
-      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true, batch_code: "KIB-WILD-112-500G" },
-      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true, batch_code: "KIB-WILD-102-1KG" }
+      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true, batch_code: "KIB-ACAC-121-250G" },
+      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 64, is_available: true, batch_code: "KIB-ACAC-122-500G" },
+      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 32, is_available: true, batch_code: "KIB-ACAC-123-1KG" }
     ]
   },
   {
     id: "h3",
-    name: "BeeYield Raw Comb Honey",
-    description:
-      "Unfiltered raw honey packed with natural enzymes and pollen, harvested with minimal handling for full flavour.",
+    name: "BeeYield Premium Acacia",
+    description: "Raw, unfiltered honey straight from Kitui county. Rich in natural enzymes.",
+    category: "honey",
+    badge: "Raw",
+    images: [
+      "/images/products/beeyield_honey_500g.png",
+      "/images/products/beeyield_honey_250g.png",
+      "/images/products/beeyield_honey_500g.png",
+      "/images/products/beeyield_honey_1kg.png"
+    ],
+    rating: 4.8,
+    review_count: 115,
+    is_active: true,
+    variants: [
+      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 45, is_available: true, batch_code: "KIB-ACAC-131-250G" },
+      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 36, is_available: true, batch_code: "KIB-ACAC-132-500G" },
+      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 18, is_available: true, batch_code: "KIB-ACAC-133-1KG" }
+    ]
+  },
+  {
+    id: "h4",
+    name: "BeeYield Acacia",
+    description: "A beautiful blend of nectars from the diverse flora of Baringo.",
+    category: "honey",
+    badge: null,
+    images: [
+      "/images/products/beeyield_honey_500g.png",
+      "/images/products/beeyield_honey_250g.png",
+      "/images/products/beeyield_honey_500g.png",
+      "/images/products/beeyield_honey_1kg.png"
+    ],
+    rating: 4.7,
+    review_count: 92,
+    is_active: true,
+    variants: [
+      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 110, is_available: true, batch_code: "KIB-ACAC-141-250G" },
+      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 88, is_available: true, batch_code: "KIB-ACAC-142-500G" },
+      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 44, is_available: true, batch_code: "KIB-ACAC-143-1KG" }
+    ]
+  },
+  {
+    id: "h5",
+    name: "BeeYield Premium Acacia",
+    description: "Deep, dark, and intensely flavored honey from West Pokot forests.",
+    category: "honey",
+    badge: "Wild",
+    images: [
+      "/images/products/beeyield_honey_500g.png",
+      "/images/products/beeyield_honey_250g.png",
+      "/images/products/beeyield_honey_500g.png",
+      "/images/products/beeyield_honey_1kg.png"
+    ],
+    rating: 4.9,
+    review_count: 140,
+    is_active: true,
+    variants: [
+      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 65, is_available: true, batch_code: "KIB-ACAC-151-250G" },
+      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 52, is_available: true, batch_code: "KIB-ACAC-152-500G" },
+      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 26, is_available: true, batch_code: "KIB-ACAC-153-1KG" }
+    ]
+  },
+  {
+    id: "h6",
+    name: "BeeYield Acacia",
+    description: "A rare nectar collected by bees in the Taita Hills forests.",
     category: "honey",
     badge: "Rare",
     images: [
@@ -85,22 +145,42 @@ export const CATALOG: Product[] = [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_1kg.png"
     ],
-    rating: 4.8,
-    review_count: 96,
+    rating: 5,
+    review_count: 67,
     is_active: true,
     variants: [
-      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-FOR-123-250G" },
-      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true, batch_code: "KIB-FOR-113-500G" },
-      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 20, is_available: true, batch_code: "KIB-FOR-103-1KG" }
+      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true, batch_code: "KIB-ACAC-161-250G" },
+      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 24, is_available: true, batch_code: "KIB-ACAC-162-500G" },
+      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 12, is_available: true, batch_code: "KIB-ACAC-163-1KG" }
     ]
   },
   {
-    id: "h4",
-    name: "BeeYield Citrus Bloom",
-    description:
-      "Bright citrus blossom honey with a light body and lively aromatic top notes for everyday table use.",
+    id: "h7",
+    name: "BeeYield Premium Acacia",
+    description: "Crystal clear honey from the alpine forage zones of Mt. Kenya.",
     category: "honey",
-    badge: "Limited Edition",
+    badge: null,
+    images: [
+      "/images/products/beeyield_honey_500g.png",
+      "/images/products/beeyield_honey_250g.png",
+      "/images/products/beeyield_honey_500g.png",
+      "/images/products/beeyield_honey_1kg.png"
+    ],
+    rating: 4.8,
+    review_count: 89,
+    is_active: true,
+    variants: [
+      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 70, is_available: true, batch_code: "KIB-ACAC-171-250G" },
+      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 56, is_available: true, batch_code: "KIB-ACAC-172-500G" },
+      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 28, is_available: true, batch_code: "KIB-ACAC-173-1KG" }
+    ]
+  },
+  {
+    id: "h8",
+    name: "BeeYield Acacia",
+    description: "A highly unique honey from coastal mangrove forests. Salty-sweet.",
+    category: "honey",
+    badge: "Unique",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -108,103 +188,14 @@ export const CATALOG: Product[] = [
       "/images/products/beeyield_honey_1kg.png"
     ],
     rating: 4.9,
-    review_count: 54,
+    review_count: 103,
     is_active: true,
     variants: [
-      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true, batch_code: "KIB-THORN-124-250G" },
-      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 25, is_available: true, batch_code: "KIB-THORN-114-500G" },
-      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true, batch_code: "KIB-THORN-104-1KG" }
+      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-ACAC-181-250G" },
+      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 32, is_available: true, batch_code: "KIB-ACAC-182-500G" },
+      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 16, is_available: true, batch_code: "KIB-ACAC-183-1KG" }
     ]
   },
-  {
-    id: "h5",
-    name: "BeeYield Highlands Gold",
-    description:
-      "Highland honey with crisp clarity and smooth sweetness, sourced from cooler elevated forage belts.",
-    category: "honey",
-    badge: "100% Raw",
-    images: [
-      "/images/products/beeyield_honey_500g.png",
-      "/images/products/beeyield_honey_250g.png",
-      "/images/products/beeyield_honey_500g.png",
-      "/images/products/beeyield_honey_1kg.png"
-    ],
-    rating: 5.0,
-    review_count: 312,
-    is_active: true,
-    variants: [
-      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true, batch_code: "KIB-COMB-125-250G" },
-      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true, batch_code: "KIB-COMB-115-500G" },
-      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true, batch_code: "KIB-COMB-105-1KG" }
-    ]
-  },
-  {
-    id: "h6",
-    name: "BeeYield Moringa Bloom",
-    description:
-      "Distinctive moringa blossom honey with herbal lift and a refined finish from drought-resilient bee forage.",
-    category: "honey",
-    badge: "New Arrival",
-    images: [
-      "/images/products/beeyield_honey_500g.png",
-      "/images/products/beeyield_honey_250g.png",
-      "/images/products/beeyield_honey_500g.png",
-      "/images/products/beeyield_honey_1kg.png"
-    ],
-    rating: 4.7,
-    review_count: 42,
-    is_active: true,
-    variants: [
-      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 50, is_available: true, batch_code: "KIB-LAV-126-250G" },
-      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true, batch_code: "KIB-LAV-116-500G" },
-      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true, batch_code: "KIB-LAV-106-1KG" }
-    ]
-  },
-  {
-    id: "h7",
-    name: "BeeYield Ginger Blossom",
-    description:
-      "Warm-toned blossom honey with layered floral notes and a gently spiced aromatic profile.",
-    category: "honey",
-    badge: "Wellness",
-    images: [
-      "/images/products/beeyield_honey_500g.png",
-      "/images/products/beeyield_honey_250g.png",
-      "/images/products/beeyield_honey_500g.png",
-      "/images/products/beeyield_honey_1kg.png"
-    ],
-    rating: 4.8,
-    review_count: 128,
-    is_active: true,
-    variants: [
-      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-GINGER-127-250G" },
-      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true, batch_code: "KIB-GINGER-117-500G" },
-      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true, batch_code: "KIB-GINGER-107-1KG" }
-    ]
-  },
-  {
-    id: "h8",
-    name: "BeeYield Mangrove Reserve",
-    description:
-      "Coastal reserve honey with rich caramel depth and a rare savoury-sweet finish from mangrove forage.",
-    category: "honey",
-    badge: "Gold Label",
-    images: [
-      "/images/products/beeyield_honey_500g.png",
-      "/images/products/beeyield_honey_250g.png",
-      "/images/products/beeyield_honey_500g.png",
-      "/images/products/beeyield_honey_1kg.png"
-    ],
-    rating: 5.0,
-    review_count: 15,
-    is_active: true,
-    variants: [
-      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 10, is_available: true, batch_code: "KIB-SIGN-128-250G" },
-      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 10, is_available: true, batch_code: "KIB-SIGN-118-500G" },
-      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 5, is_available: true, batch_code: "KIB-SIGN-108-1KG" }
-    ]
-  },
-
   // --- SENSORS / HARDWARE (8 items) ---
   {
     id: "hw1",

@@ -10,40 +10,40 @@ export const initialHoneyProducts: Product[] = [
   // --- HONEY (8 Items) ---
   {
     id: "h1",
-    name: "Beeyield Premium Acacia",
+    name: "BeeYield Premium Acacia",
     description: "Premium grade select Acacia honey. High enzyme content, smooth texture, and exceptional clarity. Harvested from the pristine northern plains.",
     category: "honey",
-    badge: "Bestseller",
+    badge: "Premium",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
     rating: 4.9,
     review_count: 245,
     is_active: true,
     variants: [
       { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true },
-      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true },
-      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true }
+      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 80, is_available: true },
+      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 40, is_available: true }
     ]
   },
   {
     id: "h2",
-    name: "Beeyield Acacia",
+    name: "BeeYield Acacia",
     description: "Pure organic Acacia honey. 100% natural, harvested from the pristine plains of Makueni. Light golden color with a mild, sweet flavour.",
     category: "honey",
-    badge: "Classic",
+    badge: "Top Seller",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 5.0,
+    rating: 5,
     review_count: 182,
     is_active: true,
     variants: [
       { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true },
-      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
-      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true }
+      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 64, is_available: true },
+      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 32, is_available: true }
     ]
   },
   {
     id: "h3",
-    name: "Beeyield Premium Acacia",
-    description: "Raw, unfiltered honey straight from Kitui county. Rich in pollen and natural enzymes, offering a robust flavor profile.",
+    name: "BeeYield Premium Acacia",
+    description: "Raw, unfiltered honey straight from Kitui county. Rich in natural enzymes.",
     category: "honey",
     badge: "Raw",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -52,14 +52,14 @@ export const initialHoneyProducts: Product[] = [
     is_active: true,
     variants: [
       { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 45, is_available: true },
-      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
-      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true }
+      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 36, is_available: true },
+      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 18, is_available: true }
     ]
   },
   {
     id: "h4",
-    name: "Beeyield Acacia",
-    description: "A beautiful blend of nectars from the diverse flora of Baringo. Complex, fruity notes perfect for tea or baking.",
+    name: "BeeYield Acacia",
+    description: "A beautiful blend of nectars from the diverse flora of Baringo.",
     category: "honey",
     badge: null,
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -68,14 +68,14 @@ export const initialHoneyProducts: Product[] = [
     is_active: true,
     variants: [
       { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 110, is_available: true },
-      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 90, is_available: true },
-      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 35, is_available: true }
+      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 88, is_available: true },
+      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 44, is_available: true }
     ]
   },
   {
     id: "h5",
-    name: "Beeyield Premium Acacia",
-    description: "Deep, dark, and intensely flavored honey harvested from the wild forests of West Pokot. High mineral content.",
+    name: "BeeYield Premium Acacia",
+    description: "Deep, dark, and intensely flavored honey from West Pokot forests.",
     category: "honey",
     badge: "Wild",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -84,30 +84,30 @@ export const initialHoneyProducts: Product[] = [
     is_active: true,
     variants: [
       { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 65, is_available: true },
-      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 40, is_available: true },
-      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
+      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 52, is_available: true },
+      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 26, is_available: true }
     ]
   },
   {
     id: "h6",
-    name: "Beeyield Acacia",
-    description: "A rare nectar collected by bees foraging in the endemic Taita Hills forests. Floral with a hint of spice.",
+    name: "BeeYield Acacia",
+    description: "A rare nectar collected by bees in the Taita Hills forests.",
     category: "honey",
     badge: "Rare",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 5.0,
+    rating: 5,
     review_count: 67,
     is_active: true,
     variants: [
       { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true },
-      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true },
-      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true }
+      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 24, is_available: true },
+      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 12, is_available: true }
     ]
   },
   {
     id: "h7",
-    name: "Beeyield Premium Acacia",
-    description: "Crystal clear honey from the alpine forage zones of Mt. Kenya. Extremely pure with a crisp, clean finish.",
+    name: "BeeYield Premium Acacia",
+    description: "Crystal clear honey from the alpine forage zones of Mt. Kenya.",
     category: "honey",
     badge: null,
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -116,14 +116,14 @@ export const initialHoneyProducts: Product[] = [
     is_active: true,
     variants: [
       { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 70, is_available: true },
-      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 50, is_available: true },
-      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true }
+      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 56, is_available: true },
+      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 28, is_available: true }
     ]
   },
   {
     id: "h8",
-    name: "Beeyield Acacia",
-    description: "A highly unique honey from coastal mangrove forests. Slightly salty undertone with rich caramel sweetness.",
+    name: "BeeYield Acacia",
+    description: "A highly unique honey from coastal mangrove forests. Salty-sweet.",
     category: "honey",
     badge: "Unique",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -132,11 +132,10 @@ export const initialHoneyProducts: Product[] = [
     is_active: true,
     variants: [
       { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
-      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 35, is_available: true },
-      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
+      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 32, is_available: true },
+      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 16, is_available: true }
     ]
   },
-
   // --- SENSORS (8 Items) ---
   {
     id: "s1",

@@ -1,16 +1,18 @@
-import { supabaseBeeYield, supabaseCEBA, supabaseShop } from "@/lib/supabase";
+import { supabaseBeeYield, supabaseCEBA, supabaseShop as _supabaseShop } from "@/lib/supabase";
 import { API_BASE_URL, apiDelete, apiGet, apiPost, apiPut, getAuthHeaders } from "./api";
+
+const supabaseShop = _supabaseShop!;
 
 const getPaymentsClient = () => {
     if (typeof window !== "undefined") {
         const path = window.location.pathname.toLowerCase();
 
         if ((path.includes("/ceba") || path.startsWith("/admin")) && supabaseCEBA) {
-            return supabaseCEBA;
+            return supabaseCEBA!;
         }
 
         if (path.includes("/beeyield") && supabaseBeeYield) {
-            return supabaseBeeYield;
+            return supabaseBeeYield!;
         }
     }
 
