@@ -228,19 +228,19 @@ const Team = () => {
                             alt="BeeYield Logo" 
                             className="h-32 md:h-48 w-auto mb-16 drop-shadow-2xl" 
                         />
-                        <Badge className="mb-6 bg-beeyield-green/10 text-beeyield-green border-none px-4 py-1.5 font-black text-[10px]">
+                        <Badge className="mb-6 bg-beeyield-green/10 text-beeyield-green border-none px-4 py-1.5 font-semibold text-[10px]">
                             The Sibling Narrative
                         </Badge>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tighter leading-[0.9] text-neutral-900 uppercase">
+                        <h1 className="text-4xl md:text-6xl font-bold mb-8 tracking-tight text-neutral-900" style={{ fontStyle: 'normal' }}>
                             Architecture <br /> Of <span className="text-beeyield-green">Trust</span>
                         </h1>
-                        <p className="text-xl text-neutral-500 leading-relaxed mb-12 max-w-2xl mx-auto font-medium">
+                        <p className="text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto">
                             Engineering the future of verifiable apiculture and ecosystem restoration through family unity and technical courage since 2020.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button 
                                 size="lg" 
-                                className="h-14 px-10 bg-neutral-900 text-beeyield-green font-black text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20"
+                                className="h-14 px-10 bg-neutral-900 text-beeyield-green font-bold text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20"
                                 onClick={() => document.getElementById('narrative')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 Our Journey
@@ -248,7 +248,7 @@ const Team = () => {
                             <Button 
                                 size="lg" 
                                 variant="outline" 
-                                className="h-14 px-10 border-neutral-200 text-neutral-900 font-black text-xs rounded-2xl hover:bg-neutral-50 transition-all"
+                                className="h-14 px-10 border-neutral-200 text-neutral-900 font-bold text-xs rounded-2xl hover:bg-neutral-50 transition-all"
                                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 Contact Directorate
@@ -297,14 +297,14 @@ const Team = () => {
 
                         <div className="space-y-12">
                             <div>
-                                <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-4 py-1.5 font-black text-[10px]">
+                                <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-4 py-1.5 font-semibold text-[10px]">
                                     Strategic Genesis
                                 </Badge>
-                                <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter leading-none mb-8">
+                                <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-8" style={{ fontStyle: 'normal' }}>
                                     Kibwezi <br />
                                     <span className="text-beeyield-green">Genesis</span>
                                 </h2>
-                                <p className="text-xl text-neutral-500 leading-relaxed font-medium">
+                                <p className="text-lg text-muted-foreground leading-relaxed">
                                     BeeYield was born from a sibling's commitment to verifiable stewardship. In 2020, Timothy Nduva and his sisters Carole and Agatha returned to their family farm in Kibwezi to architect a future where technology serves the hive.
                                 </p>
                             </div>
@@ -339,9 +339,9 @@ const Team = () => {
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] pointer-events-none" />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-24">
-                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4">Core Directives</h2>
+                        <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-4" style={{ fontStyle: 'normal' }}>Core Directives</h2>
                         <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
-                        <p className="text-neutral-400 font-medium text-xs">The underlying code of the Directorate</p>
+                        <p className="text-muted-foreground text-sm">The underlying code of the Directorate</p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
                         {teamValues.map((value, index) => (
@@ -356,8 +356,8 @@ const Team = () => {
                                 <div className="mb-10 inline-flex items-center justify-center p-6 bg-neutral-50 rounded-3xl group-hover:bg-beeyield-green/10 transition-colors">
                                     {value.icon}
                                 </div>
-                                <h3 className="text-2xl font-black text-neutral-900 mb-6 tracking-tight leading-none">{value.title}</h3>
-                                <p className="text-neutral-400 leading-relaxed font-medium">
+                                <h3 className="text-xl font-semibold text-neutral-900 mb-6 tracking-tight">{value.title}</h3>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
                                     {value.description}
                                 </p>
                             </motion.div>
@@ -369,13 +369,13 @@ const Team = () => {
             <section className="py-24 sm:py-28 bg-white border-b border-neutral-100">
                 <div className="container mx-auto px-4">
                     <div className="max-w-3xl mx-auto text-center mb-12">
-                        <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-4 py-1.5 font-black text-[10px]">
+                        <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-4 py-1.5 font-semibold text-[10px]">
                             Directorate Broadcast
                         </Badge>
-                        <h2 className="text-4xl lg:text-5xl font-black text-neutral-900 tracking-tighter mb-4">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-4" style={{ fontStyle: 'normal' }}>
                             Watch The Team Story
                         </h2>
-                        <p className="text-lg text-neutral-500 font-medium leading-relaxed">
+                        <p className="text-lg text-muted-foreground leading-relaxed">
                             The same BeeYield video link is embedded here in a side-by-side layout as requested.
                         </p>
                     </div>
@@ -397,11 +397,11 @@ const Team = () => {
             <section id="team-members" className="py-32 lg:py-48 bg-white">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-32 max-w-3xl mx-auto">
-                        <Badge className="bg-neutral-100 text-neutral-400 border-none mb-8 px-5 py-2 font-black text-[10px] rounded-full">
+                        <Badge className="bg-neutral-100 text-neutral-400 border-none mb-8 px-5 py-2 font-semibold text-[10px] rounded-full">
                             Strategic Command Unit
                         </Badge>
-                        <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-8 leading-none">The Directorate</h2>
-                        <p className="text-xl text-neutral-500 font-medium leading-relaxed">
+                        <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-8" style={{ fontStyle: 'normal' }}>The Directorate</h2>
+                        <p className="text-lg text-muted-foreground leading-relaxed">
                             A unified specialist unit engineering the precision protocols and distributed infrastructure of BeeYield.
                         </p>
                     </div>
@@ -421,7 +421,7 @@ const Team = () => {
                                     <img 
                                         src={member.image} 
                                         alt={member.name} 
-                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" 
+                                        className={`w-full h-full transition-all duration-1000 group-hover:scale-110 ${member.image === LOGO ? 'object-contain p-12 bg-white' : 'object-cover grayscale group-hover:grayscale-0'}`} 
                                     />
                                     <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                     <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[10px] text-beeyield-green font-semibold">
@@ -433,11 +433,11 @@ const Team = () => {
                                     </div>
                                 </div>
                                 <div className="text-center space-y-3">
-                                    <span className="text-[9px] font-black text-neutral-300">Technical Directorate</span>
-                                    <h4 className="text-4xl font-black text-neutral-900 tracking-tight leading-none">{member.name}</h4>
+                                    <span className="text-[9px] font-semibold text-neutral-300">Technical Directorate</span>
+                                    <h4 className="text-2xl font-bold text-neutral-900 tracking-tight" style={{ fontStyle: 'normal' }}>{member.name}</h4>
                                     <div className="flex items-center justify-center gap-2">
                                        <div className="h-1 w-1 bg-beeyield-green rounded-full animate-pulse" />
-                                       <p className="text-[10px] font-black text-beeyield-green">{member.role}</p>
+                                       <p className="text-[10px] font-semibold text-beeyield-green">{member.role}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -446,7 +446,7 @@ const Team = () => {
 
                     <div className="flex items-center gap-12 mb-24 max-w-6xl mx-auto">
                         <div className="h-px w-full bg-gradient-to-r from-transparent to-neutral-200" />
-                        <span className="text-[10px] whitespace-nowrap font-black text-neutral-300">Technical Specialists</span>
+                        <span className="text-[10px] whitespace-nowrap font-semibold text-neutral-300">Technical Specialists</span>
                         <div className="h-px w-full bg-gradient-to-l from-transparent to-neutral-200" />
                     </div>
 
@@ -464,20 +464,20 @@ const Team = () => {
                                      <img 
                                          src={member.image} 
                                          alt={member.name} 
-                                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" 
+                                         className={`w-full h-full transition-all duration-1000 group-hover:scale-110 ${member.image === LOGO ? 'object-contain p-12 bg-white' : 'object-cover grayscale group-hover:grayscale-0'}`} 
                                      />
                                      <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-t from-neutral-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                     <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[8px] text-beeyield-green font-black">
+                                     <div className="absolute top-8 right-8 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity font-mono text-[8px] text-beeyield-green font-bold">
                                         <span>ID_SEC: {member.name.substring(0,3).toUpperCase()}99{index}</span>
                                         <span className="flex items-center gap-1"><div className="w-1 h-1 bg-beeyield-gold rounded-full animate-pulse" />Operational</span>
                                      </div>
                                  </div>
                                  <div className="text-center space-y-3">
-                                     <span className="text-[9px] font-black text-neutral-300">Operations Unit</span>
-                                     <h4 className="text-4xl font-black text-neutral-900 tracking-tight leading-none">{member.name}</h4>
+                                     <span className="text-[9px] font-semibold text-neutral-300">Operations Unit</span>
+                                     <h4 className="text-2xl font-bold text-neutral-900 tracking-tight" style={{ fontStyle: 'normal' }}>{member.name}</h4>
                                      <div className="flex items-center justify-center gap-2">
                                         <div className="h-1 w-1 bg-beeyield-green rounded-full animate-pulse" />
-                                        <p className="text-[10px] font-black text-beeyield-green">{member.role}</p>
+                                        <p className="text-[10px] font-semibold text-beeyield-green">{member.role}</p>
                                      </div>
                                  </div>
                              </motion.div>
@@ -511,8 +511,8 @@ const Team = () => {
                                 ].map((stat, i) => (
                                     <div key={i} className="p-6 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-center text-center">
                                        <stat.icon className="w-5 h-5 text-beeyield-green mb-3 opacity-50" />
-                                       <span className="text-2xl font-black mb-1">{stat.val}</span>
-                                       <span className="text-[9px] font-black text-neutral-500">{stat.label}</span>
+                                       <span className="text-2xl font-bold mb-1">{stat.val}</span>
+                                       <span className="text-[9px] font-semibold text-neutral-500">{stat.label}</span>
                                     </div>
                                 ))}
                             </div>
@@ -529,11 +529,11 @@ const Team = () => {
                 <div className="container mx-auto px-4">
                     <div className="grid lg:grid-cols-2 gap-32 items-center">
                         <div>
-                            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-5 py-2 font-black text-[10px] rounded-full">
+                            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-5 py-2 font-semibold text-[10px] rounded-full">
                                 Strategic Ecosystem
                             </Badge>
-                            <h2 className="text-5xl lg:text-7xl font-black text-neutral-900 tracking-tighter mb-10 leading-none">Global <span className="text-beeyield-green">Partners</span></h2>
-                            <p className="text-xl text-neutral-400 font-medium mb-16 leading-relaxed">
+                            <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-10" style={{ fontStyle: 'normal' }}>Global <span className="text-beeyield-green">Partners</span></h2>
+                            <p className="text-lg text-muted-foreground mb-16 leading-relaxed">
                                 BeeYield collaborates with planetary-scale partners to advance beekeeping technology that secures global biodiversity and rural prosperity.
                             </p>
                             
@@ -548,7 +548,7 @@ const Team = () => {
                                         <div className="h-14 w-14 shrink-0 flex items-center justify-center bg-neutral-50 rounded-2xl text-beeyield-green group-hover:bg-beeyield-green group-hover:text-white transition-all">
                                             <p.icon className="h-7 w-7" />
                                         </div>
-                                        <span className="font-black text-xs text-neutral-900">{p.label}</span>
+                                        <span className="font-bold text-xs text-neutral-900">{p.label}</span>
                                     </div>
                                 ))}
                             </div>
@@ -558,27 +558,27 @@ const Team = () => {
                         <div id="contact">
                             <div className="bg-white p-12 lg:p-16 rounded-[3.5rem] border border-neutral-100 shadow-soft relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-48 h-48 bg-beeyield-green/[0.02] rounded-full -translate-x-20 -translate-y-20 border border-beeyield-green/5" />
-                                <h3 className="text-4xl font-black text-neutral-900 tracking-tight mb-10 leading-none">Direct Inquiry</h3>
+                                <h3 className="text-2xl font-bold text-neutral-900 tracking-tight mb-10">Direct Inquiry</h3>
                                 <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-3">
-                                            <Label htmlFor="name" className="text-[10px] font-black text-neutral-400 ml-1">Full Name</Label>
+                                            <Label htmlFor="name" className="text-[10px] font-semibold text-neutral-400 ml-1">Full Name</Label>
                                             <Input id="name" name="name" placeholder="Director..." value={formData.name} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
                                         </div>
                                         <div className="space-y-3">
-                                            <Label htmlFor="email" className="text-[10px] font-black text-neutral-400 ml-1">Email</Label>
+                                            <Label htmlFor="email" className="text-[10px] font-semibold text-neutral-400 ml-1">Email</Label>
                                             <Input id="email" name="email" type="email" placeholder="authority@domain.com" value={formData.email} onChange={handleInputChange} required className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <Label htmlFor="phone" className="text-[10px] font-black text-neutral-400 ml-1">Phone (optional)</Label>
+                                        <Label htmlFor="phone" className="text-[10px] font-semibold text-neutral-400 ml-1">Phone (optional)</Label>
                                         <Input id="phone" name="phone" type="tel" placeholder="+254" value={formData.phone} onChange={handleInputChange} className="h-16 rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all" />
                                     </div>
                                     <div className="space-y-3">
-                                        <Label htmlFor="message" className="text-[10px] font-black text-neutral-400 ml-1">Message</Label>
+                                        <Label htmlFor="message" className="text-[10px] font-semibold text-neutral-400 ml-1">Message</Label>
                                         <Textarea id="message" name="message" placeholder="Describe the mission brief..." className="min-h-[160px] rounded-2xl border-neutral-100 bg-neutral-50/50 focus:bg-white focus:ring-beeyield-green/20 focus:border-beeyield-green transition-all p-6" value={formData.message} onChange={handleInputChange} required />
                                     </div>
-                                    <Button type="submit" className="w-full h-20 rounded-3xl bg-neutral-900 text-beeyield-green font-black text-xs shadow-2xl shadow-neutral-900/30 hover:scale-[1.02] active:scale-95 transition-all" disabled={loading}>
+                                    <Button type="submit" className="w-full h-20 rounded-3xl bg-neutral-900 text-beeyield-green font-bold text-xs shadow-2xl shadow-neutral-900/30 hover:scale-[1.02] active:scale-95 transition-all" disabled={loading}>
                                         {loading ? "Transmitting..." : "Send Secure Message"}
                                     </Button>
                                 </form>
@@ -621,10 +621,10 @@ const Team = () => {
                                       />
                                       <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
                                       <div className="absolute bottom-10 left-10">
-                                         <Badge className="bg-beeyield-green text-black border-none mb-4 px-4 py-2 font-black text-[10px] rounded-lg">
+                                         <Badge className="bg-beeyield-green text-black border-none mb-4 px-4 py-2 font-semibold text-[10px] rounded-lg">
                                             {selectedMember.department}
                                          </Badge>
-                                         <h3 className="text-white text-4xl font-black tracking-tighter leading-tight">{selectedMember.name}</h3>
+                                         <h3 className="text-white text-3xl font-bold tracking-tight">{selectedMember.name}</h3>
                                       </div>
                                    </div>
 
@@ -632,7 +632,7 @@ const Team = () => {
                                       <div className="absolute top-0 right-0 w-32 h-32 bg-beeyield-green/[0.02] rounded-full translate-x-12 -translate-y-12 border border-beeyield-green/10" />
                                       <div className="mb-10">
                                          <span className="text-[12px] font-semibold text-beeyield-green block mb-4">Team member</span>
-                                         <h2 className="text-4xl font-black text-neutral-900 leading-[0.9] tracking-tighter">{selectedMember.role}</h2>
+                                         <h2 className="text-3xl font-bold text-neutral-900 tracking-tight" style={{ fontStyle: 'normal' }}>{selectedMember.role}</h2>
                                       </div>
                                       <p className="text-neutral-500 text-xl leading-relaxed font-medium mb-10">
                                          {selectedMember.description}
