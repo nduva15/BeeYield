@@ -27,11 +27,11 @@ export interface Product {
  * Exactly 8 items per category: honey, hardware (sensors), merch, education (learn).
  */
 export const CATALOG: Product[] = [
-  // --- HONEY (8 Items) ---
+  // --- HONEY (8 Items - Kibwezi BeeYield Apiary) ---
   {
     id: "h1",
     name: "BeeYield Premium Acacia",
-    description: "Premium grade select Acacia honey. High enzyme content, smooth texture, and exceptional clarity. Harvested from the pristine northern plains.",
+    description: "Harvested from our flagship BeeYield apiary in Kibwezi, this premium grade Acacia honey is known for its clarity and delicate floral notes.",
     category: "honey",
     badge: "Premium",
     images: [
@@ -44,15 +44,15 @@ export const CATALOG: Product[] = [
     review_count: 245,
     is_active: true,
     variants: [
-      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true, batch_code: "KIB-ACAC-111-250G" },
-      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 80, is_available: true, batch_code: "KIB-ACAC-112-500G" },
-      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 40, is_available: true, batch_code: "KIB-ACAC-113-1KG" }
+      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 120, is_available: true, batch_code: "KIB-ACAC-211-250G" },
+      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 84, is_available: true, batch_code: "KIB-ACAC-212-500G" },
+      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 36, is_available: true, batch_code: "KIB-ACAC-213-1KG" }
     ]
   },
   {
     id: "h2",
     name: "BeeYield Acacia",
-    description: "Pure organic Acacia honey. 100% natural, harvested from the pristine plains of Makueni. Light golden color with a mild, sweet flavour.",
+    description: "Pure Acacia honey sourced directly from our Kibwezi forest site. A classic Kenyan favorite with exceptional multi-floral complexity.",
     category: "honey",
     badge: "Top Seller",
     images: [
@@ -65,17 +65,17 @@ export const CATALOG: Product[] = [
     review_count: 182,
     is_active: true,
     variants: [
-      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true, batch_code: "KIB-ACAC-121-250G" },
-      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 64, is_available: true, batch_code: "KIB-ACAC-122-500G" },
-      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 32, is_available: true, batch_code: "KIB-ACAC-123-1KG" }
+      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 95, is_available: true, batch_code: "KIB-ACAC-221-250G" },
+      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 66, is_available: true, batch_code: "KIB-ACAC-222-500G" },
+      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 28, is_available: true, batch_code: "KIB-ACAC-223-1KG" }
     ]
   },
   {
     id: "h3",
     name: "BeeYield Premium Acacia",
-    description: "Raw, unfiltered honey straight from Kitui county. Rich in natural enzymes.",
+    description: "A limited selection from our Kibwezi reserve. Gravity-filtered to preserve the natural enzymes and the distinct aroma of local Acacia blossoms.",
     category: "honey",
-    badge: "Raw",
+    badge: "Reserve",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -86,15 +86,15 @@ export const CATALOG: Product[] = [
     review_count: 115,
     is_active: true,
     variants: [
-      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 45, is_available: true, batch_code: "KIB-ACAC-131-250G" },
-      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 36, is_available: true, batch_code: "KIB-ACAC-132-500G" },
-      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 18, is_available: true, batch_code: "KIB-ACAC-133-1KG" }
+      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 50, is_available: true, batch_code: "KIB-ACAC-231-250G" },
+      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 35, is_available: true, batch_code: "KIB-ACAC-232-500G" },
+      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true, batch_code: "KIB-ACAC-233-1KG" }
     ]
   },
   {
     id: "h4",
     name: "BeeYield Acacia",
-    description: "A beautiful blend of nectars from the diverse flora of Baringo.",
+    description: "Natural, raw Acacia honey from our sustainable Kibwezi apiary. Perfectly balanced sweetness with a smooth, lingering finish.",
     category: "honey",
     badge: null,
     images: [
@@ -107,17 +107,17 @@ export const CATALOG: Product[] = [
     review_count: 92,
     is_active: true,
     variants: [
-      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 110, is_available: true, batch_code: "KIB-ACAC-141-250G" },
-      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 88, is_available: true, batch_code: "KIB-ACAC-142-500G" },
-      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 44, is_available: true, batch_code: "KIB-ACAC-143-1KG" }
+      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 150, is_available: true, batch_code: "KIB-ACAC-241-250G" },
+      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 105, is_available: true, batch_code: "KIB-ACAC-242-500G" },
+      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 45, is_available: true, batch_code: "KIB-ACAC-243-1KG" }
     ]
   },
   {
     id: "h5",
     name: "BeeYield Premium Acacia",
-    description: "Deep, dark, and intensely flavored honey from West Pokot forests.",
+    description: "Our highest grade Acacia honey, harvested during the peak blossom season in Kibwezi. Unmatched purity and nutritional density.",
     category: "honey",
-    badge: "Wild",
+    badge: "LTD Edition",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -128,17 +128,17 @@ export const CATALOG: Product[] = [
     review_count: 140,
     is_active: true,
     variants: [
-      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 65, is_available: true, batch_code: "KIB-ACAC-151-250G" },
-      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 52, is_available: true, batch_code: "KIB-ACAC-152-500G" },
-      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 26, is_available: true, batch_code: "KIB-ACAC-153-1KG" }
+      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-ACAC-251-250G" },
+      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 28, is_available: true, batch_code: "KIB-ACAC-252-500G" },
+      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 12, is_available: true, batch_code: "KIB-ACAC-253-1KG" }
     ]
   },
   {
     id: "h6",
     name: "BeeYield Acacia",
-    description: "A rare nectar collected by bees in the Taita Hills forests.",
+    description: "100% pure honey from our Kibwezi community apiary. Supporting local beekeeping while delivering the finest natural sweetness.",
     category: "honey",
-    badge: "Rare",
+    badge: "Community",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -149,17 +149,17 @@ export const CATALOG: Product[] = [
     review_count: 67,
     is_active: true,
     variants: [
-      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true, batch_code: "KIB-ACAC-161-250G" },
-      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 24, is_available: true, batch_code: "KIB-ACAC-162-500G" },
-      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 12, is_available: true, batch_code: "KIB-ACAC-163-1KG" }
+      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 85, is_available: true, batch_code: "KIB-ACAC-261-250G" },
+      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 59, is_available: true, batch_code: "KIB-ACAC-262-500G" },
+      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true, batch_code: "KIB-ACAC-263-1KG" }
     ]
   },
   {
     id: "h7",
     name: "BeeYield Premium Acacia",
-    description: "Crystal clear honey from the alpine forage zones of Mt. Kenya.",
+    description: "Select harvest from our Kibwezi wild-forage zones. Rich in antioxidants and preserved in its rawest state for your wellness.",
     category: "honey",
-    badge: null,
+    badge: "Raw",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -170,17 +170,17 @@ export const CATALOG: Product[] = [
     review_count: 89,
     is_active: true,
     variants: [
-      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 70, is_available: true, batch_code: "KIB-ACAC-171-250G" },
-      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 56, is_available: true, batch_code: "KIB-ACAC-172-500G" },
-      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 28, is_available: true, batch_code: "KIB-ACAC-173-1KG" }
+      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 60, is_available: true, batch_code: "KIB-ACAC-271-250G" },
+      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 42, is_available: true, batch_code: "KIB-ACAC-272-500G" },
+      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 18, is_available: true, batch_code: "KIB-ACAC-273-1KG" }
     ]
   },
   {
     id: "h8",
     name: "BeeYield Acacia",
-    description: "A highly unique honey from coastal mangrove forests. Salty-sweet.",
+    description: "Crafted by bees in the pristine acacia thickets of Kibwezi. Authentic, traceable, and deeply nutritious raw honey.",
     category: "honey",
-    badge: "Unique",
+    badge: "Authentic",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -191,9 +191,9 @@ export const CATALOG: Product[] = [
     review_count: 103,
     is_active: true,
     variants: [
-      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-ACAC-181-250G" },
-      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 32, is_available: true, batch_code: "KIB-ACAC-182-500G" },
-      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 16, is_available: true, batch_code: "KIB-ACAC-183-1KG" }
+      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 110, is_available: true, batch_code: "KIB-ACAC-281-250G" },
+      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 77, is_available: true, batch_code: "KIB-ACAC-282-500G" },
+      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 33, is_available: true, batch_code: "KIB-ACAC-283-1KG" }
     ]
   },
   // --- SENSORS / HARDWARE (8 items) ---
