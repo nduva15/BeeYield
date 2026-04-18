@@ -230,7 +230,18 @@ const normalizeVariant = (variant: any): ProductVariant => ({
 });
 
 const normalizeProduct = (product: any): Product => {
-    const images = toArray<string>(product?.images).filter(Boolean);
+    let images = toArray<string>(product?.images).filter(Boolean);
+    
+    // Add default images for honey products if they are missing (Supabase fallback)
+    if (images.length === 0 && toString(product?.category) === 'honey') {
+        images = [
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png"
+        ];
+    }
+    
     const variants = toArray<any>(product?.variants || product?.product_variants).map(normalizeVariant);
 
     return {
@@ -246,6 +257,7 @@ const normalizeProduct = (product: any): Product => {
         variants,
     };
 };
+
 
 const normalizeAddress = (address: any): Address => ({
     id: toString(address?.id || address?.address_id || "address"),
