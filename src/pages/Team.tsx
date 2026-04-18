@@ -283,9 +283,9 @@ const Team = () => {
                                 <div className="absolute bottom-12 left-12 right-12 p-10 bg-white/5 backdrop-blur-2xl rounded-[2rem] border border-white/10 shadow-2xl">
                                    <div className="flex items-center gap-4 mb-6">
                                       <div className="h-0.5 w-12 bg-beeyield-green" />
-                                      <span className="text-[10px] font-black text-beeyield-green">Est. 2020</span>
+                                      <span className="text-[10px] font-bold text-beeyield-green">Est. 2020</span>
                                    </div>
-                                   <p className="text-white text-xl md:text-2xl font-black leading-tight tracking-tighter">
+                                   <p className="text-white text-xl md:text-2xl font-bold leading-tight tracking-tight">
                                      "Rural courage and family unity are the core sensors of our mission."
                                    </p>
                                 </div>
@@ -315,7 +315,7 @@ const Team = () => {
                                       <Leaf className="w-6 h-6 text-beeyield-green group-hover:text-white transition-colors" />
                                    </div>
                                    <div>
-                                      <h4 className="text-xl font-black text-neutral-900 tracking-tight mb-2">50/50 Harvest Promise</h4>
+                                      <h4 className="text-xl font-bold text-neutral-900 tracking-tight mb-2">50/50 Harvest Promise</h4>
                                       <p className="text-neutral-400 font-medium leading-relaxed">Hard-coded commitment to leaving half the surplus honey for colony survival and ecosystem health.</p>
                                    </div>
                                 </div>
@@ -324,7 +324,7 @@ const Team = () => {
                                       <ShieldCheck className="w-6 h-6 text-beeyield-gold group-hover:text-white transition-colors" />
                                    </div>
                                    <div>
-                                      <h4 className="text-xl font-black text-neutral-900 tracking-tight mb-2">Traceability</h4>
+                                      <h4 className="text-xl font-bold text-neutral-900 tracking-tight mb-2">Traceability</h4>
                                       <p className="text-neutral-400 font-medium leading-relaxed">Each batch can be checked so customers can see where their honey came from.</p>
                                    </div>
                                 </div>
@@ -495,9 +495,9 @@ const Team = () => {
                             <div className="space-y-6 max-w-xl">
                                 <div className="flex items-center gap-3">
                                    <div className="h-2 w-2 bg-beeyield-green rounded-full animate-pulse" />
-                                   <span className="text-[10px] font-black text-beeyield-green">Status: Active</span>
+                                   <span className="text-[10px] font-bold text-beeyield-green">Status: Active</span>
                                 </div>
-                                <h2 className="text-4xl lg:text-5xl font-black tracking-tighter leading-none">Meet the <span className="text-beeyield-green">team</span></h2>
+                                <h2 className="text-4xl lg:text-5xl font-bold tracking-tight leading-none">Meet the <span className="text-beeyield-green">team</span></h2>
                                 <p className="text-neutral-400 font-medium leading-relaxed">
                                     Our leadership team focuses on practical work: healthier hives, reliable data, and clear traceability from hive to jar.
                                 </p>
@@ -658,14 +658,14 @@ const Team = () => {
                                      className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
                                    >
                                       <LinkedinIcon className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
-                                      <span className="text-xs font-black text-neutral-400 group-hover:text-neutral-900 transition-colors">LinkedIn Profile</span>
+                                      <span className="text-xs font-bold text-neutral-400 group-hover:text-neutral-900 transition-colors">LinkedIn Profile</span>
                                    </a>
                                    <a 
                                      href={`mailto:${selectedMember.email}`} 
                                      className="flex items-center justify-center gap-4 hover:bg-white transition-all group"
                                    >
                                       <Mail className="w-6 h-6 text-neutral-300 group-hover:text-beeyield-green transition-colors" />
-                                      <span className="text-xs font-black text-neutral-400 group-hover:text-neutral-900 transition-colors">Contact Office</span>
+                                      <span className="text-xs font-bold text-neutral-400 group-hover:text-neutral-900 transition-colors">Contact Office</span>
                                    </a>
                                 </div>
                             </motion.div>

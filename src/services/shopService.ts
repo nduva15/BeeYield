@@ -663,13 +663,23 @@ export const getAddresses = async (): Promise<Address[]> => {
         return toArray<any>(data).map(normalizeAddress);
     } catch (error) {
         console.error("Error fetching addresses via API, falling back to Supabase:", error);
-        const { data, error: sbError } = await supabaseShop
-            .from("addresses")
-            .select("*")
-            .order("is_default", { ascending: false });
+        const { data: { user } } = await supabaseShop.auth.getUser();
+        
+        try {
+            const { data, error: sbError } = await supabaseShop
+                .from("addresses")
+                .select("*")
+                .order("is_default", { ascending: false });
 
-        if (sbError) throw sbError;
-        return toArray<any>(data).map(normalizeAddress);
+            if (sbError) throw sbError;
+            return toArray<any>(data).map(normalizeAddress);
+        } catch (sbErr) {
+            console.error("Supabase addresses query failed, falling back to user_metadata.");
+            if (user?.user_metadata?.addresses) {
+                return toArray<any>(user.user_metadata.addresses).map(normalizeAddress);
+            }
+            return [];
+        }
     }
 };
 
@@ -682,14 +692,34 @@ export const addAddress = async (address: any): Promise<Address> => {
     } catch (error) {
         console.error("Error adding address via API, falling back to Supabase:", error);
         const { data: { user } } = await supabaseShop.auth.getUser();
-        const { data, error: sbError } = await supabaseShop
-            .from("addresses")
-            .insert({ ...payload, user_id: user?.id })
-            .select()
-            .single();
+        if (!user) throw new Error("User not authenticated");
+        
+        try {
+            const { data, error: sbError } = await supabaseShop
+                .from("addresses")
+                .insert({ ...payload, user_id: user.id })
+                .select()
+                .single();
 
-        if (sbError) throw sbError;
-        return normalizeAddress(data);
+            if (sbError) throw sbError;
+            return normalizeAddress(data);
+        } catch (sbErr) {
+            console.error("Address insert failed, falling back to user_metadata.");
+            const currentAddresses = toArray<any>(user.user_metadata?.addresses || []);
+            
+            if (payload.is_default) {
+                currentAddresses.forEach(a => { a.is_default = false; });
+            }
+            
+            const newAddress = { 
+                id: `addr_${Math.random().toString(36).substring(2, 11)}`,
+                ...payload, 
+                user_id: user.id 
+            };
+            const updatedAddresses = [...currentAddresses, newAddress];
+            await supabaseShop.auth.updateUser({ data: { addresses: updatedAddresses } });
+            return normalizeAddress(newAddress);
+        }
     }
 };
 
@@ -701,15 +731,37 @@ export const updateAddress = async (addressId: string, address: any): Promise<Ad
         return normalizeAddress(data);
     } catch (error) {
         console.error("Error updating address via API, falling back to Supabase:", error);
-        const { data, error: sbError } = await supabaseShop
-            .from("addresses")
-            .update(payload)
-            .eq("id", addressId)
-            .select()
-            .single();
+        const { data: { user } } = await supabaseShop.auth.getUser();
+        
+        try {
+            const { data, error: sbError } = await supabaseShop
+                .from("addresses")
+                .update(payload)
+                .eq("id", addressId)
+                .select()
+                .single();
 
-        if (sbError) throw sbError;
-        return normalizeAddress(data);
+            if (sbError) throw sbError;
+            return normalizeAddress(data);
+        } catch (sbErr) {
+            console.error("Address update failed, falling back to user_metadata.");
+            if (!user) throw new Error("User not authenticated");
+            
+            const currentAddresses = toArray<any>(user.user_metadata?.addresses || []);
+            
+            if (payload.is_default) {
+                currentAddresses.forEach(a => { a.is_default = false; });
+            }
+            
+            const updatedAddresses = currentAddresses.map((addr: any) => 
+                addr.id === addressId ? { ...addr, ...payload } : addr
+            );
+            
+            await supabaseShop.auth.updateUser({ data: { addresses: updatedAddresses } });
+            const updated = updatedAddresses.find((a: any) => a.id === addressId);
+            if (!updated) throw new Error("Address not found");
+            return normalizeAddress(updated);
+        }
     }
 };
 
@@ -718,9 +770,22 @@ export const deleteAddress = async (addressId: string) => {
         return await apiDelete<{ status: string }>(`/shop/addresses/${addressId}`);
     } catch (error) {
         console.error("Error deleting address via API, falling back to Supabase:", error);
-        const { error: sbError } = await supabaseShop.from("addresses").delete().eq("id", addressId);
-        if (sbError) throw sbError;
-        return { status: "success" };
+        const { data: { user } } = await supabaseShop.auth.getUser();
+        
+        try {
+            const { error: sbError } = await supabaseShop.from("addresses").delete().eq("id", addressId);
+            if (sbError) throw sbError;
+            return { status: "success" };
+        } catch (sbErr) {
+            console.error("Address deletion failed, falling back to user_metadata.");
+            if (!user) throw new Error("User not authenticated");
+            
+            const currentAddresses = toArray<any>(user.user_metadata?.addresses || []);
+            const updatedAddresses = currentAddresses.filter((addr: any) => addr.id !== addressId);
+            
+            await supabaseShop.auth.updateUser({ data: { addresses: updatedAddresses } });
+            return { status: "success" };
+        }
     }
 };
 
