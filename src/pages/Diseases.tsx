@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapContainer, TileLayer, Circle, Marker, Popup, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Circle, Marker, Popup, Tooltip, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import {
@@ -65,22 +65,50 @@ const SATELLITE_HEATMAP = "/images/diseases/satellite-heatmap.jpg";
 const HIVE_INSPECTION = "/images/diseases/hive-inspection.jpg";
 
 // Map Data
-const getTownIcon = (risk: string) => {
-    const color = risk === 'High' ? '#ef4444' : risk === 'Medium' ? '#f59e0b' : '#10b981';
+const getHubIcon = () => {
+    const color = '#10b981'; // BeeYield Green for HQ
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36" fill="white" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 4px 12px ${color}90);">
+            <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
+            <circle cx="12" cy="10" r="3.5" fill="${color}" stroke="none" />
+        </svg>
+    `;
     return L.divIcon({
-        className: "custom-town-icon",
-        html: `<div style="background-color: white; border: 3px solid ${color}; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 12px ${color}90;"></div>`,
-        iconSize: [14, 14],
-        iconAnchor: [7, 7]
+        className: "bg-transparent border-none",
+        html: svg,
+        iconSize: [36, 36],
+        iconAnchor: [18, 36]
     });
 };
 
-const towns = [
-    { name: "Kibwezi", lat: -2.4167, lng: 37.9667, risk: "High", forage: "Good" },
-    { name: "Makueni", lat: -1.7997, lng: 37.6208, risk: "Medium", forage: "Excellent" },
-    { name: "Makindu", lat: -2.2789, lng: 37.8242, risk: "Low", forage: "Fair" },
-    { name: "Mtito Andei", lat: -2.6908, lng: 38.1678, risk: "Medium", forage: "Good" },
-    { name: "Emali", lat: -2.0467, lng: 37.4586, risk: "Low", forage: "Poor" }
+const getSatIcon = (status: string) => {
+    const color = status === 'Warning' ? '#ef4444' : '#f59e0b'; // Amber for standard to match the screenshot vibe
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="white" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 4px 8px ${color}80);">
+            <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
+            <circle cx="12" cy="10" r="3" fill="${color}" stroke="none" />
+        </svg>
+    `;
+    return L.divIcon({
+        className: "bg-transparent border-none",
+        html: svg,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28]
+    });
+};
+
+const kibweziHub = { name: "Kibwezi HQ", lat: -2.4167, lng: 37.9667 };
+
+const satellites = [
+    { id: "API-01", lat: -2.3867, lng: 37.9567, status: "Active" },
+    { id: "API-02", lat: -2.4367, lng: 37.9867, status: "Active" },
+    { id: "API-03", lat: -2.4067, lng: 37.9167, status: "Warning" },
+    { id: "API-04", lat: -2.4467, lng: 37.9467, status: "Active" },
+    { id: "API-05", lat: -2.3967, lng: 37.9967, status: "Active" },
+    { id: "API-06", lat: -2.4267, lng: 37.9967, status: "Active" },
+    { id: "API-07", lat: -2.4367, lng: 37.9267, status: "Active" },
+    { id: "API-08", lat: -2.3767, lng: 37.9767, status: "Active" },
+    { id: "API-09", lat: -2.4567, lng: 37.9667, status: "Active" }
 ];
 
 const Diseases = () => {
@@ -677,8 +705,8 @@ const Diseases = () => {
                                 className="relative rounded-[3rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.15)] border-8 border-white bg-neutral-200 h-full w-full group isolate"
                             >
                                 <MapContainer 
-                                    center={[-2.25, 37.85]} 
-                                    zoom={9.5} 
+                                    center={[-2.4167, 37.9667]} 
+                                    zoom={12} 
                                     scrollWheelZoom={false}
                                     style={{ height: '100%', width: '100%', zIndex: 1 }}
                                     zoomControl={false}
@@ -687,40 +715,52 @@ const Diseases = () => {
                                         attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
                                         url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                                     />
-                                    {towns.map((town, idx) => (
-                                        <React.Fragment key={`map-item-${idx}`}>
-                                            <Circle 
-                                                center={[town.lat, town.lng]} 
-                                                radius={town.risk === 'High' ? 10000 : town.risk === 'Medium' ? 6500 : 4000} 
-                                                pathOptions={{ 
-                                                    fillColor: town.risk === 'High' ? '#ef4444' : town.risk === 'Medium' ? '#f59e0b' : '#10b981', 
-                                                    fillOpacity: 0.15, 
-                                                    color: town.risk === 'High' ? '#ef4444' : town.risk === 'Medium' ? '#f59e0b' : '#10b981',
-                                                    weight: 1,
-                                                    dashArray: '4,4'
-                                                }} 
-                                            />
-                                            <Marker position={[town.lat, town.lng]} icon={getTownIcon(town.risk)}>
-                                                <Tooltip 
-                                                    permanent 
-                                                    direction="top" 
-                                                    offset={[0, -10]}
-                                                    className="bg-transparent border-none shadow-none text-neutral-900 font-bold text-xs"
-                                                >
-                                                    {town.name}
-                                                </Tooltip>
-                                                <Popup className="rounded-xl font-sans" autoClose={false}>
-                                                    <div className="text-center p-1">
-                                                        <strong className="block text-sm mb-1 text-neutral-900">{town.name}</strong>
-                                                        <div className="flex justify-between items-center gap-3">
-                                                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Risk: {town.risk}</span>
-                                                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Forage: {town.forage}</span>
-                                                        </div>
-                                                    </div>
-                                                </Popup>
-                                            </Marker>
-                                        </React.Fragment>
+                                    
+                                    {/* Central Heat Zone indicating cluster coverage */}
+                                    <Circle 
+                                        center={[kibweziHub.lat, kibweziHub.lng]} 
+                                        radius={6500} 
+                                        pathOptions={{ 
+                                            fillColor: '#f59e0b', 
+                                            fillOpacity: 0.1, 
+                                            color: '#f59e0b',
+                                            weight: 1,
+                                            dashArray: '4,4'
+                                        }} 
+                                    />
+
+                                    {/* Telemetry Polylines connecting Satellites to Hub */}
+                                    {satellites.map((sat, idx) => (
+                                        <Polyline 
+                                            key={`line-${idx}`} 
+                                            positions={[[kibweziHub.lat, kibweziHub.lng], [sat.lat, sat.lng]]} 
+                                            pathOptions={{ color: '#10b981', weight: 1.5, dashArray: '4,6', opacity: 0.6 }} 
+                                        />
                                     ))}
+
+                                    {/* Satellite Node Markers */}
+                                    {satellites.map((sat, idx) => (
+                                        <Marker key={`sat-${idx}`} position={[sat.lat, sat.lng]} icon={getSatIcon(sat.status)}>
+                                            <Popup className="rounded-xl font-sans" autoClose={false}>
+                                                <div className="text-center p-1">
+                                                    <strong className="block text-xs mb-1 text-neutral-900">Node {sat.id}</strong>
+                                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block">Status: <span className={sat.status === 'Active' ? 'text-beeyield-green' : 'text-amber-500'}>{sat.status}</span></span>
+                                                </div>
+                                            </Popup>
+                                        </Marker>
+                                    ))}
+
+                                    {/* Central HQ Marker */}
+                                    <Marker position={[kibweziHub.lat, kibweziHub.lng]} icon={getHubIcon()}>
+                                        <Tooltip 
+                                            permanent 
+                                            direction="top" 
+                                            offset={[0, -12]}
+                                            className="bg-white/90 backdrop-blur-sm border-none shadow-sm rounded-full px-3 py-1 text-neutral-900 font-bold text-xs"
+                                        >
+                                            {kibweziHub.name}
+                                        </Tooltip>
+                                    </Marker>
                                 </MapContainer>
                                 
                                 {/* Overlay status bar overlaying the map securely above z-index */}

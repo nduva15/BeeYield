@@ -34,7 +34,8 @@ import {
   Award,
   ChevronRight,
   Mail,
-  Zap
+  Zap,
+  Radio
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
@@ -103,15 +104,15 @@ const HeroSection = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Badge className="bg-beeyield-green/10 text-beeyield-green mb-6 hover:bg-beeyield-green/20 transition-colors font-black text-[10px] px-4 py-1.5 rounded-full border border-beeyield-green/20">
-              Verifiable Purity • Smart Beekeeping
+              2026 Global Field Research • Powered by Apisense
             </Badge>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-neutral-900 leading-[0.85] tracking-tighter mb-6 drop-shadow-sm">
-              The Purest <span className="text-beeyield-green block">Harvest</span>
+              Real-Time <span className="text-beeyield-green block">Telemetry</span>
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-500 mb-10 max-w-lg leading-relaxed font-medium">
-              Experience the world's most transparent honey. Powered by <span className="text-beeyield-gold font-bold">HoneyChain™</span> and a commitment to protecting 50% of the surplus for the bees.
+              Experience the world's most transparent honey. Fully traceable from the Kibwezi hive to your home using <span className="text-beeyield-gold font-bold">Apisense IoT integration</span>.
             </p>
 
             {/* CTA Group */}
@@ -169,18 +170,19 @@ const HeroSection = () => {
                 </motion.div>
               </div>
 
-              {/* Verified Origin Badge */}
+              {/* Apisense Connected Badge */}
               <motion.div
                 animate={{ y: [0, -15, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute top-10 -right-4 lg:-right-12 z-20 bg-[#FFF9F0]/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-[#F4D03F]/100 flex flex-col items-center gap-2"
+                className="absolute top-10 -right-4 lg:-right-12 z-20 bg-[#FFF9F0]/90 backdrop-blur-md p-6 rounded-[2.5rem] shadow-2xl border border-amber-200/50 flex flex-col items-center gap-2"
               >
-                <div className="w-12 h-12 bg-beeyield-green rounded-2xl flex items-center justify-center shadow-lg">
-                  <ShieldCheck className="w-6 h-6 text-[#1A1A1A]" />
+                <div className="relative w-12 h-12 bg-neutral-900 rounded-2xl flex items-center justify-center shadow-lg">
+                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-beeyield-green shadow-[0_0_8px_rgba(74,222,128,0.8)] animate-pulse" />
+                  <Radio className="w-6 h-6 text-beeyield-gold" />
                 </div>
-                <div className="text-center">
-                  <span className="block text-sm font-black text-neutral-900">Verified</span>
-                  <span className="block text-[8px] font-black text-beeyield-gold">Origin</span>
+                <div className="text-center mt-1">
+                  <span className="block text-xl font-black text-neutral-900 leading-tight">Apisense</span>
+                  <span className="block text-[9px] font-black text-beeyield-gold tracking-widest uppercase mt-0.5">Connected</span>
                 </div>
               </motion.div>
             </div>
@@ -511,15 +513,14 @@ const HeritageSection = () => {
     </section>
   );
 };
-
 // Features Section - 3 cards
 const FeaturesSection = () => {
   const navigate = useNavigate();
   const features = [
     {
-      icon: ShieldCheck,
-      title: "Honey Journey Tracking",
-      description: "Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.",
+      icon: Radio,
+      title: "Apisense IoT Traceability",
+      description: "Our 2026 Global Field Research partnership ensures every drop is scanned and verifiable from the Kibwezi node directly to your jar.",
       color: "text-beeyield-green bg-beeyield-green/10"
     },
     {
@@ -529,10 +530,10 @@ const FeaturesSection = () => {
       color: "text-beeyield-gold bg-beeyield-gold/10"
     },
     {
-      icon: Droplets,
-      title: "Hive Health Monitoring",
-      description: "Sensors help us spot stress or disease early, so we can support the colony before it affects the harvest.",
-      color: "text-beeyield-orange bg-beeyield-orange/10"
+      icon: Activity,
+      title: "Live Telemetry Monitoring",
+      description: "Apisense acoustic sensors track hive vitals 24/7, catching diseases before they threaten the ecosystem.",
+      color: "text-amber-500 bg-amber-500/10"
     },
   ];
 
