@@ -199,14 +199,20 @@ export async function apiRequest<T>(
     const authHeaders = isPublicApiEndpoint(endpoint) ? {} : await getAuthHeaders();
 
     try {
-        const response = await fetch(url, {
+        const fetchOptions: RequestInit = {
             ...options,
             headers: {
                 "Content-Type": "application/json",
                 ...authHeaders,
                 ...options?.headers,
             },
-        });
+        };
+
+        if (!fetchOptions.signal && typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+            fetchOptions.signal = AbortSignal.timeout(15000);
+        }
+
+        const response = await fetch(url, fetchOptions);
 
         if (!response.ok) {
             let errorData: any = {};
@@ -234,10 +240,16 @@ export async function apiRequest<T>(
             throw err;
         }
     } catch (error: any) {
-        if (error.name !== 'AbortError') {
+        if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+            console.error(`API Timeout for ${endpoint}: Server took too long to respond.`, error);
+            throw new Error(`Connection timeout: The server took too long to respond. Please try again.`);
+        } else if (error.message && error.message.includes('fetch')) {
+            console.error(`Network Error for ${endpoint}:`, error);
+            throw new Error(`Network error: Unable to connect to the server. Please check your connection.`);
+        } else {
             console.error(`API Error for ${endpoint}:`, error);
+            throw error;
         }
-        throw error;
     }
 }
 

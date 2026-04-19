@@ -213,7 +213,12 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
             return null;
         }
         console.error("Traceability verification failed:", error);
-        throw error; // Let the caller handle UI notification
+        
+        // Enhance error message specifically for UI
+        if (error.message && (error.message.includes('timeout') || error.message.includes('Network'))) {
+            throw new Error(`Connection Error: Unable to reach the BeeYield server to verify batch ${code}. Please try again later.`);
+        }
+        throw new Error(`Verification failed: ${error.message || 'Unknown error occurred while verifying batch.'}`);
     }
 };
 

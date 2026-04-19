@@ -144,9 +144,11 @@ const Traceability = () => {
     } catch (error) {
       console.error("Trace error:", error);
       const errorMessage = error instanceof Error ? error.message : "Please check the code and try again.";
+      const isConnectionError = errorMessage.includes("Connection Error") || errorMessage.includes("Network error") || errorMessage.includes("timeout");
+      
       toast({
         variant: "destructive",
-        title: "Couldn’t verify",
+        title: isConnectionError ? "Backend Server Unreachable" : "Couldn’t verify",
         description: errorMessage,
       });
     } finally {
