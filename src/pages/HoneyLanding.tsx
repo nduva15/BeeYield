@@ -292,7 +292,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
                   <div className="flex items-end justify-between gap-4 pt-4 border-t border-dashed border-neutral-100">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-neutral-400">Price</span>
-                      <span className="text-xl font-black text-beeyield-green">{formatPrice(product.variants[0].price_kes)}</span>
+                      <span className="text-xl font-black text-beeyield-green">{formatPrice(product.variants?.[0]?.price_kes ?? 0)}</span>
                     </div>
 
                     <Button
