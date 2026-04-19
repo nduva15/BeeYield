@@ -226,8 +226,8 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
                             <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Telemetry coverage</p>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2">
-                            {(summary.linked_device_meta || []).length > 0 ? (
-                                summary.linked_device_meta.map((device) => (
+                            {(summary?.linked_device_meta || []).length > 0 ? (
+                                summary?.linked_device_meta?.map((device) => (
                                     <span
                                         key={device.device_id}
                                         className="inline-flex rounded-full border border-[#064e3b]/10 bg-white/70 px-3 py-1.5 text-xs font-bold text-[#064e3b]"

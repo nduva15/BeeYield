@@ -948,7 +948,7 @@ async def get_user_harvests(
                 "harvests",
                 filters=scoped_filters,
                 columns=columns,
-                order_by="date",
+                order_by="harvest_date",
                 ascending=False,
                 limit=3000,
                 token=token,
@@ -965,7 +965,7 @@ async def get_user_harvests(
         if hive_id:
             filters["hive_id"] = hive_id
 
-        owned = await db_select("harvests", filters=filters, columns=columns, order_by="date", ascending=False, limit=2000, token=token)
+        owned = await db_select("harvests", filters=filters, columns=columns, order_by="harvest_date", ascending=False, limit=2000, token=token)
         all_harvests.extend(owned)
 
         if not owned and len(relevant_ids) > 1:
@@ -976,7 +976,7 @@ async def get_user_harvests(
                 if hive_id:
                     h_filters["hive_id"] = hive_id
                 all_harvests.extend(
-                    await db_select("harvests", filters=h_filters, columns=columns, order_by="date", ascending=False, limit=2000, token=token)
+                    await db_select("harvests", filters=h_filters, columns=columns, order_by="harvest_date", ascending=False, limit=2000, token=token)
                 )
             except Exception:
                 pass
