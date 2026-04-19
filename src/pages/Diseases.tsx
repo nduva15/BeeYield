@@ -1,4 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { MapContainer, TileLayer, Circle, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 import {
     Activity,
     Shield,
@@ -31,7 +34,13 @@ import {
     HeartPulse,
     Microscope,
     FlaskConical,
-    Handshake
+    Handshake,
+    Bug,
+    TrendingDown,
+    Eye,
+    BookOpen,
+    Expand,
+    BadgeDollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -47,7 +56,29 @@ import { useToast } from "@/hooks/use-toast";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 import LOGO from "@/assets/Logo.png";
-import SENSOR_IMG from "@/assets/beeyield_hub_sensor.jpg";
+
+// Apisense partnership images (public/images/diseases/)
+const SENSOR_PORTRAIT = "/images/diseases/apisense-sensor-portrait.jpg";
+const SENSOR_LANDSCAPE = "/images/diseases/apisense-sensor-landscape.png";
+const APISENSE_APP = "/images/diseases/apisense-app.png";
+const SATELLITE_HEATMAP = "/images/diseases/satellite-heatmap.jpg";
+const HIVE_INSPECTION = "/images/diseases/hive-inspection.jpg";
+
+// Map Data
+const townIcon = L.divIcon({
+    className: "custom-town-icon",
+    html: `<div style="background-color: white; border: 3px solid #10b981; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+});
+
+const towns = [
+    { name: "Kibwezi", lat: -2.4167, lng: 37.9667, risk: "High", forage: "Good" },
+    { name: "Makueni", lat: -1.7997, lng: 37.6208, risk: "Medium", forage: "Excellent" },
+    { name: "Makindu", lat: -2.2789, lng: 37.8242, risk: "Low", forage: "Fair" },
+    { name: "Mtito Andei", lat: -2.6908, lng: 38.1678, risk: "Medium", forage: "Good" },
+    { name: "Emali", lat: -2.0467, lng: 37.4586, risk: "Low", forage: "Poor" }
+];
 
 const Diseases = () => {
     const { toast } = useToast();
@@ -138,19 +169,19 @@ const Diseases = () => {
     const pollinationAdvantages = [
         {
             title: "Strategic & Safe Hive Placement",
-            description: "By leveraging Apisense's satellite data analysis and interactive risk maps, BeeYield can identify areas of elevated environmental threat. We cross-reference the availability of local forage with potential disease hotspots to position our hives in the safest, most productive locations — ensuring that the bees are healthy and highly active exactly where your crops need them most.",
+            description: "By leveraging Apisense's satellite data analysis and interactive risk maps, BeeYield gains a precise understanding of the environmental conditions surrounding each apiary. This enables field teams to place hives in locations with the lowest disease risk and highest forage potential — a direct upgrade to BeeYield's precision pollination model.",
             icon: <MapPin className="h-7 w-7" />,
             badge: "Precision Placement",
         },
         {
             title: "Reduced Chemical Intervention",
-            description: "Because Apisense detects diseases at their absolute earliest stages, we can drastically reduce the need for heavy chemical treatments. This not only lowers apiary management costs but also ensures that the pollination process remains as natural and safe as possible for the surrounding agricultural ecosystem.",
+            description: "Because Apisense detects diseases at their absolute earliest stages, BeeYield can drastically reduce the need for heavy chemical treatments. This not only lowers apiary management costs but also ensures that the pollination process remains as natural and safe as possible for the surrounding agricultural ecosystem.",
             icon: <Droplets className="h-7 w-7" />,
             badge: "Natural Pollination",
         },
         {
             title: "Instant Alerts & Actionable Guidance",
-            description: "Our apiary managers receive instant mobile notifications the moment a risk is detected. The Apisense app provides a specific diagnosis alongside actionable recommendations for treating the colony, feeding, or adjusting the hive's placement.",
+            description: "BeeYield's apiary managers receive instant mobile notifications the moment a risk is detected. The Apisense system provides a clear diagnosis and actionable treatment recommendations — enabling rapid response against threats like Foulbrood, Nosema, or Varroa, protecting the entire apiary.",
             icon: <BellRing className="h-7 w-7" />,
             badge: "Real-Time Response",
         }
@@ -166,7 +197,7 @@ const Diseases = () => {
         {
             feature: "Satellite Risk Mapping",
             technology: "Analyzes environmental conditions, weather changes, and local forage sources.",
-            benefit: "Guides our precision hive placement, avoiding high-risk zones and optimizing field coverage.",
+            benefit: "Guides BeeYield's precision hive placement, avoiding high-risk zones and optimizing field coverage.",
             icon: <Satellite className="h-5 w-5" />,
         },
         {
@@ -185,44 +216,52 @@ const Diseases = () => {
 
     const benefits = [
         {
-            title: "Ease of Use",
-            description: "Apisense consists of easy-to-install and user-friendly sensors that require no complex maintenance and do not interfere with the life of the bees.",
-            icon: <LayoutDashboard className="h-7 w-7" />,
-        },
-        {
-            title: "Scalability",
-            description: "Apisense can be used in both large and small apiaries. The more hives you have, the easier it becomes to manage your apiary.",
-            icon: <Activity className="h-7 w-7" />,
-        },
-        {
-            title: "Reduced Use of Chemicals",
-            description: "With Apisense, you can reduce the need for chemical protection and treatments — keeping the pollination process natural.",
-            icon: <FlaskConical className="h-7 w-7" />,
-        },
-        {
-            title: "Lower Costs",
-            description: "Apisense reduces apiary management costs by minimizing hive inspections and lowering expenses for bee treatments.",
-            icon: <Zap className="h-7 w-7" />,
-        },
-        {
             title: "Healthy Bees",
-            description: "You will quickly notice the first signs of diseases in your apiary and take action before the problem spreads.",
+            description: "Detect the earliest warning signs of colony stress through real-time gas and acoustic analysis — enabling intervention well before symptoms become visible to the naked eye.",
             icon: <HeartPulse className="h-7 w-7" />,
+            accent: "bg-rose-500/10 text-rose-600",
         },
         {
             title: "Safe Apiary",
-            description: "Apisense minimizes the risk of disease spreading within the apiary, helping to avoid costly treatments or the need to eliminate infected bee colonies.",
+            description: "Contain disease outbreaks at the source hive by leveraging predictive spread modeling, preventing cascading losses across the entire apiary operation.",
             icon: <ShieldCheck className="h-7 w-7" />,
+            accent: "bg-emerald-500/10 text-emerald-600",
         },
         {
             title: "Knowledge & Guidance",
-            description: "The Apisense app guides you on what to do when a threat is detected. Clear instructions and practical recommendations for the right decision.",
-            icon: <HelpCircle className="h-7 w-7" />,
+            description: "Receive AI-generated treatment protocols and step-by-step response plans whenever a threat is identified — turning complex diagnostics into clear, actionable decisions.",
+            icon: <BookOpen className="h-7 w-7" />,
+            accent: "bg-violet-500/10 text-violet-600",
         },
         {
             title: "Continuous Monitoring",
-            description: "Constant access to up-to-date information about the condition of your apiary. With the app, remotely monitor your hives anytime, anywhere.",
-            icon: <Activity className="h-7 w-7" />,
+            description: "Access live colony telemetry from any device, at any time. Track VOC levels, temperature, humidity, and hive weight around the clock without physically opening a single hive.",
+            icon: <Eye className="h-7 w-7" />,
+            accent: "bg-sky-500/10 text-sky-600",
+        },
+        {
+            title: "Ease of Use",
+            description: "Compact, non-invasive sensors clip directly onto the frame — no wiring, no calibration, no disruption to the colony. Installation takes minutes, not hours.",
+            icon: <Sparkles className="h-7 w-7" />,
+            accent: "bg-amber-500/10 text-amber-600",
+        },
+        {
+            title: "Scalability",
+            description: "A single LTE gateway supports up to 100 sensor devices within a 30-meter range. Whether managing 5 hives or 500, the system scales effortlessly with your operation.",
+            icon: <Expand className="h-7 w-7" />,
+            accent: "bg-indigo-500/10 text-indigo-600",
+        },
+        {
+            title: "Reduced Chemical Use",
+            description: "Pinpoint disease at its inception and apply targeted, minimal treatments instead of blanket chemical protocols — preserving the natural pollination ecosystem.",
+            icon: <Leaf className="h-7 w-7" />,
+            accent: "bg-lime-500/10 text-lime-600",
+        },
+        {
+            title: "Lower Costs",
+            description: "Cut operational overhead by replacing routine manual inspections with automated alerts. Fewer site visits, fewer lost colonies, and reduced treatment expenses.",
+            icon: <BadgeDollarSign className="h-7 w-7" />,
+            accent: "bg-teal-500/10 text-teal-600",
         }
     ];
 
@@ -287,15 +326,15 @@ const Diseases = () => {
         },
         {
             question: "How does BeeYield's partnership with Apisense benefit precision pollination?",
-            answer: "By integrating Apisense's IoT disease sensors into our operations, BeeYield deploys only strong, healthy colonies to grower fields. Our precision hive placement is guided by satellite risk mapping and real-time disease detection, ensuring maximum pollination efficiency and crop yield."
+            answer: "By integrating Apisense's IoT disease sensors into BeeYield's operations, the team deploys only the healthiest colonies. The real-time monitoring ensures strategic hive placement based on environmental risk data, maximizing pollination coverage and crop yield."
         },
         {
             question: "Can I test Apisense before deciding on full implementation?",
-            answer: "If you want to experience how Apisense works, join our field testing program. As a BeeYield partner in the 2026 Global Field Research, we can facilitate early access."
+            answer: "If you want to experience how Apisense works, join the field testing program. As a BeeYield partner in the 2026 Global Field Research, select apiaries can gain early access to the full Apisense monitoring stack."
         },
         {
             question: "Why does the system use satellite data?",
-            answer: "Satellite data enables the analysis of environmental conditions around the apiary, such as temperature, humidity, weather changes, and the availability of forage for bees. Combining this information with sensor data allows our machine learning algorithms to provide beekeepers with precise guidance on potential threats to their apiary."
+            answer: "Satellite data enables the analysis of environmental conditions around the apiary, such as temperature, humidity, weather changes, and the availability of forage for bees. Combining this information with sensor data allows Apisense's machine learning algorithms to provide beekeepers with precise guidance on potential threats to their apiary."
         },
         {
             question: "How does Apisense use artificial intelligence (AI)?",
@@ -313,7 +352,12 @@ const Diseases = () => {
             {/* ═══════════════════════════════════════════════════════════════
                 HERO SECTION — Partnership Announcement
             ═══════════════════════════════════════════════════════════════ */}
-            <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 bg-gradient-to-br from-beeyield-green/5 via-background to-background overflow-hidden border-b border-neutral-100">
+            <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
+                {/* Hero background image */}
+                <div className="absolute inset-0">
+                    <img src={HIVE_INSPECTION} alt="" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
+                </div>
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
                         <motion.img
@@ -323,7 +367,7 @@ const Diseases = () => {
                             alt="BeeYield Logo"
                             className="h-24 md:h-36 w-auto mb-12 drop-shadow-2xl"
                         />
-                        <Badge className="mb-6 bg-amber-500/10 text-amber-700 border-amber-200 px-5 py-2 font-semibold text-[10px] rounded-full">
+                        <Badge className="mb-6 bg-amber-500/10 text-amber-700 border-amber-200 px-5 py-2 font-semibold text-[10px] rounded-full backdrop-blur-sm">
                             2026 Apisense Global Field Research Partner
                         </Badge>
                         <motion.h1
@@ -341,7 +385,7 @@ const Diseases = () => {
                             transition={{ delay: 0.2 }}
                             className="text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto"
                         >
-                            The BeeYield and Apisense Partnership — Integrating state-of-the-art IoT disease sensors and AI-driven analytics into our precision pollination ecosystem.
+                            The BeeYield and Apisense Partnership — Integrating state-of-the-art IoT disease sensors and AI-driven analytics into BeeYield's precision pollination ecosystem.
                         </motion.p>
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -359,7 +403,7 @@ const Diseases = () => {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="h-14 px-10 border-neutral-200 text-neutral-900 font-bold text-xs rounded-2xl hover:bg-neutral-50 transition-all"
+                                className="h-14 px-10 border-neutral-200 text-neutral-900 font-bold text-xs rounded-2xl hover:bg-neutral-50 transition-all backdrop-blur-sm"
                                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 Join 2026 Field Research
@@ -367,9 +411,6 @@ const Diseases = () => {
                         </motion.div>
                     </div>
                 </div>
-                {/* Subtle decorative elements */}
-                <div className="absolute top-0 right-0 w-1/4 h-full bg-beeyield-green/[0.02] -skew-x-12 translate-x-20 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-1/4 h-full bg-amber-400/[0.02] skew-x-12 -translate-x-20 pointer-events-none" />
             </section>
 
             {/* ═══════════════════════════════════════════════════════════════
@@ -445,8 +486,8 @@ const Diseases = () => {
                         >
                             <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-900 group">
                                 <img
-                                    src={SENSOR_IMG}
-                                    alt="BeeYield IoT Sensor in Hive"
+                                    src={SENSOR_PORTRAIT}
+                                    alt="Apisense IoT Sensor installed on hive frame"
                                     className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform"
                                     style={{ transitionDuration: '2000ms' }}
                                 />
@@ -476,10 +517,10 @@ const Diseases = () => {
                                     <span className="text-beeyield-green">Protection</span>
                                 </h2>
                                 <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                                    At <strong className="text-neutral-900">BeeYield</strong>, our core mission is to deliver unparalleled precision pollination that maximizes crop yields while safeguarding the health of our most critical agricultural workforce: the bees.
+                                    At <strong className="text-neutral-900">BeeYield</strong>, the core mission is to deliver unparalleled precision pollination that maximizes crop yields while safeguarding the health of the most critical agricultural workforce: the bees.
                                 </p>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
-                                    We are proud to announce our official partnership with <strong className="text-neutral-900">Apisense</strong> as a key participant in their <strong className="text-neutral-900">2026 Global Field Research</strong> program. By integrating Apisense's state-of-the-art IoT disease sensors and AI-driven analytics into the BeeYield ecosystem, we are taking a revolutionary step forward in proactive apiary management, precision hive placement, and early threat detection.
+                                    BeeYield is proud to announce an official partnership with <strong className="text-neutral-900">Apisense</strong> as a key participant in their <strong className="text-neutral-900">2026 Global Field Research</strong> program. By integrating Apisense's state-of-the-art IoT disease sensors and AI-driven analytics into the BeeYield ecosystem, this partnership represents a revolutionary step forward in proactive apiary management, precision hive placement, and early threat detection.
                                 </p>
                             </div>
 
@@ -521,7 +562,7 @@ const Diseases = () => {
                         <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-4">How Does Apisense Work?</h2>
                         <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
                         <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                            Apisense is equipped with specialized, non-invasive IoT sensors that continuously analyze the air composition inside the hive. All data is transmitted in real time to the cloud, where proprietary AI algorithms detect early signs of diseases and threats.
+                            Apisense is equipped with specialized, non-invasive IoT sensors that continuously analyze the air composition inside the hive. All data is transmitted in real time to the cloud, where Apisense's proprietary AI algorithms detect early signs of diseases and threats.
                         </p>
                     </div>
 
@@ -544,6 +585,145 @@ const Diseases = () => {
                                 </p>
                             </motion.div>
                         ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                HIGH EFFICIENCY PROVEN BY RESEARCH
+            ═══════════════════════════════════════════════════════════════ */}
+            <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5" />
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
+                        <div className="md:w-1/3">
+                            <h2 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight">
+                                High efficiency <br />
+                                <span className="text-beeyield-green">proven by research:</span>
+                            </h2>
+                        </div>
+                        <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-10 border-t md:border-t-0 md:border-l border-white/10 pt-10 md:pt-0 md:pl-12">
+                            <div>
+                                <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-400 mb-4 tracking-tighter">95%</h3>
+                                <h4 className="text-lg font-bold text-white mb-2">Disease detection</h4>
+                                <p className="text-sm text-white/70 leading-relaxed">
+                                    Apisense achieves up to 95% accuracy in detecting early-stage signs of Foulbrood, Nosema, and Varroa destructor infestations before visible symptoms appear.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-beeyield-green to-emerald-700 mb-4 tracking-tighter">85%</h3>
+                                <h4 className="text-lg font-bold text-white mb-2">Disease spread prediction</h4>
+                                <p className="text-sm text-white/70 leading-relaxed">
+                                    Through continuous localized monitoring, the system predicts the vector spread of diseases across the apiary with up to 85% accuracy, enabling proactive containment.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                SATELLITE DATA MONITORING — Split Layout
+            ═══════════════════════════════════════════════════════════════ */}
+            <section className="py-32 bg-neutral-50 relative overflow-hidden border-b border-neutral-200">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-beeyield-green/[0.03] -skew-x-12 translate-x-20 pointer-events-none" />
+                
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+                        <div className="lg:w-1/2 space-y-8">
+                            <div>
+                                <Badge className="bg-amber-500/10 text-amber-700 border-amber-200 mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+                                    Satellite Data Monitoring
+                                </Badge>
+                                <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+                                    Environmental Risk <span className="text-beeyield-green">Mapping</span>
+                                </h2>
+                                <p className="text-lg text-muted-foreground leading-relaxed">
+                                    The Apisense system harnesses real-time satellite telemetry to provide comprehensive insights into the macro-environmental conditions surrounding BeeYield apiaries in the <strong className="text-neutral-900">Kibwezi-Makueni agricultural corridor</strong>.
+                                </p>
+                            </div>
+                            
+                            <div className="space-y-6">
+                                <div className="bg-white p-6 hover:p-7 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] border border-neutral-100 hover:border-amber-200 transition-all duration-300 flex flex-col sm:flex-row gap-5 group">
+                                    <div className="w-14 h-14 bg-amber-50 group-hover:bg-amber-100 transition-colors text-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <MapPin className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-neutral-900 mb-2">Forage & Threat Overlay</h4>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">By cross-referencing precise hive coordinates with satellite data on local flora blooms and agricultural chemical drift, Apisense dynamically generates heatmaps of potential environmental risks unique to the Kenyan climate.</p>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-6 hover:p-7 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] border border-neutral-100 hover:border-beeyield-green/30 transition-all duration-300 flex flex-col sm:flex-row gap-5 group">
+                                    <div className="w-14 h-14 bg-beeyield-green/10 group-hover:bg-beeyield-green/20 transition-colors text-beeyield-green rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <Satellite className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-neutral-900 mb-2">Predictive Deployment</h4>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">This interactive spatial visualization allows BeeYield field technicians to optimize hive placement routes safely across Makueni County, preventing unnecessary exposure to extreme weather or resource-scarce zones.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="lg:w-1/2 w-full h-[400px] md:h-[500px]">
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6 }}
+                                className="relative rounded-[3rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.15)] border-8 border-white bg-neutral-200 h-full w-full group isolate"
+                            >
+                                <MapContainer 
+                                    center={[-2.2, 37.8]} 
+                                    zoom={9} 
+                                    scrollWheelZoom={false}
+                                    style={{ height: '100%', width: '100%', zIndex: 1 }}
+                                    zoomControl={false}
+                                >
+                                    <TileLayer
+                                        attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
+                                        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                                    />
+                                    {towns.map((town, idx) => (
+                                        <React.Fragment key={`map-item-${idx}`}>
+                                            <Circle 
+                                                center={[town.lat, town.lng]} 
+                                                radius={town.risk === 'High' ? 12000 : town.risk === 'Medium' ? 8000 : 5000} 
+                                                pathOptions={{ 
+                                                    fillColor: town.risk === 'High' ? '#ef4444' : town.risk === 'Medium' ? '#f59e0b' : '#10b981', 
+                                                    fillOpacity: 0.15, 
+                                                    color: town.risk === 'High' ? '#ef4444' : town.risk === 'Medium' ? '#f59e0b' : '#10b981',
+                                                    weight: 1,
+                                                    dashArray: '4,4'
+                                                }} 
+                                            />
+                                            <Marker position={[town.lat, town.lng]} icon={townIcon}>
+                                                <Popup className="rounded-xl font-sans" autoClose={false}>
+                                                    <div className="text-center p-1">
+                                                        <strong className="block text-sm mb-1 text-neutral-900">{town.name}</strong>
+                                                        <div className="flex justify-between items-center gap-3">
+                                                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Risk: {town.risk}</span>
+                                                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Forage: {town.forage}</span>
+                                                        </div>
+                                                    </div>
+                                                </Popup>
+                                            </Marker>
+                                        </React.Fragment>
+                                    ))}
+                                </MapContainer>
+                                
+                                {/* Overlay status bar overlaying the map securely above z-index */}
+                                <div className="absolute bottom-6 left-6 right-6 pointer-events-none z-[1000] opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+                                    <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 border border-white/20 pointer-events-auto">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-beeyield-green shadow-[0_0_8px_rgba(74,222,128,0.8)] animate-pulse" />
+                                            <span className="text-sm font-bold text-neutral-900">Live API Uplink Active</span>
+                                        </div>
+                                        <span className="text-[11px] font-mono font-medium tracking-wider text-muted-foreground bg-neutral-100 px-3 py-1.5 rounded-full">HQ: Kibwezi</span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -680,73 +860,14 @@ const Diseases = () => {
                             viewport={{ once: true }}
                             className="relative"
                         >
-                            {/* App Mockup */}
-                            <div className="relative w-72 h-[560px] mx-auto border-[10px] border-neutral-900 rounded-[3.5rem] bg-white shadow-[0_40px_80px_rgba(0,0,0,0.25)] overflow-hidden">
-                                <div className="absolute top-0 inset-x-0 h-8 bg-neutral-900 flex items-center justify-center">
-                                    <div className="w-20 h-4 bg-neutral-800 rounded-full" />
-                                </div>
-                                <div className="pt-10 px-5 pb-5 h-full overflow-hidden bg-gradient-to-b from-white to-neutral-50">
-                                    {/* Mini app UI */}
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <div className="h-8 w-8 rounded-lg bg-beeyield-green/20 flex items-center justify-center">
-                                            <Sparkles className="h-4 w-4 text-beeyield-green" />
-                                        </div>
-                                        <span className="font-bold text-sm text-neutral-900">Apisense</span>
-                                        <div className="ml-auto flex items-center gap-1">
-                                            <div className="w-1.5 h-1.5 bg-beeyield-green rounded-full animate-pulse" />
-                                            <span className="text-[8px] font-bold text-beeyield-green">Live</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Health card */}
-                                    <div className="bg-beeyield-green/10 border border-beeyield-green/20 rounded-2xl p-4 mb-3">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-[9px] font-bold text-beeyield-green uppercase">Colony Health</span>
-                                            <span className="text-lg font-black text-beeyield-green">95%</span>
-                                        </div>
-                                        <div className="h-2 bg-white rounded-full overflow-hidden">
-                                            <div className="h-full bg-beeyield-green rounded-full" style={{ width: '95%' }} />
-                                        </div>
-                                    </div>
-
-                                    {/* Alert card */}
-                                    <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-3">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <AlertTriangle className="h-3 w-3 text-amber-600" />
-                                            <span className="text-[9px] font-bold text-amber-700">Varroa Risk — Low</span>
-                                        </div>
-                                        <p className="text-[8px] text-amber-600">Monitor recommended. No treatment required.</p>
-                                    </div>
-
-                                    {/* Sensor data */}
-                                    <div className="grid grid-cols-2 gap-2 mb-3">
-                                        <div className="bg-neutral-100 rounded-xl p-3 text-center">
-                                            <span className="text-[8px] font-bold text-neutral-400 block">VOC</span>
-                                            <span className="text-sm font-black text-neutral-900">0.12</span>
-                                        </div>
-                                        <div className="bg-neutral-100 rounded-xl p-3 text-center">
-                                            <span className="text-[8px] font-bold text-neutral-400 block">CO₂</span>
-                                            <span className="text-sm font-black text-neutral-900">2.4k</span>
-                                        </div>
-                                        <div className="bg-neutral-100 rounded-xl p-3 text-center">
-                                            <span className="text-[8px] font-bold text-neutral-400 block">Temp</span>
-                                            <span className="text-sm font-black text-neutral-900">34°C</span>
-                                        </div>
-                                        <div className="bg-neutral-100 rounded-xl p-3 text-center">
-                                            <span className="text-[8px] font-bold text-neutral-400 block">Humidity</span>
-                                            <span className="text-sm font-black text-neutral-900">62%</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Map preview */}
-                                    <div className="bg-neutral-200 rounded-2xl h-24 flex items-center justify-center relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-beeyield-green/10 to-amber-400/10" />
-                                        <MapPin className="h-6 w-6 text-beeyield-green relative z-10" />
-                                    </div>
-
-                                    <div className="mt-3 bg-neutral-900 rounded-xl p-3 text-center">
-                                        <span className="text-[9px] font-bold text-beeyield-green">5 Hives Monitored — All Systems Online</span>
-                                    </div>
+                            {/* Apisense App — Real tablet screenshot */}
+                            <div className="relative mx-auto max-w-md">
+                                <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.25)] border-[6px] border-neutral-800 bg-neutral-900">
+                                    <img
+                                        src={APISENSE_APP}
+                                        alt="Apisense app dashboard showing apiary map, disease detection alerts for Foulbrood, Varroa and Nosema, and colony health status"
+                                        className="w-full h-auto"
+                                    />
                                 </div>
                             </div>
 
@@ -780,7 +901,7 @@ const Diseases = () => {
                         <p className="text-muted-foreground text-sm max-w-xl mx-auto">Why BeeYield's integration with Apisense delivers unmatched value for your apiary and pollination operations</p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
                         {benefits.map((benefit, index) => (
                             <motion.div
                                 key={index}
@@ -788,15 +909,21 @@ const Diseases = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.06 }}
-                                className="bg-white p-10 rounded-[2rem] border border-neutral-100 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] hover:border-beeyield-green/20 transition-all duration-500 group text-center"
+                                className="bg-white p-8 rounded-[2rem] border border-neutral-100 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] hover:border-beeyield-green/20 transition-all duration-500 group relative overflow-hidden"
                             >
-                                <div className="mb-8 inline-flex items-center justify-center p-5 bg-neutral-50 rounded-2xl group-hover:bg-beeyield-green/10 transition-colors text-beeyield-green">
+                                {/* Numbered corner badge */}
+                                <div className="absolute top-5 right-5 w-8 h-8 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center group-hover:bg-beeyield-green/10 group-hover:border-beeyield-green/20 transition-all">
+                                    <span className="text-[10px] font-bold text-neutral-300 group-hover:text-beeyield-green transition-colors">{String(index + 1).padStart(2, '0')}</span>
+                                </div>
+                                <div className={`mb-6 inline-flex items-center justify-center p-4 rounded-2xl transition-colors ${benefit.accent}`}>
                                     {benefit.icon}
                                 </div>
-                                <h3 className="text-lg font-bold text-neutral-900 mb-4 tracking-tight">{benefit.title}</h3>
+                                <h3 className="text-lg font-bold text-neutral-900 mb-3 tracking-tight">{benefit.title}</h3>
                                 <p className="text-sm text-muted-foreground leading-relaxed">
                                     {benefit.description}
                                 </p>
+                                {/* Bottom accent line */}
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-beeyield-green/0 to-transparent group-hover:via-beeyield-green/40 transition-all duration-700" />
                             </motion.div>
                         ))}
                     </div>
@@ -841,11 +968,24 @@ const Diseases = () => {
                     {/* Hardware Section */}
                     <div className="max-w-5xl mx-auto">
                         <div className="text-center mb-12">
-                            <h3 className="text-2xl font-bold mb-4">What Does Our Solution Consist Of?</h3>
+                            <h3 className="text-2xl font-bold mb-4">What Does the Solution Consist Of?</h3>
                             <p className="opacity-80 max-w-2xl mx-auto text-sm">
                                 The Apisense solution is built on modern monitoring devices that collect data from the hive in real time, combined with satellite data and weather forecasts.
                             </p>
                         </div>
+                        {/* Sensor close-up image */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="mb-12 rounded-[2rem] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.2)] border border-white/10"
+                        >
+                            <img
+                                src={SENSOR_LANDSCAPE}
+                                alt="Apisense IoT sensor device installed on beehive frame — close-up showing gas sensors and circuit board with bees"
+                                className="w-full h-48 md:h-72 object-cover"
+                            />
+                        </motion.div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {hardwareFeatures.map((hardware, index) => (
                                 <motion.div
