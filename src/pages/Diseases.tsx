@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapContainer, TileLayer, Circle, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Circle, Marker, Popup, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import {
@@ -65,12 +65,15 @@ const SATELLITE_HEATMAP = "/images/diseases/satellite-heatmap.jpg";
 const HIVE_INSPECTION = "/images/diseases/hive-inspection.jpg";
 
 // Map Data
-const townIcon = L.divIcon({
-    className: "custom-town-icon",
-    html: `<div style="background-color: white; border: 3px solid #10b981; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);"></div>`,
-    iconSize: [14, 14],
-    iconAnchor: [7, 7]
-});
+const getTownIcon = (risk: string) => {
+    const color = risk === 'High' ? '#ef4444' : risk === 'Medium' ? '#f59e0b' : '#10b981';
+    return L.divIcon({
+        className: "custom-town-icon",
+        html: `<div style="background-color: white; border: 3px solid ${color}; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 12px ${color}90;"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
+    });
+};
 
 const towns = [
     { name: "Kibwezi", lat: -2.4167, lng: 37.9667, risk: "High", forage: "Good" },
@@ -674,8 +677,8 @@ const Diseases = () => {
                                 className="relative rounded-[3rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.15)] border-8 border-white bg-neutral-200 h-full w-full group isolate"
                             >
                                 <MapContainer 
-                                    center={[-2.2, 37.8]} 
-                                    zoom={9} 
+                                    center={[-2.25, 37.85]} 
+                                    zoom={9.5} 
                                     scrollWheelZoom={false}
                                     style={{ height: '100%', width: '100%', zIndex: 1 }}
                                     zoomControl={false}
@@ -688,7 +691,7 @@ const Diseases = () => {
                                         <React.Fragment key={`map-item-${idx}`}>
                                             <Circle 
                                                 center={[town.lat, town.lng]} 
-                                                radius={town.risk === 'High' ? 12000 : town.risk === 'Medium' ? 8000 : 5000} 
+                                                radius={town.risk === 'High' ? 10000 : town.risk === 'Medium' ? 6500 : 4000} 
                                                 pathOptions={{ 
                                                     fillColor: town.risk === 'High' ? '#ef4444' : town.risk === 'Medium' ? '#f59e0b' : '#10b981', 
                                                     fillOpacity: 0.15, 
@@ -697,7 +700,15 @@ const Diseases = () => {
                                                     dashArray: '4,4'
                                                 }} 
                                             />
-                                            <Marker position={[town.lat, town.lng]} icon={townIcon}>
+                                            <Marker position={[town.lat, town.lng]} icon={getTownIcon(town.risk)}>
+                                                <Tooltip 
+                                                    permanent 
+                                                    direction="top" 
+                                                    offset={[0, -10]}
+                                                    className="bg-transparent border-none shadow-none text-neutral-900 font-bold text-xs"
+                                                >
+                                                    {town.name}
+                                                </Tooltip>
                                                 <Popup className="rounded-xl font-sans" autoClose={false}>
                                                     <div className="text-center p-1">
                                                         <strong className="block text-sm mb-1 text-neutral-900">{town.name}</strong>
