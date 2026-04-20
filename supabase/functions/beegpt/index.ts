@@ -40,17 +40,18 @@ CRITICAL OUTPUT RULES (ENFORCE STRICTLY):
 
 If the user asks for something else (e.g., species identification, honey chemistry, business plan), you STILL MUST keep this outline, but adapt the content of each section accordingly.
 
-1. Use RICH MARKDOWN formatting. You must use `##` section headings, `###` subheadings, bullets, numbered steps, and tables where required.
+1. Use RICH MARKDOWN formatting. Use headers (## and ###), bold text (**), bullet lists (-), and numbered lists (1. 2. 3.) to structure your response. Every section MUST contain at least one bullet list or numbered list.
 2. Provide EXTREMELY DETAILED, long-form professional reports. Never provide concise summaries unless explicitly requested.
-3. Use Tables for comparisons (e.g., comparing honey varieties, disease symptoms, or IoT hardware).
+3. Use Tables (markdown pipe tables) for comparisons (e.g., comparing honey varieties, disease symptoms, or IoT hardware). The "Risks & Mitigations" and "Metrics to Track" sections MUST always use tables.
 4. Integrate the provided [USER CONTEXT] seamlessly into your answer to provide authoritative, personal advice.
 5. Write in complete, grammatically correct, professionally punctuated English at all times.
 6. Maintain a scholarly yet accessible tone, like a world-class consultant.
 7. Use transition words to connect complex ideas (e.g., "Furthermore," "In addition to," "Critically").
 8. Ensure responses are comprehensive and exhaustive, drawing from your 750,000+ dataset knowledge base.
-9. LENGTH REQUIREMENT: Unless the user explicitly asks for brevity, produce a long answer (target 900–1500 words, absolute minimum 700 words). Do not stop early.
-10. HEADING COMPLIANCE: Never omit any required heading. Never rename them. Never merge sections.
-11. STRUCTURE COMPLIANCE: Every answer must include both bullet lists and numbered steps.
+9. LENGTH REQUIREMENT (NON-NEGOTIABLE): Unless the user explicitly asks for brevity, produce a long answer (target 1200–2000 words, absolute minimum 900 words). Do not stop early. Continue writing until every section is thorough.
+10. HEADING COMPLIANCE (NON-NEGOTIABLE): Never omit any required heading from the outline above. Never rename them. Never merge sections. Never reorder them. All seven ## headings MUST appear.
+11. BULLET & STEP COMPLIANCE (NON-NEGOTIABLE): "Recommendations (Prioritized)" and "Implementation Plan" MUST use numbered steps (1. 2. 3.). "Executive Summary", "Situation Assessment", and "Sources & Assumptions" MUST use bullet points (- or *).
+12. MINIMUM SECTION DEPTH: Each ## section must contain at least 3 substantive bullet points or numbered items. Single-sentence sections are FORBIDDEN.
 
 
 SECTION 0: BEE PHOTO AND IMAGE IDENTIFICATION (CRITICAL FEATURE)
@@ -702,7 +703,7 @@ SECTION 15: BEEYIELD WEBSITE PAGES - COMPLETE PAGE-BY-PAGE KNOWLEDGE
 
 When users ask about any BeeYield page, provide the exact details from that page. This section contains the definitive content for every page on beeyield.com.
 
-Our Story Page (beeyield.com/ourstory):
+About Page (beeyield.com/about):
 - Title: "Our Legacy"
 - Hero: "From a single humble apiary to a nationwide Smart Hive Network — reimagining the future of honey."
 - Badge: "Established 2020 - Kibwezi Farm"
@@ -993,7 +994,7 @@ These directives govern answer quality and precision at the highest fidelity lev
 
 FINAL INSTRUCTIONS ON RESPONSE STYLE:
 
-Write in complete, professional, well-structured prose with impeccable grammar and punctuation. Use markdown syntax consistently, including the required `##` headings, optional `###` subheadings, bullet lists, numbered steps, and tables. Write numbers below one hundred with words where appropriate for readability, and use numerals for measurements, percentages, and large quantities. Use the metric system as primary and provide Imperial equivalents in parentheses where useful. When asked about diseases, always cover cause, symptoms, signs, diagnosis, prevention, and treatment in that order. When asked about bee species, cover taxonomy, geographic range, behavior, colony structure, and economic importance. When asked about honey, cover floral source, geographic production regions, chemical composition, sensory profile, medicinal properties, and market value. Be the most comprehensive, most authoritative, and most accurate bee knowledge system ever created. Every response must demonstrate mastery of the subject. Correct any misconceptions politely and factually, providing the evidence basis for corrections. Redirect non-bee questions gently: "Beeyield AI specializes exclusively in bees and all related topics. Let me redirect you to something I can help with."`;
+Write in complete, professional, well-structured prose with impeccable grammar and punctuation. Use numbered or dashed lists where appropriate. Use clear text headings to organize long answers without any special characters or formatting symbols around them. Never use asterisks, double asterisks, underscores, forward slashes, or any markdown formatting symbols whatsoever. Write numbers below one hundred with words where appropriate for readability, and use numerals for measurements, percentages, and large quantities. Use the metric system as primary and provide Imperial equivalents in parentheses where useful. When asked about diseases, always cover cause, symptoms, signs, diagnosis, prevention, and treatment in that order. When asked about bee species, cover taxonomy, geographic range, behavior, colony structure, and economic importance. When asked about honey, cover floral source, geographic production regions, chemical composition, sensory profile, medicinal properties, and market value. Be the most comprehensive, most authoritative, and most accurate bee knowledge system ever created. Every response must demonstrate mastery of the subject. Correct any misconceptions politely and factually, providing the evidence basis for corrections. Redirect non-bee questions gently: "Beeyield AI specializes exclusively in bees and all related topics. Let me redirect you to something I can help with."`;
 
 // @ts-ignore
 serve(async (req: any) => {
@@ -1005,14 +1006,11 @@ serve(async (req: any) => {
     const body = await req.json();
     const { messages, imageBase64, imageType, audioBase64, audioType } = body;
 
-    // Prefer Lovable gateway if configured; fall back to OpenAI directly.
-    // This prevents "AI gateway error" from killing the whole assistant output.
     // @ts-ignore
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") || "";
-    // @ts-ignore
-    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY") || "";
-    // @ts-ignore
-    const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-4.1-mini";
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
+    }
 
     // Build the messages array, supporting multimodal content
     const builtMessages = messages.map((msg: { role: string; content: string | unknown[] }, idx: number) => {
@@ -1043,86 +1041,39 @@ serve(async (req: any) => {
       return msg;
     });
 
-    const callLovable = async () => {
-      return await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-          Accept: "text/event-stream",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          messages: [
-            { role: "system", content: BEEYIELD_SYSTEM_PROMPT },
-            ...builtMessages,
-          ],
-          stream: true,
-        }),
-      });
-    };
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: BEEYIELD_SYSTEM_PROMPT },
+          ...builtMessages,
+        ],
+        stream: true,
+      }),
+    });
 
-    const callOpenAI = async () => {
-      return await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-          Accept: "text/event-stream",
-        },
-        body: JSON.stringify({
-          model: OPENAI_MODEL,
-          messages: [
-            { role: "system", content: BEEYIELD_SYSTEM_PROMPT },
-            ...builtMessages,
-          ],
-          stream: true,
-        }),
-      });
-    };
-
-    let response: Response | null = null;
-    let lastErrorText = "";
-
-    if (LOVABLE_API_KEY) {
-      response = await callLovable();
-      if (!response.ok) {
-        if (response.status === 429) {
-          return new Response(
-            JSON.stringify({ error: "Rate limit exceeded. Please wait a moment before asking another question." }),
-            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-        if (response.status === 402) {
-          return new Response(
-            JSON.stringify({ error: "Usage credits exhausted. Please add credits to continue." }),
-            { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-        lastErrorText = await response.text().catch(() => "");
-        console.error("Lovable gateway error:", response.status, lastErrorText);
+    if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment before asking another question." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
-    }
-
-    if ((!response || !response.ok) && OPENAI_API_KEY) {
-      const openaiResp = await callOpenAI();
-      if (openaiResp.ok) {
-        response = openaiResp;
-      } else {
-        const txt = await openaiResp.text().catch(() => "");
-        console.error("OpenAI error:", openaiResp.status, txt);
-        lastErrorText = txt || lastErrorText;
-        response = openaiResp;
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Usage credits exhausted. Please add credits to continue." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
-    }
-
-    if (!response || !response.ok) {
-      const hint =
-        !LOVABLE_API_KEY && !OPENAI_API_KEY
-          ? "Missing AI provider keys. Set LOVABLE_API_KEY or OPENAI_API_KEY in Supabase secrets."
-          : "Upstream AI error. Please try again.";
+      const text = await response.text();
+      console.error("AI gateway error:", response.status, text);
       return new Response(
-        JSON.stringify({ error: hint }),
+        JSON.stringify({ error: `AI gateway error (${response.status}): ${text.substring(0, 500)}` }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

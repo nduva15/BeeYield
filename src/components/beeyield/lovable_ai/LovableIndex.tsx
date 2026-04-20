@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
-import beeyieldLogo from "@/assets/beeyield-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useVoiceInput } from "@/hooks/use-voice-input";
@@ -47,28 +46,11 @@ async function streamBeeyield(
   onDone: () => void,
   onError: (err: string) => void
 ) {
-  const baseUrl =
-    import.meta.env.VITE_SUPABASE_URL ||
-    import.meta.env.VITE_SUPABASE_URL_BEEYIELD ||
-    import.meta.env.VITE_SUPABASE_URL_SHOP ||
-    import.meta.env.VITE_SUPABASE_URL_CEBA;
-
-  const anonKey =
-    import.meta.env.VITE_SUPABASE_ANON_KEY ||
-    import.meta.env.VITE_SUPABASE_ANON_KEY_BEEYIELD ||
-    import.meta.env.VITE_SUPABASE_ANON_KEY_SHOP ||
-    import.meta.env.VITE_SUPABASE_ANON_KEY_CEBA;
-
-  if (!baseUrl || !anonKey) {
-    onError("Missing Supabase URL or anon key for Beeyield AI");
-    return;
-  }
-
-  const resp = await fetch(`${baseUrl}/functions/v1/beegpt`, {
+  const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${anonKey}`,
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
     },
     body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType }),
   });
@@ -78,22 +60,6 @@ async function streamBeeyield(
     onError(data.error || `Error ${resp.status}`);
     return;
   }
-
-  // Some deployments stream SSE; others return a single JSON payload.
-  const contentType = resp.headers.get("content-type") || "";
-  if (contentType.includes("application/json")) {
-    const data: any = await resp.json().catch(() => null);
-    const text =
-      data?.response ??
-      data?.text ??
-      data?.content ??
-      data?.choices?.[0]?.message?.content ??
-      "";
-    if (text) onDelta(String(text));
-    onDone();
-    return;
-  }
-
   if (!resp.body) { onError("No response body"); return; }
 
   const reader = resp.body.getReader();
@@ -110,10 +76,8 @@ async function streamBeeyield(
       let line = buf.slice(0, nl);
       buf = buf.slice(nl + 1);
       if (line.endsWith("\r")) line = line.slice(0, -1);
-      const m = line.match(/^data:\s*(.*)$/);
-      if (!m) continue;
-      const json = (m[1] || "").trim();
-      if (!json) continue;
+      if (!line.startsWith("data: ")) continue;
+      const json = line.slice(6).trim();
       if (json === "[DONE]") { done = true; break; }
       try {
         const parsed = JSON.parse(json);
@@ -375,7 +339,7 @@ export default function Index() {
             <History className="w-4 h-4" />
             <span className="text-xs font-medium">History</span>
           </button>
-          <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto" />
+          <img src="/logo.png" alt="Beeyield" className="h-9 w-auto" />
           <div className="hidden sm:block">
             <div className="font-display font-bold text-foreground text-base leading-tight">Beeyield AI</div>
             <div className="text-xs text-muted-foreground">The World's Most Comprehensive Bee Knowledge System</div>
@@ -406,7 +370,7 @@ export default function Index() {
           <button
             onClick={() => setAboutOpen(true)}
             className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Our Story"
+            title="About Beeyield AI"
           >
             <Info className="w-4 h-4" />
           </button>
@@ -449,7 +413,7 @@ export default function Index() {
       <div className="flex-1 overflow-y-auto custom-scroll px-4 py-6 space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in max-w-3xl mx-auto w-full">
-            <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto mb-4" />
+            <img src="/logo.png" alt="Beeyield" className="h-16 w-auto mb-4 opacity-90" />
             <h1 className="font-display text-3xl font-bold text-honey mb-2">Welcome to Beeyield AI</h1>
             <p className="text-muted-foreground max-w-xl mb-8 text-sm leading-relaxed">
               The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
@@ -475,7 +439,7 @@ export default function Index() {
           >
             {msg.role === "assistant" && (
               <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-background border border-border shadow-sm">
-                <img src={beeyieldLogo} alt="Beeyield AI" className="w-6 h-6 object-contain" />
+                <img src="/logo.png" alt="Beeyield AI" className="w-6 h-6 object-contain" />
               </div>
             )}
             <div className="flex flex-col gap-1 max-w-[80%]">
@@ -506,7 +470,7 @@ export default function Index() {
         {isLoading && messages[messages.length - 1]?.role === "user" && (
           <div className="flex gap-3 justify-start max-w-4xl mx-auto w-full">
             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-background border border-border flex items-center justify-center shadow-sm">
-              <img src={beeyieldLogo} alt="Beeyield AI" className="w-6 h-6 object-contain" />
+              <img src="/logo.png" alt="Beeyield AI" className="w-6 h-6 object-contain" />
             </div>
             <div className="chat-assistant px-4 py-3 flex items-center gap-1">
               <span className="typing-dot w-2 h-2 rounded-full bg-primary inline-block" />
