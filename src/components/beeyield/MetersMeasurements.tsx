@@ -56,9 +56,9 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                 return <MetricCalendarView />;
             case 'meters-import':
                 return (
-                    <div className={cn(glass.card, "flex flex-col items-center justify-center py-24 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
+                    <div className={cn(glass.card, "flex flex-col items-center justify-center py-24 bg-muted/ backdrop-blur-xl border-border/ rounded-[2.5rem] shadow-xl")}>
                         <FileText className="w-10 h-10 text-gray-300 mb-4" />
-                        <p className="text-gray-500 font-black text-[9px]">Data sync interrupted</p>
+                        <p className="text-muted-foreground font-black text-[9px]">Data sync interrupted</p>
                     </div>
                 );
             default:
@@ -90,27 +90,27 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                                 glass.card,
                                 "p-5 cursor-pointer transition-all duration-300 relative overflow-hidden group rounded-[2rem]",
                                 isActive
-                                    ? "bg-white/60 border-white/60 ring-2 ring-[#F4D03F]/30 shadow-2xl scale-[1.02]"
-                                    : "bg-white/30 border-white/20 hover:bg-white/50 hover:shadow-xl"
+                                    ? "bg-muted/ border-border/ ring-2 ring-[#F4D03F]/30 shadow-2xl scale-[1.02]"
+                                    : "bg-muted/ border-border/ hover:bg-muted/ hover:shadow-xl"
                             )}
                         >
                             <div className="flex items-center gap-3 mb-2">
                                 <div className={cn(
                                     "w-8 h-8 rounded-xl flex items-center justify-center border transition-all",
-                                    isActive ? "bg-[#F4D03F] border-[#F4D03F] text-white" : "bg-white/50 border-white/40 text-gray-400 group-hover:text-[#1A1A1A]"
+                                    isActive ? "bg-[#F4D03F] border-[#F4D03F] text-white" : "bg-muted/ border-border/ text-muted-foreground/70 group-hover:text-foreground"
                                 )}>
                                     <Icon className="w-4 h-4" />
                                 </div>
                                 <h3 className={cn(
                                     "font-black text-[11px] transition-colors",
-                                    isActive ? "text-[#1A1A1A]" : "text-gray-500 group-hover:text-[#1A1A1A]"
+                                    isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                                 )}>
                                     {tab.label}
                                 </h3>
                             </div>
                             <p className={cn(
                                 "text-[9px] font-bold pl-11",
-                                isActive ? "text-[#1A1A1A]/60" : "text-gray-400 opacity-60"
+                                isActive ? "text-foreground/60" : "text-muted-foreground/70 opacity-60"
                             )}>
                                 {tab.subtext}
                             </p>
@@ -132,3 +132,4 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
 };
 
 export default MetersMeasurements;
+

@@ -114,7 +114,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                    <Label htmlFor="hive-form-hive-code" className="text-[9px] font-black text-gray-400 ml-2">Hive Identifier*</Label>
+                    <Label htmlFor="hive-form-hive-code" className="text-[9px] font-black text-muted-foreground/70 ml-2">Hive Identifier*</Label>
                     <div className="relative">
                         <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                         <Input
@@ -130,15 +130,15 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-[9px] font-black text-gray-400 ml-2">Location</Label>
+                    <Label className="text-[9px] font-black text-muted-foreground/70 ml-2">Location</Label>
                     <Select value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
-                        <SelectTrigger id="hive-form-apiary" aria-label="Location" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                        <SelectTrigger id="hive-form-apiary" aria-label="Location" className="h-10 border-border/ bg-muted/ px-4 rounded-xl font-black text-[9px] transition-all hover:border-border/ focus:ring-0">
                             <div className="flex items-center gap-2">
                                 <MapPin className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <SelectValue placeholder="Select Location" />
                             </div>
                         </SelectTrigger>
-                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                        <SelectContent className="bg-muted/ backdrop-blur-md border-border/ rounded-xl overflow-hidden shadow-2xl">
                             {apiaries.map(apiary => (
                                 <SelectItem key={apiary.id} value={apiary.id} className="text-[9px] font-black focus:bg-[#F4D03F]/10">{apiary.name}</SelectItem>
                             ))}
@@ -147,15 +147,15 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-[9px] font-black text-gray-400 ml-2">Hardware Blueprint</Label>
+                    <Label className="text-[9px] font-black text-muted-foreground/70 ml-2">Hardware Blueprint</Label>
                     <Select value={formData.hive_type} onValueChange={(val) => setFormData({ ...formData, hive_type: val })}>
-                        <SelectTrigger id="hive-form-hive-type" aria-label="Hive type" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                        <SelectTrigger id="hive-form-hive-type" aria-label="Hive type" className="h-10 border-border/ bg-muted/ px-4 rounded-xl font-black text-[9px] transition-all hover:border-border/ focus:ring-0">
                             <div className="flex items-center gap-2">
                                 <Layers className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <SelectValue placeholder="Select Type" />
                             </div>
                         </SelectTrigger>
-                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                        <SelectContent className="bg-muted/ backdrop-blur-md border-border/ rounded-xl overflow-hidden shadow-2xl">
                             {['Langstroth', 'Ktbh', 'Traditional Log', 'Warre'].map(t => (
                                 <SelectItem key={t} value={t} className="text-[9px] font-black focus:bg-[#F4D03F]/10">{t}</SelectItem>
                             ))}
@@ -164,7 +164,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="hive-form-frame-count" className="text-[9px] font-black text-gray-400 ml-2">Frame Saturation</Label>
+                    <Label htmlFor="hive-form-frame-count" className="text-[9px] font-black text-muted-foreground/70 ml-2">Frame Saturation</Label>
                     <div className="relative">
                         <Settings className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                         <Input
@@ -181,15 +181,15 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-xs font-semibold text-gray-500 ml-2">Bee type</Label>
+                    <Label className="text-xs font-semibold text-muted-foreground ml-2">Bee type</Label>
                     <Select value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
-                        <SelectTrigger id="hive-form-bee-type" aria-label="Bee type" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl text-sm font-semibold transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                        <SelectTrigger id="hive-form-bee-type" aria-label="Bee type" className="h-10 border-border/ bg-muted/ px-4 rounded-xl text-sm font-semibold transition-all hover:border-border/ focus:ring-0">
                             <div className="flex items-center gap-2">
                                 <Binary className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <SelectValue placeholder="Select bee type" />
                             </div>
                         </SelectTrigger>
-                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                        <SelectContent className="bg-muted/ backdrop-blur-md border-border/ rounded-xl overflow-hidden shadow-2xl">
                             {['African Honey Bee', 'Italian Bee', 'Carniolan Bee', 'Buckfast Bee'].map(b => (
                                 <SelectItem key={b} value={b} className="text-[9px] font-black focus:bg-[#F4D03F]/10">{b}</SelectItem>
                             ))}
@@ -198,15 +198,15 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-[9px] font-black text-gray-400 ml-2">Operational State</Label>
+                    <Label className="text-[9px] font-black text-muted-foreground/70 ml-2">Operational State</Label>
                     <Select value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val })}>
-                        <SelectTrigger id="hive-form-status" aria-label="Operational state" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                        <SelectTrigger id="hive-form-status" aria-label="Operational state" className="h-10 border-border/ bg-muted/ px-4 rounded-xl font-black text-[9px] transition-all hover:border-border/ focus:ring-0">
                             <div className="flex items-center gap-2">
                                 <ShieldCheck className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <SelectValue placeholder="Select Status" />
                             </div>
                         </SelectTrigger>
-                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                        <SelectContent className="bg-muted/ backdrop-blur-md border-border/ rounded-xl overflow-hidden shadow-2xl">
                             <SelectItem value="Active" className="text-[9px] font-black focus:bg-[#F4D03F]/10 text-[#1B9157]">Nominal</SelectItem>
                             <SelectItem value="Weak" className="text-[9px] font-black focus:bg-[#F4D03F]/10 text-[#F4D03F]">Observation</SelectItem>
                             <SelectItem value="Inactive" className="text-[9px] font-black focus:bg-[#F4D03F]/10 text-red-500">Offline</SelectItem>
@@ -216,15 +216,15 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-[9px] font-black text-gray-400 ml-2">Material Specification</Label>
+                    <Label className="text-[9px] font-black text-muted-foreground/70 ml-2">Material Specification</Label>
                     <Select value={formData.material} onValueChange={(val) => setFormData({ ...formData, material: val })}>
-                        <SelectTrigger id="hive-form-material" aria-label="Material" className="h-10 border-[#F4D03F]/10 bg-white/50 px-4 rounded-xl font-black text-[9px] transition-all hover:border-[#F4D03F]/30 focus:ring-0">
+                        <SelectTrigger id="hive-form-material" aria-label="Material" className="h-10 border-border/ bg-muted/ px-4 rounded-xl font-black text-[9px] transition-all hover:border-border/ focus:ring-0">
                             <div className="flex items-center gap-2">
                                 <Cpu className="w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <SelectValue placeholder="Select Material" />
                             </div>
                         </SelectTrigger>
-                        <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
+                        <SelectContent className="bg-muted/ backdrop-blur-md border-border/ rounded-xl overflow-hidden shadow-2xl">
                             {['Wood', 'Plastic', 'Bamboo'].map(m => (
                                 <SelectItem key={m} value={m} className="text-[9px] font-black focus:bg-[#F4D03F]/10">{m}</SelectItem>
                             ))}
@@ -233,7 +233,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="hive-form-installation-date" className="text-[9px] font-black text-gray-400 ml-2">Deployment_Date</Label>
+                    <Label htmlFor="hive-form-installation-date" className="text-[9px] font-black text-muted-foreground/70 ml-2">Deployment_Date</Label>
                     <Input
                         id="hive-form-installation-date"
                         name="installation_date"
@@ -246,7 +246,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="hive-form-latitude" className="text-[9px] font-black text-gray-400 ml-2">Latitude</Label>
+                    <Label htmlFor="hive-form-latitude" className="text-[9px] font-black text-muted-foreground/70 ml-2">Latitude</Label>
                     <div className="relative">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                         <Input
@@ -264,7 +264,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="hive-form-longitude" className="text-[9px] font-black text-gray-400 ml-2">Longitude</Label>
+                    <Label htmlFor="hive-form-longitude" className="text-[9px] font-black text-muted-foreground/70 ml-2">Longitude</Label>
                     <div className="relative">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                         <Input
@@ -283,7 +283,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
             </div>
 
             {/* ── Footer ── */}
-            <div className="flex justify-end gap-3 pt-6 border-t border-[#F4D03F]/10 mt-6">
+            <div className="flex justify-end gap-3 pt-6 border-t border-border/ mt-6">
                 <button
                     onClick={onCancel}
                     className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black")}
@@ -307,3 +307,4 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
         </div>
     );
 };
+

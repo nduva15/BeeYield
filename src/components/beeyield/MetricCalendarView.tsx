@@ -237,7 +237,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                 title={<>Metric <span className="text-[#F4D03F]">Calendar</span></>}
                 subtitle="See how your hive metrics change over time."
                 actions={
-                    <div className="flex gap-3 bg-white/30 p-1.5 rounded-2xl border border-white/40 shadow-inner backdrop-blur-xl relative z-10">
+                    <div className="flex gap-3 bg-muted/ p-1.5 rounded-2xl border border-border/ shadow-inner backdrop-blur-xl relative z-10">
                         {(['Activity', 'Yield', 'Temp', 'Health'] as any[]).map((m) => {
                             const map: any = { 'Activity': 'VPM', 'Yield': 'YIELD', 'Temp': 'TEMP', 'Health': 'VIBE' };
                             const Icon = (metricConfig as any)[map[m]].icon;
@@ -248,8 +248,8 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                     className={cn(
                                         "px-4 py-2 rounded-xl flex items-center gap-2 transition-all",
                                         activeMetric === map[m] 
-                                            ? "bg-white text-[#1A1A1A] shadow-lg scale-105" 
-                                            : "text-gray-400 hover:text-gray-600"
+                                            ? "bg-white text-foreground shadow-lg scale-105" 
+                                            : "text-muted-foreground/70 hover:text-muted-foreground/90"
                                     )}
                                 >
                                     <Icon className="w-3.5 h-3.5" />
@@ -264,7 +264,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 relative z-10">
                 {/* Main Calendar View */}
                 <div className="xl:col-span-8 space-y-6">
-                    <div className={cn(glass.card, "p-8 space-y-10 bg-white/40 backdrop-blur-3xl border-white/20 rounded-[2.5rem] shadow-2xl relative overflow-hidden")}>
+                    <div className={cn(glass.card, "p-8 space-y-10 bg-muted/ backdrop-blur-3xl border-border/ rounded-[2.5rem] shadow-2xl relative overflow-hidden")}>
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F4D03F]/40 to-transparent opacity-60" />
                         
                         {/* Month Navigation */}
@@ -281,7 +281,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                     onClick={() => setCurrentDate(subMonths(currentDate, 1))}
                                     aria-label="Previous month"
                                     title="Previous month"
-                                    className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center rounded-xl bg-white/40 border-white/40 hover:bg-white/60 shadow-sm transition-all text-black")}
+                                    className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center rounded-xl bg-muted/ border-border/ hover:bg-muted/ shadow-sm transition-all text-black")}
                                 >
                                     <ChevronLeft className="w-4 h-4" aria-hidden="true" focusable="false" />
                                 </button>
@@ -290,7 +290,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                     onClick={() => setCurrentDate(addMonths(currentDate, 1))}
                                     aria-label="Next month"
                                     title="Next month"
-                                    className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center rounded-xl bg-white/40 border-white/40 hover:bg-white/60 shadow-sm transition-all text-black")}
+                                    className={cn(glass.btnSecondary, "w-9 h-9 p-0 flex items-center justify-center rounded-xl bg-muted/ border-border/ hover:bg-muted/ shadow-sm transition-all text-black")}
                                 >
                                     <ChevronRight className="w-4 h-4" aria-hidden="true" focusable="false" />
                                 </button>
@@ -321,8 +321,8 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                         onMouseLeave={() => setHoveredDay(null)}
                                         className={cn(
                                             "min-h-[80px] rounded-[1.2rem] p-3 border transition-all duration-500 group/day relative overflow-hidden flex flex-col justify-between",
-                                            isCurrentMonth ? "bg-white/20 border-white/40 hover:border-[#F4D03F]/60 shadow-sm" : "bg-transparent border-transparent opacity-[0.05] pointer-events-none",
-                                            isTodayDate ? "ring-2 ring-[#F4D03F]/50 border-[#F4D03F]/60 bg-white/70 shadow-lg" : ""
+                                            isCurrentMonth ? "bg-muted/ border-border/ hover:border-border/ shadow-sm" : "bg-transparent border-transparent opacity-[0.05] pointer-events-none",
+                                            isTodayDate ? "ring-2 ring-[#F4D03F]/50 border-border/ bg-muted/ shadow-lg" : ""
                                         )}
                                         style={bg ? { backgroundImage: bg } : undefined}
                                     >
@@ -371,22 +371,22 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                 {/* Sidebar Diagnostics */}
                 <div className="xl:col-span-4 space-y-6">
                     {/* Insights Card */}
-                    <div className={cn(glass.card, "p-8 space-y-6 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl overflow-hidden group")}>
+                    <div className={cn(glass.card, "p-8 space-y-6 bg-muted/ backdrop-blur-xl border-border/ rounded-[2.5rem] shadow-xl overflow-hidden group")}>
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-black text-[#1A1A1A]">Summary</h3>
-                            <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center border border-white/40 shadow-sm group-hover:scale-110 transition-transform">
+                            <h3 className="text-sm font-black text-foreground">Summary</h3>
+                            <div className="w-10 h-10 rounded-xl bg-muted/ flex items-center justify-center border border-border/ shadow-sm group-hover:scale-110 transition-transform">
                                 <Info className="w-5 h-5 text-[#F4D03F]" />
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            <div className="p-5 rounded-2xl bg-white/60 border border-white/40 space-y-2">
-                                <p className="text-[10px] font-black text-gray-400">Monthly peak</p>
+                            <div className="p-5 rounded-2xl bg-muted/ border border-border/ space-y-2">
+                                <p className="text-[10px] font-black text-muted-foreground/70">Monthly peak</p>
                                 <div className="flex items-end gap-2">
-                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">{monthStats.max ?? '—'}</span>
-                                    <span className="text-[10px] font-bold text-gray-400 mb-2">Max ({config.unit})</span>
+                                    <span className="text-3xl font-black text-foreground tracking-tighter tabular-nums">{monthStats.max ?? '—'}</span>
+                                    <span className="text-[10px] font-bold text-muted-foreground/70 mb-2">Max ({config.unit})</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-gray-400">
+                                <div className="flex items-center gap-1.5 text-muted-foreground/70">
                                     <ArrowUpRight className="w-3 h-3" />
                                     <span className="text-[9px] font-black">
                                         {loading ? 'Loading' : monthStats.max === null ? 'No data yet' : 'Based on recent readings'}
@@ -394,11 +394,11 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                 </div>
                             </div>
 
-                            <div className="p-5 rounded-2xl bg-white/60 border border-white/40 space-y-2">
-                                <p className="text-[10px] font-black text-gray-400">Monthly average</p>
+                            <div className="p-5 rounded-2xl bg-muted/ border border-border/ space-y-2">
+                                <p className="text-[10px] font-black text-muted-foreground/70">Monthly average</p>
                                 <div className="flex items-end gap-2">
-                                    <span className="text-3xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">{monthStats.avg ?? '—'}</span>
-                                    <span className="text-[10px] font-bold text-gray-400 mb-2">Avg ({config.unit})</span>
+                                    <span className="text-3xl font-black text-foreground tracking-tighter tabular-nums">{monthStats.avg ?? '—'}</span>
+                                    <span className="text-[10px] font-bold text-muted-foreground/70 mb-2">Avg ({config.unit})</span>
                                 </div>
                             </div>
                         </div>
@@ -424,7 +424,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                 }}
                                 className={cn(
                                     glass.btnSecondary,
-                                    "w-full h-12 rounded-2xl border-white/60 font-black text-[10px] hover:bg-white hover:text-[#1A1A1A] transition-all",
+                                    "w-full h-12 rounded-2xl border-border/ font-black text-[10px] hover:bg-white hover:text-foreground transition-all",
                                     (loading || !!error || dayMetrics.size === 0) && "opacity-60 cursor-not-allowed"
                                 )}
                             >
@@ -434,8 +434,8 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                     </div>
 
                     {/* Summary Graph Card */}
-                    <div className={cn(glass.card, "p-8 space-y-6 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl overflow-hidden")}>
-                        <h3 className="text-[10px] font-black text-[#1A1A1A] mb-4">Trend</h3>
+                    <div className={cn(glass.card, "p-8 space-y-6 bg-muted/ backdrop-blur-xl border-border/ rounded-[2.5rem] shadow-xl overflow-hidden")}>
+                        <h3 className="text-[10px] font-black text-foreground mb-4">Trend</h3>
                         <div className="h-24 flex items-end gap-1.5 px-2">
                             {Array.from({ length: 12 }).map((_, i) => (
                                 <motion.div
@@ -449,7 +449,7 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
                                 </motion.div>
                             ))}
                         </div>
-                        <p className="text-[9px] font-medium text-gray-400 italic leading-relaxed pt-4 border-t border-white/40">
+                        <p className="text-[9px] font-medium text-muted-foreground/70 italic leading-relaxed pt-4 border-t border-border/">
                             Charts will populate here once sensor data is synchronized.
                         </p>
                     </div>
@@ -460,12 +460,12 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
             <div className={cn(glass.card, "p-8 bg-[#1A1A1A] text-white rounded-[2.5rem] shadow-2xl relative overflow-hidden group")}>
                 <div className="absolute top-0 right-0 w-96 h-96 bg-[#F4D03F]/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#F4D03F]/15 transition-colors" />
                 <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-                    <div className="w-16 h-16 rounded-[1.8rem] bg-white/10 flex items-center justify-center shrink-0 border border-white/20 shadow-xl group-hover:rotate-12 transition-transform duration-500">
+                    <div className="w-16 h-16 rounded-[1.8rem] bg-muted/ flex items-center justify-center shrink-0 border border-border/ shadow-xl group-hover:rotate-12 transition-transform duration-500">
                         <Activity className="w-8 h-8 text-[#F4D03F]" />
                     </div>
                     <div className="space-y-2 text-center md:text-left">
                         <h4 className="text-2xl font-black tracking-tighter">No issues <span className="text-[#F4D03F]">found</span></h4>
-                        <p className="text-xs font-bold text-gray-400 leading-relaxed max-w-4xl">
+                        <p className="text-xs font-bold text-muted-foreground/70 leading-relaxed max-w-4xl">
                             {error ? error : "Check the calendar to spot peaks and drops, and compare weeks or months."}
                         </p>
                     </div>
@@ -476,3 +476,4 @@ const MetricCalendarView: React.FC<MetricCalendarViewProps> = ({ onTabChange }) 
 };
 
 export default MetricCalendarView;
+

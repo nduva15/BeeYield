@@ -98,22 +98,22 @@ const MetersAlarms: React.FC = () => {
             />
 
             {/* Top Notifications Section */}
-            <div className={cn(glass.card, "p-0 overflow-hidden shadow-xl bg-white/40 border-white/20")}>
-                <div className="p-5 border-b border-white/10 bg-white/20 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
+            <div className={cn(glass.card, "p-0 overflow-hidden shadow-xl bg-muted/ border-border/")}>
+                <div className="p-5 border-b border-border/ bg-muted/ flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-muted/ flex items-center justify-center border border-border/">
                         <Bell className="w-4 h-4 text-[#F4D03F]" />
                     </div>
-                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Active Event Log</h3>
+                    <h3 className="text-[11px] font-black text-foreground">Active Event Log</h3>
                 </div>
                 <div className="p-0">
                     <div className="divide-y divide-white/10">
                         {loading ? (
-                            <div className="p-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>
+                            <div className="p-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground/70" /></div>
                         ) : events.length === 0 ? (
-                            <div className="p-12 text-center text-[10px] font-black text-gray-400">No active meter events</div>
+                            <div className="p-12 text-center text-[10px] font-black text-muted-foreground/70">No active meter events</div>
                         ) : (
                             events.map((event) => (
-                                <div key={event.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between hover:bg-white/50 transition-colors group">
+                                <div key={event.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between hover:bg-muted/ transition-colors group">
                                     <div className="space-y-2 mb-4 md:mb-0">
                                         <div className="flex items-center gap-3">
                                             {event.is_resolved ? (
@@ -125,11 +125,11 @@ const MetersAlarms: React.FC = () => {
                                                     <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
                                                 </div>
                                             )}
-                                            <h4 className="font-black text-[#1A1A1A] text-[11px]">{event.event_type}</h4>
+                                            <h4 className="font-black text-foreground text-[11px]">{event.event_type}</h4>
                                         </div>
-                                        <p className="text-[9px] font-bold text-gray-500">{event.message || event.reason}</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground">{event.message || event.reason}</p>
                                         <div className="flex items-center gap-3">
-                                            <span className="text-[8px] font-black text-gray-400">{getMeterInfo(event.meter_id)}</span>
+                                            <span className="text-[8px] font-black text-muted-foreground/70">{getMeterInfo(event.meter_id)}</span>
                                             <span className="text-[8px] font-black text-[#1B9157]">{new Date(event.timestamp).toLocaleString()}</span>
                                         </div>
                                     </div>
@@ -137,7 +137,7 @@ const MetersAlarms: React.FC = () => {
                                         <div className="flex flex-col items-end gap-2">
                                             <span className={cn("px-2.5 py-1 rounded-md font-black text-[8px] shadow-sm",
                                                 event.severity.toUpperCase() === 'Critical' ? "bg-red-500 text-white" :
-                                                    event.severity.toUpperCase() === 'Warning' ? "bg-[#F4D03F] text-[#1A1A1A]" : "bg-blue-500 text-white"
+                                                    event.severity.toUpperCase() === 'Warning' ? "bg-[#F4D03F] text-foreground" : "bg-blue-500 text-white"
                                             )}>
                                                 {event.severity}
                                             </span>
@@ -151,7 +151,7 @@ const MetersAlarms: React.FC = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => handleResolve(event.id)}
-                                                className={cn(glass.btnSecondary, "hidden md:flex bg-white/50 border-white/40 font-black text-[8px] h-8 px-4")}
+                                                className={cn(glass.btnSecondary, "hidden md:flex bg-muted/ border-border/ font-black text-[8px] h-8 px-4")}
                                             >
                                                 Resolve
                                             </button>
@@ -166,10 +166,10 @@ const MetersAlarms: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Stats Card */}
-                <div className={cn(glass.card, "p-0 overflow-hidden shadow-xl bg-white/40 border-white/20")}>
-                    <div className="p-5 border-b border-white/10 bg-white/20">
-                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Incident Metrics</h3>
-                        <p className="text-[9px] font-black text-gray-400 mt-1">Event distribution by severity</p>
+                <div className={cn(glass.card, "p-0 overflow-hidden shadow-xl bg-muted/ border-border/")}>
+                    <div className="p-5 border-b border-border/ bg-muted/">
+                        <h3 className="text-[11px] font-black text-foreground">Incident Metrics</h3>
+                        <p className="text-[9px] font-black text-muted-foreground/70 mt-1">Event distribution by severity</p>
                     </div>
                     <div className="p-5">
                         <div className="space-y-6">
@@ -180,10 +180,10 @@ const MetersAlarms: React.FC = () => {
                                 return (
                                     <div key={s} className="space-y-2">
                                         <div className="flex justify-between items-end">
-                                            <span className="text-[9px] font-black text-gray-400">{s.toUpperCase()}</span>
-                                            <span className="text-lg font-black text-[#1A1A1A] tracking-tighter tabular-nums">{count}</span>
+                                            <span className="text-[9px] font-black text-muted-foreground/70">{s.toUpperCase()}</span>
+                                            <span className="text-lg font-black text-foreground tracking-tighter tabular-nums">{count}</span>
                                         </div>
-                                        <div className="h-2 w-full bg-white/50 rounded-full overflow-hidden border border-white/40">
+                                        <div className="h-2 w-full bg-muted/ rounded-full overflow-hidden border border-border/">
                                             <div
                                                 className={cn("h-full transition-all duration-1000",
                                                     s === 'Critical' ? "bg-red-500" : s === 'Warning' ? "bg-[#F4D03F]" : "bg-blue-500"
@@ -201,13 +201,13 @@ const MetersAlarms: React.FC = () => {
                 {/* Info Card */}
                 <div className={cn(glass.card, "p-0 overflow-hidden shadow-xl bg-[#1B9157]/10 border-[#1B9157]/20 flex flex-col justify-between")}>
                     <div className="p-5">
-                        <h3 className="text-[11px] font-black text-[#1A1A1A]">System Integrity</h3>
+                        <h3 className="text-[11px] font-black text-foreground">System Integrity</h3>
                     </div>
                     <div className="p-5 pt-0 space-y-6 flex-1 flex flex-col justify-end">
-                        <div className="p-5 rounded-2xl bg-white/50 border border-white/40 flex items-center justify-between shadow-sm">
+                        <div className="p-5 rounded-2xl bg-muted/ border border-border/ flex items-center justify-between shadow-sm">
                             <div>
-                                <h4 className="text-[9px] font-black text-[#1A1A1A]">System integrity</h4>
-                                <p className="text-[8px] font-bold text-gray-500 mt-1">Resolved events remain in history while active issues stay actionable.</p>
+                                <h4 className="text-[9px] font-black text-foreground">System integrity</h4>
+                                <p className="text-[8px] font-bold text-muted-foreground mt-1">Resolved events remain in history while active issues stay actionable.</p>
                             </div>
                             <CheckCircle2 className="w-6 h-6 text-[#1B9157]" />
                         </div>
@@ -223,3 +223,4 @@ const MetersAlarms: React.FC = () => {
 };
 
 export default MetersAlarms;
+

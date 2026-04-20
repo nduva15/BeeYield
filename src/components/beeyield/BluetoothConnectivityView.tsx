@@ -324,11 +324,11 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                             </div>
                             <p className={glass.microLabel}>{stat.label}</p>
                         </div>
-                        <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{stat.value}</h3>
-                        <p className="text-[10px] font-medium text-gray-400 truncate">{stat.sub || 'Standby'}</p>
+                        <h3 className="text-xl font-bold text-foreground mb-1">{stat.value}</h3>
+                        <p className="text-[10px] font-medium text-muted-foreground/70 truncate">{stat.sub || 'Standby'}</p>
                         
                         {stat.progress !== undefined && (
-                            <div className="mt-5 w-full h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 shadow-inner p-0.5">
+                            <div className="mt-5 w-full h-1.5 bg-muted/ rounded-full overflow-hidden border border-border/ shadow-inner p-0.5">
                                 <motion.div
                                     className={cn("h-full rounded-full relative", stat.progress < 20 ? 'bg-red-500' : 'bg-[#1B9157]')}
                                     initial={{ width: 0 }}
@@ -339,7 +339,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                         {stat.action && (
                             <button
                                 onClick={stat.action}
-                                className="mt-5 h-8 px-3.5 rounded-lg border border-[#F4D03F]/20 text-sm font-semibold text-[#D4AC0D] hover:bg-[#F4D03F]/10 transition-all flex items-center gap-2 group/btn"
+                                className="mt-5 h-8 px-3.5 rounded-lg border border-border/ text-sm font-semibold text-[#D4AC0D] hover:bg-[#F4D03F]/10 transition-all flex items-center gap-2 group/btn"
                             >
                                 Configure <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
                             </button>
@@ -354,8 +354,8 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                     <div className={glass.section + " p-6"}>
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h3 className="text-lg font-bold text-[#1A1A1A]">Live readings</h3>
-                                <p className="text-sm text-gray-500">Live stream of environmental metrics from the sensor.</p>
+                                <h3 className="text-lg font-bold text-foreground">Live readings</h3>
+                                <p className="text-sm text-muted-foreground">Live stream of environmental metrics from the sensor.</p>
                             </div>
                             <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-[#1B9157] rounded-full text-xs font-semibold border border-emerald-100">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
@@ -384,7 +384,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                                             />
                                         </svg>
                                         <div className="flex flex-col items-center relative z-10">
-                                            <span className="text-lg font-bold tabular-nums leading-none tracking-tight mb-0.5 text-[#1A1A1A]">{gauge.val}</span>
+                                            <span className="text-lg font-bold tabular-nums leading-none tracking-tight mb-0.5 text-foreground">{gauge.val}</span>
                                             <span className="text-[9px] font-bold opacity-40">{gauge.unit}</span>
                                         </div>
                                     </div>
@@ -400,12 +400,12 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                         <div className={glass.section + " p-5"}>
                             <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/ shadow-sm">
                                         <RefreshCw className={cn("w-5 h-5 text-[#F4D03F]", isSyncing && "animate-spin")} />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-[#1A1A1A]">Cloud Synchronization</h3>
-                                        <p className="text-sm text-gray-500">Synchronize sensor data with your account.</p>
+                                        <h3 className="text-lg font-bold text-foreground">Cloud Synchronization</h3>
+                                        <p className="text-sm text-muted-foreground">Synchronize sensor data with your account.</p>
                                     </div>
                                 </div>
                                 <button
@@ -419,18 +419,18 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                             </div>
 
                             <div className="space-y-5">
-                                <div className="bg-white/40 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between border border-white/60 shadow-inner gap-4">
+                                <div className="bg-muted/ rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between border border-border/ shadow-inner gap-4">
                                     <div className="flex gap-3 items-center">
                                         <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center border border-gray-100 shadow-sm">
                                             <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
                                         </div>
                                         <div>
-                                            <p className="text-[7px] font-black text-gray-400">Last Synchronization</p>
-                                            <p className="text-[10px] font-black text-[#1A1A1A] tracking-tighter">{knownDevice?.last_sync_at || 'No Record'}</p>
+                                            <p className="text-[7px] font-black text-muted-foreground/70">Last Synchronization</p>
+                                            <p className="text-[10px] font-black text-foreground tracking-tighter">{knownDevice?.last_sync_at || 'No Record'}</p>
                                         </div>
                                     </div>
                                     <div className="text-center sm:text-right">
-                                        <p className="text-[7px] font-black text-gray-400">Upload status</p>
+                                        <p className="text-[7px] font-black text-muted-foreground/70">Upload status</p>
                                         <span className="text-[9px] font-black text-[#1B9157]">Synced</span>
                                     </div>
                                 </div>
@@ -445,9 +445,9 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                                         >
                                             <div className="flex justify-between items-end px-1">
                                                 <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Sync in progress...</span>
-                                                <span className="text-lg font-black tabular-nums tracking-tighter text-[#1A1A1A]">{syncProgress}%</span>
+                                                <span className="text-lg font-black tabular-nums tracking-tighter text-foreground">{syncProgress}%</span>
                                             </div>
-                                            <div className="h-1.5 bg-white/60 rounded-full overflow-hidden border border-white/40 p-0.5">
+                                            <div className="h-1.5 bg-muted/ rounded-full overflow-hidden border border-border/ p-0.5">
                                                 <motion.div
                                                     className="h-full bg-[#F4D03F] rounded-full shadow-sm"
                                                     initial={{ width: 0 }}
@@ -463,10 +463,10 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                         <div className={glass.section + " p-5 flex flex-col"}>
                             <div className="flex items-center justify-between mb-5">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 bg-[#F9F7F2] rounded-lg flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                    <div className="w-9 h-9 bg-muted/20 rounded-lg flex items-center justify-center border border-border/ shadow-sm">
                                         <Terminal className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
-                                    <span className="text-sm font-bold text-[#1A1A1A]">Event Log</span>
+                                    <span className="text-sm font-bold text-foreground">Event Log</span>
                                 </div>
                                 <button
                                     onClick={() => setLogs([])}
@@ -484,9 +484,9 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                                     </div>
                                 ) : (
                                     logs.map((log, i) => (
-                                        <div key={i} className="flex gap-3 pb-1 border-b border-white/10 last:border-0 hover:bg-white/40 px-2 rounded-lg transition-colors">
+                                        <div key={i} className="flex gap-3 pb-1 border-b border-border/ last:border-0 hover:bg-muted/ px-2 rounded-lg transition-colors">
                                             <span className="text-[#F4D03F]/40 shrink-0 font-black text-[8px]">0{logs.length - i}</span>
-                                            <span className={cn("font-bold tracking-tight lowercase", log.includes('Error') ? 'text-red-500' : 'text-gray-500')}>
+                                            <span className={cn("font-bold tracking-tight lowercase", log.includes('Error') ? 'text-red-500' : 'text-muted-foreground')}>
                                                 {log.split('] ')[1]}
                                             </span>
                                         </div>
@@ -503,12 +503,12 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative bg-white/90 border-white/20")}
+                        className={cn(glass.card, "p-0 overflow-hidden shadow-2xl relative bg-muted/ border-border/")}
                     >
                          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                         
-                        <div className="px-6 py-5 border-b border-[#F4D03F]/10 relative z-10">
-                            <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 mb-3 inline-block')}>
+                        <div className="px-6 py-5 border-b border-border/ relative z-10">
+                            <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-border/ mb-3 inline-block')}>
                                 Add sensor
                             </div>
                             <h2 className={cn(glass.sectionTitle, "uppercase leading-none mb-1")}>Add <span className="text-[#F4D03F]">sensor</span></h2>
@@ -524,14 +524,14 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                                     autoComplete="off"
                                     value={setupName}
                                     onChange={(e) => setSetupName(e.target.value)}
-                                    className={cn(glass.input, "w-full h-10 font-black text-[10px] bg-white/50 border-white/40 focus:bg-white")}
+                                    className={cn(glass.input, "w-full h-10 font-black text-[10px] bg-muted/ border-border/ focus:bg-white")}
                                     placeholder="e.g. Alpha Scale 01"
                                 />
                             </div>
                             <div className="space-y-2">
                                 <Label className={glass.microLabel}>Hive</Label>
                                 <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                                    <SelectTrigger id="bluetooth-setup-hive" aria-label="Hive" className={cn(glass.select, "w-full h-10 font-black text-[10px] bg-white/50 border-white/40 focus:bg-white")}>
+                                    <SelectTrigger id="bluetooth-setup-hive" aria-label="Hive" className={cn(glass.select, "w-full h-10 font-black text-[10px] bg-muted/ border-border/ focus:bg-white")}>
                                         <SelectValue placeholder="Select a hive…" />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
@@ -544,7 +544,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
                                 </Select>
                             </div>
 
-                            <div className="flex flex-col gap-2 pt-4 border-t border-[#F4D03F]/10">
+                            <div className="flex flex-col gap-2 pt-4 border-t border-border/">
                                 <button
                                     className={cn(glass.btnPrimary, "w-full h-10 text-[10px] font-black rounded-xl")}
                                     onClick={handleSetupSubmit}
@@ -574,3 +574,4 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string, me
         </motion.div>
     );
 };
+

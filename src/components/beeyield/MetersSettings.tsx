@@ -103,17 +103,17 @@ const MetersSettings: React.FC = () => {
                 {isLoading ? (
                     <div className={cn(glass.card, 'p-12 flex items-center justify-center gap-3')}>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="text-sm font-medium text-[#1A1A1A]/70">Loading current settings...</span>
+                        <span className="text-sm font-medium text-foreground/70">Loading current settings...</span>
                     </div>
                 ) : (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className={cn(glass.card, 'p-0 overflow-hidden bg-white/40 border-white/20')}>
-                                <div className="p-5 border-b border-white/10 bg-white/20 flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
+                            <div className={cn(glass.card, 'p-0 overflow-hidden bg-muted/ border-border/')}>
+                                <div className="p-5 border-b border-border/ bg-muted/ flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-xl bg-muted/ flex items-center justify-center border border-border/">
                                         <Bell className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
-                                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Notification Channels</h3>
+                                    <h3 className="text-[11px] font-black text-foreground">Notification Channels</h3>
                                 </div>
                                 <div className="p-6 space-y-4">
                                     {[
@@ -123,10 +123,10 @@ const MetersSettings: React.FC = () => {
                                         ['notify_on_theft', 'Tamper or theft'],
                                         ['notify_on_low_battery', 'Low battery'],
                                     ].map(([key, label]) => (
-                                        <div key={key} className="flex items-center justify-between rounded-xl border border-white/40 bg-white/40 px-4 py-3">
+                                        <div key={key} className="flex items-center justify-between rounded-xl border border-border/ bg-muted/ px-4 py-3">
                                             <div>
-                                                <div className="text-[10px] font-black text-[#1A1A1A]">{label}</div>
-                                                <div className="text-[9px] font-bold text-gray-500">Persisted to your BeeYield notification profile</div>
+                                                <div className="text-[10px] font-black text-foreground">{label}</div>
+                                                <div className="text-[9px] font-bold text-muted-foreground">Persisted to your BeeYield notification profile</div>
                                             </div>
                                             <Switch
                                                 checked={!!notificationForm[key as keyof typeof notificationForm]}
@@ -146,12 +146,12 @@ const MetersSettings: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className={cn(glass.card, 'p-0 overflow-hidden bg-white/40 border-white/20')}>
-                                <div className="p-5 border-b border-white/10 bg-white/20 flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
+                            <div className={cn(glass.card, 'p-0 overflow-hidden bg-muted/ border-border/')}>
+                                <div className="p-5 border-b border-border/ bg-muted/ flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-xl bg-muted/ flex items-center justify-center border border-border/">
                                         <Shield className="w-4 h-4 text-[#1B9157]" />
                                     </div>
-                                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Sensor Thresholds</h3>
+                                    <h3 className="text-[11px] font-black text-foreground">Sensor Thresholds</h3>
                                 </div>
                                 <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {[
@@ -162,7 +162,7 @@ const MetersSettings: React.FC = () => {
                                         ['humidity_max_threshold', 'Max humidity'],
                                     ].map(([key, label]) => (
                                         <div key={key} className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-[#1A1A1A]/60">{label}</label>
+                                            <label className="text-[10px] font-black text-foreground/60">{label}</label>
                                             <Input
                                                 value={iotForm[key as keyof typeof iotForm]}
                                                 onChange={(event) =>
@@ -186,14 +186,14 @@ const MetersSettings: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className={cn(glass.card, 'p-6 bg-white/40 border-white/20')}>
+                        <div className={cn(glass.card, 'p-6 bg-muted/ border-border/')}>
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
+                                <div className="w-10 h-10 rounded-xl bg-muted/ flex items-center justify-center border border-border/">
                                     <Plug className="w-5 h-5 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Integration posture</h3>
-                                    <p className="text-sm text-gray-600">
+                                    <h3 className="text-[11px] font-black text-foreground">Integration posture</h3>
+                                    <p className="text-sm text-muted-foreground/90">
                                         Meter rules now save through the shared backend instead of browser storage, so the same thresholds and alert channels follow your account across reloads and devices.
                                     </p>
                                 </div>
@@ -207,3 +207,4 @@ const MetersSettings: React.FC = () => {
 };
 
 export default MetersSettings;
+

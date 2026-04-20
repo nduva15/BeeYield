@@ -185,7 +185,7 @@ const VarroaView: React.FC = () => {
             />
 
             <section className="grid grid-cols-1 xl:grid-cols-[1.45fr_0.95fr] gap-4">
-                <div className={cn(glass.card, 'p-5 md:p-6 border-[#F4D03F]/35 shadow-[0_24px_80px_-48px_rgba(212,172,13,0.65)]')}>
+                <div className={cn(glass.card, 'p-5 md:p-6 border-border/ shadow-[0_24px_80px_-48px_rgba(212,172,13,0.65)]')}>
                     <div className="flex flex-col gap-5">
                         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                             <div className="space-y-3">
@@ -194,10 +194,10 @@ const VarroaView: React.FC = () => {
                                     Priority Hive Signal
                                 </div>
                                 <div className="space-y-2">
-                                    <h2 className="text-3xl md:text-[2.4rem] font-black tracking-[-0.06em] text-[#1A1A1A]">
+                                    <h2 className="text-3xl md:text-[2.4rem] font-black tracking-[-0.06em] text-foreground">
                                         {priorityHive ? `${priorityHive.infestation}% pressure in hive ${priorityHive.id}` : 'No varroa readings available'}
                                     </h2>
-                                    <p className="max-w-2xl text-sm md:text-[15px] leading-7 text-[#1A1A1A]/65">
+                                    <p className="max-w-2xl text-sm md:text-[15px] leading-7 text-foreground/65">
                                         {priorityHive
                                             ? `Latest ${priorityHive.method.toLowerCase()} sample was logged ${formatDate(priorityHive.date, true)}. The page now uses a stronger hero, grouped risk counts, and dedicated reading and treatment sections to match the shared design more closely.`
                                             : 'Once readings start coming in, this board will show the highest-risk colony, the latest sampling window, and the treatment queue.'}
@@ -205,27 +205,27 @@ const VarroaView: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="min-w-[220px] rounded-[28px] border border-white/70 bg-white/80 p-4 shadow-[0_18px_50px_-40px_rgba(26,26,26,0.55)]">
+                            <div className="min-w-[220px] rounded-[28px] border border-border/ bg-muted/ p-4 shadow-[0_18px_50px_-40px_rgba(26,26,26,0.55)]">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]/45">Response window</span>
-                                    <span className="rounded-full bg-[#F9F7F2] px-2.5 py-1 text-[10px] font-black text-[#1A1A1A]/60">{stats.critical > 0 ? '48h' : 'Routine'}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/45">Response window</span>
+                                    <span className="rounded-full bg-muted/20 px-2.5 py-1 text-[10px] font-black text-foreground/60">{stats.critical > 0 ? '48h' : 'Routine'}</span>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex items-end gap-2">
-                                        <span className="text-4xl font-black tracking-[-0.08em] text-[#1A1A1A]">{stats.avg}%</span>
-                                        <span className="pb-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#1A1A1A]/45">avg infestation</span>
+                                        <span className="text-4xl font-black tracking-[-0.08em] text-foreground">{stats.avg}%</span>
+                                        <span className="pb-1 text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/45">avg infestation</span>
                                     </div>
                                     <div className="h-2 rounded-full bg-[#F9F2D7] overflow-hidden">
                                         <div className="h-full rounded-full bg-gradient-to-r from-[#1B9157] via-[#F4D03F] to-red-500" style={{ width: `${Math.min(100, Math.max(8, stats.avg * 12))}%` }} />
                                     </div>
                                     <div className="grid grid-cols-2 gap-2.5">
-                                        <div className="rounded-2xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-3">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">Sampled this week</p>
-                                            <p className="mt-1 text-2xl font-black tracking-[-0.05em] text-[#1A1A1A]">{stats.sampledThisWeek}</p>
+                                        <div className="rounded-2xl border border-border/ bg-muted/20 p-3">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/40">Sampled this week</p>
+                                            <p className="mt-1 text-2xl font-black tracking-[-0.05em] text-foreground">{stats.sampledThisWeek}</p>
                                         </div>
-                                        <div className="rounded-2xl border border-[#F4D03F]/20 bg-[#F9F7F2] p-3">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">Rising signals</p>
-                                            <p className="mt-1 text-2xl font-black tracking-[-0.05em] text-[#1A1A1A]">{risingHives}</p>
+                                        <div className="rounded-2xl border border-border/ bg-muted/20 p-3">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/40">Rising signals</p>
+                                            <p className="mt-1 text-2xl font-black tracking-[-0.05em] text-foreground">{risingHives}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -235,17 +235,17 @@ const VarroaView: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                             {[
                                 { label: 'Low risk colonies', value: stats.safe, icon: ShieldCheck, tone: 'border-[#1B9157]/15 bg-[#1B9157]/10 text-[#1B9157]' },
-                                { label: 'Monitor closely', value: stats.warning, icon: BarChart3, tone: 'border-[#F4D03F]/20 bg-[#F4D03F]/12 text-[#B98A00]' },
+                                { label: 'Monitor closely', value: stats.warning, icon: BarChart3, tone: 'border-border/ bg-[#F4D03F]/12 text-[#B98A00]' },
                                 { label: 'Treatment queue', value: treatments.length, icon: Syringe, tone: 'border-red-500/15 bg-red-500/10 text-red-500' },
                             ].map((item) => (
-                                <div key={item.label} className="rounded-[26px] border border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.88),rgba(249,247,242,0.72))] p-4">
+                                <div key={item.label} className="rounded-[26px] border border-border/ bg-[linear-gradient(135deg,rgba(255,255,255,0.88),rgba(249,247,242,0.72))] p-4">
                                     <div className="flex items-center gap-3">
                                         <div className={cn('flex h-11 w-11 items-center justify-center rounded-2xl border', item.tone)}>
                                             <item.icon className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">{item.label}</p>
-                                            <p className="text-2xl font-black tracking-[-0.05em] text-[#1A1A1A]">{item.value}</p>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/40">{item.label}</p>
+                                            <p className="text-2xl font-black tracking-[-0.05em] text-foreground">{item.value}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -259,15 +259,15 @@ const VarroaView: React.FC = () => {
                         const count = hives.filter((hive) => hive.status === status).length;
                         const percent = hives.length ? Math.round((count / hives.length) * 100) : 0;
                         return (
-                            <div key={status} className={cn(glass.card, 'p-4 md:p-5', status === 'critical' ? 'border-red-500/25 bg-red-500/[0.07]' : status === 'warning' ? 'border-[#F4D03F]/30 bg-[#F4D03F]/[0.12]' : 'border-[#1B9157]/20 bg-[#1B9157]/[0.06]')}>
+                            <div key={status} className={cn(glass.card, 'p-4 md:p-5', status === 'critical' ? 'border-red-500/25 bg-red-500/[0.07]' : status === 'warning' ? 'border-border/ bg-[#F4D03F]/[0.12]' : 'border-[#1B9157]/20 bg-[#1B9157]/[0.06]')}>
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">{humanize(status)} band</p>
-                                        <p className="mt-1 text-3xl font-black tracking-[-0.08em] text-[#1A1A1A]">{count}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">{humanize(status)} band</p>
+                                        <p className="mt-1 text-3xl font-black tracking-[-0.08em] text-foreground">{count}</p>
                                     </div>
-                                    <span className="rounded-full bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/55">{percent}%</span>
+                                    <span className="rounded-full bg-muted/ px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/55">{percent}%</span>
                                 </div>
-                                <div className="mt-4 h-2 rounded-full bg-white/70 overflow-hidden">
+                                <div className="mt-4 h-2 rounded-full bg-muted/ overflow-hidden">
                                     <div className={cn('h-full rounded-full', status === 'critical' ? 'bg-red-500' : status === 'warning' ? 'bg-[#F4D03F]' : 'bg-[#1B9157]')} style={{ width: `${Math.max(percent, count > 0 ? 12 : 0)}%` }} />
                                 </div>
                             </div>
@@ -280,57 +280,57 @@ const VarroaView: React.FC = () => {
                 <div className={cn(glass.card, 'p-5 md:p-6')}>
                     <div className="flex items-center justify-between gap-3 mb-5">
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Hive watchlist</p>
-                            <h3 className="mt-1 text-2xl font-black tracking-[-0.06em] text-[#1A1A1A]">Field readings by colony</h3>
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">Hive watchlist</p>
+                            <h3 className="mt-1 text-2xl font-black tracking-[-0.06em] text-foreground">Field readings by colony</h3>
                         </div>
-                        <div className="rounded-full border border-[#F4D03F]/20 bg-[#F9F7F2] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/50">Latest samples first</div>
+                        <div className="rounded-full border border-border/ bg-muted/20 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/50">Latest samples first</div>
                     </div>
                     <div className="space-y-3">
                         {hives.length > 0 ? hives.map((hive) => (
-                            <div key={hive.id} className="rounded-[28px] border border-[#F4D03F]/18 bg-white/75 p-4 md:p-5 shadow-[0_22px_60px_-48px_rgba(26,26,26,0.4)]">
+                            <div key={hive.id} className="rounded-[28px] border border-border/ bg-muted/ p-4 md:p-5 shadow-[0_22px_60px_-48px_rgba(26,26,26,0.4)]">
                                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                                     <div className="space-y-3">
                                         <div className="flex flex-wrap items-center gap-2.5">
-                                            <span className="rounded-full border border-[#F4D03F]/15 bg-[#F9F7F2] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/45">Hive {hive.id}</span>
+                                            <span className="rounded-full border border-border/ bg-muted/20 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">Hive {hive.id}</span>
                                             <span className={cn('rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em]', statusStyles[hive.status])}>{hive.status}</span>
-                                            <span className="text-[11px] font-bold text-[#1A1A1A]/45">{formatDate(hive.date, true)}</span>
+                                            <span className="text-[11px] font-bold text-foreground/45">{formatDate(hive.date, true)}</span>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-3 md:gap-6 items-end">
                                             <div>
-                                                <p className="text-[42px] leading-none font-black tracking-[-0.08em] text-[#1A1A1A]">{hive.infestation}%</p>
-                                                <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#1A1A1A]/40">Infestation rate</p>
+                                                <p className="text-[42px] leading-none font-black tracking-[-0.08em] text-foreground">{hive.infestation}%</p>
+                                                <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/40">Infestation rate</p>
                                             </div>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                                <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] px-3 py-3">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/38">Method</p>
-                                                    <p className="mt-1 text-sm font-black text-[#1A1A1A]">{hive.method}</p>
+                                                <div className="rounded-2xl border border-border/ bg-muted/20 px-3 py-3">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-foreground/38">Method</p>
+                                                    <p className="mt-1 text-sm font-black text-foreground">{hive.method}</p>
                                                 </div>
-                                                <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] px-3 py-3">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/38">Mites</p>
-                                                    <p className="mt-1 text-sm font-black text-[#1A1A1A]">{hive.miteCount}</p>
+                                                <div className="rounded-2xl border border-border/ bg-muted/20 px-3 py-3">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-foreground/38">Mites</p>
+                                                    <p className="mt-1 text-sm font-black text-foreground">{hive.miteCount}</p>
                                                 </div>
-                                                <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] px-3 py-3 col-span-2 md:col-span-1">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/38">Sample size</p>
-                                                    <p className="mt-1 text-sm font-black text-[#1A1A1A]">{hive.sampleSize} bees</p>
+                                                <div className="rounded-2xl border border-border/ bg-muted/20 px-3 py-3 col-span-2 md:col-span-1">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-foreground/38">Sample size</p>
+                                                    <p className="mt-1 text-sm font-black text-foreground">{hive.sampleSize} bees</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-3 lg:min-w-[240px]">
-                                        <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] p-3.5">
+                                        <div className="rounded-2xl border border-border/ bg-muted/20 p-3.5">
                                             <div className="flex items-center gap-2.5">
-                                                <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl border', hive.trend === 'up' ? 'border-red-500/15 bg-red-500/10' : hive.trend === 'down' ? 'border-[#1B9157]/15 bg-[#1B9157]/10' : 'border-[#F4D03F]/15 bg-[#FFF6D9]')}>
+                                                <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl border', hive.trend === 'up' ? 'border-red-500/15 bg-red-500/10' : hive.trend === 'down' ? 'border-[#1B9157]/15 bg-[#1B9157]/10' : 'border-border/ bg-[#FFF6D9]')}>
                                                     {hive.trend === 'up' ? <TrendingUp className="w-4 h-4 text-red-500" /> : hive.trend === 'down' ? <TrendingDown className="w-4 h-4 text-[#1B9157]" /> : <History className="w-4 h-4 text-[#B98A00]" />}
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">Trend</p>
-                                                    <p className="text-sm font-black text-[#1A1A1A]">{hive.trend === 'up' ? `Up ${Math.abs(hive.trendDelta)} pts` : hive.trend === 'down' ? `Down ${Math.abs(hive.trendDelta)} pts` : 'Stable'}</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/40">Trend</p>
+                                                    <p className="text-sm font-black text-foreground">{hive.trend === 'up' ? `Up ${Math.abs(hive.trendDelta)} pts` : hive.trend === 'down' ? `Down ${Math.abs(hive.trendDelta)} pts` : 'Stable'}</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="rounded-2xl border border-[#F4D03F]/15 bg-white px-3.5 py-3">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1A1A1A]/40">Field note</p>
-                                            <p className="mt-1 text-sm leading-6 text-[#1A1A1A]/68">{hive.notes || 'No technician note attached to this reading yet.'}</p>
+                                        <div className="rounded-2xl border border-border/ bg-white px-3.5 py-3">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/40">Field note</p>
+                                            <p className="mt-1 text-sm leading-6 text-foreground/68">{hive.notes || 'No technician note attached to this reading yet.'}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -339,8 +339,8 @@ const VarroaView: React.FC = () => {
                             <div className={cn(glass.emptyState, 'min-h-[240px]')}>
                                 <Microscope className="w-8 h-8 text-[#F4D03F]" />
                                 <div className="space-y-1">
-                                    <p className="text-lg font-black text-[#1A1A1A]">No readings yet</p>
-                                    <p className="text-sm text-[#1A1A1A]/55">Add a mite count and this board will populate automatically.</p>
+                                    <p className="text-lg font-black text-foreground">No readings yet</p>
+                                    <p className="text-sm text-foreground/55">Add a mite count and this board will populate automatically.</p>
                                 </div>
                             </div>
                         )}
@@ -350,27 +350,27 @@ const VarroaView: React.FC = () => {
                 <div className="space-y-4">
                     <div className={cn(glass.card, 'p-5 md:p-6')}>
                         <div className="flex items-center gap-3 mb-5">
-                            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#F4D03F]/15 bg-[#FFF3C7]">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/ bg-[#FFF3C7]">
                                 <BarChart3 className="w-5 h-5 text-[#B98A00]" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Trend strip</p>
-                                <h3 className="text-xl font-black tracking-[-0.05em] text-[#1A1A1A]">Pressure snapshot</h3>
+                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">Trend strip</p>
+                                <h3 className="text-xl font-black tracking-[-0.05em] text-foreground">Pressure snapshot</h3>
                             </div>
                         </div>
                         <div className="space-y-3">
                             {trendSeries.length > 0 ? trendSeries.map((hive) => (
                                 <div key={hive.id} className="space-y-1.5">
                                     <div className="flex items-center justify-between gap-3 text-sm">
-                                        <span className="font-black text-[#1A1A1A]">Hive {hive.id}</span>
-                                        <span className="font-black text-[#1A1A1A]/55">{hive.infestation}%</span>
+                                        <span className="font-black text-foreground">Hive {hive.id}</span>
+                                        <span className="font-black text-foreground/55">{hive.infestation}%</span>
                                     </div>
                                     <div className="h-2.5 rounded-full bg-[#F9F2D7] overflow-hidden">
                                         <div className={cn('h-full rounded-full', hive.status === 'safe' ? 'bg-[#1B9157]' : hive.status === 'warning' ? 'bg-[#F4D03F]' : 'bg-red-500')} style={{ width: `${Math.max(8, Math.min(100, hive.infestation * 12))}%` }} />
                                     </div>
                                 </div>
                             )) : (
-                                <p className="text-sm text-[#1A1A1A]/55">Trend bars will appear once readings are available.</p>
+                                <p className="text-sm text-foreground/55">Trend bars will appear once readings are available.</p>
                             )}
                         </div>
                     </div>
@@ -381,27 +381,27 @@ const VarroaView: React.FC = () => {
                                 <CalendarClock className="w-5 h-5 text-[#1B9157]" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Treatment activity</p>
-                                <h3 className="text-xl font-black tracking-[-0.05em] text-[#1A1A1A]">Recent interventions</h3>
+                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">Treatment activity</p>
+                                <h3 className="text-xl font-black tracking-[-0.05em] text-foreground">Recent interventions</h3>
                             </div>
                         </div>
                         <div className="space-y-3">
                             {treatments.length > 0 ? treatments.map((treatment) => (
-                                <div key={treatment.id} className="rounded-[24px] border border-[#F4D03F]/15 bg-white/80 p-4">
+                                <div key={treatment.id} className="rounded-[24px] border border-border/ bg-muted/ p-4">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="space-y-1.5">
-                                            <p className="text-sm font-black text-[#1A1A1A]">{treatment.title}</p>
-                                            <p className="text-sm leading-6 text-[#1A1A1A]/62">{treatment.note}</p>
+                                            <p className="text-sm font-black text-foreground">{treatment.title}</p>
+                                            <p className="text-sm leading-6 text-foreground/62">{treatment.note}</p>
                                         </div>
-                                        <ChevronRight className="w-4 h-4 text-[#1A1A1A]/28 shrink-0 mt-0.5" />
+                                        <ChevronRight className="w-4 h-4 text-foreground/28 shrink-0 mt-0.5" />
                                     </div>
                                     <div className="mt-3 flex flex-wrap items-center gap-2.5">
-                                        <span className="rounded-full bg-[#F9F7F2] px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#1A1A1A]/48">{treatment.status}</span>
-                                        <span className="text-[11px] font-bold text-[#1A1A1A]/45">{formatDate(treatment.date, true)}</span>
+                                        <span className="rounded-full bg-muted/20 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/48">{treatment.status}</span>
+                                        <span className="text-[11px] font-bold text-foreground/45">{formatDate(treatment.date, true)}</span>
                                     </div>
                                 </div>
                             )) : (
-                                <div className="rounded-[24px] border border-dashed border-[#F4D03F]/30 bg-[#F9F7F2]/80 p-4 text-sm leading-6 text-[#1A1A1A]/58">
+                                <div className="rounded-[24px] border border-dashed border-border/ bg-muted/ p-4 text-sm leading-6 text-foreground/58">
                                     No treatment events are recorded yet. As entries appear, this panel will mirror the intervention queue more clearly.
                                 </div>
                             )}
@@ -417,8 +417,8 @@ const VarroaView: React.FC = () => {
                             <ShieldPlus className="w-5 h-5 text-red-500" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Page changes</p>
-                            <h3 className="text-xl font-black tracking-[-0.05em] text-[#1A1A1A]">What changed on this screen</h3>
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">Page changes</p>
+                            <h3 className="text-xl font-black tracking-[-0.05em] text-foreground">What changed on this screen</h3>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -427,7 +427,7 @@ const VarroaView: React.FC = () => {
                             'Risk distribution has been pulled into a tight side stack so critical, warning, and safe counts are visible immediately.',
                             'The lower half now separates readings, pressure bars, and treatment history into clearer blocks that read closer to a polished reference layout.',
                         ].map((item) => (
-                            <div key={item} className="rounded-[24px] border border-[#F4D03F]/15 bg-white/80 p-4 text-sm leading-6 text-[#1A1A1A]/68">
+                            <div key={item} className="rounded-[24px] border border-border/ bg-muted/ p-4 text-sm leading-6 text-foreground/68">
                                 {item}
                             </div>
                         ))}
@@ -436,12 +436,12 @@ const VarroaView: React.FC = () => {
 
                 <div className={cn(glass.card, 'p-5 md:p-6')}>
                     <div className="flex items-center gap-3 mb-5">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#F4D03F]/15 bg-[#FFF3C7]">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/ bg-[#FFF3C7]">
                             <History className="w-5 h-5 text-[#B98A00]" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A1A1A]/40">Sampling cadence</p>
-                            <h3 className="text-xl font-black tracking-[-0.05em] text-[#1A1A1A]">Next focus</h3>
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">Sampling cadence</p>
+                            <h3 className="text-xl font-black tracking-[-0.05em] text-foreground">Next focus</h3>
                         </div>
                     </div>
                     <div className="space-y-3">
@@ -450,7 +450,7 @@ const VarroaView: React.FC = () => {
                             `Warning band: ${stats.warning > 0 ? 'schedule a follow-up wash this week' : 'stable across the current board'}`,
                             `Coverage: ${stats.sampledThisWeek}/${stats.total || 0} hives sampled in the last 7 days`,
                         ].map((item) => (
-                            <div key={item} className="rounded-2xl border border-[#F4D03F]/15 bg-[#F9F7F2] px-3.5 py-3 text-sm font-medium leading-6 text-[#1A1A1A]/68">
+                            <div key={item} className="rounded-2xl border border-border/ bg-muted/20 px-3.5 py-3 text-sm font-medium leading-6 text-foreground/68">
                                 {item}
                             </div>
                         ))}
@@ -462,3 +462,4 @@ const VarroaView: React.FC = () => {
 };
 
 export default VarroaView;
+

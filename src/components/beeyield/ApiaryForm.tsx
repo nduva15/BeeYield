@@ -124,7 +124,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-5">
                     <div className="space-y-2">
-                        <Label className="text-[9px] font-black text-gray-400 ml-2">Site Identifier*</Label>
+                        <Label className="text-[9px] font-black text-muted-foreground/70 ml-2">Site Identifier*</Label>
                         <Input
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -134,26 +134,26 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-xs font-semibold text-gray-500 ml-2">Placement</Label>
+                        <Label className="text-xs font-semibold text-muted-foreground ml-2">Placement</Label>
                         <Select value={formData.type} onValueChange={(val) => setFormData({ ...formData, type: val })}>
-                            <SelectTrigger className="h-10 border-[#F4D03F]/10 bg-white px-4 rounded-xl font-black text-[9px] transition-all hover:border-[#F4D03F]/30 focus:ring-0 w-full">
+                            <SelectTrigger className="h-10 border-border/ bg-white px-4 rounded-xl font-black text-[9px] transition-all hover:border-border/ focus:ring-0 w-full">
                                 <div className="flex items-center gap-3">
                                     <Target className="w-3.5 h-3.5 text-[#F4D03F]" />
                                     <SelectValue placeholder="Select type" />
                                 </div>
                             </SelectTrigger>
-                            <SelectContent className="bg-white/90 backdrop-blur-md border-[#F4D03F]/20 rounded-xl overflow-hidden shadow-2xl">
-                                <SelectItem value="permanent" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Permanent Site</SelectItem>
-                                <SelectItem value="migratory" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Migratory Site</SelectItem>
-                                <SelectItem value="breeding" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Breeding Site</SelectItem>
-                                <SelectItem value="quarantine" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-[#1A1A1A]">Isolation Site</SelectItem>
+                            <SelectContent className="bg-muted/ backdrop-blur-md border-border/ rounded-xl overflow-hidden shadow-2xl">
+                                <SelectItem value="permanent" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-foreground">Permanent Site</SelectItem>
+                                <SelectItem value="migratory" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-foreground">Migratory Site</SelectItem>
+                                <SelectItem value="breeding" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-foreground">Breeding Site</SelectItem>
+                                <SelectItem value="quarantine" className="text-[9px] font-black focus:bg-[#F4D03F]/10 focus:text-foreground">Isolation Site</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-[9px] font-black text-gray-400 ml-2">Unit Capacity</Label>
+                            <Label className="text-[9px] font-black text-muted-foreground/70 ml-2">Unit Capacity</Label>
                             <div className="relative">
                                 <Hexagon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                                 <Input
@@ -161,12 +161,12 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
                                     value={formData.expected_hives || ''}
                                     onChange={(e) => setFormData({ ...formData, expected_hives: parseInt(e.target.value) || 0 })}
                                     placeholder="0"
-                                    className="h-10 pl-10 font-black text-[11px] bg-white border-[#F4D03F]/10 rounded-xl tabular-nums w-full"
+                                    className="h-10 pl-10 font-black text-[11px] bg-white border-border/ rounded-xl tabular-nums w-full"
                                 />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-[9px] font-black text-gray-400 ml-2">Area (AC)</Label>
+                            <Label className="text-[9px] font-black text-muted-foreground/70 ml-2">Area (AC)</Label>
                             <div className="relative">
                                 <Sprout className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
                                 <Input
@@ -175,21 +175,21 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
                                     value={formData.size_acres || ''}
                                     onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 0 })}
                                     placeholder="0.0"
-                                    className="h-10 pl-10 font-black text-[11px] bg-white border-[#F4D03F]/10 rounded-xl tabular-nums w-full"
+                                    className="h-10 pl-10 font-black text-[11px] bg-white border-border/ rounded-xl tabular-nums w-full"
                                 />
                             </div>
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-xs font-semibold text-gray-500 ml-2">Flora</Label>
+                        <Label className="text-xs font-semibold text-muted-foreground ml-2">Flora</Label>
                         <div className="relative">
                             <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1B9157]/40" />
                             <Input
                                 value={formData.forage_type}
                                 onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
                                 placeholder="Lavender Cluster Pro"
-                                className="h-10 pl-10 font-black text-[10px] bg-white border-[#F4D03F]/10 rounded-xl tracking-wider w-full"
+                                className="h-10 pl-10 font-black text-[10px] bg-white border-border/ rounded-xl tracking-wider w-full"
                             />
                         </div>
                     </div>
@@ -197,7 +197,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
 
                 <div className="space-y-5">
                     <div className="space-y-4">
-                        <div className="relative h-64 rounded-2xl overflow-hidden border border-[#F4D03F]/20 shadow-inner group">
+                        <div className="relative h-64 rounded-2xl overflow-hidden border border-border/ shadow-inner group">
                             <MapContainer 
                                 center={[formData.latitude || -2.42, formData.longitude || 37.97]} 
                                 zoom={13} 
@@ -226,7 +226,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
                                     <Popup className="font-bold border-none shadow-xl rounded-xl">
                                         <div className="p-2 text-center">
                                             <p className="text-xs font-black text-[#1B9157]">Deployment Pivot</p>
-                                            <p className="text-[9px] text-gray-400">Drag to exact hive site</p>
+                                            <p className="text-[9px] text-muted-foreground/70">Drag to exact hive site</p>
                                         </div>
                                     </Popup>
                                 </Marker>
@@ -235,9 +235,9 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
                             <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2">
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
-                                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+                                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground/70" />
                                         <input 
-                                            className="w-full bg-white/90 backdrop-blur-md border border-[#F4D03F]/20 rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F4D03F]/20 transition-all"
+                                            className="w-full bg-muted/ backdrop-blur-md border border-border/ rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F4D03F]/20 transition-all"
                                             placeholder="Search exact location..."
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -249,7 +249,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
                                     <button
                                         onClick={handleSearch}
                                         disabled={isSearching}
-                                        className="px-3 bg-[#F4D03F] text-[#1A1A1A] rounded-lg text-[9px] font-black shadow-lg hover:bg-[#E5C335] transition-all disabled:opacity-50 flex items-center gap-1.5"
+                                        className="px-3 bg-[#F4D03F] text-foreground rounded-lg text-[9px] font-black shadow-lg hover:bg-[#E5C335] transition-all disabled:opacity-50 flex items-center gap-1.5"
                                     >
                                         {isSearching ? <RefreshCw className="w-2.5 h-2.5 animate-spin" /> : <Search className="w-2.5 h-2.5" />}
                                         SEARCH
@@ -260,23 +260,23 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
                         
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                                <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Latitude</Label>
+                                <Label className="text-[8px] font-black text-muted-foreground/70 ml-1 uppercase">Latitude</Label>
                                 <Input 
                                     type="number"
                                     step="any"
                                     value={formData.latitude || ''} 
                                     onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || 0 }))}
-                                    className="h-8 bg-white text-[10px] font-mono border-[#F4D03F]/10 rounded-lg focus:ring-[#F4D03F]/20 w-full" 
+                                    className="h-8 bg-white text-[10px] font-mono border-border/ rounded-lg focus:ring-[#F4D03F]/20 w-full" 
                                 />
                             </div>
                             <div className="space-y-1">
-                                <Label className="text-[8px] font-black text-gray-400 ml-1 uppercase">Longitude</Label>
+                                <Label className="text-[8px] font-black text-muted-foreground/70 ml-1 uppercase">Longitude</Label>
                                 <Input 
                                     type="number"
                                     step="any"
                                     value={formData.longitude || ''} 
                                     onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || 0 }))}
-                                    className="h-8 bg-white text-[10px] font-mono border-[#F4D03F]/10 rounded-lg focus:ring-[#F4D03F]/20 w-full" 
+                                    className="h-8 bg-white text-[10px] font-mono border-border/ rounded-lg focus:ring-[#F4D03F]/20 w-full" 
                                 />
                             </div>
                         </div>
@@ -285,16 +285,16 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
             </div>
 
             <div className="space-y-2">
-                <Label className="text-[9px] font-black text-gray-400 ml-2">Operational Notes</Label>
+                <Label className="text-[9px] font-black text-muted-foreground/70 ml-2">Operational Notes</Label>
                 <Textarea
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="h-20 p-4 text-[10px] font-bold bg-white border-[#F4D03F]/10 rounded-xl resize-none italic leading-relaxed w-full"
+                    className="h-20 p-4 text-[10px] font-bold bg-white border-border/ rounded-xl resize-none italic leading-relaxed w-full"
                     placeholder="Add important notes for this site..."
                 />
             </div>
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-[#F4D03F]/10">
+            <div className="flex justify-end gap-3 pt-6 border-t border-border/">
                 <button
                     onClick={onCancel}
                     className={cn(glass.btnSecondary, "h-11 px-6 text-[9px] font-black")}
@@ -317,3 +317,4 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({ apiary, onSuccess, onCan
         </div>
     );
 };
+

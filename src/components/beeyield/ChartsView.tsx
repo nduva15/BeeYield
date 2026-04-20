@@ -134,7 +134,7 @@ const ChartsView: React.FC = () => {
                         <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage Trend <span className="text-[#F4D03F]">History</span></h3>
                         <p className={cn(glass.microLabel, "opacity-60 italic mt-1")}>Activity patterns and trend analysis</p>
                     </div>
-                    <div className="flex items-center gap-6 bg-[#FFF9F0]/60 p-2 px-4 rounded-2xl border border-border shadow-sm">
+                    <div className="flex items-center gap-6 bg-card/ p-2 px-4 rounded-2xl border border-border shadow-sm">
                         <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full bg-[#F4D03F]" />
                             <span className={cn(glass.microLabel, "font-bold normal-case opacity-70")}>Normal range</span>
@@ -149,7 +149,7 @@ const ChartsView: React.FC = () => {
                 <div className="p-10 relative z-10">
                     <div className="h-[430px] w-full relative">
                         {chartData.length === 0 && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#FFF9F0]/50 backdrop-blur-sm z-20 rounded-2xl border border-dashed border-[#F4D03F]/30">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-card/ backdrop-blur-sm z-20 rounded-2xl border border-dashed border-border/">
                                 <motion.div
                                     animate={{ opacity: [0.4, 1, 0.4] }}
                                     transition={{ duration: 2, repeat: Infinity }}
@@ -158,7 +158,7 @@ const ChartsView: React.FC = () => {
                                     <div className="w-16 h-16 rounded-full bg-[#F4D03F]/10 flex items-center justify-center">
                                         <Activity className="w-8 h-8 text-[#F4D03F]" />
                                     </div>
-                                    <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter uppercase opacity-60">Awaiting signal…</h3>
+                                    <h3 className="text-sm font-black text-foreground tracking-tighter uppercase opacity-60">Awaiting signal…</h3>
                                 </motion.div>
                             </div>
                         )}
@@ -241,7 +241,7 @@ const ChartsView: React.FC = () => {
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Recursive Usage Spike</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>KIB_MAIN_C · T+03:00</p>
                             </div>
-                            <div className={cn(glass.badge, "bg-destructive text-[#1A1A1A] border-transparent px-4 py-1 animate-pulse shadow-md relative z-10")}>
+                            <div className={cn(glass.badge, "bg-destructive text-foreground border-transparent px-4 py-1 animate-pulse shadow-md relative z-10")}>
                                 <Zap className="w-3 h-3 mr-1" /> HIGH_SEV
                             </div>
                         </div>
@@ -287,7 +287,7 @@ const ChartsView: React.FC = () => {
                                 <h4 className={cn(glass.microLabel, "text-sm font-bold text-foreground")}>Load Compression Baseline</h4>
                                 <p className={cn(glass.microLabel, "opacity-60 italic")}>Minimum signal overhead window</p>
                             </div>
-                            <div className={cn(glass.badge, "bg-destructive text-[#1A1A1A] border-transparent px-4 py-2 shadow-lg flex items-center gap-2")}>
+                            <div className={cn(glass.badge, "bg-destructive text-foreground border-transparent px-4 py-2 shadow-lg flex items-center gap-2")}>
                                 <TrendingDown className="w-4 h-4" />
                                 <span className="font-bold">-9%_LOSS</span>
                             </div>
@@ -301,10 +301,10 @@ const ChartsView: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={cn(glass.card, "p-8 shadow-xl bg-[#F4D03F]/5 border-[#F4D03F]/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+                className={cn(glass.card, "p-8 shadow-xl bg-[#F4D03F]/5 border-border/ flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-[#F4D03F]/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FFF9F0]/60 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-card/ flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-8 h-8 text-[#F4D03F]" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">
@@ -319,3 +319,4 @@ const ChartsView: React.FC = () => {
 };
 
 export default ChartsView;
+

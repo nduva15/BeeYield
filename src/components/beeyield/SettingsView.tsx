@@ -225,9 +225,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                 title={<>Control <span className="text-[#F4D03F]">Center</span></>}
                 subtitle="Manage your account, modules, alerts, and security settings."
                 actions={
-                    <div className="flex items-center gap-2 bg-white/60 border border-[#F4D03F]/20 px-4 h-10 rounded-xl shadow-sm">
+                    <div className="flex items-center gap-2 bg-muted/50 border border-primary/20 px-4 h-10 rounded-xl shadow-sm">
                         <Activity className="w-4 h-4 text-[#1B9157] animate-pulse" />
-                        <span className="text-xs font-semibold text-[#1A1A1A]">
+                        <span className="text-xs font-semibold text-foreground">
                             Sync: <span className="text-[#1B9157]">{isSyncing ? 'Syncing…' : 'On'}</span>
                         </span>
                     </div>
@@ -239,7 +239,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1">
                             <p className="text-xs font-semibold text-destructive">Settings error</p>
-                            <p className="text-sm font-semibold text-[#1A1A1A] break-words">{pageError}</p>
+                            <p className="text-sm font-semibold text-foreground break-words">{pageError}</p>
                         </div>
                         <button
                             type="button"
@@ -257,7 +257,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                 onValueChange={setActiveTab}
                 className="w-full space-y-6"
             >
-                <TabsList className="bg-white/40 p-1 h-9 w-full grid grid-cols-5 rounded-xl border border-white/40 backdrop-blur-xl">
+                <TabsList className="bg-muted/30 p-1 h-9 w-full grid grid-cols-5 rounded-xl border border-border/40 backdrop-blur-xl">
                     {[
                         { value: 'identity', label: 'Profile', icon: User },
                         { value: 'modules', label: 'Modules', icon: Layers },
@@ -268,7 +268,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         <TabsTrigger
                             key={tab.value}
                             value={tab.value}
-                            className="h-full rounded-lg text-xs font-semibold text-gray-500 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-white/40 transition-all flex items-center justify-center gap-1.5"
+                            className="h-full rounded-lg text-xs font-semibold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border/40 transition-all flex items-center justify-center gap-1.5"
                         >
                             <tab.icon className="w-3.5 h-3.5" /> {tab.label}
                         </TabsTrigger>
@@ -283,21 +283,21 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <BeeYieldCard
                                     padded={false}
                                     className={cn(
-                                        "text-center flex flex-col items-center justify-center py-8 px-6 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl relative overflow-hidden"
+                                        "text-center flex flex-col items-center justify-center py-8 px-6 bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl relative overflow-hidden"
                                     )}
                                 >
                                 <div className="absolute -top-6 -left-6 opacity-[0.03] pointer-events-none">
                                     <Fingerprint className="w-32 h-32" />
                                 </div>
-                                <div className="w-20 h-20 rounded-[1.5rem] border-4 border-white/40 bg-white p-1 flex items-center justify-center relative shadow-sm group overflow-hidden">
+                                <div className="w-20 h-20 rounded-[1.5rem] border-4 border-border/40 bg-card p-1 flex items-center justify-center relative shadow-sm group overflow-hidden">
                                     <div className="w-full h-full rounded-[1.2rem] bg-gray-50 flex items-center justify-center border border-gray-100 overflow-hidden relative">
                                         {user?.user_metadata?.avatar_url ? (
                                             <img src={user.user_metadata.avatar_url} alt={fullName} className="w-full h-full object-cover" />
                                         ) : (
-                                            <User className="w-8 h-8 text-[#1A1A1A] group-hover:scale-110 transition-transform" />
+                                            <User className="w-8 h-8 text-foreground group-hover:scale-110 transition-transform" />
                                         )}
                                         {uploading && (
-                                            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-muted/50 backdrop-blur-sm flex items-center justify-center">
                                                 <Loader2 className="h-6 w-6 animate-spin text-[#F4D03F]" />
                                             </div>
                                         )}
@@ -307,7 +307,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <Camera className="w-3.5 h-3.5" />
                                     </label>
                                 </div>
-                                <h3 className="text-sm font-bold text-[#1A1A1A] mt-6">{fullName}</h3>
+                                <h3 className="text-sm font-bold text-foreground mt-6">{fullName}</h3>
                                 <p className="text-xs font-semibold text-[#1B9157] mt-1">Verified BeeYield Profile</p>
                                 <label className={cn(glass.btnPrimary, "mt-6 w-full cursor-pointer flex items-center justify-center gap-2")}>
                                     <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
@@ -317,14 +317,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 </BeeYieldCard>
                             </motion.div>
 
-                            <BeeYieldCard className={cn("p-5 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
+                            <BeeYieldCard className={cn("p-5 bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl")}>
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
                                         <div className="flex items-center gap-2">
                                             <Palette className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                            <h4 className="text-xs font-semibold text-[#1A1A1A]">Theme</h4>
+                                            <h4 className="text-xs font-semibold text-foreground">Theme</h4>
                                         </div>
-                                        <p className="text-xs text-gray-500">Light / dark</p>
+                                        <p className="text-xs text-muted-foreground">Light / dark</p>
                                     </div>
                                     <Switch
                                         checked={theme === 'dark'}
@@ -348,20 +348,20 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <motion.div
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className={cn("p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}
+                                className={cn("p-0 overflow-hidden bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl")}
                             >
-                                <BeeYieldCard padded={false} className={cn("p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
-                                    <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between flex-wrap gap-4">
+                                <BeeYieldCard padded={false} className={cn("p-0 overflow-hidden bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl")}>
+                                    <div className="p-5 border-b border-border/50 bg-[#F4D03F][0.02] flex items-center justify-between flex-wrap gap-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                            <div className="w-9 h-9 rounded-xl bg-card flex items-center justify-center border border-gray-100 shadow-sm">
                                                 <Globe className="w-4 h-4 text-[#F4D03F]" />
                                             </div>
                                             <div className="space-y-0.5">
-                                                <h2 className="text-sm font-bold text-[#1A1A1A] leading-none">Profile review</h2>
-                                                <p className="text-xs text-gray-500">Account details</p>
+                                                <h2 className="text-sm font-bold text-foreground leading-none">Profile review</h2>
+                                                <p className="text-xs text-muted-foreground">Account details</p>
                                             </div>
                                         </div>
-                                        <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-semibold text-xs px-2 py-0.5">Archived</Badge>
+                                        <Badge className="bg-muted/30 text-muted-foreground border-border/40 rounded-lg font-semibold text-xs px-2 py-0.5">Archived</Badge>
                                     </div>
 
                                     <div className="p-6 space-y-6">
@@ -372,7 +372,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                     icon={User}
                                                     placeholder="e.g. Timothy Nduva"
                                                     className="w-full"
-                                                    inputClassName="w-full font-bold bg-white/50"
+                                                    inputClassName="w-full font-bold bg-card/50"
                                                     value={fullName}
                                                     onChange={(e) => setFullName(e.target.value)}
                                                     disabled={profileLoading}
@@ -385,7 +385,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                     icon={Mail}
                                                     placeholder="e.g. you@example.com"
                                                     className="w-full"
-                                                    inputClassName="w-full font-bold bg-white/50"
+                                                    inputClassName="w-full font-bold bg-card/50"
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     disabled={profileLoading}
@@ -400,7 +400,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                     icon={Smartphone}
                                                     placeholder="+254 7XX XXX XXX"
                                                     className="w-full"
-                                                    inputClassName="w-full font-bold bg-white/50"
+                                                    inputClassName="w-full font-bold bg-card/50"
                                                     value={phone}
                                                     onChange={(e) => setPhone(e.target.value)}
                                                     disabled={profileLoading}
@@ -413,7 +413,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                     icon={MapPin}
                                                     placeholder="Kibwezi, Kenya"
                                                     className="w-full"
-                                                    inputClassName="w-full font-bold bg-white/50"
+                                                    inputClassName="w-full font-bold bg-card/50"
                                                     value={locationName}
                                                     onChange={(e) => setLocationName(e.target.value)}
                                                     disabled={profileLoading}
@@ -421,7 +421,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             </BeeYieldFormField>
                                         </div>
 
-                                        <div className="pt-6 border-t border-[#F4D03F]/10 flex flex-col sm:flex-row justify-between items-center sm:items-start md:items-center gap-4">
+                                        <div className="pt-6 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center sm:items-start md:items-center gap-4">
                                             <div className="flex items-center gap-2 text-[#1B9157]">
                                                 <Activity className="w-5 h-5 animate-pulse" />
                                                 <p className="text-xs font-semibold text-[#1B9157]">Status: OK</p>
@@ -445,16 +445,16 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}
+                        className={cn(glass.card, "p-0 overflow-hidden bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl")}
                     >
-                        <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="p-5 border-b border-border/50 bg-[#F4D03F][0.02] flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                <div className="w-9 h-9 rounded-xl bg-card flex items-center justify-center border border-gray-100 shadow-sm">
                                     <Layers className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-sm font-bold text-[#1A1A1A] leading-none">Modules</h3>
-                                    <p className="text-xs text-gray-500">Choose what you want to use in BeeYield.</p>
+                                    <h3 className="text-sm font-bold text-foreground leading-none">Modules</h3>
+                                    <p className="text-xs text-muted-foreground">Choose what you want to use in BeeYield.</p>
                                 </div>
                             </div>
                             <div className="flex gap-3">
@@ -479,15 +479,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         key={mod.id}
                                         initial={{ opacity: 0, scale: 0.98 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="p-3.5 rounded-xl border border-white/40 bg-white/30 flex items-start justify-between group hover:bg-white/60 hover:border-[#F4D03F]/30 hover:shadow-sm transition-all"
+                                        className="p-3.5 rounded-xl border border-border/40 bg-card/30 flex items-start justify-between group hover:bg-muted/50 hover:border-border/ hover:shadow-sm transition-all"
                                     >
                                         <div className="flex gap-3">
-                                            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center border border-gray-100 bg-white shadow-sm transition-transform group-hover:scale-105", mod.color)}>
+                                            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center border border-gray-100 bg-card shadow-sm transition-transform group-hover:scale-105", mod.color)}>
                                                 <mod.icon className="w-4 h-4" />
                                             </div>
                                             <div className="space-y-0.5">
-                                                <h4 className="text-xs font-semibold text-[#1A1A1A]">{mod.label}</h4>
-                                                <p className="text-xs text-gray-500 max-w-[240px] leading-relaxed">{mod.desc}</p>
+                                                <h4 className="text-xs font-semibold text-foreground">{mod.label}</h4>
+                                                <p className="text-xs text-muted-foreground max-w-[240px] leading-relaxed">{mod.desc}</p>
                                             </div>
                                         </div>
                                         <Switch
@@ -514,14 +514,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                 <TabsContent value="alerts" className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Internal alerts */}
-                        <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
-                            <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex flex-wrap items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                        <div className={cn(glass.card, "p-0 overflow-hidden bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl")}>
+                            <div className="p-4 border-b border-border/50 bg-[#F4D03F][0.02] flex flex-wrap items-center gap-3">
+                                <div className="w-8 h-8 rounded-xl bg-card flex items-center justify-center border border-gray-100 shadow-sm">
                                     <Bell className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h4 className="text-sm font-bold text-[#1A1A1A] leading-none">BeeYield alerts</h4>
-                                    <p className="text-xs text-gray-500">Choose what you want to be notified about.</p>
+                                    <h4 className="text-sm font-bold text-foreground leading-none">BeeYield alerts</h4>
+                                    <p className="text-xs text-muted-foreground">Choose what you want to be notified about.</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-3">
@@ -530,10 +530,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     { id: 'swarmRisk', title: 'Swarm risk', desc: 'Signs your hive may swarm soon.', color: 'amber-500' },
                                     { id: 'onboardingHints', title: 'Tips and reminders', desc: 'Helpful prompts while you work.', color: 'blue-500' },
                                 ].map((alert) => (
-                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-xl border border-white/40 hover:border-[#F4D03F]/30 bg-white/30 hover:bg-white/60 transition-colors group">
+                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-xl border border-border/40 hover:border-border/ bg-card/30 hover:bg-muted/50 transition-colors group">
                                         <div className="space-y-0.5">
-                                            <h5 className="text-xs font-semibold text-[#1A1A1A]">{alert.title}</h5>
-                                            <p className="text-xs text-gray-500">{alert.desc}</p>
+                                            <h5 className="text-xs font-semibold text-foreground">{alert.title}</h5>
+                                            <p className="text-xs text-muted-foreground">{alert.desc}</p>
                                         </div>
                                         <Switch
                                             checked={!!(alerts as any)[alert.id]}
@@ -546,14 +546,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         </div>
 
                         {/* Delivery */}
-                        <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}>
+                        <div className={cn(glass.card, "p-0 overflow-hidden bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl")}>
                             <div className="p-4 border-b border-blue-500/10 bg-blue-500/[0.02] flex flex-wrap items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                <div className="w-8 h-8 rounded-xl bg-card flex items-center justify-center border border-gray-100 shadow-sm">
                                     <Smartphone className="w-4 h-4 text-blue-500" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h4 className="text-sm font-bold text-[#1A1A1A] leading-none">Where to send alerts</h4>
-                                    <p className="text-xs text-gray-500">Choose your alert channels.</p>
+                                    <h4 className="text-sm font-bold text-foreground leading-none">Where to send alerts</h4>
+                                    <p className="text-xs text-muted-foreground">Choose your alert channels.</p>
                                 </div>
                             </div>
                             <div className="p-5 space-y-3">
@@ -562,10 +562,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     { id: 'lowBattery', title: 'Low battery', desc: 'When a device battery gets low.', color: 'blue-500' },
                                     { id: 'marketing', title: 'Product updates', desc: 'News and pricing updates.', color: 'amber-500' },
                                 ].map((alert) => (
-                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-xl border border-white/40 hover:border-blue-500/30 bg-white/30 hover:bg-white/60 transition-colors group">
+                                    <div key={alert.id} className="flex items-center justify-between p-3 rounded-xl border border-border/40 hover:border-blue-500/30 bg-card/30 hover:bg-muted/50 transition-colors group">
                                         <div className="space-y-0.5">
-                                            <h5 className="text-xs font-semibold text-[#1A1A1A]">{alert.title}</h5>
-                                            <p className="text-xs text-gray-500">{alert.desc}</p>
+                                            <h5 className="text-xs font-semibold text-foreground">{alert.title}</h5>
+                                            <p className="text-xs text-muted-foreground">{alert.desc}</p>
                                         </div>
                                         <Switch
                                             checked={!!(alerts as any)[alert.id]}
@@ -591,14 +591,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <motion.div
                             whileHover={{ scale: 1.01 }}
-                            className={cn(glass.card, "p-6 bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl relative overflow-hidden group")}
+                            className={cn(glass.card, "p-6 bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl relative overflow-hidden group")}
                         >
                             <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 blur-3xl rounded-full" />
-                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-100 mb-5 shadow-sm group-hover:bg-white transition-colors">
+                            <div className="w-10 h-10 rounded-xl bg-card flex items-center justify-center border border-gray-100 mb-5 shadow-sm group-hover:bg-card transition-colors">
                                 <Key className="w-5 h-5 text-[#F4D03F]" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A] leading-none mb-3">Access</h3>
-                            <p className="text-xs text-gray-500 leading-relaxed mb-6 max-w-sm border-l-2 border-[#F4D03F]/40 pl-3">
+                            <h3 className="text-sm font-bold text-foreground leading-none mb-3">Access</h3>
+                            <p className="text-xs text-muted-foreground leading-relaxed mb-6 max-w-sm border-l-2 border-border/ pl-3">
                                 Manage access settings for this account.
                             </p>
                             <button className={glass.btnSecondary}>
@@ -608,10 +608,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
                         <motion.div
                             whileHover={{ scale: 1.01 }}
-                            className={cn(glass.card, "p-6 bg-white/40 backdrop-blur-xl border-red-500/10 rounded-[2.5rem] shadow-xl relative overflow-hidden group")}
+                            className={cn(glass.card, "p-6 bg-muted/30 backdrop-blur-xl border-red-500/10 rounded-[2.5rem] shadow-xl relative overflow-hidden group")}
                         >
                             <div className="absolute -top-10 -right-10 w-40 h-40 bg-red-500/5 blur-3xl rounded-full" />
-                            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center border border-red-100 mb-5 shadow-sm group-hover:bg-white transition-colors">
+                            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center border border-red-100 mb-5 shadow-sm group-hover:bg-card transition-colors">
                                 <Trash2 className="w-5 h-5 text-red-500" />
                             </div>
                             <h3 className="text-sm font-bold tracking-tight text-red-500 leading-none mb-3">Delete account</h3>
@@ -630,16 +630,16 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem] shadow-xl")}
+                        className={cn(glass.card, "p-0 overflow-hidden bg-muted/30 backdrop-blur-xl border-border rounded-[2.5rem] shadow-xl")}
                     >
-                        <div className="p-5 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between gap-4 flex-wrap">
+                        <div className="p-5 border-b border-border/50 bg-[#F4D03F][0.02] flex items-center justify-between gap-4 flex-wrap">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
+                                <div className="w-9 h-9 rounded-xl bg-card flex items-center justify-center border border-gray-100 shadow-sm">
                                     <CreditCard className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-sm font-bold text-[#1A1A1A] leading-none">Billing</h3>
-                                    <p className="text-xs text-gray-500">Cards, payments, and invoices.</p>
+                                    <h3 className="text-sm font-bold text-foreground leading-none">Billing</h3>
+                                    <p className="text-xs text-muted-foreground">Cards, payments, and invoices.</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -650,7 +650,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 >
                                     {billingLoading ? 'SYNCING…' : 'Refresh'}
                                 </button>
-                                <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-semibold text-xs px-2 py-0.5">
+                                <Badge className="bg-muted/30 text-muted-foreground border-border/40 rounded-lg font-semibold text-xs px-2 py-0.5">
                                     Secured by Stripe
                                 </Badge>
                             </div>
@@ -664,15 +664,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     { label: 'Costs', value: billingOverview?.total_costs ?? 0, icon: ArrowDownRight, color: 'text-red-500' },
                                     { label: 'Net', value: billingOverview?.net_result ?? 0, icon: ArrowUpRight, color: 'text-[#F4D03F]' },
                                 ].map((k) => (
-                                    <div key={k.label} className="p-4 rounded-2xl border border-white/40 bg-white/30 hover:bg-white/60 transition-colors">
+                                    <div key={k.label} className="p-4 rounded-2xl border border-border/40 bg-card/30 hover:bg-muted/50 transition-colors">
                                         <div className="flex items-center justify-between">
                                             <div className="space-y-1">
-                                                <p className="text-xs text-gray-500">{k.label}</p>
-                                                <p className="text-lg font-black text-[#1A1A1A] tabular-nums">
+                                                <p className="text-xs text-muted-foreground">{k.label}</p>
+                                                <p className="text-lg font-black text-foreground tabular-nums">
                                                     KES {Number(k.value || 0).toLocaleString()}
                                                 </p>
                                             </div>
-                                            <div className={cn("w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm", k.color)}>
+                                            <div className={cn("w-9 h-9 rounded-xl bg-card flex items-center justify-center border border-gray-100 shadow-sm", k.color)}>
                                                 <k.icon className="w-4 h-4" />
                                             </div>
                                         </div>
@@ -685,8 +685,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <div className="lg:col-span-5 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <h4 className="text-sm font-bold text-[#1A1A1A]">Payment cards</h4>
-                                            <p className="text-xs text-gray-500">Saved methods</p>
+                                            <h4 className="text-sm font-bold text-foreground">Payment cards</h4>
+                                            <p className="text-xs text-muted-foreground">Saved methods</p>
                                         </div>
 
                                         <button 
@@ -743,9 +743,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
                                     <div className="space-y-3">
                                         {paymentMethods.length === 0 ? (
-                                            <div className="p-5 rounded-2xl border border-dashed border-white/50 bg-white/20 text-center">
-                                                <p className="text-sm font-semibold text-gray-600">No saved cards</p>
-                                                <p className="text-xs text-gray-500 mt-2">
+                                            <div className="p-5 rounded-2xl border border-dashed border-border/ bg-card/20 text-center">
+                                                <p className="text-sm font-semibold text-muted-foreground/90">No saved cards</p>
+                                                <p className="text-xs text-muted-foreground mt-2">
                                                     Add a card to speed up upgrades and invoice payments.
                                                 </p>
                                             </div>
@@ -753,16 +753,16 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             paymentMethods.map((pm) => (
                                                 <div
                                                     key={pm.id}
-                                                    className="p-4 rounded-2xl border border-white/40 bg-gradient-to-br from-[#111827] to-[#0B1220] text-white relative overflow-hidden"
+                                                    className="p-4 rounded-2xl border border-border/40 bg-gradient-to-br from-[#111827] to-[#0B1220] text-white relative overflow-hidden"
                                                 >
                                                     <div className="absolute top-5 left-5 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
                                                     {(pm.is_default || pm.isDefault) && (
-                                                        <Badge className="absolute top-4 left-20 bg-[#F4D03F] text-[#1A1A1A] rounded-full px-3 py-1 text-xs font-semibold">
+                                                        <Badge className="absolute top-4 left-20 bg-[#F4D03F] text-foreground rounded-full px-3 py-1 text-xs font-semibold">
                                                             Default
                                                         </Badge>
                                                     )}
                                                     <button
-                                                        className="absolute top-3 right-3 w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/10"
+                                                        className="absolute top-3 right-3 w-8 h-8 rounded-xl bg-card/10 hover:bg-card/20 flex items-center justify-center border border-border/"
                                                         onClick={async () => {
                                                             try {
                                                                 await deletePaymentMethod(pm.id);
@@ -807,23 +807,23 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <div className="lg:col-span-7 space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <h4 className="text-sm font-bold text-[#1A1A1A]">Payment history</h4>
-                                            <p className="text-xs text-gray-500">Recent transactions</p>
+                                            <h4 className="text-sm font-bold text-foreground">Payment history</h4>
+                                            <p className="text-xs text-muted-foreground">Recent transactions</p>
                                         </div>
-                                        <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] px-2 py-0.5">
+                                        <Badge className="bg-muted/30 text-muted-foreground border-border/40 rounded-lg font-black text-[8px] px-2 py-0.5">
                                             Last 50
                                         </Badge>
                                     </div>
 
-                                    <div className="rounded-2xl border border-white/40 bg-white/30 overflow-hidden">
+                                    <div className="rounded-2xl border border-border/40 bg-card/30 overflow-hidden">
                                         <Table>
                                             <TableHeader>
-                                                <TableRow className="bg-white/40">
-                                                    <TableHead className="text-xs font-semibold text-gray-500">Date</TableHead>
-                                                    <TableHead className="text-xs font-semibold text-gray-500">Type</TableHead>
-                                                    <TableHead className="text-xs font-semibold text-gray-500">Amount</TableHead>
-                                                    <TableHead className="text-xs font-semibold text-gray-500">Status</TableHead>
-                                                    <TableHead className="text-xs font-semibold text-gray-500 text-right">Details</TableHead>
+                                                <TableRow className="bg-muted/30">
+                                                    <TableHead className="text-xs font-semibold text-muted-foreground">Date</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-muted-foreground">Type</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-muted-foreground">Amount</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-muted-foreground">Status</TableHead>
+                                                    <TableHead className="text-xs font-semibold text-muted-foreground text-right">Details</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
@@ -831,8 +831,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                     <TableRow>
                                                         <TableCell colSpan={5} className="text-center py-10">
                                                             <div className="opacity-40 space-y-2">
-                                                                <Clock className="w-6 h-6 mx-auto text-gray-500" />
-                                                                <p className="text-sm font-semibold text-gray-600">No transactions yet</p>
+                                                                <Clock className="w-6 h-6 mx-auto text-muted-foreground" />
+                                                                <p className="text-sm font-semibold text-muted-foreground/90">No transactions yet</p>
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
@@ -840,10 +840,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                     transactions.slice(0, 12).map((tx, idx) => (
                                                         <TableRow
                                                             key={(tx.id || idx) as any}
-                                                            className="cursor-pointer hover:bg-white/60"
+                                                            className="cursor-pointer hover:bg-muted/50"
                                                             onClick={() => setSelectedTx(tx)}
                                                         >
-                                                            <TableCell className="text-[10px] font-bold text-gray-600">
+                                                            <TableCell className="text-[10px] font-bold text-muted-foreground/90">
                                                                 {tx.date ? new Date(tx.date).toLocaleDateString() : '—'}
                                                             </TableCell>
                                                             <TableCell className="text-xs font-semibold">
@@ -856,14 +856,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                                     {tx.type || '—'}
                                                                 </span>
                                                             </TableCell>
-                                                            <TableCell className="text-[10px] font-black tabular-nums text-[#1A1A1A]">
+                                                            <TableCell className="text-[10px] font-black tabular-nums text-foreground">
                                                                 {(tx.currency || 'KES').toUpperCase()} {Number(tx.amount || 0).toLocaleString()}
                                                             </TableCell>
-                                                            <TableCell className="text-xs font-semibold text-gray-500">
+                                                            <TableCell className="text-xs font-semibold text-muted-foreground">
                                                                 {tx.status || tx.etims_status || '—'}
                                                             </TableCell>
                                                             <TableCell className="text-right">
-                                                                <button className="inline-flex items-center gap-2 text-xs font-semibold text-[#F4D03F] hover:text-[#1A1A1A]">
+                                                                <button className="inline-flex items-center gap-2 text-xs font-semibold text-[#F4D03F] hover:text-foreground">
                                                                     View <ExternalLink className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </TableCell>
@@ -882,40 +882,40 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     >
                                         <div className="space-y-4">
                                             <div className="grid grid-cols-2 gap-3">
-                                                <div className="p-3 rounded-xl border border-[#F4D03F]/20 bg-white/40">
-                                                    <p className="text-xs font-semibold text-gray-500">Amount</p>
-                                                    <p className="text-sm font-black tabular-nums text-[#1A1A1A]">
+                                                <div className="p-3 rounded-xl border border-primary/20 bg-muted/30">
+                                                    <p className="text-xs font-semibold text-muted-foreground">Amount</p>
+                                                    <p className="text-sm font-black tabular-nums text-foreground">
                                                         {(selectedTx?.currency || 'KES').toUpperCase()} {Number(selectedTx?.amount || 0).toLocaleString()}
                                                     </p>
                                                 </div>
-                                                <div className="p-3 rounded-xl border border-[#F4D03F]/20 bg-white/40">
-                                                    <p className="text-xs font-semibold text-gray-500">Type</p>
-                                                    <p className="text-sm font-semibold text-[#1A1A1A]">
+                                                <div className="p-3 rounded-xl border border-primary/20 bg-muted/30">
+                                                    <p className="text-xs font-semibold text-muted-foreground">Type</p>
+                                                    <p className="text-sm font-semibold text-foreground">
                                                         {selectedTx?.type || '—'}
                                                     </p>
                                                 </div>
-                                                <div className="p-3 rounded-xl border border-[#F4D03F]/20 bg-white/40">
-                                                    <p className="text-xs font-semibold text-gray-500">Status</p>
-                                                    <p className="text-sm font-semibold text-[#1A1A1A]">
+                                                <div className="p-3 rounded-xl border border-primary/20 bg-muted/30">
+                                                    <p className="text-xs font-semibold text-muted-foreground">Status</p>
+                                                    <p className="text-sm font-semibold text-foreground">
                                                         {selectedTx?.status || selectedTx?.etims_status || '—'}
                                                     </p>
                                                 </div>
-                                                <div className="p-3 rounded-xl border border-[#F4D03F]/20 bg-white/40">
-                                                    <p className="text-xs font-semibold text-gray-500">Date</p>
-                                                    <p className="text-sm font-black text-[#1A1A1A]">
+                                                <div className="p-3 rounded-xl border border-primary/20 bg-muted/30">
+                                                    <p className="text-xs font-semibold text-muted-foreground">Date</p>
+                                                    <p className="text-sm font-black text-foreground">
                                                         {selectedTx?.date ? new Date(selectedTx.date).toLocaleString() : '—'}
                                                     </p>
                                                 </div>
                                             </div>
 
-                                            <div className="p-4 rounded-xl border border-[#F4D03F]/20 bg-white/30 space-y-2">
-                                                <p className="text-xs font-semibold text-gray-500">Description</p>
-                                                <p className="text-[10px] font-bold text-[#1A1A1A]">
+                                            <div className="p-4 rounded-xl border border-primary/20 bg-card/30 space-y-2">
+                                                <p className="text-xs font-semibold text-muted-foreground">Description</p>
+                                                <p className="text-[10px] font-bold text-foreground">
                                                     {selectedTx?.description || '—'}
                                                 </p>
                                                 {selectedTx?.category && (
-                                                    <p className="text-xs font-semibold text-gray-500">
-                                                        Category: <span className="text-[#1A1A1A]">{selectedTx.category}</span>
+                                                    <p className="text-xs font-semibold text-muted-foreground">
+                                                        Category: <span className="text-foreground">{selectedTx.category}</span>
                                                     </p>
                                                 )}
                                             </div>
@@ -932,3 +932,5 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 };
 
 export default SettingsView;
+
+

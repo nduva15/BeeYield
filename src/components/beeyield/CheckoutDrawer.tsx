@@ -139,7 +139,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={!isProcessing ? onClose : undefined}
-                        className="fixed inset-0 bg-[#FFF9F0]/80 backdrop-blur-sm z-50 cursor-crosshair"
+                        className="fixed inset-0 bg-card/ backdrop-blur-sm z-50 cursor-crosshair"
                     />
 
                     {/* Drawer */}
@@ -152,13 +152,13 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                     >
                         {/* Header */}
                         <div className="h-16 flex items-center justify-between px-6 border-b border-[#1A1A1A]">
-                            <span className="text-[10px] font-black text-[#1A1A1A]">Secure Checkout</span>
+                            <span className="text-[10px] font-black text-foreground">Secure Checkout</span>
                             <button
                                 onClick={onClose}
                                 disabled={isProcessing}
                                 aria-label="Close checkout"
                                 title="Close"
-                                className="p-2 text-gray-400 hover:text-[#1A1A1A] transition-colors disabled:opacity-0"
+                                className="p-2 text-muted-foreground/70 hover:text-foreground transition-colors disabled:opacity-0"
                             >
                                 <X size={18} />
                             </button>
@@ -170,21 +170,21 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                             {step === 'review' && (
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                                     <div className="space-y-2">
-                                        <p className="text-[9px] font-black text-gray-400">Selected Hive Plan</p>
+                                        <p className="text-[9px] font-black text-muted-foreground/70">Selected Hive Plan</p>
                                         <div className="bg-[#111] border border-[#1A1A1A] p-4">
-                                            <h3 className="text-xl font-black text-[#1A1A1A] leading-none">{item?.name}</h3>
-                                            <p className="text-[11px] text-gray-600 mt-1.5 leading-relaxed">{item?.description}</p>
+                                            <h3 className="text-xl font-black text-foreground leading-none">{item?.name}</h3>
+                                            <p className="text-[11px] text-muted-foreground/90 mt-1.5 leading-relaxed">{item?.description}</p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-[#111] border border-[#1A1A1A] p-4">
-                                            <p className="text-[8px] font-black text-gray-400 tracking-tighter">Amount Due</p>
+                                            <p className="text-[8px] font-black text-muted-foreground/70 tracking-tighter">Amount Due</p>
                                             <p className="text-lg font-black text-[#F59E0B] mt-1">{item?.currency} {item?.price.toLocaleString()}</p>
                                         </div>
                                         <div className="bg-[#111] border border-[#1A1A1A] p-4">
-                                            <p className="text-[8px] font-black text-gray-400 tracking-tighter">Tax (16% VAT)</p>
-                                            <p className="text-lg font-black text-[#1A1A1A] mt-1">Incl</p>
+                                            <p className="text-[8px] font-black text-muted-foreground/70 tracking-tighter">Tax (16% VAT)</p>
+                                            <p className="text-lg font-black text-foreground mt-1">Incl</p>
                                         </div>
                                     </div>
 
@@ -192,7 +192,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         <button
                                             onClick={() => setStep('payment')}
                                             disabled={isProcessing}
-                                            className="w-full h-14 bg-[#FFF9F0] text-[#1A1A1A] font-black hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                                            className="w-full h-14 bg-card text-foreground font-black hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                                         >
                                             Select Payment
                                             <ChevronRight size={16} />
@@ -204,7 +204,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                             {step === 'payment' && (
                                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                                     <div className="space-y-4">
-                                        <p className="text-[9px] font-black text-gray-400">Select Method</p>
+                                        <p className="text-[9px] font-black text-muted-foreground/70">Select Method</p>
 
                                         <div className="space-y-2">
                                             {paymentMethods.map((method) => (
@@ -215,18 +215,18 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                                         "w-full flex items-center justify-between p-4 border transition-all text-left",
                                                         selectedMethod === method.id
                                                             ? "bg-[#111] border-[#F59E0B]"
-                                                            : "bg-transparent border-[#1A1A1A] hover:border-[#F4D03F]/20"
+                                                            : "bg-transparent border-[#1A1A1A] hover:border-border/"
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 bg-[#F9F7F2] flex items-center justify-center">
+                                                        <div className="w-10 h-10 bg-muted/20 flex items-center justify-center">
                                                             <Smartphone size={20} className="text-[#1B9157]" />
                                                         </div>
                                                         <div>
-                                                            <p className="text-[12px] font-bold text-[#1A1A1A]">
+                                                            <p className="text-[12px] font-bold text-foreground">
                                                                 {method.phone || 'Enter phone below'}
                                                             </p>
-                                                            <p className="text-[9px] text-gray-400 font-black">{method.provider}</p>
+                                                            <p className="text-[9px] text-muted-foreground/70 font-black">{method.provider}</p>
                                                         </div>
                                                     </div>
                                                     {method.isDefault && <span className="text-[8px] font-black text-[#F59E0B] border border-[#F59E0B]/20 px-1.5 py-0.5">Default</span>}
@@ -236,18 +236,18 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                     </div>
 
                                     <div className="space-y-2">
-                                        <p className="text-[9px] font-black text-gray-400">M-Pesa phone</p>
+                                        <p className="text-[9px] font-black text-muted-foreground/70">M-Pesa phone</p>
                                         <input
                                             value={mpesaPhone}
                                             onChange={(e) => setMpesaPhone(e.target.value)}
                                             placeholder="2547XXXXXXXX"
                                             inputMode="tel"
                                             autoComplete="tel"
-                                            className="w-full h-12 bg-[#111] border border-[#1A1A1A] px-4 text-[12px] font-bold text-[#1A1A1A] placeholder:text-gray-600 outline-none focus:border-[#F59E0B]"
+                                            className="w-full h-12 bg-[#111] border border-[#1A1A1A] px-4 text-[12px] font-bold text-foreground placeholder:text-muted-foreground/90 outline-none focus:border-[#F59E0B]"
                                             aria-label="M-Pesa phone number"
                                             title="M-Pesa phone number"
                                         />
-                                        <p className="text-[10px] text-gray-500 leading-relaxed font-bold">
+                                        <p className="text-[10px] text-muted-foreground leading-relaxed font-bold">
                                             Use international format (e.g. 2547…). We’ll prompt on your phone to confirm the payment.
                                         </p>
                                     </div>
@@ -263,7 +263,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         <button
                                             onClick={handlePayment}
                                             disabled={isProcessing}
-                                            className="w-full h-14 bg-[#F59E0B] text-[#1A1A1A] font-black hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-wait"
+                                            className="w-full h-14 bg-[#F59E0B] text-foreground font-black hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-wait"
                                         >
                                             {isProcessing ? "Handshaking..." : `Pay ${item?.currency} ${item?.price.toLocaleString()}`}
                                             <LockIcon size={16} className={cn("transition-transform", isProcessing ? "animate-pulse" : "group-hover:translate-y-[-1px]")} />
@@ -271,7 +271,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                         <button
                                             onClick={() => setStep('review')}
                                             disabled={isProcessing}
-                                            className="w-full h-11 text-gray-400 font-black hover:text-[#1A1A1A] transition-colors text-[10px] disabled:opacity-0"
+                                            className="w-full h-11 text-muted-foreground/70 font-black hover:text-foreground transition-colors text-[10px] disabled:opacity-0"
                                         >
                                             Back to Review
                                         </button>
@@ -301,16 +301,16 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                                 animate={{ scale: 1 }}
                                                 className="w-20 h-20 bg-[#1B9157] flex items-center justify-center"
                                             >
-                                                <CheckCircle2 size={40} className="text-[#1A1A1A]" />
+                                                <CheckCircle2 size={40} className="text-foreground" />
                                             </motion.div>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
-                                        <h3 className="text-xl font-black text-[#1A1A1A] tracking-tight">
+                                        <h3 className="text-xl font-black text-foreground tracking-tight">
                                             {step === 'processing' ? 'Verifying Fund Access' : 'Paid'}
                                         </h3>
-                                        <p className="text-[11px] text-gray-500 max-w-[240px] leading-relaxed mx-auto">
+                                        <p className="text-[11px] text-muted-foreground max-w-[240px] leading-relaxed mx-auto">
                                             {step === 'processing'
                                                 ? 'Performing multi-hop handshake with regional payment clusters...'
                                                 : `Your ${item?.name} is now active. Receipt has been logged to the ledger.`}
@@ -341,18 +341,18 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                                         toast.error('Could not generate receipt', { id: tid });
                                                     }
                                                 }}
-                                                className="w-full h-14 bg-[#F59E0B] text-[#1A1A1A] font-black hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2"
+                                                className="w-full h-14 bg-[#F59E0B] text-foreground font-black hover:bg-[#FBBF24] transition-colors flex items-center justify-center gap-2"
                                             >
                                                 Download Receipt
                                                 <ChevronRight size={16} />
                                             </button>
                                             <button
                                                 onClick={onClose}
-                                                className="w-full h-12 text-gray-600 font-black hover:text-[#1A1A1A] transition-colors text-[10px]"
+                                                className="w-full h-12 text-muted-foreground/90 font-black hover:text-foreground transition-colors text-[10px]"
                                             >
                                                 Return to Vault
                                             </button>
-                                            <p className="text-[9px] text-gray-400 font-black">
+                                            <p className="text-[9px] text-muted-foreground/70 font-black">
                                                 Ref: {(receiptRef || idempotencyKey || '—').toString().slice(0, 12).toUpperCase()}
                                             </p>
                                         </div>
@@ -365,10 +365,10 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                         {/* Footer Info */}
                         <div className="p-6 bg-[#050505] border-t border-[#1A1A1A] flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <LockIcon size={12} className="text-gray-400" />
-                                <span className="text-[9px] font-black text-gray-400">256-BIT RSA</span>
+                                <LockIcon size={12} className="text-muted-foreground/70" />
+                                <span className="text-[9px] font-black text-muted-foreground/70">256-BIT RSA</span>
                             </div>
-                            <span className="text-[9px] font-black text-gray-400">PCI-DSS v4.0</span>
+                            <span className="text-[9px] font-black text-muted-foreground/70">PCI-DSS v4.0</span>
                         </div>
                     </motion.div>
                 </>
@@ -378,3 +378,4 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
 };
 
 export default CheckoutDrawer;
+

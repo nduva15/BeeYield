@@ -234,27 +234,27 @@ const BeeCalculatorPage: React.FC = () => {
                                 glass.card,
                                 "w-full p-4 flex items-center justify-between gap-4 text-left transition-all duration-300 group hover:shadow-sm overflow-hidden relative",
                                 activeSection === item.id
-                                    ? "bg-white border-[#F4D03F]/30 ring-2 ring-[#F4D03F]/10"
-                                    : "bg-white/40 border-transparent opacity-80"
+                                    ? "bg-white border-border/ ring-2 ring-[#F4D03F]/10"
+                                    : "bg-muted/ border-transparent opacity-80"
                             )}
                         >
                             {activeSection === item.id && (
                                 <motion.div layoutId="active-pill" className="absolute left-0 top-0 bottom-0 w-1 bg-[#F4D03F]" />
                             )}
                             <div className="flex items-center gap-3">
-                                <item.icon className={cn("w-4 h-4", activeSection === item.id ? item.color : "text-gray-400")} />
+                                <item.icon className={cn("w-4 h-4", activeSection === item.id ? item.color : "text-muted-foreground/70")} />
                                 <span className={cn("text-xs font-black tracking-tight", activeSection === item.id ? "text-foreground" : "text-foreground/60")}>
                                     {item.label}
                                 </span>
                             </div>
                             <div className={cn(glass.badge, "border-none px-2 py-0.5",
-                                activeSection === item.id ? `${item.bg}/10 ${item.color}` : "bg-transparent text-gray-400")}>
+                                activeSection === item.id ? `${item.bg}/10 ${item.color}` : "bg-transparent text-muted-foreground/70")}>
                                 {item.count}
                             </div>
                         </button>
                     ))}
 
-                    <div className={cn(glass.card, "mt-6 p-6 space-y-3 bg-[#F4D03F]/5 border-[#F4D03F]/10 relative overflow-hidden group rounded-2xl")}>
+                    <div className={cn(glass.card, "mt-6 p-6 space-y-3 bg-[#F4D03F]/5 border-border/ relative overflow-hidden group rounded-2xl")}>
                         <div className="flex items-center gap-2 relative z-10">
                             <Info className="w-3.5 h-3.5 text-[#F4D03F]" />
                             <h4 className="text-[10px] font-black text-[#F4D03F] tracking-tight">Cloud Sync</h4>
@@ -278,7 +278,7 @@ const BeeCalculatorPage: React.FC = () => {
                             >
                                 <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* Syrup Calculator */}
-                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
+                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/")}>
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
                                                 <h3 className="text-xl font-black tracking-tight leading-none">Sugar <span className="text-blue-500">syrup</span></h3>
@@ -309,14 +309,14 @@ const BeeCalculatorPage: React.FC = () => {
                                                     <button
                                                         onClick={() => setSyrupRatio('1:1')}
                                                         className={cn("h-9 rounded-lg text-sm font-semibold transition-all",
-                                                            syrupRatio === '1:1' ? "bg-white text-foreground shadow-sm ring-1 ring-black/5" : "text-foreground/40 hover:bg-white/50")}
+                                                            syrupRatio === '1:1' ? "bg-white text-foreground shadow-sm ring-1 ring-black/5" : "text-foreground/40 hover:bg-muted/")}
                                                     >
                                                         1:1 (Stim)
                                                     </button>
                                                     <button
                                                         onClick={() => setSyrupRatio('2:1')}
                                                         className={cn("h-9 rounded-lg text-sm font-semibold transition-all",
-                                                            syrupRatio === '2:1' ? "bg-white text-foreground shadow-sm ring-1 ring-black/5" : "text-foreground/40 hover:bg-white/50")}
+                                                            syrupRatio === '2:1' ? "bg-white text-foreground shadow-sm ring-1 ring-black/5" : "text-foreground/40 hover:bg-muted/")}
                                                     >
                                                         2:1 (Store)
                                                     </button>
@@ -338,7 +338,7 @@ const BeeCalculatorPage: React.FC = () => {
                                     </div>
 
                                     {/* Winter Ready Tool */}
-                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10 overflow-hidden relative")}>
+                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/ overflow-hidden relative")}>
                                         <div className="absolute -top-12 -right-12 w-32 h-32 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
                                         <div className="flex justify-between items-start relative z-10">
                                             <div className="space-y-1">
@@ -420,7 +420,7 @@ const BeeCalculatorPage: React.FC = () => {
                             >
                                 <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* Varroa Wash Interpreter */}
-                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10 overflow-hidden relative group")}>
+                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/ overflow-hidden relative group")}>
                                         <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl pointer-events-none transition-colors duration-500"
                                             style={{ backgroundColor: varroaResult.status === 'safe' ? 'rgba(16,185,129,0.05)' : varroaResult.status === 'warning' ? 'rgba(245,158,11,0.05)' : 'rgba(239,68,68,0.05)' }} />
 
@@ -470,7 +470,7 @@ const BeeCalculatorPage: React.FC = () => {
                                     </div>
 
                                     {/* Treatment Window Optimizer */}
-                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10 overflow-hidden relative")}>
+                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/ overflow-hidden relative")}>
                                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-500/5 rounded-full blur-[80px] pointer-events-none" />
 
                                         <div className="flex justify-between items-start relative z-10">
@@ -510,7 +510,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                         { name: 'Apivar', max: 40, risk: temp > 40 },
                                                         { name: 'Oxalic Vapor', max: 25, risk: temp > 25 }
                                                     ].map((p) => (
-                                                        <div key={p.name} className="flex justify-between items-center px-4 py-2 rounded-xl bg-white/40 border border-black/5 transition-colors group">
+                                                        <div key={p.name} className="flex justify-between items-center px-4 py-2 rounded-xl bg-muted/ border border-black/5 transition-colors group">
                                                             <span className="text-[10px] font-black tracking-tight text-foreground/60 group-hover:text-foreground">{p.name}</span>
                                                             <div className={cn(
                                                                 glass.badge, "border-none px-2 py-0.5 text-[8px] font-black shadow-none",
@@ -538,7 +538,7 @@ const BeeCalculatorPage: React.FC = () => {
                             >
                                 <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* BOM Calculator */}
-                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
+                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/")}>
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
                                                 <h3 className="text-xl font-black tracking-tight leading-none">Equipment <span className="text-[#F4D03F]">Bom</span></h3>
@@ -580,7 +580,7 @@ const BeeCalculatorPage: React.FC = () => {
                                     </div>
 
                                     {/* Harvest Package Estimator */}
-                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
+                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/")}>
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
                                                 <h3 className="text-xl font-black tracking-tight leading-none">Supply <span className="text-emerald-500">Estimator</span></h3>
@@ -624,7 +624,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
-                                                <div className="p-4 rounded-2xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 text-center flex flex-col items-center justify-center h-24 relative overflow-hidden group">
+                                                <div className="p-4 rounded-2xl bg-[#F4D03F]/10 border border-border/ text-center flex flex-col items-center justify-center h-24 relative overflow-hidden group">
                                                     <div className="absolute inset-0 bg-gradient-to-tr from-[#F4D03F]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                                     <p className="text-3xl font-black tabular-nums transition-transform group-hover:scale-105 duration-300">{harvestResult.jars}</p>
                                                     <p className="text-[8px] font-black opacity-40 mt-1">Jars Needed</p>
@@ -646,14 +646,14 @@ const BeeCalculatorPage: React.FC = () => {
                                 </section>
 
                                 {/* Queen Replacement Tool */}
-                                <section className={cn(glass.card, "p-6 space-y-6 shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10 overflow-hidden relative group")}>
+                                <section className={cn(glass.card, "p-6 space-y-6 shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/ overflow-hidden relative group")}>
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none -mr-12 -mt-12 transition-transform group-hover:scale-110 duration-700" />
                                     <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 relative z-10">
                                         <div className="space-y-1">
                                             <h3 className="text-xl font-black tracking-tight leading-none">Queen <span className="text-[#F4D03F]">Logistics</span></h3>
                                             <p className="text-[10px] font-black opacity-40 leading-none">Nuc & Queen Procurement logic</p>
                                         </div>
-                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/5 flex items-center justify-center border border-[#F4D03F]/10">
+                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/5 flex items-center justify-center border border-border/">
                                             <Award className="w-5 h-5 text-[#F4D03F]" />
                                         </div>
                                     </div>
@@ -694,7 +694,7 @@ const BeeCalculatorPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="lg:col-span-8 flex flex-col sm:flex-row gap-4 h-full">
-                                            <div className="flex-1 p-6 rounded-2xl bg-white/40 border border-black/5 flex flex-col items-center justify-center text-center shadow-inner relative overflow-hidden group/result">
+                                            <div className="flex-1 p-6 rounded-2xl bg-muted/ border border-black/5 flex flex-col items-center justify-center text-center shadow-inner relative overflow-hidden group/result">
                                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover/result:scale-150 transition-transform duration-700" />
                                                 <p className="text-6xl font-black tabular-nums tracking-tighter text-foreground relative z-10 leading-none">{queensNeeded}</p>
                                                 <p className="text-[8px] font-black opacity-30 mt-3 relative z-10">Mated Queens Required</p>
@@ -721,7 +721,7 @@ const BeeCalculatorPage: React.FC = () => {
                             >
                                 <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                     {/* Margin Calculator */}
-                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10")}>
+                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/")}>
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
                                                 <h3 className="text-xl font-black tracking-tight leading-none">Cost <span className="text-indigo-500">Baseline</span></h3>
@@ -791,19 +791,19 @@ const BeeCalculatorPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="p-6 rounded-2xl bg-indigo-500 border border-indigo-400 text-white flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm group relative overflow-hidden">
-                                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                                            <div className="absolute inset-0 bg-muted/ opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                             <div>
                                                 <p className="text-[8px] font-black opacity-60 mb-1">Break-Even Point</p>
                                                 <p className="text-4xl font-black tabular-nums leading-none"><span className="text-xl opacity-60 mr-1">$</span>{marginResult.costPerKg} <span className="text-[10px] opacity-60 ml-1">/ KG</span></p>
                                             </div>
-                                            <div className={cn(glass.badge, "bg-white/20 text-white border-none px-3 py-1 text-[8px] font-black backdrop-blur-md")}>
+                                            <div className={cn(glass.badge, "bg-muted/ text-white border-none px-3 py-1 text-[8px] font-black backdrop-blur-md")}>
                                                 TARGET: 40%
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Hiking ROI */}
-                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-white/50 backdrop-blur-xl rounded-3xl border-[#F4D03F]/10 overflow-hidden relative")}>
+                                    <div className={cn(glass.card, "p-6 space-y-6 flex flex-col justify-between shadow-sm bg-muted/ backdrop-blur-xl rounded-3xl border-border/ overflow-hidden relative")}>
                                         <div className={cn("absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl pointer-events-none transition-colors duration-700",
                                             hikingROI.isWorthIt ? "bg-emerald-500/10" : "bg-red-500/10")} />
                                         <div className="flex justify-between items-start relative z-10">
@@ -927,7 +927,7 @@ const BeeCalculatorPage: React.FC = () => {
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: idx * 0.05 }}
                                             key={log.id}
-                                            className={cn(glass.card, "p-4 relative group overflow-hidden border-black/5 bg-white/50 backdrop-blur-xl rounded-2xl")}
+                                            className={cn(glass.card, "p-4 relative group overflow-hidden border-black/5 bg-muted/ backdrop-blur-xl rounded-2xl")}
                                         >
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none" />
                                             <div className="flex justify-between items-start mb-4">
@@ -950,7 +950,7 @@ const BeeCalculatorPage: React.FC = () => {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/10">
+                                                <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-border/">
                                                     <p className="text-[8px] font-black text-[#F4D03F] mb-2">Results</p>
                                                     <div className="space-y-1">
                                                         {Object.values(log.results || {}).slice(0, 2).map((v: any, i) => (
@@ -975,3 +975,4 @@ const BeeCalculatorPage: React.FC = () => {
 };
 
 export default BeeCalculatorPage;
+

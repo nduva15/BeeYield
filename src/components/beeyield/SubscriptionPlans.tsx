@@ -64,7 +64,7 @@ const plans: Plan[] = [
             'Dedicated account manager',
             'White-label reporting'
         ],
-        color: 'border-[#F4D03F]/30 text-[#F4D03F] bg-[#F4D03F]/10 shadow-lg shadow-honey/10',
+        color: 'border-border/ text-[#F4D03F] bg-[#F4D03F]/10 shadow-lg shadow-honey/10',
         icon: Crown
     }
 ];
@@ -112,7 +112,7 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
                             isCurrent ? "scale-[1.02] border-[#F4D03F] shadow-2xl shadow-honey/20 ring-1 ring-[#F4D03F]/50" : "hover:border-foreground/20 hover:shadow-xl"
                         )}
                     >
-                        <div className="p-8 border-b border-[#F4D03F]/20 bg-gray-400">
+                        <div className="p-8 border-b border-border/ bg-gray-400">
                             <div className="flex justify-between items-start mb-6">
                                 <div className={cn("p-4 rounded-2xl flex items-center justify-center border", plan.color)}>
                                     <Icon className="w-8 h-8" />
@@ -165,3 +165,4 @@ const SubscriptionPlans: React.FC<{ currentTier: string; onUpgrade?: (tier: stri
 };
 
 export default SubscriptionPlans;
+

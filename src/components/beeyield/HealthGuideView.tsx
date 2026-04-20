@@ -42,24 +42,24 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                 <div className="lg:col-span-4 space-y-6">
                     <div className={cn(glass.section, "p-6 space-y-6")}>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider pl-1">Pathology Database</label>
+                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">Pathology Database</label>
                             <Select onValueChange={(val) => { setActiveTab('diseases'); setSelectedItem(diseaseData.find(d => d.id === val)); }}>
                                 <SelectTrigger className={cn(glass.input, "h-12")}>
                                     <SelectValue placeholder="Select Disease..." />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-white/20 bg-white/90 backdrop-blur-xl">
+                                <SelectContent className="rounded-2xl border-border/ bg-muted/ backdrop-blur-xl">
                                     {diseaseData.map(d => <SelectItem key={d.id} value={d.id} className="text-xs font-bold">{d.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider pl-1">Species Reference</label>
+                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">Species Reference</label>
                             <Select onValueChange={(val) => { setActiveTab('species'); setSelectedItem(speciesData.find(s => s.id === val)); }}>
                                 <SelectTrigger className={cn(glass.input, "h-12")}>
                                     <SelectValue placeholder="Select Bee Type..." />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-white/20 bg-white/90 backdrop-blur-xl">
+                                <SelectContent className="rounded-2xl border-border/ bg-muted/ backdrop-blur-xl">
                                     {speciesData.map(s => <SelectItem key={s.id} value={s.id} className="text-xs font-bold">{s.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
@@ -69,7 +69,7 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                     {loading && (
                         <div className={cn(glass.card, "p-6 flex items-center gap-4")}>
                             <Activity className="w-5 h-5 animate-spin text-[#F4D03F]" />
-                            <span className="text-[11px] font-bold text-gray-500">Syncing database...</span>
+                            <span className="text-[11px] font-bold text-muted-foreground">Syncing database...</span>
                         </div>
                     )}
                 </div>
@@ -89,17 +89,17 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-3xl -mr-32 -mt-32" />
                                     
                                     <div className="flex items-center gap-6 relative z-10">
-                                        <div className="w-16 h-16 rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/20 flex items-center justify-center text-[#F4D03F]">
+                                        <div className="w-16 h-16 rounded-2xl bg-card border border-border/ flex items-center justify-center text-[#F4D03F]">
                                             {activeTab === 'diseases' ? <Bug className="w-8 h-8" /> : <Dna className="w-8 h-8" />}
                                         </div>
                                         <div>
-                                            <h2 className="text-3xl font-black text-[#1A1A1A] tracking-tighter">{selectedItem.name}</h2>
+                                            <h2 className="text-3xl font-black text-foreground tracking-tighter">{selectedItem.name}</h2>
                                             <div className="flex items-center gap-3 flex-wrap">
                                                 <p className="text-sm font-bold text-[#1B9157]">
                                                     {activeTab === 'diseases' ? selectedItem.type : selectedItem.scientificName}
                                                 </p>
                                                 {activeTab === 'diseases' && selectedItem.riskLevel && (
-                                                    <span className="px-2 py-0.5 rounded-full bg-[#FFF9F0] text-[10px] font-black text-[#1A1A1A]/70 uppercase tracking-wider border border-[#F4D03F]/20">
+                                                    <span className="px-2 py-0.5 rounded-full bg-card text-[10px] font-black text-foreground/70 uppercase tracking-wider border border-border/">
                                                         {selectedItem.riskLevel}
                                                     </span>
                                                 )}
@@ -113,8 +113,8 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                     </div>
 
                                     {selectedItemImage && (
-                                        <div className="pt-6 border-t border-[#F4D03F]/10">
-                                            <div className="relative overflow-hidden rounded-[2rem] border border-[#F4D03F]/15 bg-[#FFF9F0]">
+                                        <div className="pt-6 border-t border-border/">
+                                            <div className="relative overflow-hidden rounded-[2rem] border border-border/ bg-card">
                                                 <img
                                                     src={selectedItemImage}
                                                     alt={selectedItem.commonName || selectedItem.name}
@@ -144,7 +144,7 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                                             {selectedItem.commonName || selectedItem.name}
                                                         </p>
                                                     </div>
-                                                    <span className="rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#1A1A1A]">
+                                                    <span className="rounded-full bg-muted/ px-3 py-1 text-[10px] font-black uppercase tracking-wider text-foreground">
                                                         {activeTab === 'species' ? 'Exact photo' : 'Reference image'}
                                                     </span>
                                                 </div>
@@ -154,23 +154,23 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
 
                                     <div className={cn(
                                         "grid grid-cols-1 md:grid-cols-2 gap-8",
-                                        selectedItemImage ? "pt-2" : "pt-6 border-t border-[#F4D03F]/10",
+                                        selectedItemImage ? "pt-2" : "pt-6 border-t border-border/",
                                     )}>
                                         <div className="space-y-4">
-                                            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                            <h4 className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-widest flex items-center gap-2">
                                                 <div className="w-1 h-3 bg-[#F4D03F]" />
                                                 {activeTab === 'diseases' ? 'Causes & Signs' : 'Species Profile'}
                                             </h4>
-                                            <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
+                                            <p className="text-sm font-semibold text-foreground/80 leading-relaxed">
                                                 {activeTab === 'diseases' ? selectedItem.causes : (selectedItem.suitability || selectedItem.description || 'No species profile is stored for this record yet.')}
                                             </p>
                                         </div>
                                         <div className="space-y-4">
-                                            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                            <h4 className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-widest flex items-center gap-2">
                                                 <div className="w-1 h-3 bg-[#1B9157]" />
                                                 {activeTab === 'diseases' ? 'Treatment & Management' : 'Health & Management'}
                                             </h4>
-                                            <p className="text-sm font-semibold text-[#1A1A1A]/80 leading-relaxed">
+                                            <p className="text-sm font-semibold text-foreground/80 leading-relaxed">
                                                 {activeTab === 'diseases' ? selectedItem.treatment : (selectedItem.healthProfile || selectedItem.notes || 'Health management notes are not available for this species yet.')}
                                             </p>
                                         </div>
@@ -179,22 +179,22 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                                         {activeTab === 'diseases' ? (
                                             <>
-                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
-                                                    <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                                <div className="rounded-2xl bg-card border border-border/ p-4 space-y-3">
+                                                    <div className="flex items-center gap-2 text-foreground">
                                                         <Stethoscope className="w-4 h-4 text-[#F4D03F]" />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Detection</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Detection</span>
                                                     </div>
-                                                    <p className="text-xs font-bold text-[#1A1A1A]/75 leading-relaxed">
+                                                    <p className="text-xs font-bold text-foreground/75 leading-relaxed">
                                                         {selectedItem.detection || (selectedItem.symptoms || []).join(', ') || 'Detection notes are not stored for this record yet.'}
                                                     </p>
-                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/60 leading-relaxed">{selectedItem.cureStatus || selectedItem.prevention}</p>
+                                                    <p className="text-[11px] font-semibold text-foreground/60 leading-relaxed">{selectedItem.cureStatus || selectedItem.prevention}</p>
                                                 </div>
-                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
-                                                    <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                                <div className="rounded-2xl bg-card border border-border/ p-4 space-y-3">
+                                                    <div className="flex items-center gap-2 text-foreground">
                                                         <Bug className="w-4 h-4 text-[#F4D03F]" />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hosts & Spread</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Hosts & Spread</span>
                                                     </div>
-                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/65 leading-relaxed">{selectedItem.transmission || selectedItem.prevention || 'Transmission notes are not stored for this record yet.'}</p>
+                                                    <p className="text-[11px] font-semibold text-foreground/65 leading-relaxed">{selectedItem.transmission || selectedItem.prevention || 'Transmission notes are not stored for this record yet.'}</p>
                                                     <div className="flex flex-wrap gap-1">
                                                         {(selectedItem.hostSpecies || []).map((host: string) => (
                                                             <span key={host} className="px-2 py-1 rounded-lg bg-amber-50 text-[10px] font-bold text-amber-700">
@@ -203,10 +203,10 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
-                                                    <div className="flex items-center gap-2 text-[#1A1A1A]">
+                                                <div className="rounded-2xl bg-card border border-border/ p-4 space-y-3">
+                                                    <div className="flex items-center gap-2 text-foreground">
                                                         <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Field Actions</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Field Actions</span>
                                                     </div>
                                                     <div className="flex flex-wrap gap-1">
                                                         {(selectedItem.responseSteps || selectedItem.symptoms || []).map((step: string) => (
@@ -219,13 +219,13 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                             </>
                                         ) : (
                                             <>
-                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Origin</span>
-                                                    <p className="text-xs font-bold text-[#1A1A1A]/75">{selectedItem.location || 'Unknown'}</p>
-                                                    <p className="text-[11px] font-semibold text-[#1A1A1A]/60 leading-relaxed">{selectedItem.idealUse || selectedItem.suitability}</p>
+                                                <div className="rounded-2xl bg-card border border-border/ p-4 space-y-3">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Origin</span>
+                                                    <p className="text-xs font-bold text-foreground/75">{selectedItem.location || 'Unknown'}</p>
+                                                    <p className="text-[11px] font-semibold text-foreground/60 leading-relaxed">{selectedItem.idealUse || selectedItem.suitability}</p>
                                                 </div>
-                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Common Pressures</span>
+                                                <div className="rounded-2xl bg-card border border-border/ p-4 space-y-3">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Common Pressures</span>
                                                     <div className="flex flex-wrap gap-1">
                                                         {(selectedItem.commonDiseases || []).map((risk: string) => (
                                                             <span key={risk} className="px-2 py-1 rounded-lg bg-rose-50 text-[10px] font-bold text-rose-700">
@@ -234,8 +234,8 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div className="rounded-2xl bg-[#FFF9F0] border border-[#F4D03F]/10 p-4 space-y-3">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Traits & Watchouts</span>
+                                                <div className="rounded-2xl bg-card border border-border/ p-4 space-y-3">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Traits & Watchouts</span>
                                                     <div className="flex flex-wrap gap-1">
                                                         {(selectedItem.traits || []).map((trait: string, i: number) => (
                                                             <span key={`${trait}-${i}`} className="px-2 py-1 rounded-lg bg-emerald-50 text-[10px] font-bold text-emerald-700">
@@ -269,8 +269,8 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                                 <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-6 border border-dashed border-gray-300">
                                     <Microscope className="w-10 h-10 text-gray-300" />
                                 </div>
-                                <h3 className="text-xl font-black text-[#1A1A1A] tracking-tight">Database Awaiting</h3>
-                                <p className="text-[11px] font-bold text-gray-500 mt-2">Select an entry from the database to view detailed health protocols.</p>
+                                <h3 className="text-xl font-black text-foreground tracking-tight">Database Awaiting</h3>
+                                <p className="text-[11px] font-bold text-muted-foreground mt-2">Select an entry from the database to view detailed health protocols.</p>
                             </div>
                         )}
                     </AnimatePresence>
@@ -281,3 +281,4 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
 };
 
 export default HealthGuideView;
+

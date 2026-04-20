@@ -157,11 +157,11 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                 subtitle="Operational telemetry for this location."
                 actions={
                     <div className="flex items-center gap-2 relative z-10">
-                        <div className="flex bg-[#F9F7F2] p-1 rounded-lg border border-[#F4D03F]/10 gap-1">
+                        <div className="flex bg-muted/20 p-1 rounded-lg border border-border/ gap-1">
                             <button
                                 onClick={() => setActiveView('dashboard')}
                                 className={cn('h-7 px-3 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5',
-                                    activeView === 'dashboard' ? 'bg-[#F4D03F] text-[#1A1A1A] shadow-sm' : 'text-gray-400 hover:text-[#F4D03F]'
+                                    activeView === 'dashboard' ? 'bg-[#F4D03F] text-foreground shadow-sm' : 'text-muted-foreground/70 hover:text-[#F4D03F]'
                                 )}
                             >
                                 <Target className="w-3.5 h-3.5" />
@@ -170,7 +170,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                             <button
                                 onClick={() => setActiveView('details')}
                                 className={cn('h-7 px-3 rounded-md text-[10px] font-bold transition-all flex items-center gap-1.5',
-                                    activeView === 'details' ? 'bg-[#F4D03F] text-[#1A1A1A] shadow-sm' : 'text-gray-400 hover:text-[#F4D03F]'
+                                    activeView === 'details' ? 'bg-[#F4D03F] text-foreground shadow-sm' : 'text-muted-foreground/70 hover:text-[#F4D03F]'
                                 )}
                             >
                                 <Activity className="w-3.5 h-3.5" />
@@ -190,15 +190,15 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {[
-                            { label: 'TOTAL UNITS', value: stats.total, icon: Hexagon, color: 'text-[#1A1A1A]' },
+                            { label: 'TOTAL UNITS', value: stats.total, icon: Hexagon, color: 'text-foreground' },
                             { label: 'Healthy', value: stats.healthy, icon: ShieldCheck, color: 'text-[#1B9157]' },
                             { label: 'Alerts', value: stats.warnings, icon: Activity, color: 'text-[#FBBE24]' },
                             { label: 'Critical', value: stats.critical, icon: Box, color: 'text-red-500' },
-                            { label: 'AREA (AC)', value: apiary.size_acres || 0, icon: Sprout, color: 'text-[#1A1A1A]' }
+                            { label: 'AREA (AC)', value: apiary.size_acres || 0, icon: Sprout, color: 'text-foreground' }
                         ].map((s, i) => (
-                            <div key={i} className="bg-white/40 border border-[#F4D03F]/10 p-3 rounded-xl flex flex-col gap-1 relative overflow-hidden group hover:border-[#F4D03F]/30 transition-all backdrop-blur-sm shadow-sm">
+                            <div key={i} className="bg-muted/ border border-border/ p-3 rounded-xl flex flex-col gap-1 relative overflow-hidden group hover:border-border/ transition-all backdrop-blur-sm shadow-sm">
                                 <div className="flex items-center justify-between relative z-10">
-                                    <span className="text-[8px] font-black text-gray-400">{s.label}</span>
+                                    <span className="text-[8px] font-black text-muted-foreground/70">{s.label}</span>
                                     <s.icon className={cn("w-3.5 h-3.5", s.color)} />
                                 </div>
                                 <span className={cn("text-xl font-black tracking-tight tabular-nums relative z-10", s.color)}>{s.value}</span>
@@ -206,10 +206,10 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                         ))}
                     </div>
 
-                    <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+                    <div className={cn(glass.card, "p-4 bg-muted/ border-border/ backdrop-blur-md")}>
                         <div className="space-y-1">
-                            <h3 className="text-[10px] font-black text-[#1A1A1A]">Analytics</h3>
-                            <p className="text-[9px] font-bold text-gray-400">
+                            <h3 className="text-[10px] font-black text-foreground">Analytics</h3>
+                            <p className="text-[9px] font-bold text-muted-foreground/70">
                                 No synthetic charts. Add real telemetry/harvest data to populate analytics.
                             </p>
                         </div>
@@ -222,16 +222,16 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                 initial={{ opacity: 0, x: -50 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 1 }}
-                                className={cn(glass.card, "bg-white/40 border-[#F4D03F]/10 backdrop-blur-md min-h-[500px] flex flex-col p-0 overflow-hidden")}
+                                className={cn(glass.card, "bg-muted/ border-border/ backdrop-blur-md min-h-[500px] flex flex-col p-0 overflow-hidden")}
                             >
-                                <div className="flex items-center justify-between p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02]">
+                                <div className="flex items-center justify-between p-4 border-b border-border/ bg-[#F4D03F][0.02]">
                                     <div className="space-y-0.5">
-                                        <h3 className="text-[10px] font-black text-[#1A1A1A]">Asset Matrix</h3>
-                                        <p className="text-[8px] font-bold text-gray-400">High-Density Grid</p>
+                                        <h3 className="text-[10px] font-black text-foreground">Asset Matrix</h3>
+                                        <p className="text-[8px] font-bold text-muted-foreground/70">High-Density Grid</p>
                                     </div>
-                                    <div className="flex bg-[#F4D03F]/5 p-1 rounded-lg gap-1 border border-[#F4D03F]/10 shadow-inner">
+                                    <div className="flex bg-[#F4D03F]/5 p-1 rounded-lg gap-1 border border-border/ shadow-inner">
                                         <button
-                                            className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'grid' ? "bg-white shadow-md text-[#F4D03F] border border-[#F4D03F]/10" : "text-gray-300 hover:text-[#1A1A1A]")}
+                                            className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'grid' ? "bg-white shadow-md text-[#F4D03F] border border-border/" : "text-gray-300 hover:text-foreground")}
                                             onClick={() => setViewMode('grid')}
                                             aria-label="Grid view"
                                             title="Grid view"
@@ -239,7 +239,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                             <LayoutGrid className="w-3.5 h-3.5" />
                                         </button>
                                         <button
-                                            className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'list' ? "bg-white shadow-md text-[#F4D03F] border border-[#F4D03F]/10" : "text-gray-300 hover:text-[#1A1A1A]")}
+                                            className={cn("h-7 w-7 rounded-md transition-all flex items-center justify-center", viewMode === 'list' ? "bg-white shadow-md text-[#F4D03F] border border-border/" : "text-gray-300 hover:text-foreground")}
                                             onClick={() => setViewMode('list')}
                                             aria-label="List view"
                                             title="List view"
@@ -260,7 +260,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                                     transition={{ delay: i * 0.02, duration: 0.5 }}
                                                     whileHover={{ scale: 1.1, zIndex: 50, boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}
                                                     className={cn(
-                                                        "aspect-square rounded-lg flex items-center justify-center text-sm font-bold text-[#1A1A1A] cursor-pointer shadow-sm relative overflow-hidden border border-[#F4D03F]/40",
+                                                        "aspect-square rounded-lg flex items-center justify-center text-sm font-bold text-foreground cursor-pointer shadow-sm relative overflow-hidden border border-border/",
                                                         getStatusColor(hive.status)
                                                     )}
                                                     onClick={() => handleEditHive(hive)}
@@ -272,7 +272,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                             {hives.length === 0 && (
                                                 <div className="col-span-full h-96 flex flex-col items-center justify-center text-center opacity-20">
                                                     <Box className="w-24 h-24 mb-6 animate-pulse" />
-                                                    <p className="text-lg font-semibold text-gray-600">No hives yet</p>
+                                                    <p className="text-lg font-semibold text-muted-foreground/90">No hives yet</p>
                                                 </div>
                                             )}
                                         </div>
@@ -285,21 +285,21 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                                     animate={{ opacity: 1, x: 0 }}
                                                     transition={{ delay: i * 0.05, duration: 0.8 }}
                                                     whileHover={{ x: 5, scale: 1.01 }}
-                                                    className="flex items-center justify-between p-3 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10 hover:border-[#F4D03F]/40 hover:bg-[#F4D03F]/10 transition-all cursor-pointer group shadow-sm"
+                                                    className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border/ hover:border-border/ hover:bg-[#F4D03F]/10 transition-all cursor-pointer group shadow-sm"
                                                     onClick={() => handleEditHive(hive)}
                                                 >
                                                     <div className="flex items-center gap-3">
-                                                        <div className={cn("w-2 h-2 rounded-full border border-[#F4D03F]/20 shadow-sm animate-pulse", getStatusColor(hive.status))} />
+                                                        <div className={cn("w-2 h-2 rounded-full border border-border/ shadow-sm animate-pulse", getStatusColor(hive.status))} />
                                                         <div className="flex flex-col">
-                                                            <span className="text-sm font-bold text-[#1A1A1A] tracking-tight group-hover:text-[#F4D03F] transition-colors">#{hive.hive_code}</span>
-                                                            <span className="text-xs text-gray-500">Hive</span>
+                                                            <span className="text-sm font-bold text-foreground tracking-tight group-hover:text-[#F4D03F] transition-colors">#{hive.hive_code}</span>
+                                                            <span className="text-xs text-muted-foreground">Hive</span>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-4">
                                                         <div className="flex flex-col items-end">
                                                             <div className="flex items-center gap-2">
                                                                 <Thermometer className="w-3.5 h-3.5 text-red-500 opacity-40 group-hover:opacity-100 transition-all" />
-                                                                <span className="text-sm font-bold tabular-nums text-[#1A1A1A]/70 italic group-hover:text-[#1A1A1A]">
+                                                                <span className="text-sm font-bold tabular-nums text-foreground/70 italic group-hover:text-foreground">
                                                                     {((hive as any).latest_temp)?.toFixed(1) || '--'}°C
                                                                 </span>
                                                             </div>
@@ -324,11 +324,11 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                             >
                                 <div className={cn(glass.sectionHeader, "flex items-center justify-between")}>
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-border/">
                                             <Database className="w-4 h-4 text-[#F4D03F]" />
                                         </div>
                                         <div className="space-y-0.5">
-                                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Devices</h3>
+                                            <h3 className="text-sm font-semibold text-foreground">Devices</h3>
                                             <p className={cn(glass.microLabel, "opacity-40")}>Device management</p>
                                         </div>
                                     </div>
@@ -494,34 +494,34 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
                     </button>
                 }
             />
-            <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+            <div className={cn(glass.card, "p-4 bg-muted/ border-border/ backdrop-blur-md")}>
                 <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black text-gray-400">Total Apiaries</span>
-                    <div className="h-6 w-6 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
+                    <span className="text-[9px] font-black text-muted-foreground/70">Total Apiaries</span>
+                    <div className="h-6 w-6 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-border/ shadow-sm">
                         <MapPin className="w-3.5 h-3.5 text-[#F4D03F]" />
                     </div>
                 </div>
-                <div className="text-xl font-black tracking-tight text-[#1A1A1A] tabular-nums mt-2">{apiaries.length}</div>
-                <p className="text-[8px] font-bold text-gray-400 mt-1">Records</p>
+                <div className="text-xl font-black tracking-tight text-foreground tabular-nums mt-2">{apiaries.length}</div>
+                <p className="text-[8px] font-bold text-muted-foreground/70 mt-1">Records</p>
             </div>
 
             {apiaries.length > 0 && (
                 <>
-                    <div className={cn(glass.card, "p-4 bg-white/40 border-[#F4D03F]/10 backdrop-blur-md")}>
+                    <div className={cn(glass.card, "p-4 bg-muted/ border-border/ backdrop-blur-md")}>
                         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
                             <div className="space-y-1">
-                                <span className="text-[9px] font-black uppercase tracking-[0.18em] text-gray-400">Weather focus</span>
-                                <h3 className="text-lg font-black tracking-tight text-[#1A1A1A]">
+                                <span className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Weather focus</span>
+                                <h3 className="text-lg font-black tracking-tight text-foreground">
                                     {weatherApiary?.name || 'Select an apiary'}
                                 </h3>
-                                <p className="text-xs font-semibold text-gray-500">
+                                <p className="text-xs font-semibold text-muted-foreground">
                                     Weather cards follow the selected apiary across your dashboard views.
                                 </p>
                             </div>
                             <div className="w-full lg:w-[320px]">
                                 <Label className={cn(glass.microLabel, "mb-2 block")}>Apiary weather source</Label>
                                 <Select value={weatherApiaryId} onValueChange={setSelectedApiaryId}>
-                                    <SelectTrigger className={cn(glass.select, "h-11 border-white/40 bg-white/60")}>
+                                    <SelectTrigger className={cn(glass.select, "h-11 border-border/ bg-muted/")}>
                                         <SelectValue placeholder="Choose an apiary" />
                                     </SelectTrigger>
                                     <SelectContent className={glass.selectContent}>
@@ -556,10 +556,10 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
                     animate={{ scale: 1, opacity: 1 }}
                     className={glass.emptyState}
                 >
-                    <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center mb-6 shadow-sm">
+                    <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/5 border border-border/ flex items-center justify-center mb-6 shadow-sm">
                         <SearchX className="w-6 h-6 text-[#F4D03F] opacity-40" />
                     </div>
-                    <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight opacity-40">No Locations Found</h3>
+                    <h3 className="text-lg font-bold text-foreground tracking-tight opacity-40">No Locations Found</h3>
                     <p className="text-[10px] font-bold opacity-30 italic max-w-xs mx-auto text-center mt-2">Add your first location to start tracking.</p>
                     <button onClick={() => setIsAddingPlace(true)} className={cn(glass.btnPrimary, "mt-6 px-6")}>
                         <Plus className="w-4 h-4 mr-2" /> Add location
@@ -579,7 +579,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
                                 <div
                                     className={cn(
                                         glass.card,
-                                        "p-0 cursor-pointer shadow-sm hover:border-[#F4D03F]/40 transition-all duration-300 relative flex flex-col h-full group bg-white/70 backdrop-blur-md rounded-xl overflow-hidden"
+                                        "p-0 cursor-pointer shadow-sm hover:border-border/ transition-all duration-300 relative flex flex-col h-full group bg-muted/ backdrop-blur-md rounded-xl overflow-hidden"
                                     )}
                                     onClick={() => {
                                         setSelectedApiaryId(apiary.id);
@@ -588,13 +588,13 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
                                 >
                                     <div className="p-4 flex flex-col h-full relative z-10">
                                         <div className="flex justify-between items-start mb-4">
-                                            <div className="px-2.5 py-1 bg-[#1A1A1A]/5 rounded-lg border border-[#F4D03F]/10 text-xs font-semibold text-gray-500 group-hover:bg-[#F4D03F] group-hover:text-[#1A1A1A] group-hover:border-[#F4D03F] transition-all">
+                                            <div className="px-2.5 py-1 bg-[#1A1A1A]/5 rounded-lg border border-border/ text-xs font-semibold text-muted-foreground group-hover:bg-[#F4D03F] group-hover:text-foreground group-hover:border-[#F4D03F] transition-all">
                                                 {apiary.type || 'Permanent'}
                                             </div>
                                             <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); handleEdit(apiary); }}
-                                                    className="w-7 h-7 rounded-lg bg-white/50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#1A1A1A] hover:border-gray-200 transition-all"
+                                                    className="w-7 h-7 rounded-lg bg-muted/ border border-gray-100 flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:border-gray-200 transition-all"
                                                     aria-label="Edit location"
                                                     title="Edit location"
                                                 >
@@ -612,31 +612,31 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
                                         </div>
 
                                         <div className="space-y-1 mb-6">
-                                            <h3 className="text-base font-black text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors tracking-tight truncate">{apiary.name}</h3>
-                                            <div className="flex items-center gap-1.5 text-gray-500">
-                                                <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                                            <h3 className="text-base font-black text-foreground group-hover:text-[#F4D03F] transition-colors tracking-tight truncate">{apiary.name}</h3>
+                                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                                                <MapPin className="w-3.5 h-3.5 text-muted-foreground/70" />
                                                 <span className="text-xs font-bold truncate">{apiary.location_name || 'Location not set'}</span>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-3 mt-auto">
                                             <div className={cn("px-3 py-2.5 rounded-xl border space-y-1", (apiary.hive_count || 0) > 0 ? "bg-[#1B9157]/5 border-[#1B9157]/10" : "bg-gray-50/50 border-gray-100")}>
-                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Total Hives</p>
+                                                <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider">Total Hives</p>
                                                 <div className="flex items-baseline gap-1.5">
                                                     <span className={cn("text-lg font-black tracking-tight tabular-nums", (apiary.hive_count || 0) > 0 ? "text-[#1B9157]" : "text-gray-300")}>{apiary.hive_count || 0}</span>
-                                                    <span className="text-[10px] font-bold text-gray-400">Hub</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground/70">Hub</span>
                                                 </div>
                                             </div>
                                             <div className="px-3 py-2.5 rounded-xl bg-gray-50/50 border border-gray-100 space-y-1">
-                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Acres</p>
+                                                <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider">Acres</p>
                                                 <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-lg font-black tracking-tight text-[#1A1A1A] tabular-nums">{apiary.size_acres || 0}</span>
-                                                    <span className="text-[10px] font-bold text-gray-400">Ac</span>
+                                                    <span className="text-lg font-black tracking-tight text-foreground tabular-nums">{apiary.size_acres || 0}</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground/70">Ac</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <button className="mt-5 w-full h-10 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 text-xs font-black text-[#1A1A1A] hover:bg-[#F4D03F] hover:text-white hover:border-[#F4D03F] transition-all duration-300 flex items-center justify-center gap-2 shadow-sm group-hover:shadow-md">
+                                        <button className="mt-5 w-full h-10 rounded-xl bg-[#F4D03F]/5 border border-border/ text-xs font-black text-foreground hover:bg-[#F4D03F] hover:text-white hover:border-[#F4D03F] transition-all duration-300 flex items-center justify-center gap-2 shadow-sm group-hover:shadow-md">
                                             View Details
                                             <ArrowRight className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity group-hover:translate-x-1 duration-300" />
                                         </button>
@@ -692,3 +692,4 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
 };
 
 export default MyPlacesView;
+

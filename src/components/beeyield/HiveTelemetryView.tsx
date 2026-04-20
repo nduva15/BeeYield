@@ -36,8 +36,8 @@ interface WeightData {
   timestamp: number;
 }
 
-const pill = 'inline-flex items-center gap-2 rounded-2xl border bg-white/75 px-4 py-2 shadow-sm';
-const tile = 'rounded-[28px] border border-white/70 bg-white/75 p-5 shadow-sm';
+const pill = 'inline-flex items-center gap-2 rounded-2xl border bg-muted/ px-4 py-2 shadow-sm';
+const tile = 'rounded-[28px] border border-border/ bg-muted/ p-5 shadow-sm';
 
 const HiveTelemetryView: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
@@ -295,17 +295,17 @@ const HiveTelemetryView: React.FC = () => {
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="xl:col-span-8">
-            <div className={cn(glass.section, 'rounded-[36px] border-white/60 bg-gradient-to-br from-[#FFF9F0] via-white/80 to-[#F9F7F2] p-7 shadow-[0_30px_80px_-40px_rgba(26,26,26,0.28)]')}>
+            <div className={cn(glass.section, 'rounded-[36px] border-border/ bg-gradient-to-br from-[#FFF9F0] via-white/80 to-[#F9F7F2] p-7 shadow-[0_30px_80px_-40px_rgba(26,26,26,0.28)]')}>
               <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="space-y-3">
                   <div className="inline-flex items-center gap-2 rounded-full border border-[#1B9157]/15 bg-[#1B9157]/10 px-3 py-1.5">
                     <Activity className="h-3.5 w-3.5 text-[#1B9157]" />
                     <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#1B9157]">Live pollination telemetry</span>
                   </div>
-                  <h2 className="max-w-2xl text-4xl font-black leading-none tracking-tight text-[#1A1A1A]">
+                  <h2 className="max-w-2xl text-4xl font-black leading-none tracking-tight text-foreground">
                     Field-ready telemetry with a <span className="text-[#F4D03F]">BeeYield AI</span> finish
                   </h2>
-                  <p className="max-w-2xl border-l-4 border-[#F4D03F]/20 pl-5 text-sm font-medium leading-relaxed text-slate-500">
+                  <p className="max-w-2xl border-l-4 border-border/ pl-5 text-sm font-medium leading-relaxed text-slate-500">
                     The page now uses the same premium hierarchy, spacing, and card language as Home and BeeYield AI.
                   </p>
                 </div>
@@ -313,7 +313,7 @@ const HiveTelemetryView: React.FC = () => {
                 <div className="w-full max-w-sm space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Hive selection</label>
                   <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                    <SelectTrigger className={cn(glass.select, 'h-12 rounded-2xl border-white/70 bg-white/80 shadow-sm')}>
+                    <SelectTrigger className={cn(glass.select, 'h-12 rounded-2xl border-border/ bg-muted/ shadow-sm')}>
                       <SelectValue placeholder="Select hive" />
                     </SelectTrigger>
                     <SelectContent className={cn(glass.selectContent, 'rounded-2xl')}>
@@ -333,10 +333,10 @@ const HiveTelemetryView: React.FC = () => {
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-[0.24em] text-slate-400">Current biomass</p>
                       <div className="mt-2 flex items-end gap-2">
-                        <span className="text-6xl font-black leading-none tracking-tight text-[#1A1A1A]">{latest ? latest.weight.toFixed(2) : '0.00'}</span>
+                        <span className="text-6xl font-black leading-none tracking-tight text-foreground">{latest ? latest.weight.toFixed(2) : '0.00'}</span>
                         <span className="pb-1 text-lg font-black uppercase tracking-[0.18em] text-slate-300">kg</span>
                       </div>
-                      <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#F4D03F]/20 bg-[#F4D03F]/10 px-3 py-1.5">
+                      <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-border/ bg-[#F4D03F]/10 px-3 py-1.5">
                         {latestDelta >= 0 ? <ArrowUpRight className="h-3.5 w-3.5 text-[#1B9157]" /> : <ArrowDownRight className="h-3.5 w-3.5 text-red-500" />}
                         <span className={cn('text-[10px] font-black uppercase tracking-[0.18em]', latestDelta >= 0 ? 'text-[#1B9157]' : 'text-red-500')}>
                           Session delta {latestDelta >= 0 ? '+' : ''}{latestDelta.toFixed(2)} kg
@@ -345,14 +345,14 @@ const HiveTelemetryView: React.FC = () => {
                     </div>
 
                     <div className="grid min-w-[220px] gap-3 sm:grid-cols-2">
-                      <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#FFF9F0] p-4">
+                      <div className="rounded-2xl border border-border/ bg-card p-4">
                         <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Linked hive</p>
-                        <p className="mt-2 text-sm font-black text-[#1A1A1A]">{selectedHive ? getHiveDisplayName(selectedHive) : 'No hive selected'}</p>
+                        <p className="mt-2 text-sm font-black text-foreground">{selectedHive ? getHiveDisplayName(selectedHive) : 'No hive selected'}</p>
                         <p className="mt-1 text-[11px] font-medium text-slate-500">Last seen {lastSeen}</p>
                       </div>
                       <div className="rounded-2xl border border-[#1B9157]/15 bg-white p-4">
                         <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Sensor endpoint</p>
-                        <p className="mt-2 text-sm font-black text-[#1A1A1A]">{deviceLabel}</p>
+                        <p className="mt-2 text-sm font-black text-foreground">{deviceLabel}</p>
                         <p className="mt-1 text-[11px] font-medium text-slate-500">{activeDeviceId ? `Device ID ${activeDeviceId}` : 'Awaiting device link'}</p>
                       </div>
                     </div>
@@ -364,9 +364,9 @@ const HiveTelemetryView: React.FC = () => {
                       { label: 'Positive gain', value: `${totalYield} kg` },
                       { label: 'Anomaly state', value: isAlert ? 'Investigate' : 'Stable' },
                     ].map((item) => (
-                      <div key={item.label} className="rounded-2xl border border-dashed border-[#F4D03F]/20 bg-gradient-to-r from-[#F4D03F]/10 to-white px-4 py-3">
+                      <div key={item.label} className="rounded-2xl border border-dashed border-border/ bg-gradient-to-r from-[#F4D03F]/10 to-white px-4 py-3">
                         <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">{item.label}</p>
-                        <p className="mt-1 text-base font-black text-[#1A1A1A]">{item.value}</p>
+                        <p className="mt-1 text-base font-black text-foreground">{item.value}</p>
                       </div>
                     ))}
                   </div>
@@ -378,7 +378,7 @@ const HiveTelemetryView: React.FC = () => {
                       <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/40">Operations rail</p>
                       <h3 className="mt-2 text-2xl font-black tracking-tight">Sensor actions</h3>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-3"><ShieldCheck className="h-5 w-5 text-[#F4D03F]" /></div>
+                    <div className="rounded-2xl border border-border/ bg-muted/ p-3"><ShieldCheck className="h-5 w-5 text-[#F4D03F]" /></div>
                   </div>
 
                   <div className="mt-6 space-y-3">
@@ -387,7 +387,7 @@ const HiveTelemetryView: React.FC = () => {
                       { label: 'Reporting', text: 'Prepare a downloadable telemetry pack', action: () => setExportOpen(true), icon: ChevronRight },
                       { label: 'Sync', text: 'Refresh hive, gateway, and readings', action: handleRefresh, icon: RefreshCw },
                     ].map((item) => (
-                      <button key={item.label} type="button" onClick={item.action} className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left transition-all hover:border-[#F4D03F]/30 hover:bg-white/10">
+                      <button key={item.label} type="button" onClick={item.action} className="flex w-full items-center justify-between rounded-2xl border border-border/ bg-muted/ px-4 py-4 text-left transition-all hover:border-border/ hover:bg-muted/">
                         <div>
                           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/40">{item.label}</p>
                           <p className="mt-1 text-sm font-black text-white">{item.text}</p>
@@ -403,7 +403,7 @@ const HiveTelemetryView: React.FC = () => {
 
           <div className="xl:col-span-4 space-y-4">
             {[
-              { label: 'Live weight', value: latest ? `${latest.weight.toFixed(2)} kg` : '0.00 kg', icon: Scale, color: 'text-[#1A1A1A]' },
+              { label: 'Live weight', value: latest ? `${latest.weight.toFixed(2)} kg` : '0.00 kg', icon: Scale, color: 'text-foreground' },
               { label: 'Flux velocity', value: `${dwdt >= 0 ? '+' : ''}${dwdt.toFixed(3)}`, icon: Gauge, color: isFlowing ? 'text-[#1B9157]' : 'text-red-500' },
               { label: 'Positive gain', value: `${totalYield} kg`, icon: Zap, color: 'text-[#F4D03F]' },
               { label: 'Security state', value: isAlert ? 'Investigate' : 'Stable', icon: AlertTriangle, color: isAlert ? 'text-red-500' : 'text-[#1B9157]' },
@@ -425,10 +425,10 @@ const HiveTelemetryView: React.FC = () => {
         </div>
 
         <div className={cn(glass.section, 'rounded-[32px] overflow-hidden shadow-sm')}>
-          <div className="flex flex-col gap-4 border-b border-[#F4D03F]/15 bg-[#F9F7F2]/70 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-4 border-b border-border/ bg-muted/ px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Telemetry ledger</p>
-              <h3 className="mt-2 text-2xl font-black tracking-tight text-[#1A1A1A]">Recent history</h3>
+              <h3 className="mt-2 text-2xl font-black tracking-tight text-foreground">Recent history</h3>
               <p className="mt-1 text-sm text-slate-500">A compact, dashboard-native view of the latest telemetry samples.</p>
             </div>
             <div className={pill}>
@@ -446,9 +446,9 @@ const HiveTelemetryView: React.FC = () => {
               data.slice(-6).reverse().map((row, index) => (
                 <div key={`${row.timestamp}-${index}`} className="grid gap-4 px-6 py-5 transition-colors hover:bg-[#F4D03F]/5 md:grid-cols-[1.2fr_0.8fr_0.8fr_auto]">
                   <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Timestamp</p><p className="mt-1 text-sm font-semibold text-slate-600 tabular-nums">{row.time}</p></div>
-                  <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Weight</p><p className="mt-1 text-lg font-black text-[#1A1A1A] tabular-nums">{row.weight} kg</p></div>
+                  <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Weight</p><p className="mt-1 text-lg font-black text-foreground tabular-nums">{row.weight} kg</p></div>
                   <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Change rate</p><p className={cn('mt-1 text-lg font-black tabular-nums', row.dwdt > 0 ? 'text-[#1B9157]' : 'text-red-500')}>{row.dwdt > 0 ? '+' : ''}{row.dwdt.toFixed(3)}</p></div>
-                  <div className="flex items-center justify-start md:justify-end"><div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#F4D03F]/15 bg-white shadow-sm"><ChevronRight className="h-5 w-5 text-[#F4D03F]" /></div></div>
+                  <div className="flex items-center justify-start md:justify-end"><div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/ bg-white shadow-sm"><ChevronRight className="h-5 w-5 text-[#F4D03F]" /></div></div>
                 </div>
               ))
             )}
@@ -458,11 +458,11 @@ const HiveTelemetryView: React.FC = () => {
 
       <GlassModal isOpen={calibrationOpen} onClose={() => setCalibrationOpen(false)} title="Sensor Calibration" subtitle="POP-OUT CONTROL FORM" maxWidth="max-w-2xl">
         <div className="space-y-5">
-          <div className="rounded-[28px] border border-[#F4D03F]/15 bg-white/70 p-5 shadow-sm">
+          <div className="rounded-[28px] border border-border/ bg-muted/ p-5 shadow-sm">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Linked device</p>
-                <h3 className="mt-2 text-xl font-black tracking-tight text-[#1A1A1A]">{deviceLabel}</h3>
+                <h3 className="mt-2 text-xl font-black tracking-tight text-foreground">{deviceLabel}</h3>
                 <p className="mt-1 text-sm text-slate-500">{selectedHive?.hive_code || selectedHive?.name || 'No hive selected'} • {activeDeviceId || 'No device id'}</p>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-[#1B9157]/15 bg-[#1B9157]/10 px-3 py-1.5"><span className="h-2.5 w-2.5 rounded-full bg-[#1B9157]" /><span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1B9157]">{gatewayStatus}</span></div>
@@ -470,9 +470,9 @@ const HiveTelemetryView: React.FC = () => {
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="rounded-[28px] border border-[#F4D03F]/15 bg-[#FFF9F0] p-5">
+            <div className="rounded-[28px] border border-border/ bg-card p-5">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Quick tare</p>
-              <h4 className="mt-2 text-lg font-black tracking-tight text-[#1A1A1A]">Zero the active sensor</h4>
+              <h4 className="mt-2 text-lg font-black tracking-tight text-foreground">Zero the active sensor</h4>
               <p className="mt-2 text-sm leading-relaxed text-slate-500">Use this when the scale needs a clean baseline before the next field reading arrives.</p>
               <button type="button" onClick={async () => { const success = await handleTare(); if (success) setCalibrationOpen(false); }} disabled={isTaring} className={cn(glass.btnPrimary, 'mt-5 h-11 w-full rounded-2xl shadow-lg shadow-[#F4D03F]/20')}>
                 {isTaring ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
@@ -480,12 +480,12 @@ const HiveTelemetryView: React.FC = () => {
               </button>
             </div>
 
-            <div className="rounded-[28px] border border-[#F4D03F]/15 bg-white/80 p-5">
+            <div className="rounded-[28px] border border-border/ bg-muted/ p-5">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Manual offset</p>
-              <h4 className="mt-2 text-lg font-black tracking-tight text-[#1A1A1A]">Apply a correction value</h4>
+              <h4 className="mt-2 text-lg font-black tracking-tight text-foreground">Apply a correction value</h4>
               <div className="mt-4 space-y-2">
                 <label htmlFor="telemetry-manual-offset" className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Offset correction (kg)</label>
-                <Input id="telemetry-manual-offset" type="number" step="0.01" value={manualOffsetValue} onChange={(event) => setManualOffsetValue(event.target.value)} className={cn(glass.input, 'h-12 rounded-2xl bg-[#FFF9F0]')} />
+                <Input id="telemetry-manual-offset" type="number" step="0.01" value={manualOffsetValue} onChange={(event) => setManualOffsetValue(event.target.value)} className={cn(glass.input, 'h-12 rounded-2xl bg-card')} />
               </div>
               <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <button type="button" onClick={() => setCalibrationOpen(false)} className={cn(glass.btnSecondary, 'h-11 rounded-2xl px-5')}>Cancel</button>
@@ -498,16 +498,16 @@ const HiveTelemetryView: React.FC = () => {
 
       <GlassModal isOpen={exportOpen} onClose={() => setExportOpen(false)} title="Export Telemetry" subtitle="POP-OUT DELIVERY FORM" maxWidth="max-w-xl">
         <div className="space-y-5">
-          <div className="rounded-[28px] border border-[#F4D03F]/15 bg-white/80 p-5">
+          <div className="rounded-[28px] border border-border/ bg-muted/ p-5">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Export bundle</p>
-            <h4 className="mt-2 text-lg font-black tracking-tight text-[#1A1A1A]">Prepare a clean CSV package</h4>
+            <h4 className="mt-2 text-lg font-black tracking-tight text-foreground">Prepare a clean CSV package</h4>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Hive</p><p className="mt-1 text-sm font-black text-[#1A1A1A]">{selectedHive?.hive_code || selectedHive?.name || 'No hive selected'}</p></div>
-              <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Rows</p><p className="mt-1 text-sm font-black text-[#1A1A1A]">{data.length} telemetry records</p></div>
+              <div className="rounded-2xl border border-border/ bg-card p-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Hive</p><p className="mt-1 text-sm font-black text-foreground">{selectedHive?.hive_code || selectedHive?.name || 'No hive selected'}</p></div>
+              <div className="rounded-2xl border border-border/ bg-card p-4"><p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">Rows</p><p className="mt-1 text-sm font-black text-foreground">{data.length} telemetry records</p></div>
             </div>
             <div className="mt-4 space-y-2">
               <label htmlFor="telemetry-export-name" className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">File name</label>
-              <Input id="telemetry-export-name" value={exportFileName} onChange={(event) => setExportFileName(event.target.value)} className={cn(glass.input, 'h-12 rounded-2xl bg-[#FFF9F0]')} />
+              <Input id="telemetry-export-name" value={exportFileName} onChange={(event) => setExportFileName(event.target.value)} className={cn(glass.input, 'h-12 rounded-2xl bg-card')} />
             </div>
           </div>
 
@@ -522,3 +522,4 @@ const HiveTelemetryView: React.FC = () => {
 };
 
 export default HiveTelemetryView;
+

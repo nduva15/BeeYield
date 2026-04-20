@@ -473,3 +473,4 @@ function Stat({ label, value, highlight = false }: { label: string; value: strin
     </div>
   );
 }
+

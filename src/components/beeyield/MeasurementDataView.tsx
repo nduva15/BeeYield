@@ -101,7 +101,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: i * 0.05 }}
-                        className={cn(glass.card, "p-4 flex flex-col gap-1.5 border-white/40 shadow-sm group hover:border-[#F4D03F]/30 transition-all")}
+                        className={cn(glass.card, "p-4 flex flex-col gap-1.5 border-border/ shadow-sm group hover:border-border/ transition-all")}
                     >
                         <div className="flex items-center justify-between relative z-10">
                             <span className={glass.microLabel}>{stat.label}</span>
@@ -114,18 +114,18 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </div>
 
             {/* Main Chart Area */}
-            <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden mt-6")}>
+            <div className={cn(glass.card, "p-6 bg-muted/ border-border/ shadow-xl relative overflow-hidden mt-6")}>
                 <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                 <div className="relative z-10">
                     <div className="flex justify-between items-center mb-8">
                         <div className="space-y-1">
-                            <h3 className="text-[14px] font-black text-[#1A1A1A] italic">Temperature Stability</h3>
-                            <p className="text-[9px] font-black text-gray-400">Environmental Monitoring</p>
+                            <h3 className="text-[14px] font-black text-foreground italic">Temperature Stability</h3>
+                            <p className="text-[9px] font-black text-muted-foreground/70">Environmental Monitoring</p>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white/50 border border-[#F4D03F]/20 shadow-sm">
+                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-muted/ border border-border/ shadow-sm">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] animate-pulse shadow-sm shadow-[#F4D03F]/50" />
-                                <span className="text-[9px] font-black text-[#1A1A1A]">Active Sensor 01</span>
+                                <span className="text-[9px] font-black text-foreground">Active Sensor 01</span>
                             </div>
                         </div>
                     </div>
@@ -173,10 +173,10 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}>
+                <div className={cn(glass.card, "p-6 bg-muted/ border-border/ shadow-xl relative overflow-hidden")}>
                     <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1B9157 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                     <div className="flex justify-between items-center mb-8 relative z-10">
-                        <h3 className="text-[12px] font-black text-[#1A1A1A] italic">Weight Variance (kg)</h3>
+                        <h3 className="text-[12px] font-black text-foreground italic">Weight Variance (kg)</h3>
                         <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 font-black text-[9px] px-3 py-1 rounded-xl shadow-sm">Digital Scale</Badge>
                     </div>
                     <div className="h-[220px] w-full relative z-10">
@@ -192,11 +192,11 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     </div>
                 </div>
 
-                <div className={cn(glass.card, "p-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}>
+                <div className={cn(glass.card, "p-6 bg-muted/ border-border/ shadow-xl relative overflow-hidden")}>
                     <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1B9157 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                     <div className="flex justify-between items-center mb-8 relative z-10">
-                        <h3 className="text-[12px] font-black text-[#1A1A1A] italic">Humidity Profile (%)</h3>
-                        <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 font-black text-[9px] px-3 py-1 rounded-xl shadow-sm">Humidity Sensor</Badge>
+                        <h3 className="text-[12px] font-black text-foreground italic">Humidity Profile (%)</h3>
+                        <Badge className="bg-[#F4D03F]/10 text-[#F4D03F] border-border/ font-black text-[9px] px-3 py-1 rounded-xl shadow-sm">Humidity Sensor</Badge>
                     </div>
                     <div className="h-[220px] w-full relative z-10">
                         <ResponsiveContainer width="100%" height="100%">
@@ -222,3 +222,4 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
 };
 
 export default MeasurementDataView;
+

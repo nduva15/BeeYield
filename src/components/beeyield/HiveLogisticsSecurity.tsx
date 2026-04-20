@@ -122,7 +122,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* 3D Map Interface */}
                 <div className="lg:col-span-8 flex flex-col gap-6">
-                    <div className={cn(glass.card, "bg-white/40 border-white/20 h-[500px] relative overflow-hidden shadow-xl p-0")}>
+                    <div className={cn(glass.card, "bg-muted/ border-border/ h-[500px] relative overflow-hidden shadow-xl p-0")}>
                         <MapContainer
                             center={mapCenter}
                             zoom={zoom}
@@ -187,7 +187,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                                     <Marker position={[p.x, p.y]}>
                                         <Popup className="font-bold border-none shadow-2xl rounded-xl">
                                             <div className="p-3 text-center">
-                                                <p className="text-xs font-black text-[#1A1A1A]">{p.id}</p>
+                                                <p className="text-xs font-black text-foreground">{p.id}</p>
                                                 <p className="text-[10px] font-bold text-[#10b981]">{p.hives} Hives Installed</p>
                                             </div>
                                         </Popup>
@@ -196,12 +196,12 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                             ))}
                         </MapContainer>
 
-                        <div className="absolute top-6 left-6 flex flex-col gap-3 p-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl z-[1000] w-64">
-                            <h4 className="text-[9px] font-black text-[#1A1A1A] border-b border-[#F4D03F]/10 pb-2 uppercase tracking-widest">Location Manager</h4>
+                        <div className="absolute top-6 left-6 flex flex-col gap-3 p-4 bg-muted/ backdrop-blur-xl border border-border/ rounded-2xl shadow-xl z-[1000] w-64">
+                            <h4 className="text-[9px] font-black text-foreground border-b border-border/ pb-2 uppercase tracking-widest">Location Manager</h4>
                             <div className="relative">
-                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground/70" />
                                 <input 
-                                    className="w-full bg-white/50 border border-gray-100 rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold focus:outline-none focus:ring-1 focus:ring-[#1B9157]"
+                                    className="w-full bg-muted/ border border-gray-100 rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold focus:outline-none focus:ring-1 focus:ring-[#1B9157]"
                                     placeholder="Search lamu, beijing..."
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') handleSearch(e.currentTarget.value);
@@ -210,7 +210,7 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                             </div>
                             <button 
                                 onClick={handleLocate}
-                                className="flex items-center justify-between px-3 py-1.5 bg-[#F4D03F] text-[#1A1A1A] rounded-lg text-[8px] font-black hover:opacity-90 transition-all"
+                                className="flex items-center justify-between px-3 py-1.5 bg-[#F4D03F] text-foreground rounded-lg text-[8px] font-black hover:opacity-90 transition-all"
                             >
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-2.5 h-2.5" />
@@ -220,20 +220,20 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                             </button>
                         </div>
 
-                        <div className="absolute bottom-6 left-6 p-4 bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl">
-                            <h4 className="text-[9px] font-black text-[#1A1A1A] mb-3 border-b border-[#F4D03F]/10 pb-2">Hive Stats</h4>
+                        <div className="absolute bottom-6 left-6 p-4 bg-muted/ backdrop-blur-xl border border-border/ rounded-2xl shadow-xl">
+                            <h4 className="text-[9px] font-black text-foreground mb-3 border-b border-border/ pb-2">Hive Stats</h4>
                             <div className="flex gap-8">
                                 <div className="space-y-0.5">
-                                    <p className="text-[7px] font-black text-gray-400">Active</p>
-                                    <p className="text-lg font-black text-[#1A1A1A]">{pallets.length}</p>
+                                    <p className="text-[7px] font-black text-muted-foreground/70">Active</p>
+                                    <p className="text-lg font-black text-foreground">{pallets.length}</p>
                                 </div>
                                 <div className="space-y-0.5">
-                                    <p className="text-[7px] font-black text-gray-400">Coverage</p>
+                                    <p className="text-[7px] font-black text-muted-foreground/70">Coverage</p>
                                     <p className="text-lg font-black text-[#10b981]">84%</p>
                                 </div>
                                 <div className="space-y-0.5">
-                                    <p className="text-[7px] font-black text-gray-400">Status</p>
-                                    <p className="text-lg font-black text-[#1A1A1A]">Normal</p>
+                                    <p className="text-[7px] font-black text-muted-foreground/70">Status</p>
+                                    <p className="text-lg font-black text-foreground">Normal</p>
                                 </div>
                             </div>
                         </div>
@@ -242,9 +242,9 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
 
                 {/* Security Audit & Exceptions Sidebar */}
                 <div className="lg:col-span-4 space-y-5">
-                    <div className={cn(glass.card, "p-5 space-y-5 bg-white/40 border-white/20 shadow-xl relative overflow-hidden group")}>
-                        <div className="flex items-center justify-between mb-5 border-b border-[#F4D03F]/10 pb-4">
-                            <h3 className="text-[10px] font-black text-[#1A1A1A] leading-none">Live History</h3>
+                    <div className={cn(glass.card, "p-5 space-y-5 bg-muted/ border-border/ shadow-xl relative overflow-hidden group")}>
+                        <div className="flex items-center justify-between mb-5 border-b border-border/ pb-4">
+                            <h3 className="text-[10px] font-black text-foreground leading-none">Live History</h3>
                             <ShieldAlert className="w-4 h-4 text-[#F4D03F]" />
                         </div>
                         <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
@@ -254,14 +254,14 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                                 { status: 'Wait', msg: 'Signal check in North area.', time: '13:58' },
                                 { status: 'OK', msg: 'GPS tracking updated.', time: '12:40' },
                             ].map((log, i) => (
-                                <div key={i} className="flex gap-3 items-start border-b border-white/20 pb-3 last:border-0">
+                                <div key={i} className="flex gap-3 items-start border-b border-border/ pb-3 last:border-0">
                                     <span className={cn(
                                         "text-[8px] font-black px-2 py-0.5 rounded-full",
                                         log.status === 'OK' ? "bg-[#10b981] text-white" : "bg-[#F4D03F] text-white"
                                     )}>{log.status}</span>
                                     <div className="space-y-0.5">
-                                        <p className="text-[9px] font-black text-[#1A1A1A]/60 tracking-tight">{log.msg}</p>
-                                        <p className="text-[7px] font-black text-gray-400">{log.time}</p>
+                                        <p className="text-[9px] font-black text-foreground/60 tracking-tight">{log.msg}</p>
+                                        <p className="text-[7px] font-black text-muted-foreground/70">{log.time}</p>
                                     </div>
                                 </div>
                             ))}
@@ -269,25 +269,25 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
                     </div>
 
                     <div className={cn(glass.card, "p-5 bg-[#064e3b] text-white group transition-all relative overflow-hidden shadow-xl")}>
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-muted/ rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                         <div className="flex items-center gap-4 mb-4 relative z-10">
                             <Crosshair className="w-5 h-5 text-[#F4D03F]" />
                             <h3 className="text-[10px] font-black leading-none">Status Summary</h3>
                         </div>
-                        <p className="text-[9px] font-black opacity-60 leading-relaxed tracking-tight relative z-10 pl-3 border-l-4 border-[#F4D03F]/40">
+                        <p className="text-[9px] font-black opacity-60 leading-relaxed tracking-tight relative z-10 pl-3 border-l-4 border-border/">
                             Adding hives will set up an **Automatic Alarm**. Any unexpected movement will send an alert.
                         </p>
                     </div>
 
                     <div className={cn(glass.card, "p-5 space-y-4 border-red-500/10 bg-red-50/30 shadow-xl")}>
                         <h4 className="text-[9px] text-red-500 font-black mb-2">Health_Alerts</h4>
-                        <div className="flex items-center gap-4 bg-white/40 p-4 rounded-2xl border border-red-500/10">
+                        <div className="flex items-center gap-4 bg-muted/ p-4 rounded-2xl border border-red-500/10">
                             <div className="w-8 h-8 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20 shrink-0">
                                 <AlertCircle className="w-5 h-5 text-red-500" />
                             </div>
                             <div className="space-y-0.5">
                                 <p className="text-[9px] font-black text-red-500 tracking-tight">Movement_Detected</p>
-                                <p className="text-[8px] font-black text-gray-400">High Winds Or Movement</p>
+                                <p className="text-[8px] font-black text-muted-foreground/70">High Winds Or Movement</p>
                             </div>
                         </div>
                     </div>
@@ -298,4 +298,5 @@ const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChan
 };
 
 export default HiveLogisticsSecurity;
+
 

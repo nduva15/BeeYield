@@ -111,7 +111,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
                 <Activity className="w-8 h-8 animate-spin text-[#F1C40F]" />
-                <span className="text-sm font-semibold text-gray-400 italic">Compiling audit summary…</span>
+                <span className="text-sm font-semibold text-muted-foreground/70 italic">Compiling audit summary…</span>
             </div>
         );
     }
@@ -172,13 +172,13 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                         className={cn(glass.section, "p-6 flex flex-col group bg-white")}
                     >
                         <div className="flex items-center justify-between mb-6">
-                            <span className="text-[10px] font-bold text-gray-400">{metric.label}</span>
+                            <span className="text-[10px] font-bold text-muted-foreground/70">{metric.label}</span>
                             <CheckCircle2 className="w-4 h-4 text-[#1B9157]" />
                         </div>
 
                         <div className="flex items-baseline gap-1 mb-2">
-                            <span className="text-4xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">{metric.value}</span>
-                            <span className="text-sm font-bold text-gray-400">{metric.unit}</span>
+                            <span className="text-4xl font-black text-foreground tabular-nums tracking-tighter">{metric.value}</span>
+                            <span className="text-sm font-bold text-muted-foreground/70">{metric.unit}</span>
                         </div>
 
                         <div className="flex items-center gap-2 mb-4">
@@ -186,17 +186,17 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                             <span className="text-[10px] font-bold text-[#1B9157]">{metric.method}</span>
                         </div>
 
-                        <p className="text-[11px] text-gray-500 leading-relaxed flex-1 border-l-2 border-[#F1C40F]/30 pl-3">
+                        <p className="text-[11px] text-muted-foreground leading-relaxed flex-1 border-l-2 border-[#F1C40F]/30 pl-3">
                             {metric.detail}
                         </p>
 
                         <div className="mt-6 pt-4 border-t border-[#F1C40F]/10 flex items-center justify-between">
-                            <span className="text-[9px] font-bold text-gray-400">Score</span>
+                            <span className="text-[9px] font-bold text-muted-foreground/70">Score</span>
                             <div className="flex items-center gap-3">
                                 <div className="h-1.5 w-16 bg-gray-100 rounded-full overflow-hidden border border-[#F1C40F]/10">
                                     <div className="h-full bg-[#1B9157] rounded-full transition-all" style={{ width: `${metric.score}%` }} />
                                 </div>
-                                <span className="text-sm font-black text-[#1A1A1A] tabular-nums">{Math.round(metric.score)}</span>
+                                <span className="text-sm font-black text-foreground tabular-nums">{Math.round(metric.score)}</span>
                             </div>
                         </div>
                     </motion.div>
@@ -210,8 +210,8 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                         <AlertCircle className="w-4 h-4 text-red-500" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-[#1A1A1A]">Maintenance Alerts</h3>
-                        <p className="text-[9px] font-bold text-gray-500">Live Status Notifications</p>
+                        <h3 className="text-sm font-bold text-foreground">Maintenance Alerts</h3>
+                        <p className="text-[9px] font-bold text-muted-foreground">Live Status Notifications</p>
                     </div>
                 </div>
 
@@ -219,7 +219,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                     {criticalExceptions.map((alert, i) => (
                         <div key={i} className="p-5 rounded-xl border border-red-100 bg-red-50/30 group relative overflow-hidden">
                             <h4 className="text-sm font-bold text-red-600 mb-2">{alert.title}</h4>
-                            <p className="text-[11px] text-gray-500 leading-relaxed mb-4 font-medium">
+                            <p className="text-[11px] text-muted-foreground leading-relaxed mb-4 font-medium">
                                 {alert.detail}
                             </p>
                             <button 
@@ -240,7 +240,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
 
                 <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
                     <div className="w-20 h-20 rounded-2xl bg-[#F1C40F] flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(241,196,15,0.3)]">
-                        <Award className="w-10 h-10 text-[#1A1A1A]" />
+                        <Award className="w-10 h-10 text-foreground" />
                     </div>
                     <div className="flex-1 space-y-4">
                         <div className="space-y-1">
@@ -252,7 +252,7 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
                         </p>
                         <div className="flex flex-wrap gap-4 pt-2">
                             {['Contract Standards', 'Welfare Verified'].map(tag => (
-                                <div key={tag} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/20 rounded-full">
+                                <div key={tag} className="flex items-center gap-2 px-3 py-1.5 bg-muted/ border border-border/ rounded-full">
                                     <CheckCircle2 className="w-3 h-3 text-[#F1C40F]" />
                                     <span className="text-[10px] font-bold uppercase tracking-wider">{tag}</span>
                                 </div>
@@ -266,3 +266,4 @@ const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
 };
 
 export default HealthyHiveIndex;
+

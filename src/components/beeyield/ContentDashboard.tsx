@@ -33,7 +33,7 @@ const KanbanColumn = ({
 }) => {
     return (
         <div
-            className="flex-1 min-w-[320px] bg-muted/5 rounded-2xl p-5 border border-[#F4D03F]/5 flex flex-col gap-4 group/column transition-all duration-300 hover:bg-muted/10"
+            className="flex-1 min-w-[320px] bg-muted/5 rounded-2xl p-5 border border-border/ flex flex-col gap-4 group/column transition-all duration-300 hover:bg-muted/10"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => onDrop(e, status)}
         >
@@ -90,7 +90,7 @@ const KanbanColumn = ({
                                 {post.title}
                             </h4>
 
-                            <div className="flex items-center justify-between pt-3 border-t border-white/5 mt-auto">
+                            <div className="flex items-center justify-between pt-3 border-t border-border/ mt-auto">
                                 <div className="flex items-center gap-1.5 opacity-40 font-mono text-[9px] uppercase tracking-widest">
                                     <FileText className="w-3 h-3" />
                                     <span>{Math.round(post.word_count / 1000)}k / {Math.round(post.target_word_count / 1000)}k</span>
@@ -266,7 +266,7 @@ const ContentDashboard = () => {
                     <SelectTrigger className="w-[240px] h-11 bg-muted/20 border-border/50 rounded-xl font-black text-[10px] tracking-widest uppercase">
                         <SelectValue placeholder="FILTER BY CLASSIFICATION" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl border border-[#F4D03F]/10">
+                    <SelectContent className="rounded-xl border border-border/">
                         <SelectItem value="all" className="font-black text-[10px] uppercase tracking-widest">Global Classification</SelectItem>
                         {Object.entries(PILLAR_META).map(([key, meta]) => (
                             <SelectItem key={key} value={key} className="font-black text-[10px] uppercase tracking-widest">
@@ -322,3 +322,4 @@ const ContentDashboard = () => {
 };
 
 export default ContentDashboard;
+

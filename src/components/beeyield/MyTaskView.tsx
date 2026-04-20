@@ -120,7 +120,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
       case 'high': return 'bg-red-50 text-red-600 border-red-100';
       case 'medium': return 'bg-amber-50 text-amber-600 border-amber-100';
       case 'low': return 'bg-blue-50 text-blue-600 border-blue-100';
-      default: return 'bg-gray-50 text-gray-600 border-gray-100';
+      default: return 'bg-gray-50 text-muted-foreground/90 border-gray-100';
     }
   };
 
@@ -223,7 +223,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
         setEditingTask(task);
         setIsTaskModalOpen(true);
       }}
-      className="group flex items-start gap-4 p-4 rounded-2xl border border-[#F4D03F]/10 bg-white/60 hover:bg-white hover:border-[#F4D03F]/30 hover:shadow-lg transition-all cursor-pointer"
+      className="group flex items-start gap-4 p-4 rounded-2xl border border-border/ bg-muted/ hover:bg-white hover:border-border/ hover:shadow-lg transition-all cursor-pointer"
     >
       <button 
         onClick={(e) => handleToggleStatus(task, e)}
@@ -241,7 +241,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
         <div className="flex items-center justify-between gap-2">
           <h4 className={cn(
             "text-[13px] font-bold tracking-tight truncate",
-            task.status === 'completed' ? "text-gray-400 line-through" : "text-[#1A1A1A]"
+            task.status === 'completed' ? "text-muted-foreground/70 line-through" : "text-foreground"
           )}>
             {task.title}
           </h4>
@@ -251,14 +251,14 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
         </div>
 
         {task.description && (
-          <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed">
+          <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
             {task.description}
           </p>
         )}
 
         <div className="flex items-center gap-3 pt-1 flex-wrap">
           {task.due_date && (
-            <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
+            <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground/70">
               <Clock className="w-3 h-3" />
               {format(parseISO(task.due_date), 'MMM d, yyyy')}
             </div>
@@ -312,13 +312,13 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
             { label: 'In Progress', value: stats.inProgress, icon: Filter, color: 'text-blue-600', bg: 'bg-blue-50' },
             { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
           ].map((stat, i) => (
-            <div key={i} className={cn(glass.card, "p-4 flex items-center gap-4 bg-white/60")}>
+            <div key={i} className={cn(glass.card, "p-4 flex items-center gap-4 bg-muted/")}>
               <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", stat.bg)}>
                 <stat.icon className={cn("w-5 h-5", stat.color)} />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-black text-gray-400 ml-1 uppercase tracking-wider">{stat.label}</p>
-                <div className="text-xl font-black text-[#1A1A1A] tabular-nums">{stat.value}</div>
+                <p className="text-[10px] font-black text-muted-foreground/70 ml-1 uppercase tracking-wider">{stat.label}</p>
+                <div className="text-xl font-black text-foreground tabular-nums">{stat.value}</div>
               </div>
             </div>
           ))}
@@ -328,7 +328,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
         <div className={cn(glass.section, "p-6 space-y-6")}>
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* View Switching */}
-            <div className="flex items-center gap-2 bg-[#F9F7F2] p-1.5 rounded-2xl border border-[#F4D03F]/10">
+            <div className="flex items-center gap-2 bg-muted/20 p-1.5 rounded-2xl border border-border/">
               {(['day', 'list', 'week', 'month'] as const).map((mode) => (
                 <button
                   key={mode}
@@ -336,8 +336,8 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                   className={cn(
                     "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all",
                     viewMode === mode 
-                      ? "bg-white text-[#1A1A1A] shadow-md scale-105" 
-                      : "text-gray-400 hover:text-gray-600"
+                      ? "bg-white text-foreground shadow-md scale-105" 
+                      : "text-muted-foreground/70 hover:text-muted-foreground/90"
                   )}
                 >
                   {mode}
@@ -350,23 +350,23 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setCurrentDate(viewMode === 'month' ? subMonths(currentDate, 1) : subDays(currentDate, 7))}
-                  className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-gray-50 transition-all text-gray-600"
+                  className="w-10 h-10 rounded-xl bg-white border border-border/ flex items-center justify-center hover:bg-gray-50 transition-all text-muted-foreground/90"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <h3 className="text-sm font-black text-[#1A1A1A] min-w-[140px] text-center">
+                <h3 className="text-sm font-black text-foreground min-w-[140px] text-center">
                   {format(currentDate, viewMode === 'day' ? 'MMMM d, yyyy' : 'MMMM yyyy')}
                 </h3>
                 <button 
                   onClick={() => setCurrentDate(viewMode === 'month' ? addMonths(currentDate, 1) : addDays(currentDate, 7))}
-                  className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-gray-50 transition-all text-gray-600"
+                  className="w-10 h-10 rounded-xl bg-white border border-border/ flex items-center justify-center hover:bg-gray-50 transition-all text-muted-foreground/90"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="relative flex-1 lg:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
                 <input 
                   type="text" 
                   placeholder="Filter tasks..."
@@ -387,11 +387,11 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="grid grid-cols-7 gap-px bg-[#F4D03F]/10 border border-[#F4D03F]/10 rounded-[2rem] overflow-hidden shadow-2xl shadow-black/[0.03]"
+                  className="grid grid-cols-7 gap-px bg-[#F4D03F]/10 border border-border/ rounded-[2rem] overflow-hidden shadow-2xl shadow-black/[0.03]"
                 >
                   {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(day => (
-                    <div key={day} className="bg-white/40 p-4 text-center">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{day}</span>
+                    <div key={day} className="bg-muted/ p-4 text-center">
+                      <span className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-[0.2em]">{day}</span>
                     </div>
                   ))}
                   {generateMonthDays().map((date, i) => {
@@ -404,14 +404,14 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                         key={i} 
                         onClick={() => setSelectedDate(date)}
                         className={cn(
-                          "min-h-[120px] p-2 bg-white/60 relative group transition-all hover:bg-white",
-                          isOtherMonth && "bg-[#F9F7F2]/30 text-gray-300",
+                          "min-h-[120px] p-2 bg-muted/ relative group transition-all hover:bg-white",
+                          isOtherMonth && "bg-muted/ text-gray-300",
                           isTodayDate && "ring-1 ring-inset ring-[#F4D03F]/40"
                         )}
                       >
                         <div className={cn(
                           "text-[12px] font-black mb-1 flex items-center justify-center w-6 h-6 rounded-lg",
-                          isTodayDate ? "bg-[#F4D03F] text-[#1A1A1A]" : "text-gray-400"
+                          isTodayDate ? "bg-[#F4D03F] text-foreground" : "text-muted-foreground/70"
                         )}>
                           {format(date, 'd')}
                         </div>
@@ -429,14 +429,14 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                                 "px-2 py-1 rounded-lg text-[10px] font-bold truncate border",
                                 t.status === 'completed' 
                                   ? "bg-emerald-50 text-emerald-600 border-emerald-100 opacity-60" 
-                                  : "bg-[#F4D03F]/5 border-[#F4D03F]/10 text-gray-700 hover:border-[#F4D03F]/30"
+                                  : "bg-[#F4D03F]/5 border-border/ text-gray-700 hover:border-border/"
                               )}
                             >
                               {t.title}
                             </div>
                           ))}
                           {dayTasks.length > 3 && (
-                            <div className="text-[9px] font-black text-gray-400 text-center uppercase py-0.5">
+                            <div className="text-[9px] font-black text-muted-foreground/70 text-center uppercase py-0.5">
                               + {dayTasks.length - 3} more
                             </div>
                           )}
@@ -459,11 +459,11 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                     const dayTasks = filteredTasks.filter(t => t.due_date && isSameDay(parseISO(t.due_date), date));
                     return (
                       <div key={i} className="space-y-3">
-                        <div className="p-4 bg-[#F9F7F2]/60 rounded-2xl border border-[#F4D03F]/10 text-center">
-                          <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{format(date, 'EEE')}</p>
+                        <div className="p-4 bg-muted/ rounded-2xl border border-border/ text-center">
+                          <p className="text-[10px] font-black text-muted-foreground/70 uppercase mb-1">{format(date, 'EEE')}</p>
                           <p className={cn(
                             "text-lg font-black",
-                            isToday(date) ? "text-[#F4D03F]" : "text-[#1A1A1A]"
+                            isToday(date) ? "text-[#F4D03F]" : "text-foreground"
                           )}>{format(date, 'd')}</p>
                         </div>
                         <div className="space-y-2">
@@ -491,11 +491,11 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                     {filteredTasks.length > 0 ? (
                       filteredTasks.map(renderTaskCard)
                     ) : (
-                      <div className="col-span-full p-20 text-center space-y-4 bg-white/40 rounded-[2.5rem] border border-dashed border-[#F4D03F]/20">
-                        <div className="w-20 h-20 rounded-[2rem] bg-[#F9F7F2] flex items-center justify-center mx-auto">
+                      <div className="col-span-full p-20 text-center space-y-4 bg-muted/ rounded-[2.5rem] border border-dashed border-border/">
+                        <div className="w-20 h-20 rounded-[2rem] bg-muted/20 flex items-center justify-center mx-auto">
                           <ClipboardList className="w-10 h-10 text-[#F4D03F]/40" />
                         </div>
-                        <p className="text-sm font-black text-gray-400 uppercase tracking-widest">No matching tasks found</p>
+                        <p className="text-sm font-black text-muted-foreground/70 uppercase tracking-widest">No matching tasks found</p>
                       </div>
                     )}
                   </div>
@@ -509,13 +509,13 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                   animate={{ opacity: 1, scale: 1 }}
                   className="max-w-3xl mx-auto space-y-6"
                 >
-                  <div className={cn(glass.card, "p-8 space-y-6 bg-white/60")}>
-                    <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-6">
+                  <div className={cn(glass.card, "p-8 space-y-6 bg-muted/")}>
+                    <div className="flex items-center justify-between border-b border-border/ pb-6">
                       <div className="flex flex-col">
-                        <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tighter">
+                        <h2 className="text-2xl font-black text-foreground tracking-tighter">
                           Plan for {format(currentDate, 'EEEE')}
                         </h2>
-                        <p className="text-[11px] font-bold text-gray-400">{format(currentDate, 'MMMM d, yyyy')}</p>
+                        <p className="text-[11px] font-bold text-muted-foreground/70">{format(currentDate, 'MMMM d, yyyy')}</p>
                       </div>
                       <BeeYieldBadge className="bg-emerald-50 text-emerald-600 border-emerald-100">
                         {tasks.filter(t => t.due_date && isSameDay(parseISO(t.due_date), currentDate)).length} Tasks Scheduled
@@ -539,15 +539,15 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
           </div>
 
           {/* Bottom Action Strip */}
-          <div className="pt-6 border-t border-[#F4D03F]/10 flex items-center justify-between">
+          <div className="pt-6 border-t border-border/ flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-[#F4D03F]" />
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Standard Task</span>
+                <span className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-widest">Standard Task</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Completed</span>
+                <span className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-widest">Completed</span>
               </div>
             </div>
             
@@ -740,7 +740,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
           setEditingTask(null);
           setIsTaskModalOpen(true);
         }}
-        className="fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-[#F4D03F] text-[#1A1A1A] border-4 border-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 lg:hidden"
+        className="fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-[#F4D03F] text-foreground border-4 border-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 lg:hidden"
       >
         <Plus className="w-6 h-6" />
       </button>
@@ -750,3 +750,4 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
 };
 
 export default MyTaskView;
+

@@ -136,7 +136,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             <BeeYieldPageShell className="space-y-0">
                 <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                 <Activity className="w-8 h-8 animate-spin text-[#F4D03F]" />
-                <span className="text-sm font-semibold text-gray-600 italic">Updating data...</span>
+                <span className="text-sm font-semibold text-muted-foreground/90 italic">Updating data...</span>
                 </div>
             </BeeYieldPageShell>
         );
@@ -157,9 +157,9 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 onBack={() => onTabChange('home')}
                 actions={
                     <div className="flex items-center gap-3">
-                        <div className="hidden sm:flex items-center gap-2 bg-white/40 px-3 py-1.5 rounded-xl border border-white/40 shadow-sm backdrop-blur-md">
+                        <div className="hidden sm:flex items-center gap-2 bg-muted/ px-3 py-1.5 rounded-xl border border-border/ shadow-sm backdrop-blur-md">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
-                            <span className="text-xs font-semibold text-gray-500">Live</span>
+                            <span className="text-xs font-semibold text-muted-foreground">Live</span>
                         </div>
                     </div>
                 }
@@ -206,9 +206,9 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     };
 
                     return (
-                        <div key={medium} className={cn(glass.card, "p-4 space-y-3 bg-white/40 border-white/20 shadow-xl group hover:shadow-2xl transition-all")}>
+                        <div key={medium} className={cn(glass.card, "p-4 space-y-3 bg-muted/ border-border/ shadow-xl group hover:shadow-2xl transition-all")}>
                             <div className="flex justify-between items-start">
-                                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center border border-white/40 bg-white shadow-sm group-hover:scale-105 transition-transform", colors[medium])}>
+                                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center border border-border/ bg-white shadow-sm group-hover:scale-105 transition-transform", colors[medium])}>
                                     <Icon className="w-4 h-4" />
                                 </div>
                                 <Badge className={cn("text-[8px] px-1.5 py-0.5 rounded-md border-none font-bold", alertCount > 0 ? "bg-red-500/10 text-red-500" : "bg-[#1B9157]/10 text-[#1B9157]")}>
@@ -216,8 +216,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 </Badge>
                             </div>
                             <div>
-                                <p className="text-[8px] font-black text-gray-400">{medium} LOAD</p>
-                                <p className="text-lg font-black text-[#1A1A1A] tracking-tighter tabular-nums">
+                                <p className="text-[8px] font-black text-muted-foreground/70">{medium} LOAD</p>
+                                <p className="text-lg font-black text-foreground tracking-tighter tabular-nums">
                                      {total} <span className="text-[9px] font-medium opacity-30 tracking-normal font-sans">{unit}</span>
                                 </p>
                             </div>
@@ -241,20 +241,20 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Trend Chart */}
-                <div className={cn(glass.card, "lg:col-span-2 p-5 space-y-4 bg-white/40 border-white/20 shadow-xl")}>
-                    <div className="flex justify-between items-center border-b border-white/20 pb-4">
+                <div className={cn(glass.card, "lg:col-span-2 p-5 space-y-4 bg-muted/ border-border/ shadow-xl")}>
+                    <div className="flex justify-between items-center border-b border-border/ pb-4">
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Usage patterns</h3>
-                            <p className="text-[8px] font-black text-gray-400">Daily monitoring trend</p>
+                            <h3 className="text-[11px] font-black text-foreground">Usage patterns</h3>
+                            <p className="text-[8px] font-black text-muted-foreground/70">Daily monitoring trend</p>
                         </div>
-                        <div className="flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 backdrop-blur-sm">
+                        <div className="flex bg-muted/ p-1 rounded-xl border border-border/ gap-1 backdrop-blur-sm">
                             {(['Water', 'Heat', 'Energy'] as const).map(m => (
                                 <button
                                     key={m}
                                     onClick={() => setUsageFilter(m)}
                                     className={cn(
                                         "h-7 px-4 rounded-lg text-[8px] font-black transition-all",
-                                        usageFilter === m ? "bg-white text-[#1A1A1A] shadow-sm border border-white/40" : "text-gray-400 hover:text-[#1A1A1A]/60"
+                                        usageFilter === m ? "bg-white text-foreground shadow-sm border border-border/" : "text-muted-foreground/70 hover:text-foreground/60"
                                     )}
                                 >
                                     {m}
@@ -266,8 +266,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                         {trendData.length < 2 ? (
                             <div className="h-full w-full flex items-center justify-center text-center">
                                 <div className="space-y-2">
-                                    <div className="text-[10px] font-black text-gray-400">Not enough readings</div>
-                                    <div className="text-sm font-semibold text-gray-600">Connect devices to populate trends.</div>
+                                    <div className="text-[10px] font-black text-muted-foreground/70">Not enough readings</div>
+                                    <div className="text-sm font-semibold text-muted-foreground/90">Connect devices to populate trends.</div>
                                 </div>
                             </div>
                         ) : (
@@ -293,14 +293,14 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 </div>
 
                 {/* Assistant */}
-                <div className={cn(glass.card, "p-5 flex flex-col bg-white/40 border-white/20 shadow-xl")}>
-                    <div className="flex items-center gap-3 mb-4 border-b border-white/20 pb-4">
+                <div className={cn(glass.card, "p-5 flex flex-col bg-muted/ border-border/ shadow-xl")}>
+                    <div className="flex items-center gap-3 mb-4 border-b border-border/ pb-4">
                         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-[#1A1A1A]/10 shadow-sm">
-                            <Bot className="w-5 h-5 text-[#1A1A1A]" />
+                            <Bot className="w-5 h-5 text-foreground" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Assistant</h3>
-                            <p className="text-[8px] font-black text-gray-400">Colony health advisor</p>
+                            <h3 className="text-[11px] font-black text-foreground">Assistant</h3>
+                            <p className="text-[8px] font-black text-muted-foreground/70">Colony health advisor</p>
                         </div>
                     </div>
 
@@ -309,7 +309,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <div key={idx} className={cn("flex", msg.role === 'user' ? "justify-end" : "justify-start")}>
                                 <div className={cn(
                                     "px-4 py-2.5 rounded-2xl max-w-[90%] text-[10px] font-black tracking-wider leading-relaxed shadow-sm",
-                                    msg.role === 'user' ? "bg-[#1A1A1A] text-white rounded-tr-none" : "bg-white border border-white/40 text-gray-500 rounded-tl-none"
+                                    msg.role === 'user' ? "bg-[#1A1A1A] text-white rounded-tr-none" : "bg-white border border-border/ text-muted-foreground rounded-tl-none"
                                 )}>
                                     {msg.content}
                                 </div>
@@ -323,7 +323,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             value={aiMessage}
                             onChange={e => setAiMessage(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                            className="w-full h-10 bg-white border border-white/40 rounded-xl pl-4 pr-12 text-[9px] font-black outline-none focus:ring-1 focus:ring-[#1A1A1A]/10 shadow-sm"
+                            className="w-full h-10 bg-white border border-border/ rounded-xl pl-4 pr-12 text-[9px] font-black outline-none focus:ring-1 focus:ring-[#1A1A1A]/10 shadow-sm"
                         />
                         <button
                             onClick={handleSendMessage}
@@ -338,34 +338,34 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             </div>
 
             {/* Recent Events List */}
-            <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
-                <div className="p-4 border-b border-white/20 bg-white/20 flex justify-between items-center backdrop-blur-sm">
+            <div className={cn(glass.card, "p-0 overflow-hidden bg-muted/ border-border/ shadow-xl")}>
+                <div className="p-4 border-b border-border/ bg-muted/ flex justify-between items-center backdrop-blur-sm">
                     <div className="flex items-center gap-3">
                         <TrendingUp className="w-4 h-4 text-[#1B9157]" />
-                        <h3 className="text-[11px] font-black text-[#1A1A1A]">Activity log</h3>
+                        <h3 className="text-[11px] font-black text-foreground">Activity log</h3>
                     </div>
-                    <Button onClick={() => onTabChange('meters-alarms')} variant="ghost" className="text-[8px] font-black text-gray-500 hover:text-[#1A1A1A] hover:bg-white/40 rounded-xl px-3 h-7">
+                    <Button onClick={() => onTabChange('meters-alarms')} variant="ghost" className="text-[8px] font-black text-muted-foreground hover:text-foreground hover:bg-muted/ rounded-xl px-3 h-7">
                         Full history <ChevronRight className="w-3" />
                     </Button>
                 </div>
                 <div className="divide-y divide-white/20">
                     {events.slice(0, 5).map((event, i) => (
-                        <div key={event.id || i} className="p-5 flex items-center justify-between hover:bg-white/40 transition-colors group">
+                        <div key={event.id || i} className="p-5 flex items-center justify-between hover:bg-muted/ transition-colors group">
                             <div className="flex items-center gap-4">
                                 <div className={cn(
                                     "w-2 h-2 rounded-full",
                                     event.severity === 'Critical' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" : "bg-[#1B9157]"
                                 )} />
                                 <div>
-                                    <p className={cn("text-[11px] font-black tracking-tight italic", event.severity === 'Critical' ? "text-red-500" : "text-[#1A1A1A]")}>
+                                    <p className={cn("text-[11px] font-black tracking-tight italic", event.severity === 'Critical' ? "text-red-500" : "text-foreground")}>
                                         {event.event_type}
                                     </p>
-                                    <p className="text-[10px] text-[#1A1A1A]/40 font-medium italic mt-0.5 truncate max-w-[400px]">
+                                    <p className="text-[10px] text-foreground/40 font-medium italic mt-0.5 truncate max-w-[400px]">
                                         {event.reason} · Meter: {event.meter_id || 'System'}
                                     </p>
                                 </div>
                             </div>
-                            <span className="text-[10px] font-black text-[#1A1A1A]/30 tabular-nums">
+                            <span className="text-[10px] font-black text-foreground/30 tabular-nums">
                                 {new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                         </div>
@@ -390,3 +390,4 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 };
 
 export default MetersView;
+

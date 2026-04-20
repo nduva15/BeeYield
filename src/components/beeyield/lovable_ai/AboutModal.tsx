@@ -98,3 +98,4 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
     </Dialog>
   );
 }
+

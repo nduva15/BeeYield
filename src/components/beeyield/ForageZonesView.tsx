@@ -202,7 +202,7 @@ const ForageZonesView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onT
                             </Select>
 
                             <div className="relative">
-                                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                <Search className="w-4 h-4 text-muted-foreground/70 absolute left-3 top-1/2 -translate-y-1/2" />
                                 <Input
                                     value={search}
                                     onChange={(event) => setSearch(event.target.value)}
@@ -231,21 +231,21 @@ const ForageZonesView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onT
                                         type="button"
                                         onClick={() => setSelectedZoneId(zone.id)}
                                         className={cn(
-                                            'w-full rounded-2xl border px-4 py-4 text-left transition-all bg-white/60 hover:bg-white',
-                                            selectedZoneId === zone.id ? 'border-[#F4D03F]/50 shadow-sm' : 'border-[#F4D03F]/15'
+                                            'w-full rounded-2xl border px-4 py-4 text-left transition-all bg-muted/ hover:bg-white',
+                                            selectedZoneId === zone.id ? 'border-border/ shadow-sm' : 'border-border/'
                                         )}
                                     >
                                         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                                             <div className="space-y-1 min-w-0">
-                                                <div className="text-sm font-bold text-[#1A1A1A]">{zone.zone_name || 'Unnamed zone'}</div>
-                                                <div className="text-[11px] font-semibold text-gray-500">{getApiaryName(zone.apiary_id)}</div>
-                                                <div className="text-xs text-gray-500">
+                                                <div className="text-sm font-bold text-foreground">{zone.zone_name || 'Unnamed zone'}</div>
+                                                <div className="text-[11px] font-semibold text-muted-foreground">{getApiaryName(zone.apiary_id)}</div>
+                                                <div className="text-xs text-muted-foreground">
                                                     {zone.flora_type || 'No flora type'}{zone.season ? ` / ${zone.season}` : ''}
                                                 </div>
                                             </div>
                                             <div className="text-left lg:text-right">
-                                                <div className="text-[10px] font-black text-[#1A1A1A]">{zone.radius_km || 0} km</div>
-                                                <div className="text-[10px] text-gray-500">Density {zone.density_score || 0}</div>
+                                                <div className="text-[10px] font-black text-foreground">{zone.radius_km || 0} km</div>
+                                                <div className="text-[10px] text-muted-foreground">Density {zone.density_score || 0}</div>
                                             </div>
                                         </div>
                                     </button>
@@ -268,30 +268,30 @@ const ForageZonesView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onT
                                         <div className="text-[10px] font-black tracking-[0.18em] text-[#F4D03F]">
                                             {getApiaryName(selectedZone.apiary_id)}
                                         </div>
-                                        <h3 className="text-lg font-bold text-[#1A1A1A]">{selectedZone.zone_name || 'Unnamed zone'}</h3>
-                                        <p className="text-sm text-gray-500">{selectedZone.flora_type || 'No flora type'}</p>
+                                        <h3 className="text-lg font-bold text-foreground">{selectedZone.zone_name || 'Unnamed zone'}</h3>
+                                        <p className="text-sm text-muted-foreground">{selectedZone.flora_type || 'No flora type'}</p>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-3">
-                                            <div className="text-[10px] font-bold text-gray-400">Radius</div>
-                                            <div className="text-sm font-semibold text-[#1A1A1A]">{selectedZone.radius_km || 0} km</div>
+                                        <div className="rounded-xl border border-border/ bg-muted/ p-3">
+                                            <div className="text-[10px] font-bold text-muted-foreground/70">Radius</div>
+                                            <div className="text-sm font-semibold text-foreground">{selectedZone.radius_km || 0} km</div>
                                         </div>
-                                        <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-3">
-                                            <div className="text-[10px] font-bold text-gray-400">Density</div>
-                                            <div className="text-sm font-semibold text-[#1A1A1A]">{selectedZone.density_score || 0}</div>
+                                        <div className="rounded-xl border border-border/ bg-muted/ p-3">
+                                            <div className="text-[10px] font-bold text-muted-foreground/70">Density</div>
+                                            <div className="text-sm font-semibold text-foreground">{selectedZone.density_score || 0}</div>
                                         </div>
                                     </div>
 
-                                    <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-4 space-y-2">
-                                        <div className="text-[10px] font-bold text-gray-400">Coordinates</div>
+                                    <div className="rounded-xl border border-border/ bg-muted/ p-4 space-y-2">
+                                        <div className="text-[10px] font-bold text-muted-foreground/70">Coordinates</div>
                                         <div className="text-sm text-gray-700">
                                             {selectedZone.latitude ?? '-'}, {selectedZone.longitude ?? '-'}
                                         </div>
                                     </div>
 
-                                    <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-4 space-y-2">
-                                        <div className="text-[10px] font-bold text-gray-400">Notes</div>
+                                    <div className="rounded-xl border border-border/ bg-muted/ p-4 space-y-2">
+                                        <div className="text-[10px] font-bold text-muted-foreground/70">Notes</div>
                                         <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedZone.notes || 'No notes yet.'}</p>
                                     </div>
 
@@ -310,8 +310,8 @@ const ForageZonesView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onT
 
                         <div className={cn(glass.card, 'p-5 space-y-4')}>
                             <div>
-                                <h3 className="text-[11px] font-black text-[#1A1A1A]">{editingZoneId ? 'Update zone' : 'Create zone'}</h3>
-                                <p className="text-[10px] text-gray-500">{editingZoneId ? 'Edit the saved backend record.' : 'Add a new forage zone for an apiary.'}</p>
+                                <h3 className="text-[11px] font-black text-foreground">{editingZoneId ? 'Update zone' : 'Create zone'}</h3>
+                                <p className="text-[10px] text-muted-foreground">{editingZoneId ? 'Edit the saved backend record.' : 'Add a new forage zone for an apiary.'}</p>
                             </div>
 
                             <BeeYieldFormField id="zone-apiary" label="Apiary">
@@ -358,7 +358,7 @@ const ForageZonesView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onT
                             </BeeYieldFormField>
 
                             <BeeYieldFormField id="zone-notes" label="Notes">
-                                <Textarea id="zone-notes" value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} className="min-h-[110px] rounded-xl border border-[#F4D03F]/30 bg-[#FFF9F0] text-sm" />
+                                <Textarea id="zone-notes" value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} className="min-h-[110px] rounded-xl border border-border/ bg-card text-sm" />
                             </BeeYieldFormField>
 
                             <div className="flex gap-2">
@@ -395,3 +395,4 @@ const ForageZonesView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onT
 };
 
 export default ForageZonesView;
+

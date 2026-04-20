@@ -80,7 +80,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                             <span className="text-[10px] font-bold text-emerald-600 opacity-60 leading-none mb-1">Coverage</span>
                             <span className="text-sm font-bold text-emerald-700 leading-none">{avgCoverage}%</span>
                         </div>
-                        <div className="flex flex-col items-end px-3 py-1 bg-[#F9F7F2] border border-amber-100 rounded-lg shadow-sm">
+                        <div className="flex flex-col items-end px-3 py-1 bg-muted/20 border border-amber-100 rounded-lg shadow-sm">
                             <span className="text-[10px] font-bold text-amber-600 opacity-60 leading-none mb-1">Units</span>
                             <span className="text-sm font-bold text-amber-700 leading-none">{totalHives}</span>
                         </div>
@@ -98,9 +98,9 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                     >
                         <div className="flex items-start sm:items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 shrink-0 shadow-sm">
-                                <Info className="w-5 h-5 text-gray-400" />
+                                <Info className="w-5 h-5 text-muted-foreground/70" />
                             </div>
-                            <p className="text-xs font-medium text-gray-500 leading-relaxed uppercase tracking-tighter sm:tracking-normal">
+                            <p className="text-xs font-medium text-muted-foreground leading-relaxed uppercase tracking-tighter sm:tracking-normal">
                                 Click the grid to add units. <br /> Drag to adjust placement.
                             </p>
                         </div>
@@ -206,7 +206,7 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                     <div className="w-2 h-2 rounded-full bg-red-500 mt-1 shrink-0 animate-pulse" />
                                     <div>
                                         <p className="text-[10px] font-bold text-red-700 tracking-wider mb-1 leading-none">{alert.title}</p>
-                                        <p className="text-[10px] font-medium text-gray-500 leading-relaxed">{alert.desc}</p>
+                                        <p className="text-[10px] font-medium text-muted-foreground leading-relaxed">{alert.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -220,9 +220,9 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                     >
                         <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
-                                <ClipboardList className="w-5 h-5 text-gray-500" />
+                                <ClipboardList className="w-5 h-5 text-muted-foreground" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Operational Logs</h3>
+                            <h3 className="text-sm font-bold text-foreground tracking-tight">Operational Logs</h3>
                         </div>
 
                         <div className="p-4 space-y-4 max-h-[250px] overflow-y-auto custom-scrollbar">
@@ -231,13 +231,13 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                                     <div className="flex justify-between items-center mb-1">
                                         <div className="flex items-center gap-2">
                                             <div className={cn("w-1.5 h-1.5 rounded-full", log.type === 'syrup' ? 'bg-[#F4D03F]' : 'bg-[#1B9157]')} />
-                                            <span className="text-[10px] font-bold tracking-wider text-gray-500">
+                                            <span className="text-[10px] font-bold tracking-wider text-muted-foreground">
                                                 {log.type === 'syrup' ? 'System_Feeding' : 'Registry_Audit'}
                                             </span>
                                         </div>
-                                        <span className="text-[10px] font-bold text-gray-300 group-hover:text-gray-400 transition-colors">{log.time}</span>
+                                        <span className="text-[10px] font-bold text-gray-300 group-hover:text-muted-foreground/70 transition-colors">{log.time}</span>
                                     </div>
-                                    <p className="text-[11px] font-medium text-[#1A1A1A] leading-relaxed border-l-2 border-gray-100 pl-3 group-hover:border-[#F4D03F] transition-colors">
+                                    <p className="text-[11px] font-medium text-foreground leading-relaxed border-l-2 border-gray-100 pl-3 group-hover:border-[#F4D03F] transition-colors">
                                         {log.desc}
                                     </p>
                                 </div>
@@ -259,14 +259,14 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
                 animate={{ opacity: 1, y: 0 }}
                 className={cn(glass.card, "p-5 lg:p-6 bg-white border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-4 lg:gap-6 relative overflow-hidden group shadow-sm")}
             >
-                <div className="absolute -right-6 -top-6 w-32 h-32 bg-[#F9F7F2]/50 blur-2xl rounded-full" />
+                <div className="absolute -right-6 -top-6 w-32 h-32 bg-muted/ blur-2xl rounded-full" />
                 <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center shrink-0 border border-gray-200 shadow-sm group-hover:bg-[#1B9157]/5 group-hover:border-[#1B9157]/20 transition-colors">
-                    <Info className="w-6 h-6 text-gray-400 group-hover:text-[#1B9157] transition-colors" />
+                    <Info className="w-6 h-6 text-muted-foreground/70 group-hover:text-[#1B9157] transition-colors" />
                 </div>
                 <div className="flex-1 space-y-1 relative z-10">
-                    <h5 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Intelligence Sync</h5>
-                    <p className="text-[11px] font-medium text-gray-500 leading-relaxed tracking-tighter sm:tracking-normal border-l-2 border-[#1B9157] pl-4">
-                        Current field plan coverage at <span className="text-[#1A1A1A] font-bold">82%</span>. Shift Section A-4 trajectories North-East to close gap.
+                    <h5 className="text-sm font-bold text-foreground tracking-tight">Intelligence Sync</h5>
+                    <p className="text-[11px] font-medium text-muted-foreground leading-relaxed tracking-tighter sm:tracking-normal border-l-2 border-[#1B9157] pl-4">
+                        Current field plan coverage at <span className="text-foreground font-bold">82%</span>. Shift Section A-4 trajectories North-East to close gap.
                         Security flags in Sector 4 require urgent ground verification.
                     </p>
                 </div>
@@ -282,3 +282,4 @@ const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) 
 };
 
 export default DeploymentPlanning;
+

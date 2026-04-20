@@ -309,7 +309,7 @@ const ContentEditor = () => {
                     {post.status !== 'published' && (
                         <Button
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-[#1A1A1A] font-bold"
+                            className="bg-green-600 hover:bg-green-700 text-foreground font-bold"
                             onClick={handlePublish}
                             disabled={publishing}
                         >
@@ -370,7 +370,7 @@ const ContentEditor = () => {
                 </div>
 
                 {/* Center: Writing Area */}
-                <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full bg-[#FFF9F0] shadow-sm border-x">
+                <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full bg-card shadow-sm border-x">
                     {activeChapter ? (
                         <>
                             <div className="p-6 border-b pb-4">
@@ -495,3 +495,4 @@ const ContentEditor = () => {
 };
 
 export default ContentEditor;
+

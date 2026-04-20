@@ -43,14 +43,14 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
             },
             cell: ({ row }) => (
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] border border-[#F4D03F]/10 flex items-center justify-center shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-muted/20 border border-border/ flex items-center justify-center shadow-sm">
                         <Hash className="w-4 h-4 text-[#F4D03F]" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-sm font-bold text-[#1A1A1A] tracking-tight uppercase">{row.getValue('hive_code')}</span>
+                        <span className="text-sm font-bold text-foreground tracking-tight uppercase">{row.getValue('hive_code')}</span>
                         <div className="flex items-center gap-1">
                             <Binary className="w-2.5 h-2.5 text-[#F4D03F]/40" />
-                            <span className="text-[8px] font-bold text-gray-400">Firmware v5.2</span>
+                            <span className="text-[8px] font-bold text-muted-foreground/70">Firmware v5.2</span>
                         </div>
                     </div>
                 </div>
@@ -69,9 +69,9 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                     <div className={cn(
                         "inline-flex items-center gap-2 px-3 py-1 rounded-md border text-[10px] font-bold tracking-wider",
                         isHealthy ? 'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20' :
-                            isWarning ? 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20' :
+                            isWarning ? 'bg-[#F4D03F]/10 text-[#F4D03F] border-border/' :
                                 isCritical ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                    'bg-gray-100 text-gray-400 border-gray-200'
+                                    'bg-gray-100 text-muted-foreground/70 border-gray-200'
                     )}>
                         <div className={cn("w-1.5 h-1.5 rounded-full",
                             isHealthy ? 'bg-[#1B9157] animate-pulse' :
@@ -94,8 +94,8 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                     <div className="flex flex-col items-center gap-1 group/cell">
                         <div className="flex items-center gap-2">
                             <Scale className="w-3.5 h-3.5 text-[#F4D03F]/40 group-hover/cell:text-[#F4D03F] transition-colors" />
-                            <span className="text-sm font-bold tabular-nums text-[#1A1A1A]">
-                                {weight ? weight.toFixed(1) : '---'}<span className="text-[10px] text-gray-400 ml-0.5 font-bold">kg</span>
+                            <span className="text-sm font-bold tabular-nums text-foreground">
+                                {weight ? weight.toFixed(1) : '---'}<span className="text-[10px] text-muted-foreground/70 ml-0.5 font-bold">kg</span>
                             </span>
                         </div>
                     </div>
@@ -115,9 +115,9 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                                 temp && temp > 36 ? 'text-red-500' : 'text-[#F4D03F]/40 group-hover/cell:text-[#F4D03F]'
                             )} />
                             <span className={cn("text-sm font-bold tabular-nums transition-colors",
-                                temp && temp > 36 ? 'text-red-500' : 'text-[#1A1A1A]'
+                                temp && temp > 36 ? 'text-red-500' : 'text-foreground'
                             )}>
-                                {temp ? temp.toFixed(1) : '---'}<span className="text-[10px] text-gray-400 ml-0.5 font-bold">°C</span>
+                                {temp ? temp.toFixed(1) : '---'}<span className="text-[10px] text-muted-foreground/70 ml-0.5 font-bold">°C</span>
                             </span>
                         </div>
                     </div>
@@ -134,10 +134,10 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                     <div className="flex items-center gap-4 justify-end group/bat">
                         <div className="flex flex-col items-end gap-1.5">
                             <div className="flex items-center gap-2">
-                                <span className="text-[8px] font-bold text-gray-400">PWR: </span>
-                                <span className="text-xs font-bold tabular-nums text-[#1A1A1A]">{batVal}%</span>
+                                <span className="text-[8px] font-bold text-muted-foreground/70">PWR: </span>
+                                <span className="text-xs font-bold tabular-nums text-foreground">{batVal}%</span>
                             </div>
-                            <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden border border-[#F4D03F]/5">
+                            <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden border border-border/">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${batVal}%` }}
@@ -177,12 +177,12 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
             {/* Search */}
             <div className={cn(glass.filterBar, "bg-white")}>
                 <div className="flex-1 w-full relative group/search">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 opacity-50 group-focus-within/search:opacity-100 transition-opacity" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70 opacity-50 group-focus-within/search:opacity-100 transition-opacity" />
                     <Input
                         placeholder="Search fleet registry..."
                         value={globalFilter ?? ''}
                         onChange={(event) => setGlobalFilter(event.target.value)}
-                        className="h-9 pl-9 bg-transparent border-none text-xs font-bold text-[#1A1A1A] placeholder:text-gray-400 focus-visible:ring-0"
+                        className="h-9 pl-9 bg-transparent border-none text-xs font-bold text-foreground placeholder:text-muted-foreground/70 focus-visible:ring-0"
                     />
                 </div>
                 <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-[#1B9157]/5 rounded-lg border border-[#1B9157]/10">
@@ -197,9 +197,9 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                     <table className="w-full text-left">
                         <thead>
                             {table.getHeaderGroups().map((headerGroup) => (
-                                <tr key={headerGroup.id} className="bg-[#F9F7F2]">
+                                <tr key={headerGroup.id} className="bg-muted/20">
                                     {headerGroup.headers.map((header) => (
-                                        <th key={header.id} className="px-5 py-3 border-b border-[#F4D03F]/10">
+                                        <th key={header.id} className="px-5 py-3 border-b border-border/">
                                             {flexRender(header.column.columnDef.header, header.getContext())}
                                         </th>
                                     ))}
@@ -231,12 +231,12 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                                     <tr>
                                         <td colSpan={columns.length} className="h-40 text-center">
                                             <div className="flex flex-col items-center justify-center gap-4">
-                                                <div className="w-16 h-16 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center">
+                                                <div className="w-16 h-16 rounded-xl bg-[#F4D03F]/5 border border-border/ flex items-center justify-center">
                                                     <SearchCode className="w-8 h-8 text-[#F4D03F] opacity-30" />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <p className="text-sm font-bold text-[#1A1A1A] tracking-tight uppercase">Registry Null</p>
-                                                    <p className="text-[10px] text-gray-400 font-bold">Revise search parameters</p>
+                                                    <p className="text-sm font-bold text-foreground tracking-tight uppercase">Registry Null</p>
+                                                    <p className="text-[10px] text-muted-foreground/70 font-bold">Revise search parameters</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -251,7 +251,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
             {/* Pagination */}
             {table.getPageCount() > 1 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="text-[10px] font-bold text-gray-400">
+                    <div className="text-[10px] font-bold text-muted-foreground/70">
                         Segment {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </div>
                     <div className="flex items-center gap-2">
@@ -277,3 +277,4 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
         </div>
     );
 };
+

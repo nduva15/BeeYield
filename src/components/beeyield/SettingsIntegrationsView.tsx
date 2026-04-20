@@ -129,8 +129,8 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
                                     <LockIcon className="w-5 h-5 text-[#1B9157]" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">eTIMS VSDC Terminal</h3>
-                                    <p className="text-[10px] font-bold text-gray-500 tracking-wider">Electronic Tax Invoice Generation Enforcement</p>
+                                    <h3 className="text-lg font-bold text-foreground tracking-tight">eTIMS VSDC Terminal</h3>
+                                    <p className="text-[10px] font-bold text-muted-foreground tracking-wider">Electronic Tax Invoice Generation Enforcement</p>
                                 </div>
                             </div>
                             <button
@@ -146,7 +146,7 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Registered KRA PIN</label>
+                                        <label className="text-[10px] font-bold text-muted-foreground tracking-wider ml-1">Registered KRA PIN</label>
                                         <Input
                                             placeholder="P05XXXXXXXX"
                                             value={kraPin}
@@ -155,7 +155,7 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Branch Code</label>
+                                        <label className="text-[10px] font-bold text-muted-foreground tracking-wider ml-1">Branch Code</label>
                                         <Input
                                             placeholder="00"
                                             value={branchCode}
@@ -164,7 +164,7 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Device Serial</label>
+                                        <label className="text-[10px] font-bold text-muted-foreground tracking-wider ml-1">Device Serial</label>
                                         <Input
                                             placeholder="BY-VSCU-MOCK-2026"
                                             value={deviceSerial}
@@ -173,7 +173,7 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Registered Business</label>
+                                        <label className="text-[10px] font-bold text-muted-foreground tracking-wider ml-1">Registered Business</label>
                                         <Input
                                             placeholder="BeeYield Ltd"
                                             value={companyName}
@@ -186,20 +186,20 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
                                 <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 space-y-4 relative overflow-hidden">
                                     <div className="flex items-center gap-3">
                                         <Activity className="w-4 h-4 text-[#1B9157]" />
-                                        <span className="text-[10px] font-bold tracking-wider text-gray-500">Live Resilience Metrics</span>
+                                        <span className="text-[10px] font-bold tracking-wider text-muted-foreground">Live Resilience Metrics</span>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center bg-white px-4 py-2.5 rounded-lg border border-gray-100">
-                                            <span className="text-[10px] font-bold text-gray-400 tracking-wider">Authorized Hub</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">Authorized Hub</span>
                                             <span className="text-xs font-bold text-[#1B9157]">BeeYield-VSDC-v4</span>
                                         </div>
                                         <div className="flex justify-between items-center bg-white px-4 py-2.5 rounded-lg border border-gray-100">
-                                            <span className="text-[10px] font-bold text-gray-400 tracking-wider">Last sync</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">Last sync</span>
                                             <span className="text-xs font-bold text-gray-700">{getSyncDate('etims')}</span>
                                         </div>
                                         <div className="pt-3">
                                             <div className="flex justify-between items-center mb-1.5 px-1">
-                                                <span className="text-[10px] font-bold text-gray-400 tracking-wider">Uptime Stability</span>
+                                                <span className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">Uptime Stability</span>
                                                 <span className="text-[10px] font-bold text-[#1B9157]">99.9%</span>
                                             </div>
                                             <div className="h-1.5 bg-gray-200/50 rounded-full overflow-hidden">
@@ -217,11 +217,11 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
             <div className={cn(glass.card, "p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-white shadow-sm")}>
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 shadow-sm">
-                        <Database className="w-5 h-5 text-gray-400" />
+                        <Database className="w-5 h-5 text-muted-foreground/70" />
                     </div>
                     <div className="space-y-0.5">
-                        <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Encryption & Data Residency</h4>
-                        <p className="max-w-2xl text-[11px] text-gray-500 font-medium leading-relaxed">
+                        <h4 className="text-sm font-bold text-foreground tracking-tight">Encryption & Data Residency</h4>
+                        <p className="max-w-2xl text-[11px] text-muted-foreground font-medium leading-relaxed">
                             We store data securely. Tax and finance records are kept separate, and transmission logs are encrypted at rest.
                         </p>
                     </div>
@@ -233,3 +233,4 @@ const SettingsIntegrationsView: React.FC<{ initialConfigs?: any[] }> = ({ initia
 };
 
 export default SettingsIntegrationsView;
+

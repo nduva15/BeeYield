@@ -75,7 +75,7 @@ const MeasurementIntervalSelector = () => {
                     className={cn(
                         "flex-1 py-2 text-[9px] font-black rounded-lg transition-all",
                         selected === opt
-                            ? "bg-[#FFF9F0] text-[#F4D03F] shadow-xl scale-[1.02] z-10 border border-[#F4D03F]/20"
+                            ? "bg-card text-[#F4D03F] shadow-xl scale-[1.02] z-10 border border-border/"
                             : "text-foreground/40 hover:text-foreground/60"
                     )}
                 >
@@ -119,18 +119,18 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                     ].map((item, i) => (
                         <div key={i} className="space-y-3">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-border/">
                                     <item.icon className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <h4 className={cn(glass.microLabel, "opacity-80")}>{item.label}</h4>
                             </div>
                             <ToggleSwitch checked={item.checked} onCheckedChange={item.set} />
-                            <p className="text-[10px] text-gray-400 italic font-medium leading-tight">{item.desc}</p>
+                            <p className="text-[10px] text-muted-foreground/70 italic font-medium leading-tight">{item.desc}</p>
                         </div>
                     ))}
                 </div>
 
-                <div className="pt-6 flex gap-4 border-t border-[#F4D03F]/10">
+                <div className="pt-6 flex gap-4 border-t border-border/">
                     <button
                         className={cn(glass.btnSecondary, "flex-1 h-10")}
                         onClick={() => onOpenChange(false)}
@@ -192,12 +192,12 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                     </div>
                 </div>
 
-                <div className="pt-6 border-t border-[#F4D03F]/10 space-y-4">
+                <div className="pt-6 border-t border-border/ space-y-4">
                     <h4 className={glass.sectionTitle}>Diagnostic <span className="text-[#F4D03F]">Triggers</span></h4>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 bg-[#F4D03F]/5 rounded-xl border border-[#F4D03F]/10 space-y-4">
+                        <div className="p-4 bg-[#F4D03F]/5 rounded-xl border border-border/ space-y-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 shadow-sm">
+                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-border/ shadow-sm">
                                     <Thermometer className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <span className={cn(glass.microLabel, "text-[#F4D03F]")}>Thermal</span>
@@ -405,11 +405,11 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                     </motion.div>
                 ) : (
                     <div className={glass.emptyState}>
-                        <div className="w-12 h-12 rounded-xl bg-[#F9F7F2] flex items-center justify-center mb-4">
-                            <SearchCode className="w-6 h-6 text-gray-400" />
+                        <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center mb-4">
+                            <SearchCode className="w-6 h-6 text-muted-foreground/70" />
                         </div>
-                        <h3 className="text-lg font-medium text-[#1A1A1A]">Select a Hive</h3>
-                        <p className="text-gray-500 mt-1 max-w-sm font-medium">
+                        <h3 className="text-lg font-medium text-foreground">Select a Hive</h3>
+                        <p className="text-muted-foreground mt-1 max-w-sm font-medium">
                             Establish a telemetry link by selecting a hive from the registry.
                         </p>
                     </div>
@@ -425,7 +425,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                     <motion.div
                         key={i}
                         whileHover={{ y: -4, scale: 1.01 }}
-                        className={cn(glass.card, "p-5 border-[#F4D03F]/10 flex items-center gap-6 group cursor-default shadow-sm transition-all duration-300 relative overflow-hidden")}
+                        className={cn(glass.card, "p-5 border-border/ flex items-center gap-6 group cursor-default shadow-sm transition-all duration-300 relative overflow-hidden")}
                     >
                         <div className="absolute top-0 right-0 w-16 h-16 bg-[#F4D03F]/5 rounded-full -mr-8 -mt-8 blur-xl pointer-events-none" />
                         <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center border transition-all duration-500 shadow-sm", panel.bg, `border-${panel.color.split('-')[1]}-500/10`)}>
@@ -563,17 +563,17 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
                             >
                                 <div className="p-5">
                                     <div className="flex items-start justify-between mb-4">
-                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/">
                                             <BluetoothIcon className="w-5 h-5 text-[#F4D03F]" />
                                         </div>
                                         <div className={glass.badge}>Active</div>
                                     </div>
-                                    <h4 className="text-lg font-bold text-[#1A1A1A] mb-1">
+                                    <h4 className="text-lg font-bold text-foreground mb-1">
                                         {device.serial_number ? device.serial_number.toUpperCase() : 'Unknown Device'}
                                     </h4>
                                     <p className={glass.microLabel}>{device.device_uid}</p>
                                     
-                                    <div className="mt-6 pt-4 border-t border-[#F4D03F]/10 flex justify-between items-center text-[10px] font-bold text-[#1A1A1A]/40">
+                                    <div className="mt-6 pt-4 border-t border-border/ flex justify-between items-center text-[10px] font-bold text-foreground/40">
                                         <span>Firmware v{device.firmware_version || '1.0'}</span>
                                         <span className="text-[#1B9157]">Encrypted</span>
                                     </div>
@@ -583,11 +583,11 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
                     </div>
                 ) : (
                     <div className={glass.emptyState}>
-                        <div className="w-12 h-12 rounded-xl bg-[#F9F7F2] flex items-center justify-center mb-4">
-                            <BluetoothIcon className="w-6 h-6 text-gray-400" />
+                        <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center mb-4">
+                            <BluetoothIcon className="w-6 h-6 text-muted-foreground/70" />
                         </div>
-                        <h3 className="text-lg font-medium text-[#1A1A1A]">No Devices Found</h3>
-                        <p className="text-gray-500 mt-1 max-w-sm font-medium">
+                        <h3 className="text-lg font-medium text-foreground">No Devices Found</h3>
+                        <p className="text-muted-foreground mt-1 max-w-sm font-medium">
                             Ensure your BeeYield Hub is in discovery mode and try scanning again.
                         </p>
                     </div>
@@ -614,3 +614,4 @@ export const USBView: React.FC<RemainingViewProps> = ({ onTabChange }) => (
         </motion.div>
     </BeeYieldPageShell>
 );
+

@@ -34,18 +34,18 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent 
                 className={cn(
-                    "bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-[2rem] shadow-2xl p-0 overflow-hidden outline-none transition-all duration-300",
+                    "bg-card border border-border/ rounded-[2rem] shadow-2xl p-0 overflow-hidden outline-none transition-all duration-300",
                     activeTab === 'apiary' ? 'max-w-4xl' : 'max-w-xl'
                 )}
             >
                 {/* Header */}
-                <div className="bg-gradient-to-br from-[#F4D03F]/5 to-transparent px-8 py-6 border-b border-[#F4D03F]/10">
+                <div className="bg-gradient-to-br from-[#F4D03F]/5 to-transparent px-8 py-6 border-b border-border/">
                     <DialogHeader>
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F4D03F]/10 rounded-xl border border-[#F4D03F]/20 w-fit mb-3">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F4D03F]/10 rounded-xl border border-border/ w-fit mb-3">
                             <Plus className="w-4 h-4 text-[#F4D03F]" />
                             <span className="text-[11px] font-black tracking-wider text-[#F4D03F] uppercase">New Record</span>
                         </div>
-                        <DialogTitle className="text-2xl font-black text-[#1A1A1A] tracking-tight">
+                        <DialogTitle className="text-2xl font-black text-foreground tracking-tight">
                             Create New Asset
                         </DialogTitle>
                         <DialogDescription className="text-xs font-bold text-muted-foreground">
@@ -55,18 +55,18 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                 </div>
 
                 {/* Content */}
-                <div className="px-8 py-6 bg-white/50 backdrop-blur-xl">
+                <div className="px-8 py-6 bg-muted/ backdrop-blur-xl">
                     <Tabs defaultValue="apiary" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 bg-white/40 p-1.5 h-12 rounded-xl mb-8 border border-[#F4D03F]/10 shadow-sm">
+                        <TabsList className="grid w-full grid-cols-2 bg-muted/ p-1.5 h-12 rounded-xl mb-8 border border-border/ shadow-sm">
                             <TabsTrigger 
                                 value="apiary" 
-                                className="rounded-lg text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-[#F4D03F] data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-md transition-all h-9"
+                                className="rounded-lg text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-[#F4D03F] data-[state=active]:text-foreground data-[state=active]:shadow-md transition-all h-9"
                             >
                                 Deployment Site (Apiary)
                             </TabsTrigger>
                             <TabsTrigger 
                                 value="hive" 
-                                className="rounded-lg text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-[#F4D03F] data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-md transition-all h-9"
+                                className="rounded-lg text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-[#F4D03F] data-[state=active]:text-foreground data-[state=active]:shadow-md transition-all h-9"
                             >
                                 Hive Unit
                             </TabsTrigger>
@@ -90,3 +90,4 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
 };
 
 export default QuickActionModal;
+

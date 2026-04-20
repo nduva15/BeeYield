@@ -140,24 +140,24 @@ const BeeFlightHoursForecast: React.FC = () => {
             </div>
 
             <div className={cn(glass.section, 'mt-6 flex flex-col overflow-hidden')}>
-                <div className="flex items-center justify-between border-b border-[#F4D03F]/10 px-5 py-4">
+                <div className="flex items-center justify-between border-b border-border/ px-5 py-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#F4D03F]/20 bg-[#F9F7F2]">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border/ bg-muted/20">
                             <Activity className="h-4 w-4 text-[#F4D03F]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-sm font-bold text-[#1A1A1A]">Forecast Capacity</h3>
-                            <p className="text-[9px] text-gray-500">Backend-derived flyable windows</p>
+                            <h3 className="text-sm font-bold text-foreground">Forecast Capacity</h3>
+                            <p className="text-[9px] text-muted-foreground">Backend-derived flyable windows</p>
                         </div>
                     </div>
                     <div className="text-right">
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">
+                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">
                             {primaryApiary?.name || 'No apiary'}
                         </p>
                     </div>
                 </div>
 
-                <div className="relative h-[380px] w-full bg-[#FFF9F0] p-6">
+                <div className="relative h-[380px] w-full bg-card p-6">
                     <div
                         className="pointer-events-none absolute inset-0 opacity-[0.01]"
                         style={{
@@ -168,13 +168,13 @@ const BeeFlightHoursForecast: React.FC = () => {
                     />
 
                     {!hasForecast && !isLoading ? (
-                        <div className={cn(glass.card, 'flex h-full w-full items-center justify-center border border-[#F4D03F]/10 bg-white/50')}>
+                        <div className={cn(glass.card, 'flex h-full w-full items-center justify-center border border-border/ bg-muted/')}>
                             <div className="space-y-2 p-6 text-center">
-                                <div className="inline-flex items-center justify-center gap-2 text-[#1A1A1A]">
+                                <div className="inline-flex items-center justify-center gap-2 text-foreground">
                                     <Info className="h-4 w-4 text-[#F4D03F]" />
                                     <span className="text-sm font-bold">Forecast data unavailable</span>
                                 </div>
-                                <p className="max-w-md text-xs font-medium text-gray-500">
+                                <p className="max-w-md text-xs font-medium text-muted-foreground">
                                     This screen now waits for real backend weather summary data instead of rendering synthetic weekly placeholders.
                                 </p>
                             </div>
@@ -217,7 +217,7 @@ const BeeFlightHoursForecast: React.FC = () => {
 
                 <div className="relative z-10 flex flex-col items-center gap-10 lg:flex-row">
                     <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#F4D03F] shadow-[0_0_30px_rgba(244,208,63,0.3)]">
-                        <Info className="h-8 w-8 text-[#1A1A1A]" />
+                        <Info className="h-8 w-8 text-foreground" />
                     </div>
                     <div className="flex-1 space-y-4">
                         <div className="space-y-1">
@@ -226,13 +226,13 @@ const BeeFlightHoursForecast: React.FC = () => {
                             </h4>
                             <p className="text-[10px] font-bold text-[#F4D03F]/60">Forecast & Foraging Cycles</p>
                         </div>
-                        <p className="border-l-2 border-[#F4D03F]/40 pl-6 text-sm font-medium leading-relaxed opacity-80">
+                        <p className="border-l-2 border-border/ pl-6 text-sm font-medium leading-relaxed opacity-80">
                             {bestWindow
                                 ? `${bestWindow.day} currently shows the strongest flyable window with about ${bestWindow.hours} productive hours, average temperatures near ${Math.round(bestWindow.avgTemp)}°C, and peak wind around ${Math.round(bestWindow.maxWind)} km/h.`
                                 : 'We use selected-apiary weather telemetry to estimate likely bee work windows as real forecast data becomes available.'}
                         </p>
                     </div>
-                    <button className={cn(glass.btnSecondary, 'h-12 border-transparent bg-white px-8 text-[#1A1A1A] hover:bg-white/90')}>
+                    <button className={cn(glass.btnSecondary, 'h-12 border-transparent bg-white px-8 text-foreground hover:bg-muted/')}>
                         Learn More
                         <ArrowRight className="ml-2 h-4 w-4" />
                     </button>
@@ -243,3 +243,4 @@ const BeeFlightHoursForecast: React.FC = () => {
 };
 
 export default BeeFlightHoursForecast;
+

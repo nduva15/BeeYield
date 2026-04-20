@@ -401,8 +401,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                         <div className="relative mb-4">
                             <img src={Logo} alt="Beeyield" className="h-12 w-auto relative z-10" />
                         </div>
-                        <h1 className="text-2xl font-black text-[#1A1A1A] mb-2 tracking-tighter">BeeYield AI</h1>
-                        <p className="text-[#1A1A1A]/50 max-w-2xl mb-6 text-sm font-semibold leading-relaxed">
+                        <h1 className="text-2xl font-black text-foreground mb-2 tracking-tighter">BeeYield AI</h1>
+                        <p className="text-foreground/50 max-w-2xl mb-6 text-sm font-semibold leading-relaxed">
                             Ask about hive health, inspections, pollination, or traceability. Start with one question—short is fine.
                         </p>
 
@@ -411,7 +411,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 <button
                                     key={s}
                                     onClick={() => send(s)}
-                                    className="text-left px-4 py-3 rounded-lg text-[11px] border border-[#F4D03F]/10 bg-[#FFF9F0] hover:border-[#F4D03F]/50 hover:bg-[#F4D03F]/5 transition-all text-[#1A1A1A]/60 hover:text-[#1A1A1A] leading-relaxed font-semibold shadow-sm group flex items-center justify-between"
+                                    className="text-left px-4 py-3 rounded-lg text-[11px] border border-border/ bg-card hover:border-border/ hover:bg-[#F4D03F]/5 transition-all text-foreground/60 hover:text-foreground leading-relaxed font-semibold shadow-sm group flex items-center justify-between"
                                 >
                                     <span className="truncate mr-4">{s}</span>
                                     <Send className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all text-[#F4D03F]" />
@@ -431,19 +431,19 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                         >
                             {msg.role === "assistant" && (
-                                <div className="flex-shrink-0 w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center bg-white border border-[#F4D03F]/10 shadow-sm p-1 self-start mt-1">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center bg-white border border-border/ shadow-sm p-1 self-start mt-1">
                                     <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                                 </div>
                             )}
                             <div className={`flex flex-col gap-1.5 ${msg.role === "user" ? "max-w-[85%] items-end" : "max-w-[90%] items-start"}`}>
                                 {msg.imagePreview && (
-                                    <div className="rounded-xl overflow-hidden border border-[#F4D03F]/5 shadow-sm mb-1">
+                                    <div className="rounded-xl overflow-hidden border border-border/ shadow-sm mb-1">
                                         <img src={msg.imagePreview} alt="Attached" className="max-h-48 object-contain" />
                                     </div>
                                 )}
                                 <div className={`px-4 py-2.5 text-[12px] leading-relaxed whitespace-pre-wrap shadow-sm ${msg.role === "user"
                                         ? "bg-[#1A1A1A] text-white rounded-2xl rounded-tr-sm font-bold"
-                                        : "bg-white text-[#1A1A1A] border border-[#F4D03F]/10 rounded-2xl rounded-tl-sm font-semibold prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-headings:text-[#1A1A1A] prose-strong:text-[#1A1A1A] prose-a:text-[#1B9157]"
+                                        : "bg-white text-foreground border border-border/ rounded-2xl rounded-tl-sm font-semibold prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-headings:text-foreground prose-strong:text-foreground prose-a:text-[#1B9157]"
                                     }`}>
                                     {msg.role === "user" ? (
                                         msg.content
@@ -455,8 +455,8 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 </div>
                             </div>
                             {msg.role === "user" && (
-                                <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center shadow-sm self-start mt-1">
-                                    <User className="w-4 h-4 text-[#1A1A1A]/20" />
+                                <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-white border border-border/ flex items-center justify-center shadow-sm self-start mt-1">
+                                    <User className="w-4 h-4 text-foreground/20" />
                                 </div>
                             )}
                         </motion.div>
@@ -464,10 +464,10 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
 
                     {isLoading && messages[messages.length - 1]?.role === "user" && (
                         <div className="flex gap-6 justify-start">
-                            <div className="flex-shrink-0 w-12 h-12 rounded-2xl overflow-hidden bg-[#FFF9F0] border border-[#F4D03F]/20 flex items-center justify-center p-2.5 shadow-xl">
+                            <div className="flex-shrink-0 w-12 h-12 rounded-2xl overflow-hidden bg-card border border-border/ flex items-center justify-center p-2.5 shadow-xl">
                                 <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                             </div>
-                            <div className="bg-[#FFF9F0] border border-border rounded-[2.5rem] rounded-tl-lg px-8 py-6 flex items-center gap-2">
+                            <div className="bg-card border border-border rounded-[2.5rem] rounded-tl-lg px-8 py-6 flex items-center gap-2">
                                 <div className="typing-dot w-2 h-2 rounded-full bg-[#F4D03F]" />
                                 <div className="typing-dot w-2 h-2 rounded-full bg-[#F4D03F]" />
                                 <div className="typing-dot w-2 h-2 rounded-full bg-[#F4D03F]" />
@@ -483,12 +483,12 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                 <div className="max-w-4xl mx-auto relative group">
                     <div className="absolute inset-0 bg-[#F4D03F]/5 blur-2xl -z-10 opacity-0 group-focus-within:opacity-100 transition-opacity" />
 
-                    <div className="bg-[#FFF9F0]/90 backdrop-blur-2xl rounded-2xl border border-[#F4D03F]/20 shadow-xl group-focus-within:border-[#F4D03F]/40 transition-all p-2">
+                    <div className="bg-card/ backdrop-blur-2xl rounded-2xl border border-border/ shadow-xl group-focus-within:border-border/ transition-all p-2">
                         {(attachedImage || attachedAudio) && (
-                            <div className="p-2 flex items-center gap-3 bg-[#F9F7F2] rounded-xl mb-2 animate-in slide-in-from-bottom-2">
+                            <div className="p-2 flex items-center gap-3 bg-muted/20 rounded-xl mb-2 animate-in slide-in-from-bottom-2">
                                 {imagePreviewUrl && (
                                     <div className="relative group/img">
-                                        <img src={imagePreviewUrl} alt="Attached" className="h-10 w-10 object-cover rounded-lg border border-[#F4D03F]/20 shadow-sm" />
+                                        <img src={imagePreviewUrl} alt="Attached" className="h-10 w-10 object-cover rounded-lg border border-border/ shadow-sm" />
                                         <button
                                             onClick={() => { setAttachedImage(null); setImagePreviewUrl(null); if (imageInputRef.current) imageInputRef.current.value = ""; }}
                                             className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center shadow-sm hover:scale-110"
@@ -500,12 +500,12 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                     </div>
                                 )}
                                 {attachedAudio && (
-                                    <div className="flex items-center gap-2 bg-[#FFF9F0] border border-[#F4D03F]/10 rounded-lg px-3 py-1.5 text-[9px] font-bold text-[#1A1A1A]/60 shadow-sm relative">
+                                    <div className="flex items-center gap-2 bg-card border border-border/ rounded-lg px-3 py-1.5 text-[9px] font-bold text-foreground/60 shadow-sm relative">
                                         <Mic className="w-3 h-3 text-[#F4D03F]" />
                                         <span className="max-w-[150px] truncate">{attachedAudio.name}</span>
                                         <button
                                             onClick={() => { setAttachedAudio(null); if (audioInputRef.current) audioInputRef.current.value = ""; }}
-                                            className="ml-1 text-[#1A1A1A]/30 hover:text-red-500"
+                                            className="ml-1 text-foreground/30 hover:text-red-500"
                                             aria-label="Remove attached audio"
                                             title="Remove attached audio"
                                         >
@@ -521,7 +521,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 <button
                                     type="button"
                                     onClick={() => imageInputRef.current?.click()}
-                                    className="w-9 h-9 rounded-lg hover:bg-[#F4D03F]/10 flex items-center justify-center transition-all text-[#1A1A1A]/40 hover:text-[#F4D03F]"
+                                    className="w-9 h-9 rounded-lg hover:bg-[#F4D03F]/10 flex items-center justify-center transition-all text-foreground/40 hover:text-[#F4D03F]"
                                     title="Attach imagery"
                                 >
                                     <Image className="w-4 h-4" />
@@ -529,7 +529,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 <button
                                     type="button"
                                     onClick={() => audioInputRef.current?.click()}
-                                    className="w-9 h-9 rounded-lg hover:bg-[#F4D03F]/10 flex items-center justify-center transition-all text-[#1A1A1A]/40 hover:text-[#F4D03F]"
+                                    className="w-9 h-9 rounded-lg hover:bg-[#F4D03F]/10 flex items-center justify-center transition-all text-foreground/40 hover:text-[#F4D03F]"
                                     title="Attach audio"
                                 >
                                     <Mic className="w-4 h-4" />
@@ -545,7 +545,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     placeholder="Ask a question…"
-                                    className="w-full bg-transparent border-none px-2 py-2 text-sm text-[#1A1A1A] placeholder:text-[#1A1A1A]/30 outline-none focus:ring-0 transition-all resize-none min-h-[40px] max-h-[160px] font-semibold"
+                                    className="w-full bg-transparent border-none px-2 py-2 text-sm text-foreground placeholder:text-foreground/30 outline-none focus:ring-0 transition-all resize-none min-h-[40px] max-h-[160px] font-semibold"
                                     rows={1}
                                     disabled={isLoading}
                                     onInput={(e) => {
@@ -562,7 +562,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                         type="button"
                                         onClick={toggleListening}
                                         className={cn("w-9 h-9 rounded-lg flex items-center justify-center transition-all shadow-sm",
-                                            isListening ? "bg-red-500 text-white" : "text-[#1A1A1A]/40 hover:bg-[#F4D03F]/10 hover:text-[#F4D03F]"
+                                            isListening ? "bg-red-500 text-white" : "text-foreground/40 hover:bg-[#F4D03F]/10 hover:text-[#F4D03F]"
                                         )}
                                         aria-label={isListening ? "Stop voice input" : "Start voice input"}
                                         title={isListening ? "Stop voice input" : "Start voice input"}
@@ -584,7 +584,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                         </form>
                     </div>
 
-                    <p className="text-center text-[8px] text-[#1A1A1A]/30 font-bold mt-3 flex items-center justify-center gap-3">
+                    <p className="text-center text-[8px] text-foreground/30 font-bold mt-3 flex items-center justify-center gap-3">
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
                         Powered by BeeYield AI — 750K+ research datasets
                         <span className="w-6 h-px bg-[#F4D03F]/20" />
@@ -619,7 +619,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setAboutOpen(false)}
-                            className="absolute inset-0 bg-[#FFF9F0]/80 backdrop-blur-md"
+                            className="absolute inset-0 bg-card/ backdrop-blur-md"
                         />
                         <AboutBeeYield onClose={() => setAboutOpen(false)} />
                     </div>
@@ -631,12 +631,12 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setGalleryOpen(false)}
-                            className="absolute inset-0 bg-[#FFF9F0]/80 backdrop-blur-md"
+                            className="absolute inset-0 bg-card/ backdrop-blur-md"
                         />
                         <div className="relative w-full h-full bg-background rounded-[3rem] overflow-hidden shadow-3xl border border-border z-10">
                             <button 
                                 onClick={() => setGalleryOpen(false)}
-                                className="absolute top-8 right-8 w-12 h-12 rounded-full bg-muted/50 hover:bg-[#F4D03F] transition-all flex items-center justify-center text-foreground hover:text-[#1A1A1A] z-[110]"
+                                className="absolute top-8 right-8 w-12 h-12 rounded-full bg-muted/50 hover:bg-[#F4D03F] transition-all flex items-center justify-center text-foreground hover:text-foreground z-[110]"
                                 aria-label="Close species gallery"
                                 title="Close"
                             >
@@ -668,3 +668,4 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
         </BeeYieldPageShell>
     );
 }
+

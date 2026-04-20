@@ -51,7 +51,7 @@ function sourceTone(source?: WeatherMetricSource) {
         case 'device':
             return 'border-[#10b981]/20 bg-[#10b981]/10 text-[#047857]';
         case 'provider':
-            return 'border-[#F4D03F]/30 bg-[#F4D03F]/10 text-[#8a6a00]';
+            return 'border-border/ bg-[#F4D03F]/10 text-[#8a6a00]';
         default:
             return 'border-[#064e3b]/10 bg-[#064e3b]/5 text-[#064e3b]/55';
     }
@@ -80,7 +80,7 @@ function MetricCard(props: {
                     <p className="mt-2 text-3xl font-black tracking-tight text-[#064e3b]">{value}</p>
                     {detail && <p className="mt-1 text-xs font-semibold text-[#064e3b]/55">{detail}</p>}
                 </div>
-                <div className={cn('rounded-2xl p-3 text-[#064e3b]', accent || 'bg-white/70')}>{icon}</div>
+                <div className={cn('rounded-2xl p-3 text-[#064e3b]', accent || 'bg-muted/')}>{icon}</div>
             </div>
             <div className="mt-4">
                 <span className={cn('inline-flex rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em]', sourceTone(source))}>
@@ -120,7 +120,7 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
     }
 
     return (
-        <div className={cn(glass.card, 'overflow-hidden border-[#064e3b]/10 bg-[#FFF9F0] p-5', className)}>
+        <div className={cn(glass.card, 'overflow-hidden border-[#064e3b]/10 bg-card p-5', className)}>
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                     <div>
@@ -141,7 +141,7 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
                             {hourlyCards.map((point, index) => (
                                 <div
                                     key={`${point?.timestamp || 'hour'}-${index}`}
-                                    className="min-w-[74px] rounded-2xl border border-[#064e3b]/10 bg-white/70 px-3 py-2 text-center"
+                                    className="min-w-[74px] rounded-2xl border border-[#064e3b]/10 bg-muted/ px-3 py-2 text-center"
                                 >
                                     <p className="text-[11px] font-black text-[#064e3b]/55">{formatHour(point?.timestamp)}</p>
                                     <p className="mt-1 text-xl font-black text-[#064e3b]">{formatTemperature(point?.temperature_c)}</p>
@@ -230,7 +230,7 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
                                 summary?.linked_device_meta?.map((device) => (
                                     <span
                                         key={device.device_id}
-                                        className="inline-flex rounded-full border border-[#064e3b]/10 bg-white/70 px-3 py-1.5 text-xs font-bold text-[#064e3b]"
+                                        className="inline-flex rounded-full border border-[#064e3b]/10 bg-muted/ px-3 py-1.5 text-xs font-bold text-[#064e3b]"
                                     >
                                         {device.device_name} | {device.status || 'unknown'}
                                     </span>
@@ -247,3 +247,4 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
 };
 
 export default WeatherTelemetryPanel;
+

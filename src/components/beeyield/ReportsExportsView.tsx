@@ -197,14 +197,14 @@ const ReportsExportsView: React.FC = () => {
                 />
 
                 <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6">
-                    <div className={cn(glass.card, 'p-6 bg-white/40 border-white/20 space-y-6')}>
+                    <div className={cn(glass.card, 'p-6 bg-muted/ border-border/ space-y-6')}>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-[#1A1A1A]/60">Scope</label>
+                                <label className="text-[10px] font-black text-foreground/60">Scope</label>
                                 <Input value={reportScope} onChange={(e) => setReportScope(e.target.value)} className={glass.input} inputMode="numeric" />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-[#1A1A1A]/60">Format</label>
+                                <label className="text-[10px] font-black text-foreground/60">Format</label>
                                 <Select value={selectedFormat} onValueChange={(value: 'PDF' | 'XLSX') => setSelectedFormat(value)}>
                                     <SelectTrigger className={glass.input}>
                                         <SelectValue />
@@ -216,7 +216,7 @@ const ReportsExportsView: React.FC = () => {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-[#1A1A1A]/60">Apiary</label>
+                                <label className="text-[10px] font-black text-foreground/60">Apiary</label>
                                 <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                                     <SelectTrigger className={glass.input}>
                                         <SelectValue />
@@ -232,7 +232,7 @@ const ReportsExportsView: React.FC = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-[#1A1A1A]/60">Hive</label>
+                            <label className="text-[10px] font-black text-foreground/60">Hive</label>
                                 <Select value={selectedHive} onValueChange={setSelectedHive}>
                                     <SelectTrigger className={glass.input}>
                                         <SelectValue />
@@ -248,7 +248,7 @@ const ReportsExportsView: React.FC = () => {
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {Object.entries(sections).map(([key, enabled]) => (
-                                <label key={key} className="flex items-center gap-2 rounded-xl border border-white/40 bg-white/40 px-3 py-2 text-[10px] font-black text-[#1A1A1A]">
+                                <label key={key} className="flex items-center gap-2 rounded-xl border border-border/ bg-muted/ px-3 py-2 text-[10px] font-black text-foreground">
                                     <Checkbox
                                         checked={enabled}
                                         onCheckedChange={(checked) =>
@@ -272,14 +272,14 @@ const ReportsExportsView: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className={cn(glass.card, 'p-6 bg-white/40 border-white/20 space-y-4')}>
+                    <div className={cn(glass.card, 'p-6 bg-muted/ border-border/ space-y-4')}>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
+                            <div className="w-10 h-10 rounded-xl bg-muted/ flex items-center justify-center border border-border/">
                                 <Calendar className="w-5 h-5 text-[#F4D03F]" />
                             </div>
                             <div>
-                                <h3 className="text-[11px] font-black text-[#1A1A1A]">Schedule reports</h3>
-                                <p className="text-[9px] font-bold text-gray-500">Recurring report delivery stored in the backend</p>
+                                <h3 className="text-[11px] font-black text-foreground">Schedule reports</h3>
+                                <p className="text-[9px] font-bold text-muted-foreground">Recurring report delivery stored in the backend</p>
                             </div>
                         </div>
 
@@ -325,22 +325,22 @@ const ReportsExportsView: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <div className={cn(glass.card, 'p-0 overflow-hidden bg-white/40 border-white/20')}>
-                        <div className="p-5 border-b border-white/10 bg-white/20 flex items-center gap-3">
+                    <div className={cn(glass.card, 'p-0 overflow-hidden bg-muted/ border-border/')}>
+                        <div className="p-5 border-b border-border/ bg-muted/ flex items-center gap-3">
                             <FileSpreadsheet className="w-4 h-4 text-[#1B9157]" />
-                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Generated reports</h3>
+                            <h3 className="text-[11px] font-black text-foreground">Generated reports</h3>
                         </div>
                         <div className="p-5 space-y-3">
                             {reportsLoading ? (
-                                <div className="flex items-center justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-gray-400" /></div>
+                                <div className="flex items-center justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground/70" /></div>
                             ) : filteredReports.length === 0 ? (
-                                <p className="text-sm text-gray-500">No reports generated yet.</p>
+                                <p className="text-sm text-muted-foreground">No reports generated yet.</p>
                             ) : (
                                 filteredReports.map((report) => (
-                                    <div key={report.id} className="flex items-center justify-between rounded-xl border border-white/40 bg-white/40 px-4 py-3">
+                                    <div key={report.id} className="flex items-center justify-between rounded-xl border border-border/ bg-muted/ px-4 py-3">
                                         <div>
-                                            <div className="text-[10px] font-black text-[#1A1A1A] uppercase">{report.report_type.replace('_', ' ')}</div>
-                                            <div className="text-[9px] font-bold text-gray-500">{new Date(report.created_at).toLocaleString()}</div>
+                                            <div className="text-[10px] font-black text-foreground uppercase">{report.report_type.replace('_', ' ')}</div>
+                                            <div className="text-[9px] font-bold text-muted-foreground">{new Date(report.created_at).toLocaleString()}</div>
                                         </div>
                                         <Button
                                             className={glass.btnSecondary}
@@ -356,27 +356,27 @@ const ReportsExportsView: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className={cn(glass.card, 'p-0 overflow-hidden bg-white/40 border-white/20')}>
-                        <div className="p-5 border-b border-white/10 bg-white/20 flex items-center gap-3">
+                    <div className={cn(glass.card, 'p-0 overflow-hidden bg-muted/ border-border/')}>
+                        <div className="p-5 border-b border-border/ bg-muted/ flex items-center gap-3">
                             <Calendar className="w-4 h-4 text-[#F4D03F]" />
-                            <h3 className="text-[11px] font-black text-[#1A1A1A]">Scheduled reports</h3>
+                            <h3 className="text-[11px] font-black text-foreground">Scheduled reports</h3>
                         </div>
                         <div className="p-5 space-y-3">
                             {schedulesLoading ? (
-                                <div className="flex items-center justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-gray-400" /></div>
+                                <div className="flex items-center justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground/70" /></div>
                             ) : filteredSchedules.length === 0 ? (
-                                <p className="text-sm text-gray-500">No schedules saved yet.</p>
+                                <p className="text-sm text-muted-foreground">No schedules saved yet.</p>
                             ) : (
                                 filteredSchedules.map((schedule) => (
-                                    <div key={schedule.id} className="flex items-center justify-between rounded-xl border border-white/40 bg-white/40 px-4 py-3">
+                                    <div key={schedule.id} className="flex items-center justify-between rounded-xl border border-border/ bg-muted/ px-4 py-3">
                                         <div>
-                                            <div className="text-[10px] font-black text-[#1A1A1A]">{schedule.name}</div>
-                                            <div className="text-[9px] font-bold text-gray-500">
+                                            <div className="text-[10px] font-black text-foreground">{schedule.name}</div>
+                                            <div className="text-[9px] font-bold text-muted-foreground">
                                                 {schedule.frequency} • {schedule.recipients?.join(', ') || 'No recipients'}
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className={cn(glass.badge, schedule.is_active ? 'border-[#1B9157]/30 bg-[#1B9157]/10 text-[#1B9157]' : 'border-gray-200 bg-gray-100 text-gray-500')}>
+                                            <span className={cn(glass.badge, schedule.is_active ? 'border-[#1B9157]/30 bg-[#1B9157]/10 text-[#1B9157]' : 'border-gray-200 bg-gray-100 text-muted-foreground')}>
                                                 {schedule.is_active ? 'Active' : 'Paused'}
                                             </span>
                                             <Button className={glass.btnSecondary} onClick={() => handleEditSchedule(schedule)}>
@@ -402,3 +402,4 @@ const ReportsExportsView: React.FC = () => {
 };
 
 export default ReportsExportsView;
+

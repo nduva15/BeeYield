@@ -32,9 +32,9 @@ const DEG = '\u00B0';
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
     return (
-        <div className="flex items-center justify-between gap-4 py-2 border-b border-[#F4D03F]/10 last:border-b-0">
-            <span className="text-[10px] font-black text-gray-400">{label}</span>
-            <span className="text-[11px] font-bold text-[#1A1A1A] break-all text-right">{value}</span>
+        <div className="flex items-center justify-between gap-4 py-2 border-b border-border/ last:border-b-0">
+            <span className="text-[10px] font-black text-muted-foreground/70">{label}</span>
+            <span className="text-[11px] font-bold text-foreground break-all text-right">{value}</span>
         </div>
     );
 }
@@ -213,21 +213,21 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "p-5")}>
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center overflow-hidden shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-white border border-border/ flex items-center justify-center overflow-hidden shadow-sm">
                                 {avatarUrl ? (
                                     <img src={avatarUrl} alt={fullName} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-[#F9F7F2] text-[#F4D03F] font-bold text-sm">
+                                    <div className="w-full h-full flex items-center justify-center bg-muted/20 text-[#F4D03F] font-bold text-sm">
                                         {fullName.charAt(0).toUpperCase()}
                                     </div>
                                 )}
                             </div>
                             <div>
-                                <h3 className="text-sm font-semibold text-[#1A1A1A]">{fullName}</h3>
-                                <p className="text-[11px] text-gray-500">Your signed-in details</p>
+                                <h3 className="text-sm font-semibold text-foreground">{fullName}</h3>
+                                <p className="text-[11px] text-muted-foreground">Your signed-in details</p>
                             </div>
                         </div>
-                        <div className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-4">
+                        <div className="bg-muted/ border border-border/ rounded-xl p-4">
                             <Row label="Email" value={user?.email || '—'} />
                             <Row label="User ID" value={user?.id || '—'} />
                             <Row label="Profile" value={beeyieldUser ? 'Active' : '—'} />
@@ -250,8 +250,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     <div className={cn(glass.section, "p-5")}>
                         <div className="flex items-center justify-between mb-4">
                             <div>
-                                <h3 className="text-sm font-semibold text-[#1A1A1A]">Important views</h3>
-                                <p className="text-[11px] text-gray-500">Quick access to core workflows</p>
+                                <h3 className="text-sm font-semibold text-foreground">Important views</h3>
+                                <p className="text-[11px] text-muted-foreground">Quick access to core workflows</p>
                             </div>
                         </div>
 
@@ -269,16 +269,16 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     type="button"
                                     onClick={() => onTabChange(v.id)}
                                     className={cn(
-                                        "text-left bg-white/50 border border-[#F4D03F]/10 rounded-2xl p-4 hover:bg-white/70 hover:border-[#F4D03F]/20 transition-all",
+                                        "text-left bg-muted/ border border-border/ rounded-2xl p-4 hover:bg-muted/ hover:border-border/ transition-all",
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/10 flex items-center justify-center">
+                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-border/ flex items-center justify-center">
                                             <v.icon className="w-5 h-5 text-[#F4D03F]" />
                                         </div>
                                         <div className="min-w-0">
-                                            <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate">{v.label}</div>
-                                            <div className="text-[10px] text-gray-500 truncate">{v.sub}</div>
+                                            <div className="font-black text-[11px] tracking-tight text-foreground truncate">{v.label}</div>
+                                            <div className="text-[10px] text-muted-foreground truncate">{v.sub}</div>
                                         </div>
                                     </div>
                                 </button>
@@ -289,20 +289,20 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                 <div className="lg:col-span-12">
                     <div className={cn(glass.section, "overflow-hidden")}>
-                        <div className="border-b border-[#F4D03F]/20 bg-[linear-gradient(135deg,rgba(255,249,240,0.96),rgba(249,247,242,0.98))] px-5 py-5 md:px-6">
+                        <div className="border-b border-border/ bg-[linear-gradient(135deg,rgba(255,249,240,0.96),rgba(249,247,242,0.98))] px-5 py-5 md:px-6">
                             <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
                                 <div className="space-y-5">
                                     <div className="flex flex-wrap items-start justify-between gap-4">
                                         <div className="space-y-2">
-                                            <div className="inline-flex items-center gap-2 rounded-full border border-[#F4D03F]/20 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
+                                            <div className="inline-flex items-center gap-2 rounded-full border border-border/ bg-muted/ px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
                                                 <CloudSun className="h-3.5 w-3.5 text-[#F4D03F]" />
                                                 Home weather
                                             </div>
                                             <div>
-                                                <h3 className="text-2xl font-black tracking-tight text-[#1A1A1A]">
+                                                <h3 className="text-2xl font-black tracking-tight text-foreground">
                                                     {primaryApiary ? `${primaryApiary.name} forecast window` : 'Apiary weather overview'}
                                                 </h3>
-                                                <p className="mt-1 text-sm text-gray-500">
+                                                <p className="mt-1 text-sm text-muted-foreground">
                                                     Keep the home dashboard focused on what the bees can do right now.
                                                 </p>
                                             </div>
@@ -314,38 +314,38 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     </div>
 
                                     <div className="grid gap-4 md:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]">
-                                        <div className="rounded-[24px] border border-[#F4D03F]/15 bg-white/75 p-4">
+                                        <div className="rounded-[24px] border border-border/ bg-muted/ p-4">
                                             <div className="flex items-start justify-between gap-3">
                                                 <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Current field conditions</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Current field conditions</p>
                                                     <div className="mt-3 flex items-end gap-3">
-                                                        <p className="text-5xl font-black tracking-tight text-[#1A1A1A]">
+                                                        <p className="text-5xl font-black tracking-tight text-foreground">
                                                             {typeof weatherCurrent?.temperature_c === 'number' ? `${Math.round(weatherCurrent.temperature_c)}${DEG}` : `--${DEG}`}
                                                         </p>
                                                         <div className="pb-1">
-                                                            <p className="text-sm font-black text-[#1A1A1A]">
+                                                            <p className="text-sm font-black text-foreground">
                                                                 {weatherCurrent?.condition || 'Condition pending'}
                                                             </p>
-                                                            <p className="text-xs font-semibold text-gray-500">
+                                                            <p className="text-xs font-semibold text-muted-foreground">
                                                                 {primaryApiary?.location_name || 'Location not set'}
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="rounded-2xl border border-[#F4D03F]/15 bg-[#F4D03F]/10 p-3 text-[#8a6a00]">
+                                                <div className="rounded-2xl border border-border/ bg-[#F4D03F]/10 p-3 text-[#8a6a00]">
                                                     <CloudSun className="h-5 w-5" />
                                                 </div>
                                             </div>
-                                            <p className="mt-4 text-sm font-semibold text-gray-600">
+                                            <p className="mt-4 text-sm font-semibold text-muted-foreground/90">
                                                 {weatherReadiness.detail}
                                             </p>
                                         </div>
 
-                                        <div className="rounded-[24px] border border-[#F4D03F]/15 bg-white/75 p-4">
+                                        <div className="rounded-[24px] border border-border/ bg-muted/ p-4">
                                             <div className="flex items-center justify-between gap-3">
                                                 <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Active apiary</p>
-                                                    <p className="mt-1 text-sm font-bold text-[#1A1A1A]">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Active apiary</p>
+                                                    <p className="mt-1 text-sm font-bold text-foreground">
                                                         {primaryApiary?.name || 'Select an apiary'}
                                                     </p>
                                                 </div>
@@ -375,13 +375,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                             </div>
 
                                             <div className="mt-4 grid grid-cols-2 gap-3">
-                                                <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-3">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Linked devices</p>
-                                                    <p className="mt-2 text-lg font-black text-[#1A1A1A]">{linkedWeatherDevices}</p>
+                                                <div className="rounded-2xl border border-border/ bg-card p-3">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Linked devices</p>
+                                                    <p className="mt-2 text-lg font-black text-foreground">{linkedWeatherDevices}</p>
                                                 </div>
-                                                <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-3">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">Observed</p>
-                                                    <p className="mt-2 text-lg font-black text-[#1A1A1A]">
+                                                <div className="rounded-2xl border border-border/ bg-card p-3">
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Observed</p>
+                                                    <p className="mt-2 text-lg font-black text-foreground">
                                                         {weatherCurrent?.last_observed_at
                                                             ? new Date(weatherCurrent.last_observed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                                                             : '--'}
@@ -394,12 +394,12 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
                                     {weatherHighlights.map((item) => (
-                                        <div key={item.label} className="rounded-[24px] border border-[#F4D03F]/12 bg-white/80 p-4">
+                                        <div key={item.label} className="rounded-[24px] border border-border/ bg-muted/ p-4">
                                             <div className="flex items-start justify-between gap-3">
                                                 <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">{item.label}</p>
-                                                    <p className="mt-2 text-2xl font-black tracking-tight text-[#1A1A1A]">{item.value}</p>
-                                                    <p className="mt-1 text-[11px] font-semibold text-gray-500">{item.detail}</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">{item.label}</p>
+                                                    <p className="mt-2 text-2xl font-black tracking-tight text-foreground">{item.value}</p>
+                                                    <p className="mt-1 text-[11px] font-semibold text-muted-foreground">{item.detail}</p>
                                                 </div>
                                                 <div className={cn("rounded-2xl border p-3", item.accent)}>
                                                     <item.icon className="h-4 w-4" />
@@ -431,15 +431,15 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             { label: 'Harvested', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${productionSummary.leftForBeesKg.toFixed(1)} KG left for bees` },
                             { label: 'Batches', value: batches.length, icon: Binary, hint: `${productionSummary.verifiedBatches} blockchain-verified` },
                         ].map((card) => (
-                            <div key={card.label} className={cn(glass.section, "p-5 bg-white/60")}>
+                            <div key={card.label} className={cn(glass.section, "p-5 bg-muted/")}>
                                 <div className="flex items-center justify-between mb-3">
-                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/10 flex items-center justify-center">
+                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-border/ flex items-center justify-center">
                                         <card.icon className="w-5 h-5 text-[#F4D03F]" />
                                     </div>
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">{card.label}</span>
+                                    <span className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-tight">{card.label}</span>
                                 </div>
-                                <div className="text-2xl font-black tracking-tight text-[#1A1A1A]">{card.value}</div>
-                                <p className="text-[10px] text-gray-500 mt-1">{card.hint}</p>
+                                <div className="text-2xl font-black tracking-tight text-foreground">{card.value}</div>
+                                <p className="text-[10px] text-muted-foreground mt-1">{card.hint}</p>
                             </div>
                         ))}
                     </div>
@@ -447,14 +447,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "overflow-hidden")}>
-                        <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
+                        <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/">
                                     <MapPin className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Apiaries</h3>
-                                    <p className="text-[11px] text-gray-500">{apiaries.length} records</p>
+                                    <h3 className="text-sm font-semibold text-foreground">Apiaries</h3>
+                                    <p className="text-[11px] text-muted-foreground">{apiaries.length} records</p>
                                 </div>
                             </div>
                             <button onClick={() => onTabChange('places')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px]")}>
@@ -463,14 +463,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
                         <div className="p-4 space-y-2">
                             {apiariesQuery.isLoading ? (
-                                <div className="text-[11px] text-gray-500">Loading…</div>
+                                <div className="text-[11px] text-muted-foreground">Loading…</div>
                             ) : apiaries.length === 0 ? (
-                                <div className="text-[11px] text-gray-500">No apiaries yet.</div>
+                                <div className="text-[11px] text-muted-foreground">No apiaries yet.</div>
                             ) : (
                                 apiaries.slice(0, 8).map((a: Apiary) => (
-                                    <div key={a.id} className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3">
-                                        <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate">{a.name}</div>
-                                        <div className="text-[10px] text-gray-500 truncate">{a.location_name || 'Unknown location'}</div>
+                                    <div key={a.id} className="bg-muted/ border border-border/ rounded-xl p-3">
+                                        <div className="font-black text-[11px] tracking-tight text-foreground truncate">{a.name}</div>
+                                        <div className="text-[10px] text-muted-foreground truncate">{a.location_name || 'Unknown location'}</div>
                                     </div>
                                 ))
                             )}
@@ -480,14 +480,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "overflow-hidden")}>
-                        <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
+                        <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                             <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onTabChange('beeyield')}>
-                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 group-hover:bg-[#F4D03F]/20 transition-all">
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/ group-hover:bg-[#F4D03F]/20 transition-all">
                                     <Hexagon className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors">Hives</h3>
-                                    <p className="text-[11px] text-gray-500">{hives.length} records</p>
+                                    <h3 className="text-sm font-semibold text-foreground group-hover:text-[#F4D03F] transition-colors">Hives</h3>
+                                    <p className="text-[11px] text-muted-foreground">{hives.length} records</p>
                                 </div>
                             </div>
                             <button onClick={() => onTabChange('beeyield')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px]")}>
@@ -496,18 +496,18 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
                         <div className="p-4 space-y-2">
                             {hivesQuery.isLoading ? (
-                                <div className="text-[11px] text-gray-500">Loading…</div>
+                                <div className="text-[11px] text-muted-foreground">Loading…</div>
                             ) : hives.length === 0 ? (
-                                <div className="text-[11px] text-gray-500">No hives yet.</div>
+                                <div className="text-[11px] text-muted-foreground">No hives yet.</div>
                             ) : (
                                 hives.slice(0, 8).map((h: Hive) => (
                                     <div 
                                         key={h.id} 
                                         onClick={() => onTabChange('beeyield')}
-                                        className="bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 cursor-pointer hover:border-[#F4D03F]/30 hover:bg-white transition-all group"
+                                        className="bg-muted/ border border-border/ rounded-xl p-3 cursor-pointer hover:border-border/ hover:bg-white transition-all group"
                                     >
-                                        <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate group-hover:text-[#F4D03F] transition-colors">{h.hive_code}</div>
-                                        <div className="text-[10px] text-gray-500 truncate">{h.status || 'Active'}</div>
+                                        <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-[#F4D03F] transition-colors">{h.hive_code}</div>
+                                        <div className="text-[10px] text-muted-foreground truncate">{h.status || 'Active'}</div>
                                     </div>
                                 ))
                             )}
@@ -517,14 +517,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                 <div className="lg:col-span-4">
                     <div className={cn(glass.section, "overflow-hidden")}>
-                        <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
+                        <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                             <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onTabChange('harvests')}>
-                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10 group-hover:bg-[#F4D03F]/20 transition-all">
+                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/ group-hover:bg-[#F4D03F]/20 transition-all">
                                     <Binary className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A] group-hover:text-[#F4D03F] transition-colors">Traceability Batches</h3>
-                                    <p className="text-[11px] text-gray-500">{batches.length} records</p>
+                                    <h3 className="text-sm font-semibold text-foreground group-hover:text-[#F4D03F] transition-colors">Traceability Batches</h3>
+                                    <p className="text-[11px] text-muted-foreground">{batches.length} records</p>
                                 </div>
                             </div>
                             <button onClick={() => onTabChange('harvests')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px]")}>
@@ -533,29 +533,29 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
                         <div className="p-4 space-y-2">
                             {batchesQuery.isLoading ? (
-                                <div className="text-[11px] text-gray-500">Loading…</div>
+                                <div className="text-[11px] text-muted-foreground">Loading…</div>
                             ) : recentBatches.length === 0 ? (
-                                <div className="text-[11px] text-gray-500">No batches yet.</div>
+                                <div className="text-[11px] text-muted-foreground">No batches yet.</div>
                             ) : (
                                 recentBatches.map((batch: BatchView) => (
                                     <button
                                         key={batch.id}
                                         onClick={() => onTabChange('harvests')}
-                                        className="w-full text-left bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-[#F4D03F]/5 transition-all active:scale-[0.98] group"
+                                        className="w-full text-left bg-muted/ border border-border/ rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-[#F4D03F]/5 transition-all active:scale-[0.98] group"
                                     >
                                         <div className="min-w-0">
-                                            <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate group-hover:text-[#F4D03F] transition-colors">
+                                            <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-[#F4D03F] transition-colors">
                                                 {batch.batch_code}
                                             </div>
-                                            <div className="text-[10px] text-gray-500 truncate">
+                                            <div className="text-[10px] text-muted-foreground truncate">
                                                 {batch.apiary_name || batch.apiary?.name || batch.hive?.hive_code || 'Traceability record'}
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                                            <div className="text-[10px] font-black tabular-nums text-[#1A1A1A]">
+                                            <div className="text-[10px] font-black tabular-nums text-foreground">
                                                 {(batch.quantity_kg ?? 0).toFixed(1)} kg
                                             </div>
-                                            <div className="text-[10px] text-gray-500">
+                                            <div className="text-[10px] text-muted-foreground">
                                                 {batch.verification_status || batch.completeness?.status || 'pending review'}
                                             </div>
                                         </div>
@@ -568,14 +568,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
             </div>
 
             <div className={cn(glass.section, "overflow-hidden mt-6")}>
-                <div className="px-5 py-4 border-b border-[#F4D03F]/20 flex items-center justify-between">
+                <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/10">
+                        <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/">
                             <Hand className="w-4 h-4 text-[#F4D03F]" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-semibold text-[#1A1A1A]">Harvests</h3>
-                            <p className="text-[11px] text-gray-500">{harvests.length} records</p>
+                            <h3 className="text-sm font-semibold text-foreground">Harvests</h3>
+                            <p className="text-[11px] text-muted-foreground">{harvests.length} records</p>
                         </div>
                     </div>
                     <button onClick={() => onTabChange('harvests')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px]")}>
@@ -584,23 +584,23 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 </div>
                 <div className="p-4 space-y-2">
                     {harvestsQuery.isLoading ? (
-                        <div className="text-[11px] text-gray-500">Loading…</div>
+                        <div className="text-[11px] text-muted-foreground">Loading…</div>
                     ) : recentHarvests.length === 0 ? (
-                        <div className="text-[11px] text-gray-500">No harvests yet.</div>
+                        <div className="text-[11px] text-muted-foreground">No harvests yet.</div>
                     ) : (
                         recentHarvests.map((h: Harvest) => (
                             <button 
                                 key={h.id} 
                                 onClick={() => setSelectedHarvest(h)}
-                                className="w-full text-left bg-white/50 border border-[#F4D03F]/10 rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-[#F4D03F]/5 transition-all active:scale-[0.98] group"
+                                className="w-full text-left bg-muted/ border border-border/ rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-[#F4D03F]/5 transition-all active:scale-[0.98] group"
                             >
                                 <div className="min-w-0">
-                                    <div className="font-black text-[11px] tracking-tight text-[#1A1A1A] truncate group-hover:text-[#F4D03F] transition-colors">{h.batch_code || `BAT-${h.id.slice(-6).toUpperCase()}`}</div>
-                                    <div className="text-[10px] text-gray-500 truncate">{h.honey_type || '—'}</div>
+                                    <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-[#F4D03F] transition-colors">{h.batch_code || `BAT-${h.id.slice(-6).toUpperCase()}`}</div>
+                                    <div className="text-[10px] text-muted-foreground truncate">{h.honey_type || '—'}</div>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
-                                    <div className="text-[10px] font-black tabular-nums text-[#1A1A1A]">{(h.quantity_kg ?? 0).toFixed(1)} kg</div>
-                                    <div className="text-[10px] text-gray-500 flex items-center gap-1">
+                                    <div className="text-[10px] font-black tabular-nums text-foreground">{(h.quantity_kg ?? 0).toFixed(1)} kg</div>
+                                    <div className="text-[10px] text-muted-foreground flex items-center gap-1">
                                         <Calendar className="w-3 h-3 opacity-60" />
                                         {h.harvest_date ? new Date(h.harvest_date).toLocaleDateString() : '—'}
                                     </div>
@@ -726,9 +726,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         id="dash-edit-verified"
                                         checked={editForm.is_verified || false}
                                         onChange={e => setEditForm({ ...editForm, is_verified: e.target.checked })}
-                                        className="rounded bg-black/40 border-[#F4D03F]/20 text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
+                                        className="rounded bg-black/40 border-border/ text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
                                     />
-                                    <Label htmlFor="dash-edit-verified" className="text-xs font-black text-gray-400 cursor-pointer">
+                                    <Label htmlFor="dash-edit-verified" className="text-xs font-black text-muted-foreground/70 cursor-pointer">
                                         Verified Record
                                     </Label>
                                 </div>
@@ -776,15 +776,15 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     <div className="text-sm font-bold">{selectedHarvest.moisture_content_percent != null ? `${selectedHarvest.moisture_content_percent}%` : '—'}</div>
                                 </div>
                                 {selectedHarvest.notes && (
-                                    <div className="col-span-2 space-y-1 pt-2 border-t border-[#F4D03F]/10">
+                                    <div className="col-span-2 space-y-1 pt-2 border-t border-border/">
                                         <Label className={glass.microLabel}>Notes</Label>
-                                        <p className="text-xs font-medium text-gray-600 leading-relaxed">{selectedHarvest.notes}</p>
+                                        <p className="text-xs font-medium text-muted-foreground/90 leading-relaxed">{selectedHarvest.notes}</p>
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        <div className="pt-4 border-t border-[#F4D03F]/10 flex gap-3">
+                        <div className="pt-4 border-t border-border/ flex gap-3">
                             {isEditing ? (
                                 <>
                                     <button onClick={() => setIsEditing(false)} className={cn(glass.btnSecondary, "flex-1 h-10")}>
@@ -817,3 +817,4 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 };
 
 export default DashboardHomeView;
+

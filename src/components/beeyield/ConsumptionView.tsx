@@ -118,7 +118,7 @@ const ConsumptionView: React.FC = () => {
 
                 <div className="p-10 pb-4 border-b border-border bg-gray-400 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm">
+                        <div className="w-12 h-12 rounded-2xl bg-card/ flex items-center justify-center border border-border shadow-sm">
                             <Search className="w-6 h-6 text-[#F4D03F]" />
                         </div>
                         <div>
@@ -199,7 +199,7 @@ const ConsumptionView: React.FC = () => {
                 className="space-y-6"
             >
                 <div className="flex items-center gap-4 px-2">
-                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/ shadow-sm">
                         <Activity className="w-5 h-5 text-[#F4D03F]" />
                     </div>
                     <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Usage <span className="text-[#F4D03F]">Summary</span></h3>
@@ -215,7 +215,7 @@ const ConsumptionView: React.FC = () => {
                             className="p-6 pt-8 flex items-center justify-between hover:bg-gray-400:bg-[#F4D03F]/10 rounded-2xl transition-all group first:pt-6"
                         >
                             <div className="flex items-center gap-4">
-                                <div className={cn("w-14 h-14 rounded-2xl bg-[#FFF9F0]/60 flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300", item.color)}>
+                                <div className={cn("w-14 h-14 rounded-2xl bg-card/ flex items-center justify-center border border-border shadow-sm group-hover:scale-110 transition-transform duration-300", item.color)}>
                                     <item.icon className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -223,7 +223,7 @@ const ConsumptionView: React.FC = () => {
                                     <p className={cn(glass.microLabel, "opacity-40 font-bold")}>Recent period</p>
                                 </div>
                             </div>
-                            <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-[#FFF9F0] text-[#F4D03F] border-[#F4D03F]/30 shadow-lg group-hover:scale-105 transition-transform")}>
+                            <div className={cn(glass.badge, "h-12 px-8 text-lg font-bold bg-card text-[#F4D03F] border-border/ shadow-lg group-hover:scale-105 transition-transform")}>
                                 {item.value}
                             </div>
                         </motion.div>
@@ -236,10 +236,10 @@ const ConsumptionView: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={cn(glass.card, "p-8 shadow-xl bg-[#F4D03F]/5 border-[#F4D03F]/20 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
+                className={cn(glass.card, "p-8 shadow-xl bg-[#F4D03F]/5 border-border/ flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group")}
             >
                 <div className="absolute right-0 top-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#F4D03F]/15 transition-colors" />
-                <div className="w-16 h-16 rounded-[1.5rem] bg-[#FFF9F0]/60 flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-card/ flex items-center justify-center shrink-0 border border-[#F4D03F] shadow-sm group-hover:scale-110 transition-transform duration-500 relative z-10">
                     <Info className="w-8 h-8 text-[#F4D03F]" />
                 </div>
                 <div className="relative z-10 text-center md:text-left">
@@ -255,3 +255,4 @@ const ConsumptionView: React.FC = () => {
 };
 
 export default ConsumptionView;
+

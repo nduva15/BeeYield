@@ -54,7 +54,7 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
     const hours = Array.from({ length: 24 }, (_, i) => i);
 
     return (
-        <div className="p-8 space-y-8 bg-[#FFF9F0] min-h-screen text-[#064e3b] antialiased">
+        <div className="p-8 space-y-8 bg-card min-h-screen text-[#064e3b] antialiased">
             <div className="flex items-center gap-4 border-b-4 border-[#064e3b] pb-6">
                 <div className="w-10 h-10 bg-[#064e3b] border-4 border-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_#facc15]">
                     <Layers className="w-6 h-6 text-[#facc15]" />
@@ -136,3 +136,4 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
 };
 
 export default LiveActivityHeatmap;
+

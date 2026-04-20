@@ -65,7 +65,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                     <button
                         onClick={fetchStats}
                         disabled={loading}
-                        className={cn(glass.btnPrimary, "h-24 bg-[#F4D03F] text-[#1A1A1A] shadow-4xl rounded-[3.5rem] px-16 font-black italic text-2xl transition-all flex items-center justify-center gap-10 group/btn pl-24")}
+                        className={cn(glass.btnPrimary, "h-24 bg-[#F4D03F] text-foreground shadow-4xl rounded-[3.5rem] px-16 font-black italic text-2xl transition-all flex items-center justify-center gap-10 group/btn pl-24")}
                     >
                         {loading ? <RefreshCw className="w-10 h-10 animate-spin" /> : <ShieldCheck className="w-10 h-10 group-hover/btn:rotate-180 transition-transform duration-1000" />}
                         Execute Health Check
@@ -86,11 +86,11 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                 <motion.div 
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className={cn(glass.card, "lg:col-span-8 p-0 overflow-hidden bg-[#FFF9F0]/60 backdrop-blur-3xl rounded-[5rem] relative")}
+                    className={cn(glass.card, "lg:col-span-8 p-0 overflow-hidden bg-card/ backdrop-blur-3xl rounded-[5rem] relative")}
                 >
-                    <div className="p-16 border-b border-[#F4D03F]/20 bg-gray-400 backdrop-blur-3xl flex items-center justify-between relative z-10">
+                    <div className="p-16 border-b border-border/ bg-gray-400 backdrop-blur-3xl flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-10">
-                            <div className="w-18 h-18 rounded-[2rem] bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 shadow-3xl">
+                            <div className="w-18 h-18 rounded-[2rem] bg-[#F4D03F]/10 flex items-center justify-center border border-border/ shadow-3xl">
                                 <Cpu className="w-10 h-10 text-[#F4D03F] animate-pulse" />
                             </div>
                             <div className="space-y-4">
@@ -98,7 +98,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                                 <p className={cn(glass.microLabel, 'opacity-40 uppercase italic')}>Active endpoint routing and usage distribution.</p>
                             </div>
                         </div>
-                        <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 px-12 py-4 rounded-full shadow-4xl skew-x-[-15deg]")}>
+                        <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#F4D03F] border-border/ px-12 py-4 rounded-full shadow-4xl skew-x-[-15deg]")}>
                             <div className="skew-x-[15deg] font-black italic text-[16px] flex items-center gap-6">
                                 <div className="w-3.5 h-3.5 rounded-full bg-[#F4D03F] animate-pulse" />
                                 System Optimal
@@ -113,7 +113,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                                     <Label className={cn(glass.microLabel, 'opacity-40 italic')}>System Utilization</Label>
                                     <span className="text-4xl font-black italic text-[#F4D03F] tracking-tighter tabular-nums">{usagePercent}%</span>
                                 </div>
-                                <div className="h-4 w-full bg-[#F9F7F2] rounded-full overflow-hidden shadow-inner p-[2px] border border-[#F4D03F]/10">
+                                <div className="h-4 w-full bg-muted/20 rounded-full overflow-hidden shadow-inner p-[2px] border border-border/">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${usagePercent}%` }}
@@ -131,10 +131,10 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                                             initial={{ opacity: 0, scale: 0.95 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             transition={{ delay: idx * 0.1 }}
-                                            className="flex items-center justify-between p-10 rounded-[3.5rem] bg-[#F9F7F2] border border-[#F4D03F]/10 hover:border-[#F4D03F]/40 transition-all duration-700 shadow-4xl group"
+                                            className="flex items-center justify-between p-10 rounded-[3.5rem] bg-muted/20 border border-border/ hover:border-border/ transition-all duration-700 shadow-4xl group"
                                         >
                                             <div className="flex items-center gap-10">
-                                                <div className="w-16 h-16 rounded-[1.5rem] bg-gray-400 flex items-center justify-center shadow-4xl border border-[#F4D03F]/10 group-hover:scale-110 transition-transform">
+                                                <div className="w-16 h-16 rounded-[1.5rem] bg-gray-400 flex items-center justify-center shadow-4xl border border-border/ group-hover:scale-110 transition-transform">
                                                     <Terminal className="w-8 h-8 text-[#F4D03F] opacity-40 group-hover:opacity-100" />
                                                 </div>
                                                 <div className="flex flex-col gap-1">
@@ -148,7 +148,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                                             </div>
                                         </motion.div>
                                     )) : (
-                                        <div className={cn(glass.emptyState, "py-20 bg-transparent border-dashed border-2 border-[#F4D03F]/10 rounded-[4rem]")}>
+                                        <div className={cn(glass.emptyState, "py-20 bg-transparent border-dashed border-2 border-border/ rounded-[4rem]")}>
                                             <Binary className="w-20 h-20 text-[#F4D03F] opacity-10 mb-8" />
                                             <p className="text-2xl font-black opacity-20 italic">Waiting for Telemetry Data</p>
                                         </div>
@@ -158,7 +158,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                         </div>
                     </div>
 
-                    <div className="p-16 border-t border-[#F4D03F]/20 bg-gray-400 backdrop-blur-3xl flex items-center justify-between rounded-b-[5rem]">
+                    <div className="p-16 border-t border-border/ bg-gray-400 backdrop-blur-3xl flex items-center justify-between rounded-b-[5rem]">
                         <div className="flex items-center gap-10 opacity-10 px-10">
                             <LockIcon className="w-10 h-10" />
                             <p className="text-[14px] font-black italic">Encryption Layer Active</p>
@@ -179,13 +179,13 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                                 initial={{ opacity: 0, x: 50 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}
-                                className={cn(glass.card, "p-12 shadow-4xl hover:border-[#F4D03F]/60 transition-all duration-1000 relative group overflow-hidden bg-[#FFF9F0]/60 backdrop-blur-3xl rounded-[4rem]")}
+                                className={cn(glass.card, "p-12 shadow-4xl hover:border-border/ transition-all duration-1000 relative group overflow-hidden bg-card/ backdrop-blur-3xl rounded-[4rem]")}
                             >
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F][0.04] rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none group-hover:bg-[#F4D03F][0.08] transition-all" />
                                 
                                 <div className="flex justify-between items-start mb-10">
                                     <div className="space-y-4">
-                                        <div className={cn(glass.badge, "bg-gray-400 text-[#F4D03F] border-[#F4D03F]/10 px-8 py-2.5 shadow-3xl skew-x-[-12deg]")}>
+                                        <div className={cn(glass.badge, "bg-gray-400 text-[#F4D03F] border-border/ px-8 py-2.5 shadow-3xl skew-x-[-12deg]")}>
                                             <span className="skew-x-[12deg] font-black italic text-[10px]">{api.type}</span>
                                         </div>
                                         <h3 className="text-4xl font-black italic text-foreground tracking-tighter leading-none group-hover:text-[#F4D03F] transition-colors">{api.name}</h3>
@@ -199,11 +199,11 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                                 <div className="space-y-8">
                                     <div className="space-y-2">
                                         <span className={cn(glass.microLabel, 'opacity-30 text-[10px] italic')}>Endpoint Routing</span>
-                                        <div className="font-mono text-sm text-foreground/80 bg-[#F9F7F2] p-6 rounded-2xl border border-[#F4D03F]/10 break-all">
+                                        <div className="font-mono text-sm text-foreground/80 bg-muted/20 p-6 rounded-2xl border border-border/ break-all">
                                             {api.checkPath}
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between border-t border-[#F4D03F]/10 pt-6">
+                                    <div className="flex items-center justify-between border-t border-border/ pt-6">
                                         <span className={cn(glass.microLabel, 'opacity-30 uppercase italic')}>Sync</span>
                                         <span className="text-[12px] font-black italic text-foreground/40 tabular-nums">{api.lastCheck.split(',')[1]}</span>
                                     </div>
@@ -218,3 +218,4 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
 };
 
 export default ServerStatusView;
+

@@ -223,11 +223,11 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
           onRefresh={handleRefresh}
           actions={
             activeApiary ? (
-              <div className="flex items-center gap-2 rounded-xl border border-[#F4D03F]/20 bg-white/70 px-3 py-2 shadow-sm">
+              <div className="flex items-center gap-2 rounded-xl border border-border/ bg-muted/ px-3 py-2 shadow-sm">
                 <MapPin className="h-4 w-4 text-[#1B9157]" />
                 <div className="text-left">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Active apiary</p>
-                  <p className="text-xs font-bold text-[#1A1A1A]">{activeApiary.name}</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">Active apiary</p>
+                  <p className="text-xs font-bold text-foreground">{activeApiary.name}</p>
                 </div>
               </div>
             ) : null
@@ -237,14 +237,14 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           <div className="xl:col-span-4">
             <div className={cn(glass.section, 'overflow-hidden')}>
-              <div className="flex items-center justify-between border-b border-[#F4D03F]/10 px-5 py-4 bg-white/60">
+              <div className="flex items-center justify-between border-b border-border/ px-5 py-4 bg-muted/">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#F4D03F]/20 bg-[#F4D03F]/10">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/ bg-[#F4D03F]/10">
                     <MapPin className="h-5 w-5 text-[#1B9157]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Tracked Apiaries</h3>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">
+                    <h3 className="text-sm font-black tracking-tight text-foreground">Tracked Apiaries</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">
                       {apiaries.length} synced locations
                     </p>
                   </div>
@@ -276,13 +276,13 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                           'w-full rounded-2xl border p-4 text-left transition-all',
                           isActive
                             ? 'border-[#1B9157]/25 bg-[#1B9157]/5 shadow-sm'
-                            : 'border-transparent bg-white/40 hover:border-[#F4D03F]/25 hover:bg-white/80',
+                            : 'border-transparent bg-muted/ hover:border-border/ hover:bg-muted/',
                         )}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="space-y-1">
-                            <p className="text-sm font-black tracking-tight text-[#1A1A1A]">{apiary.name}</p>
-                            <p className="text-[11px] text-gray-500">
+                            <p className="text-sm font-black tracking-tight text-foreground">{apiary.name}</p>
+                            <p className="text-[11px] text-muted-foreground">
                               {apiary.location_name || apiary.region || 'Location not set'}
                             </p>
                           </div>
@@ -317,7 +317,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                   value: apiaryDevices.length.toString(),
                   hint: `${apiaryReadings.length} readings / 24h`,
                   icon: Cpu,
-                  accent: 'text-[#1A1A1A]',
+                  accent: 'text-foreground',
                 },
                 {
                   label: 'Open Alerts',
@@ -336,28 +336,28 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
               ].map((item) => (
                 <div key={item.label} className={cn(glass.card, 'p-5')}>
                   <div className="flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#F4D03F]/15 bg-white/70">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/ bg-muted/">
                       <item.icon className={cn('h-5 w-5', item.accent)} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">{item.label}</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">{item.label}</span>
                   </div>
                   <div className="mt-4 space-y-1">
                     <p className={cn('text-3xl font-black tracking-tight', item.accent)}>{item.value}</p>
-                    <p className="text-xs text-gray-500">{item.hint}</p>
+                    <p className="text-xs text-muted-foreground">{item.hint}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className={cn(glass.section, 'overflow-hidden')}>
-              <div className="flex items-center justify-between border-b border-[#F4D03F]/10 px-5 py-4 bg-white/60">
+              <div className="flex items-center justify-between border-b border-border/ px-5 py-4 bg-muted/">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1B9157]/20 bg-[#1B9157]/10">
                     <Activity className="h-5 w-5 text-[#1B9157]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Foraging Dynamics</h3>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">
+                    <h3 className="text-sm font-black tracking-tight text-foreground">Foraging Dynamics</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">
                       Last 24 hours of telemetry
                     </p>
                   </div>
@@ -411,14 +411,14 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className={cn(glass.section, 'p-5')}>
-                <div className="flex items-center justify-between border-b border-[#F4D03F]/10 pb-4">
+                <div className="flex items-center justify-between border-b border-border/ pb-4">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-200 bg-red-50">
                       <AlertCircle className="h-5 w-5 text-red-600" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Live Warnings</h3>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">
+                      <h3 className="text-sm font-black tracking-tight text-foreground">Live Warnings</h3>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">
                         Sensor and pollination risks
                       </p>
                     </div>
@@ -452,14 +452,14 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
               </div>
 
               <div className={cn(glass.section, 'p-5 bg-[#1A1A1A] text-white')}>
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center justify-between border-b border-border/ pb-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/ bg-muted/">
                       <ShieldCheck className="h-5 w-5 text-[#1B9157]" />
                     </div>
                     <div>
                       <h3 className="text-sm font-black tracking-tight">Field Status</h3>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">
                         Live sync summary
                       </p>
                     </div>
@@ -467,24 +467,24 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                 </div>
 
                 <div className="mt-5 space-y-4">
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <div className="flex items-center justify-between rounded-2xl border border-border/ bg-muted/ px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-[#F4D03F]" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Active window</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Active window</span>
                     </div>
                     <span className="text-sm font-black">{activeWindow}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <div className="flex items-center justify-between rounded-2xl border border-border/ bg-muted/ px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Hexagon className="h-4 w-4 text-[#1B9157]" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Target FPA</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Target FPA</span>
                     </div>
                     <span className="text-sm font-black">{coverage.targetFpa.toFixed(1)}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                  <div className="flex items-center justify-between rounded-2xl border border-border/ bg-muted/ px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Activity className="h-4 w-4 text-[#F4D03F]" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Last sync</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Last sync</span>
                     </div>
                     <span className="text-right text-sm font-black">{lastSyncLabel}</span>
                   </div>
@@ -513,3 +513,4 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
 };
 
 export default PollinationIntelligence;
+

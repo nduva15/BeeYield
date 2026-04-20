@@ -170,10 +170,10 @@ const IntegrationsView: React.FC = () => {
                         <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 px-3 py-1 rounded-lg font-bold text-[10px] tracking-wider">
                             Connected services
                         </Badge>
-                        <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight leading-none">
+                        <h1 className="text-3xl font-bold text-foreground tracking-tight leading-none">
                             Integrations
                         </h1>
-                        <p className="text-gray-500 font-medium max-w-xl leading-relaxed text-sm">
+                        <p className="text-muted-foreground font-medium max-w-xl leading-relaxed text-sm">
                             Connect BeeYield with the tools you already use for bookkeeping and selling.
                         </p>
                         <div className="flex gap-3">
@@ -192,8 +192,8 @@ const IntegrationsView: React.FC = () => {
                                     <s.icon className={cn("w-5 h-5", s.color)} />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-[#1A1A1A]">{s.name}</h3>
-                                    <p className="text-[10px] font-medium text-gray-400 mt-0.5">Automatic sync</p>
+                                    <h3 className="text-sm font-bold text-foreground">{s.name}</h3>
+                                    <p className="text-[10px] font-medium text-muted-foreground/70 mt-0.5">Automatic sync</p>
                                 </div>
                             </div>
                         ))}
@@ -212,8 +212,8 @@ const IntegrationsView: React.FC = () => {
                             <f.icon className="w-5 h-5" style={{ color: f.theme }} />
                         </div>
                         <div className="space-y-1">
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">{f.title}</h3>
-                            <p className="text-xs text-gray-500 font-medium leading-relaxed">{f.desc}</p>
+                            <h3 className="text-sm font-bold text-foreground tracking-tight">{f.title}</h3>
+                            <p className="text-xs text-muted-foreground font-medium leading-relaxed">{f.desc}</p>
                         </div>
                     </div>
                 ))}
@@ -235,12 +235,12 @@ const IntegrationsView: React.FC = () => {
                         </div>
                         <div className="space-y-1">
                             <div className="flex items-center gap-3">
-                                <h2 className="text-2xl font-bold text-[#1A1A1A] tracking-tight leading-none capitalize">{p} <span style={{ color }}>Industrial</span></h2>
+                                <h2 className="text-2xl font-bold text-foreground tracking-tight leading-none capitalize">{p} <span style={{ color }}>Industrial</span></h2>
                                 <Badge className={cn("px-2 py-0.5 rounded-md font-bold text-[10px] tracking-wider border-none", isConnectedNode ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-50 text-red-600")}>
                                     {isConnectedNode ? "Connected" : "Not connected"}
                                 </Badge>
                             </div>
-                            <p className="text-[10px] font-bold text-gray-500 leading-none">Sync and settings</p>
+                            <p className="text-[10px] font-bold text-muted-foreground leading-none">Sync and settings</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
@@ -248,7 +248,7 @@ const IntegrationsView: React.FC = () => {
                             Sync now <RefreshCw className="w-3.5 h-3.5" />
                         </button>
                         <button
-                            className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs bg-white text-[#1A1A1A]")}
+                            className={cn(glass.btnSecondary, "h-9 px-4 font-bold text-xs bg-white text-foreground")}
                             onClick={() => handleConnectToggle(p as any)}
                         >
                             {isConnectedNode ? 'Reconnect' : 'Connect'}
@@ -261,25 +261,25 @@ const IntegrationsView: React.FC = () => {
                         <div className={cn(glass.card, "p-0 overflow-hidden bg-white min-h-[300px]")}>
                             <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                                 <div>
-                                    <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Recent activity</h4>
-                                    <p className="text-[10px] font-bold text-gray-500 tracking-wider mt-0.5">Sync history</p>
+                                    <h4 className="text-sm font-bold text-foreground tracking-tight">Recent activity</h4>
+                                    <p className="text-[10px] font-bold text-muted-foreground tracking-wider mt-0.5">Sync history</p>
                                 </div>
-                                <Terminal className="w-4 h-4 text-gray-400" />
+                                <Terminal className="w-4 h-4 text-muted-foreground/70" />
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
                                     <thead className="bg-gray-50/50">
                                         <tr>
-                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 tracking-wider border-b border-gray-100">Timestamp</th>
-                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 tracking-wider border-b border-gray-100">Event</th>
-                                            <th className="px-4 py-3 text-[10px] font-bold text-gray-500 tracking-wider border-b border-gray-100">Status</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground tracking-wider border-b border-gray-100">Timestamp</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground tracking-wider border-b border-gray-100">Event</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground tracking-wider border-b border-gray-100">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
                                         {(auditLogs[p] || []).slice(0, 6).map((log, i) => (
                                             <tr key={i} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-4 py-3 text-[11px] font-medium text-gray-600 tabular-nums">{new Date(log.created_at).toLocaleString()}</td>
-                                                <td className="px-4 py-3 text-[11px] font-bold text-[#1A1A1A]">{log.event_type}</td>
+                                                <td className="px-4 py-3 text-[11px] font-medium text-muted-foreground/90 tabular-nums">{new Date(log.created_at).toLocaleString()}</td>
+                                                <td className="px-4 py-3 text-[11px] font-bold text-foreground">{log.event_type}</td>
                                                 <td className="px-4 py-3">
                                                     <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-md", log.status === 'success' ? "bg-[#1B9157]/10 text-[#1B9157]" : "bg-red-50 text-red-600")}>{log.status}</span>
                                                 </td>
@@ -287,7 +287,7 @@ const IntegrationsView: React.FC = () => {
                                         ))}
                                         {(auditLogs[p] || []).length === 0 && (
                                             <tr>
-                                                <td colSpan={3} className="px-4 py-12 text-center text-[11px] font-medium text-gray-500">No sync events logged.</td>
+                                                <td colSpan={3} className="px-4 py-12 text-center text-[11px] font-medium text-muted-foreground">No sync events logged.</td>
                                             </tr>
                                         )}
                                     </tbody>
@@ -299,24 +299,24 @@ const IntegrationsView: React.FC = () => {
                     <div className="lg:col-span-4 space-y-4">
                         <div className={cn(glass.card, "p-4 space-y-4 bg-white")}>
                             <div>
-                                <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Target <span style={{ color }}>Config</span></h4>
-                                <p className="text-[10px] font-bold text-gray-500 tracking-wider mt-1">Connection settings</p>
+                                <h4 className="text-sm font-bold text-foreground tracking-tight">Target <span style={{ color }}>Config</span></h4>
+                                <p className="text-[10px] font-bold text-muted-foreground tracking-wider mt-1">Connection settings</p>
                             </div>
                             
                             {p === 'quickbooks' ? (
                                 <>
                                     <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Revenue account</Label>
+                                        <Label className="text-[10px] font-bold text-muted-foreground tracking-wider ml-1">Revenue account</Label>
                                         <Input value={qboIncomeAccount} onChange={(e) => setQboIncomeAccount(e.target.value)} className="h-9 text-xs font-medium bg-gray-50 border-gray-200 rounded-lg px-3" />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Expense account</Label>
+                                        <Label className="text-[10px] font-bold text-muted-foreground tracking-wider ml-1">Expense account</Label>
                                         <Input value={qboExpenseAccount} onChange={(e) => setQboExpenseAccount(e.target.value)} className="h-9 text-xs font-medium bg-gray-50 border-gray-200 rounded-lg px-3" />
                                     </div>
                                 </>
                             ) : (
                                 <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-bold text-gray-500 tracking-wider ml-1">Shopify Store URL</Label>
+                                    <Label className="text-[10px] font-bold text-muted-foreground tracking-wider ml-1">Shopify Store URL</Label>
                                     <Input value={shopUrl} onChange={(e) => setShopUrl(e.target.value)} placeholder="name.myshopify.com" className="h-9 text-xs font-medium bg-gray-50 border-gray-200 rounded-lg px-3" />
                                 </div>
                             )}
@@ -355,12 +355,12 @@ const IntegrationsView: React.FC = () => {
                             </button>
                         </div>
 
-                        <div className={cn(glass.card, "p-4 space-y-3 bg-[#F9F7F2] border-[#F4D03F]/20")}>
-                            <div className="flex items-center gap-2 text-[#1A1A1A]">
+                        <div className={cn(glass.card, "p-4 space-y-3 bg-muted/20 border-border/")}>
+                            <div className="flex items-center gap-2 text-foreground">
                                 <LockIcon className="w-4 h-4 text-[#F4D03F]" />
                                 <span className="text-xs font-bold tracking-tight">Secure</span>
                             </div>
-                                <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#F4D03F]/30 pl-3">
+                                <p className="text-[11px] font-medium text-muted-foreground/90 leading-relaxed border-l-2 border-border/ pl-3">
                                     Credentials are encrypted and stored securely.
                                 </p>
                             </div>
@@ -368,13 +368,13 @@ const IntegrationsView: React.FC = () => {
                         {(syncResult[p]?.metrics || activeConfig?.last_sync) && (
                             <div className={cn(glass.card, "p-4 space-y-3 bg-white border-gray-100")}>
                                 <div>
-                                    <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Latest sync</h4>
-                                    <p className="text-[10px] font-bold text-gray-500 tracking-wider mt-1">Rust integration runtime</p>
+                                    <h4 className="text-sm font-bold text-foreground tracking-tight">Latest sync</h4>
+                                    <p className="text-[10px] font-bold text-muted-foreground tracking-wider mt-1">Rust integration runtime</p>
                                 </div>
                                 {Object.entries(syncResult[p]?.metrics || activeConfig?.last_sync || {}).slice(0, 4).map(([key, value]) => (
                                     <div key={key} className="flex items-center justify-between text-[11px] gap-3">
-                                        <span className="font-bold text-gray-500 uppercase tracking-wider">{key.replace(/_/g, ' ')}</span>
-                                        <span className="font-medium text-[#1A1A1A] text-right">{String(value)}</span>
+                                        <span className="font-bold text-muted-foreground uppercase tracking-wider">{key.replace(/_/g, ' ')}</span>
+                                        <span className="font-medium text-foreground text-right">{String(value)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -410,7 +410,7 @@ const IntegrationsView: React.FC = () => {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center min-h-[300px] space-y-3 opacity-50">
                         <RefreshCw className="w-6 h-6 text-[#1B9157] animate-spin" />
-                        <span className="text-[10px] font-bold text-gray-500 tracking-wider">Loading…</span>
+                        <span className="text-[10px] font-bold text-muted-foreground tracking-wider">Loading…</span>
                     </div>
                 ) : (
                     <AnimatePresence mode="wait">
@@ -429,8 +429,8 @@ const IntegrationsView: React.FC = () => {
                                     <div className={cn(glass.card, "p-5 bg-white border-gray-100")}>
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="space-y-1">
-                                                <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight">KRA eTIMS</h2>
-                                                <p className="text-[11px] font-medium text-gray-500 leading-relaxed max-w-2xl">
+                                                <h2 className="text-lg font-bold text-foreground tracking-tight">KRA eTIMS</h2>
+                                                <p className="text-[11px] font-medium text-muted-foreground leading-relaxed max-w-2xl">
                                                     Enter your compliance details, then you’ll be redirected to eTIMS to sign in / sign up. After onboarding, you can issue and sync invoices from BeeYield Billing.
                                                 </p>
                                             </div>
@@ -462,10 +462,10 @@ const IntegrationsView: React.FC = () => {
 
             <div className="pt-8 border-t border-gray-100 text-center space-y-3">
                 <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 mx-auto mb-2">
-                    <HistoryIcon className="w-4 h-4 text-gray-400" />
+                    <HistoryIcon className="w-4 h-4 text-muted-foreground/70" />
                 </div>
-                <h3 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Data & activity logs</h3>
-                <p className="text-[11px] font-medium text-gray-500 max-w-xl mx-auto leading-relaxed">
+                <h3 className="text-xs font-bold text-foreground tracking-tight">Data & activity logs</h3>
+                <p className="text-[11px] font-medium text-muted-foreground max-w-xl mx-auto leading-relaxed">
                     We keep a record of sync activity so you can troubleshoot and audit changes.
                 </p>
             </div>
@@ -475,3 +475,4 @@ const IntegrationsView: React.FC = () => {
 };
 
 export default IntegrationsView;
+

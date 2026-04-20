@@ -214,3 +214,4 @@ export default function BeeDiseasesPage({ isOpen, onClose }: BeeDiseasesPageProp
     </div>
   );
 }
+

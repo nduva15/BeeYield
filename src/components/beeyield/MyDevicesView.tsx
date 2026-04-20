@@ -238,7 +238,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 {/* Search and Filters */}
                 <div className={glass.sectionHeader}>
                     <div className="flex-1 w-full space-y-2">
-                        <Label htmlFor="my-devices-search" className="text-xs font-semibold text-[#1A1A1A]/60 ml-2">Device ID</Label>
+                        <Label htmlFor="my-devices-search" className="text-xs font-semibold text-foreground/60 ml-2">Device ID</Label>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F]/40" />
                             <Input
@@ -316,11 +316,11 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             </td>
                                             <td className="px-4 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-xl bg-white border border-[#F4D03F]/10 flex items-center justify-center shadow-sm group-hover:bg-[#F4D03F] group-hover:text-white transition-all">
+                                                    <div className="w-9 h-9 rounded-xl bg-white border border-border/ flex items-center justify-center shadow-sm group-hover:bg-[#F4D03F] group-hover:text-white transition-all">
                                                         <Cpu className="w-4 h-4" />
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-[11px] font-black tracking-tight text-[#1A1A1A]">{device.device_code}</span>
+                                                        <span className="text-[11px] font-black tracking-tight text-foreground">{device.device_code}</span>
                                                         <span className="text-[7px] font-black text-[#F4D03F] italic">Node v5.2</span>
                                                     </div>
                                                 </div>
@@ -328,7 +328,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             <td className="px-4 py-4">
                                                 <div className="flex items-center gap-2">
                                                     <MapPin className="w-3 h-3 text-[#F4D03F] opacity-40" />
-                                                    <span className="text-[9px] font-bold text-[#1A1A1A]/60 tracking-wider">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</span>
+                                                    <span className="text-[9px] font-bold text-foreground/60 tracking-wider">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
@@ -353,13 +353,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             <td className="px-4 py-4">
                                                 <div className="flex items-center gap-2">
                                                     <Activity className="w-3 h-3 text-[#F4D03F] opacity-40" />
-                                                    <span className="text-[9px] font-bold text-[#1A1A1A]/40">{timeAgo(device.last_ping)}</span>
+                                                    <span className="text-[9px] font-bold text-foreground/40">{timeAgo(device.last_ping)}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                                     <button
-                                                        className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm disabled:opacity-60"
+                                                        className="w-8 h-8 rounded-lg bg-white border border-border/ flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm disabled:opacity-60"
                                                         onClick={() => handleEditDevice(device)}
                                                         aria-label="Edit device"
                                                         title="Edit device"
@@ -372,7 +372,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                                         )}
                                                     </button>
                                                     <button
-                                                        className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm"
+                                                        className="w-8 h-8 rounded-lg bg-white border border-border/ flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm"
                                                         onClick={() => onTabChange('device', undefined, device.id)}
                                                         aria-label="View device details"
                                                         title="View device details"
@@ -380,7 +380,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                                         <FileSearch className="w-3.5 h-3.5" />
                                                     </button>
                                                     <button
-                                                        className="w-8 h-8 rounded-lg bg-white border border-[#F4D03F]/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm disabled:opacity-60"
+                                                        className="w-8 h-8 rounded-lg bg-white border border-border/ flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm disabled:opacity-60"
                                                         onClick={() => handleDeleteDevice(device)}
                                                         aria-label="Delete device"
                                                         title="Delete device"
@@ -428,3 +428,4 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
 };
 
 export default MyDevicesView;
+

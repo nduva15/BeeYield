@@ -23,9 +23,9 @@ const InteractiveButton: React.FC<InteractiveButtonProps> = ({
     type = 'button'
 }) => {
     const variantStyles = {
-        primary: 'bg-[hsl(var(--honey-gold))] text-[#1A1A1A] hover:bg-[hsl(var(--pollen-yellow))]',
-        secondary: 'bg-[hsl(var(--secondary))] text-[#1A1A1A] hover:bg-[hsl(var(--secondary))]/90',
-        ghost: 'bg-transparent border-2 border-[#F4D03F]/20 hover:border-[hsl(var(--honey-gold))]'
+        primary: 'bg-[hsl(var(--honey-gold))] text-foreground hover:bg-[hsl(var(--pollen-yellow))]',
+        secondary: 'bg-[hsl(var(--secondary))] text-foreground hover:bg-[hsl(var(--secondary))]/90',
+        ghost: 'bg-transparent border-2 border-border/ hover:border-[hsl(var(--honey-gold))]'
     };
 
     return (
@@ -50,3 +50,4 @@ const InteractiveButton: React.FC<InteractiveButtonProps> = ({
 };
 
 export default InteractiveButton;
+

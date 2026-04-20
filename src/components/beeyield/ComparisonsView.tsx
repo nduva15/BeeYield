@@ -273,7 +273,7 @@ const ComparisonsView: React.FC = () => {
                     </div>
 
                     {/* Comparison Pills */}
-                    <div className="flex bg-[#F9F7F2] p-1.5 gap-1.5 rounded-2xl border border-border shadow-inner">
+                    <div className="flex bg-muted/20 p-1.5 gap-1.5 rounded-2xl border border-border shadow-inner">
                         {(['daily', 'weekly', 'monthly'] as const).map((tab) => (
                             <button
                                 key={tab}
@@ -282,7 +282,7 @@ const ComparisonsView: React.FC = () => {
                                     "px-6 py-2.5 rounded-xl text-[10px] font-bold transition-all",
                                     selectedComparisonTab === tab
                                         ? "bg-white text-[#F1C40F] shadow-sm ring-1 ring-border"
-                                        : "text-gray-400 hover:text-gray-600 hover:bg-gray-100/50"
+                                        : "text-muted-foreground/70 hover:text-muted-foreground/90 hover:bg-gray-100/50"
                                 )}
                             >
                                 {tab === 'daily' ? 'Daily' : tab === 'weekly' ? 'Weekly' : 'Monthly'}
@@ -299,7 +299,7 @@ const ComparisonsView: React.FC = () => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="absolute inset-0 z-20 bg-white/60 backdrop-blur-sm rounded-3xl flex items-center justify-center"
+                                    className="absolute inset-0 z-20 bg-muted/ backdrop-blur-sm rounded-3xl flex items-center justify-center"
                                 >
                                     <div className="flex flex-col items-center gap-4 text-[#F1C40F]">
                                         <Loader2 className="w-12 h-12 animate-spin" />
@@ -310,7 +310,7 @@ const ComparisonsView: React.FC = () => {
                         </AnimatePresence>
 
                         {chartData.length === 0 && !isLoading ? (
-                            <div className="h-full w-full flex flex-col items-center justify-center bg-gray-50 rounded-3xl border border-dashed border-border text-gray-400">
+                            <div className="h-full w-full flex flex-col items-center justify-center bg-gray-50 rounded-3xl border border-dashed border-border text-muted-foreground/70">
                                 <ArrowLeftRight className="w-16 h-16 mb-6 opacity-20" />
                                 <p className={cn(glass.microLabel, "normal-case text-base font-semibold")}>Not enough data for this selection.</p>
                                 <p className="text-xs mt-1">Connect more sensors to enable comparison mapping.</p>
@@ -390,7 +390,7 @@ const ComparisonsView: React.FC = () => {
                 </div>
                 <div className="relative z-10 text-center md:text-left">
                     <h5 className={cn(glass.sectionTitle, "text-2xl normal-case mb-2")}>Trend Analysis Summary</h5>
-                    <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-[#1A1A1A]/70">
+                    <p className="text-sm italic font-medium opacity-80 leading-relaxed max-w-4xl text-foreground/70">
                         We compare yield across locations. The yellow line reflects recent foraging conditions in your selected apiary, while the dashed line shows the peer group average for comparison.
                     </p>
                 </div>
@@ -400,3 +400,4 @@ const ComparisonsView: React.FC = () => {
 };
 
 export default ComparisonsView;
+

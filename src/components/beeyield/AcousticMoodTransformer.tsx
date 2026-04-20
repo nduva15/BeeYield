@@ -134,9 +134,9 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                 actions={
                     <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
                         <Activity className={cn("w-3 h-3", loading ? "text-[#F4D03F] animate-spin" : "text-[#1B9157] animate-pulse")} />
-                        <span className="text-xs font-bold text-gray-500 tracking-tight">
+                        <span className="text-xs font-bold text-muted-foreground tracking-tight">
                             Confidence:{' '}
-                            <span className="text-[#1A1A1A]">
+                            <span className="text-foreground">
                                 {typeof confidence === 'number' ? `${confidence.toFixed(1)}%` : (loading ? 'Analyzing…' : '—')}
                             </span>
                         </span>
@@ -159,11 +159,11 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                     <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-gray-200 shadow-sm">
-                        <Waves className="w-5 h-5 text-gray-500" />
+                        <Waves className="w-5 h-5 text-muted-foreground" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-[#1A1A1A]">Sound pattern</h3>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Live sound display</p>
+                        <h3 className="text-sm font-bold text-foreground">Sound pattern</h3>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Live sound display</p>
                     </div>
                 </div>
                         <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100 shadow-sm">
@@ -190,10 +190,10 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                                         if (active && payload && payload.length) {
                                             return (
                                                 <div className="bg-white p-3 rounded-xl shadow-2xl border border-gray-100">
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{payload[0].payload.freq} Hz</p>
+                                                    <p className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest mb-1">{payload[0].payload.freq} Hz</p>
                                                     <div className="flex items-baseline gap-1">
-                                                        <p className="text-sm font-black text-[#1A1A1A] tabular-nums">{payload[0].value?.toFixed(1)}</p>
-                                                        <span className="text-[10px] font-medium text-gray-400">dB</span>
+                                                        <p className="text-sm font-black text-foreground tabular-nums">{payload[0].value?.toFixed(1)}</p>
+                                                        <span className="text-[10px] font-medium text-muted-foreground/70">dB</span>
                                                     </div>
                                                 </div>
                                             );
@@ -221,10 +221,10 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                             { label: 'Volume', val: '58.2', unit: 'dB', icon: Volume2 }
                         ].map((stat, i) => (
                             <div key={i} className="p-3 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center gap-1 group hover:border-[#1B9157]/30 transition-colors">
-                                <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-gray-600">{stat.label}</p>
+                                <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/70 group-hover:text-muted-foreground/90">{stat.label}</p>
                                 <div className="flex items-baseline gap-1">
-                                    <p className="text-base font-black text-[#1A1A1A] tracking-tighter">{stat.val}</p>
-                                    {stat.unit && <span className="text-[9px] font-medium text-gray-400">{stat.unit}</span>}
+                                    <p className="text-base font-black text-foreground tracking-tighter">{stat.val}</p>
+                                    {stat.unit && <span className="text-[9px] font-medium text-muted-foreground/70">{stat.unit}</span>}
                                 </div>
                             </div>
                         ))}
@@ -235,8 +235,8 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                 <div className="w-full xl:w-[360px] p-5 lg:p-6 space-y-6 bg-[#FCFAF5]">
                     <section className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <ShieldAlert className="w-4 h-4 text-gray-400" />
-                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Colony Analysis</h3>
+                            <ShieldAlert className="w-4 h-4 text-muted-foreground/70" />
+                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">Colony Analysis</h3>
                         </div>
 
                         <div className={cn(
@@ -259,9 +259,9 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
 
                     <section className="space-y-3">
                         <div className="flex justify-between items-center">
-                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Analysis Mode</h4>
+                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">Analysis Mode</h4>
                             <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center border border-gray-200">
-                                <Settings className="w-3.5 h-3.5 text-gray-400" />
+                                <Settings className="w-3.5 h-3.5 text-muted-foreground/70" />
                             </div>
                         </div>
 
@@ -279,15 +279,15 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                                     className={cn(
                                         "w-full h-11 rounded-xl px-4 text-xs font-bold border transition-all group flex items-center justify-between outline-none bg-white",
                                         status === btn.id
-                                            ? "text-[#1A1A1A] border-gray-300 shadow-md scale-[1.02]"
-                                            : "border-transparent text-gray-400 hover:border-gray-200"
+                                            ? "text-foreground border-gray-300 shadow-md scale-[1.02]"
+                                            : "border-transparent text-muted-foreground/70 hover:border-gray-200"
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className={cn("w-2 h-2 rounded-full", status === btn.id ? "bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)]" : "bg-gray-200")} />
                                         <span>{btn.label}</span>
                                     </div>
-                                    <btn.icon className={cn("w-4 h-4", status === btn.id ? "text-gray-600" : "text-gray-300")} />
+                                    <btn.icon className={cn("w-4 h-4", status === btn.id ? "text-muted-foreground/90" : "text-gray-300")} />
                                 </button>
                             ))}
                         </div>
@@ -298,7 +298,7 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                             <div className="w-1.5 h-1.5 bg-[#1B9157] animate-pulse rounded-full" />
                             <p className="text-[10px] font-bold uppercase tracking-widest text-[#1B9157]">Processing</p>
                         </div>
-                        <div className="font-mono text-[9px] text-gray-400 leading-relaxed">
+                        <div className="font-mono text-[9px] text-muted-foreground/70 leading-relaxed">
                             <p className="flex gap-2 font-bold"><span>&gt;</span> Data verified</p>
                             <p className="text-[#1B9157] font-bold flex gap-2"><span>&gt;</span> Health confirmed</p>
                         </div>
@@ -312,14 +312,14 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
                 animate={{ opacity: 1, y: 0 }}
                 className={cn(glass.card, "p-5 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden group shadow-lg")}
             >
-                <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#F9F7F2] blur-3xl rounded-full" />
+                <div className="absolute -right-10 -top-10 w-32 h-32 bg-muted/20 blur-3xl rounded-full" />
                 <div className="flex items-start sm:items-center gap-4 relative z-10 flex-1">
-                    <div className="w-12 h-12 rounded-xl bg-[#F9F7F2] flex items-center justify-center shrink-0 border border-gray-100 shadow-sm group-hover:bg-[#1B9157]/10 group-hover:border-[#1B9157]/20 transition-all">
+                    <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center shrink-0 border border-gray-100 shadow-sm group-hover:bg-[#1B9157]/10 group-hover:border-[#1B9157]/20 transition-all">
                         <Info className="w-5 h-5 text-[#1B9157]" />
                     </div>
                     <div className="space-y-1">
-                        <h5 className="text-sm font-black text-[#1A1A1A] tracking-tight">Status Update</h5>
-                        <p className="text-[11px] font-medium text-gray-500 leading-relaxed max-w-2xl border-l-2 border-[#1B9157] pl-3">
+                        <h5 className="text-sm font-black text-foreground tracking-tight">Status Update</h5>
+                        <p className="text-[11px] font-medium text-muted-foreground leading-relaxed max-w-2xl border-l-2 border-[#1B9157] pl-3">
                             The colony's acoustic profile is stable. Sensor data indicates normal foraging behavior and queen activity.
                         </p>
                     </div>
@@ -338,3 +338,4 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
 };
 
 export default AcousticMoodTransformer;
+

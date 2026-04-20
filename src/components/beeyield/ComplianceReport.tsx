@@ -58,7 +58,7 @@ const ComplianceReport: React.FC<{ onTabChange?: (tab: string) => void }> = ({ o
                     <motion.section
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-8 relative overflow-hidden shadow-sm border-[#F4D03F]/20 rounded-3xl")}
+                        className={cn(glass.card, "p-8 relative overflow-hidden shadow-sm border-border/ rounded-3xl")}
                     >
                         {/* Decorative Background Stamp */}
                         <Award className="absolute -top-10 -right-10 w-96 h-96 text-[#F4D03F][0.03] rotate-12 pointer-events-none" />
@@ -67,8 +67,8 @@ const ComplianceReport: React.FC<{ onTabChange?: (tab: string) => void }> = ({ o
                         <div className="space-y-6 relative z-10">
                             <div className="flex justify-between items-start">
                                 <div className="space-y-1">
-                                    <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">Hive Strength Audit</h3>
-                                    <p className="text-[10px] font-bold text-gray-400">Frames of Bees (FOB) Certification</p>
+                                    <h3 className="text-lg font-bold text-foreground tracking-tight">Hive Strength Audit</h3>
+                                    <p className="text-[10px] font-bold text-muted-foreground/70">Frames of Bees (FOB) Certification</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-3xl font-bold text-[#F4D03F] tracking-tight tabular-nums leading-none">8.4</p>
@@ -80,32 +80,32 @@ const ComplianceReport: React.FC<{ onTabChange?: (tab: string) => void }> = ({ o
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1 text-center p-5 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
-                                    <p className="text-xl font-bold tabular-nums text-[#1A1A1A]">1,284</p>
-                                    <p className="text-[10px] font-bold text-gray-400 tracking-wider">Certified Hives</p>
+                                    <p className="text-xl font-bold tabular-nums text-foreground">1,284</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">Certified Hives</p>
                                 </div>
                                 <div className="space-y-1 text-center p-5 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
-                                    <p className="text-xl font-bold tabular-nums text-[#1A1A1A]">98.2%</p>
-                                    <p className="text-[10px] font-bold text-gray-400 tracking-wider">Contract Match</p>
+                                    <p className="text-xl font-bold tabular-nums text-foreground">98.2%</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">Contract Match</p>
                                 </div>
                             </div>
 
-                            <div className={cn(glass.card, "p-5 bg-[#F4D03F]/5 border-[#F4D03F]/10 shadow-sm relative overflow-hidden group")}>
+                            <div className={cn(glass.card, "p-5 bg-[#F4D03F]/5 border-border/ shadow-sm relative overflow-hidden group")}>
                                 <div className="flex items-center gap-3 mb-3 relative z-10">
-                                    <div className="w-8 h-8 rounded-lg bg-white/60 flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                    <div className="w-8 h-8 rounded-lg bg-muted/ flex items-center justify-center border border-border/ shadow-sm">
                                         <Stamp className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
-                                    <h4 className="text-base font-bold text-[#1A1A1A] tracking-tight uppercase">Quality Guarantee</h4>
+                                    <h4 className="text-base font-bold text-foreground tracking-tight uppercase">Quality Guarantee</h4>
                                 </div>
-                                <p className="text-[10px] font-medium text-gray-500 leading-relaxed mb-5 tracking-tighter relative z-10">
+                                <p className="text-[10px] font-medium text-muted-foreground leading-relaxed mb-5 tracking-tighter relative z-10">
                                     Acoustic health analysis confirms that the apiary strength meets or exceeds the minimum healthy foraging levels.
                                 </p>
-                                <div className="flex items-center justify-between border-t border-[#F4D03F]/10 pt-4 relative z-10">
+                                <div className="flex items-center justify-between border-t border-border/ pt-4 relative z-10">
                                     <div className="flex items-center gap-2">
                                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                                         <span className="text-[9px] font-bold text-emerald-600">Verified</span>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-mono text-[8px] text-gray-400">SEC_ID: b57492...e91a02</p>
+                                        <p className="font-mono text-[8px] text-muted-foreground/70">SEC_ID: b57492...e91a02</p>
                                     </div>
                                 </div>
                             </div>
@@ -122,23 +122,23 @@ const ComplianceReport: React.FC<{ onTabChange?: (tab: string) => void }> = ({ o
                             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-sm">
                                 <Leaf className="w-4 h-4 text-emerald-600" />
                             </div>
-                            <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">Sustainability <span className="text-[#F4D03F]">Metrics</span></h3>
+                            <h3 className="text-lg font-bold text-foreground tracking-tight">Sustainability <span className="text-[#F4D03F]">Metrics</span></h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className={cn(glass.card, "p-5 space-y-2 shadow-sm bg-white border-emerald-500/10 rounded-xl")}>
-                                <p className="text-[10px] font-bold text-gray-400 tracking-wider">Biodiversity</p>
+                                <p className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">Biodiversity</p>
                                 <p className="text-2xl font-bold text-emerald-600">A+</p>
-                                <p className="text-[10px] font-bold text-gray-500 tracking-tighter pt-2 border-t border-gray-100">
+                                <p className="text-[10px] font-bold text-muted-foreground tracking-tighter pt-2 border-t border-gray-100">
                                     Zero pesticide risk detected.
                                 </p>
                             </div>
                             <div className={cn(glass.card, "p-5 space-y-2 shadow-sm bg-white border-emerald-500/10 rounded-xl")}>
-                                <p className="text-[10px] font-bold text-gray-400 tracking-wider">Welfare Index</p>
+                                <p className="text-[10px] font-bold text-muted-foreground/70 tracking-wider">Welfare Index</p>
                                 <div className="flex items-baseline gap-1">
                                     <p className="text-2xl font-bold text-emerald-600">92</p>
                                     <p className="text-[10px] font-medium text-gray-300">/100</p>
                                 </div>
-                                <p className="text-[10px] font-bold text-gray-500 tracking-tighter pt-2 border-t border-gray-100">
+                                <p className="text-[10px] font-bold text-muted-foreground tracking-tighter pt-2 border-t border-gray-100">
                                     Healthy weight gain trend.
                                 </p>
                             </div>
@@ -152,13 +152,13 @@ const ComplianceReport: React.FC<{ onTabChange?: (tab: string) => void }> = ({ o
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
-                        className={cn(glass.card, "p-8 space-y-6 shadow-sm bg-white/50 backdrop-blur-xl border-border/50 rounded-3xl")}
+                        className={cn(glass.card, "p-8 space-y-6 shadow-sm bg-muted/ backdrop-blur-xl border-border/50 rounded-3xl")}
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100 shadow-sm">
                                 <Info className="w-4 h-4 text-indigo-500" />
                             </div>
-                            <h4 className="text-base font-bold text-[#1A1A1A] tracking-tight uppercase">Certification</h4>
+                            <h4 className="text-base font-bold text-foreground tracking-tight uppercase">Certification</h4>
                         </div>
                         <p className="text-[10px] font-bold opacity-60 leading-relaxed tracking-tight text-foreground">
                             Standardized report for crop insurance and GAP certification. Verified record of pollination activity.
@@ -187,12 +187,12 @@ const ComplianceReport: React.FC<{ onTabChange?: (tab: string) => void }> = ({ o
                         transition={{ delay: 0.3 }}
                         className={cn(glass.card, "p-6 space-y-6 text-center shadow-sm relative overflow-hidden group rounded-2xl")}
                     >
-                        <div className="w-12 h-12 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center mx-auto border border-[#F4D03F]/20 shadow-sm group-hover:scale-105 transition-transform">
+                        <div className="w-12 h-12 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center mx-auto border border-border/ shadow-sm group-hover:scale-105 transition-transform">
                             <Share2 className="w-4 h-4 text-[#F4D03F]" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-lg font-bold text-[#1A1A1A] tracking-tight uppercase">Verification</h4>
-                            <p className="text-[10px] font-bold text-gray-400 tracking-wider max-w-[200px] mx-auto">
+                            <h4 className="text-lg font-bold text-foreground tracking-tight uppercase">Verification</h4>
+                            <p className="text-[10px] font-bold text-muted-foreground/70 tracking-wider max-w-[200px] mx-auto">
                                 Securely share with underwriters or owners.
                             </p>
                         </div>
@@ -208,3 +208,4 @@ const ComplianceReport: React.FC<{ onTabChange?: (tab: string) => void }> = ({ o
 };
 
 export default ComplianceReport;
+

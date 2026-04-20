@@ -317,12 +317,12 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                     }
                 />
 
-                <div className={cn(glass.card, 'p-5 bg-white/45 border-white/20')}>
+                <div className={cn(glass.card, 'p-5 bg-muted/ border-border/')}>
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div className="space-y-1">
-                            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#1A1A1A]/40">Registry lanes</p>
-                            <h3 className="text-lg font-black text-[#1A1A1A]">Switch meter categories without leaving the registry</h3>
-                            <p className="text-sm font-medium text-gray-500">
+                            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-foreground/40">Registry lanes</p>
+                            <h3 className="text-lg font-black text-foreground">Switch meter categories without leaving the registry</h3>
+                            <p className="text-sm font-medium text-muted-foreground">
                                 Each category uses the same backend CRUD flow, and registration now happens in a single pop-out form.
                             </p>
                         </div>
@@ -338,8 +338,8 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                         className={cn(
                                             'h-10 px-4 rounded-xl border text-sm font-bold transition-all',
                                             isActive
-                                                ? 'bg-[#F4D03F] text-[#1A1A1A] border-[#F4D03F] shadow-sm'
-                                                : 'bg-white/80 border-white/50 text-gray-600 hover:text-[#1A1A1A] hover:border-[#F4D03F]/50'
+                                                ? 'bg-[#F4D03F] text-foreground border-[#F4D03F] shadow-sm'
+                                                : 'bg-muted/ border-border/ text-muted-foreground/90 hover:text-foreground hover:border-border/'
                                         )}
                                     >
                                         {tab.label}
@@ -357,7 +357,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                     <GlassStatCard label="Sites" value={stats.sites} icon={Building2} />
                 </div>
 
-                <div className={cn(glass.card, 'p-6 bg-white/40 border-white/20 space-y-5')}>
+                <div className={cn(glass.card, 'p-6 bg-muted/ border-border/ space-y-5')}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Input
                                 value={search}
@@ -397,24 +397,24 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                     const building = buildings.find((item) => item.id === meter.building_id);
                                     const apartment = apartments.find((item) => item.id === meter.apartment_id);
                                     return (
-                                        <div key={meter.id} className="rounded-3xl border border-white/50 bg-white/75 px-5 py-5 shadow-sm">
+                                        <div key={meter.id} className="rounded-3xl border border-border/ bg-muted/ px-5 py-5 shadow-sm">
                                             <div className="flex flex-col gap-4">
                                                 <div className="flex items-start justify-between gap-3">
                                                     <div className="space-y-2">
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-10 h-10 rounded-2xl bg-[#F4D03F]/15 border border-[#F4D03F]/30 flex items-center justify-center">
-                                                                <Gauge className="w-5 h-5 text-[#1A1A1A]" />
+                                                            <div className="w-10 h-10 rounded-2xl bg-[#F4D03F]/15 border border-border/ flex items-center justify-center">
+                                                                <Gauge className="w-5 h-5 text-foreground" />
                                                             </div>
                                                             <div>
-                                                                <div className="text-base font-black text-[#1A1A1A]">{meter.meter_number}</div>
-                                                                <div className="text-[11px] font-bold text-gray-500">
+                                                                <div className="text-base font-black text-foreground">{meter.meter_number}</div>
+                                                                <div className="text-[11px] font-bold text-muted-foreground">
                                                                     {meter.meter_code || 'No external code'}
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <div className="flex flex-wrap gap-2">
-                                                            <span className="px-2.5 py-1 rounded-full bg-[#F4D03F]/15 text-[10px] font-black text-[#1A1A1A] border border-[#F4D03F]/20">
+                                                            <span className="px-2.5 py-1 rounded-full bg-[#F4D03F]/15 text-[10px] font-black text-foreground border border-border/">
                                                                 {meter.status}
                                                             </span>
                                                             {meter.has_alarm && (
@@ -438,30 +438,30 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                                                 </div>
 
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                                    <div className="rounded-2xl border border-white/50 bg-[#FFF9F0]/90 px-4 py-3">
-                                                        <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
+                                                    <div className="rounded-2xl border border-border/ bg-card/ px-4 py-3">
+                                                        <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">
                                                             <MapPin className="w-3.5 h-3.5" />
                                                             Placement
                                                         </div>
-                                                        <div className="mt-2 font-bold text-[#1A1A1A]">{building?.name || meter.building_id}</div>
-                                                        <div className="text-[12px] font-semibold text-gray-500">
+                                                        <div className="mt-2 font-bold text-foreground">{building?.name || meter.building_id}</div>
+                                                        <div className="text-[12px] font-semibold text-muted-foreground">
                                                             {apartment ? apartment.unit_number : 'No hive / station assigned'}
                                                         </div>
                                                     </div>
 
-                                                    <div className="rounded-2xl border border-white/50 bg-[#FFF9F0]/90 px-4 py-3">
-                                                        <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
+                                                    <div className="rounded-2xl border border-border/ bg-card/ px-4 py-3">
+                                                        <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">
                                                             <Activity className="w-3.5 h-3.5" />
                                                             Latest reading
                                                         </div>
-                                                        <div className="mt-2 font-bold text-[#1A1A1A]">{formatMeterReading(meter)}</div>
-                                                        <div className="text-[12px] font-semibold text-gray-500">
+                                                        <div className="mt-2 font-bold text-foreground">{formatMeterReading(meter)}</div>
+                                                        <div className="text-[12px] font-semibold text-muted-foreground">
                                                             {meter.last_reading_at ? new Date(meter.last_reading_at).toLocaleString() : 'Waiting for first sync'}
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-2 text-[12px] font-semibold text-gray-500">
+                                                <div className="flex items-center gap-2 text-[12px] font-semibold text-muted-foreground">
                                                     <CalendarDays className="w-4 h-4 text-[#F4D03F]" />
                                                     Installed: {formatInstallDate(meter.install_date)}
                                                 </div>
@@ -558,20 +558,20 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                             />
                         </BeeYieldFormField>
 
-                        <div className="rounded-2xl border border-[#F4D03F]/20 bg-[#FFF9F0]/80 px-4 py-4">
-                            <div className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Meter type</div>
-                            <div className="mt-2 text-base font-black text-[#1A1A1A]">{meterType}</div>
-                            <div className="mt-1 text-sm font-medium text-gray-500">
+                        <div className="rounded-2xl border border-border/ bg-card/ px-4 py-4">
+                            <div className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Meter type</div>
+                            <div className="mt-2 text-base font-black text-foreground">{meterType}</div>
+                            <div className="mt-1 text-sm font-medium text-muted-foreground">
                                 Default reading unit: {DEFAULT_READING_UNITS[meterType]}
                             </div>
                         </div>
                     </div>
 
                     {!selectedMeter && (
-                        <div className="rounded-3xl border border-[#F4D03F]/20 bg-[#FFF9F0]/80 p-5 space-y-4">
+                        <div className="rounded-3xl border border-border/ bg-card/ p-5 space-y-4">
                             <div>
-                                <h4 className="text-sm font-black text-[#1A1A1A]">Optional first reading</h4>
-                                <p className="text-sm font-medium text-gray-500">
+                                <h4 className="text-sm font-black text-foreground">Optional first reading</h4>
+                                <p className="text-sm font-medium text-muted-foreground">
                                     If you already know the starting reading, it will be saved to the backend together with the new meter.
                                 </p>
                             </div>
@@ -632,3 +632,4 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
 };
 
 export default MetersListBase;
+

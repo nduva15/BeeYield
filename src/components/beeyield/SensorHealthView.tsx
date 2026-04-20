@@ -94,10 +94,10 @@ const VitalsCard: React.FC<{
         <div className={cn(glass.card, "p-5 flex flex-col justify-between group transition-all h-full bg-white shadow-sm")}>
             <div className="flex items-start justify-between mb-4">
                 <div className="space-y-1">
-                    <p className="text-[10px] font-bold tracking-wider text-gray-400">{label}</p>
+                    <p className="text-[10px] font-bold tracking-wider text-muted-foreground/70">{label}</p>
                     <div className="flex items-baseline gap-1">
-                        <span className={cn("text-3xl font-bold tracking-tight", status === 'ok' ? 'text-[#1A1A1A]' : status === 'warn' ? 'text-amber-600' : 'text-red-600')}>{value}</span>
-                        <span className="text-xs font-bold text-gray-400">{unit}</span>
+                        <span className={cn("text-3xl font-bold tracking-tight", status === 'ok' ? 'text-foreground' : status === 'warn' ? 'text-amber-600' : 'text-red-600')}>{value}</span>
+                        <span className="text-xs font-bold text-muted-foreground/70">{unit}</span>
                     </div>
                 </div>
                 <div className={cn(
@@ -111,8 +111,8 @@ const VitalsCard: React.FC<{
             </div>
             <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-4">
                 <div className="flex flex-col">
-                    <span className="text-[9px] font-bold text-gray-400">Target</span>
-                    <span className="text-xs font-bold text-gray-600">{target}</span>
+                    <span className="text-[9px] font-bold text-muted-foreground/70">Target</span>
+                    <span className="text-xs font-bold text-muted-foreground/90">{target}</span>
                 </div>
                 <div className={cn("flex items-center gap-1 font-bold text-[10px]", trendColor)}>
                     <TrendIcon className="w-3 h-3" />
@@ -195,10 +195,10 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         return (
             <div className={cn(glass.page, "flex items-center justify-center min-h-[50vh]")}>
                 <div className="text-center space-y-4">
-                    <div className="w-16 h-16 rounded-2xl bg-[#F9F7F2] border border-gray-200 mx-auto flex items-center justify-center relative shadow-sm">
+                    <div className="w-16 h-16 rounded-2xl bg-muted/20 border border-gray-200 mx-auto flex items-center justify-center relative shadow-sm">
                         <Zap className="w-8 h-8 text-[#F4D03F] animate-pulse" />
                     </div>
-                    <h3 className="text-xl font-bold text-[#1A1A1A] animate-pulse">Loading Sensor Matrix...</h3>
+                    <h3 className="text-xl font-bold text-foreground animate-pulse">Loading Sensor Matrix...</h3>
                 </div>
             </div>
         );
@@ -230,7 +230,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         return (
             <div className={cn(glass.page, "p-6")}>
                 <div className={cn(glass.card, "p-10 text-center space-y-2")}>
-                    <div className="text-sm font-black text-[#1A1A1A]">No hives connected yet</div>
+                    <div className="text-sm font-black text-foreground">No hives connected yet</div>
                     <div className="text-xs font-semibold text-slate-500 max-w-xl mx-auto">
                         Add a hive (or connect a device) to start streaming temperature/humidity readings into this dashboard.
                     </div>
@@ -267,7 +267,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 actions={
                     <div className="flex items-center gap-3 bg-white px-4 py-1.5 rounded-lg border border-gray-200 shadow-sm">
                          <div className="w-2 h-2 rounded-full bg-[#1B9157] shadow-[0_0_8px_rgba(27,145,87,0.4)] animate-pulse" />
-                         <span className="text-xs font-bold text-[#1A1A1A] tabular-nums">{liveTime.toLocaleTimeString()} — LIVE</span>
+                         <span className="text-xs font-bold text-foreground tabular-nums">{liveTime.toLocaleTimeString()} — LIVE</span>
                     </div>
                 }
             />
@@ -293,7 +293,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                 <h4 className={cn("text-sm font-bold tracking-tight", alert.severity === 'critical' ? "text-red-600" : "text-amber-700")}>
                                     Attention Needed: {alert.alert_type}
                                 </h4>
-                                <p className="text-xs font-medium text-gray-500">{alert.message}</p>
+                                <p className="text-xs font-medium text-muted-foreground">{alert.message}</p>
                             </div>
                             <div className="shrink-0 text-right">
                                 <span className="text-[10px] font-bold text-gray-300">{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}</span>
@@ -306,8 +306,8 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             {/* Hive Selector */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-gray-400" />
-                    <h3 className="text-[10px] font-bold tracking-wider text-gray-500">Hive selection</h3>
+                    <Layers className="w-4 h-4 text-muted-foreground/70" />
+                    <h3 className="text-[10px] font-bold tracking-wider text-muted-foreground">Hive selection</h3>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     {realHives.map(hive => {
@@ -324,13 +324,13 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             >
                                 <div className="space-y-3 relative z-10">
                                     <div className="flex justify-between items-center">
-                                        <span className={cn("text-xs font-bold tracking-wider uppercase", isSelected ? "text-[#1B9157]" : "text-gray-500")}>{hive.code}</span>
+                                        <span className={cn("text-xs font-bold tracking-wider uppercase", isSelected ? "text-[#1B9157]" : "text-muted-foreground")}>{hive.code}</span>
                                         {hive.alert && <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)] animate-pulse" />}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-sm font-bold text-[#1A1A1A] tabular-nums">{hive.temp}°C</span>
+                                        <span className="text-sm font-bold text-foreground tabular-nums">{hive.temp}°C</span>
                                         <div className="w-1 h-1 rounded-full bg-gray-200" />
-                                        <span className="text-sm font-bold text-gray-400 tabular-nums">{hive.humidity}%</span>
+                                        <span className="text-sm font-bold text-muted-foreground/70 tabular-nums">{hive.humidity}%</span>
                                     </div>
                                 </div>
                             </button>
@@ -362,11 +362,11 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 <div className={cn(glass.card, "p-5 flex flex-col justify-between group transition-all bg-white shadow-sm overflow-hidden")}>
                     <div className="flex items-start justify-between mb-2">
                         <div className="space-y-1">
-                            <p className="text-[10px] font-bold tracking-wider text-gray-400">Hive Sound</p>
+                            <p className="text-[10px] font-bold tracking-wider text-muted-foreground/70">Hive Sound</p>
                             <h3 className={cn("text-xl font-bold tracking-tight uppercase", acoustic.color)}>
                                 {selectedHive.acoustic}
                             </h3>
-                            <p className="text-[10px] font-bold text-gray-400">{acoustic.label}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground/70">{acoustic.label}</p>
                         </div>
                         <div className={cn(
                             "w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm",
@@ -378,7 +378,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         </div>
                     </div>
                     <div className="flex items-end gap-1 h-12 border-t border-gray-50 pt-3 mt-4">
-                        <div className="w-full text-[10px] font-bold text-gray-400">
+                        <div className="w-full text-[10px] font-bold text-muted-foreground/70">
                             No acoustic waveform data available yet.
                         </div>
                     </div>
@@ -390,12 +390,12 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-100 pb-4 gap-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 shadow-sm">
-                            <Activity className="w-5 h-5 text-gray-400" />
+                            <Activity className="w-5 h-5 text-muted-foreground/70" />
                         </div>
-                        <h2 className="text-base font-bold text-[#1A1A1A] tracking-tight">History Trends</h2>
+                        <h2 className="text-base font-bold text-foreground tracking-tight">History Trends</h2>
                     </div>
                     <div className="flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
-                        <span className="px-3 text-[10px] font-bold text-gray-400">Past {historyRange} Mo</span>
+                        <span className="px-3 text-[10px] font-bold text-muted-foreground/70">Past {historyRange} Mo</span>
                         <div className="flex items-center gap-1">
                             <button
                                 onClick={() => setHistoryRange(r => Math.max(1, r - 1))}
@@ -448,7 +448,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100 shadow-sm">
                         <Shield className="w-5 h-5 text-emerald-600" />
                     </div>
-                    <h3 className="text-base font-bold text-[#1A1A1A] tracking-tight">Global Status Matrix</h3>
+                    <h3 className="text-base font-bold text-foreground tracking-tight">Global Status Matrix</h3>
                 </div>
                 <div className={cn(glass.card, "p-0 overflow-hidden shadow-sm bg-white")}>
                     <div className="overflow-x-auto custom-scrollbar">
@@ -456,7 +456,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             <thead>
                                 <tr className="bg-gray-50/50">
                                     {['Hive', 'Temp', 'Humidity', 'Sound profile', 'Last sync', 'Health'].map(h => (
-                                        <th key={h} className="px-6 py-4 text-[10px] font-bold tracking-wider text-gray-400 border-b border-gray-100">{h}</th>
+                                        <th key={h} className="px-6 py-4 text-[10px] font-bold tracking-wider text-muted-foreground/70 border-b border-gray-100">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -466,11 +466,11 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className={cn("w-2 h-2 rounded-full", acousticConfig[hive.acoustic]?.bg || "bg-emerald-500")} />
-                                                <span className="text-sm font-bold text-[#1A1A1A] group-hover:text-[#1B9157] transition-colors">{hive.code}</span>
+                                                <span className="text-sm font-bold text-foreground group-hover:text-[#1B9157] transition-colors">{hive.code}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm font-bold text-gray-500 tabular-nums">{hive.temp}°C</td>
-                                        <td className="px-6 py-4 text-sm font-bold text-gray-500 tabular-nums">{hive.humidity}%</td>
+                                        <td className="px-6 py-4 text-sm font-bold text-muted-foreground tabular-nums">{hive.temp}°C</td>
+                                        <td className="px-6 py-4 text-sm font-bold text-muted-foreground tabular-nums">{hive.humidity}%</td>
                                         <td className="px-6 py-4">
                                             <span className={cn("text-[10px] font-bold px-2.5 py-1 rounded-lg border", 
                                                 hive.acoustic === 'Healthy' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
@@ -499,3 +499,4 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 };
 
 export default SensorHealthView;
+

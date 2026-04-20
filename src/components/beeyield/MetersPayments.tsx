@@ -171,12 +171,12 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             />
 
             {/* Consumption Summary */}
-            <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem]")}>
-                <div className="p-5 border-b border-white/10 bg-white/20 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-white/50 flex items-center justify-center border border-white/40">
+            <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden bg-muted/ backdrop-blur-xl border-border/ rounded-[2.5rem]")}>
+                <div className="p-5 border-b border-border/ bg-muted/ flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-muted/ flex items-center justify-center border border-border/">
                         <CreditCard className="w-4 h-4 text-[#1B9157]" />
                     </div>
-                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Resource usage summary</h3>
+                    <h3 className="text-[11px] font-black text-foreground">Resource usage summary</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10">
@@ -186,33 +186,33 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.1 }}
                             key={idx}
-                            className="p-6 flex flex-col items-center text-center group hover:bg-white/50 transition-colors"
+                            className="p-6 flex flex-col items-center text-center group hover:bg-muted/ transition-colors"
                         >
-                            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4 shadow-sm border border-white/40 group-hover:scale-110 transition-transform duration-300 bg-white/60", item.color)}>
+                            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4 shadow-sm border border-border/ group-hover:scale-110 transition-transform duration-300 bg-muted/", item.color)}>
                                 <item.icon className="w-5 h-5" />
                             </div>
-                            <p className="text-[9px] font-black text-gray-500 mb-1">{item.label}</p>
-                            <h3 className="text-2xl font-black text-[#1A1A1A] tracking-tighter tabular-nums">
-                                {item.value} <span className="text-[10px] font-bold text-gray-400">{item.unit}</span>
+                            <p className="text-[9px] font-black text-muted-foreground mb-1">{item.label}</p>
+                            <h3 className="text-2xl font-black text-foreground tracking-tighter tabular-nums">
+                                {item.value} <span className="text-[10px] font-bold text-muted-foreground/70">{item.unit}</span>
                             </h3>
-                            <p className="text-[8px] font-black text-gray-400 mt-2">{item.subtext}</p>
+                            <p className="text-[8px] font-black text-muted-foreground/70 mt-2">{item.subtext}</p>
                         </motion.div>
                     ))}
                 </div>
             </div>
 
             {/* Export to billing system */}
-            <div className={cn(glass.card, "p-6 shadow-xl bg-white/40 backdrop-blur-xl border-white/20 relative overflow-hidden group rounded-[2.5rem]")}>
+            <div className={cn(glass.card, "p-6 shadow-xl bg-muted/ backdrop-blur-xl border-border/ relative overflow-hidden group rounded-[2.5rem]")}>
                 <div className="absolute top-0 right-0 w-48 h-48 bg-[#1B9157]/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-transform group-hover:scale-110" />
 
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-white/50 flex items-center justify-center border border-white/40 shadow-sm">
+                        <div className="w-12 h-12 rounded-xl bg-muted/ flex items-center justify-center border border-border/ shadow-sm">
                             <FileText className="w-6 h-6 text-[#1B9157]" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-[11px] font-black text-[#1A1A1A]">All reports export</h3>
-                            <p className="text-[9px] font-bold text-gray-500">Export all billing data for your records</p>
+                            <h3 className="text-[11px] font-black text-foreground">All reports export</h3>
+                            <p className="text-[9px] font-bold text-muted-foreground">Export all billing data for your records</p>
                         </div>
                     </div>
 
@@ -226,28 +226,28 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             </div>
 
             {/* Sample billing rates */}
-            <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden bg-white/40 backdrop-blur-xl border-white/20 rounded-[2.5rem]")}>
-                <div className="p-5 border-b border-white/10 bg-white/20">
-                    <h3 className="text-[11px] font-black text-[#1A1A1A]">Billing rates</h3>
-                    <p className="text-[9px] font-bold text-gray-500 mt-1">Set standard rates for your resources</p>
+            <div className={cn(glass.card, "p-0 shadow-xl overflow-hidden bg-muted/ backdrop-blur-xl border-border/ rounded-[2.5rem]")}>
+                <div className="p-5 border-b border-border/ bg-muted/">
+                    <h3 className="text-[11px] font-black text-foreground">Billing rates</h3>
+                    <p className="text-[9px] font-bold text-muted-foreground mt-1">Set standard rates for your resources</p>
                 </div>
 
                 <div className="p-5 space-y-4">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-10">
                             <Loader2 className="w-6 h-6 animate-spin text-[#F4D03F]" />
-                            <p className="text-[9px] font-black text-gray-500 mt-4 animate-pulse">Updating rates...</p>
+                            <p className="text-[9px] font-black text-muted-foreground mt-4 animate-pulse">Updating rates...</p>
                         </div>
                     ) : error ? (
                         <div className="flex flex-col items-center justify-center py-10 text-center">
                             <FileText className="w-8 h-8 text-red-300 mb-4" />
                             <p className="text-[9px] font-black text-red-600">Load Failed</p>
-                            <p className="text-[10px] font-semibold text-gray-500 mt-2 max-w-md">{error}</p>
+                            <p className="text-[10px] font-semibold text-muted-foreground mt-2 max-w-md">{error}</p>
                         </div>
                     ) : rates.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-10">
                             <FileText className="w-8 h-8 text-gray-300 mb-4" />
-                            <p className="text-[9px] font-black text-gray-500">No billing rates found</p>
+                            <p className="text-[9px] font-black text-muted-foreground">No billing rates found</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -257,26 +257,26 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: idx * 0.1 }}
                                     key={item.id}
-                                    className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-white/50 border border-white/40 hover:bg-white/70 transition-colors group"
+                                    className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-muted/ border border-border/ hover:bg-muted/ transition-colors group"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center border border-white/40 shadow-sm group-hover:scale-105 transition-transform duration-200">
+                                        <div className="w-10 h-10 rounded-xl bg-muted/ flex items-center justify-center border border-border/ shadow-sm group-hover:scale-105 transition-transform duration-200">
                                             {item.meter_type === 'Water' && <Droplet className="w-4 h-4 text-blue-500" />}
                                             {item.meter_type === 'Heat' && <Flame className="w-4 h-4 text-[#F4D03F]" />}
                                             {item.meter_type === 'Energy' && <Zap className="w-4 h-4 text-[#1B9157]" />}
                                         </div>
                                         <div>
-                                            <h4 className="text-[10px] font-black text-[#1A1A1A]">{item.meter_type} Rate</h4>
-                                            <p className="text-[8px] font-bold text-gray-500 mt-0.5">{item.description || 'Standard billing rate'}</p>
+                                            <h4 className="text-[10px] font-black text-foreground">{item.meter_type} Rate</h4>
+                                            <p className="text-[8px] font-bold text-muted-foreground mt-0.5">{item.description || 'Standard billing rate'}</p>
                                         </div>
                                     </div>
                                     <div className="text-left md:text-right">
-                                        <p className="text-lg font-black text-[#1A1A1A] tracking-tighter tabular-nums">
-                                            {item.rate_per_unit.toFixed(2)} <span className="text-[9px] font-bold text-gray-400">{item.currency} / {item.unit}</span>
+                                        <p className="text-lg font-black text-foreground tracking-tighter tabular-nums">
+                                            {item.rate_per_unit.toFixed(2)} <span className="text-[9px] font-bold text-muted-foreground/70">{item.currency} / {item.unit}</span>
                                         </p>
                                         <div className="flex items-center md:justify-end gap-2 mt-1">
                                             {item.is_active && <div className="bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20 px-2 py-0.5 rounded-md text-[8px] font-black">Active</div>}
-                                            <p className="text-[8px] font-bold text-gray-400">EFF: {new Date(item.effective_from).toLocaleDateString()}</p>
+                                            <p className="text-[8px] font-bold text-muted-foreground/70">EFF: {new Date(item.effective_from).toLocaleDateString()}</p>
                                             <button
                                                 type="button"
                                                 onClick={() => deleteRate(item.id)}
@@ -293,10 +293,10 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     )}
                 </div>
 
-                <div className="p-5 border-t border-white/10 bg-white/20 space-y-6">
+                <div className="p-5 border-t border-border/ bg-muted/ space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black text-gray-500 ml-1">Sensor type</label>
+                            <label className="text-[9px] font-black text-muted-foreground ml-1">Sensor type</label>
                             <Select
                                 value={newRate.meter_type.toLowerCase()}
                                 onValueChange={(v) => {
@@ -307,19 +307,19 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                     setNewRate((p) => ({ ...p, meter_type: next }));
                                 }}
                             >
-                                <SelectTrigger id="meters-payments-meter-type" aria-label="Meter type" className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black">
+                                <SelectTrigger id="meters-payments-meter-type" aria-label="Meter type" className="h-9 bg-muted/ border-border/ rounded-xl text-[9px] font-black">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-xl border border-white/40 shadow-lg bg-white/90 backdrop-blur-xl">
-                                    <SelectItem value="water" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Water</SelectItem>
-                                    <SelectItem value="heat" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Heat</SelectItem>
-                                    <SelectItem value="energy" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Energy</SelectItem>
-                                    <SelectItem value="other" className="text-[9px] font-black hover:bg-white/50 cursor-pointer">Other</SelectItem>
+                                <SelectContent className="rounded-xl border border-border/ shadow-lg bg-muted/ backdrop-blur-xl">
+                                    <SelectItem value="water" className="text-[9px] font-black hover:bg-muted/ cursor-pointer">Water</SelectItem>
+                                    <SelectItem value="heat" className="text-[9px] font-black hover:bg-muted/ cursor-pointer">Heat</SelectItem>
+                                    <SelectItem value="energy" className="text-[9px] font-black hover:bg-muted/ cursor-pointer">Energy</SelectItem>
+                                    <SelectItem value="other" className="text-[9px] font-black hover:bg-muted/ cursor-pointer">Other</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <label htmlFor="meters-payments-rate-per-unit" className="text-[9px] font-black text-gray-500 ml-1">Unit Rate</label>
+                            <label htmlFor="meters-payments-rate-per-unit" className="text-[9px] font-black text-muted-foreground ml-1">Unit Rate</label>
                             <Input
                                 id="meters-payments-rate-per-unit"
                                 name="rate_per_unit"
@@ -329,11 +329,11 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                 placeholder="0.00"
                                 value={newRate.rate_per_unit}
                                 onChange={(e) => setNewRate((p) => ({ ...p, rate_per_unit: e.target.value }))}
-                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black font-mono w-full"
+                                className="h-9 bg-muted/ border-border/ rounded-xl text-[9px] font-black font-mono w-full"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label htmlFor="meters-payments-description" className="text-[9px] font-black text-gray-500 ml-1">Annotation</label>
+                            <label htmlFor="meters-payments-description" className="text-[9px] font-black text-muted-foreground ml-1">Annotation</label>
                             <Input
                                 id="meters-payments-description"
                                 name="description"
@@ -341,7 +341,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                 placeholder="COMMENT..."
                                 value={newRate.description}
                                 onChange={(e) => setNewRate((p) => ({ ...p, description: e.target.value }))}
-                                className="h-9 bg-white/50 border-white/40 rounded-xl text-[9px] font-black w-full"
+                                className="h-9 bg-muted/ border-border/ rounded-xl text-[9px] font-black w-full"
                             />
                         </div>
                         <button
@@ -356,10 +356,10 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     </div>
 
                     {/* Drag and Drop Columns */}
-                    <div className="pt-5 border-t border-white/10">
+                    <div className="pt-5 border-t border-border/">
                         <div className="mb-4">
-                            <h4 className="text-[11px] font-black text-[#1A1A1A]">Export columns</h4>
-                            <p className="text-[9px] font-bold text-gray-500 mt-1">Arrange columns for your export reports</p>
+                            <h4 className="text-[11px] font-black text-foreground">Export columns</h4>
+                            <p className="text-[9px] font-bold text-muted-foreground mt-1">Arrange columns for your export reports</p>
                         </div>
 
                         <Reorder.Group axis="y" values={columns} onReorder={setColumns} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -367,13 +367,13 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                 <Reorder.Item
                                     key={column}
                                     value={column}
-                                    className={cn(glass.card, "p-3 flex items-center justify-between cursor-grab active:cursor-grabbing hover:bg-white/50 transition-colors group bg-white/30 border-white/40")}
+                                    className={cn(glass.card, "p-3 flex items-center justify-between cursor-grab active:cursor-grabbing hover:bg-muted/ transition-colors group bg-muted/ border-border/")}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-6 h-6 rounded-md bg-white/50 flex items-center justify-center border border-white/40 shadow-sm group-hover:bg-[#F4D03F] group-hover:border-[#F4D03F] group-hover:text-white transition-colors duration-200">
-                                            <GripVertical className="w-3 h-3 text-gray-500 group-hover:text-white" />
+                                        <div className="w-6 h-6 rounded-md bg-muted/ flex items-center justify-center border border-border/ shadow-sm group-hover:bg-[#F4D03F] group-hover:border-[#F4D03F] group-hover:text-white transition-colors duration-200">
+                                            <GripVertical className="w-3 h-3 text-muted-foreground group-hover:text-white" />
                                         </div>
-                                        <span className="text-[9px] font-black text-[#1A1A1A]">{column}</span>
+                                        <span className="text-[9px] font-black text-foreground">{column}</span>
                                     </div>
                                 </Reorder.Item>
                             ))}
@@ -387,3 +387,4 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
 };
 
 export default MetersPayments;
+

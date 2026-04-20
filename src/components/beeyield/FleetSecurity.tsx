@@ -100,22 +100,22 @@ const FleetSecurity: React.FC = () => {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="bg-amber-100/60 backdrop-blur-xl border border-amber-200/40 text-[#1A1A1A] px-4 py-2.5 flex items-center justify-between gap-4 rounded-2xl shadow-sm relative z-50 overflow-hidden"
+                        className="bg-amber-100/60 backdrop-blur-xl border border-amber-200/40 text-foreground px-4 py-2.5 flex items-center justify-between gap-4 rounded-2xl shadow-sm relative z-50 overflow-hidden"
                     >
                         <div className="flex items-center gap-3 relative z-10">
                             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
                                 <AlertTriangle className="w-4 h-4 text-red-500" />
                             </div>
                             <div className="space-y-0.5">
-                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Movement_Detected</h3>
-                                <p className="text-[8px] font-black text-gray-500">PALLET_{pallets[1].id}_SECTOR_G4</p>
+                                <h3 className="text-[10px] font-black text-foreground">Movement_Detected</h3>
+                                <p className="text-[8px] font-black text-muted-foreground">PALLET_{pallets[1].id}_SECTOR_G4</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 relative z-10">
-                            <button className="h-7 px-3 bg-white text-[#1A1A1A] border border-amber-200/40 shadow-sm rounded-lg font-black text-[9px] hover:bg-amber-50 transition-all">Suppress</button>
+                            <button className="h-7 px-3 bg-white text-foreground border border-amber-200/40 shadow-sm rounded-lg font-black text-[9px] hover:bg-amber-50 transition-all">Suppress</button>
                             <button
                                 onClick={() => setGlobalAlert(false)}
-                                className="w-8 h-8 flex items-center justify-center bg-transparent rounded-lg hover:bg-amber-200 transition-all text-gray-500 hover:text-[#1A1A1A]"
+                                className="w-8 h-8 flex items-center justify-center bg-transparent rounded-lg hover:bg-amber-200 transition-all text-muted-foreground hover:text-foreground"
                                 aria-label="Dismiss alert"
                                 title="Dismiss alert"
                                 type="button"
@@ -135,7 +135,7 @@ const FleetSecurity: React.FC = () => {
                 subtitle="High-fidelity telemetry of pallet movement, geo-fencing, and nodal integrity protocols."
                 actions={
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2.5 bg-white/60 px-3 h-8 rounded-xl border border-white/40 shadow-sm backdrop-blur-sm">
+                        <div className="flex items-center gap-2.5 bg-muted/ px-3 h-8 rounded-xl border border-border/ shadow-sm backdrop-blur-sm">
                             <LockIcon className="w-3 h-3 text-[#1B9157]" />
                             <button className={glass.btnPrimary}>Secure UI</button>
                         </div>
@@ -151,21 +151,21 @@ const FleetSecurity: React.FC = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={cn(glass.card, "p-0 shadow-xl bg-white/40 border-white/20")}
+                        className={cn(glass.card, "p-0 shadow-xl bg-muted/ border-border/")}
                     >
-                        <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between">
+                        <div className="p-4 border-b border-border/ bg-[#F4D03F][0.02] flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
                                     <MapPin className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
-                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Asset_Vector_Map</h3>
+                                <h3 className="text-[10px] font-black text-foreground">Asset_Vector_Map</h3>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-2 px-3 py-1 bg-white/60 rounded-xl border border-white/40 shadow-sm">
+                                <div className="flex items-center gap-2 px-3 py-1 bg-muted/ rounded-xl border border-border/ shadow-sm">
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                                    <span className="text-[8px] font-black text-gray-400">Geo Synced</span>
+                                    <span className="text-[8px] font-black text-muted-foreground/70">Geo Synced</span>
                                 </div>
-                                <RefreshCw className="w-4 h-4 text-gray-400 hover:text-[#1A1A1A] cursor-pointer transition-colors" />
+                                <RefreshCw className="w-4 h-4 text-muted-foreground/70 hover:text-foreground cursor-pointer transition-colors" />
                             </div>
                         </div>
                         
@@ -190,14 +190,14 @@ const FleetSecurity: React.FC = () => {
                                         )} />
                                     </div>
                                     <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-white border border-gray-200 shadow-sm flex items-center px-2 py-1 rounded-md opacity-0 group-hover/node:opacity-100 transition-opacity whitespace-nowrap z-20">
-                                        <span className="text-[10px] font-bold text-[#1A1A1A]">{p.id}</span>
+                                        <span className="text-[10px] font-bold text-foreground">{p.id}</span>
                                     </div>
                                 </motion.div>
                             ))}
                             
                             <div className="absolute bottom-4 right-4 flex flex-col gap-2">
-                                <button className="h-8 w-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-[#1A1A1A] hover:bg-gray-50 transition-all shadow-sm font-bold text-lg leading-none">+</button>
-                                <button className="h-8 w-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-[#1A1A1A] hover:bg-gray-50 transition-all shadow-sm font-bold text-lg leading-none">-</button>
+                                <button className="h-8 w-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-gray-50 transition-all shadow-sm font-bold text-lg leading-none">+</button>
+                                <button className="h-8 w-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-gray-50 transition-all shadow-sm font-bold text-lg leading-none">-</button>
                             </div>
                         </div>
                     </motion.div>
@@ -208,24 +208,24 @@ const FleetSecurity: React.FC = () => {
                     <motion.div
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={cn(glass.card, "p-0 shadow-xl bg-white/40 border-white/20")}
+                        className={cn(glass.card, "p-0 shadow-xl bg-muted/ border-border/")}
                     >
-                       <div className="p-4 border-b border-[#F4D03F]/10 bg-[#F4D03F][0.02] flex items-center justify-between">
+                       <div className="p-4 border-b border-border/ bg-[#F4D03F][0.02] flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-xl bg-white border border-gray-100 flex items-center justify-center shadow-sm">
                                     <Activity className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
-                                <h3 className="text-[10px] font-black text-[#1A1A1A]">Unit_Matrix</h3>
+                                <h3 className="text-[10px] font-black text-foreground">Unit_Matrix</h3>
                             </div>
-                            <span className="text-[8px] font-black text-gray-400">{pallets.length}_ASSETS</span>
+                            <span className="text-[8px] font-black text-muted-foreground/70">{pallets.length}_ASSETS</span>
                         </div>
 
                         <div className="p-4 space-y-3 max-h-[350px] overflow-y-auto custom-scrollbar">
                             {pallets.map((p, i) => (
-                                <div key={i} className="bg-white/60 border border-white/40 p-3 rounded-2xl flex items-center justify-between hover:border-[#F4D03F]/40 transition-all group shadow-sm">
+                                <div key={i} className="bg-muted/ border border-border/ p-3 rounded-2xl flex items-center justify-between hover:border-border/ transition-all group shadow-sm">
                                     <div className="flex flex-col gap-0.5">
-                                        <span className="text-[10px] font-black text-[#1A1A1A] tracking-tight">{p.id}</span>
-                                        <span className="text-[8px] font-black text-gray-400">{p.vibration.toFixed(2)}V_ECHO</span>
+                                        <span className="text-[10px] font-black text-foreground tracking-tight">{p.id}</span>
+                                        <span className="text-[8px] font-black text-muted-foreground/70">{p.vibration.toFixed(2)}V_ECHO</span>
                                     </div>
                                     <div className="text-right flex flex-col items-end gap-1.5 w-24">
                                         <span className={cn(
@@ -245,9 +245,9 @@ const FleetSecurity: React.FC = () => {
                             ))}
                         </div>
 
-                        <div className="p-4 border-t border-[#F4D03F]/10 bg-white/20 flex flex-col gap-2">
-                            <button className={cn(glass.btnSecondary, "w-full bg-white/60 border-white/40")}>Manual Override</button>
-                            <button className="w-full h-8 bg-transparent text-gray-400 font-bold text-xs tracking-wider rounded-lg hover:text-[#1A1A1A] transition-all">Diagnostics</button>
+                        <div className="p-4 border-t border-border/ bg-muted/ flex flex-col gap-2">
+                            <button className={cn(glass.btnSecondary, "w-full bg-muted/ border-border/")}>Manual Override</button>
+                            <button className="w-full h-8 bg-transparent text-muted-foreground/70 font-bold text-xs tracking-wider rounded-lg hover:text-foreground transition-all">Diagnostics</button>
                         </div>
                     </motion.div>
                 </div>
@@ -263,3 +263,4 @@ const FleetSecurity: React.FC = () => {
 };
 
 export default FleetSecurity;
+

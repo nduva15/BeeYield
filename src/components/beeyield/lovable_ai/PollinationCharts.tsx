@@ -236,3 +236,4 @@ export default function PollinationCharts({ isOpen, onClose }: PollinationCharts
     </div>
   );
 }
+

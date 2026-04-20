@@ -11,7 +11,7 @@ interface SeasonSummaryProps {
 function calcGrade(score: number): { letter: string; color: string; bg: string } {
     if (score >= 90) return { letter: 'A', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 border-[#1B9157]/30 shadow-emerald-500/10' };
     if (score >= 75) return { letter: 'B', color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/5 border-[#1B9157]/20 shadow-emerald-400/10' };
-    if (score >= 60) return { letter: 'C', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10 border-[#F4D03F]/30 shadow-honey/10' };
+    if (score >= 60) return { letter: 'C', color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10 border-border/ shadow-honey/10' };
     if (score >= 45) return { letter: 'D', color: 'text-orange-500', bg: 'bg-orange-500/10 border-orange-500/30 shadow-orange-500/10' };
     return { letter: 'F', color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/30 shadow-red-500/10' };
 }
@@ -167,7 +167,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20')}>
+                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-border/')}>
                         <TrendingUp className="w-3.5 h-3.5" />
                         <span className="">End-of-Season Pollination Report</span>
                     </div>
@@ -269,7 +269,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                 {loading ? (
                                     <tr>
                                         <td colSpan={8} className="px-8 py-10">
-                                            <div className="flex items-center gap-3 text-[11px] text-gray-500">
+                                            <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
                                                 <Loader2 className="w-4 h-4 animate-spin" />
                                                 Loading contracts…
                                             </div>
@@ -277,7 +277,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                     </tr>
                                 ) : (contracts || []).length === 0 ? (
                                     <tr>
-                                        <td colSpan={8} className="px-8 py-10 text-[11px] text-gray-500">
+                                        <td colSpan={8} className="px-8 py-10 text-[11px] text-muted-foreground">
                                             No pollination contracts found for this account.
                                         </td>
                                     </tr>
@@ -289,10 +289,10 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                             : contracted;
                                         const ratio = contracted > 0 ? delivered / contracted : 1;
                                         return (
-                                            <tr key={c.id} className="hover:bg-[#F9F7F2] transition-colors group">
+                                            <tr key={c.id} className="hover:bg-muted/20 transition-colors group">
                                                 <td className="px-8 py-5">
                                                     <div className={cn(glass.sectionTitle, "text-lg normal-case")}>{c.contract_code}</div>
-                                                    <div className="text-[10px] text-gray-500">{c.farm_location}</div>
+                                                    <div className="text-[10px] text-muted-foreground">{c.farm_location}</div>
                                                 </td>
                                                 <td className="px-8 py-5">
                                                     <span className={cn(glass.microLabel, "opacity-70 normal-case font-bold")}>{c.crop_type}</span>
@@ -322,7 +322,7 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
                                                     <span className={cn(glass.badge, "border-transparent px-3",
                                                         c.status === 'completed' ? "bg-[#1B9157]/10 text-[#1B9157] font-bold" :
                                                             c.status === 'active' ? "bg-[#F4D03F]/10 text-[#F4D03F] font-bold" :
-                                                                "bg-gray-100 text-gray-600 font-bold"
+                                                                "bg-gray-100 text-muted-foreground/90 font-bold"
                                                     )}>
                                                         {String(c.status || '—')}
                                                     </span>
@@ -347,3 +347,4 @@ const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
 };
 
 export default SeasonSummary;
+

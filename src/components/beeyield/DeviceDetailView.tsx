@@ -145,7 +145,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
           }
         />
         <BeeYieldCard className="p-8 text-center">
-          <p className="text-sm text-gray-500">Try refreshing your devices list.</p>
+          <p className="text-sm text-muted-foreground">Try refreshing your devices list.</p>
           <div className="mt-4 flex items-center justify-center gap-3">
             <Button className={glass.btnPrimary} onClick={handleRefresh}>
               <RefreshCw className={cn('w-4 h-4', refreshing && 'animate-spin')} />
@@ -249,43 +249,43 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
         <div className="lg:col-span-4 space-y-6">
           <BeeYieldCard className="space-y-4">
             <div className="flex items-center justify-between">
-              <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Status</p>
+              <p className={cn(glass.microLabel, 'text-foreground/60')}>Status</p>
               <Badge className={cn(glass.badge, status === 'Nominal' ? 'border-[#1B9157]/30 bg-[#1B9157]/10 text-[#1B9157]' : 'border-red-500/20 bg-red-500/10 text-red-600')}>
                 {status}
               </Badge>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl border border-white/40 bg-white/30">
+              <div className="p-3 rounded-xl border border-border/ bg-muted/">
                 <div className="flex items-center gap-2">
                   <Battery className="w-4 h-4 text-[#F4D03F]" />
-                  <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Battery</p>
+                  <p className={cn(glass.microLabel, 'text-foreground/60')}>Battery</p>
                 </div>
-                <p className="text-lg font-black tabular-nums text-[#1A1A1A]">{device.battery_level ?? '—'}%</p>
+                <p className="text-lg font-black tabular-nums text-foreground">{device.battery_level ?? '—'}%</p>
               </div>
-              <div className="p-3 rounded-xl border border-white/40 bg-white/30">
+              <div className="p-3 rounded-xl border border-border/ bg-muted/">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-[#F4D03F]" />
-                  <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Last ping</p>
+                  <p className={cn(glass.microLabel, 'text-foreground/60')}>Last ping</p>
                 </div>
-                <p className="text-sm font-black text-[#1A1A1A]">{timeAgo(lastPing)}</p>
+                <p className="text-sm font-black text-foreground">{timeAgo(lastPing)}</p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-[#1A1A1A]/70">
+              <div className="flex items-center gap-2 text-foreground/70">
                 <MapPin className="w-4 h-4 text-[#F4D03F]" />
                 <span className="text-[11px] font-black">
                   {apiary?.name || device.location_name || '—'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-[#1A1A1A]/70">
+              <div className="flex items-center gap-2 text-foreground/70">
                 <Hexagon className="w-4 h-4 text-[#1B9157]" />
                 <span className="text-[11px] font-black">
                   {hive?.hive_code || 'No Hive Link'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-[#1A1A1A]/70">
+              <div className="flex items-center gap-2 text-foreground/70">
                 <Signal className="w-4 h-4 text-[#F4D03F]" />
                 <span className="text-[11px] font-black">
                   FW {device.firmware_version || '—'}
@@ -295,25 +295,25 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
           </BeeYieldCard>
 
           <BeeYieldCard className="space-y-3">
-            <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Latest snapshot</p>
+            <p className={cn(glass.microLabel, 'text-foreground/60')}>Latest snapshot</p>
             {!latest ? (
-              <p className="text-sm text-gray-500">No recent reading payload.</p>
+              <p className="text-sm text-muted-foreground">No recent reading payload.</p>
             ) : (
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl border border-white/40 bg-white/30">
-                  <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Temp</p>
+                <div className="p-3 rounded-xl border border-border/ bg-muted/">
+                  <p className={cn(glass.microLabel, 'text-foreground/60')}>Temp</p>
                   <p className="text-lg font-black tabular-nums">{(latest.temperature ?? (latest.readings as any)?.temperature ?? '—')} </p>
                 </div>
-                <div className="p-3 rounded-xl border border-white/40 bg-white/30">
-                  <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Humidity</p>
+                <div className="p-3 rounded-xl border border-border/ bg-muted/">
+                  <p className={cn(glass.microLabel, 'text-foreground/60')}>Humidity</p>
                   <p className="text-lg font-black tabular-nums">{(latest.humidity ?? (latest.readings as any)?.humidity ?? '—')} </p>
                 </div>
-                <div className="p-3 rounded-xl border border-white/40 bg-white/30">
-                  <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Weight</p>
+                <div className="p-3 rounded-xl border border-border/ bg-muted/">
+                  <p className={cn(glass.microLabel, 'text-foreground/60')}>Weight</p>
                   <p className="text-lg font-black tabular-nums">{(latest.weight ?? (latest.readings as any)?.weight ?? '—')} </p>
                 </div>
-                <div className="p-3 rounded-xl border border-white/40 bg-white/30">
-                  <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Signal</p>
+                <div className="p-3 rounded-xl border border-border/ bg-muted/">
+                  <p className={cn(glass.microLabel, 'text-foreground/60')}>Signal</p>
                   <p className="text-lg font-black tabular-nums">{latest.signal_strength ?? latest.signal_dbm ?? '—'}</p>
                 </div>
               </div>
@@ -322,7 +322,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
 
           <BeeYieldCard className="space-y-3 border border-red-500/20">
             <div className="flex items-center justify-between">
-              <p className={cn(glass.microLabel, 'text-[#1A1A1A]/60')}>Danger zone</p>
+              <p className={cn(glass.microLabel, 'text-foreground/60')}>Danger zone</p>
               <Button
                 variant="outline"
                 className={cn(glass.btnSecondary, 'h-9 border-red-500/20 text-red-600 hover:text-red-700')}
@@ -333,7 +333,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
                 Delete
               </Button>
             </div>
-            <p className="text-xs text-gray-500">Deletes this device from your registry (readings remain in history unless your DB policy cascades).</p>
+            <p className="text-xs text-muted-foreground">Deletes this device from your registry (readings remain in history unless your DB policy cascades).</p>
           </BeeYieldCard>
         </div>
 
@@ -346,17 +346,17 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
           />
 
           <BeeYieldCard className="p-0 overflow-hidden">
-            <div className="p-5 border-b border-white/20 bg-white/20 flex items-center justify-between">
+            <div className="p-5 border-b border-border/ bg-muted/ flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-100 shadow-sm">
                   <Activity className="w-4 h-4 text-[#F4D03F]" />
                 </div>
                 <div className="space-y-0.5">
-                  <h3 className="text-[11px] font-black text-[#1A1A1A] leading-none">Recent_Readings</h3>
-                  <p className="text-[8px] font-black text-gray-400">Last 50 Events</p>
+                  <h3 className="text-[11px] font-black text-foreground leading-none">Recent_Readings</h3>
+                  <p className="text-[8px] font-black text-muted-foreground/70">Last 50 Events</p>
                 </div>
               </div>
-              <Badge className="bg-white/40 text-gray-500 border-white/40 rounded-lg font-black text-[8px] px-2 py-0.5">
+              <Badge className="bg-muted/ text-muted-foreground border-border/ rounded-lg font-black text-[8px] px-2 py-0.5">
                 {deviceReadings.length}
               </Badge>
             </div>
@@ -364,7 +364,7 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-white/30 border-b border-white/40">
+                  <tr className="bg-muted/ border-b border-border/">
                     <th className={glass.tableHead}>Timestamp</th>
                     <th className={glass.tableHead}>Type</th>
                     <th className={glass.tableHead}>Payload</th>
@@ -373,21 +373,21 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
                 <tbody className="divide-y divide-[#F4D03F]/10">
                   {deviceReadings.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="p-10 text-center text-sm text-gray-500">
+                      <td colSpan={3} className="p-10 text-center text-sm text-muted-foreground">
                         No readings yet for this device.
                       </td>
                     </tr>
                   ) : (
                     deviceReadings.map((r) => (
-                      <tr key={r.id} className="hover:bg-white/40 transition-colors">
-                        <td className="px-6 py-4 text-[11px] font-bold text-gray-600 tabular-nums">
+                      <tr key={r.id} className="hover:bg-muted/ transition-colors">
+                        <td className="px-6 py-4 text-[11px] font-bold text-muted-foreground/90 tabular-nums">
                           {new Date(r.timestamp).toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 text-[11px] font-black text-[#1A1A1A]">
+                        <td className="px-6 py-4 text-[11px] font-black text-foreground">
                           {r.sensor_type || 'reading'}
                         </td>
                         <td className="px-6 py-4">
-                          <pre className="text-[10px] font-mono text-[#1A1A1A]/70 whitespace-pre-wrap break-words">
+                          <pre className="text-[10px] font-mono text-foreground/70 whitespace-pre-wrap break-words">
                             {JSON.stringify(r.readings ?? r, null, 2)}
                           </pre>
                         </td>
@@ -483,4 +483,5 @@ export default function DeviceDetailView(props: DeviceDetailViewProps) {
     </BeeYieldPageShell>
   );
 }
+
 

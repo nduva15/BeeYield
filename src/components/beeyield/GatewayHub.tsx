@@ -76,8 +76,8 @@ const GatewayHub: React.FC = () => {
                 subtitle="Localized Orchard Mesh | Lifecycle Monitoring | Asset Integrity"
                 actions={
                     <div className={cn(glass.card, 'px-4 py-2 bg-white flex flex-col items-end shadow-sm')}>
-                        <span className="text-[10px] font-bold text-gray-500 tracking-wider mb-0.5">Network Load</span>
-                        <span className="text-[16px] font-bold text-[#1A1A1A] tracking-tight">{networkLoadLabel}</span>
+                        <span className="text-[10px] font-bold text-muted-foreground tracking-wider mb-0.5">Network Load</span>
+                        <span className="text-[16px] font-bold text-foreground tracking-tight">{networkLoadLabel}</span>
                     </div>
                 }
             />
@@ -89,8 +89,8 @@ const GatewayHub: React.FC = () => {
                             <AlertTriangle className="w-5 h-5 text-amber-500" />
                         </div>
                         <div className="flex-1 space-y-2">
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Gateway Attention Needed</h3>
-                            <p className="text-xs font-medium text-gray-600 leading-relaxed">
+                            <h3 className="text-sm font-bold text-foreground tracking-tight">Gateway Attention Needed</h3>
+                            <p className="text-xs font-medium text-muted-foreground/90 leading-relaxed">
                                 {staleGateways.length} gateway{staleGateways.length === 1 ? '' : 's'} have not checked in recently. Review connectivity and field power before relying on telemetry.
                             </p>
                             <button className={cn(glass.btnSecondary, 'mt-2 h-8 px-3 text-[11px] font-bold border-amber-200 hover:bg-amber-100/50')}>
@@ -105,8 +105,8 @@ const GatewayHub: React.FC = () => {
                         <Shield className="w-5 h-5 text-emerald-500" />
                     </div>
                     <div className="flex-1 space-y-2">
-                        <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Encryption Pulse: Active</h3>
-                        <p className="text-xs font-medium text-gray-600 leading-relaxed">
+                        <h3 className="text-sm font-bold text-foreground tracking-tight">Encryption Pulse: Active</h3>
+                        <p className="text-xs font-medium text-muted-foreground/90 leading-relaxed">
                             Gateway security status now reflects live registered devices only. No seeded demo nodes are shown on this screen.
                         </p>
                     </div>
@@ -126,11 +126,11 @@ const GatewayHub: React.FC = () => {
 
                 {!isLoading && gateways.length === 0 && (
                     <div className={cn(glass.card, 'p-6 flex min-h-[200px] flex-col items-center justify-center text-center')}>
-                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-[#F4D03F]/10 bg-[#F9F7F2]">
+                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-border/ bg-muted/20">
                             <Cpu className="h-5 w-5 text-[#F4D03F]" />
                         </div>
-                        <h3 className="text-sm font-bold text-[#1A1A1A]">No registered gateways</h3>
-                        <p className="mt-1 max-w-xs text-[11px] font-medium text-gray-500">
+                        <h3 className="text-sm font-bold text-foreground">No registered gateways</h3>
+                        <p className="mt-1 max-w-xs text-[11px] font-medium text-muted-foreground">
                             This hub now shows live gateway inventory only. Pair a real gateway to populate the fleet.
                         </p>
                     </div>
@@ -138,10 +138,10 @@ const GatewayHub: React.FC = () => {
 
                 <button className={cn(glass.card, 'p-6 flex flex-col items-center justify-center border-dashed border-2 hover:bg-gray-50 transition-all min-h-[200px]')}>
                     <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 mb-3 shadow-sm">
-                        <Plus className="h-6 w-6 text-gray-400" />
+                        <Plus className="h-6 w-6 text-muted-foreground/70" />
                     </div>
-                    <h3 className="text-sm font-bold text-[#1A1A1A]">Pair Gateway</h3>
-                    <p className="text-[10px] font-bold tracking-wider text-gray-500 mt-1">Provision via Bluetooth</p>
+                    <h3 className="text-sm font-bold text-foreground">Pair Gateway</h3>
+                    <p className="text-[10px] font-bold tracking-wider text-muted-foreground mt-1">Provision via Bluetooth</p>
                 </button>
             </div>
         </motion.div>
@@ -149,3 +149,4 @@ const GatewayHub: React.FC = () => {
 };
 
 export default GatewayHub;
+

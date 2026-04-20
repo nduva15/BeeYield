@@ -174,7 +174,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                     actions={
                         <button
                             onClick={() => { setIsAddingNote(false); setIsEditingNote(null); }}
-                            className={cn(glass.btnSecondary, "px-4 h-8 rounded-xl text-[12px] font-semibold flex items-center gap-2 border-[#F4D03F]/10")}
+                            className={cn(glass.btnSecondary, "px-4 h-8 rounded-xl text-[12px] font-semibold flex items-center gap-2 border-border/")}
                         >
                             <ChevronLeft className="w-3.5 h-3.5" />
                             Back
@@ -185,7 +185,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
                     {/* Main Form Area */}
                     <div className="lg:col-span-8 space-y-6">
-                        <BeeYieldCard className={cn("p-5 space-y-6 bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}>
+                        <BeeYieldCard className={cn("p-5 space-y-6 bg-muted/ border-border/ shadow-xl relative overflow-hidden")}>
                             <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F4D03F 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                             
                             {/* Title Field */}
@@ -195,14 +195,14 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
                                     placeholder="e.g. Varroa check"
-                                    inputClassName="bg-white/50"
+                                    inputClassName="bg-muted/"
                                 />
                             </BeeYieldFormField>
 
                             {/* Date and Time Row */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
                                 <div className="space-y-3">
-                                    <label htmlFor="note_date" className="text-[12px] font-semibold text-[#1A1A1A]/70 ml-1">Date</label>
+                                    <label htmlFor="note_date" className="text-[12px] font-semibold text-foreground/70 ml-1">Date</label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <button
@@ -210,9 +210,9 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                                 name="note_date"
                                                 type="button"
                                                 aria-label="Select note date"
-                                                className={cn(glass.btnSecondary, "w-full justify-between h-10 px-4 rounded-xl border-white/40 bg-white/40 hover:bg-white/60 group shadow-sm transition-colors")}
+                                                className={cn(glass.btnSecondary, "w-full justify-between h-10 px-4 rounded-xl border-border/ bg-muted/ hover:bg-muted/ group shadow-sm transition-colors")}
                                             >
-                                                <span className="font-semibold text-[12px] text-[#1A1A1A]">{format(noteDate, "dd/MM/yyyy")}</span>
+                                                <span className="font-semibold text-[12px] text-foreground">{format(noteDate, "dd/MM/yyyy")}</span>
                                                 <CalendarIcon className="w-3.5 h-3.5 text-[#F4D03F] group-hover:scale-110 transition-transform" />
                                             </button>
                                         </PopoverTrigger>
@@ -234,7 +234,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                             type="time"
                                             value={noteTime}
                                             onChange={(e) => setNoteTime(e.target.value)}
-                                            inputClassName="bg-white/40"
+                                            inputClassName="bg-muted/"
                                         />
                                     </BeeYieldFormField>
                                 </div>
@@ -242,14 +242,14 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 
                             {/* Description */}
                             <div className="space-y-3 relative z-10">
-                                <label htmlFor="note_details" className="text-[12px] font-semibold text-[#1A1A1A]/70 ml-1">Details</label>
+                                <label htmlFor="note_details" className="text-[12px] font-semibold text-foreground/70 ml-1">Details</label>
                                 <textarea
                                     id="note_details"
                                     name="note_details"
                                     autoComplete="off"
                                     value={description}
                                     onChange={handleDescriptionChange}
-                                    className={cn(glass.input, "w-full min-h-[260px] p-4 leading-relaxed resize-none bg-white/40 border-white/40 hover:bg-white/60 focus:bg-white transition-colors text-[13px] font-medium shadow-sm")}
+                                    className={cn(glass.input, "w-full min-h-[260px] p-4 leading-relaxed resize-none bg-muted/ border-border/ hover:bg-muted/ focus:bg-white transition-colors text-[13px] font-medium shadow-sm")}
                                     placeholder="Write what you observed…"
                                 />
                                 {updateNoteMutation.isPending && (
@@ -274,7 +274,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             <button
                                 type="button"
                                 onClick={() => { setIsAddingNote(false); setIsEditingNote(null); }}
-                                className={cn(glass.btnSecondary, "px-8 h-9 text-[12px] font-semibold rounded-xl border-white/40 shadow-sm")}
+                                className={cn(glass.btnSecondary, "px-8 h-9 text-[12px] font-semibold rounded-xl border-border/ shadow-sm")}
                             >
                                 Cancel
                             </button>
@@ -283,10 +283,10 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 
                     {/* Meta Sidebar */}
                     <div className="lg:col-span-4 space-y-6">
-                        <BeeYieldCard className={cn("p-5 space-y-6 bg-white/40 border-white/20 shadow-lg")}>
+                        <BeeYieldCard className={cn("p-5 space-y-6 bg-muted/ border-border/ shadow-lg")}>
                             {/* Priority Selection */}
                             <div className="space-y-4">
-                                <label className="text-[12px] font-semibold text-[#1A1A1A]/70 ml-1">Priority</label>
+                                <label className="text-[12px] font-semibold text-foreground/70 ml-1">Priority</label>
                                 <div className="grid grid-cols-1 gap-2.5">
                                     {['low', 'medium', 'high'].map((p) => (
                                         <button
@@ -298,10 +298,10 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                                 priority === p
                                                     ? cn(
                                                         p === 'low' && "bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 shadow-md",
-                                                        p === 'medium' && "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 shadow-md",
+                                                        p === 'medium' && "bg-[#F4D03F]/10 text-[#F4D03F] border-border/ shadow-md",
                                                         p === 'high' && "bg-red-500/10 text-red-500 border-red-500/20 shadow-md"
                                                     )
-                                                    : "bg-white/30 border-gray-100 text-gray-400 hover:bg-white/50"
+                                                    : "bg-muted/ border-gray-100 text-muted-foreground/70 hover:bg-muted/"
                                             )}
                                         >
                                             {priority === p && <div className={cn("absolute left-0 top-0 bottom-0 w-1", p === 'low' ? "bg-[#1B9157]" : p === 'medium' ? "bg-[#F4D03F]" : "bg-red-500")} />}
@@ -319,7 +319,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 
                             {/* Category Selection */}
                             <div className="space-y-4">
-                                <label className="text-[12px] font-semibold text-[#1A1A1A]/70 ml-1">Category</label>
+                                <label className="text-[12px] font-semibold text-foreground/70 ml-1">Category</label>
                                 <div className="flex flex-wrap gap-2">
                                     {['General', 'Health', 'Queen Seen', 'Harvest', 'Varroa'].map((cat) => (
                                         <button
@@ -329,8 +329,8 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                             className={cn(
                                                 "px-3.5 py-1.5 rounded-lg text-[12px] font-semibold transition-all outline-none cursor-pointer border",
                                                 category === cat
-                                                    ? "bg-[#F4D03F] text-[#1A1A1A] border-[#F4D03F] shadow-lg shadow-[#F4D03F]/20"
-                                                    : "bg-white/30 border-gray-100 text-gray-400 hover:text-[#1A1A1A] hover:bg-white/50"
+                                                    ? "bg-[#F4D03F] text-foreground border-[#F4D03F] shadow-lg shadow-[#F4D03F]/20"
+                                                    : "bg-muted/ border-gray-100 text-muted-foreground/70 hover:text-foreground hover:bg-muted/"
                                             )}
                                         >
                                             {cat}
@@ -341,7 +341,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 
                             {/* Entity Link */}
                             <div className="space-y-4">
-                                <label className="text-[12px] font-semibold text-[#1A1A1A]/70 ml-1">Link to location (optional)</label>
+                                <label className="text-[12px] font-semibold text-foreground/70 ml-1">Link to location (optional)</label>
                                 <div className="space-y-3">
                                     <div className="relative group">
                                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#F4D03F] opacity-30 group-focus-within:opacity-100 transition-opacity" />
@@ -352,7 +352,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                             aria-label="Select apiary"
                                             value={selectedPlaceId || ""}
                                             onChange={(e) => setSelectedPlaceId(e.target.value || null)}
-                                            className={cn(glass.select, "w-full pl-10 text-[12px] font-medium bg-white/40 h-10")}
+                                            className={cn(glass.select, "w-full pl-10 text-[12px] font-medium bg-muted/ h-10")}
                                         >
                                             <option value="">All apiaries</option>
                                             {apiaries.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -367,7 +367,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                             aria-label="Select hive"
                                             value={selectedHiveId || ""}
                                             onChange={(e) => setSelectedHiveId(e.target.value || null)}
-                                            className={cn(glass.select, "w-full pl-10 text-[12px] font-medium bg-white/40 h-10")}
+                                            className={cn(glass.select, "w-full pl-10 text-[12px] font-medium bg-muted/ h-10")}
                                         >
                                             <option value="">All hives</option>
                                             {hives.filter(h => !selectedPlaceId || h.apiary_id === selectedPlaceId).map(h => (
@@ -410,7 +410,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.filterBar, "p-1.5 flex items-center gap-2 bg-white/40 backdrop-blur-md rounded-2xl border-white/20")}
+                className={cn(glass.filterBar, "p-1.5 flex items-center gap-2 bg-muted/ backdrop-blur-md rounded-2xl border-border/")}
             >
                 <div className="flex flex-col md:flex-row gap-2 items-center w-full">
                     <div className="relative flex-1 group/sel w-full">
@@ -421,7 +421,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             autoComplete="off"
                             value={selectedPlaceId || ""}
                             onChange={(e) => setSelectedPlaceId(e.target.value || null)}
-                            className={cn(glass.select, "w-full pl-10 h-10 text-[12px] font-medium bg-white/20")}
+                            className={cn(glass.select, "w-full pl-10 h-10 text-[12px] font-medium bg-muted/")}
                             aria-label="Filter by apiary"
                         >
                             <option value="">All apiaries</option>
@@ -437,7 +437,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             autoComplete="off"
                             value={selectedHiveId || ""}
                             onChange={(e) => setSelectedHiveId(e.target.value || null)}
-                            className={cn(glass.select, "w-full pl-10 h-10 text-[12px] font-medium bg-white/20")}
+                            className={cn(glass.select, "w-full pl-10 h-10 text-[12px] font-medium bg-muted/")}
                             aria-label="Filter by hive"
                         >
                             <option value="">All hives</option>
@@ -454,13 +454,13 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             placeholder="Search notes..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className={cn(glass.input, "w-full pl-10 h-10 text-[12px] font-medium bg-white/20 border-white/20")}
+                            className={cn(glass.input, "w-full pl-10 h-10 text-[12px] font-medium bg-muted/ border-border/")}
                         />
                     </div>
 
-                    <div className="flex items-center gap-3 px-4 h-10 bg-white/40 rounded-xl border border-white/40 shadow-sm shrink-0">
+                    <div className="flex items-center gap-3 px-4 h-10 bg-muted/ rounded-xl border border-border/ shadow-sm shrink-0">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse" />
-                        <span className="text-[11px] font-semibold text-gray-600 whitespace-nowrap">
+                        <span className="text-[11px] font-semibold text-muted-foreground/90 whitespace-nowrap">
                             {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
                         </span>
                     </div>
@@ -471,12 +471,12 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
             <div className="relative z-10 pt-6">
                 {filteredNotes.length === 0 ? (
                     <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={glass.emptyState}>
-                        <div className="w-20 h-20 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center mb-6">
+                        <div className="w-20 h-20 rounded-xl bg-[#F4D03F]/5 border border-border/ flex items-center justify-center mb-6">
                             <StickyNote className="w-8 h-8 text-[#F4D03F] opacity-30" />
                         </div>
                         <div className="space-y-4">
-                            <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight">No notes yet</h3>
-                            <p className="text-sm text-gray-500 max-w-md mx-auto">No notes match these filters.</p>
+                            <h3 className="text-lg font-bold text-foreground tracking-tight">No notes yet</h3>
+                            <p className="text-sm text-muted-foreground max-w-md mx-auto">No notes match these filters.</p>
                         </div>
                         <button onClick={() => setIsAddingNote(true)} className={cn(glass.btnPrimary, "mt-8 px-6")}>
                             <Plus className="w-4 h-4" /> Add your first note
@@ -492,7 +492,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ delay: i * 0.05 }}
-                                    className={cn(glass.card, "p-5 hover:border-[#F4D03F]/40 group flex flex-col h-full bg-white/40 border-white/20 shadow-xl relative overflow-hidden")}
+                                    className={cn(glass.card, "p-5 hover:border-border/ group flex flex-col h-full bg-muted/ border-border/ shadow-xl relative overflow-hidden")}
                                 >
                                     <div className={cn("absolute left-0 top-0 w-1.5 h-full transition-colors",
                                         note.priority === 'high' ? "bg-red-500" :
@@ -502,7 +502,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     <div className="flex items-center justify-between mb-5 relative z-10">
                                         <div className={cn("px-3 py-1 text-[11px] font-semibold rounded-lg border", 
                                             note.priority === 'high' ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                                            note.priority === 'medium' ? "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20" : 
+                                            note.priority === 'medium' ? "bg-[#F4D03F]/10 text-[#F4D03F] border-border/" : 
                                             "bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20"
                                         )}>
                                             {note.category || "General"}
@@ -510,7 +510,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => setIsEditingNote(note)}
-                                                className="w-9 h-9 rounded-xl bg-white/60 border border-white/20 flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm"
+                                                className="w-9 h-9 rounded-xl bg-muted/ border border-border/ flex items-center justify-center hover:bg-[#F4D03F] hover:text-white transition-all shadow-sm"
                                                 aria-label="Edit note"
                                                 title="Edit note"
                                             >
@@ -518,7 +518,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteNote(note.id)}
-                                                className="w-9 h-9 rounded-xl bg-white/60 border border-white/20 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                                className="w-9 h-9 rounded-xl bg-muted/ border border-border/ flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
                                                 aria-label="Delete note"
                                                 title="Delete note"
                                             >
@@ -528,28 +528,28 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     </div>
 
                                     <div className="space-y-4 relative z-10 flex-1">
-                                        <h4 className="text-[14px] font-bold text-[#1A1A1A] tracking-tight line-clamp-2 group-hover:text-[#F4D03F] transition-colors leading-snug">
+                                        <h4 className="text-[14px] font-bold text-foreground tracking-tight line-clamp-2 group-hover:text-[#F4D03F] transition-colors leading-snug">
                                             {note.title?.trim() || "Untitled note"}
                                         </h4>
 
-                                        <div className="bg-white/40 rounded-2xl p-5 border border-white/40 flex-1 min-h-[100px] shadow-inner relative overflow-hidden">
+                                        <div className="bg-muted/ rounded-2xl p-5 border border-border/ flex-1 min-h-[100px] shadow-inner relative overflow-hidden">
                                             <div className="absolute top-2 right-2 opacity-10"><StickyNote className="w-8 h-8" /></div>
-                                            <p className="text-[12px] font-medium text-gray-600 leading-relaxed line-clamp-4 relative z-10">
+                                            <p className="text-[12px] font-medium text-muted-foreground/90 leading-relaxed line-clamp-4 relative z-10">
                                                 {note.content?.trim() || "No details yet."}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="pt-5 border-t border-[#F4D03F]/5 flex flex-wrap gap-4 mt-6 relative z-10">
+                                    <div className="pt-5 border-t border-border/ flex flex-wrap gap-4 mt-6 relative z-10">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-8 h-8 rounded-lg bg-white/60 border border-white/20 flex items-center justify-center shadow-sm">
+                                            <div className="w-8 h-8 rounded-lg bg-muted/ border border-border/ flex items-center justify-center shadow-sm">
                                                 <ClockIcon className="w-3.5 h-3.5 text-[#F4D03F]" />
                                             </div>
-                                            <span className="text-[12px] font-medium text-gray-600 tabular-nums">{format(new Date(note.note_date || note.created_at!), "dd MMM yyyy")}</span>
+                                            <span className="text-[12px] font-medium text-muted-foreground/90 tabular-nums">{format(new Date(note.note_date || note.created_at!), "dd MMM yyyy")}</span>
                                         </div>
                                         {note.hive_id && (
                                             <div className="flex items-center gap-2 ml-auto">
-                                                <span className="text-[12px] font-semibold text-white bg-[#1B9157] px-3 py-1.5 rounded-xl border border-white/20 shadow-sm transition-colors">
+                                                <span className="text-[12px] font-semibold text-white bg-[#1B9157] px-3 py-1.5 rounded-xl border border-border/ shadow-sm transition-colors">
                                                     Hive {hives.find(h => h.id === note.hive_id)?.hive_code || "Unknown"}
                                                 </span>
                                             </div>
@@ -566,3 +566,4 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
 };
 
 export default MyNotesView;
+

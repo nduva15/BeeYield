@@ -58,7 +58,7 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                     >
                         <div className={glass.sectionHeader}>
                             <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center border border-[#1B9157]/20">
+                                <div className="w-8 h-8 rounded-lg bg-muted/20 flex items-center justify-center border border-[#1B9157]/20">
                                      <Sprout className="w-4 h-4 text-[#1B9157]" />
                                  </div>
                                  <h3 className={glass.sectionTitle}>Orchard Status</h3>
@@ -76,8 +76,8 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                         animate={{ opacity: 1, x: 0 }}
                         className={cn(glass.card, "p-5 h-full flex flex-col")}
                     >
-                        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[#F4D03F]/20">
-                            <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center border border-[#F4D03F]/20">
+                        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border/">
+                            <div className="w-8 h-8 rounded-lg bg-muted/20 flex items-center justify-center border border-border/">
                                 <Activity className="w-4 h-4 text-[#F4D03F]" />
                             </div>
                             <h4 className={glass.sectionTitle}>Hive Metrics</h4>
@@ -99,14 +99,14 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                         <h3 className={glass.sectionTitle}>Pollination Correlation</h3>
                         <p className={glass.microLabel}>Bloom cycles vs. hive activity delta analysis</p>
                     </div>
-                    <div className="flex items-center gap-4 bg-[#F9F7F2]/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-[#F4D03F]/10">
+                    <div className="flex items-center gap-4 bg-muted/ backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-border/">
                         <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-2.5 rounded-full bg-[#1B9157]/10 border border-[#1B9157]/40 shadow-sm" />
-                            <span className="text-[10px] font-bold text-gray-500 tracking-tighter">Bloom %</span>
+                            <span className="text-[10px] font-bold text-muted-foreground tracking-tighter">Bloom %</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-1 rounded-full bg-[#1B9157]/60" />
-                            <span className="text-[10px] font-bold text-gray-500 tracking-tighter">Activity</span>
+                            <span className="text-[10px] font-bold text-muted-foreground tracking-tighter">Activity</span>
                         </div>
                     </div>
                 </div>
@@ -121,13 +121,13 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                 animate={{ opacity: 1, y: 0 }}
                 className={cn(glass.card, "flex flex-col sm:flex-row items-start sm:items-center gap-4 relative overflow-hidden group py-5")}
             >
-                <div className="w-8 h-8 rounded-lg bg-[#F9F7F2] flex items-center justify-center shrink-0 border border-[#F4D03F]/20 relative z-10">
+                <div className="w-8 h-8 rounded-lg bg-muted/20 flex items-center justify-center shrink-0 border border-border/ relative z-10">
                     <Info className="w-4 h-4 text-[#F4D03F]" />
                 </div>
                 <div className="flex-1 space-y-1 relative z-10">
-                    <h5 className={cn(glass.microLabel, "text-[#1A1A1A]")}>Bloom Accuracy Module</h5>
-                    <p className="text-[10px] font-medium text-[#1A1A1A]/60 leading-relaxed pl-3 border-l-2 border-[#F4D03F]/30">
-                        Synchronizing deployments with floral peak ensures maximum fruit set. Use <span className="text-[#1A1A1A] font-bold">'Log Bloom Data'</span> to calibrate predictive models.
+                    <h5 className={cn(glass.microLabel, "text-foreground")}>Bloom Accuracy Module</h5>
+                    <p className="text-[10px] font-medium text-foreground/60 leading-relaxed pl-3 border-l-2 border-border/">
+                        Synchronizing deployments with floral peak ensures maximum fruit set. Use <span className="text-foreground font-bold">'Log Bloom Data'</span> to calibrate predictive models.
                     </p>
                 </div>
             </motion.div>
@@ -150,7 +150,7 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
                                 onClick={() => setShowLogForm(false)}
                                 className="absolute right-4 top-4 w-9 h-9 flex items-center justify-center bg-white border border-gray-100 hover:bg-gray-50 rounded-xl z-20 shadow-md transition-all active:scale-95"
                             >
-                                <X className="w-4 h-4 text-gray-400" />
+                                <X className="w-4 h-4 text-muted-foreground/70" />
                             </button>
                             <BloomLogForm onClose={() => setShowLogForm(false)} />
                         </motion.div>
@@ -163,3 +163,4 @@ const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) =>
 
 
 export default BloomTrackingView;
+

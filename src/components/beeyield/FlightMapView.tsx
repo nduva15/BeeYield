@@ -388,7 +388,7 @@ const FlightMapView: React.FC = () => {
 
             <section className={cn(card, 'p-5 md:p-6')}>
                 <div className="space-y-6">
-                    <div className="rounded-[22px] border border-[#d6c29f] bg-white/70 p-4">
+                    <div className="rounded-[22px] border border-[#d6c29f] bg-muted/ p-4">
                         <div className="mb-2 text-sm font-medium text-[#9a7d45]">{hasPrivateApiaries ? 'My locations' : 'Live location'}</div>
                         <Select value={selectedApiaryId} onValueChange={handleApiaryChange}>
                             <SelectTrigger className="h-14 rounded-2xl border-[#c8b189] bg-white text-lg font-medium text-[#3f3426]">
@@ -579,7 +579,7 @@ const FlightMapView: React.FC = () => {
                                     </div>
                                 </label>
                             ))}
-                            {filteredHives.length === 0 ? <div className="rounded-2xl border border-dashed border-[#dfcda6] bg-white/70 px-4 py-6 text-sm text-[#8f7f66]">No hives match this status filter.</div> : null}
+                            {filteredHives.length === 0 ? <div className="rounded-2xl border border-dashed border-[#dfcda6] bg-muted/ px-4 py-6 text-sm text-[#8f7f66]">No hives match this status filter.</div> : null}
                         </div>
                         <div className="mt-5 flex flex-wrap items-center gap-3">
                             <Button onClick={handlePlanRoute} disabled={planningRoute} className="rounded-full bg-[#fffaf1] px-6 py-6 text-base font-semibold text-[#bd6a00] shadow-[0_6px_18px_rgba(157,118,39,0.12)] hover:bg-[#fff4dc]">
@@ -635,3 +635,4 @@ const FlightMapView: React.FC = () => {
 };
 
 export default FlightMapView;
+

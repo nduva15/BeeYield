@@ -173,16 +173,16 @@ const SpatialCoverageView: React.FC = () => {
           subtitle="Selected-apiary coverage density, hive spacing, and live environmental context."
           onRefresh={handleRefresh}
           actions={
-            <div className="flex items-center gap-3 rounded-2xl border border-[#F4D03F]/20 bg-white/70 px-4 py-2 shadow-sm">
+            <div className="flex items-center gap-3 rounded-2xl border border-border/ bg-muted/ px-4 py-2 shadow-sm">
               <div className="flex items-center gap-2 border-r border-gray-100 pr-3">
                 <Wind className="h-4 w-4 text-blue-500" />
-                <span className="text-[10px] font-black text-gray-500">
+                <span className="text-[10px] font-black text-muted-foreground">
                   {weatherLoading ? '...' : weatherWind !== null ? `${Math.round(weatherWind)} km/h` : 'No wind'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Thermometer className="h-4 w-4 text-orange-500" />
-                <span className="text-[10px] font-black text-gray-500">
+                <span className="text-[10px] font-black text-muted-foreground">
                   {weatherLoading ? '...' : weatherTemperature !== null ? `${Math.round(weatherTemperature)}°C` : 'No temp'}
                 </span>
               </div>
@@ -193,26 +193,26 @@ const SpatialCoverageView: React.FC = () => {
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           <div className="xl:col-span-8">
             <div className={cn(glass.section, 'overflow-hidden')}>
-              <div className="flex items-center justify-between border-b border-[#F4D03F]/10 px-5 py-4 bg-white/60">
+              <div className="flex items-center justify-between border-b border-border/ px-5 py-4 bg-muted/">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1B9157]/20 bg-[#1B9157]/10">
                     <Layers className="h-5 w-5 text-[#1B9157]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Spatial Overlay</h3>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">
+                    <h3 className="text-sm font-black tracking-tight text-foreground">Spatial Overlay</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">
                       {selectedApiary?.name || 'Choose an apiary'}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 rounded-xl border border-[#F4D03F]/15 bg-white/80 p-1">
+                <div className="flex items-center gap-2 rounded-xl border border-border/ bg-muted/ p-1">
                   <button
                     type="button"
                     onClick={() => setViewMode('kernel')}
                     className={cn(
                       'rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
-                      viewMode === 'kernel' ? 'bg-[#1A1A1A] text-white' : 'text-gray-500 hover:bg-[#F4D03F]/10',
+                      viewMode === 'kernel' ? 'bg-[#1A1A1A] text-white' : 'text-muted-foreground hover:bg-[#F4D03F]/10',
                     )}
                   >
                     Kernel
@@ -222,7 +222,7 @@ const SpatialCoverageView: React.FC = () => {
                     onClick={() => setViewMode('nodes')}
                     className={cn(
                       'rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
-                      viewMode === 'nodes' ? 'bg-[#1A1A1A] text-white' : 'text-gray-500 hover:bg-[#F4D03F]/10',
+                      viewMode === 'nodes' ? 'bg-[#1A1A1A] text-white' : 'text-muted-foreground hover:bg-[#F4D03F]/10',
                     )}
                   >
                     Nodes
@@ -230,7 +230,7 @@ const SpatialCoverageView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="relative min-h-[520px] bg-[#F9F7F2] p-5">
+              <div className="relative min-h-[520px] bg-muted/20 p-5">
                 {loading && !nodePositions.length ? (
                   <BeeYieldLoading label="Loading coverage map..." />
                 ) : !selectedApiary ? (
@@ -251,7 +251,7 @@ const SpatialCoverageView: React.FC = () => {
                       <select
                         value={selectedApiaryId}
                         onChange={(event) => setSelectedApiaryId(event.target.value)}
-                        className={cn(glass.input, 'h-10 min-w-[220px] bg-white/80')}
+                        className={cn(glass.input, 'h-10 min-w-[220px] bg-muted/')}
                         aria-label="Select apiary"
                         title="Select apiary"
                       >
@@ -339,43 +339,43 @@ const SpatialCoverageView: React.FC = () => {
                       ))}
                     </svg>
 
-                    <div className="absolute bottom-5 left-5 rounded-2xl border border-[#F4D03F]/15 bg-white/80 p-4 shadow-lg">
-                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Coverage legend</p>
+                    <div className="absolute bottom-5 left-5 rounded-2xl border border-border/ bg-muted/ p-4 shadow-lg">
+                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Coverage legend</p>
                       <div className="mt-3 space-y-2">
-                        <div className="flex items-center gap-3 text-[11px] text-gray-600">
+                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground/90">
                           <span className="h-3 w-3 rounded-full bg-[#1B9157]" />
                           Active hive coverage
                         </div>
-                        <div className="flex items-center gap-3 text-[11px] text-gray-600">
+                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground/90">
                           <span className="h-3 w-3 rounded-full bg-[#EF4444]" />
                           Hive needs attention
                         </div>
                       </div>
                     </div>
 
-                    <div className="absolute bottom-5 right-5 max-w-[280px] rounded-2xl border border-[#F4D03F]/15 bg-white/85 p-4 shadow-lg">
+                    <div className="absolute bottom-5 right-5 max-w-[280px] rounded-2xl border border-border/ bg-muted/ p-4 shadow-lg">
                       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157]">Selected hive</p>
                       {selectedNode ? (
                         <div className="mt-3 space-y-2">
                           <div>
-                            <p className="text-sm font-black text-[#1A1A1A]">{selectedNode.hive.hive_code}</p>
-                            <p className="text-[10px] font-bold text-gray-500">{selectedNode.hive.status || 'Unspecified status'}</p>
+                            <p className="text-sm font-black text-foreground">{selectedNode.hive.hive_code}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground">{selectedNode.hive.status || 'Unspecified status'}</p>
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Frames</p>
-                              <p className="text-[11px] font-black text-[#1A1A1A]">{selectedNode.hive.frame_count || 'N/A'}</p>
+                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Frames</p>
+                              <p className="text-[11px] font-black text-foreground">{selectedNode.hive.frame_count || 'N/A'}</p>
                             </div>
                             <div>
-                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Placement</p>
-                              <p className="text-[11px] font-black text-[#1A1A1A]">
+                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Placement</p>
+                              <p className="text-[11px] font-black text-foreground">
                                 {selectedNode.hive.latitude != null && selectedNode.hive.longitude != null ? 'Saved GPS' : 'Coverage node'}
                               </p>
                             </div>
                           </div>
                           <div>
-                            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-400">Precision coordinates</p>
-                            <p className="text-[11px] font-black text-[#1A1A1A]">
+                            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Precision coordinates</p>
+                            <p className="text-[11px] font-black text-foreground">
                               {selectedNode.hive.latitude != null && selectedNode.hive.longitude != null
                                 ? `${Number(selectedNode.hive.latitude).toFixed(6)}, ${Number(selectedNode.hive.longitude).toFixed(6)}`
                                 : 'No saved hive coordinates yet'}
@@ -383,7 +383,7 @@ const SpatialCoverageView: React.FC = () => {
                           </div>
                         </div>
                       ) : (
-                        <p className="mt-3 text-[11px] font-bold text-gray-500">Select a node to inspect hive placement.</p>
+                        <p className="mt-3 text-[11px] font-bold text-muted-foreground">Select a node to inspect hive placement.</p>
                       )}
                     </div>
                   </>
@@ -394,41 +394,41 @@ const SpatialCoverageView: React.FC = () => {
 
           <div className="xl:col-span-4 space-y-6">
             <div className={cn(glass.section, 'p-6')}>
-              <div className="flex items-center gap-3 border-b border-[#F4D03F]/10 pb-4">
+              <div className="flex items-center gap-3 border-b border-border/ pb-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1B9157]/20 bg-[#1B9157]/10">
                   <Activity className="h-5 w-5 text-[#1B9157]" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Coverage Metrics</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Live apiary summary</p>
+                  <h3 className="text-sm font-black tracking-tight text-foreground">Coverage Metrics</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">Live apiary summary</p>
                 </div>
               </div>
 
               <div className="mt-5 grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Current FPA</p>
-                  <p className="text-2xl font-black text-[#1A1A1A]">{coverage.currentFpa.toFixed(1)}</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Current FPA</p>
+                  <p className="text-2xl font-black text-foreground">{coverage.currentFpa.toFixed(1)}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Target FPA</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Target FPA</p>
                   <p className="text-2xl font-black text-[#1B9157]">{coverage.targetFpa.toFixed(1)}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Coverage Gap</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Coverage Gap</p>
                   <p className="text-2xl font-black text-red-600">{coverage.coverageGapPercent.toFixed(0)}%</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Node Efficiency</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Node Efficiency</p>
                   <p className="text-2xl font-black text-[#1B9157]">{coverage.nodeEfficiency.toFixed(0)}%</p>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-[#F4D03F]/20 bg-white/70 p-4">
+              <div className="mt-6 rounded-2xl border border-border/ bg-muted/ p-4">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 text-[#F4D03F]" />
-                  <h4 className="text-xs font-black tracking-tight text-[#1A1A1A]">Actionable Insight</h4>
+                  <h4 className="text-xs font-black tracking-tight text-foreground">Actionable Insight</h4>
                 </div>
-                <p className="mt-3 text-xs leading-relaxed text-gray-600">{describeCoverageAction(coverage)}</p>
+                <p className="mt-3 text-xs leading-relaxed text-muted-foreground/90">{describeCoverageAction(coverage)}</p>
               </div>
             </div>
 
@@ -440,37 +440,37 @@ const SpatialCoverageView: React.FC = () => {
             />
 
             <div className={cn(glass.card, 'p-6')}>
-              <div className="flex items-center gap-3 border-b border-[#F4D03F]/10 pb-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#F4D03F]/20 bg-[#F4D03F]/10">
+              <div className="flex items-center gap-3 border-b border-border/ pb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/ bg-[#F4D03F]/10">
                   <Satellite className="h-5 w-5 text-[#F4D03F]" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black tracking-tight text-[#1A1A1A]">Flight Weather Context</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">Telemetry-backed route signals</p>
+                  <h3 className="text-sm font-black tracking-tight text-foreground">Flight Weather Context</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">Telemetry-backed route signals</p>
                 </div>
               </div>
 
               <div className="mt-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Wind resistance</span>
-                  <span className="text-sm font-black text-[#1A1A1A]">{windStatus}</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Wind resistance</span>
+                  <span className="text-sm font-black text-foreground">{windStatus}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Humidity load</span>
-                  <span className="text-sm font-black text-[#1A1A1A]">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Humidity load</span>
+                  <span className="text-sm font-black text-foreground">
                     {weatherHumidity !== null ? `${Math.round(weatherHumidity)}%` : 'Unavailable'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Foraging radius</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Foraging radius</span>
                   <span className="text-sm font-black text-[#1B9157]">{foragingRadius}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Linked devices</span>
-                  <span className="text-sm font-black text-[#1A1A1A]">{telemetryLinks}</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Linked devices</span>
+                  <span className="text-sm font-black text-foreground">{telemetryLinks}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Open alerts</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Open alerts</span>
                   <span className="text-sm font-black text-red-600">{activeAlerts.filter((alert) => !alert.resolved).length}</span>
                 </div>
               </div>
@@ -483,3 +483,4 @@ const SpatialCoverageView: React.FC = () => {
 };
 
 export default SpatialCoverageView;
+

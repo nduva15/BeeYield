@@ -72,9 +72,9 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                 subtitle="Global environmental matrix and predictive multi-spectral ecosystem analysis."
                 actions={
                     <div className="flex items-center gap-3">
-                         <div className="flex items-center gap-2 bg-white/50 backdrop-blur-md px-4 py-2 rounded-2xl border border-gray-100 shadow-sm transition-all hover:bg-white/80">
+                         <div className="flex items-center gap-2 bg-muted/ backdrop-blur-md px-4 py-2 rounded-2xl border border-gray-100 shadow-sm transition-all hover:bg-muted/">
                             <Satellite className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-                            <span className="text-[10px] font-black text-gray-400 tracking-widest leading-none pt-0.5 uppercase">Network Link: Synchronized</span>
+                            <span className="text-[10px] font-black text-muted-foreground/70 tracking-widest leading-none pt-0.5 uppercase">Network Link: Synchronized</span>
                          </div>
                     </div>
                 }
@@ -112,7 +112,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                 {/* Visual Engine */}
                 <div className="xl:col-span-8">
-                    <div className={cn(glass.section, "p-10 space-y-10 min-h-[500px] flex flex-col justify-between relative overflow-hidden group bg-gradient-to-br from-white to-gray-50/30 shadow-xl border-white/60")}>
+                    <div className={cn(glass.section, "p-10 space-y-10 min-h-[500px] flex flex-col justify-between relative overflow-hidden group bg-gradient-to-br from-white to-gray-50/30 shadow-xl border-border/")}>
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#1B9157]/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none group-hover:bg-[#1B9157]/10 transition-all duration-1000" />
                         
                         <div className="space-y-6 relative">
@@ -121,24 +121,24 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                     <BrainCircuit className="w-7 h-7 text-[#1B9157]" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <h3 className="text-sm font-black text-[#1A1A1A] tracking-tighter uppercase italic">Predictive Models</h3>
+                                    <h3 className="text-sm font-black text-foreground tracking-tighter uppercase italic">Predictive Models</h3>
                                     <p className="text-[9px] font-bold text-emerald-600 tracking-widest leading-none bg-emerald-50 px-2 py-0.5 rounded-full w-fit">Powered by BeeYield AI Molecular OS</p>
                                 </div>
                             </div>
 
                             <div className="space-y-3">
-                                <h2 className="text-5xl font-black text-[#1A1A1A] tracking-tighter leading-none">
+                                <h2 className="text-5xl font-black text-foreground tracking-tighter leading-none">
                                     Environmental <span className="text-[#F4D03F]">Flux</span> Analysis
                                 </h2>
-                                <p className="text-sm text-gray-500 font-medium max-w-2xl leading-relaxed border-l-4 border-[#F4D03F]/20 pl-6">
+                                <p className="text-sm text-muted-foreground font-medium max-w-2xl leading-relaxed border-l-4 border-border/ pl-6">
                                     Leveraging sub-meter satellite telemetry to quantify canopy density and phenological shifts. Our neural architecture correlates chlorophyll absorption with localized honey-flow potential.
                                 </p>
                             </div>
 
-                            <div className="h-56 w-full bg-white/40 backdrop-blur-sm rounded-[32px] border border-white/60 p-8 shadow-xl relative group/chart">
+                            <div className="h-56 w-full bg-muted/ backdrop-blur-sm rounded-[32px] border border-border/ p-8 shadow-xl relative group/chart">
                                 <div className="absolute top-4 right-8 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-[#1B9157] animate-pulse" />
-                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Real-time Telemetry</span>
+                                    <span className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-widest">Real-time Telemetry</span>
                                 </div>
                                 {ecoHistory.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
@@ -161,8 +161,8 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                 </ResponsiveContainer>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center h-full opacity-30 gap-2">
-                                        <Satellite className="w-8 h-8 text-gray-400" />
-                                        <p className="text-[10px] font-bold text-gray-400">No satellite telemetry yet — awaiting first reading.</p>
+                                        <Satellite className="w-8 h-8 text-muted-foreground/70" />
+                                        <p className="text-[10px] font-bold text-muted-foreground/70">No satellite telemetry yet — awaiting first reading.</p>
                                     </div>
                                 )}
                             </div>
@@ -186,12 +186,12 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
 
                 {/* Tactical Overlays */}
                 <div className="xl:col-span-4 space-y-6">
-                    <div className={cn(glass.section, "p-8 space-y-8 h-full flex flex-col justify-between overflow-hidden relative shadow-xl border-white/60")}>
+                    <div className={cn(glass.section, "p-8 space-y-8 h-full flex flex-col justify-between overflow-hidden relative shadow-xl border-border/")}>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/5 rounded-full blur-3xl -mr-16 -mt-16" />
                         
                         <div className="space-y-6">
                             <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-                                <h3 className="text-base font-black text-[#1A1A1A] tracking-tight uppercase">Tactical Integrity</h3>
+                                <h3 className="text-base font-black text-foreground tracking-tight uppercase">Tactical Integrity</h3>
                                 <div className="flex items-center gap-2">
                                      <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
                                      <span className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest">Active</span>
@@ -205,9 +205,9 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                     { title: 'Competition', icon: Scale, color: '#F4D03F', status: 'Minimal' },
                                     { title: 'Yield Pulse', icon: TrendingUp, color: '#1B9157', status: '+19.6%' }
                                 ].map((btn) => (
-                                    <div key={btn.title} className="bg-white p-5 rounded-2xl border border-gray-50 hover:border-[#F4D03F]/30 transition-all cursor-pointer group hover:bg-white hover:shadow-2xl">
+                                    <div key={btn.title} className="bg-white p-5 rounded-2xl border border-gray-50 hover:border-border/ transition-all cursor-pointer group hover:bg-white hover:shadow-2xl">
                                         <btn.icon className="w-6 h-6 mb-3 transition-transform group-hover:scale-110 group-hover:rotate-6" style={{ color: btn.color }} />
-                                        <p className="text-[10px] font-black text-[#1A1A1A] tracking-widest leading-none mb-1.5 uppercase">{btn.title}</p>
+                                        <p className="text-[10px] font-black text-foreground tracking-widest leading-none mb-1.5 uppercase">{btn.title}</p>
                                         <p className="text-[9px] font-bold text-emerald-600 tracking-widest">{btn.status}</p>
                                     </div>
                                 ))}
@@ -222,7 +222,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                                 <ShieldCheck className="w-5 h-5 text-emerald-400" />
                                 <h4 className="text-xs font-black text-white tracking-widest uppercase">Expert Strategy Note</h4>
                             </div>
-                            <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
+                            <p className="text-[11px] text-muted-foreground/70 leading-relaxed font-medium">
                                 Biomass trajectory indicates an <span className="text-white font-bold uppercase">Extended 14-day bloom window</span>. Vapor Pressure Deficit (VPD) levels remain optimal for peak nectar secretion across localized tactical sectors.
                             </p>
                         </div>
@@ -252,7 +252,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                 ].map((feature, idx) => (
                     <div
                         key={idx}
-                        className={cn(glass.section, "p-10 group relative overflow-hidden shadow-xl border-white/60 transition-all hover:border-[#1B9157]/20")}
+                        className={cn(glass.section, "p-10 group relative overflow-hidden shadow-xl border-border/ transition-all hover:border-[#1B9157]/20")}
                     >
                         <div className="absolute right-0 bottom-0 opacity-[0.02] group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-1000">
                              <feature.icon className="w-56 h-56" />
@@ -261,13 +261,13 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                             <div className="w-14 h-14 rounded-[20px] bg-white border border-gray-100 flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
                                 <feature.icon className="w-7 h-7 text-[#1B9157]" />
                             </div>
-                            <h3 className="text-xl font-black text-[#1A1A1A] tracking-tighter uppercase italic">{feature.title}</h3>
+                            <h3 className="text-xl font-black text-foreground tracking-tighter uppercase italic">{feature.title}</h3>
                         </div>
                         <ul className="space-y-6 relative">
                             {feature.list.map((item, i) => (
                                 <li key={i} className="flex gap-5 items-center group/item">
                                     <div className="w-2.5 h-2.5 rounded-full bg-[#1B9157]/20 border border-[#1B9157]/10 shadow-sm group-hover/item:bg-[#F4D03F]/40 transition-colors" />
-                                    <span className="text-[10px] text-gray-400 font-black tracking-[0.1em] uppercase group-hover/item:text-[#1A1A1A] transition-colors">{item}</span>
+                                    <span className="text-[10px] text-muted-foreground/70 font-black tracking-[0.1em] uppercase group-hover/item:text-foreground transition-colors">{item}</span>
                                 </li>
                             ))}
                         </ul>
@@ -280,3 +280,4 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
 };
 
 export default AgroIntelligenceView;
+

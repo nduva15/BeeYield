@@ -66,7 +66,7 @@ const SensorAlertsView: React.FC = () => {
                                 onClick={() => setFilter(f)}
                                 className={cn(
                                     "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
-                                    filter === f ? "bg-white text-[#1A1A1A] shadow-sm" : "text-gray-400 hover:text-[#1A1A1A] hover:bg-white/50"
+                                    filter === f ? "bg-white text-foreground shadow-sm" : "text-muted-foreground/70 hover:text-foreground hover:bg-muted/"
                                 )}
                             >
                                 {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -85,15 +85,15 @@ const SensorAlertsView: React.FC = () => {
                 <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                          <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center shadow-sm">
-                            <Bell className="w-4 h-4 text-gray-400" />
+                            <Bell className="w-4 h-4 text-muted-foreground/70" />
                         </div>
-                        <h2 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Notifications</h2>
+                        <h2 className="text-sm font-bold text-foreground tracking-tight">Notifications</h2>
                     </div>
                     <button 
                         onClick={loadData}
                         className="p-2 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-gray-100"
                     >
-                        <RefreshCw className={cn("w-4 h-4 text-gray-400", loading && "animate-spin")} />
+                        <RefreshCw className={cn("w-4 h-4 text-muted-foreground/70", loading && "animate-spin")} />
                     </button>
                 </div>
 
@@ -102,14 +102,14 @@ const SensorAlertsView: React.FC = () => {
                         {loading && alerts.length === 0 ? (
                             <div className="p-20 flex flex-col items-center justify-center gap-3">
                                 <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]" />
-                                <span className="text-xs font-bold text-gray-400">Syncing Matrix...</span>
+                                <span className="text-xs font-bold text-muted-foreground/70">Syncing Matrix...</span>
                             </div>
                         ) : alerts.length === 0 ? (
                             <div className="p-20 flex flex-col items-center justify-center gap-4 text-gray-200">
                                 <CheckCircle2 className="w-16 h-16" />
                                 <div className="text-center">
                                     <h3 className="text-lg font-bold text-gray-300">All Clear</h3>
-                                    <p className="text-xs font-medium text-gray-400">No {filter !== 'all' ? filter : ''} items to show.</p>
+                                    <p className="text-xs font-medium text-muted-foreground/70">No {filter !== 'all' ? filter : ''} items to show.</p>
                                 </div>
                             </div>
                         ) : (
@@ -133,7 +133,7 @@ const SensorAlertsView: React.FC = () => {
                                         </div>
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-3">
-                                                <h4 className="text-sm font-bold text-[#1A1A1A] tracking-tight">{alert.alert_type} Alert</h4>
+                                                <h4 className="text-sm font-bold text-foreground tracking-tight">{alert.alert_type} Alert</h4>
                                                 <span className={cn(
                                                     "text-[10px] font-bold px-2 py-0.5 rounded-md border",
                                                     alert.severity === 'critical' ? "bg-red-50 text-red-600 border-red-100" : 
@@ -141,16 +141,16 @@ const SensorAlertsView: React.FC = () => {
                                                     "bg-emerald-50 text-emerald-600 border-emerald-100"
                                                 )}>{alert.severity.toUpperCase()}</span>
                                             </div>
-                                            <p className="text-xs font-medium text-gray-500 leading-relaxed border-l-2 border-gray-100 pl-3 group-hover:border-[#F4D03F] transition-colors">{alert.message}</p>
+                                            <p className="text-xs font-medium text-muted-foreground leading-relaxed border-l-2 border-gray-100 pl-3 group-hover:border-[#F4D03F] transition-colors">{alert.message}</p>
                                             <div className="flex items-center gap-3 mt-2">
                                                 <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md">
                                                      <div className="w-1 h-1 rounded-full bg-gray-400" />
-                                                     <span className="text-[10px] font-bold text-gray-400 tracking-tighter sm:tracking-normal">{getHiveName(alert.hive_id)}</span>
+                                                     <span className="text-[10px] font-bold text-muted-foreground/70 tracking-tighter sm:tracking-normal">{getHiveName(alert.hive_id)}</span>
                                                 </div>
                                                 {alert.apiary_id && (
                                                     <div className="flex items-center gap-1.5 bg-white border border-gray-100 px-2 py-0.5 rounded-md">
                                                         <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                                        <span className="text-[10px] font-bold text-gray-500 tracking-tighter sm:tracking-normal">
+                                                        <span className="text-[10px] font-bold text-muted-foreground tracking-tighter sm:tracking-normal">
                                                             {getApiaryName(alert.apiary_id)}
                                                         </span>
                                                     </div>
@@ -184,7 +184,7 @@ const SensorAlertsView: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div className={cn(glass.card, "lg:col-span-7 p-0 overflow-hidden bg-white border-gray-200 shadow-sm")}>
                     <div className="p-4 border-b border-gray-100 bg-gray-50">
-                        <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Priority Distribution</h3>
+                        <h3 className="text-sm font-bold text-foreground tracking-tight">Priority Distribution</h3>
                     </div>
                     <div className="p-6 space-y-5">
                         {(['critical', 'warning', 'info'] as const).map(s => {
@@ -196,9 +196,9 @@ const SensorAlertsView: React.FC = () => {
                                     <div className="flex justify-between items-end">
                                         <div className="flex items-center gap-2">
                                              <div className={cn("w-1.5 h-1.5 rounded-full", s === 'critical' ? 'bg-red-500' : s === 'warning' ? 'bg-[#F4D03F]' : 'bg-[#1B9157]')} />
-                                             <span className="text-[10px] font-bold tracking-wider text-gray-400">{s}</span>
+                                             <span className="text-[10px] font-bold tracking-wider text-muted-foreground/70">{s}</span>
                                         </div>
-                                        <span className="text-sm font-bold text-[#1A1A1A]">{count} Nodes</span>
+                                        <span className="text-sm font-bold text-foreground">{count} Nodes</span>
                                     </div>
                                     <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                                         <motion.div
@@ -217,7 +217,7 @@ const SensorAlertsView: React.FC = () => {
                 </div>
 
                 <div className={cn(glass.card, "lg:col-span-5 p-6 bg-emerald-50 border-emerald-100 flex flex-col justify-between shadow-sm relative overflow-hidden group")}>
-                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/20 blur-3xl rounded-full" />
+                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-muted/ blur-3xl rounded-full" />
                     <div className="relative z-10 flex items-start justify-between">
                          <div className="space-y-1">
                             <h3 className="text-sm font-bold text-emerald-700 tracking-tight">System Status</h3>
@@ -230,7 +230,7 @@ const SensorAlertsView: React.FC = () => {
                     
                     <button
                         onClick={loadData}
-                        className="relative z-10 w-full mt-8 h-10 bg-white text-[#1A1A1A] border border-emerald-100 rounded-xl font-bold text-xs shadow-sm hover:bg-emerald-500 hover:text-white hover:border-emerald-600 transition-all flex items-center justify-center gap-3"
+                        className="relative z-10 w-full mt-8 h-10 bg-white text-foreground border border-emerald-100 rounded-xl font-bold text-xs shadow-sm hover:bg-emerald-500 hover:text-white hover:border-emerald-600 transition-all flex items-center justify-center gap-3"
                     >
                         <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
                         Run System Audit
@@ -248,3 +248,4 @@ const SensorAlertsView: React.FC = () => {
 };
 
 export default SensorAlertsView;
+

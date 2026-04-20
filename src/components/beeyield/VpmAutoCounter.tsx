@@ -26,7 +26,7 @@ const VpmAutoCounter: React.FC = () => {
                     <div className="flex gap-4">
                         <button
                             onClick={() => setIsActive(!isActive)}
-                            className="w-12 h-12 rounded-xl bg-white/50 border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-[#F4D03F]/40 transition-all shadow-sm active:scale-95"
+                            className="w-12 h-12 rounded-xl bg-muted/ border border-border backdrop-blur-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-border/ transition-all shadow-sm active:scale-95"
                         >
                             {isActive ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                         </button>
@@ -37,16 +37,16 @@ const VpmAutoCounter: React.FC = () => {
                 }
             />
 
-            <div className={cn(glass.card, "flex flex-col lg:flex-row overflow-hidden p-0 rounded-3xl shadow-sm border-[#F4D03F]/10")}>
+            <div className={cn(glass.card, "flex flex-col lg:flex-row overflow-hidden p-0 rounded-3xl shadow-sm border-border/")}>
                 {/* Camera Feed Context */}
-                <div className="flex-1 p-6 bg-[#F9F7F2] min-h-[450px] relative overflow-hidden group">
+                <div className="flex-1 p-6 bg-muted/20 min-h-[450px] relative overflow-hidden group">
                     {/* UI Overlays */}
-                    <div className="absolute inset-0 pointer-events-none rounded-2xl border-2 border-transparent group-hover:border-[#F4D03F]/20 transition-all duration-500 z-10 m-2" />
+                    <div className="absolute inset-0 pointer-events-none rounded-2xl border-2 border-transparent group-hover:border-border/ transition-all duration-500 z-10 m-2" />
 
                     {/* Feed Info */}
                     <div className="absolute top-6 left-6 z-30 flex flex-col gap-2">
                         <Badge className={cn(glass.badge, "bg-emerald-500 text-white border-none shadow-sm")}>Live</Badge>
-                        <Badge className={cn(glass.badge, "bg-white/60 text-foreground border-border backdrop-blur-md py-0.5 text-[8px]")}>Signal: Stable</Badge>
+                        <Badge className={cn(glass.badge, "bg-muted/ text-foreground border-border backdrop-blur-md py-0.5 text-[8px]")}>Signal: Stable</Badge>
                     </div>
 
                     <div className="absolute bottom-6 left-6 z-30">
@@ -82,7 +82,7 @@ const VpmAutoCounter: React.FC = () => {
                 </div>
 
                 {/* Data Panel */}
-                <div className="w-full lg:w-[400px] p-8 space-y-8 bg-white/30 border-t lg:border-t-0 lg:border-l border-border shrink-0">
+                <div className="w-full lg:w-[400px] p-8 space-y-8 bg-muted/ border-t lg:border-t-0 lg:border-l border-border shrink-0">
                     <section className="space-y-4">
                         <div className="flex items-center gap-3">
                             <Activity className="w-5 h-5 text-[#F4D03F]" />
@@ -90,7 +90,7 @@ const VpmAutoCounter: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className={cn(glass.card, "p-4 text-center bg-white/50 border-border shadow-sm")}>
+                            <div className={cn(glass.card, "p-4 text-center bg-muted/ border-border shadow-sm")}>
                                 <p className="text-2xl font-black tabular-nums leading-none mb-1">—</p>
                                 <p className="text-[10px] font-bold opacity-40">Visits / Min</p>
                             </div>
@@ -106,7 +106,7 @@ const VpmAutoCounter: React.FC = () => {
                             <p className="text-[10px] font-black opacity-40">Capture Efficiency</p>
                             <span className={cn(
                                 "text-[8px] font-black px-2 py-0.5 rounded-full border",
-                                "bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20"
+                                "bg-[#F4D03F]/10 text-[#F4D03F] border-border/"
                             )}>
                                 NO DATA
                             </span>
@@ -139,11 +139,11 @@ const VpmAutoCounter: React.FC = () => {
                         </div>
                     </section>
 
-                    <div className="p-4 rounded-xl border border-[#F4D03F]/20 bg-[#F4D03F]/5 flex items-start gap-3">
+                    <div className="p-4 rounded-xl border border-border/ bg-[#F4D03F]/5 flex items-start gap-3">
                         <AlertTriangle className="w-4 h-4 text-[#F4D03F] shrink-0 mt-0.5" />
                         <div>
-                            <h5 className="text-[10px] font-black text-[#1A1A1A] mb-1">Equipment disconnected</h5>
-                            <p className="text-[10px] font-bold text-[#1A1A1A]/70 leading-relaxed tracking-tight">
+                            <h5 className="text-[10px] font-black text-foreground mb-1">Equipment disconnected</h5>
+                            <p className="text-[10px] font-bold text-foreground/70 leading-relaxed tracking-tight">
                                 This view shows activity from live sensor feeds. Please connect your equipment to see real-time results.
                             </p>
                         </div>
@@ -155,3 +155,4 @@ const VpmAutoCounter: React.FC = () => {
 };
 
 export default VpmAutoCounter;
+

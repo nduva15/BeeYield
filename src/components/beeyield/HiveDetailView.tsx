@@ -278,16 +278,16 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={glass.page}>
             {/* ── Header ── */}
-            <div className="flex items-center gap-4 pb-5 border-b border-[#F4D03F]/20 mb-6">
+            <div className="flex items-center gap-4 pb-5 border-b border-border/ mb-6">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#1A1A1A] transition-colors"
+                    className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Go back
                 </button>
                 <div className="flex-1">
-                    <h1 className="text-2xl font-black text-[#1A1A1A] tracking-tight">{hive?.hive_code || 'Hive'}</h1>
+                    <h1 className="text-2xl font-black text-foreground tracking-tight">{hive?.hive_code || 'Hive'}</h1>
                     <p className="text-sm text-[#F4D03F] font-semibold">{apiary?.name || 'BeeYield Apiary'}</p>
                 </div>
             </div>
@@ -316,10 +316,10 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             ) : (
                                 <div className="space-y-2">
                                     {requests.map((r: any) => (
-                                        <div key={r.id} className="flex justify-between items-center p-3 rounded-xl bg-white/50 border border-[#F4D03F]/10">
+                                        <div key={r.id} className="flex justify-between items-center p-3 rounded-xl bg-muted/ border border-border/">
                                             <div>
-                                                <p className="text-sm font-bold text-[#1A1A1A]">{r.subject || r.title}</p>
-                                                <p className="text-xs text-gray-500">{new Date(r.created_at).toLocaleDateString()}</p>
+                                                <p className="text-sm font-bold text-foreground">{r.subject || r.title}</p>
+                                                <p className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</p>
                                             </div>
                                             <span className={cn(glass.badge, r.status === 'resolved' ? 'bg-emerald-50 text-emerald-700' : '')}>{r.status}</span>
                                         </div>
@@ -334,31 +334,31 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         <div className="p-5">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2">
-                                    <button onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear(calYear - 1); } else { setCalMonth(calMonth - 1); } }} className="w-8 h-8 rounded-lg border border-[#F4D03F]/20 flex items-center justify-center hover:bg-[#F4D03F]/5 transition-colors">
-                                        <ChevronLeft className="w-4 h-4 text-gray-500" />
+                                    <button onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear(calYear - 1); } else { setCalMonth(calMonth - 1); } }} className="w-8 h-8 rounded-lg border border-border/ flex items-center justify-center hover:bg-[#F4D03F]/5 transition-colors">
+                                        <ChevronLeft className="w-4 h-4 text-muted-foreground" />
                                     </button>
-                                    <button onClick={() => { if (calMonth === 11) { setCalMonth(0); setCalYear(calYear + 1); } else { setCalMonth(calMonth + 1); } }} className="w-8 h-8 rounded-lg border border-[#F4D03F]/20 flex items-center justify-center hover:bg-[#F4D03F]/5 transition-colors">
-                                        <ChevronRight className="w-4 h-4 text-gray-500" />
+                                    <button onClick={() => { if (calMonth === 11) { setCalMonth(0); setCalYear(calYear + 1); } else { setCalMonth(calMonth + 1); } }} className="w-8 h-8 rounded-lg border border-border/ flex items-center justify-center hover:bg-[#F4D03F]/5 transition-colors">
+                                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
                                     </button>
                                 </div>
-                                <h3 className="text-lg font-black text-[#1A1A1A]">{MONTHS[calMonth]} {calYear}</h3>
-                                <div className="flex bg-[#F4D03F]/5 p-0.5 rounded-lg border border-[#F4D03F]/10">
-                                    <span className="px-3 py-1 rounded-md bg-white text-[10px] font-bold text-[#1A1A1A] shadow-sm">Month</span>
-                                    <span className="px-3 py-1 text-[10px] font-bold text-gray-400">Agenda</span>
+                                <h3 className="text-lg font-black text-foreground">{MONTHS[calMonth]} {calYear}</h3>
+                                <div className="flex bg-[#F4D03F]/5 p-0.5 rounded-lg border border-border/">
+                                    <span className="px-3 py-1 rounded-md bg-white text-[10px] font-bold text-foreground shadow-sm">Month</span>
+                                    <span className="px-3 py-1 text-[10px] font-bold text-muted-foreground/70">Agenda</span>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-7 gap-0">
                                 {DAYS.map(d => (
-                                    <div key={d} className="text-center py-2 text-[10px] font-black text-gray-400 uppercase tracking-wider">{d}</div>
+                                    <div key={d} className="text-center py-2 text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">{d}</div>
                                 ))}
                                 {calendarDays.map((cell, i) => (
                                     <div
                                         key={i}
                                         className={cn(
                                             "text-center py-3 text-sm font-semibold rounded-lg transition-colors cursor-default",
-                                            cell.current ? 'text-[#1A1A1A]' : 'text-gray-300',
-                                            cell.isToday && 'bg-[#FEF3C7] text-[#1A1A1A] font-black outline-none ring-0',
+                                            cell.current ? 'text-foreground' : 'text-gray-300',
+                                            cell.isToday && 'bg-[#FEF3C7] text-foreground font-black outline-none ring-0',
                                             // Show inspection dates in red
                                             cell.current && detail?.inspections?.some(ins => {
                                                 const d = new Date(ins.inspection_date);
@@ -380,8 +380,8 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                     </div>
 
                     <div className={cn(glass.section)}>\n                        <div className="p-5">
-                            <h3 className="text-lg font-black text-[#1A1A1A] italic mb-1">The Queen's Rearing Calendar</h3>
-                            <p className="text-sm text-gray-500 font-medium mb-5">Plan a batch, track milestones, and confirm progress directly from the hive view.</p>
+                            <h3 className="text-lg font-black text-foreground italic mb-1">The Queen's Rearing Calendar</h3>
+                            <p className="text-sm text-muted-foreground font-medium mb-5">Plan a batch, track milestones, and confirm progress directly from the hive view.</p>
 
                             <div className="flex items-center gap-3 mb-6">
                                 <button onClick={fetchDetail} className="h-9 px-4 rounded-full bg-[#0F172A] text-white text-xs font-bold flex items-center gap-2 hover:bg-[#1E293B] transition-colors shadow-sm">
@@ -396,21 +396,21 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             {rearingBatches.length > 0 ? (
                                 <div className="space-y-3">
                                     {rearingBatches.map(batch => (
-                                        <div key={batch.id} className="p-4 rounded-xl bg-white/50 border border-[#F4D03F]/10 shadow-sm">
+                                        <div key={batch.id} className="p-4 rounded-xl bg-muted/ border border-border/ shadow-sm">
                                             <div className="flex justify-between items-start">
                                                 <div>
-                                                    <p className="font-bold text-sm text-[#1A1A1A]">{batch.batch_name}</p>
-                                                    <p className="text-xs text-gray-500">{batch.method} · {new Date(batch.start_date).toLocaleDateString()} · {batch.planned_units} units</p>
+                                                    <p className="font-bold text-sm text-foreground">{batch.batch_name}</p>
+                                                    <p className="text-xs text-muted-foreground">{batch.method} · {new Date(batch.start_date).toLocaleDateString()} · {batch.planned_units} units</p>
                                                 </div>
                                                 <span className={cn(glass.badge, batch.status === 'completed' ? 'bg-emerald-50 text-emerald-700' : '')}>{batch.status || 'active'}</span>
                                             </div>
-                                            {batch.notebook && <p className="text-xs text-gray-500 mt-2 border-t border-[#F4D03F]/10 pt-2">{batch.notebook}</p>}
+                                            {batch.notebook && <p className="text-xs text-muted-foreground mt-2 border-t border-border/ pt-2">{batch.notebook}</p>}
                                         </div>
                                     ))}
                                 </div>
                             ) : (
                                 <div className="py-8 text-center bg-emerald-50/50 rounded-2xl border border-dashed border-emerald-200">
-                                    <p className="text-sm text-gray-500 font-medium mb-4">No queen rearing batches have been created for this hive yet.</p>
+                                    <p className="text-sm text-muted-foreground font-medium mb-4">No queen rearing batches have been created for this hive yet.</p>
                                     <button onClick={() => setShowRearingForm(true)} className="px-5 py-2.5 rounded-full bg-white border border-gray-200 text-sm font-bold text-[#1E293B] hover:bg-gray-50 transition-colors shadow-sm">
                                         Create first batch
                                     </button>
@@ -445,17 +445,17 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                 }, '');
                                 return (
                                     <div className="grid grid-cols-3 gap-3">
-                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 text-center">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Total Yield</p>
-                                            <p className="text-lg font-black text-[#1A1A1A] tabular-nums">{totalKg.toFixed(1)}<span className="text-xs font-bold text-gray-400 ml-0.5">kg</span></p>
+                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-border/ text-center">
+                                            <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Total Yield</p>
+                                            <p className="text-lg font-black text-foreground tabular-nums">{totalKg.toFixed(1)}<span className="text-xs font-bold text-muted-foreground/70 ml-0.5">kg</span></p>
                                         </div>
-                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 text-center">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Batches</p>
-                                            <p className="text-lg font-black text-[#1A1A1A] tabular-nums">{harvests.length}</p>
+                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-border/ text-center">
+                                            <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Batches</p>
+                                            <p className="text-lg font-black text-foreground tabular-nums">{harvests.length}</p>
                                         </div>
-                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-[#F4D03F]/20 text-center">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Last Harvest</p>
-                                            <p className="text-sm font-black text-[#1A1A1A]">{latestDate ? new Date(latestDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : '—'}</p>
+                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-border/ text-center">
+                                            <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Last Harvest</p>
+                                            <p className="text-sm font-black text-foreground">{latestDate ? new Date(latestDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : '—'}</p>
                                         </div>
                                     </div>
                                 );
@@ -463,10 +463,10 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
 
                             {/* ── Hive type badge ── */}
                             {hive?.hive_type && (
-                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#1A1A1A]/3 border border-[#F4D03F]/10 w-fit">
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#1A1A1A]/3 border border-border/ w-fit">
                                     <Hexagon className="w-3.5 h-3.5 text-[#F4D03F]" />
-                                    <span className="text-[10px] font-black text-[#1A1A1A] tracking-wide uppercase">{hive.hive_type}</span>
-                                    <span className="text-[10px] text-gray-400 font-medium">hive type</span>
+                                    <span className="text-[10px] font-black text-foreground tracking-wide uppercase">{hive.hive_type}</span>
+                                    <span className="text-[10px] text-muted-foreground/70 font-medium">hive type</span>
                                 </div>
                             )}
 
@@ -480,27 +480,27 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: i * 0.04 }}
                                             onClick={() => setSelectedHarvest(h)}
-                                            className="rounded-xl border border-[#F4D03F]/20 bg-white/60 overflow-hidden shadow-sm hover:border-[#F4D03F]/40 hover:shadow-md transition-all cursor-pointer group"
+                                            className="rounded-xl border border-border/ bg-muted/ overflow-hidden shadow-sm hover:border-border/ hover:shadow-md transition-all cursor-pointer group"
                                         >
                                             {/* Card header */}
-                                            <div className="flex items-center justify-between px-4 py-3 border-b border-[#F4D03F]/10 bg-[#F9F7F2]/60">
+                                            <div className="flex items-center justify-between px-4 py-3 border-b border-border/ bg-muted/">
                                                 <div className="flex items-center gap-2.5">
-                                                    <div className="w-7 h-7 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center">
+                                                    <div className="w-7 h-7 rounded-lg bg-[#F4D03F]/10 border border-border/ flex items-center justify-center">
                                                         <Wheat className="w-3.5 h-3.5 text-[#D97706]" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black text-[#1A1A1A] tabular-nums">
+                                                        <p className="text-sm font-black text-foreground tabular-nums">
                                                             {parseFloat(h.quantity_kg || 0).toFixed(1)} kg
                                                             <span className="ml-2 text-[10px] font-bold text-[#D97706] bg-[#F4D03F]/10 px-2 py-0.5 rounded-md">{h.honey_type || 'Multi-flower'}</span>
                                                         </p>
-                                                        <p className="text-[10px] font-semibold text-gray-400">
+                                                        <p className="text-[10px] font-semibold text-muted-foreground/70">
                                                             {new Date(h.harvest_date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {h.batch_code && (
-                                                        <span className="px-2.5 py-1 rounded-lg bg-[#1A1A1A]/5 border border-[#F4D03F]/10 text-[9px] font-black text-gray-500 tracking-widest font-mono">
+                                                        <span className="px-2.5 py-1 rounded-lg bg-[#1A1A1A]/5 border border-border/ text-[9px] font-black text-muted-foreground tracking-widest font-mono">
                                                             {h.batch_code}
                                                         </span>
                                                     )}
@@ -521,28 +521,28 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                                     { label: 'Extraction', value: h.extraction_method || '—' },
                                                 ].map(({ label, value }) => (
                                                     <div key={label} className="px-3 py-2.5 flex flex-col gap-0.5">
-                                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-wider">{label}</p>
-                                                        <p className="text-[11px] font-bold text-[#1A1A1A] truncate" title={value}>{value}</p>
+                                                        <p className="text-[8px] font-black text-muted-foreground/70 uppercase tracking-wider">{label}</p>
+                                                        <p className="text-[11px] font-bold text-foreground truncate" title={value}>{value}</p>
                                                     </div>
                                                 ))}
                                             </div>
 
                                             {/* Notes row */}
                                             {(h.notes || h.forage_type || h.weather_conditions) && (
-                                                <div className="px-4 py-2.5 border-t border-[#F4D03F]/10 bg-[#FFFBF0]/40 flex items-start gap-3 flex-wrap">
-                                                    {h.forage_type && <span className="text-[10px] text-gray-500"><span className="font-bold text-gray-400">Flora:</span> {h.forage_type}</span>}
-                                                    {h.weather_conditions && <span className="text-[10px] text-gray-500"><span className="font-bold text-gray-400">Weather:</span> {h.weather_conditions}</span>}
-                                                    {h.notes && <span className="text-[10px] text-gray-500 italic">{h.notes}</span>}
+                                                <div className="px-4 py-2.5 border-t border-border/ bg-[#FFFBF0]/40 flex items-start gap-3 flex-wrap">
+                                                    {h.forage_type && <span className="text-[10px] text-muted-foreground"><span className="font-bold text-muted-foreground/70">Flora:</span> {h.forage_type}</span>}
+                                                    {h.weather_conditions && <span className="text-[10px] text-muted-foreground"><span className="font-bold text-muted-foreground/70">Weather:</span> {h.weather_conditions}</span>}
+                                                    {h.notes && <span className="text-[10px] text-muted-foreground italic">{h.notes}</span>}
                                                 </div>
                                             )}
                                         </motion.div>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="py-10 text-center rounded-2xl border border-dashed border-[#F4D03F]/30 bg-[#FFFBF0]/30">
+                                <div className="py-10 text-center rounded-2xl border border-dashed border-border/ bg-[#FFFBF0]/30">
                                     <Wheat className="w-8 h-8 mx-auto mb-3 text-[#F4D03F] opacity-30" />
-                                    <p className="text-sm font-bold text-gray-400">No harvests recorded yet</p>
-                                    <p className="text-[11px] text-gray-400 mt-1 mb-4">Log your first batch to start tracking production.</p>
+                                    <p className="text-sm font-bold text-muted-foreground/70">No harvests recorded yet</p>
+                                    <p className="text-[11px] text-muted-foreground/70 mt-1 mb-4">Log your first batch to start tracking production.</p>
                                     <button onClick={() => setShowHarvestForm(true)} className={cn(glass.btnPrimary, 'mx-auto')}>
                                         <Plus className="w-4 h-4" /> Add first harvest
                                     </button>
@@ -562,27 +562,27 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             {lastInspection ? (
                                 <div className="mt-3 space-y-2">
                                     <div className="flex justify-between">
-                                        <span className="text-xs text-gray-500">Date</span>
-                                        <span className="text-xs font-bold text-[#1A1A1A]">{new Date(lastInspection.inspection_date).toLocaleDateString()}</span>
+                                        <span className="text-xs text-muted-foreground">Date</span>
+                                        <span className="text-xs font-bold text-foreground">{new Date(lastInspection.inspection_date).toLocaleDateString()}</span>
                                     </div>
                                     {lastInspection.health_status && (
                                         <div className="flex justify-between">
-                                            <span className="text-xs text-gray-500">Health</span>
+                                            <span className="text-xs text-muted-foreground">Health</span>
                                             <span className={cn(glass.badge, 'text-[10px]')}>{lastInspection.health_status}</span>
                                         </div>
                                     )}
                                     {lastInspection.queen_seen !== undefined && (
                                         <div className="flex justify-between">
-                                            <span className="text-xs text-gray-500">Queen seen</span>
+                                            <span className="text-xs text-muted-foreground">Queen seen</span>
                                             <span className="text-xs font-bold">{lastInspection.queen_seen ? '✓ Yes' : '✗ No'}</span>
                                         </div>
                                     )}
                                     {lastInspection.notes && (
-                                        <p className="text-xs text-gray-500 mt-2 border-t border-[#F4D03F]/10 pt-2">{lastInspection.notes}</p>
+                                        <p className="text-xs text-muted-foreground mt-2 border-t border-border/ pt-2">{lastInspection.notes}</p>
                                     )}
                                 </div>
                             ) : (
-                                <p className="text-xs text-gray-400 mt-3">No inspections recorded for selected hive.</p>
+                                <p className="text-xs text-muted-foreground/70 mt-3">No inspections recorded for selected hive.</p>
                             )}
                         </div>
                     </div>
@@ -592,24 +592,24 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         <div className="p-5">
                             <BeeYieldSectionHeader title="QR Code" icon={QrCode} />
                             <div className="mt-3 flex flex-col items-center">
-                                <div className="w-32 h-32 bg-white rounded-xl border-2 border-[#F4D03F]/20 flex items-center justify-center shadow-inner mb-3 overflow-hidden">
+                                <div className="w-32 h-32 bg-white rounded-xl border-2 border-border/ flex items-center justify-center shadow-inner mb-3 overflow-hidden">
                                     <canvas ref={qrRef} className="w-full h-full" />
                                 </div>
                                 <div className="flex gap-2 mb-3">
                                     <button 
                                         onClick={handleDownloadQR}
-                                        className="h-8 px-3 rounded-lg border border-[#F4D03F]/20 text-xs font-bold text-gray-600 flex items-center gap-1.5 hover:bg-[#F4D03F]/5 transition-colors"
+                                        className="h-8 px-3 rounded-lg border border-border/ text-xs font-bold text-muted-foreground/90 flex items-center gap-1.5 hover:bg-[#F4D03F]/5 transition-colors"
                                     >
                                         <Download className="w-3 h-3" /> Download
                                     </button>
                                     <button 
                                         onClick={handlePrintQR}
-                                        className="h-8 px-3 rounded-lg border border-[#F4D03F]/20 text-xs font-bold text-gray-600 flex items-center gap-1.5 hover:bg-[#F4D03F]/5 transition-colors"
+                                        className="h-8 px-3 rounded-lg border border-border/ text-xs font-bold text-muted-foreground/90 flex items-center gap-1.5 hover:bg-[#F4D03F]/5 transition-colors"
                                     >
                                         <Printer className="w-3 h-3" /> Print
                                     </button>
                                 </div>
-                                <p className="text-[10px] text-gray-400 text-center leading-relaxed">Print and stick a QR code on the hive to quickly find the hive in the BeeYield webapp or app.</p>
+                                <p className="text-[10px] text-muted-foreground/70 text-center leading-relaxed">Print and stick a QR code on the hive to quickly find the hive in the BeeYield webapp or app.</p>
                             </div>
                         </div>
                     </div>
@@ -619,20 +619,20 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         <div className="p-5">
                             <BeeYieldSectionHeader title="Queen" icon={Crown} />
                             <div className="mt-3 flex items-start gap-4">
-                                <div className="w-14 h-14 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center text-2xl flex-shrink-0">
+                                <div className="w-14 h-14 rounded-xl bg-[#F4D03F]/10 border border-border/ flex items-center justify-center text-2xl flex-shrink-0">
                                     🐝
                                 </div>
                                 <div className="flex-1">
                                     {queen ? (
                                         <div>
-                                            <p className="text-sm font-bold text-[#1A1A1A]">{queen.name || 'Queen'}</p>
-                                            <p className="text-xs text-gray-500">{queen.breed || 'Unknown breed'} · {queen.origin || 'Unknown origin'}</p>
-                                            {queen.marking_color && <p className="text-xs text-gray-400 mt-1">Marked: {queen.marking_color} · {queen.year_introduced}</p>}
+                                            <p className="text-sm font-bold text-foreground">{queen.name || 'Queen'}</p>
+                                            <p className="text-xs text-muted-foreground">{queen.breed || 'Unknown breed'} · {queen.origin || 'Unknown origin'}</p>
+                                            {queen.marking_color && <p className="text-xs text-muted-foreground/70 mt-1">Marked: {queen.marking_color} · {queen.year_introduced}</p>}
                                         </div>
                                     ) : (
                                         <div>
-                                            <p className="text-sm font-bold text-[#1A1A1A]">Queen</p>
-                                            <p className="text-xs text-gray-400 font-medium mb-2">No queen assigned to this hive.</p>
+                                            <p className="text-sm font-bold text-foreground">Queen</p>
+                                            <p className="text-xs text-muted-foreground/70 font-medium mb-2">No queen assigned to this hive.</p>
                                             <button
                                                 onClick={() => setShowQueenForm(true)}
                                                 className="text-[11px] font-black text-red-500 hover:text-red-600 mt-1 uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-full border border-red-100 transition-colors"
@@ -659,12 +659,12 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             className={cn(glass.modalCard, 'max-w-lg')}
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-white flex items-center justify-between rounded-t-2xl">
+                            <div className="px-5 py-4 border-b border-border/ bg-white flex items-center justify-between rounded-t-2xl">
                                 <div>
-                                    <h2 className="text-lg font-black text-[#1A1A1A]">Assign Queen</h2>
-                                    <p className="text-xs text-gray-500 font-medium">Add queen information for {hive?.hive_code}</p>
+                                    <h2 className="text-lg font-black text-foreground">Assign Queen</h2>
+                                    <p className="text-xs text-muted-foreground font-medium">Add queen information for {hive?.hive_code}</p>
                                 </div>
-                                <button onClick={() => setShowQueenForm(false)} className="w-8 h-8 rounded-lg border border-[#F4D03F]/20 flex items-center justify-center hover:bg-red-50 transition-colors">
+                                <button onClick={() => setShowQueenForm(false)} className="w-8 h-8 rounded-lg border border-border/ flex items-center justify-center hover:bg-red-50 transition-colors">
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
@@ -734,15 +734,15 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                 {selectedHarvest && (
                     <div className="space-y-6">
                         {/* Highlights Strip */}
-                        <div className="flex bg-[#F9F7F2]/60 rounded-xl p-3 border border-[#F4D03F]/20 gap-4">
+                        <div className="flex bg-muted/ rounded-xl p-3 border border-border/ gap-4">
                             <div className="flex-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Yield</p>
-                                <p className="text-xl font-black text-[#1A1A1A]">{parseFloat(selectedHarvest.quantity_kg || 0).toFixed(1)} <span className="text-sm text-gray-400">kg</span></p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Yield</p>
+                                <p className="text-xl font-black text-foreground">{parseFloat(selectedHarvest.quantity_kg || 0).toFixed(1)} <span className="text-sm text-muted-foreground/70">kg</span></p>
                             </div>
                             <div className="w-px bg-[#F4D03F]/20" />
                             <div className="flex-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-0.5">Date</p>
-                                <p className="text-sm font-bold text-[#1A1A1A] mt-1">{new Date(selectedHarvest.harvest_date).toLocaleDateString()}</p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Date</p>
+                                <p className="text-sm font-bold text-foreground mt-1">{new Date(selectedHarvest.harvest_date).toLocaleDateString()}</p>
                             </div>
                             <div className="w-px bg-[#F4D03F]/20" />
                             <div className="flex-1 text-right flex flex-col items-end justify-center">
@@ -751,7 +751,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                         <ShieldCheck className="w-3.5 h-3.5" /> Verified
                                     </span>
                                 ) : (
-                                    <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-[10px] font-black text-gray-500">
+                                    <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-[10px] font-black text-muted-foreground">
                                         Unverified
                                     </span>
                                 )}
@@ -761,41 +761,41 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                         {/* Data Grid */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Honey Type</p>
-                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.honey_type || '—'}</p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Honey Type</p>
+                                <p className="text-sm font-bold text-foreground">{selectedHarvest.honey_type || '—'}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Color Grade</p>
-                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.color_grade || '—'}</p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Color Grade</p>
+                                <p className="text-sm font-bold text-foreground">{selectedHarvest.color_grade || '—'}</p>
                             </div>
                             
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Moisture Content</p>
-                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.moisture_content_percent ? `${selectedHarvest.moisture_content_percent}%` : '—'}</p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Moisture Content</p>
+                                <p className="text-sm font-bold text-foreground">{selectedHarvest.moisture_content_percent ? `${selectedHarvest.moisture_content_percent}%` : '—'}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Extraction Method</p>
-                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.extraction_method || '—'}</p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Extraction Method</p>
+                                <p className="text-sm font-bold text-foreground">{selectedHarvest.extraction_method || '—'}</p>
                             </div>
 
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Left for Bees</p>
-                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.quantity_left_for_bees_kg ? `${selectedHarvest.quantity_left_for_bees_kg} kg` : '—'}</p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Left for Bees</p>
+                                <p className="text-sm font-bold text-foreground">{selectedHarvest.quantity_left_for_bees_kg ? `${selectedHarvest.quantity_left_for_bees_kg} kg` : '—'}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Forage Type (Flora)</p>
-                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.forage_type || selectedHarvest.florage_type || '—'}</p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Forage Type (Flora)</p>
+                                <p className="text-sm font-bold text-foreground">{selectedHarvest.forage_type || selectedHarvest.florage_type || '—'}</p>
                             </div>
 
                             <div className="space-y-1 col-span-2">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Weather Conditions</p>
-                                <p className="text-sm font-bold text-[#1A1A1A]">{selectedHarvest.weather_conditions || '—'}</p>
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Weather Conditions</p>
+                                <p className="text-sm font-bold text-foreground">{selectedHarvest.weather_conditions || '—'}</p>
                             </div>
 
                             {selectedHarvest.notes && (
-                                <div className="space-y-1 col-span-2 pt-3 border-t border-[#F4D03F]/10">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Notes</p>
-                                    <p className="text-sm text-gray-600 bg-[#FFFBF0]/50 p-3 rounded-lg border border-[#F4D03F]/10 leading-relaxed">{selectedHarvest.notes}</p>
+                                <div className="space-y-1 col-span-2 pt-3 border-t border-border/">
+                                    <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Notes</p>
+                                    <p className="text-sm text-muted-foreground/90 bg-[#FFFBF0]/50 p-3 rounded-lg border border-border/ leading-relaxed">{selectedHarvest.notes}</p>
                                 </div>
                             )}
                         </div>
@@ -819,7 +819,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Harvest Date*</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Harvest Date*</label>
                             <input
                                 type="date"
                                 value={harvestForm.harvest_date}
@@ -829,7 +829,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Yield (KG)*</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Yield (KG)*</label>
                             <input
                                 type="number"
                                 step="0.1"
@@ -841,7 +841,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Honey Type</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Honey Type</label>
                             <select
                                 value={harvestForm.honey_type}
                                 onChange={(e) => setHarvestForm({ ...harvestForm, honey_type: e.target.value })}
@@ -855,7 +855,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             </select>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Color Grade</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Color Grade</label>
                             <select
                                 value={harvestForm.color_grade}
                                 onChange={(e) => setHarvestForm({ ...harvestForm, color_grade: e.target.value })}
@@ -868,7 +868,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             </select>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Left for Bees (KG)</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Left for Bees (KG)</label>
                             <input
                                 type="number"
                                 step="0.1"
@@ -879,7 +879,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Moisture (%)</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Moisture (%)</label>
                             <input
                                 type="number"
                                 step="0.1"
@@ -890,7 +890,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Florage Type</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Florage Type</label>
                             <input
                                 placeholder="e.g. Wildflower"
                                 value={harvestForm.florage_type || ''}
@@ -899,7 +899,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Batch Code</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Batch Code</label>
                             <input
                                 placeholder="Auto-generated"
                                 value={harvestForm.batch_code || ''}
@@ -908,7 +908,7 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-gray-400">Weather</label>
+                            <label className="text-[10px] font-black uppercase text-muted-foreground/70">Weather</label>
                             <input
                                 placeholder="e.g. Sunny, 25°C"
                                 value={harvestForm.weather_conditions || ''}
@@ -916,21 +916,21 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                 className={cn(glass.input, "w-full h-9 text-sm font-bold")}
                             />
                         </div>
-                        <div className="space-y-2 border border-[#F4D03F]/20 rounded-xl p-2 flex items-center gap-2">
+                        <div className="space-y-2 border border-border/ rounded-xl p-2 flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 id="modal-harvest-verified"
                                 checked={harvestForm.is_verified}
                                 onChange={(e) => setHarvestForm({ ...harvestForm, is_verified: e.target.checked })}
-                                className="rounded bg-black/40 border-[#F4D03F]/20 text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
+                                className="rounded bg-black/40 border-border/ text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
                             />
-                            <label htmlFor="modal-harvest-verified" className="text-[10px] font-black uppercase text-gray-400 cursor-pointer">
+                            <label htmlFor="modal-harvest-verified" className="text-[10px] font-black uppercase text-muted-foreground/70 cursor-pointer">
                                 Verified Record
                             </label>
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-gray-400">Notes</label>
+                        <label className="text-[10px] font-black uppercase text-muted-foreground/70">Notes</label>
                         <textarea
                             placeholder="Observations..."
                             value={harvestForm.notes || ''}
@@ -961,9 +961,9 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             className={cn(glass.modalCard, 'max-w-xl')}
                             onClick={e => e.stopPropagation()}
                         >
-                            <div className="px-5 py-4 border-b border-[#F4D03F]/10 bg-[#F4D03F]/[0.02]">
-                                <h2 className="text-lg font-black text-[#1A1A1A]">New Queen Rearing Batch</h2>
-                                <p className="text-xs text-gray-500 font-medium">Plan a batch for {hive?.hive_code}</p>
+                            <div className="px-5 py-4 border-b border-border/ bg-[#F4D03F]/[0.02]">
+                                <h2 className="text-lg font-black text-foreground">New Queen Rearing Batch</h2>
+                                <p className="text-xs text-muted-foreground font-medium">Plan a batch for {hive?.hive_code}</p>
                             </div>
                             <div className="p-5 space-y-4">
                                 <div className="grid grid-cols-3 gap-4">
@@ -1001,15 +1001,15 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                 </div>
 
                                 <div className="flex items-center gap-6 pt-2">
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A] cursor-pointer">
+                                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground cursor-pointer">
                                         <Checkbox checked={rearingForm.generate_calendar} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_calendar: !!c })} />
                                         Generate calendar
                                     </label>
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A] cursor-pointer">
+                                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground cursor-pointer">
                                         <Checkbox checked={rearingForm.generate_units} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_units: !!c })} />
                                         Generate units
                                     </label>
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A] cursor-pointer">
+                                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground cursor-pointer">
                                         <Checkbox checked={rearingForm.generate_reminders} onCheckedChange={c => setRearingForm({ ...rearingForm, generate_reminders: !!c })} />
                                         Generate reminders
                                     </label>
@@ -1034,3 +1034,4 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
 };
 
 export default HiveDetailView;
+

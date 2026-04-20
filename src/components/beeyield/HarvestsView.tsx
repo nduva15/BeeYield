@@ -351,8 +351,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
             {/* Stats Matrix */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <GlassStatCard label="Total honey" value={`${stats.totalHoney}KG`} icon={Zap} index={0} />
-                <GlassStatCard label="Total harvests" value={stats.totalHarvests} icon={History} index={1} color="text-[#1A1A1A]" />
-                <GlassStatCard label="This month" value={stats.thisMonth} icon={Calendar} index={2} color="text-[#1A1A1A]" />
+                <GlassStatCard label="Total harvests" value={stats.totalHarvests} icon={History} index={1} color="text-foreground" />
+                <GlassStatCard label="This month" value={stats.thisMonth} icon={Calendar} index={2} color="text-foreground" />
                 <GlassStatCard label="Average yield" value={`${stats.avgPerHarvest}KG`} icon={Activity} index={3} color="text-[#1B9157]" />
             </div>
 
@@ -363,12 +363,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
             />
 
             <Tabs defaultValue="harvests" className="w-full space-y-6">
-                <TabsList className={cn(glass.filterBar, "bg-white/40 backdrop-blur-xl border-white/20 p-1 rounded-xl w-full max-w-sm mx-auto h-auto flex gap-1")}>
-                    <TabsTrigger value="harvests" className="flex-1 rounded-lg text-[10px] font-black py-2 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm transition-all h-9 uppercase tracking-tighter">
+                <TabsList className={cn(glass.filterBar, "bg-muted/ backdrop-blur-xl border-border/ p-1 rounded-xl w-full max-w-sm mx-auto h-auto flex gap-1")}>
+                    <TabsTrigger value="harvests" className="flex-1 rounded-lg text-[10px] font-black py-2 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all h-9 uppercase tracking-tighter">
                         <History className="w-4 h-4 mr-2" />
                         Harvest Logs
                     </TabsTrigger>
-                    <TabsTrigger value="batches" className="flex-1 rounded-lg text-[10px] font-black py-2 data-[state=active]:bg-white data-[state=active]:text-[#1A1A1A] data-[state=active]:shadow-sm transition-all h-9 uppercase tracking-tighter">
+                    <TabsTrigger value="batches" className="flex-1 rounded-lg text-[10px] font-black py-2 data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all h-9 uppercase tracking-tighter">
                         <Binary className="w-4 h-4 mr-2" />
                         Traceability Batches
                     </TabsTrigger>
@@ -379,10 +379,10 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className={cn(glass.filterBar, "bg-white/40 backdrop-blur-xl border-white/20 p-2 rounded-2xl")}
+                className={cn(glass.filterBar, "bg-muted/ backdrop-blur-xl border-border/ p-2 rounded-2xl")}
             >
                 <div className="flex-1 w-full relative group/search">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/20" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20" />
                     <Input
                         id="harvests-search"
                         name="search_harvests"
@@ -390,12 +390,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                         placeholder="Search harvests…"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-10 pl-10 bg-white/50 border border-white/40 rounded-xl text-sm font-semibold text-[#1A1A1A] placeholder:text-gray-400 focus:bg-white transition-colors"
+                        className="h-10 pl-10 bg-muted/ border border-border/ rounded-xl text-sm font-semibold text-foreground placeholder:text-muted-foreground/70 focus:bg-white transition-colors"
                     />
                 </div>
-                <div className="flex items-center gap-2 w-full md:w-auto p-1 border-t md:border-t-0 md:border-l border-white/20">
+                <div className="flex items-center gap-2 w-full md:w-auto p-1 border-t md:border-t-0 md:border-l border-border/">
                     <Select value={filterYear} onValueChange={setFilterYear}>
-                        <SelectTrigger id="harvests-filter-year" aria-label="Filter year" className="h-10 w-full md:w-32 bg-white/50 border border-white/40 rounded-xl focus:bg-white text-sm font-semibold text-gray-600 transition-colors">
+                        <SelectTrigger id="harvests-filter-year" aria-label="Filter year" className="h-10 w-full md:w-32 bg-muted/ border border-border/ rounded-xl focus:bg-white text-sm font-semibold text-muted-foreground/90 transition-colors">
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-3.5 h-3.5" />
                                 <SelectValue placeholder="Year" />
@@ -414,7 +414,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                     <div className="w-px h-4 bg-[#F4D03F]/20 mx-1 hidden md:block" />
                     <button
                         onClick={exportHarvestsCsv}
-                        className="h-8 px-3 text-xs font-bold text-gray-500 hover:text-[#F4D03F] transition-all flex items-center gap-2"
+                        className="h-8 px-3 text-xs font-bold text-muted-foreground hover:text-[#F4D03F] transition-all flex items-center gap-2"
                         aria-label="Export filtered harvests as CSV"
                         title="Export CSV"
                     >
@@ -426,25 +426,25 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
 
             {/* Harvest table */}
             <div className="mt-4 relative z-10">
-                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
+                <div className={cn(glass.card, "p-0 overflow-hidden bg-muted/ border-border/ shadow-xl")}>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="bg-white/30 border-b border-white/40 backdrop-blur-sm">
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Batch ID</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Date</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Apiary</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Hive</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Farmer</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Type</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Florage</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Net Yield</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Left for Bees</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Grade</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Moisture</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Extraction</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight">Weather</th>
-                                    <th className="px-4 py-4 text-[10px] font-black text-gray-500 tracking-tight text-center">Verified</th>
+                                <tr className="bg-muted/ border-b border-border/ backdrop-blur-sm">
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Batch ID</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Date</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Apiary</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Hive</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Farmer</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Type</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Florage</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight text-center">Net Yield</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight text-center">Left for Bees</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight text-center">Grade</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight text-center">Moisture</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Extraction</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight">Weather</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-muted-foreground tracking-tight text-center">Verified</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#F4D03F]/5">
@@ -453,7 +453,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                             <td colSpan={14} className="p-10 text-center h-40">
                                                 <div className="flex flex-col items-center gap-3">
                                                     <RefreshCw className="w-6 h-6 text-[#F4D03F] animate-spin" />
-                                                    <span className="text-xs font-medium text-gray-400">Loading entries...</span>
+                                                    <span className="text-xs font-medium text-muted-foreground/70">Loading entries...</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -462,7 +462,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                             <td colSpan={14} className="p-10 text-center h-40">
                                                 <div className="flex flex-col items-center gap-4">
                                                     <SearchX className="w-8 h-8 text-gray-300" />
-                                                    <span className="text-sm font-medium text-gray-400">No harvests found</span>
+                                                    <span className="text-sm font-medium text-muted-foreground/70">No harvests found</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -473,38 +473,38 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 onClick={() => setSelectedHarvest(sanitizeHarvest(h))}
-                                                className="hover:bg-white/50 transition-colors group cursor-pointer"
+                                                className="hover:bg-muted/ transition-colors group cursor-pointer"
                                             >
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-black text-[#1A1A1A] tabular-nums">
+                                                    <span className="text-[10px] font-black text-foreground tabular-nums">
                                                         {h.batch_code || `BAT-${h.id.toString().slice(-6).toUpperCase()}`}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-bold text-gray-500 tabular-nums">
+                                                    <span className="text-[10px] font-bold text-muted-foreground tabular-nums">
                                                         {formatHarvestDate(h.harvest_date)}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[11px] font-bold text-[#1A1A1A] truncate max-w-[120px]">
+                                                    <span className="text-[11px] font-bold text-foreground truncate max-w-[120px]">
                                                         {h.apiary?.name || '—'}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-bold text-[#1A1A1A]">
+                                                    <span className="text-[10px] font-bold text-foreground">
                                                         {h.hive?.hive_code || (h as any).hive_code || '—'}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-bold text-gray-500">
+                                                    <span className="text-[10px] font-bold text-muted-foreground">
                                                         {(h as any).farmer?.name || (h as any).farmer?.full_name || '—'}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-bold text-gray-600">{h.honey_type || '—'}</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground/90">{h.honey_type || '—'}</span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-bold text-gray-500">{h.florage_type || h.nectar_source || '—'}</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground">{h.florage_type || h.nectar_source || '—'}</span>
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
                                                     <span className="text-[11px] font-black text-[#1B9157] tabular-nums">
@@ -512,25 +512,25 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
-                                                    <span className="text-[10px] font-bold text-gray-500 tabular-nums">
+                                                    <span className="text-[10px] font-bold text-muted-foreground tabular-nums">
                                                         {h.quantity_left_for_bees_kg != null ? `${h.quantity_left_for_bees_kg} Kg` : '—'}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
-                                                    <Badge variant="outline" className="border-[#F4D03F]/20 text-[#F4D03F] font-bold text-[9px] tracking-wider bg-white">
+                                                    <Badge variant="outline" className="border-border/ text-[#F4D03F] font-bold text-[9px] tracking-wider bg-white">
                                                         {h.color_grade || '—'}
                                                     </Badge>
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
-                                                    <span className="text-[10px] font-bold text-gray-500 tabular-nums">
+                                                    <span className="text-[10px] font-bold text-muted-foreground tabular-nums">
                                                         {h.moisture_content_percent != null ? `${h.moisture_content_percent}%` : '—'}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-bold text-gray-500">{h.extraction_method || '—'}</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground">{h.extraction_method || '—'}</span>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-[10px] font-bold text-gray-400">{h.weather_conditions || '—'}</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground/70">{h.weather_conditions || '—'}</span>
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
                                                     {h.is_verified ? (
@@ -538,7 +538,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                                             <ShieldCheck className="w-3 h-3 mr-1" /> Verified
                                                         </Badge>
                                                     ) : (
-                                                        <span className="text-[9px] font-bold text-gray-400">Pending</span>
+                                                        <span className="text-[9px] font-bold text-muted-foreground/70">Pending</span>
                                                     )}
                                                 </td>
                                             </motion.tr>
@@ -563,7 +563,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                     
                     <div className="flex flex-wrap items-center gap-2">
                         <Select value={filterApiaryId || 'all'} onValueChange={setFilterApiaryId}>
-                            <SelectTrigger className="w-[140px] h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all shadow-sm">
+                            <SelectTrigger className="w-[140px] h-9 rounded-xl border-border/ bg-muted/ text-[10px] font-bold focus:bg-white transition-all shadow-sm">
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-3 h-3 text-[#F4D03F]/40" />
                                     <SelectValue placeholder="Location" />
@@ -576,7 +576,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                         </Select>
 
                         <Select value={filterHiveId || 'all'} onValueChange={setFilterHiveId}>
-                            <SelectTrigger className="w-[120px] h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all shadow-sm">
+                            <SelectTrigger className="w-[120px] h-9 rounded-xl border-border/ bg-muted/ text-[10px] font-bold focus:bg-white transition-all shadow-sm">
                                 <div className="flex items-center gap-2">
                                     <Hexagon className="w-3 h-3 text-[#F4D03F]/40" />
                                     <SelectValue placeholder="Unit" />
@@ -589,7 +589,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                         </Select>
 
                         <Select value={batchYearFilter} onValueChange={setBatchYearFilter}>
-                            <SelectTrigger className="w-[100px] h-9 rounded-xl border-white/40 bg-white/50 text-[10px] font-bold focus:bg-white transition-all shadow-sm">
+                            <SelectTrigger className="w-[100px] h-9 rounded-xl border-border/ bg-muted/ text-[10px] font-bold focus:bg-white transition-all shadow-sm">
                                 <div className="flex items-center gap-2">
                                     <Calendar className="w-3 h-3 text-[#F4D03F]/40" />
                                     <SelectValue placeholder="Year" />
@@ -605,23 +605,23 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                     </div>
                 </div>
                 
-                <div className={cn(glass.card, "p-0 overflow-hidden bg-white/40 border-white/20 shadow-xl")}>
+                <div className={cn(glass.card, "p-0 overflow-hidden bg-muted/ border-border/ shadow-xl")}>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-white/30 border-b border-white/40 backdrop-blur-sm">
+                            <thead className="bg-muted/ border-b border-border/ backdrop-blur-sm">
                                 <tr>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Batch Code</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Hive</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Harvest Date</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight">Honey Type</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-center">Net (KG)</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-center">Grade</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-500 tracking-tight text-right">Blockchain Hash</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-tight">Batch Code</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-tight">Hive</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-tight">Harvest Date</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-tight">Honey Type</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-tight text-center">Net (KG)</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-tight text-center">Grade</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase text-muted-foreground tracking-tight text-right">Blockchain Hash</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#F4D03F]/5">
                                 {isBatchesLoading ? (
-                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">Verifying records...</td></tr>
+                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-muted-foreground/70 font-bold">Verifying records...</td></tr>
                                 ) : enrichedBatches
                                     .filter(b => batchYearFilter === 'all' || b.harvest_year === batchYearFilter)
                                     .filter(b => {
@@ -635,7 +635,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         return h?.hive_id === filterHiveId || (h as any)?.hive?.id === filterHiveId;
                                     })
                                     .length === 0 ? (
-                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-gray-400 font-bold">No traceability records found for this selection.</td></tr>
+                                    <tr><td colSpan={7} className="p-12 text-center text-xs text-muted-foreground/70 font-bold">No traceability records found for this selection.</td></tr>
                                 ) : enrichedBatches
                                     .filter(b => batchYearFilter === 'all' || b.harvest_year === batchYearFilter)
                                     .filter(b => {
@@ -649,9 +649,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         return h?.hive_id === filterHiveId || (h as any)?.hive?.id === filterHiveId;
                                     })
                                     .map((batch) => (
-                                    <tr key={batch.id} className="hover:bg-white/50 transition-colors group">
+                                    <tr key={batch.id} className="hover:bg-muted/ transition-colors group">
                                         <td className="px-6 py-4">
-                                            <span className="text-[11px] font-black text-[#1A1A1A] tabular-nums font-mono text-primary/80 uppercase">
+                                            <span className="text-[11px] font-black text-foreground tabular-nums font-mono text-primary/80 uppercase">
                                                 {batch.batch_code}
                                             </span>
                                         </td>
@@ -661,15 +661,15 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="text-[10px] font-bold text-gray-500 tabular-nums">
+                                            <span className="text-[10px] font-bold text-muted-foreground tabular-nums">
                                                 {formatHarvestDate(batch.harvest_date)}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-[10px] font-semibold text-gray-600">
+                                        <td className="px-6 py-4 text-[10px] font-semibold text-muted-foreground/90">
                                             {batch.honey_type}
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <span className="text-[11px] font-black text-[#1A1A1A]">
+                                            <span className="text-[11px] font-black text-foreground">
                                                 {batch.quantity_kg} KG
                                             </span>
                                         </td>
@@ -684,7 +684,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
-                                                <code className="text-[8px] font-mono text-gray-400 opacity-60">
+                                                <code className="text-[8px] font-mono text-muted-foreground/70 opacity-60">
                                                     {(batch.block_hash || '0x...').slice(0, 16)}...
                                                 </code>
                                             </div>
@@ -815,9 +815,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                         id="edit-harvest-verified"
                                         checked={editForm.is_verified || false}
                                         onChange={e => setEditForm({ ...editForm, is_verified: e.target.checked })}
-                                        className="rounded bg-black/40 border-[#F4D03F]/20 text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
+                                        className="rounded bg-black/40 border-border/ text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
                                     />
-                                    <Label htmlFor="edit-harvest-verified" className="text-xs font-black text-gray-400 cursor-pointer">
+                                    <Label htmlFor="edit-harvest-verified" className="text-xs font-black text-muted-foreground/70 cursor-pointer">
                                         Verified Record
                                     </Label>
                                 </div>
@@ -865,15 +865,15 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                     <div className="text-sm font-bold">{selectedHarvest.weather_conditions || '—'}</div>
                                 </div>
                                 {selectedHarvest.notes && (
-                                    <div className="col-span-2 space-y-1 pt-2 border-t border-[#F4D03F]/10">
+                                    <div className="col-span-2 space-y-1 pt-2 border-t border-border/">
                                         <Label className={glass.microLabel}>Notes</Label>
-                                        <p className="text-xs font-medium text-gray-600 leading-relaxed">{selectedHarvest.notes}</p>
+                                        <p className="text-xs font-medium text-muted-foreground/90 leading-relaxed">{selectedHarvest.notes}</p>
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        <div className="pt-4 border-t border-[#F4D03F]/10 flex gap-3">
+                        <div className="pt-4 border-t border-border/ flex gap-3">
                             {isEditing ? (
                                 <>
                                     <button onClick={() => setIsEditing(false)} className={cn(glass.btnSecondary, "flex-1 h-10")}>
@@ -1058,15 +1058,15 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                                 className={cn(glass.input, "h-10")}
                             />
                         </div>
-                        <div className="space-y-2 border border-[#F4D03F]/20 rounded-xl p-2 flex items-center gap-2">
+                        <div className="space-y-2 border border-border/ rounded-xl p-2 flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 id="add-harvest-verified"
                                 checked={formData.is_verified}
                                 onChange={(e) => setFormData({ ...formData, is_verified: e.target.checked })}
-                                className="rounded bg-black/40 border-[#F4D03F]/20 text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
+                                className="rounded bg-black/40 border-border/ text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
                             />
-                            <Label htmlFor="add-harvest-verified" className="text-[10px] font-black uppercase text-gray-400 cursor-pointer">
+                            <Label htmlFor="add-harvest-verified" className="text-[10px] font-black uppercase text-muted-foreground/70 cursor-pointer">
                                 Verified Record
                             </Label>
                         </div>
@@ -1138,3 +1138,4 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
 };
 
 export default HarvestsView;
+

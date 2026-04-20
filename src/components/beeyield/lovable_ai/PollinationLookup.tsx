@@ -323,3 +323,4 @@ function CompareRow({ label, values, highlight = false }: { label: string; value
     </tr>
   );
 }
+

@@ -218,13 +218,13 @@ export function UsbHubDashboard() {
                     <div className="flex items-center gap-3">
                         <div className={cn(
                             "flex items-center gap-2.5 px-4 h-9 rounded-xl border backdrop-blur-md transition-all duration-500",
-                            connectionStatus === 'connected' ? 'bg-[#1B9157]/10 border-[#1B9157]/20 shadow-sm' : 'bg-white/40 border-white/20 opacity-80'
+                            connectionStatus === 'connected' ? 'bg-[#1B9157]/10 border-[#1B9157]/20 shadow-sm' : 'bg-muted/ border-border/ opacity-80'
                         )}>
                             <div className={cn(
                                 "w-1.5 h-1.5 rounded-full",
                                 connectionStatus === 'connected' ? 'bg-[#1B9157] shadow-sm shadow-[#1B9157]/50 animate-pulse' : 'bg-gray-400/50'
                             )} />
-                            <span className={cn("text-[9px] font-black", connectionStatus === 'connected' ? 'text-[#1B9157]' : 'text-gray-400')}>
+                            <span className={cn("text-[9px] font-black", connectionStatus === 'connected' ? 'text-[#1B9157]' : 'text-muted-foreground/70')}>
                                 {connectionStatus === 'connected' ? 'Handshake Established' : 'Link Offline'}
                             </span>
                         </div>
@@ -236,12 +236,12 @@ export function UsbHubDashboard() {
             <div className={glass.section}>
                 <div className={glass.sectionHeader}>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-border/ flex items-center justify-center">
                             <Terminal className="w-5 h-5 text-[#F4D03F]" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-[#1A1A1A]">Hardware Terminal</h3>
-                            <p className="text-sm text-gray-400">Physical link stream for industrial hub diagnostics.</p>
+                            <h3 className="text-lg font-bold text-foreground">Hardware Terminal</h3>
+                            <p className="text-sm text-muted-foreground/70">Physical link stream for industrial hub diagnostics.</p>
                         </div>
                     </div>
 
@@ -261,7 +261,7 @@ export function UsbHubDashboard() {
                             <div className="flex items-start justify-between gap-4">
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black text-destructive">USB Error</p>
-                                    <p className="text-sm font-semibold text-[#1A1A1A] break-words">{lastError}</p>
+                                    <p className="text-sm font-semibold text-foreground break-words">{lastError}</p>
                                 </div>
                                 <button
                                     type="button"
@@ -284,7 +284,7 @@ export function UsbHubDashboard() {
                         ) : (
                             <div className="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar-terminal pr-4">
                                 {logs.map((log, i) => (
-                                    <div key={i} className="flex gap-4 border-b border-white/5 pb-1 last:border-0">
+                                    <div key={i} className="flex gap-4 border-b border-border/ pb-1 last:border-0">
                                         <span className="text-white/20 w-8">[{i + 1}]</span>
                                         <span className="leading-relaxed">{log}</span>
                                     </div>
@@ -305,21 +305,21 @@ export function UsbHubDashboard() {
                     className="lg:col-span-8 space-y-6"
                 >
                     <div className={glass.card + " p-6 h-full"}>
-                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#F4D03F]/10">
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-border/">
                             <div>
-                                <h3 className="text-lg font-bold text-[#1A1A1A]">Firmware Upload</h3>
-                                <p className="text-sm text-gray-500">Securely flash new architecture to the hub.</p>
+                                <h3 className="text-lg font-bold text-foreground">Firmware Upload</h3>
+                                <p className="text-sm text-muted-foreground">Securely flash new architecture to the hub.</p>
                             </div>
                             <FileCode className="w-6 h-6 text-[#F4D03F]" />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 flex-1">
                             <div className="md:col-span-5 space-y-5">
-                                <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-[#F4D03F]/20 rounded-xl p-8 bg-[#F9F7F2] hover:bg-[#F4D03F]/5 transition-all cursor-pointer group">
-                                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm mb-4 border border-[#F4D03F]/10">
+                                <label htmlFor="firmware-input-dash" className="flex flex-col items-center justify-center border-2 border-dashed border-border/ rounded-xl p-8 bg-muted/20 hover:bg-[#F4D03F]/5 transition-all cursor-pointer group">
+                                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm mb-4 border border-border/">
                                         <SettingsIcon className={cn("w-6 h-6 text-[#F4D03F]", isFlashing ? "animate-spin" : "")} />
                                     </div>
-                                    <p className="text-sm font-bold text-[#1A1A1A] text-center">
+                                    <p className="text-sm font-bold text-foreground text-center">
                                         {firmwareFile ? firmwareFile.name : 'Select .bin file'}
                                     </p>
                                     <Input
@@ -346,7 +346,7 @@ export function UsbHubDashboard() {
                             </div>
 
                             <div className="md:col-span-7 flex flex-col">
-                                <div className="bg-[#1A1A1A]/5 rounded-2xl p-4 flex-1 border border-[#F4D03F]/5">
+                                <div className="bg-[#1A1A1A]/5 rounded-2xl p-4 flex-1 border border-border/">
                                     <label htmlFor="firmware-manifest-json" className="sr-only">Manifest JSON</label>
                                     <Textarea
                                         id="firmware-manifest-json"
@@ -367,7 +367,7 @@ export function UsbHubDashboard() {
                                                 setManifestError('Manifest JSON is invalid.');
                                             }
                                         }}
-                                        className="w-full h-full min-h-[180px] p-4 font-mono text-[9px] leading-relaxed resize-none bg-transparent border-none focus:ring-0 text-[#1A1A1A]/70 font-bold"
+                                        className="w-full h-full min-h-[180px] p-4 font-mono text-[9px] leading-relaxed resize-none bg-transparent border-none focus:ring-0 text-foreground/70 font-bold"
                                         spellCheck={false}
                                     />
                                 </div>
@@ -378,7 +378,7 @@ export function UsbHubDashboard() {
                         </div>
 
                         {/* PROGRESS MONITOR */}
-                        <div className="mt-8 pt-6 border-t border-[#F4D03F]/10">
+                        <div className="mt-8 pt-6 border-t border-border/">
                             <AnimatePresence mode="wait">
                                 {isFlashing ? (
                                     <motion.div
@@ -391,7 +391,7 @@ export function UsbHubDashboard() {
                                             <span className="text-[9px] font-black text-[#F4D03F] animate-pulse">Writing data...</span>
                                             <span className="text-2xl font-black text-[#F4D03F] tracking-tighter tabular-nums">{syncProgress}%</span>
                                         </div>
-                                        <div className="h-2 w-full bg-white/60 rounded-full overflow-hidden p-0.5 border border-[#F4D03F]/10 shadow-inner">
+                                        <div className="h-2 w-full bg-muted/ rounded-full overflow-hidden p-0.5 border border-border/ shadow-inner">
                                             <motion.div
                                                 className="h-full bg-[#1B9157] rounded-full"
                                                 initial={{ width: 0 }}
@@ -406,7 +406,7 @@ export function UsbHubDashboard() {
                                         </div>
                                         <div>
                                             <span className="text-[9px] font-black text-[#1B9157]">System Standby</span>
-                                            <p className="text-[8px] font-black text-gray-400 mt-0.5">Verified For Overwrite</p>
+                                            <p className="text-[8px] font-black text-muted-foreground/70 mt-0.5">Verified For Overwrite</p>
                                         </div>
                                     </div>
                                 )}
@@ -422,9 +422,9 @@ export function UsbHubDashboard() {
                     className="lg:col-span-4"
                 >
                     <div className={glass.card + " p-6 h-full"}>
-                        <div className="mb-8 border-b border-[#F4D03F]/10 pb-4">
-                            <h2 className="text-lg font-bold text-[#1A1A1A]">Safety checklist</h2>
-                            <p className="text-sm text-gray-500">Critical checks before flashing hardware.</p>
+                        <div className="mb-8 border-b border-border/ pb-4">
+                            <h2 className="text-lg font-bold text-foreground">Safety checklist</h2>
+                            <p className="text-sm text-muted-foreground">Critical checks before flashing hardware.</p>
                         </div>
 
                         <ul className="space-y-4">
@@ -435,12 +435,12 @@ export function UsbHubDashboard() {
                                 { t: "Persistent Link", d: "Do not sever USB bridge" }
                             ].map((item, i) => (
                                 <li key={i} className="flex gap-4 items-start">
-                                    <div className="w-8 h-8 bg-[#F9F7F2] border border-[#F4D03F]/20 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold text-[#1A1A1A]">
+                                    <div className="w-8 h-8 bg-muted/20 border border-border/ rounded-lg shrink-0 flex items-center justify-center text-xs font-bold text-foreground">
                                         {i + 1}
                                     </div>
                                     <div className="space-y-0.5">
-                                        <p className="text-sm font-bold text-[#1A1A1A]">{item.t}</p>
-                                        <p className="text-xs text-gray-400">{item.d}</p>
+                                        <p className="text-sm font-bold text-foreground">{item.t}</p>
+                                        <p className="text-xs text-muted-foreground/70">{item.d}</p>
                                     </div>
                                 </li>
                             ))}
@@ -456,3 +456,4 @@ export function UsbHubDashboard() {
         </BeeYieldPageShell>
     );
 }
+

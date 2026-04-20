@@ -265,12 +265,12 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             ))}
                         </MapContainer>
 
-                        <div className="absolute top-4 right-4 flex flex-col gap-2 z-[1000] w-64 bg-white/70 backdrop-blur-xl p-4 border border-white/40 rounded-2xl shadow-xl">
-                            <p className="text-[10px] font-black text-[#1A1A1A] mb-2 border-b border-[#F4D03F]/20 pb-1">Location Search</p>
+                        <div className="absolute top-4 right-4 flex flex-col gap-2 z-[1000] w-64 bg-muted/ backdrop-blur-xl p-4 border border-border/ rounded-2xl shadow-xl">
+                            <p className="text-[10px] font-black text-foreground mb-2 border-b border-border/ pb-1">Location Search</p>
                             <div className="relative">
-                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground/70" />
                                 <input 
-                                    className="w-full bg-white/50 border border-gray-100 rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold focus:outline-none focus:ring-1 focus:ring-[#1B9157]"
+                                    className="w-full bg-muted/ border border-gray-100 rounded-lg py-1.5 pl-8 pr-3 text-[9px] font-bold focus:outline-none focus:ring-1 focus:ring-[#1B9157]"
                                     placeholder="Search lamu, beijing..."
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') handleSearch(e.currentTarget.value);
@@ -279,7 +279,7 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             </div>
                             <button 
                                 onClick={handleLocate}
-                                className="flex items-center justify-between px-3 py-1.5 bg-[#F4D03F] text-[#1A1A1A] rounded-lg text-[8px] font-black hover:opacity-90 transition-all mt-1"
+                                className="flex items-center justify-between px-3 py-1.5 bg-[#F4D03F] text-foreground rounded-lg text-[8px] font-black hover:opacity-90 transition-all mt-1"
                             >
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-2.5 h-2.5" />
@@ -290,9 +290,9 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                         </div>
 
                         {isDrawing && (
-                            <div className="absolute top-4 left-4 px-3 py-1.5 bg-[#F9F7F2] border border-[#F4D03F]/30 rounded-lg flex items-center gap-2 z-20 shadow-sm">
+                            <div className="absolute top-4 left-4 px-3 py-1.5 bg-muted/20 border border-border/ rounded-lg flex items-center gap-2 z-20 shadow-sm">
                                 <Activity className="w-3.5 h-3.5 animate-pulse text-[#1B9157]" />
-                                <span className="text-xs font-bold text-[#1A1A1A] tracking-tight">Active</span>
+                                <span className="text-xs font-bold text-foreground tracking-tight">Active</span>
                             </div>
                         )}
                     </div>
@@ -305,36 +305,36 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100">
                                 <Calculator className="w-4 h-4 text-[#1B9157]" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Area Stats</h3>
+                            <h3 className="text-sm font-bold text-foreground tracking-tight">Area Stats</h3>
                         </div>
                         <div className="space-y-4">
                             <div className="space-y-1">
-                                <p className="text-[10px] font-bold text-gray-500 tracking-wider">Total Area</p>
+                                <p className="text-[10px] font-bold text-muted-foreground tracking-wider">Total Area</p>
                                 <div className="flex items-end gap-2">
-                                    <p className="text-3xl font-bold tracking-tight text-[#1A1A1A]">{acreage.toFixed(1)}</p>
+                                    <p className="text-3xl font-bold tracking-tight text-foreground">{acreage.toFixed(1)}</p>
                                     <span className="text-[10px] font-bold text-[#1B9157] mb-1.5">Acres</span>
                                 </div>
                             </div>
                             <div className="space-y-1 pt-4 border-t border-gray-100">
-                                <p className="text-[10px] font-bold text-gray-500 tracking-wider">Suggested Hives</p>
+                                <p className="text-[10px] font-bold text-muted-foreground tracking-wider">Suggested Hives</p>
                                 <div className="flex items-end gap-2">
-                                    <p className="text-3xl font-bold tracking-tight text-[#1A1A1A]">{suggestedHives}</p>
+                                    <p className="text-3xl font-bold tracking-tight text-foreground">{suggestedHives}</p>
                                     <span className="text-[10px] font-bold text-[#F4D03F] mb-1.5">Hives</span>
                                 </div>
-                                <p className="text-[10px] font-medium text-gray-400 leading-tight mt-2">
-                                    Based on <span className="text-gray-600 font-bold">2.5 hives/acre</span> (standard density).
+                                <p className="text-[10px] font-medium text-muted-foreground/70 leading-tight mt-2">
+                                    Based on <span className="text-muted-foreground/90 font-bold">2.5 hives/acre</span> (standard density).
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className={cn(glass.card, "p-4 bg-[#F9F7F2] border-[#F4D03F]/20 space-y-2")}>
+                    <div className={cn(glass.card, "p-4 bg-muted/20 border-border/ space-y-2")}>
                         <div className="flex items-center gap-2 text-[#1B9157]">
                             <Zap className="w-4 h-4" />
-                            <h4 className="text-xs font-bold text-[#1A1A1A] tracking-tight">Placement Notes</h4>
+                            <h4 className="text-xs font-bold text-foreground tracking-tight">Placement Notes</h4>
                         </div>
-                        <p className="text-[11px] font-medium text-gray-600 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
-                            Optimal hive placement algorithm increases pollination coverage by <span className="text-[#1A1A1A] font-bold">18%</span>.
+                        <p className="text-[11px] font-medium text-muted-foreground/90 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
+                            Optimal hive placement algorithm increases pollination coverage by <span className="text-foreground font-bold">18%</span>.
                         </p>
                     </div>
 
@@ -343,8 +343,8 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
                             <Info className="w-3.5 h-3.5 text-[#F4D03F]" />
                         </div>
                         <div className="space-y-0.5">
-                            <p className="text-xs font-bold text-[#1A1A1A]">Location Export</p>
-                            <p className="text-[10px] font-medium text-gray-500 leading-relaxed">
+                            <p className="text-xs font-bold text-foreground">Location Export</p>
+                            <p className="text-[10px] font-medium text-muted-foreground leading-relaxed">
                                 Map data can be exported as CSV for drone drops or manual field placement.
                             </p>
                         </div>
@@ -356,3 +356,4 @@ const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
 };
 
 export default OrchardMapper;
+

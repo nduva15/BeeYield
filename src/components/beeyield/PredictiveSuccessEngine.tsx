@@ -157,19 +157,19 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                 {/* Prediction Summary */}
                 <div className="lg:col-span-4 flex flex-col gap-6">
                     <div className={cn(glass.section, "p-6 flex flex-col items-center")}>
-                        <div className="w-full flex items-center justify-between border-b border-[#F4D03F]/10 pb-4 mb-8">
-                            <h3 className="text-sm font-bold text-[#1A1A1A]">Seasonal Output</h3>
-                            <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center">
+                        <div className="w-full flex items-center justify-between border-b border-border/ pb-4 mb-8">
+                            <h3 className="text-sm font-bold text-foreground">Seasonal Output</h3>
+                            <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 border border-border/ flex items-center justify-center">
                                 <BarChart3 className="w-4 h-4 text-[#F4D03F]" />
                             </div>
                         </div>
 
                         <div className="relative w-48 h-24 mb-8">
                             <div className="absolute inset-0 flex flex-col items-center justify-end">
-                                <span className="text-4xl font-black text-[#1A1A1A] tabular-nums tracking-tighter">
+                                <span className="text-4xl font-black text-foreground tabular-nums tracking-tighter">
                                     {loading ? '—' : (summary.lbsPerAcre ?? '—')}
                                 </span>
-                                <span className="text-[10px] font-bold text-gray-400 mt-1">LBS / ACRE</span>
+                                <span className="text-[10px] font-bold text-muted-foreground/70 mt-1">LBS / ACRE</span>
                             </div>
                             <svg className="w-full h-full" viewBox="0 0 100 50">
                                 <path 
@@ -193,15 +193,15 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                         </div>
 
                         <div className="grid grid-cols-2 gap-3 w-full">
-                            <div className="p-3 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10 text-center">
-                                <p className="text-[9px] font-bold text-gray-400 mb-1">Accuracy</p>
+                            <div className="p-3 rounded-xl bg-muted/20 border border-border/ text-center">
+                                <p className="text-[9px] font-bold text-muted-foreground/70 mb-1">Accuracy</p>
                                 <p className="text-sm font-bold text-[#1B9157]">
                                     {loading ? '—' : summary.accuracyPct !== null ? `± ${summary.accuracyPct}%` : '—'}
                                 </p>
                             </div>
-                            <div className="p-3 rounded-xl bg-[#F9F7F2] border border-[#F4D03F]/10 text-center">
-                                <p className="text-[9px] font-bold text-gray-400 mb-1">Growth</p>
-                                <p className="text-sm font-bold text-[#1A1A1A]">
+                            <div className="p-3 rounded-xl bg-muted/20 border border-border/ text-center">
+                                <p className="text-[9px] font-bold text-muted-foreground/70 mb-1">Growth</p>
+                                <p className="text-sm font-bold text-foreground">
                                     {loading ? '—' : summary.growthPct !== null ? `${summary.growthPct >= 0 ? '+' : ''}${summary.growthPct}%` : '—'}
                                 </p>
                             </div>
@@ -213,10 +213,10 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                             <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#1B9157]/20 shadow-sm">
                                 <ShieldAlert className="w-4 h-4 text-[#1B9157]" />
                             </div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A]">Performance Alpha</h3>
+                            <h3 className="text-sm font-bold text-foreground">Performance Alpha</h3>
                         </div>
-                        <p className="text-[11px] text-gray-500 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
-                            Bees worked <span className="text-[#1A1A1A] font-bold">4 hours longer</span> than predicted by the weather forecast.
+                        <p className="text-[11px] text-muted-foreground leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
+                            Bees worked <span className="text-foreground font-bold">4 hours longer</span> than predicted by the weather forecast.
                         </p>
                     </div>
                 </div>
@@ -224,24 +224,24 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                 {/* Growth Curve */}
                 <div className="lg:col-span-8 flex flex-col gap-6">
                     <div className={cn(glass.section, "overflow-hidden flex flex-col")}>
-                        <div className="px-5 py-4 border-b border-[#F4D03F]/10 flex items-center justify-between">
+                        <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 border border-border/ flex items-center justify-center">
                                     <Activity className="w-4 h-4 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-[#1A1A1A]">Efficiency Curve</h3>
-                                    <p className="text-[10px] text-gray-500 text-[9px]">Sensors vs forecast</p>
+                                    <h3 className="text-sm font-bold text-foreground">Efficiency Curve</h3>
+                                    <p className="text-[10px] text-muted-foreground text-[9px]">Sensors vs forecast</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="h-[340px] w-full p-6 relative bg-[#FFF9F0]">
+                        <div className="h-[340px] w-full p-6 relative bg-card">
                              <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                              
-                            <div className={cn(glass.card, "h-full w-full bg-white/50 border border-[#F4D03F]/10")}>
+                            <div className={cn(glass.card, "h-full w-full bg-muted/ border border-border/")}>
                                 {loading ? (
-                                    <div className="h-full flex items-center justify-center gap-3 text-sm font-bold text-gray-500">
+                                    <div className="h-full flex items-center justify-center gap-3 text-sm font-bold text-muted-foreground">
                                         <Loader2 className="w-4 h-4 animate-spin" />
                                         Loading predictor inputs…
                                     </div>
@@ -249,14 +249,14 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                     <div className="h-full flex items-center justify-center text-center p-6">
                                         <div className="space-y-2">
                                             <div className="text-sm font-bold text-red-600">Could not load inputs</div>
-                                            <div className="text-xs font-medium text-gray-500">{error}</div>
+                                            <div className="text-xs font-medium text-muted-foreground">{error}</div>
                                         </div>
                                     </div>
                                 ) : series.length === 0 ? (
                                     <div className="h-full flex items-center justify-center text-center p-6">
                                         <div className="space-y-2">
-                                            <div className="text-sm font-bold text-[#1A1A1A]">No data yet</div>
-                                            <div className="text-xs font-medium text-gray-500">Add harvest records and ingest activity telemetry to enable predictions.</div>
+                                            <div className="text-sm font-bold text-foreground">No data yet</div>
+                                            <div className="text-xs font-medium text-muted-foreground">Add harvest records and ingest activity telemetry to enable predictions.</div>
                                         </div>
                                     </div>
                                 ) : (
@@ -282,8 +282,8 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                     </div>
 
                     <div className={cn(glass.section, "p-0 overflow-hidden")}>
-                        <div className="px-5 py-4 border-b border-[#F4D03F]/10 flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-[#1A1A1A]">Success Nodes</h3>
+                        <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
+                            <h3 className="text-sm font-bold text-foreground">Success Nodes</h3>
                             <button
                                 onClick={() => {
                                     const header = 'month,yield_lbs,vpm\n';
@@ -308,10 +308,10 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="bg-[#F9F7F2]/50">
-                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400">Factor</th>
-                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400 text-center">Weight</th>
-                                        <th className="px-5 py-3 text-[10px] font-bold text-gray-400 text-right">Diagnostic</th>
+                                    <tr className="bg-muted/">
+                                        <th className="px-5 py-3 text-[10px] font-bold text-muted-foreground/70">Factor</th>
+                                        <th className="px-5 py-3 text-[10px] font-bold text-muted-foreground/70 text-center">Weight</th>
+                                        <th className="px-5 py-3 text-[10px] font-bold text-muted-foreground/70 text-right">Diagnostic</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[#F4D03F]/5">
@@ -335,28 +335,28 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                                             status: summary.accuracyPct !== null ? (summary.accuracyPct <= 4 ? 'High' : summary.accuracyPct <= 7 ? 'MID' : 'LOW') : '—'
                                         },
                                     ].map((row, i) => (
-                                        <tr key={i} className="hover:bg-[#F9F7F2] transition-colors">
+                                        <tr key={i} className="hover:bg-muted/20 transition-colors">
                                             <td className="px-5 py-3">
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-[#1A1A1A]">{row.name}</span>
-                                                    <span className="text-[10px] text-gray-400">{row.val}</span>
+                                                    <span className="text-xs font-bold text-foreground">{row.name}</span>
+                                                    <span className="text-[10px] text-muted-foreground/70">{row.val}</span>
                                                 </div>
                                             </td>
                                             <td className="px-5 py-3">
                                                 <div className="flex items-center gap-3 justify-center">
-                                                    <div className="h-1.5 w-16 bg-[#F9F7F2] rounded-full overflow-hidden border border-[#F4D03F]/10">
+                                                    <div className="h-1.5 w-16 bg-muted/20 rounded-full overflow-hidden border border-border/">
                                                         <div className="h-full bg-[#1B9157]" style={{ width: row.weight === '—' ? '0%' : row.weight }} />
                                                     </div>
-                                                    <span className="text-[10px] font-bold text-[#1A1A1A] tabular-nums">{row.weight}</span>
+                                                    <span className="text-[10px] font-bold text-foreground tabular-nums">{row.weight}</span>
                                                 </div>
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <div className={cn(
                                                     "inline-flex px-2 py-0.5 rounded-full text-[8px] font-black border",
                                                     row.status === 'High' ? "bg-emerald-50 text-[#1B9157] border-emerald-100" :
-                                                        row.status === 'MID' ? "bg-[#F4D03F]/10 text-[#1A1A1A] border-[#F4D03F]/20" :
+                                                        row.status === 'MID' ? "bg-[#F4D03F]/10 text-foreground border-border/" :
                                                             row.status === 'LOW' ? "bg-red-500/10 text-red-600 border-red-500/20" :
-                                                                "bg-[#F9F7F2] text-gray-500 border-[#F4D03F]/10"
+                                                                "bg-muted/20 text-muted-foreground border-border/"
                                                 )}>{row.status}</div>
                                             </td>
                                         </tr>
@@ -373,3 +373,4 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
 };
 
 export default PredictiveSuccessEngine;
+

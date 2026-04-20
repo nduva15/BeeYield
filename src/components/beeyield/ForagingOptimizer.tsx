@@ -211,7 +211,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                         <select
                             value={selectedApiaryId}
                             onChange={(event) => setSelectedApiaryId(event.target.value)}
-                            className="h-9 rounded-xl border border-gray-200 bg-white px-3 text-[10px] font-black text-[#1A1A1A]"
+                            className="h-9 rounded-xl border border-gray-200 bg-white px-3 text-[10px] font-black text-foreground"
                         >
                             {apiaries.map((apiary: any) => (
                                 <option key={apiary.id} value={apiary.id}>{apiary.name || 'Apiary'}</option>
@@ -223,7 +223,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                 <button
                                     key={mode}
                                     onClick={() => setViewMode(mode)}
-                                    className={cn('h-8 px-4 rounded-lg font-bold text-xs transition-all flex items-center gap-2', viewMode === mode ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-gray-500 hover:text-[#1A1A1A]')}
+                                    className={cn('h-8 px-4 rounded-lg font-bold text-xs transition-all flex items-center gap-2', viewMode === mode ? 'bg-white text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}
                                 >
                                     {mode === 'MAP' ? <MapIcon className="w-3.5 h-3.5" /> : <Activity className="w-3.5 h-3.5" />}
                                     {mode}
@@ -244,8 +244,8 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                     <Marker position={mapCenter}>
                                         <Popup>
                                             <div className="space-y-1">
-                                                <p className="text-sm font-black text-[#1A1A1A]">{selectedApiary?.name || 'BeeYield forage site'}</p>
-                                                <p className="text-[11px] text-gray-500">{selectedApiary?.forage_type || 'Mixed forage bloom'}</p>
+                                                <p className="text-sm font-black text-foreground">{selectedApiary?.name || 'BeeYield forage site'}</p>
+                                                <p className="text-[11px] text-muted-foreground">{selectedApiary?.forage_type || 'Mixed forage bloom'}</p>
                                             </div>
                                         </Popup>
                                     </Marker>
@@ -257,7 +257,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                         <React.Fragment key={source.id}>
                                             <Marker position={[source.lat, source.lng]}>
                                                 <Popup>
-                                                    <p className="text-sm font-black text-[#1A1A1A]">{source.name}</p>
+                                                    <p className="text-sm font-black text-foreground">{source.name}</p>
                                                 </Popup>
                                             </Marker>
                                             <Circle center={[source.lat, source.lng]} radius={Math.max(120, source.intensity * 400)} pathOptions={{ color: '#2563EB', fillOpacity: 0.07, weight: 1 }} />
@@ -265,25 +265,25 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                     ))}
                                 </MapContainer>
 
-                                <div className="absolute left-6 top-6 rounded-2xl border border-gray-100 bg-white/95 p-4 shadow-lg">
+                                <div className="absolute left-6 top-6 rounded-2xl border border-gray-100 bg-muted/ p-4 shadow-lg">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-[#1B9157]">ML forage score</p>
-                                    <p className="mt-2 text-3xl font-black text-[#1A1A1A]">{forageInsight.score}</p>
-                                    <p className="text-[11px] font-semibold text-gray-500">{forageInsight.flightWindowHours}h flight window</p>
+                                    <p className="mt-2 text-3xl font-black text-foreground">{forageInsight.score}</p>
+                                    <p className="text-[11px] font-semibold text-muted-foreground">{forageInsight.flightWindowHours}h flight window</p>
                                 </div>
 
                                 <div className="absolute bottom-6 right-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-xl">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Best move</p>
-                                    <p className="mt-2 text-sm font-black text-[#1A1A1A]">Shift north-east toward dense bloom</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Best move</p>
+                                    <p className="mt-2 text-sm font-black text-foreground">Shift north-east toward dense bloom</p>
                                     <p className="text-[11px] font-semibold text-[#1B9157]">Drift risk {forageInsight.driftRisk}%</p>
                                 </div>
                             </motion.div>
                         ) : (
                             <motion.div key="math" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className={cn(glass.card, 'h-[520px] p-6 bg-white border-gray-200')}>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-                                    <div className="rounded-2xl border border-gray-100 bg-[#F9F7F2] p-5">
+                                    <div className="rounded-2xl border border-gray-100 bg-muted/20 p-5">
                                         <div className="mb-4">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Honey gain curve</p>
-                                            <h3 className="text-lg font-black text-[#1A1A1A]">Seasonal yield profile</h3>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Honey gain curve</p>
+                                            <h3 className="text-lg font-black text-foreground">Seasonal yield profile</h3>
                                         </div>
                                         <ResponsiveContainer width="100%" height={320}>
                                             <AreaChart data={harvestSeries}>
@@ -304,8 +304,8 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
 
                                     <div className="rounded-2xl border border-gray-100 bg-white p-5">
                                         <div className="mb-4">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Calculus layer</p>
-                                            <h3 className="text-lg font-black text-[#1A1A1A]">Flight activity derivative</h3>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Calculus layer</p>
+                                            <h3 className="text-lg font-black text-foreground">Flight activity derivative</h3>
                                         </div>
                                         <ResponsiveContainer width="100%" height={320}>
                                             <LineChart data={gradientSeries}>
@@ -329,11 +329,11 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                         <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center">
-                                    <Brain className="w-4 h-4 text-gray-500" />
+                                    <Brain className="w-4 h-4 text-muted-foreground" />
                                 </div>
-                                <h3 className="text-sm font-bold text-[#1A1A1A] tracking-tight">AI forage signals</h3>
+                                <h3 className="text-sm font-bold text-foreground tracking-tight">AI forage signals</h3>
                             </div>
-                            <span className="text-[10px] font-bold text-gray-500 tracking-wider">{loading ? 'Syncing' : 'Ready'}</span>
+                            <span className="text-[10px] font-bold text-muted-foreground tracking-wider">{loading ? 'Syncing' : 'Ready'}</span>
                         </div>
 
                         <div className="p-4 space-y-3">
@@ -344,10 +344,10 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                             ].map((item) => (
                                 <div key={item.label} className="flex justify-between items-center p-3 rounded-xl bg-gray-50 border border-gray-100">
                                     <div>
-                                        <p className="text-[10px] font-bold text-gray-500 tracking-wider">{item.label}</p>
-                                        <p className="text-lg font-bold text-[#1A1A1A]">{item.val}</p>
+                                        <p className="text-[10px] font-bold text-muted-foreground tracking-wider">{item.label}</p>
+                                        <p className="text-lg font-bold text-foreground">{item.val}</p>
                                     </div>
-                                    <span className="text-[10px] font-bold px-2 py-1 bg-white border border-gray-200 text-gray-600 rounded-md">{item.status}</span>
+                                    <span className="text-[10px] font-bold px-2 py-1 bg-white border border-gray-200 text-muted-foreground/90 rounded-md">{item.status}</span>
                                 </div>
                             ))}
                         </div>
@@ -360,7 +360,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                             </div>
                             <h3 className="text-sm font-bold text-red-600 tracking-tight">Environmental alert</h3>
                         </div>
-                        <p className="text-xs font-medium text-gray-600 mb-4 leading-relaxed">
+                        <p className="text-xs font-medium text-muted-foreground/90 mb-4 leading-relaxed">
                             Drift risk is {forageInsight.driftRisk}% near the outer bloom ring. Rebalance weaker colonies before the afternoon lull.
                         </p>
                         <button
@@ -381,18 +381,18 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                 <Sparkles className="w-5 h-5 text-emerald-600" />
                             </div>
                             <div>
-                                <p className="text-sm font-bold text-[#1A1A1A] tracking-tight">Recommendation</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Forage assistant</p>
+                                <p className="text-sm font-bold text-foreground tracking-tight">Recommendation</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Forage assistant</p>
                             </div>
                         </div>
-                        <p className="text-xs font-medium text-gray-500 leading-relaxed">{forageInsight.recommendation}</p>
+                        <p className="text-xs font-medium text-muted-foreground leading-relaxed">{forageInsight.recommendation}</p>
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="rounded-xl border border-gray-100 bg-[#F9F7F2] p-3">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-500">Flight window</p>
-                                <p className="mt-2 text-lg font-black text-[#1A1A1A]">{forageInsight.flightWindowHours}h</p>
+                            <div className="rounded-xl border border-gray-100 bg-muted/20 p-3">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Flight window</p>
+                                <p className="mt-2 text-lg font-black text-foreground">{forageInsight.flightWindowHours}h</p>
                             </div>
-                            <div className="rounded-xl border border-gray-100 bg-[#F9F7F2] p-3">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-500">Score</p>
+                            <div className="rounded-xl border border-gray-100 bg-muted/20 p-3">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Score</p>
                                 <p className="mt-2 text-lg font-black text-[#1B9157]">{forageInsight.score}</p>
                             </div>
                         </div>
@@ -413,8 +413,8 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                             <Waves className="w-5 h-5 text-emerald-600" />
                         </div>
                         <div className="space-y-1">
-                            <p className="text-sm font-bold text-[#1A1A1A] tracking-tight">Mapping coverage</p>
-                            <p className="text-xs font-medium text-gray-500 leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
+                            <p className="text-sm font-bold text-foreground tracking-tight">Mapping coverage</p>
+                            <p className="text-xs font-medium text-muted-foreground leading-relaxed border-l-2 border-[#1B9157]/30 pl-3">
                                 {forageInsight.sources.length} mapped forage sources are available for route and bloom balancing.
                             </p>
                         </div>
@@ -426,3 +426,4 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
 };
 
 export default ForagingOptimizer;
+

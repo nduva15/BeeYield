@@ -24,10 +24,10 @@ const StatCard: React.FC<StatCardProps> = ({
 }) => {
     return (
         <div className={cn("h-full", className)}>
-            <Card className="h-full border border-border bg-[#FFF9F0]/80 backdrop-blur-md rounded-[2.5rem] shadow-xl shadow-black/5 flex flex-col transition-all duration-300 hover:scale-[1.02] hover:border-[#F4D03F]/30 hover:shadow-honey/5 group overflow-hidden">
+            <Card className="h-full border border-border bg-card/ backdrop-blur-md rounded-[2.5rem] shadow-xl shadow-black/5 flex flex-col transition-all duration-300 hover:scale-[1.02] hover:border-border/ hover:shadow-honey/5 group overflow-hidden">
                 <CardContent className="p-8 flex flex-col justify-between h-full bg-transparent">
                     <div className="flex justify-between items-start mb-8">
-                        <div className="w-14 h-14 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 group-hover:scale-110 transition-transform">
+                        <div className="w-14 h-14 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/ group-hover:scale-110 transition-transform">
                             <Icon className="w-7 h-7 text-[#F4D03F] stroke-[2] transition-colors" />
                         </div>
                         {trend && (
@@ -61,3 +61,4 @@ const StatCard: React.FC<StatCardProps> = ({
 };
 
 export default StatCard;
+

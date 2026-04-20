@@ -137,9 +137,9 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                 icon={Zap}
                 color="text-[#F4D03F]"
                 bg="bg-[#F4D03F]/10"
-                borderColor="border-[#F4D03F]/20"
+                borderColor="border-border/"
                 action={
-                    <div className={cn(glass.badge, "px-3 py-1.5 border-[#F4D03F]/10 bg-[#F4D03F]/5 text-[#F4D03F]")}>
+                    <div className={cn(glass.badge, "px-3 py-1.5 border-border/ bg-[#F4D03F]/5 text-[#F4D03F]")}>
                         SPECTRUM: 100-800HZ
                     </div>
                 }
@@ -148,9 +148,9 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Control Panel */}
                 <div className="lg:col-span-5 space-y-6 flex flex-col">
-                    <div className={cn(glass.card, "p-5 flex flex-col gap-6 bg-white/40 shadow-xl border-white/20")}>
-                        <div className="flex items-center gap-3 border-b border-[#F4D03F]/10 pb-4">
-                            <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20">
+                    <div className={cn(glass.card, "p-5 flex flex-col gap-6 bg-muted/ shadow-xl border-border/")}>
+                        <div className="flex items-center gap-3 border-b border-border/ pb-4">
+                            <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-border/">
                                 <Terminal className="w-4 h-4 text-[#F4D03F]" />
                             </div>
                             <h3 className={glass.sectionTitle}>Audio sensor</h3>
@@ -162,7 +162,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 value={selectedHiveId}
                                 onChange={(e) => setSelectedHiveId(e.target.value)}
                                 className={cn(
-                                    "w-full h-10 rounded-xl border border-white/30 bg-white/40 px-3 text-[10px] font-black text-[#1A1A1A] outline-none",
+                                    "w-full h-10 rounded-xl border border-border/ bg-muted/ px-3 text-[10px] font-black text-foreground outline-none",
                                     (hives || []).length === 0 && "opacity-60"
                                 )}
                                 aria-label="Select hive for analysis"
@@ -181,13 +181,13 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <p className={glass.microLabel}>
                                 Record hive audio for analysis. Aim for at least 3 seconds.
                             </p>
-                            <div className="flex items-center gap-2 text-[8px] font-black text-gray-400">
+                            <div className="flex items-center gap-2 text-[8px] font-black text-muted-foreground/70">
                                 <Activity className="w-3 h-3 text-[#F4D03F]/40" />
                                 <span>Signal locked</span>
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-3 mt-auto pt-6 border-t border-[#F4D03F]/10">
+                        <div className="flex flex-col gap-3 mt-auto pt-6 border-t border-border/">
                             <button
                                 onClick={handleRecord}
                                 disabled={recording || analyzing}
@@ -231,16 +231,16 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 initial={{ opacity: 0, height: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, height: 'auto', scale: 1 }}
                                 exit={{ opacity: 0, height: 0, scale: 0.95 }}
-                                className={cn(glass.card, "p-5 overflow-hidden border-white/40 shadow-sm")}
+                                className={cn(glass.card, "p-5 overflow-hidden border-border/ shadow-sm")}
                             >
                                 <div className="flex justify-between items-end mb-3">
                                     <div className="flex flex-col gap-1">
                                         <span className={cn(glass.microLabel, "animate-pulse")}>Processing Signal...</span>
-                                        <span className="text-[8px] font-black text-gray-400">In progress</span>
+                                        <span className="text-[8px] font-black text-muted-foreground/70">In progress</span>
                                     </div>
                                     <span className="text-xl tabular-nums font-black leading-none text-[#F4D03F]">{progress}%</span>
                                 </div>
-                                <div className="h-1.5 w-full bg-white/30 rounded-full overflow-hidden border border-white/20">
+                                <div className="h-1.5 w-full bg-muted/ rounded-full overflow-hidden border border-border/">
                                     <motion.div
                                         className="h-full bg-[#F4D03F] rounded-full"
                                         initial={{ width: 0 }}
@@ -276,16 +276,16 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                             {result.label}
                                         </h4>
                                     </div>
-                                    <div className={cn(glass.badge, "border-none bg-white/20", result === 'Healthy' ? "text-[#1B9157]" : "text-red-500")}>
+                                    <div className={cn(glass.badge, "border-none bg-muted/", result === 'Healthy' ? "text-[#1B9157]" : "text-red-500")}>
                                         {result.label === 'Healthy' ? "Optimal" : "Critical"}
                                     </div>
                                 </div>
-                                <p className={cn(glass.microLabel, "relative z-10 border-t border-[#F4D03F]/10 pt-4 mt-1 text-gray-500")}>
+                                <p className={cn(glass.microLabel, "relative z-10 border-t border-border/ pt-4 mt-1 text-muted-foreground")}>
                                     {result.label === 'Healthy'
                                         ? "Acoustic signature optimal. No anomalies detected in signal path."
                                         : "Frequency variance detected. Immediate field audit recommended."}
                                     {typeof result.confidence === 'number' && (
-                                        <span className="ml-2 text-[10px] font-black text-gray-400">
+                                        <span className="ml-2 text-[10px] font-black text-muted-foreground/70">
                                             CONF {(result.confidence * 100).toFixed(1)}%
                                         </span>
                                     )}
@@ -296,13 +296,13 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                 </div>
 
                 {/* Waveform Visualization */}
-                <div className={cn(glass.card, "p-0 overflow-hidden lg:col-span-7 flex flex-col group border-white/40 shadow-sm")}>
-                    <div className="flex items-center justify-between p-5 border-b border-[#F4D03F]/10 bg-white/20">
+                <div className={cn(glass.card, "p-0 overflow-hidden lg:col-span-7 flex flex-col group border-border/ shadow-sm")}>
+                    <div className="flex items-center justify-between p-5 border-b border-border/ bg-muted/">
                         <div className="flex items-center gap-3">
                             <Activity className="w-4 h-4 text-[#F4D03F]" />
                             <h3 className={glass.sectionTitle}>Spectral Wave</h3>
                         </div>
-                        <div className={cn(glass.badge, "bg-[#F4D03F]/5 text-[#F4D03F] border-[#F4D03F]/10")}>Live Feed</div>
+                        <div className={cn(glass.badge, "bg-[#F4D03F]/5 text-[#F4D03F] border-border/")}>Live Feed</div>
                     </div>
 
                     <div className="flex-1 flex flex-col items-center justify-center min-h-[350px] p-5 relative">
@@ -332,10 +332,10 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                         </div>
                     </div>
 
-                    <div className="p-5 border-t border-[#F4D03F]/10 bg-white/30 grid grid-cols-2 gap-5 divide-x divide-[#F4D03F]/10">
+                    <div className="p-5 border-t border-border/ bg-muted/ grid grid-cols-2 gap-5 divide-x divide-[#F4D03F]/10">
                         <div className="space-y-1">
                             <UiLabel className={glass.microLabel}>Amplitude Gain</UiLabel>
-                            <p className="text-xl font-black tabular-nums tracking-tighter text-[#1A1A1A]">-14.2 DB</p>
+                            <p className="text-xl font-black tabular-nums tracking-tighter text-foreground">-14.2 DB</p>
                         </div>
                         <div className="space-y-1 pl-5 text-right">
                             <UiLabel className={glass.microLabel}>Confidence Lock</UiLabel>
@@ -349,3 +349,4 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
 };
 
 export default SoundAnalysisView;
+

@@ -190,3 +190,4 @@ const SeoScorecard: React.FC<SeoScorecardProps> = ({ analysis, focusKeywords }) 
 };
 
 export default SeoScorecard;
+

@@ -711,7 +711,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 {a.name}{a.location_name ? ` — ${a.location_name}` : ''}
                                             </SelectItem>
                                         )) : (
-                                            <div className="p-2 text-center text-[10px] text-gray-400 font-black">No locations yet</div>
+                                            <div className="p-2 text-center text-[10px] text-muted-foreground/70 font-black">No locations yet</div>
                                         )}
                                     </SelectContent>
                                 </Select>
@@ -730,7 +730,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 {h.hive_code} {h.apiary_name ? `- ${h.apiary_name}` : ''}
                                             </SelectItem>
                                         )) : (
-                                            <div className="p-2 text-center text-[10px] text-gray-400 font-black">
+                                            <div className="p-2 text-center text-[10px] text-muted-foreground/70 font-black">
                                                 {selectedApiaryId ? 'No hives in this location' : 'Select a location first'}
                                             </div>
                                         )}
@@ -751,7 +751,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 {code}
                                             </SelectItem>
                                         )) : (
-                                            <div className="p-2 text-center text-[10px] text-gray-400 font-black">
+                                            <div className="p-2 text-center text-[10px] text-muted-foreground/70 font-black">
                                                 {selectedHiveId ? 'No batches for this hive' : 'Select a hive first'}
                                             </div>
                                         )}
@@ -785,7 +785,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 {h.harvest_date ? new Date(h.harvest_date).toLocaleDateString() : 'No date'} {h.quantity_kg ? `• ${h.quantity_kg} kg` : ''} {h.batch_code ? `• ${h.batch_code}` : ''}
                                             </SelectItem>
                                         )) : (
-                                            <div className="p-2 text-center text-[10px] text-gray-400 font-black">
+                                            <div className="p-2 text-center text-[10px] text-muted-foreground/70 font-black">
                                                 {!selectedHiveId ? 'Select a hive first' : !(design.batchNumber || '').trim() ? 'Select a batch first' : 'No harvests for this batch'}
                                             </div>
                                         )}
@@ -794,29 +794,29 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             </div>
 
                             {/* Harvest History (per Hive) */}
-                            <div className={cn(glass.card, "p-4 bg-white/30 border border-[#F4D03F]/10")}>
+                            <div className={cn(glass.card, "p-4 bg-muted/ border border-border/")}>
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <Calendar className="w-4 h-4 text-[#F4D03F]/70" />
-                                        <p className="text-[12px] font-semibold text-[#1A1A1A]/70">
+                                        <p className="text-[12px] font-semibold text-foreground/70">
                                             Harvest history
                                         </p>
                                     </div>
-                                    <Badge className="bg-white/60 border border-[#F4D03F]/15 text-[#1A1A1A] font-semibold text-[11px]">
+                                    <Badge className="bg-muted/ border border-border/ text-foreground font-semibold text-[11px]">
                                         {selectedHiveId ? `${filteredHarvestsByBatch.length}` : '—'}
                                     </Badge>
                                 </div>
 
                                 {!selectedHiveId ? (
-                                    <div className="text-[12px] text-gray-500 font-semibold text-center py-4">
+                                    <div className="text-[12px] text-muted-foreground font-semibold text-center py-4">
                                         Select a hive to view history
                                     </div>
                                 ) : !(design.batchNumber || '').trim() ? (
-                                    <div className="text-[12px] text-gray-500 font-semibold text-center py-4">
+                                    <div className="text-[12px] text-muted-foreground font-semibold text-center py-4">
                                         Select a batch to view history
                                     </div>
                                 ) : filteredHarvestsByBatch.length === 0 ? (
-                                    <div className="text-[12px] text-gray-500 font-semibold text-center py-4">
+                                    <div className="text-[12px] text-muted-foreground font-semibold text-center py-4">
                                         No harvests for this batch
                                     </div>
                                 ) : (
@@ -834,21 +834,21 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     className={cn(
                                                         "w-full text-left rounded-xl px-3 py-2 border transition-all flex items-center justify-between",
                                                         isActive
-                                                            ? "bg-[#F4D03F]/10 border-[#F4D03F]/30"
-                                                            : "bg-white/40 border-white/40 hover:bg-white/70 hover:border-[#F4D03F]/20"
+                                                            ? "bg-[#F4D03F]/10 border-border/"
+                                                            : "bg-muted/ border-border/ hover:bg-muted/ hover:border-border/"
                                                     )}
                                                 >
                                                     <div className="min-w-0">
-                                                        <p className="text-[12px] font-semibold text-[#1A1A1A] truncate">
+                                                        <p className="text-[12px] font-semibold text-foreground truncate">
                                                             {label}
                                                         </p>
-                                                        <p className="text-[11px] text-gray-500 font-medium truncate">
+                                                        <p className="text-[11px] text-muted-foreground font-medium truncate">
                                                             {date}{kg ? ` • ${kg}` : ''}
                                                         </p>
                                                     </div>
                                                     <div className={cn(
                                                         "shrink-0 w-8 h-8 rounded-xl grid place-items-center border",
-                                                        isActive ? "bg-[#F4D03F] border-[#F4D03F] text-black" : "bg-white/70 border-white/70 text-gray-700"
+                                                        isActive ? "bg-[#F4D03F] border-[#F4D03F] text-black" : "bg-muted/ border-border/ text-gray-700"
                                                     )}>
                                                         <ChevronRight className="w-4 h-4" />
                                                     </div>
@@ -901,7 +901,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     <div className="flex items-center justify-between">
                                         <Label className={glass.microLabel}>Product story</Label>
                                         <button
-                                            className="h-7 px-2.5 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 text-xs font-semibold text-[#D4AC0D] flex items-center gap-1.5 hover:bg-[#F4D03F]/20 transition-all"
+                                            className="h-7 px-2.5 rounded-lg bg-[#F4D03F]/10 border border-border/ text-xs font-semibold text-[#D4AC0D] flex items-center gap-1.5 hover:bg-[#F4D03F]/20 transition-all"
                                             onClick={generateBlurb}
                                             disabled={isGeneratingBlurb}
                                         >
@@ -916,25 +916,25 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         onChange={e => updateDesign({ marketingNote: e.target.value })}
                                         placeholder="Write a short product story…"
                                     />
-                                    <div className="flex justify-between items-center text-xs font-semibold text-gray-500">
+                                    <div className="flex justify-between items-center text-xs font-semibold text-muted-foreground">
                                         <span>Character limit</span>
                                         <span className={cn(design.marketingNote.length > 160 ? "text-[#F4D03F]" : "")}>{design.marketingNote.length}/180</span>
                                     </div>
                                 </div>
 
                                 {labelPack && (
-                                    <div className={cn(glass.card, "p-4 bg-white/30 border border-[#F4D03F]/10")}>
+                                    <div className={cn(glass.card, "p-4 bg-muted/ border border-border/")}>
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2">
                                                 <Sparkles className="w-4 h-4 text-[#F4D03F]/70" />
-                                                <p className="text-[10px] font-black text-[#1A1A1A]/70">
+                                                <p className="text-[10px] font-black text-foreground/70">
                                                     Label pack
                                                 </p>
                                             </div>
                                             <button
                                                 type="button"
                                                 onClick={() => copyToClipboard("Full label pack (JSON)", JSON.stringify(labelPack, null, 2))}
-                                                className="h-8 px-3 rounded-lg bg-white/60 border border-[#F4D03F]/15 text-sm font-semibold flex items-center gap-1.5 hover:bg-white transition-all text-[#1A1A1A]"
+                                                className="h-8 px-3 rounded-lg bg-muted/ border border-border/ text-sm font-semibold flex items-center gap-1.5 hover:bg-white transition-all text-foreground"
                                             >
                                                 <Copy className="w-3 h-3" />
                                                 Copy JSON
@@ -950,37 +950,37 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 { k: "Allergen notes", v: labelPack.allergen_notes },
                                                 { k: "QR landing copy", v: labelPack.qr_landing_copy },
                                             ].map((row) => (
-                                                <div key={row.k} className="rounded-xl border border-white/40 bg-white/60 p-3">
+                                                <div key={row.k} className="rounded-xl border border-border/ bg-muted/ p-3">
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div className="min-w-0">
-                                                            <p className="text-xs font-semibold text-[#1A1A1A]/60">
+                                                            <p className="text-xs font-semibold text-foreground/60">
                                                                 {row.k}
                                                             </p>
-                                                            <p className="text-[11px] font-semibold text-[#1A1A1A] whitespace-pre-wrap mt-1 leading-relaxed">
+                                                            <p className="text-[11px] font-semibold text-foreground whitespace-pre-wrap mt-1 leading-relaxed">
                                                                 {row.v}
                                                             </p>
                                                         </div>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard(row.k, row.v)}
-                                                            className="shrink-0 w-9 h-9 rounded-xl bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all grid place-items-center"
+                                                            className="shrink-0 w-9 h-9 rounded-xl bg-white border border-border/ hover:border-border/ hover:bg-[#F4D03F]/5 transition-all grid place-items-center"
                                                             aria-label={`Copy ${row.k}`}
                                                             title={`Copy ${row.k}`}
                                                         >
-                                                            <Copy className="w-4 h-4 text-[#1A1A1A]/60" />
+                                                            <Copy className="w-4 h-4 text-foreground/60" />
                                                         </button>
                                                     </div>
                                                 </div>
                                             ))}
 
                                             <div className="grid grid-cols-1 gap-3">
-                                                <div className="rounded-xl border border-white/40 bg-white/60 p-3">
+                                                <div className="rounded-xl border border-border/ bg-muted/ p-3">
                                                     <div className="flex items-center justify-between gap-3">
-                                                        <p className="text-[9px] font-black text-[#1A1A1A]/60">Tasting notes</p>
+                                                        <p className="text-[9px] font-black text-foreground/60">Tasting notes</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Tasting notes", (labelPack.tasting_notes || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/ hover:border-border/ hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -988,18 +988,18 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     </div>
                                                     <ul className="mt-2 space-y-1">
                                                         {(labelPack.tasting_notes || []).map((n, idx) => (
-                                                            <li key={idx} className="text-[11px] font-semibold text-[#1A1A1A]/80">- {n}</li>
+                                                            <li key={idx} className="text-[11px] font-semibold text-foreground/80">- {n}</li>
                                                         ))}
                                                     </ul>
                                                 </div>
 
-                                                <div className="rounded-xl border border-white/40 bg-white/60 p-3">
+                                                <div className="rounded-xl border border-border/ bg-muted/ p-3">
                                                     <div className="flex items-center justify-between gap-3">
-                                                        <p className="text-[9px] font-black text-[#1A1A1A]/60">Sustainability claims</p>
+                                                        <p className="text-[9px] font-black text-foreground/60">Sustainability claims</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Sustainability claims", (labelPack.sustainability_claims || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/ hover:border-border/ hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -1007,18 +1007,18 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     </div>
                                                     <ul className="mt-2 space-y-1">
                                                         {(labelPack.sustainability_claims || []).map((n, idx) => (
-                                                            <li key={idx} className="text-[11px] font-semibold text-[#1A1A1A]/80">- {n}</li>
+                                                            <li key={idx} className="text-[11px] font-semibold text-foreground/80">- {n}</li>
                                                         ))}
                                                     </ul>
                                                 </div>
 
-                                                <div className="rounded-xl border border-white/40 bg-white/60 p-3">
+                                                <div className="rounded-xl border border-border/ bg-muted/ p-3">
                                                     <div className="flex items-center justify-between gap-3">
-                                                        <p className="text-[9px] font-black text-[#1A1A1A]/60">Pairings</p>
+                                                        <p className="text-[9px] font-black text-foreground/60">Pairings</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Pairings", (labelPack.pairings || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-[#F4D03F]/10 hover:border-[#F4D03F]/30 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/ hover:border-border/ hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -1026,7 +1026,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     </div>
                                                     <ul className="mt-2 space-y-1">
                                                         {(labelPack.pairings || []).map((n, idx) => (
-                                                            <li key={idx} className="text-[11px] font-semibold text-[#1A1A1A]/80">- {n}</li>
+                                                            <li key={idx} className="text-[11px] font-semibold text-foreground/80">- {n}</li>
                                                         ))}
                                                     </ul>
                                                 </div>
@@ -1053,7 +1053,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 { id: 'showFooter', label: 'Include footer', value: design.showFooter },
                             ].map((item) => (
                                 <div key={item.id} className="flex items-center justify-between">
-                                    <Label className="text-sm font-semibold text-[#1A1A1A]/80">{item.label}</Label>
+                                    <Label className="text-sm font-semibold text-foreground/80">{item.label}</Label>
                                     <Switch 
                                         checked={item.value as boolean} 
                                         onCheckedChange={v => updateDesign({ [item.id]: v })} 
@@ -1100,7 +1100,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5 }}
                                 ref={previewRef}
-                                className="shadow-[0_40px_100px_rgba(0,0,0,0.15)] relative overflow-hidden flex flex-col p-8 transition-all duration-500 ease-out border border-white/40"
+                                className="shadow-[0_40px_100px_rgba(0,0,0,0.15)] relative overflow-hidden flex flex-col p-8 transition-all duration-500 ease-out border border-border/"
                                 style={{
                                     width: `${parseFloat(design.customWidth) * 4}px`,
                                     height: `${parseFloat(design.customHeight) * 4}px`,
@@ -1121,7 +1121,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     {design.showLogo && (
                                         <div className="flex items-center justify-center mb-5">
                                             <div
-                                                className="px-3 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 shadow-lg shadow-black/10"
+                                                className="px-3 py-2 rounded-2xl bg-muted/ backdrop-blur-md border border-border/ shadow-lg shadow-black/10"
                                                 style={{ maxWidth: '72%' }}
                                             >
                                                 {design.logoUrl ? (
@@ -1156,7 +1156,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         </div>
 
                                         <div className="shrink-0 text-right">
-                                            <div className="inline-flex flex-col items-end rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 px-3 py-2 shadow-lg shadow-black/10">
+                                            <div className="inline-flex flex-col items-end rounded-2xl bg-muted/ backdrop-blur-md border border-border/ px-3 py-2 shadow-lg shadow-black/10">
                                                 <p className="text-[7px] opacity-50 font-black">Net Weight</p>
                                                 <p className="text-3xl font-black tabular-nums tracking-tighter leading-none">
                                                     {design.weight}
@@ -1206,7 +1206,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     )}
 
                                     {design.showQRCode && (
-                                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[35%] w-32 h-32 rounded-[2rem] bg-white/16 backdrop-blur-md border border-white/25 p-2 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
+                                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[35%] w-32 h-32 rounded-[2rem] bg-muted/ backdrop-blur-md border border-border/ p-2 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
                                             <div className="relative w-full h-full rounded-3xl bg-white overflow-hidden">
                                                 {qrDataUrl ? (
                                                     <>
@@ -1229,7 +1229,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 )}
                                             </div>
                                             <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
-                                                <div className="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur border border-white/25 text-[7px] font-black opacity-80">
+                                                <div className="px-2.5 py-1 rounded-full bg-muted/ backdrop-blur border border-border/ text-[7px] font-black opacity-80">
                                                     SCAN TO VERIFY
                                                 </div>
                                             </div>
@@ -1258,27 +1258,27 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         <div
                                             key={saved.id}
                                             className={cn(
-                                                "p-3 rounded-lg border bg-white/40 hover:bg-white/80 transition-all group flex justify-between items-center",
-                                                saved.id === design.id ? "border-[#F4D03F]/40 shadow-sm" : "border-[#F4D03F]/10"
+                                                "p-3 rounded-lg border bg-muted/ hover:bg-muted/ transition-all group flex justify-between items-center",
+                                                saved.id === design.id ? "border-border/ shadow-sm" : "border-border/"
                                             )}
                                         >
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <p className="text-sm font-semibold text-[#1A1A1A] truncate">{saved.name || saved.productName || 'Untitled label'}</p>
+                                                    <p className="text-sm font-semibold text-foreground truncate">{saved.name || saved.productName || 'Untitled label'}</p>
                                                     {saved.id === design.id && (
                                                         <Badge variant="secondary" className="h-5 rounded-full border-0 bg-[#F4D03F]/15 text-[#8A6A00]">
                                                             Active
                                                         </Badge>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-gray-500">{saved.honeyType} • {saved.customWidth}×{saved.customHeight} mm</p>
+                                                <p className="text-xs text-muted-foreground">{saved.honeyType} • {saved.customWidth}×{saved.customHeight} mm</p>
                                             </div>
                                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
                                                     onClick={() => loadDesign(saved)}
                                                     aria-label="Load saved label design"
                                                     title="Load"
-                                                    className="p-1.5 rounded-md hover:bg-[#F4D03F]/10 text-gray-500 hover:text-[#F4D03F]"
+                                                    className="p-1.5 rounded-md hover:bg-[#F4D03F]/10 text-muted-foreground hover:text-[#F4D03F]"
                                                 >
                                                     <Eye className="w-3.5 h-3.5" />
                                                 </button>
@@ -1286,7 +1286,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     onClick={() => deleteDesign(saved.id)}
                                                     aria-label="Delete saved label design"
                                                     title="Delete"
-                                                    className="p-1.5 rounded-md hover:bg-red-50 text-gray-500 hover:text-red-500"
+                                                    className="p-1.5 rounded-md hover:bg-red-50 text-muted-foreground hover:text-red-500"
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />
                                                 </button>
@@ -1307,7 +1307,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     { label: 'Weight and units', icon: ShieldCheck, status: 'OK', color: 'text-[#1B9157]' },
                                     { label: 'Country rules', icon: Shield, status: 'Check', color: 'text-[#F4D03F]' },
                                 ].map((c, i) => (
-                                    <div key={i} className="flex items-center justify-between p-2.5 rounded-lg border border-black/5 bg-white/30">
+                                    <div key={i} className="flex items-center justify-between p-2.5 rounded-lg border border-black/5 bg-muted/">
                                         <div className="flex items-center gap-2.5">
                                             <c.icon className={cn("w-3.5 h-3.5", c.color)} />
                                             <span className="text-xs font-semibold">{c.label}</span>
@@ -1343,7 +1343,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         "group p-2.5 rounded-xl border-2 transition-all duration-300",
                                         design.template === tmp.id
                                             ? 'border-[#F4D03F] bg-[#F4D03F]/5 shadow-md'
-                                            : 'border-transparent bg-white/50 hover:border-[#F4D03F]/20'
+                                            : 'border-transparent bg-muted/ hover:border-border/'
                                     )}
                                 >
                                     <div className="aspect-[3/2] rounded-lg mb-2 shadow-inner flex flex-col p-2 space-y-1 overflow-hidden" style={{ backgroundColor: tmp.color }}>
@@ -1399,7 +1399,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </div>
                         <div className="p-5">
                             <div
-                                className="w-full h-28 rounded-xl border-2 border-dashed border-[#F4D03F]/30 flex flex-col items-center justify-center bg-white/30 cursor-pointer hover:bg-[#F4D03F]/5 transition-all group"
+                                className="w-full h-28 rounded-xl border-2 border-dashed border-border/ flex flex-col items-center justify-center bg-muted/ cursor-pointer hover:bg-[#F4D03F]/5 transition-all group"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 {design.logoUrl ? (
@@ -1407,7 +1407,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 ) : (
                                     <>
                                         <Upload className="w-6 h-6 text-[#F4D03F]/40 group-hover:text-[#F4D03F] mb-2 transition-colors" />
-                                        <p className="text-sm font-semibold text-gray-500">Upload a logo</p>
+                                        <p className="text-sm font-semibold text-muted-foreground">Upload a logo</p>
                                     </>
                                 )}
                             </div>
@@ -1450,3 +1450,4 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 };
 
 export default LabelGeneratorView;
+

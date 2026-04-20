@@ -148,20 +148,20 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
             <div className="flex min-h-[300px] items-center justify-center">
                 <div className="space-y-3 text-center">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 shadow-sm">
-                        <MapPin className="h-5 w-5 text-gray-400" />
+                        <MapPin className="h-5 w-5 text-muted-foreground/70" />
                     </div>
-                    <h3 className="text-sm font-bold tracking-tight text-[#1A1A1A]">No Apiary Selected</h3>
-                    <p className="text-xs font-medium text-gray-500">Select an apiary to view telemetry.</p>
+                    <h3 className="text-sm font-bold tracking-tight text-foreground">No Apiary Selected</h3>
+                    <p className="text-xs font-medium text-muted-foreground">Select an apiary to view telemetry.</p>
                 </div>
             </div>
         );
     }
 
     const statCards = [
-        { label: 'Total Hives', value: stats?.totalHives || 0, icon: Hexagon, color: 'text-[#1A1A1A]' },
+        { label: 'Total Hives', value: stats?.totalHives || 0, icon: Hexagon, color: 'text-foreground' },
         { label: 'Active', value: stats?.activeHives || 0, icon: Activity, color: 'text-[#1B9157]', trend: 'up' as const },
         { label: 'Strength', value: `${stats?.avgStrength || 0}%`, icon: TrendingUp, color: 'text-[#F4D03F]' },
-        { label: 'Avg Weight', value: `${stats?.avgWeight || 0} kg`, icon: Package, color: 'text-[#1A1A1A]' },
+        { label: 'Avg Weight', value: `${stats?.avgWeight || 0} kg`, icon: Package, color: 'text-foreground' },
     ];
 
     return (
@@ -172,8 +172,8 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                         <MapPin className="h-4 w-4 text-[#1B9157]" />
                     </div>
                     <div className="space-y-0.5">
-                        <h2 className="text-lg font-bold tracking-tight text-[#1A1A1A]">{apiary.location_name || 'Orchard Sector'}</h2>
-                        <p className="text-sm text-gray-500">
+                        <h2 className="text-lg font-bold tracking-tight text-foreground">{apiary.location_name || 'Orchard Sector'}</h2>
+                        <p className="text-sm text-muted-foreground">
                             Live readings | {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                     </div>
@@ -181,7 +181,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                 <div
                     className={cn(
                         'flex items-center gap-2 rounded-lg border px-3 py-1.5 shadow-sm',
-                        (stats?.avgStrength || 0) > 70 ? 'border-[#1B9157]/20 bg-[#1B9157]/5' : 'border-[#F4D03F]/20 bg-[#F4D03F]/5',
+                        (stats?.avgStrength || 0) > 70 ? 'border-[#1B9157]/20 bg-[#1B9157]/5' : 'border-border/ bg-[#F4D03F]/5',
                     )}
                 >
                     <div
@@ -191,7 +191,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                         )}
                     />
                     <Sun className={cn('h-3.5 w-3.5', (stats?.avgStrength || 0) > 70 ? 'text-[#1B9157]' : 'text-[#F4D03F]')} />
-                    <span className="text-xs font-bold text-[#1A1A1A]">
+                    <span className="text-xs font-bold text-foreground">
                         {(stats?.avgStrength || 0) > 70 ? 'Optimal' : (stats?.avgStrength || 0) > 40 ? 'Fair' : 'Alert'}
                     </span>
                 </div>
@@ -213,13 +213,13 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                         </div>
                         <div className="mt-1 space-y-0.5">
                             <div className="flex items-baseline gap-1">
-                                <p className="text-xl font-bold tracking-tight text-[#1A1A1A]">
+                                <p className="text-xl font-bold tracking-tight text-foreground">
                                     {card.label === 'Strength' ? stats?.avgStrength : card.value}
                                 </p>
-                                {card.label === 'Strength' && <span className="text-xs font-bold text-gray-400">%</span>}
-                                {card.label === 'Avg Weight' && <span className="text-xs font-bold text-gray-400">kg</span>}
+                                {card.label === 'Strength' && <span className="text-xs font-bold text-muted-foreground/70">%</span>}
+                                {card.label === 'Avg Weight' && <span className="text-xs font-bold text-muted-foreground/70">kg</span>}
                             </div>
-                            <p className="text-[10px] font-bold tracking-wider text-gray-500">{card.label}</p>
+                            <p className="text-[10px] font-bold tracking-wider text-muted-foreground">{card.label}</p>
                         </div>
                     </div>
                 ))}
@@ -230,9 +230,9 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                     <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 p-4">
                         <div className="flex items-center gap-2">
                             <Activity className="h-4 w-4 text-[#1B9157]" />
-                            <h3 className="text-sm font-bold tracking-tight text-[#1A1A1A]">Foraging Activity</h3>
+                            <h3 className="text-sm font-bold tracking-tight text-foreground">Foraging Activity</h3>
                         </div>
-                        <span className="text-[10px] font-bold tracking-wider text-gray-500">Today</span>
+                        <span className="text-[10px] font-bold tracking-wider text-muted-foreground">Today</span>
                     </div>
                     <div className="min-h-[220px] flex-1 p-4">
                         {(isHistoryLoading || hivesLoading) && !activityData.length ? (
@@ -242,7 +242,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                         ) : !activityData.length ? (
                             <div className="flex h-full flex-col items-center justify-center py-8 text-center opacity-40">
                                 <Activity className="mb-2 h-8 w-8 text-gray-300" />
-                                <p className="text-[10px] font-bold text-gray-400">Waiting for live sensor stream...</p>
+                                <p className="text-[10px] font-bold text-muted-foreground/70">Waiting for live sensor stream...</p>
                             </div>
                         ) : (
                             <ResponsiveContainer width="99%" height={220}>
@@ -297,20 +297,20 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                         <Activity className="h-4 w-4 text-[#1B9157]" />
                     </div>
                     <div className="space-y-0.5">
-                        <h4 className="text-sm font-bold text-[#1A1A1A]">Schedule Inspection</h4>
-                        <p className="text-[10px] font-medium text-gray-500">Check colony health</p>
+                        <h4 className="text-sm font-bold text-foreground">Schedule Inspection</h4>
+                        <p className="text-[10px] font-medium text-muted-foreground">Check colony health</p>
                     </div>
                 </button>
                 <button
                     onClick={() => onTabChange && onTabChange('harvests')}
                     className={cn(glass.card, 'group flex items-center gap-4 p-3.5 text-left transition-all hover:border-gray-300 hover:bg-gray-50')}
                 >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition-all group-hover:border-[#F4D03F]/20 group-hover:bg-[#F4D03F]/10">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition-all group-hover:border-border/ group-hover:bg-[#F4D03F]/10">
                         <Hexagon className="h-4 w-4 text-[#F4D03F]" />
                     </div>
                     <div className="space-y-0.5">
-                        <h4 className="text-sm font-bold text-[#1A1A1A]">Log Harvest</h4>
-                        <p className="text-[10px] font-medium text-gray-500">Record production metrics</p>
+                        <h4 className="text-sm font-bold text-foreground">Log Harvest</h4>
+                        <p className="text-[10px] font-medium text-muted-foreground">Record production metrics</p>
                     </div>
                 </button>
             </div>
@@ -319,3 +319,4 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
 };
 
 export default OrchardDashboardView;
+

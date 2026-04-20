@@ -107,7 +107,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                             onClick={() => setShowHeatmap(h => !h)}
                             className={cn(
                                 glass.btnSecondary,
-                                showHeatmap ? "bg-[#1A1A1A] text-white border-transparent" : "bg-white/60 border-white/40"
+                                showHeatmap ? "bg-[#1A1A1A] text-white border-transparent" : "bg-muted/ border-border/"
                             )}
                         >
                             {showHeatmap ? 'Hide heatmap' : 'Show heatmap'}
@@ -136,7 +136,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                             <p className={cn("text-[10px] font-bold", hive.status === 'moved' ? "text-red-600" : "text-amber-600")}>
                                 {hive.status === 'moved' ? `Security protocols breached — ${hive.id}` : `Location variance alert — ${hive.id}`}
                             </p>
-                            <p className="text-[10px] font-medium text-gray-500 mt-0.5">
+                            <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
                                 {hive.status === 'moved'
                                     ? `Hive confirmed outside authorized perimeter in ${hive.block}.`
                                     : `Unexpected location drift detected in ${hive.block}. Please verify.`}
@@ -150,7 +150,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* The Orchard Map */}
                 <div className="lg:col-span-8 space-y-4">
-                    <div className={cn(glass.card, "bg-neutral-900 shadow-xl relative overflow-hidden group border-white/10")} style={{ aspectRatio: '16/10' }}>
+                    <div className={cn(glass.card, "bg-neutral-900 shadow-xl relative overflow-hidden group border-border/")} style={{ aspectRatio: '16/10' }}>
                         {hives.length === 0 && (
                             <div className="absolute inset-0 flex items-center justify-center p-10">
                                 <div className="text-center space-y-2">
@@ -184,7 +184,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                         {/* Grid Lines */}
                         <div className="absolute inset-0 grid grid-cols-4 grid-rows-3 pointer-events-none opacity-20">
                             {Array.from({ length: 12 }).map((_, i) => (
-                                <div key={i} className="border border-white/10" />
+                                <div key={i} className="border border-border/" />
                             ))}
                         </div>
 
@@ -202,7 +202,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                     title={`Select hive ${h.id}`}
                                 >
                                     <div className={cn(
-                                        "w-4 h-4 rounded-full border-2 border-white/80 transition-all", s.dot,
+                                        "w-4 h-4 rounded-full border-2 border-border/ transition-all", s.dot,
                                         isSelected ? "scale-150 shadow-lg ring-4 ring-white/20" : "group-hover:scale-125 shadow-sm"
                                     )} />
                                 </button>
@@ -214,16 +214,16 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                         {Object.entries(statusConfig).map(([key, s]) => (
                             <div key={key} className="flex items-center gap-2">
                                 <div className={cn("w-2.5 h-2.5 rounded-full", s.dot.split(' ')[0])} />
-                                <span className="text-[8px] font-black text-gray-400">{s.label}</span>
+                                <span className="text-[8px] font-black text-muted-foreground/70">{s.label}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 <div className="lg:col-span-4 space-y-4">
-                    <div className={cn(glass.card, "p-5 bg-white/40 backdrop-blur-xl border-white/20 shadow-xl space-y-4")}>
-                        <div className="border-b border-[#F4D03F]/10 pb-3">
-                            <h3 className="text-[10px] font-black text-[#1A1A1A]">Node_Integrity</h3>
+                    <div className={cn(glass.card, "p-5 bg-muted/ backdrop-blur-xl border-border/ shadow-xl space-y-4")}>
+                        <div className="border-b border-border/ pb-3">
+                            <h3 className="text-[10px] font-black text-foreground">Node_Integrity</h3>
                         </div>
                         <div className="space-y-2 max-h-[440px] overflow-y-auto pr-1 custom-scrollbar">
                             {hives.map(h => {
@@ -239,7 +239,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                                 ? "bg-[#1A1A1A] border-[#1A1A1A] text-white shadow-xl"
                                                 : h.status !== 'nominal'
                                                     ? "border-amber-200/40 bg-amber-50/20"
-                                                    : "border-white/40 bg-white/40 hover:border-[#F4D03F]/40"
+                                                    : "border-border/ bg-muted/ hover:border-border/"
                                         )}
                                     >
                                         <div className="flex items-center justify-between mb-3">
@@ -249,15 +249,15 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                             </div>
                                             <span className={cn(
                                                 "text-[8px] font-black px-2 py-0.5 rounded-lg",
-                                                isSelected ? "bg-white/10 text-white" :
+                                                isSelected ? "bg-muted/ text-white" :
                                                     h.status === 'nominal' ? "bg-emerald-50 text-emerald-600" : "bg-amber-100 text-amber-600"
                                             )}>{s.label}</span>
                                         </div>
                                         <div className="flex items-end justify-between">
-                                            <span className={cn("text-[8px] font-black", isSelected ? "text-white/40" : "text-gray-400")}>{h.block}</span>
+                                            <span className={cn("text-[8px] font-black", isSelected ? "text-white/40" : "text-muted-foreground/70")}>{h.block}</span>
                                             <div className="text-right">
-                                                <p className={cn("text-[7px] font-black mb-1", isSelected ? "text-white/40" : "text-gray-400")}>DENSITY_{h.saturation}%</p>
-                                                <div className={cn("h-1 w-16 rounded-full overflow-hidden", isSelected ? "bg-white/10" : "bg-gray-100")}>
+                                                <p className={cn("text-[7px] font-black mb-1", isSelected ? "text-white/40" : "text-muted-foreground/70")}>DENSITY_{h.saturation}%</p>
+                                                <div className={cn("h-1 w-16 rounded-full overflow-hidden", isSelected ? "bg-muted/" : "bg-gray-100")}>
                                                     <div
                                                         className={cn("h-full", h.saturation > 60 ? "bg-[#1B9157]" : h.saturation > 30 ? "bg-[#F4D03F]" : "bg-red-500")}
                                                         style={{ width: `${h.saturation}%` }}
@@ -277,3 +277,4 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
 };
 
 export default GeospatialSecurity;
+

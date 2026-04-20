@@ -74,7 +74,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-8">
                 <div className="space-y-4">
-                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20')}>
+                    <div className={cn(glass.badge, 'bg-[#F4D03F]/10 text-[#F4D03F] border-border/')}>
                         <ClipboardList className="w-3.5 h-3.5" />
                         <span className="">Smart Urgency Filter</span>
                     </div>
@@ -87,7 +87,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                 </div>
 
                 {/* FPA KPI */}
-                <div className={cn(glass.card, "p-6 sm:px-8 border-[#F4D03F]/20 shadow-xl shadow-honey/5 flex flex-col justify-center items-end bg-gradient-to-br from-white/80 to-honey/10")}>
+                <div className={cn(glass.card, "p-6 sm:px-8 border-border/ shadow-xl shadow-honey/5 flex flex-col justify-center items-end bg-gradient-to-br from-white/80 to-honey/10")}>
                     <p className={cn(glass.microLabel, "text-muted-foreground mb-1 font-semibold")}>Avg Strength</p>
                     <p className={cn(glass.sectionTitle, "text-5xl tabular-nums text-[#F4D03F] leading-none mb-2")}>{fpa}</p>
                     <p className={cn(glass.microLabel, "text-muted-foreground/60 italic font-semibold normal-case")}>Frames Per Colony / {TOTAL_ACRES} Area</p>
@@ -106,7 +106,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 className={cn(
                                     "px-5 py-2.5 rounded-xl text-[10px] font-black transition-all whitespace-nowrap",
                                     filterUrgency === u
-                                        ? "bg-[#FFF9F0] text-foreground shadow-sm"
+                                        ? "bg-card text-foreground shadow-sm"
                                         : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -120,7 +120,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                     onClick={() => setShowResolved(r => !r)}
                     className={cn(
                         "px-6 py-3 rounded-2xl text-[10px] font-black transition-all border ml-auto",
-                        showResolved ? "bg-[#1B9157] border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-[#F9F7F2]0 border-border text-muted-foreground hover:border-[#1B9157] hover:text-[#1B9157]"
+                        showResolved ? "bg-[#1B9157] border-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-muted/200 border-border text-muted-foreground hover:border-[#1B9157] hover:text-[#1B9157]"
                     )}
                 >
                     {showResolved ? 'Hide Resolved' : 'Show Resolved'}
@@ -146,7 +146,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 key={task.id}
                                 className={cn(
                                     glass.card,
-                                    "p-6 flex flex-col md:flex-row md:items-center gap-6 group hover:border-[#F4D03F]/40 transition-all",
+                                    "p-6 flex flex-col md:flex-row md:items-center gap-6 group hover:border-border/ transition-all",
                                     task.resolved ? "opacity-60 bg-muted/20" : "",
                                     !task.resolved && `hover:shadow-xl hover:shadow-black/5`
                                 )}
@@ -216,7 +216,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 <Activity className="w-5 h-5 text-[#F4D03F]" />
                                 <h3 className={cn(glass.sectionTitle, "text-2xl normal-case")}>Colony Strength Audit <span className="text-muted-foreground mr-1">—</span> {auditHive.hive}</h3>
                             </div>
-                            <button onClick={() => setAuditHive(null)} className="w-8 h-8 rounded-full bg-[#F9F7F2]0 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-[#FFF9F0]:bg-[#F4D03F]/10 transition-all border border-border">✕</button>
+                            <button onClick={() => setAuditHive(null)} className="w-8 h-8 rounded-full bg-muted/200 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-card:bg-[#F4D03F]/10 transition-all border border-border">✕</button>
                         </div>
                         <div className="p-8 space-y-8 pb-10">
                             <div className="space-y-4">
@@ -239,7 +239,7 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
                                 </div>
                             </div>
 
-                            <div className="p-4 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20">
+                            <div className="p-4 rounded-xl bg-[#F4D03F]/10 border border-border/">
                                 <p className={cn(glass.microLabel, "normal-case italic font-semibold text-[#F4D03F]/80")}>
                                     Strength contribution from this hive: <span className="text-[#F4D03F] font-black text-sm not-italic ml-1">{(auditFob / TOTAL_ACRES).toFixed(3)}</span> frames/colony
                                 </p>
@@ -260,3 +260,4 @@ const YardOperations: React.FC<YardOperationsProps> = ({ onTabChange }) => {
 };
 
 export default YardOperations;
+

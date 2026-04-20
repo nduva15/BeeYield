@@ -260,7 +260,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                     <div className={cn(glass.card, 'p-5 space-y-4')}>
                         <div className="grid grid-cols-1 md:grid-cols-[1fr_180px] gap-3">
                             <div className="relative">
-                                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                <Search className="w-4 h-4 text-muted-foreground/70 absolute left-3 top-1/2 -translate-y-1/2" />
                                 <Input
                                     value={search}
                                     onChange={(event) => setSearch(event.target.value)}
@@ -304,8 +304,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                             type="button"
                                             onClick={() => setSelectedRequestId(request.id)}
                                             className={cn(
-                                                'w-full rounded-2xl border px-4 py-4 text-left transition-all bg-white/60 hover:bg-white',
-                                                selectedRequestId === request.id ? 'border-[#F4D03F]/50 shadow-sm' : 'border-[#F4D03F]/15'
+                                                'w-full rounded-2xl border px-4 py-4 text-left transition-all bg-muted/ hover:bg-white',
+                                                selectedRequestId === request.id ? 'border-border/ shadow-sm' : 'border-border/'
                                             )}
                                         >
                                             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -318,9 +318,9 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                             {request.category || 'General'}
                                                         </Badge>
                                                     </div>
-                                                    <div className="text-sm font-bold text-[#1A1A1A]">{request.subject}</div>
-                                                    <div className="text-xs text-gray-500 line-clamp-2">{request.description}</div>
-                                                    <div className="text-[11px] text-gray-500">
+                                                    <div className="text-sm font-bold text-foreground">{request.subject}</div>
+                                                    <div className="text-xs text-muted-foreground line-clamp-2">{request.description}</div>
+                                                    <div className="text-[11px] text-muted-foreground">
                                                         {request.apiary_id ? getApiaryName(request.apiary_id) : 'No apiary linked'}
                                                         {request.hive_id ? ` / ${getHiveName(request.hive_id)}` : ''}
                                                     </div>
@@ -330,8 +330,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                                         <StatusIcon className="w-3 h-3" />
                                                         {normalizedStatus}
                                                     </div>
-                                                    <div className="text-[10px] font-semibold text-gray-500">{request.priority}</div>
-                                                    <div className="text-[10px] text-gray-400">
+                                                    <div className="text-[10px] font-semibold text-muted-foreground">{request.priority}</div>
+                                                    <div className="text-[10px] text-muted-foreground/70">
                                                         {new Date(request.created_at).toLocaleDateString()}
                                                     </div>
                                                 </div>
@@ -357,8 +357,8 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                         <div className="text-[10px] font-black tracking-[0.18em] text-[#F4D03F]">
                                             #{selectedRequest.id.slice(0, 8).toUpperCase()}
                                         </div>
-                                        <h3 className="text-lg font-bold text-[#1A1A1A]">{selectedRequest.subject}</h3>
-                                        <p className="text-sm text-gray-500">{selectedRequest.category || 'General'}</p>
+                                        <h3 className="text-lg font-bold text-foreground">{selectedRequest.subject}</h3>
+                                        <p className="text-sm text-muted-foreground">{selectedRequest.category || 'General'}</p>
                                     </div>
                                     <div className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[10px] font-bold', statusClasses(selectedRequest.status))}>
                                         {React.createElement(statusIcon(selectedRequest.status), { className: 'w-3 h-3' })}
@@ -367,40 +367,40 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-3">
-                                        <div className="text-[10px] font-bold text-gray-400">Priority</div>
-                                        <div className="text-sm font-semibold text-[#1A1A1A]">{selectedRequest.priority}</div>
+                                    <div className="rounded-xl border border-border/ bg-muted/ p-3">
+                                        <div className="text-[10px] font-bold text-muted-foreground/70">Priority</div>
+                                        <div className="text-sm font-semibold text-foreground">{selectedRequest.priority}</div>
                                     </div>
-                                    <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-3">
-                                        <div className="text-[10px] font-bold text-gray-400">Created</div>
-                                        <div className="text-sm font-semibold text-[#1A1A1A]">
+                                    <div className="rounded-xl border border-border/ bg-muted/ p-3">
+                                        <div className="text-[10px] font-bold text-muted-foreground/70">Created</div>
+                                        <div className="text-sm font-semibold text-foreground">
                                             {new Date(selectedRequest.created_at).toLocaleDateString()}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-4 space-y-2">
-                                    <div className="text-[10px] font-bold text-gray-400">Description</div>
+                                <div className="rounded-xl border border-border/ bg-muted/ p-4 space-y-2">
+                                    <div className="text-[10px] font-bold text-muted-foreground/70">Description</div>
                                     <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedRequest.description}</p>
                                 </div>
 
-                                <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-4 space-y-2">
-                                    <div className="text-[10px] font-bold text-gray-400">Linked entities</div>
+                                <div className="rounded-xl border border-border/ bg-muted/ p-4 space-y-2">
+                                    <div className="text-[10px] font-bold text-muted-foreground/70">Linked entities</div>
                                     <div className="text-sm text-gray-700">{getApiaryName(selectedRequest.apiary_id)}</div>
-                                    <div className="text-sm text-gray-500">{getHiveName(selectedRequest.hive_id)}</div>
+                                    <div className="text-sm text-muted-foreground">{getHiveName(selectedRequest.hive_id)}</div>
                                 </div>
 
-                                <div className="rounded-xl border border-[#F4D03F]/10 bg-white/70 p-4 space-y-3">
+                                <div className="rounded-xl border border-border/ bg-muted/ p-4 space-y-3">
                                     <div className="flex items-center justify-between gap-3">
-                                        <div className="text-[10px] font-bold text-gray-400">Comments</div>
-                                        {requestComments.isLoading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                                        <div className="text-[10px] font-bold text-muted-foreground/70">Comments</div>
+                                        {requestComments.isLoading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground/70" />}
                                     </div>
                                     <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                                         {(requestComments.data || []).length === 0 ? (
-                                            <p className="text-sm text-gray-500">No comments yet. Add context or follow-up details here.</p>
+                                            <p className="text-sm text-muted-foreground">No comments yet. Add context or follow-up details here.</p>
                                         ) : (
                                             (requestComments.data || []).map((comment) => (
-                                                <div key={comment.id} className="rounded-xl border border-[#F4D03F]/10 bg-[#FFF9F0] px-3 py-2">
+                                                <div key={comment.id} className="rounded-xl border border-border/ bg-card px-3 py-2">
                                                     <div className="text-[10px] font-black text-[#F4D03F]">
                                                         {new Date(comment.created_at).toLocaleString()}
                                                     </div>
@@ -413,7 +413,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                         <Textarea
                                             value={commentDraft}
                                             onChange={(event) => setCommentDraft(event.target.value)}
-                                            className="min-h-[96px] rounded-xl border border-[#F4D03F]/30 bg-[#FFF9F0] text-sm"
+                                            className="min-h-[96px] rounded-xl border border-border/ bg-card text-sm"
                                             placeholder="Add a follow-up note, reproduction step, or resolution detail."
                                         />
                                         <div className="flex justify-end">
@@ -450,7 +450,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
             </div>
 
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <DialogContent className="max-w-2xl bg-[#FFF9F0] border border-[#F4D03F]/20 rounded-2xl">
+                <DialogContent className="max-w-2xl bg-card border border-border/ rounded-2xl">
                     <DialogHeader>
                         <DialogTitle>{editingRequest ? 'Update request' : 'Create request'}</DialogTitle>
                         <DialogDescription>
@@ -548,7 +548,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                 id="request-description"
                                 value={form.description}
                                 onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                                className="min-h-[140px] rounded-xl border border-[#F4D03F]/30 bg-[#FFF9F0] text-sm"
+                                className="min-h-[140px] rounded-xl border border-border/ bg-card text-sm"
                                 placeholder="Describe the issue, affected hardware/software, and what you already tried."
                             />
                         </BeeYieldFormField>
@@ -582,3 +582,4 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
 };
 
 export default MyRequestsView;
+

@@ -45,7 +45,7 @@ const VpmTicker: React.FC = () => {
     }, []);
 
     return (
-        <div className={cn(glass.card, "flex items-center gap-4 px-6 h-full p-0 shadow-none hover:shadow-none hover:border-[#F4D03F]/20 transition-all rounded-2xl group border-l-4 overflow-hidden border-l-honey bg-gray-400")}>
+        <div className={cn(glass.card, "flex items-center gap-4 px-6 h-full p-0 shadow-none hover:shadow-none hover:border-border/ transition-all rounded-2xl group border-l-4 overflow-hidden border-l-honey bg-gray-400")}>
             <div className="flex items-center gap-2">
                 <Camera className="w-4 h-4 text-[#F4D03F]" />
                 <span className={cn(glass.microLabel, "text-muted-foreground whitespace-nowrap")}>Live VPM</span>
@@ -103,3 +103,4 @@ const VpmTicker: React.FC = () => {
 };
 
 export default VpmTicker;
+

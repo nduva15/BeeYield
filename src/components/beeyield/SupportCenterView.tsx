@@ -137,15 +137,15 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                 {/* KPI Section */}
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                     {[
-                        { label: 'Total Tickets', value: stats.total, border: 'border-[#F4D03F]/20' },
+                        { label: 'Total Tickets', value: stats.total, border: 'border-border/' },
                         { label: 'Pending', value: stats.pending, border: 'border-amber-500/20' },
                         { label: 'In Progress', value: stats.active, border: 'border-[#1B9157]/20' },
                         { label: 'Resolved', value: stats.completed, border: 'border-gray-200' },
-                        { label: 'Last Contact', value: stats.lastRequest, border: 'border-[#F4D03F]/20' },
+                        { label: 'Last Contact', value: stats.lastRequest, border: 'border-border/' },
                     ].map((stat, i) => (
                         <div key={i} className={cn(glass.card, "p-4")}>
                             <p className={glass.microLabel}>{stat.label}</p>
-                            <p className="text-xl font-bold tracking-tight text-[#1A1A1A] mt-2 truncate">{stat.value}</p>
+                            <p className="text-xl font-bold tracking-tight text-foreground mt-2 truncate">{stat.value}</p>
                         </div>
                     ))}
                 </div>
@@ -157,8 +157,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
                         <div className="lg:col-span-8 space-y-4">
                             <div>
-                                <h2 className="text-lg font-bold text-[#1A1A1A] tracking-tight">Contact <span className="text-[#F4D03F]">Support</span></h2>
-                                <p className="text-sm text-gray-500 max-w-xl leading-relaxed mt-1">
+                                <h2 className="text-lg font-bold text-foreground tracking-tight">Contact <span className="text-[#F4D03F]">Support</span></h2>
+                                <p className="text-sm text-muted-foreground max-w-xl leading-relaxed mt-1">
                                     Experts available for hardware calibration, app issues, or data interpretation.
                                 </p>
                             </div>
@@ -170,10 +170,10 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                     { icon: MapPin, label: 'Hub', value: 'Kibwezi, Kenya' }
                                 ].map((item, idx) => (
                                     <div key={idx} className="space-y-1">
-                                        <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                                        <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/70">
                                             <item.icon className="w-3.5 h-3.5 text-[#F4D03F]" /> {item.label}
                                         </div>
-                                        <p className="text-[#1A1A1A] font-bold text-sm truncate">{item.value}</p>
+                                        <p className="text-foreground font-bold text-sm truncate">{item.value}</p>
                                     </div>
                                 ))}
                             </div>
@@ -206,8 +206,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                     className={cn(
                                         "px-4 h-8 rounded-lg text-xs font-bold uppercase tracking-wider transition-all",
                                         activeTab === tab
-                                            ? "bg-white text-[#1A1A1A] shadow-sm border border-[#F4D03F]/20"
-                                            : "text-gray-500 hover:text-gray-800"
+                                            ? "bg-white text-foreground shadow-sm border border-border/"
+                                            : "text-muted-foreground hover:text-gray-800"
                                     )}
                                 >
                                     {tab.replace('_', ' ')}
@@ -216,7 +216,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                         </div>
 
                         <div className="relative group w-full md:w-72">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#F4D03F] transition-all" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70 group-focus-within:text-[#F4D03F] transition-all" />
                             <input
                                 id="support-center-filter"
                                 name="search_tickets"
@@ -237,13 +237,13 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                         ) : filteredRequests.length === 0 ? (
                             <div className={cn(glass.emptyState, "h-[400px] border-none bg-transparent")}>
                                 <Send className="w-12 h-12 text-[#F4D03F]/40" />
-                                <h3 className="text-sm font-bold text-[#1A1A1A]">No Tickets Found</h3>
-                                <p className="text-xs text-gray-500">All support channels are synchronized.</p>
+                                <h3 className="text-sm font-bold text-foreground">No Tickets Found</h3>
+                                <p className="text-xs text-muted-foreground">All support channels are synchronized.</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full">
-                                    <thead className="bg-[#F9F7F2]">
+                                    <thead className="bg-muted/20">
                                         <tr>
                                             <th className={cn(glass.tableHead, "text-left")}>Subject</th>
                                             <th className={cn(glass.tableHead, "text-left")}>Priority</th>
@@ -256,8 +256,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                             <tr key={request.id} className={glass.tableRow}>
                                                 <td className="px-4 py-4">
                                                     <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-[#1A1A1A] truncate">{request.subject}</span>
-                                                        <span className="text-xs text-gray-500 mt-1">{request.category}</span>
+                                                        <span className="text-sm font-bold text-foreground truncate">{request.subject}</span>
+                                                        <span className="text-xs text-muted-foreground mt-1">{request.category}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-4">
@@ -276,10 +276,10 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                                                 request.status === 'in_progress' ? "bg-blue-500" :
                                                                     "bg-[#1B9157]"
                                                         )} />
-                                                        <span className="text-xs font-bold text-gray-500">{request.status.replace('_', ' ')}</span>
+                                                        <span className="text-xs font-bold text-muted-foreground">{request.status.replace('_', ' ')}</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-4 text-xs font-bold text-gray-400 tabular-nums">
+                                                <td className="px-4 py-4 text-xs font-bold text-muted-foreground/70 tabular-nums">
                                                     {new Date(request.created_at).toLocaleDateString()}
                                                 </td>
                                             </tr>
@@ -305,11 +305,11 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                 className={cn(glass.modalCard, "max-w-2xl max-h-[90vh] overflow-y-auto")}
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                <div className="p-8 lg:p-10 relative overflow-hidden bg-[#FFF9F0]">
+                                <div className="p-8 lg:p-10 relative overflow-hidden bg-card">
                                     <button
                                         type="button"
                                         onClick={() => setIsDialogOpen(false)}
-                                        className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-lg border border-[#F4D03F]/20 bg-white/90 text-[#1A1A1A]/60 shadow-sm transition hover:bg-white hover:text-[#1A1A1A]"
+                                        className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-lg border border-border/ bg-muted/ text-foreground/60 shadow-sm transition hover:bg-white hover:text-foreground"
                                         aria-label="Close new ticket form"
                                     >
                                         <X className="h-4 w-4" />
@@ -317,7 +317,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none" />
 
                                     <div className="mb-8 flex items-center gap-4 pr-12 relative z-10">
-                                        <div className="w-12 h-12 bg-[#F9F7F2] rounded-xl flex items-center justify-center border border-[#F4D03F]/20 shadow-sm">
+                                        <div className="w-12 h-12 bg-muted/20 rounded-xl flex items-center justify-center border border-border/ shadow-sm">
                                             <MessageSquare className="w-5 h-5 text-[#F4D03F]" />
                                         </div>
                                         <div>
@@ -384,7 +384,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                                             />
                                         </div>
 
-                                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-[#F4D03F]/10">
+                                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-border/">
                                             <div className="flex items-center gap-2 opacity-60">
                                                 <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
                                                 <p className={glass.microLabel}>Secure Channels Active</p>
@@ -414,3 +414,4 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
 };
 
 export default SupportCenterView;
+

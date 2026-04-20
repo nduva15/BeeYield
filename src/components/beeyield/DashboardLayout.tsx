@@ -33,7 +33,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
 
     return (
-        <div className="flex h-screen w-full bg-[#F9F7F2] overflow-hidden font-sans text-[#1A1A1A] selection:bg-[#F4D03F]/30 selection:text-[#1A1A1A]">
+        <div className="flex h-screen w-full bg-background overflow-hidden font-sans text-foreground selection:bg-primary/30 selection:text-foreground">
             {/* Sidebar */}
             {!hideSidebar && (
                 <GlassSidebar
@@ -92,3 +92,5 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 };
 
 export default DashboardLayout;
+
+

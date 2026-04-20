@@ -101,14 +101,14 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                             </div>
                         )}
                         {warnCount > 0 && (
-                            <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-[#1A1A1A] border-[#F4D03F]/20 py-1.5")}>
+                            <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-foreground border-border/ py-1.5")}>
                                 <AlertTriangle className="w-3.5 h-3.5 mr-2 text-[#F4D03F]" />
                                 {warnCount} Warnings
                             </div>
                         )}
-                        <div className={cn(glass.badge, "bg-[#F9F7F2] border-[#F4D03F]/20 py-1.5")}>
+                        <div className={cn(glass.badge, "bg-muted/20 border-border/ py-1.5")}>
                             <div className="w-2 h-2 rounded-full bg-[#1B9157] mr-2 animate-pulse" />
-                            <span className="text-xs font-bold text-[#1A1A1A] tabular-nums">
+                            <span className="text-xs font-bold text-foreground tabular-nums">
                                 {liveTime.toLocaleTimeString()}
                             </span>
                         </div>
@@ -119,9 +119,9 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
             {/* Heartbeat Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
                 {heartbeatNodes.length === 0 ? (
-                    <div className={cn(glass.card, "p-8 text-center lg:col-span-3 bg-white/40 border-white/20")}>
-                        <p className="text-sm font-bold text-[#1A1A1A]">No heartbeat telemetry yet</p>
-                        <p className="text-xs font-medium text-gray-500 mt-1">
+                    <div className={cn(glass.card, "p-8 text-center lg:col-span-3 bg-muted/ border-border/")}>
+                        <p className="text-sm font-bold text-foreground">No heartbeat telemetry yet</p>
+                        <p className="text-xs font-medium text-muted-foreground mt-1">
                             This view requires live sensor streams (temperature, acoustic, etc.). Connect devices to enable the heartbeat grid.
                         </p>
                     </div>
@@ -144,8 +144,8 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                 <div className="flex items-center gap-3">
                                     <div className={cn("w-2.5 h-2.5 rounded-full", cfg.dot)} />
                                     <div>
-                                        <p className="text-sm font-bold text-[#1A1A1A]">{node.id}</p>
-                                        <p className="text-[10px] text-gray-400 tabular-nums">{node.temp}°C</p>
+                                        <p className="text-sm font-bold text-foreground">{node.id}</p>
+                                        <p className="text-[10px] text-muted-foreground/70 tabular-nums">{node.temp}°C</p>
                                     </div>
                                 </div>
                                 <div className={cn(
@@ -179,17 +179,17 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
 
             {/* Live Event Feed */}
             <div className={cn(glass.section, "p-0 overflow-hidden")}>
-                <div className="px-5 py-4 border-b border-[#F4D03F]/10 flex items-center justify-between">
+                <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 border border-[#F4D03F]/20 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/5 border border-border/ flex items-center justify-center">
                             <Zap className="w-4 h-4 text-[#F4D03F]" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold text-[#1A1A1A]">Activity Ledger</h3>
-                            <p className="text-[10px] text-gray-500 text-[9px]">Real-time Events</p>
+                            <h3 className="text-sm font-bold text-foreground">Activity Ledger</h3>
+                            <p className="text-[10px] text-muted-foreground text-[9px]">Real-time Events</p>
                         </div>
                     </div>
-                    <div className={cn(glass.badge, "bg-[#F9F7F2] border-[#F4D03F]/20 py-1.5")}>
+                    <div className={cn(glass.badge, "bg-muted/20 border-border/ py-1.5")}>
                         {events.length} events
                     </div>
                 </div>
@@ -206,7 +206,7 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                     animate={{ opacity: 1, x: 0, height: 'auto' }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.2 }}
-                                    className="flex items-center gap-4 px-5 py-3 hover:bg-[#F9F7F2] transition-colors group"
+                                    className="flex items-center gap-4 px-5 py-3 hover:bg-muted/20 transition-colors group"
                                 >
                                     <div className={cn("w-2 h-2 rounded-full shrink-0", cfg.dot)} />
                                     <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border", cfg.bg, "border-transparent")}>
@@ -214,10 +214,10 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-[#1A1A1A]">{event.hive}</span>
+                                            <span className="text-xs font-bold text-foreground">{event.hive}</span>
                                             <span className="text-[10px] text-gray-300 tabular-nums">{event.time}</span>
                                         </div>
-                                        <p className="text-[11px] text-gray-500 truncate">{event.event}</p>
+                                        <p className="text-[11px] text-muted-foreground truncate">{event.event}</p>
                                     </div>
                                     <button
                                         className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -239,11 +239,11 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F4D03F]/10 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
                 <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
                     <div className="w-16 h-16 rounded-2xl bg-[#F4D03F] flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(244,208,63,0.3)]">
-                        <Info className="w-8 h-8 text-[#1A1A1A]" />
+                        <Info className="w-8 h-8 text-foreground" />
                     </div>
                     <div className="flex-1 space-y-2">
                         <h5 className="text-xl font-bold tracking-tight">Monitoring <span className="text-[#F4D03F]">Intelligence</span></h5>
-                        <p className="text-sm font-medium opacity-80 leading-relaxed pl-6 border-l-2 border-[#F4D03F]/40">
+                        <p className="text-sm font-medium opacity-80 leading-relaxed pl-6 border-l-2 border-border/">
                             Alerts and status summaries will appear here once real heartbeat telemetry is connected.
                         </p>
                     </div>
@@ -260,3 +260,4 @@ const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) =>
 };
 
 export default ContinuousMonitor;
+

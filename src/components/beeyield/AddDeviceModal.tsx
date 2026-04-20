@@ -126,7 +126,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent
-                className="max-w-4xl border border-[#F4D03F]/20 bg-[#FFF9F0] p-0 overflow-hidden rounded-[2rem] shadow-2xl outline-none"
+                className="max-w-4xl border border-border/ bg-card p-0 overflow-hidden rounded-[2rem] shadow-2xl outline-none"
                 onEscapeKeyDown={(event) => {
                     if (preventClose) event.preventDefault();
                 }}
@@ -137,15 +137,15 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                     if (preventClose) event.preventDefault();
                 }}
             >
-                <div className="border-b border-[#F4D03F]/10 bg-gradient-to-br from-[#F4D03F]/5 to-transparent px-8 py-7">
+                <div className="border-b border-border/ bg-gradient-to-br from-[#F4D03F]/5 to-transparent px-8 py-7">
                     <DialogHeader className="space-y-3 pr-8">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F4D03F]/10 rounded-xl border border-[#F4D03F]/20 w-fit">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F4D03F]/10 rounded-xl border border-border/ w-fit">
                             <Cpu className="w-4 h-4 text-[#F4D03F]" />
                             <span className="text-[11px] font-black tracking-wider text-[#F4D03F] uppercase">
                                 {device ? 'Device update' : 'Device setup'}
                             </span>
                         </div>
-                        <DialogTitle className="text-3xl font-black tracking-tight text-[#1A1A1A]">
+                        <DialogTitle className="text-3xl font-black tracking-tight text-foreground">
                             {device ? 'Refine device record' : 'Register new device'}
                         </DialogTitle>
                         <DialogDescription className="max-w-2xl text-xs font-bold text-muted-foreground leading-relaxed">
@@ -154,18 +154,18 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                     </DialogHeader>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6 bg-white/40 p-8 backdrop-blur-xl">
+                <form onSubmit={handleSubmit} className="space-y-6 bg-muted/ p-8 backdrop-blur-xl">
                     <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
                         <div className="xl:col-span-3 space-y-6">
-                            <div className={cn(glass.section, "bg-white/70 border-[#F4D03F]/15 p-6 space-y-5")}>
+                            <div className={cn(glass.section, "bg-muted/ border-border/ p-6 space-y-5")}>
                                 <div className="space-y-1">
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Device identity</h3>
-                                    <p className="text-[11px] text-gray-500">Use the printed hardware ID and choose the matching device role.</p>
+                                    <h3 className="text-sm font-semibold text-foreground">Device identity</h3>
+                                    <p className="text-[11px] text-muted-foreground">Use the printed hardware ID and choose the matching device role.</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-2">
-                                        <Label htmlFor="add-device-code" className="text-[10px] font-black text-gray-400 ml-2">Hardware ID*</Label>
+                                        <Label htmlFor="add-device-code" className="text-[10px] font-black text-muted-foreground/70 ml-2">Hardware ID*</Label>
                                         <div className="relative">
                                             <Network className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/50" />
                                             <Input
@@ -181,9 +181,9 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-black text-gray-400 ml-2">Device type</Label>
+                                        <Label className="text-[10px] font-black text-muted-foreground/70 ml-2">Device type</Label>
                                         <Select value={deviceType} onValueChange={(value: 'infield' | 'inland' | 'disease') => setDeviceType(value)}>
-                                            <SelectTrigger id="add-device-type" aria-label="Device type" className={cn(glass.select, "h-11 bg-white/70")}>
+                                            <SelectTrigger id="add-device-type" aria-label="Device type" className={cn(glass.select, "h-11 bg-muted/")}>
                                                 <div className="flex items-center gap-2">
                                                     <Zap className="w-4 h-4 text-[#F4D03F]" />
                                                     <SelectValue />
@@ -199,7 +199,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="device-name" className="text-[10px] font-black text-gray-400 ml-2">Display name</Label>
+                                    <Label htmlFor="device-name" className="text-[10px] font-black text-muted-foreground/70 ml-2">Display name</Label>
                                     <div className="relative">
                                         <Binary className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F4D03F]/50" />
                                         <Input
@@ -212,23 +212,23 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                                             className={cn(glass.input, "h-11 pl-10")}
                                         />
                                     </div>
-                                    <p className="text-[10px] text-gray-500 px-2">
+                                    <p className="text-[10px] text-muted-foreground px-2">
                                         Leave blank to auto-name it from the hardware ID.
                                     </p>
                                 </div>
                             </div>
 
-                            <div className={cn(glass.section, "bg-white/70 border-[#F4D03F]/15 p-6 space-y-5")}>
+                            <div className={cn(glass.section, "bg-muted/ border-border/ p-6 space-y-5")}>
                                 <div className="space-y-1">
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Placement</h3>
-                                    <p className="text-[11px] text-gray-500">Attach the device to an apiary, then optionally narrow it down to a hive.</p>
+                                    <h3 className="text-sm font-semibold text-foreground">Placement</h3>
+                                    <p className="text-[11px] text-muted-foreground">Attach the device to an apiary, then optionally narrow it down to a hive.</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-black text-gray-400 ml-2">Location*</Label>
+                                        <Label className="text-[10px] font-black text-muted-foreground/70 ml-2">Location*</Label>
                                         <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                                            <SelectTrigger id="add-device-apiary" aria-label="Location" className={cn(glass.select, "h-11 bg-white/70")}>
+                                            <SelectTrigger id="add-device-apiary" aria-label="Location" className={cn(glass.select, "h-11 bg-muted/")}>
                                                 <div className="flex items-center gap-2">
                                                     <Database className="w-4 h-4 text-[#F4D03F]" />
                                                     <SelectValue placeholder="Select a location" />
@@ -245,13 +245,13 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-black text-gray-400 ml-2">Hive</Label>
+                                        <Label className="text-[10px] font-black text-muted-foreground/70 ml-2">Hive</Label>
                                         <Select
                                             value={selectedHiveId}
                                             onValueChange={setSelectedHiveId}
                                             disabled={!selectedApiaryId}
                                         >
-                                            <SelectTrigger id="add-device-hive" aria-label="Hive" className={cn(glass.select, "h-11 bg-white/70 disabled:opacity-50")}>
+                                            <SelectTrigger id="add-device-hive" aria-label="Hive" className={cn(glass.select, "h-11 bg-muted/ disabled:opacity-50")}>
                                                 <div className="flex items-center gap-2">
                                                     <ShieldCheck className="w-4 h-4 text-[#1B9157]" />
                                                     <SelectValue placeholder={selectedApiaryId ? "Select a hive" : "Pick a location first"} />
@@ -271,30 +271,30 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                         </div>
 
                         <div className="xl:col-span-2 space-y-6">
-                            <div className={cn(glass.section, "bg-white/70 border-[#F4D03F]/15 p-6 space-y-4")}>
+                            <div className={cn(glass.section, "bg-muted/ border-border/ p-6 space-y-4")}>
                                 <div className="space-y-1">
-                                    <h3 className="text-sm font-semibold text-[#1A1A1A]">Assignment summary</h3>
-                                    <p className="text-[11px] text-gray-500">Preview how this device will appear once saved.</p>
+                                    <h3 className="text-sm font-semibold text-foreground">Assignment summary</h3>
+                                    <p className="text-[11px] text-muted-foreground">Preview how this device will appear once saved.</p>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-wider text-gray-400">Device</p>
-                                        <p className="mt-1 text-sm font-bold text-[#1A1A1A] break-all">
+                                    <div className="rounded-2xl border border-border/ bg-card p-4">
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">Device</p>
+                                        <p className="mt-1 text-sm font-bold text-foreground break-all">
                                             {deviceName.trim() || deviceCode.trim() || 'Unnamed device'}
                                         </p>
                                     </div>
-                                    <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-wider text-gray-400">Type</p>
-                                        <p className="mt-1 text-sm font-bold text-[#1A1A1A] capitalize">
+                                    <div className="rounded-2xl border border-border/ bg-card p-4">
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">Type</p>
+                                        <p className="mt-1 text-sm font-bold text-foreground capitalize">
                                             {deviceType === 'inland' ? 'Gateway' : deviceType === 'infield' ? 'Sensor' : 'Health monitor'}
                                         </p>
                                     </div>
-                                    <div className="rounded-2xl border border-[#F4D03F]/10 bg-[#FFF9F0] p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-wider text-gray-400">Location</p>
+                                    <div className="rounded-2xl border border-border/ bg-card p-4">
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/70">Location</p>
                                         <div className="mt-1 flex items-start gap-2">
                                             <MapPin className="w-4 h-4 text-[#F4D03F] mt-0.5 shrink-0" />
-                                            <p className="text-sm font-bold text-[#1A1A1A]">
+                                            <p className="text-sm font-bold text-foreground">
                                                 {selectedApiary?.location_name || selectedApiary?.name || 'No location selected'}
                                             </p>
                                         </div>
@@ -302,17 +302,17 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                                 </div>
                             </div>
 
-                            <div className={cn(glass.card, "bg-[#FFF9F0] border-[#F4D03F]/15 p-5")}>
+                            <div className={cn(glass.card, "bg-card border-border/ p-5")}>
                                 <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center shrink-0">
+                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-border/ flex items-center justify-center shrink-0">
                                         <Info className="w-4 h-4 text-[#F4D03F]" />
                                     </div>
                                     <div className="space-y-2">
-                                        <p className="text-sm font-semibold text-[#1A1A1A]">What gets linked</p>
-                                        <p className="text-[11px] leading-relaxed text-gray-500">
+                                        <p className="text-sm font-semibold text-foreground">What gets linked</p>
+                                        <p className="text-[11px] leading-relaxed text-muted-foreground">
                                             Saving this record stores the selected apiary as the device location and keeps the hive relationship optional.
                                         </p>
-                                        <p className="text-[11px] leading-relaxed text-gray-500">
+                                        <p className="text-[11px] leading-relaxed text-muted-foreground">
                                             {selectedApiaryId
                                                 ? `${filteredHives.length} hive${filteredHives.length === 1 ? '' : 's'} available in this location.`
                                                 : 'Choose a location to unlock hive assignment.'}
@@ -323,7 +323,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
                         </div>
                     </div>
 
-                    <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-[#F4D03F]/10 pt-6">
+                    <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-border/ pt-6">
                         <button
                             type="button"
                             onClick={() => handleOpenChange(false)}
@@ -352,3 +352,4 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onS
 };
 
 export default AddDeviceModal;
+

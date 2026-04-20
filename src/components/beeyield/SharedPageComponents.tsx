@@ -47,7 +47,7 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
         >
             <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                    <div className="w-12 h-12 rounded-xl bg-[#FFF9F0] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-card flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Icon className="w-6 h-6" />
                     </div>
                     {badge && (
@@ -56,11 +56,11 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
                         </Badge>
                     )}
                 </div>
-                <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">
+                <h3 className="text-lg font-bold text-foreground mb-1">
                     {title}
                 </h3>
                 {description && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground/90">
                         {description}
                     </p>
                 )}
@@ -107,18 +107,18 @@ export const StatCard: React.FC<StatCardProps> = ({
     const getTrendColor = () => {
         if (trend === 'up') return 'text-[#1B9157]';
         if (trend === 'down') return 'text-red-600';
-        return 'text-gray-600';
+        return 'text-muted-foreground/90';
     };
 
     return (
         <Card className={cn("border-l-4 p-6", getColorClasses())}>
             <div className="flex items-start justify-between">
                 <div className="flex-1">
-                    <p className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">
+                    <p className="text-xs font-bold text-muted-foreground/90 uppercase tracking-wider mb-2">
                         {label}
                     </p>
                     <div className="flex items-baseline gap-2">
-                        <p className="text-3xl font-black text-[#1A1A1A]">
+                        <p className="text-3xl font-black text-foreground">
                             {value}
                         </p>
                         {change !== undefined && (
@@ -128,14 +128,14 @@ export const StatCard: React.FC<StatCardProps> = ({
                         )}
                     </div>
                     {subtitle && (
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             {subtitle}
                         </p>
                     )}
                 </div>
                 {Icon && (
-                    <div className="w-10 h-10 rounded-lg bg-[#FFF9F0] flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-gray-600" />
+                    <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-muted-foreground/90" />
                     </div>
                 )}
             </div>
@@ -153,11 +153,11 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, a
     return (
         <div className="flex items-start justify-between">
             <div className="space-y-1">
-                <h2 className="text-xl font-bold text-[#1A1A1A]">
+                <h2 className="text-xl font-bold text-foreground">
                     {title}
                 </h2>
                 {subtitle && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground/90">
                         {subtitle}
                     </p>
                 )}
@@ -181,12 +181,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon: Icon, title, descr
     return (
         <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
             <div className="w-16 h-16 bg-[#F4D03F]/10 rounded-2xl flex items-center justify-center mb-4">
-                <Icon className="w-8 h-8 text-gray-400" />
+                <Icon className="w-8 h-8 text-muted-foreground/70" />
             </div>
-            <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
                 {title}
             </h3>
-            <p className="text-gray-600 max-w-sm mb-6">
+            <p className="text-muted-foreground/90 max-w-sm mb-6">
                 {description}
             </p>
             {action && (
@@ -197,3 +197,4 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon: Icon, title, descr
         </div>
     );
 };
+
