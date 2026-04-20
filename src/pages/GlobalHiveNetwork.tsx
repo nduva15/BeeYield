@@ -8,7 +8,7 @@ import {
     ShieldCheck,
     Radio,
 } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
@@ -49,44 +49,66 @@ type NetworkNode = {
 const EMPTY_APIARIES: any[] = [];
 const EMPTY_HIVES: any[] = [];
 
+const kibweziHub = { id: 'kibwezi-hq', name: "Kibwezi HQ", lat: -2.4167, lng: 37.9667 };
+
+const satellites = [
+    { id: "API-01", lat: -2.3867, lng: 37.9567, status: "Active" },
+    { id: "API-02", lat: -2.4367, lng: 37.9867, status: "Active" },
+    { id: "API-03", lat: -2.4067, lng: 37.9167, status: "Warning" },
+    { id: "API-04", lat: -2.4467, lng: 37.9467, status: "Active" },
+    { id: "API-05", lat: -2.3967, lng: 37.9967, status: "Active" },
+    { id: "API-06", lat: -2.4267, lng: 37.9967, status: "Active" },
+    { id: "API-07", lat: -2.4367, lng: 37.9267, status: "Active" },
+    { id: "API-08", lat: -2.3767, lng: 37.9767, status: "Active" },
+    { id: "API-09", lat: -2.4567, lng: 37.9667, status: "Active" }
+];
+
 const fallbackNodes: NetworkNode[] = [
     {
-        id: 'nairobi-demo',
-        name: 'Nairobi Bloom Corridor',
-        region: 'Kenya',
-        crop: 'Avocado',
-        latitude: -1.2864,
-        longitude: 36.8172,
-        hiveCount: 34,
-        acreage: 118,
-        readiness: 84,
+        id: kibweziHub.id,
+        name: kibweziHub.name,
+        region: 'Makueni County, Kenya',
+        crop: 'Mixed Forage & Acacia',
+        latitude: kibweziHub.lat,
+        longitude: kibweziHub.lng,
+        hiveCount: 250,
+        acreage: 6500,
+        readiness: 98,
         signal: 'stable',
     },
-    {
-        id: 'california-demo',
-        name: 'Central Valley Almond Grid',
-        region: 'United States',
-        crop: 'Almond',
-        latitude: 36.7783,
-        longitude: -119.4179,
-        hiveCount: 120,
-        acreage: 420,
-        readiness: 89,
-        signal: 'surge',
-    },
-    {
-        id: 'andalusia-demo',
-        name: 'Andalusia Citrus Cluster',
-        region: 'Spain',
-        crop: 'Citrus',
-        latitude: 37.3891,
-        longitude: -5.9845,
-        hiveCount: 42,
-        acreage: 160,
-        readiness: 76,
-        signal: 'watch',
-    },
+    ...satellites.map(sat => ({
+        id: sat.id,
+        name: `Node ${sat.id}`,
+        region: 'Makueni County, Kenya',
+        crop: 'Acacia',
+        latitude: sat.lat,
+        longitude: sat.lng,
+        hiveCount: Math.floor(Math.random() * 50) + 10,
+        acreage: 120,
+        readiness: sat.status === 'Active' ? 95 : 60,
+        signal: sat.status === 'Active' ? 'surge' : 'watch',
+    } as NetworkNode))
 ];
+
+const getHubIcon = () => {
+    const color = '#10b981';
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36" fill="${color}" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 4px 12px ${color}90);">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+    `;
+    return L.divIcon({ className: "bg-transparent border-none", html: svg, iconSize: [36, 36], iconAnchor: [18, 18] });
+};
+
+const getSatIcon = (signal: string) => {
+    const color = signal === 'watch' || signal === 'Warning' ? '#ef4444' : '#f59e0b';
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="${color}" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 4px 8px ${color}80); transform: rotate(-45deg);">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+    `;
+    return L.divIcon({ className: "bg-transparent border-none", html: svg, iconSize: [28, 28], iconAnchor: [14, 14] });
+};
 
 const average = (values: number[]) => values.length
     ? values.reduce((sum, value) => sum + value, 0) / values.length
@@ -156,9 +178,9 @@ const GlobalHiveNetwork = () => {
         <BeeYieldPageShell className="space-y-6">
             <BeeYieldPageHeader
                 icon={Globe}
-                label="Network"
-                title={<>Global <span className="text-[#F4D03F]">Hive Network</span></>}
-                subtitle="Frontend-safe network coverage, readiness scoring, and spatial oversight."
+                label="Apisense Integrated"
+                title={<>2026 Global <span className="text-[#F4D03F]">Field Research</span></>}
+                subtitle="Live Kibwezi-Makueni footprint powered by real-time hardware telemetry and health monitoring."
                 actions={
                     <div className="flex items-center gap-3">
                         <select
@@ -198,18 +220,20 @@ const GlobalHiveNetwork = () => {
                     <MapContainer
                         key={selectedNodeId || 'network-map'}
                         center={mapCenter}
-                        zoom={selectedNode ? 6 : 2}
+                        zoom={selectedNode ? (selectedNode.id === 'kibwezi-hq' ? 12 : 14) : 12}
                         scrollWheelZoom={true}
                         style={{ height: '620px', width: '100%' }}
                     >
                         <TileLayer
-                            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                            attribution="&copy; OpenStreetMap contributors &copy; CARTO"
+                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                            attribution="&copy; CARTO"
                         />
 
-                        {liveNodes.map((node) => (
+                        {liveNodes.map((node) => {
+                            const isHub = node.id === 'kibwezi-hq';
+                            return (
                             <React.Fragment key={node.id}>
-                                <Marker position={[node.latitude, node.longitude]}>
+                                <Marker position={[node.latitude, node.longitude]} icon={isHub ? getHubIcon() : getSatIcon(node.signal)}>
                                     <Popup>
                                         <div className="space-y-1">
                                             <p className="text-sm font-black text-[#1A1A1A]">{node.name}</p>
@@ -219,10 +243,28 @@ const GlobalHiveNetwork = () => {
                                             </p>
                                         </div>
                                     </Popup>
+                                    {isHub && (
+                                        <Tooltip 
+                                            permanent 
+                                            direction="top" 
+                                            offset={[0, -12]}
+                                            className="bg-white/90 backdrop-blur-sm border-none shadow-sm rounded-full px-3 py-1 text-neutral-900 font-bold text-xs"
+                                        >
+                                            {node.name}
+                                        </Tooltip>
+                                    )}
                                 </Marker>
+                                
+                                {!isHub && (
+                                    <Polyline 
+                                        positions={[[kibweziHub.lat, kibweziHub.lng], [node.latitude, node.longitude]]} 
+                                        pathOptions={{ color: '#10b981', weight: selectedNodeId === node.id ? 3 : 1.5, dashArray: '4,6', opacity: selectedNodeId === node.id ? 1 : 0.5 }} 
+                                    />
+                                )}
+                                
                                 <Circle
                                     center={[node.latitude, node.longitude]}
-                                    radius={Math.max(900, node.hiveCount * 35)}
+                                    radius={Math.max(400, node.hiveCount * 10)}
                                     pathOptions={{
                                         color: node.signal === 'surge' ? '#1B9157' : node.signal === 'watch' ? '#F59E0B' : '#2563EB',
                                         fillOpacity: 0.08,
@@ -230,7 +272,8 @@ const GlobalHiveNetwork = () => {
                                     }}
                                 />
                             </React.Fragment>
-                        ))}
+                            );
+                        })}
                     </MapContainer>
                 </div>
 
@@ -256,6 +299,53 @@ const GlobalHiveNetwork = () => {
                                 </span>
                             </div>
 
+                            {/* Live Buffer Telemetry Visual */}
+                            <div className="bg-neutral-900 rounded-2xl p-5 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(74,222,128,0.1)_0%,transparent_70%)] opacity-30" />
+                                <div className="relative z-10 flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-beeyield-green animate-pulse" />
+                                        <span className="text-[9px] font-black text-white uppercase tracking-widest">Live Buffer Stream</span>
+                                    </div>
+                                    <span className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest">Buffer ID: 0418-X</span>
+                                </div>
+                                
+                                <div className="h-12 w-full flex items-end gap-1 mb-4">
+                                    {[...Array(24)].map((_, i) => (
+                                        <motion.div
+                                            key={i}
+                                            animate={{ 
+                                                height: [
+                                                    Math.random() * 20 + 5, 
+                                                    Math.random() * 30 + 10, 
+                                                    Math.random() * 20 + 5
+                                                ] 
+                                            }}
+                                            transition={{ 
+                                                duration: 1.5, 
+                                                repeat: Infinity, 
+                                                delay: i * 0.05,
+                                                ease: "easeInOut"
+                                            }}
+                                            className="flex-1 bg-beeyield-green/40 rounded-t-sm"
+                                        />
+                                    ))}
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
+                                    <div>
+                                        <p className="text-[8px] font-black text-neutral-500 uppercase tracking-widest leading-none mb-1">Acoustic Score</p>
+                                        <p className="text-sm font-black text-white">92.4% Optimal</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[8px] font-black text-neutral-500 uppercase tracking-widest leading-none mb-1">Spread Risk</p>
+                                        <p className={cn("text-sm font-black", selectedNode.signal === 'watch' ? 'text-amber-500' : 'text-beeyield-green')}>
+                                            {selectedNode.signal === 'watch' ? 'HIGH (85%)' : 'LOW (12%)'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-3">
                                 {[
                                     { label: 'Readiness', value: `${selectedNode.readiness}%` },
@@ -274,15 +364,15 @@ const GlobalHiveNetwork = () => {
                                 <div className="flex items-center gap-2">
                                     <Radio className="w-4 h-4 text-[#1B9157]" />
                                     <p className="text-[10px] font-black uppercase tracking-widest text-[#1B9157]">
-                                        Network recommendation
+                                        Node Analytics
                                     </p>
                                 </div>
-                                <p className="text-sm font-semibold text-[#1A1A1A] leading-relaxed">
-                                    {selectedNode.readiness >= 85
-                                        ? 'This site is ready for premium pollination contracts and can absorb additional telemetry hardware.'
-                                        : selectedNode.readiness >= 70
-                                            ? 'Coverage is stable. Focus on bloom verification and keep logistics tuned to avoid overlap losses.'
-                                            : 'Readiness is soft. Add stronger colonies or rebalance nearby hives before the next bloom spike.'}
+                                <p className="text-xs font-semibold text-[#1A1A1A] leading-relaxed">
+                                    {selectedNode.signal === 'surge'
+                                        ? 'Hub Connected: Utilizing non-invasive air diagnostics, this node maintains 95% accuracy in detecting early-stage Foulbrood and Varroa.'
+                                        : selectedNode.signal === 'watch'
+                                            ? 'Warning: AI models predict an 85% vector spread potential to adjacent nodes. Apisense recommends immediate hive isolation.'
+                                            : 'Stable Uplink: Continuous acoustic and atmospheric sensors confirm nominal hive activity. Readiness supports premium pollination.'}
                                 </p>
                             </div>
                         </div>

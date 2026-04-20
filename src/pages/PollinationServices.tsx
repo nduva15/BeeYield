@@ -26,38 +26,38 @@ const PollinationServices = () => {
     const differences = [
         {
             icon: Cpu,
-            title: "Colony Monitoring",
-            description: "Sensors inside hives track temperature and activity so you can spot changes early.",
-            link: "/precision-pollination"
+            title: "95% Detection Accuracy",
+            description: "Apisense IoT units mounted inside the hive achieve up to 95% accuracy in detecting early-stage signs of Foulbrood, Nosema, and Varroa destructor.",
+            link: "/diseases"
         },
         {
             icon: Activity,
-            title: "Hive Health Monitoring",
-            description: "Analysis of colony sounds to detect queen presence and general hive productivity levels.",
+            title: "85% Spread Prediction",
+            description: "Through continuous localized monitoring, the system predicts the vector spread of diseases across the apiary with up to 85% accuracy.",
+            link: "/diseases"
+        },
+        {
+            icon: Radio,
+            title: "Non-Invasive IoT Telemetry",
+            description: "Specialized, non-invasive IoT sensors continuously analyze the air composition inside the hive without disturbing the natural rhythm of the bees.",
             link: "/precision-pollination"
         },
         {
-            icon: Eye,
-            title: "Field Coverage Mapping",
-            description: "See where activity is strong or weak across the field so you can adjust placement.",
-            link: "/in-land-pollination"
-        },
-        {
             icon: Target,
-            title: "Visitation Analytics",
-            description: "Estimate bee visits per flower to understand pollination strength.",
+            title: "Predictive Deployment",
+            description: "By cross-referencing precise hive coordinates with satellite data on local flora blooms and agricultural chemical drift, Apisense prevents unnecessary exposure.",
             link: "/in-land-pollination"
         },
         {
             icon: Shield,
-            title: "Early Disease Detection",
-            description: "Early warning signs from sensors and inspections to catch issues like Varroa sooner.",
+            title: "2026 Field Research",
+            description: "BeeYield's participation in the 2026 Apisense Global Field Research gives you early access to next-generation prediction solutions.",
             link: "/diseases"
         },
         {
-            icon: Target,
-            title: "Precision Pollination",
-            description: "A practical service: monitoring, placement support, and a record of what happened during bloom.",
+            icon: Globe,
+            title: "Kibwezi Hub Uplink",
+            description: "All telemetry routes back directly to the local Kibwezi-Makueni agricultural corridor Hub, ensuring zero downtime for your data.",
             link: "/precision-pollination"
         }
     ];
@@ -141,16 +141,16 @@ const PollinationServices = () => {
                                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-[#F4D03F] text-[11px] font-black mb-8 border border-amber-100 shadow-sm"
                             >
                                 <Zap className="w-3.5 h-3.5" />
-                                2026 Global Field Research
+                                Partner in Pollination
                             </motion.div>
 
                             <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
-                                Don't guess where<br/>
-                                <span className="text-[#F4D03F]">the bees are.</span> <span className="text-[#1B9157]">Know.</span>
+                                Your <span className="text-[#F4D03F]">Partner</span> <br />
+                                in <span className="text-[#1B9157]">Pollination.</span>
                             </h1>
 
                             <p className="text-lg md:text-xl text-neutral-600 mb-10 max-w-xl leading-relaxed font-medium">
-                                See the unseen with Apisense. Professional pollination records for every field. We don't just supply bees; we provide real-time proof of flight patterns and field coverage.
+                                Professional pollination records for every field. We don't just supply bees; we provide clear proof of hive activity and colony health using reliable sensor technology.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 mb-12">

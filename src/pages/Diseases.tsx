@@ -68,32 +68,30 @@ const HIVE_INSPECTION = "/images/diseases/hive-inspection.jpg";
 const getHubIcon = () => {
     const color = '#10b981'; // BeeYield Green for HQ
     const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36" fill="white" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 4px 12px ${color}90);">
-            <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-            <circle cx="12" cy="10" r="3.5" fill="${color}" stroke="none" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36" fill="${color}" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 4px 12px ${color}90);">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
         </svg>
     `;
     return L.divIcon({
         className: "bg-transparent border-none",
         html: svg,
         iconSize: [36, 36],
-        iconAnchor: [18, 36]
+        iconAnchor: [18, 18]
     });
 };
 
 const getSatIcon = (status: string) => {
     const color = status === 'Warning' ? '#ef4444' : '#f59e0b'; // Amber for standard to match the screenshot vibe
     const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="white" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 4px 8px ${color}80);">
-            <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-            <circle cx="12" cy="10" r="3" fill="${color}" stroke="none" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="${color}" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0px 4px 8px ${color}80); transform: rotate(-45deg);">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
         </svg>
     `;
     return L.divIcon({
         className: "bg-transparent border-none",
         html: svg,
         iconSize: [28, 28],
-        iconAnchor: [14, 28]
+        iconAnchor: [14, 14]
     });
 };
 
