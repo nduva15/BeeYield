@@ -679,7 +679,7 @@ All colors MUST be HSL.
 
   /* 1. Honeycomb SVG background pattern - Obsidian & Citrus */
   .honeycomb-bg {
-    background-color: #FEFCE8;
+    
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V17L28 1l28 16v33L28 66zm0-2.25L54 49.13V18.87L28 3.25 2 18.87v30.26L28 63.75z' fill='%23F59E0B' fill-opacity='0.04'/%3E%3C/svg%3E");
   }
 
@@ -840,5 +840,157 @@ All colors MUST be HSL.
 
   .animate-marquee {
     animation: marquee 30s linear infinite;
+  }
+}
+
+/* === ADDED FOR AI DASHBOARD DARK MODE AND CUSTOM CLASSES === */
+@layer base {
+  .dark {
+    /* === Beeyield Dark Mode — Amber/Honey === */
+
+    --background: 24 12% 7%;
+    --foreground: 42 80% 92%;
+
+    --card: 24 15% 10%;
+    --card-foreground: 42 80% 92%;
+
+    --popover: 24 15% 10%;
+    --popover-foreground: 42 80% 92%;
+
+    --primary: 38 95% 52%;
+    --primary-foreground: 24 12% 7%;
+
+    --secondary: 30 20% 15%;
+    --secondary-foreground: 42 70% 80%;
+
+    --muted: 24 15% 14%;
+    --muted-foreground: 38 30% 55%;
+
+    --accent: 45 100% 60%;
+    --accent-foreground: 24 12% 7%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 30 20% 18%;
+    --input: 30 20% 18%;
+    --ring: 38 95% 52%;
+
+    /* Custom bee tokens */
+    --honey: 38 95% 52%;
+    --honey-deep: 28 90% 38%;
+    --honey-light: 45 100% 68%;
+    --honeycomb: 32 25% 12%;
+    --wax: 42 40% 22%;
+    --pollen: 55 100% 62%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(24 12% 7%) 0%, hsl(28 30% 10%) 50%, hsl(24 12% 7%) 100%);
+    --gradient-amber: linear-gradient(135deg, hsl(38 95% 52%), hsl(28 90% 38%));
+    --gradient-glow: radial-gradient(ellipse at center, hsl(38 95% 52% / 0.15) 0%, transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(24 15% 12%), hsl(30 20% 10%));
+
+    /* Shadows */
+    --shadow-honey: 0 0 30px hsl(38 95% 52% / 0.25);
+    --shadow-card: 0 4px 24px hsl(0 0% 0% / 0.4);
+    --shadow-glow: 0 0 60px hsl(38 95% 52% / 0.15);
+
+    --sidebar-background: 24 15% 9%;
+    --sidebar-foreground: 42 60% 75%;
+    --sidebar-primary: 38 95% 52%;
+    --sidebar-primary-foreground: 24 12% 7%;
+    --sidebar-accent: 30 20% 15%;
+    --sidebar-accent-foreground: 42 80% 88%;
+    --sidebar-border: 30 20% 14%;
+    --sidebar-ring: 38 95% 52%;
+  }
+}
+
+@layer components {
+  /* Honeycomb SVG background pattern */
+  .honeycomb-bg {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V17L28 1l28 16v33L28 66zm0-2.25L54 49.13V18.87L28 3.25 2 18.87v30.26L28 63.75z' fill='%23f59e0b' fill-opacity='0.04'/%3E%3C/svg%3E");
+  }
+
+  .hex-glow {
+    box-shadow: var(--shadow-honey);
+  }
+
+  .amber-glow {
+    box-shadow: 0 0 20px hsl(38 95% 52% / 0.3), 0 0 60px hsl(38 95% 52% / 0.1);
+  }
+
+  /* Chat message bubbles */
+  .chat-user {
+    background: var(--gradient-amber);
+    color: hsl(var(--primary-foreground));
+    border-radius: 18px 18px 4px 18px;
+  }
+
+  .chat-assistant {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 18px 18px 18px 4px;
+  }
+
+  /* Knowledge category cards */
+  .knowledge-card {
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--border));
+    transition: all 0.3s ease;
+  }
+
+  .knowledge-card:hover {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow: var(--shadow-honey);
+    transform: translateY(-2px);
+  }
+
+  /* Scrollbar */
+  .custom-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scroll::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
+  }
+
+  /* Typing indicator dots */
+  .typing-dot {
+    animation: typing-bounce 1.4s infinite ease-in-out;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typing-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  @keyframes hex-pulse {
+    0%, 100% { opacity: 0.04; }
+    50% { opacity: 0.08; }
+  }
+
+  .hex-animate {
+    animation: hex-pulse 4s ease-in-out infinite;
+  }
+
+  /* Shimmer loading */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--border)) 50%, hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
   }
 }

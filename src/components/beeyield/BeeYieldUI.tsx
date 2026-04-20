@@ -53,12 +53,15 @@ export function BeeYieldPageHeader(props: {
   onBack?: () => void;
   onRefresh?: () => void;
 }) {
-  // We keep the GlassTheme header look, but allow some extra hooks.
-  // Badge/back/refresh are implemented as actions to avoid redesigning the header layout.
   const { title, subtitle, icon, label, actions, action, badge, onBack, onRefresh } = props;
 
   const badgeNode = badge ? (
-    <span className={cn(glass.badge, badge.variant === 'success' && 'border-[#1B9157]/30 bg-[#1B9157]/10', badge.variant === 'error' && 'border-red-500/20 bg-red-500/10 text-red-600', badge.variant === 'warning' && 'border-[#F4D03F]/30 bg-[#F4D03F]/10')}>
+    <span className={cn(
+      glass.badge, 
+      badge.variant === 'success' && 'border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400', 
+      badge.variant === 'error' && 'border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400', 
+      badge.variant === 'warning' && 'border-primary/30 bg-primary/10 text-primary-foreground dark:text-primary'
+    )}>
       {badge.text}
     </span>
   ) : null;
@@ -67,12 +70,12 @@ export function BeeYieldPageHeader(props: {
     <div className="flex items-center gap-2.5">
       {badgeNode}
       {onRefresh && (
-        <Button variant="outline" size="sm" className="h-9 rounded-lg border-[#F4D03F]/40 bg-[#FFF9F0] hover:bg-[#F4D03F]/10" onClick={onRefresh}>
+        <Button variant="outline" size="sm" className={cn(glass.btnSecondary, "h-9")} onClick={onRefresh}>
           Refresh
         </Button>
       )}
       {onBack && (
-        <Button variant="outline" size="sm" className="h-9 rounded-lg border-[#F4D03F]/40 bg-[#FFF9F0] hover:bg-[#F4D03F]/10" onClick={onBack}>
+        <Button variant="outline" size="sm" className={cn(glass.btnSecondary, "h-9")} onClick={onBack}>
           Back
         </Button>
       )}
@@ -81,17 +84,16 @@ export function BeeYieldPageHeader(props: {
   );
 
   if (!icon) {
-    // Fallback to a simple header if no icon is provided
     return (
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-[#F4D03F]/20 relative mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-border relative mb-6">
         <div className="space-y-1.5">
           {label && (
-            <div className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border bg-[#F4D03F]/10 text-[#1A1A1A]/70 border-[#F4D03F]/20')}>
+            <div className={cn('inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border bg-primary/10 text-foreground/70 border-primary/20')}>
               {label}
             </div>
           )}
           <h1 className={cn(glass.sectionTitle, 'mt-1')}>{title}</h1>
-          {subtitle && <p className="text-sm text-gray-500 max-w-2xl leading-relaxed">{subtitle}</p>}
+          {subtitle && <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">{subtitle}</p>}
         </div>
         {headerActions}
       </div>
@@ -117,16 +119,16 @@ export function BeeYieldSectionHeader(props: {
 }) {
   const { title, subtitle, icon: Icon, actions } = props;
   return (
-    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-3 border-b border-[#F4D03F]/10 mb-4">
+    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-3 border-b border-border/50 mb-4">
       <div className="flex items-center gap-3">
         {Icon && (
-          <div className="w-8 h-8 rounded-lg bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center">
-            <Icon className="w-4 h-4 text-[#F4D03F]" />
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Icon className="w-4 h-4 text-primary" />
           </div>
         )}
         <div className="space-y-0.5">
-          <h3 className="text-sm font-black text-[#1A1A1A] tracking-tight">{title}</h3>
-          {subtitle && <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{subtitle}</p>}
+          <h3 className="text-sm font-black text-foreground tracking-tight">{title}</h3>
+          {subtitle && <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{subtitle}</p>}
         </div>
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
@@ -146,7 +148,7 @@ export function BeeYieldTabBar({
   className?: string;
 }) {
   return (
-    <div className={cn('flex bg-white/40 p-1 rounded-xl border border-white/40 gap-1 w-fit', className)}>
+    <div className={cn('flex bg-muted/30 p-1 rounded-xl border border-border/40 gap-1 w-fit', className)}>
       {tabs.map((t) => {
         const isActive = t.id === activeTab;
         return (
@@ -157,7 +159,7 @@ export function BeeYieldTabBar({
             onClick={() => onChange(t.id)}
             className={cn(
               'h-9 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center',
-              isActive ? 'bg-[#F4D03F] text-[#1A1A1A] shadow-sm' : 'text-gray-600 hover:text-[#1A1A1A] hover:bg-[#F4D03F]/10',
+              isActive ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-primary/10',
               t.disabled && 'opacity-50 cursor-not-allowed'
             )}
           >
@@ -182,12 +184,12 @@ export function BeeYieldEmptyState({
 }) {
   return (
     <div className={glass.emptyState}>
-      <div className="w-12 h-12 rounded-xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center">
-        <Icon className="w-6 h-6 text-gray-500" />
+      <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+        <Icon className="w-6 h-6 text-muted-foreground" />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-bold text-[#1A1A1A]">{title}</p>
-        {description && <p className="text-sm text-gray-500 max-w-md">{description}</p>}
+        <p className="text-sm font-bold text-foreground">{title}</p>
+        {description && <p className="text-sm text-muted-foreground max-w-md">{description}</p>}
       </div>
       {action && (
         <Button className={glass.btnPrimary} onClick={action.onClick}>
@@ -200,7 +202,7 @@ export function BeeYieldEmptyState({
 
 export function BeeYieldLoading({ label = 'Loading…' }: { label?: string }) {
   return (
-    <div className="flex items-center justify-center gap-3 py-10 text-[#1A1A1A]/70">
+    <div className="flex items-center justify-center gap-3 py-10 text-muted-foreground">
       <Loader2 className="w-4 h-4 animate-spin" />
       <span className="text-sm font-medium">{label}</span>
     </div>
@@ -224,14 +226,14 @@ export function BeeYieldFormField({
 }) {
   return (
     <div className={cn('space-y-1.5', className)}>
-      <Label htmlFor={id} className="text-sm font-semibold text-[#1A1A1A]/70">
+      <Label htmlFor={id} className="text-sm font-semibold text-muted-foreground">
         {label}
       </Label>
       {children}
       {error ? (
         <p className="text-[11px] font-semibold text-red-600">{error}</p>
       ) : hint ? (
-        <p className="text-xs text-gray-500">{hint}</p>
+        <p className="text-xs text-muted-foreground">{hint}</p>
       ) : null}
     </div>
   );
@@ -255,7 +257,7 @@ export function BeeYieldTextInput({
 
   return (
     <div className={cn('relative', className)}>
-      <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
       <Input id={id} className={cn(glass.input, 'pl-10', inputClassName)} {...props} />
     </div>
   );
@@ -274,9 +276,9 @@ export function BeeYieldBadge({
     <span
       className={cn(
         glass.badge,
-        variant === 'success' && 'border-[#1B9157]/30 bg-[#1B9157]/10 text-[#1B9157]',
-        variant === 'error' && 'border-red-500/20 bg-red-500/10 text-red-600',
-        variant === 'warning' && 'border-[#F4D03F]/30 bg-[#F4D03F]/10 text-[#F4D03F]',
+        variant === 'success' && 'border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400',
+        variant === 'error' && 'border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400',
+        variant === 'warning' && 'border-primary/30 bg-primary/10 text-primary-foreground dark:text-primary',
         className
       )}
     >
@@ -284,4 +286,3 @@ export function BeeYieldBadge({
     </span>
   );
 }
-

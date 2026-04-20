@@ -1,8 +1,11 @@
-// Theme hook - Light mode only, dark mode removed
+import { useTheme as useThemeContext } from "@/contexts/ThemeContext";
+
 export function useTheme() {
+  const { theme, setTheme } = useThemeContext();
+  
   return {
-    theme: "light" as const,
-    setTheme: () => {},
-    toggleTheme: () => {},
+    theme,
+    setTheme,
+    toggleTheme: () => setTheme(theme === "light" ? "dark" : "light"),
   };
 }

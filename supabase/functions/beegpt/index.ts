@@ -1145,22 +1145,83 @@ serve(async (req: any) => {
     });
 
     if (!response.ok) {
+      console.warn("Lovable gateway failed with status:", response.status, "Falling back to OpenAI API.");
+      
+      const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+      if (OPENAI_API_KEY) {
+        response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: BEEYIELD_SYSTEM_PROMPT },
+              ...builtMessages,
+            ],
+            stream: true,
+          }),
+        });
+      }
+    }
+
+    if (!response.ok) {
+      console.warn("OpenAI API failed or unavailable. Falling back directly to Google Gemini Native API.");
+      const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
+      
+      if (GOOGLE_API_KEY) {
+        // Convert OpenAI specific multimodal format to Gemini Native format
+        const geminiContents = builtMessages.map((m: any) => {
+          if (Array.isArray(m.content)) {
+            return {
+              role: m.role === "assistant" ? "model" : "user",
+              parts: m.content.map((p: any) => {
+                if (p.type === "text") return { text: p.text };
+                if (p.type === "image_url") {
+                  const [mimeRaw, b64] = p.image_url.url.split(";base64,");
+                  const mimeType = mimeRaw.replace("data:", "");
+                  return { inlineData: { mimeType, data: b64 } };
+                }
+                return { text: "" };
+              })
+            };
+          }
+          return {
+            role: m.role === "assistant" ? "model" : "user",
+            parts: [{ text: m.content }]
+          };
+        });
+
+        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:streamGenerateContent?alt=sse&key=${GOOGLE_API_KEY}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: BEEYIELD_SYSTEM_PROMPT }] },
+            contents: geminiContents
+          }),
+        });
+      }
+    }
+
+    if (!response.ok) {
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment before asking another question." }),
+          JSON.stringify({ error: "API Rate limit exceeded or credits exhausted across all fallback providers (OpenAI/Google). Please check your account billing." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
+      if (response.status === 403) {
         return new Response(
-          JSON.stringify({ error: "Usage credits exhausted. Please add credits to continue." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: "API Key Permission Error (403). The provided Google/OpenAI keys are forbidden or lack API access." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       const text = await response.text();
       console.error("AI gateway error:", response.status, text);
       return new Response(
-        JSON.stringify({ error: "AI gateway error. Please try again." }),
+        JSON.stringify({ error: `AI Gateway exhausted (Lovable/OpenAI/Google failed). Last error: ${response.status} ${text.substring(0, 100)}` }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
