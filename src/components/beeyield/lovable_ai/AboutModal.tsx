@@ -35,7 +35,7 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scroll">
         <DialogHeader>
           <DialogTitle className="text-2xl font-display text-honey flex items-center gap-2">
-            🐝 Our Story
+            🐝 About Beeyield AI
           </DialogTitle>
         </DialogHeader>
 

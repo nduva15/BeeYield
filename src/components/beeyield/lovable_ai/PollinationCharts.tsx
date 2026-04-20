@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend, AreaChart, Area } from "recharts";
-import { dashboardPollinationCropDetails } from "@/data/beePollinationData";
 
-const CROP_DATA = dashboardPollinationCropDetails.map((crop) => ({
-  crop: crop.cropName,
-  dependency: crop.dependencyPercent,
-  value: crop.estimatedMarketValueUsdBn ?? Number((crop.targetFPA / 4).toFixed(1)),
-}));
+const CROP_DATA = [
+  { crop: "Almonds", dependency: 100, value: 5.6 },
+  { crop: "Apples", dependency: 90, value: 4.1 },
+  { crop: "Blueberries", dependency: 90, value: 1.2 },
+  { crop: "Cherries", dependency: 90, value: 1.8 },
+  { crop: "Avocados", dependency: 80, value: 2.9 },
+  { crop: "Cucumbers", dependency: 80, value: 1.1 },
+  { crop: "Watermelon", dependency: 70, value: 0.9 },
+  { crop: "Soybeans", dependency: 50, value: 46.8 },
+  { crop: "Canola", dependency: 50, value: 4.2 },
+  { crop: "Coffee", dependency: 40, value: 19.3 },
+  { crop: "Cocoa", dependency: 30, value: 5.1 },
+  { crop: "Cotton", dependency: 20, value: 8.7 },
+];
 
 const REGIONAL_VALUE = [
   { region: "Asia-Pacific", value: 198 },

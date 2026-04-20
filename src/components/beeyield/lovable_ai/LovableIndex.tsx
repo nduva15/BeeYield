@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3 } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator } from "lucide-react";
 import { toast } from "sonner";
+import beeyieldLogo from "@/assets/beeyield-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useVoiceInput } from "@/hooks/use-voice-input";
@@ -12,6 +13,8 @@ import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer"
 import BeeGallery from "@/components/beeyield/lovable_ai/BeeGallery";
 import BeeDiseasesPage from "@/components/beeyield/lovable_ai/BeeDiseasesPage";
 import PollinationCharts from "@/components/beeyield/lovable_ai/PollinationCharts";
+import PollinationLookup from "@/components/beeyield/lovable_ai/PollinationLookup";
+import HarvestCalculator from "@/components/beeyield/lovable_ai/HarvestCalculator";
 
 type Message = {
   id: string;
@@ -50,7 +53,7 @@ async function streamBeeyield(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
     body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType }),
   });
@@ -113,6 +116,8 @@ export default function Index() {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [diseasesOpen, setDiseasesOpen] = useState(false);
   const [pollinationOpen, setPollinationOpen] = useState(false);
+  const [lookupOpen, setLookupOpen] = useState(false);
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   // Media state
   const [attachedImage, setAttachedImage] = useState<File | null>(null);
@@ -339,7 +344,7 @@ export default function Index() {
             <History className="w-4 h-4" />
             <span className="text-xs font-medium">History</span>
           </button>
-          <img src="/logo.png" alt="Beeyield" className="h-9 w-auto" />
+          <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto" />
           <div className="hidden sm:block">
             <div className="font-display font-bold text-foreground text-base leading-tight">Beeyield AI</div>
             <div className="text-xs text-muted-foreground">The World's Most Comprehensive Bee Knowledge System</div>
@@ -366,6 +371,20 @@ export default function Index() {
             title="Pollination Data & Charts"
           >
             <BarChart3 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setLookupOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Pollination Stocking Density Lookup"
+          >
+            <Flower2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setCalculatorOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Harvest Calculator"
+          >
+            <Calculator className="w-4 h-4" />
           </button>
           <button
             onClick={() => setAboutOpen(true)}
@@ -413,7 +432,7 @@ export default function Index() {
       <div className="flex-1 overflow-y-auto custom-scroll px-4 py-6 space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in max-w-3xl mx-auto w-full">
-            <img src="/logo.png" alt="Beeyield" className="h-16 w-auto mb-4 opacity-90" />
+            <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto mb-4 opacity-90" />
             <h1 className="font-display text-3xl font-bold text-honey mb-2">Welcome to Beeyield AI</h1>
             <p className="text-muted-foreground max-w-xl mb-8 text-sm leading-relaxed">
               The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
@@ -439,7 +458,7 @@ export default function Index() {
           >
             {msg.role === "assistant" && (
               <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-background border border-border shadow-sm">
-                <img src="/logo.png" alt="Beeyield AI" className="w-6 h-6 object-contain" />
+                <img src={beeyieldLogo} alt="Beeyield AI" className="w-6 h-6 object-contain" />
               </div>
             )}
             <div className="flex flex-col gap-1 max-w-[80%]">
@@ -470,7 +489,7 @@ export default function Index() {
         {isLoading && messages[messages.length - 1]?.role === "user" && (
           <div className="flex gap-3 justify-start max-w-4xl mx-auto w-full">
             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-background border border-border flex items-center justify-center shadow-sm">
-              <img src="/logo.png" alt="Beeyield AI" className="w-6 h-6 object-contain" />
+              <img src={beeyieldLogo} alt="Beeyield AI" className="w-6 h-6 object-contain" />
             </div>
             <div className="chat-assistant px-4 py-3 flex items-center gap-1">
               <span className="typing-dot w-2 h-2 rounded-full bg-primary inline-block" />
@@ -605,6 +624,8 @@ export default function Index() {
       <BeeGallery isOpen={galleryOpen} onClose={() => setGalleryOpen(false)} />
       <BeeDiseasesPage isOpen={diseasesOpen} onClose={() => setDiseasesOpen(false)} />
       <PollinationCharts isOpen={pollinationOpen} onClose={() => setPollinationOpen(false)} />
+      <PollinationLookup isOpen={lookupOpen} onClose={() => setLookupOpen(false)} />
+      <HarvestCalculator isOpen={calculatorOpen} onClose={() => setCalculatorOpen(false)} />
     </div>
   );
 }

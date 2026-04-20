@@ -70,6 +70,51 @@ export type Database = {
         }
         Relationships: []
       }
+      harvest_runs: {
+        Row: {
+          acres: number
+          ai_forecast: string | null
+          created_at: string
+          crop: string
+          device_id: string
+          fill_pct: number
+          frame_type: string
+          hhi: number
+          hives: number
+          id: string
+          local_estimate_kg: number | null
+          region: string
+        }
+        Insert: {
+          acres: number
+          ai_forecast?: string | null
+          created_at?: string
+          crop: string
+          device_id: string
+          fill_pct: number
+          frame_type: string
+          hhi: number
+          hives: number
+          id?: string
+          local_estimate_kg?: number | null
+          region: string
+        }
+        Update: {
+          acres?: number
+          ai_forecast?: string | null
+          created_at?: string
+          crop?: string
+          device_id?: string
+          fill_pct?: number
+          frame_type?: string
+          hhi?: number
+          hives?: number
+          id?: string
+          local_estimate_kg?: number | null
+          region?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
