@@ -353,64 +353,6 @@ const InLandPollination = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          DARK SECTION — BEEYIELD DIFFERENCE
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-20 bg-neutral-900 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
-          <div className="container mx-auto px-4 relative z-10">
-              <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="text-center mb-12"
-              >
-                  <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
-                      The PLIP Difference
-                  </Badge>
-                  <h2 className="text-3xl lg:text-4xl font-bold tracking-tight">
-                      See the bees. <span className="text-beeyield-green">Know the data.</span>
-                  </h2>
-              </motion.div>
-
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.1 }}
-                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
-                  >
-                      <div className="flex items-center justify-center mb-4">
-                          <Signal className="h-20 w-20 text-beeyield-green" />
-                      </div>
-                      <div className="h-1 w-16 bg-beeyield-green/30 mx-auto mb-6 rounded-full" />
-                      <h3 className="text-xl font-bold mb-3">Acoustic Precision</h3>
-                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
-                          Highly sensitive analysis models distinguish the <strong className="text-white">acoustic signature of a flying bee</strong> from a tractor engine on the same frequency.
-                      </p>
-                  </motion.div>
-
-                  <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.2 }}
-                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
-                  >
-                      <div className="flex items-center justify-center mb-4">
-                          <BarChart3 className="h-20 w-20 text-amber-400" />
-                      </div>
-                      <div className="h-1 w-16 bg-amber-400/30 mx-auto mb-6 rounded-full" />
-                      <h3 className="text-xl font-bold mb-3">Real-Time Visibility</h3>
-                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
-                          Compare pollination activity among different <strong className="text-white">genetic strains</strong>, filter by treatments, and correlate output rates with quality levels and germination rates.
-                      </p>
-                  </motion.div>
-              </div>
-          </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
           HOW IT WORKS GRID + PRODUCT SHOWCASE
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-32 bg-neutral-50/50 border-y border-neutral-100 relative">
@@ -478,7 +420,7 @@ const InLandPollination = () => {
                               {item.description}
                           </p>
                       </motion.div>
-                  ))}
+                  ))/* End of map */}
               </div>
           </div>
       </section>
@@ -617,6 +559,81 @@ const InLandPollination = () => {
               description="Contact us to discuss how PLIP can give you visibility and accountability for your pollination experience."
             />
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          THE BEEYIELD DIFFERENCE (MOVED TO FOOTER)
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 bg-neutral-900 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
+          <div className="container mx-auto px-4 relative z-10">
+              <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-12"
+              >
+                  <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+                      The BeeYield Difference
+                  </Badge>
+                  <h2 className="text-3xl lg:text-4xl font-bold tracking-tight">
+                      Knowledge is power. <span className="text-beeyield-green">Data is even better.</span>
+                  </h2>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                  <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 }}
+                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
+                  >
+                      <div className="text-7xl md:text-8xl font-black text-beeyield-green mb-4 tracking-tighter flex items-center justify-center">
+                          <Calculator className="h-20 w-20 text-beeyield-green" />
+                      </div>
+                      <div className="h-1 w-16 bg-beeyield-green/30 mx-auto mb-6 rounded-full" />
+                      <h3 className="text-xl font-bold mb-3">Precision Calculation</h3>
+                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
+                          Knowing the exact strength of every hive in your field means pollination can be calculated using a <strong className="text-white">frames-per-acre model</strong> for a far more precise outcome.
+                      </p>
+                  </motion.div>
+
+                  <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
+                  >
+                      <div className="text-7xl md:text-8xl font-black text-amber-400 mb-4 tracking-tighter flex items-center justify-center">
+                          <Shield className="h-20 w-20 text-amber-400" />
+                      </div>
+                      <div className="h-1 w-16 bg-amber-400/30 mx-auto mb-6 rounded-full" />
+                      <h3 className="text-xl font-bold mb-3">Financial Prudence</h3>
+                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
+                          It's accurate, efficient, and cost-effective. You <strong className="text-white">stop paying for "boxes"</strong> and start paying for actual pollination power.
+                      </p>
+                  </motion.div>
+              </div>
+          </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          CUSTOMER SUCCESS
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-24 bg-white relative overflow-hidden line-bottom border-y border-neutral-100">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+            <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-8">
+                We Don’t Succeed <span className="text-beeyield-green">Unless You Succeed</span>
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                We want our partnership with you to be as smooth and stress free as possible. Meet Alissa, Head of Customer Success; her team is ready to provide you with all the help you need, from onboarding, to making sure all your contract paperwork is buttoned up.
+            </p>
+            <p className="text-lg text-neutral-900 font-semibold mb-8">
+                Get in touch for any reason at all: <a href="mailto:info@beeyield.com" className="text-beeyield-green hover:underline">info@beeyield.com</a>
+            </p>
         </div>
       </section>
 

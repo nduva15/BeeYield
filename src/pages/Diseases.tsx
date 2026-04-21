@@ -442,63 +442,98 @@ const Diseases = () => {
                 </div>
             </section>
 
-            {/* ═══════════════════════════════════════════════════════════════
-                EFFICIENCY STATS — 95% / 85%
-            ═══════════════════════════════════════════════════════════════ */}
-            <section className="py-20 bg-neutral-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
-                <div className="container mx-auto px-4 relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-12"
-                    >
-                        <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
-                            High Efficiency Proven by Research
-                        </Badge>
-                        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight">
-                            Industry-Leading <span className="text-beeyield-green">Accuracy</span>
-                        </h2>
-                    </motion.div>
+      {/* ═══════════════════════════════════════════════════════════════
+          INTELLIGENT PROTECTION
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100">
+          <div className="container mx-auto px-4 relative z-10">
+              <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto mb-20 items-stretch">
+                  {/* Left Column */}
+                  <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      className="space-y-6"
+                  >
+                      <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider mb-2 inline-block">
+                          Apisense System
+                      </Badge>
+                      <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900 leading-tight">
+                          Intelligent protection <br />
+                          <span className="text-beeyield-green">of your bees</span>
+                      </h2>
+                      <p className="text-lg text-muted-foreground leading-relaxed pt-2">
+                          <strong className="text-neutral-900">Apisense</strong> is an innovative system that intelligently helps protect beehives from diseases and environmental threats.
+                      </p>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                          By combining modern technologies, Apisense provides real-time monitoring of bee health – without disturbing their natural rhythm of life.
+                      </p>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                          Apisense is a compact IoT device that can be easily installed inside a hive, together with an application that allows you to constantly monitor the condition of your apiary, no matter where you are.
+                      </p>
+                  </motion.div>
 
-                    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.1 }}
-                            className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
-                        >
-                            <div className="text-7xl md:text-8xl font-black text-beeyield-green mb-4 tracking-tighter">
-                                95<span className="text-4xl">%</span>
-                            </div>
-                            <div className="h-1 w-16 bg-beeyield-green/30 mx-auto mb-6 rounded-full" />
-                            <h3 className="text-xl font-bold mb-3">Disease Detection</h3>
-                            <p className="text-neutral-400 font-medium leading-relaxed text-sm">
-                                Apisense achieves up to 95% accuracy in detecting <strong className="text-white">Foulbrood, Nosema, and Varroa</strong> — before they can cause irreversible damage.
-                            </p>
-                        </motion.div>
+                  {/* Right Column */}
+                  <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 }}
+                      className="space-y-6 bg-neutral-50 p-10 rounded-[2.5rem] border border-neutral-100 h-full flex flex-col justify-center"
+                  >
+                      <h2 className="text-3xl font-bold tracking-tight text-neutral-900 leading-tight">
+                          Intelligent <br />
+                          <span className="text-amber-500">bee protection</span>
+                      </h2>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                          With Apisense technology, you gain full control over bee health and the ability to detect hive threats at an early stage.
+                      </p>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                          This reduces the use of chemicals and lowers apiary maintenance costs.
+                      </p>
+                      <div className="bg-white p-5 rounded-xl border border-neutral-100 shadow-sm mt-2">
+                          <p className="font-bold text-neutral-900 leading-relaxed flex items-center gap-3">
+                              <Sparkles className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                              The result is stronger bee colonies and higher yields of top-quality honey.
+                          </p>
+                      </div>
+                      
+                      <div className="pt-4">
+                          <Button size="lg" className="w-full bg-beeyield-green hover:bg-neutral-900 text-white shadow-xl shadow-beeyield-green/20 transition-all rounded-xl" onClick={() => document.getElementById('partnership')?.scrollIntoView({ behavior: 'smooth' })}>
+                              Learn more <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                      </div>
+                  </motion.div>
+              </div>
 
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.2 }}
-                            className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
-                        >
-                            <div className="text-7xl md:text-8xl font-black text-amber-400 mb-4 tracking-tighter">
-                                85<span className="text-4xl">%</span>
-                            </div>
-                            <div className="h-1 w-16 bg-amber-400/30 mx-auto mb-6 rounded-full" />
-                            <h3 className="text-xl font-bold mb-3">Disease Spread Prediction</h3>
-                            <p className="text-neutral-400 font-medium leading-relaxed text-sm">
-                                Advanced modeling forecasts potential outbreaks, allowing us to <strong className="text-white">isolate threats before they compromise neighboring hives</strong>.
-                            </p>
-                        </motion.div>
-                    </div>
-                </div>
-            </section>
+              {/* THREAT CARDS */}
+              <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white p-10 rounded-[2rem] border border-neutral-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-xl hover:border-amber-200 transition-all duration-300 group">
+                      <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                          <AlertTriangle className="h-7 w-7" />
+                      </div>
+                      <h3 className="text-xl font-bold text-neutral-900 mb-4 tracking-tight">Limited possibilities</h3>
+                      <p className="text-neutral-500 leading-relaxed font-medium">Inspecting hives manually takes time and relies on proficiency in detecting signs of disease.</p>
+                  </motion.div>
+                  
+                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="bg-white p-10 rounded-[2rem] border border-neutral-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-xl hover:border-rose-200 transition-all duration-300 group">
+                      <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                          <Activity className="h-7 w-7" />
+                      </div>
+                      <h3 className="text-xl font-bold text-neutral-900 mb-4 tracking-tight">Low detection rate</h3>
+                      <p className="text-neutral-500 leading-relaxed font-medium">Bee diseases are often detected too late, which hinders effective treatment.</p>
+                  </motion.div>
+
+                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="bg-white p-10 rounded-[2rem] border border-neutral-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-xl hover:border-violet-200 transition-all duration-300 group">
+                      <div className="w-14 h-14 bg-violet-50 text-violet-600 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                          <Bug className="h-7 w-7" />
+                      </div>
+                      <h3 className="text-xl font-bold text-neutral-900 mb-4 tracking-tight">Rising threat</h3>
+                      <p className="text-neutral-500 leading-relaxed font-medium">Incidence of foulbrood, varroosis, and nosemosis is growing consistently.</p>
+                  </motion.div>
+              </div>
+          </div>
+      </section>
 
             {/* ═══════════════════════════════════════════════════════════════
                 PARTNERSHIP NARRATIVE
