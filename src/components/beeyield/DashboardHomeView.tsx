@@ -138,7 +138,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         }
 
         return WEATHER_READINESS.ready;
-        };
     }, [weatherCurrent?.humidity_pct, weatherCurrent?.temperature_c, weatherCurrent?.wind_speed_kmh]);
 
     const weatherHighlights = [

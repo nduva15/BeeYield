@@ -24,43 +24,43 @@ export interface ShowcaseSlide {
 
 export const SHOWCASE_SLIDES: ShowcaseSlide[] = [
   {
-    image: '/Logo.png',
+    image: '/images/beehub/screenshot-quick-analysis.png',
     title: 'Quick Analysis',
     description:
       'Fast statistical overview for decision-making. View activity status, brood strength, temperature, humidity, daily weight changes, and swarm/pest risk — all at a glance.',
   },
   {
-    image: '/Logo.png',
+    image: '/images/beehub/screenshot-acoustic-audit.png',
     title: 'Acoustic Audit',
     description:
       'Record a short sample and check for unusual sound patterns. BeeYield AI processes spectral wave data at 94.8% confidence to detect pre-swarm signatures and colony anomalies.',
   },
   {
-    image: '/Logo.png',
+    image: '/images/beehub/screenshot-beeyield-ai.png',
     title: 'BeeYield AI',
     description:
       "The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research.",
   },
   {
-    image: '/Logo.png',
+    image: '/images/beehub/screenshot-capabilities.png',
     title: 'Platform Capabilities',
     description:
       '20,000+ bee species covered, 300+ honey varieties, 50+ disease protocols, 750K+ research datasets, 91 million managed hives globally. Comprehensive database, image identification, and voice input.',
   },
   {
-    image: '/Logo.png',
+    image: '/images/beehub/screenshot-coverage-area.png',
     title: 'Coverage Area',
     description:
       'Spatial overlay of your apiary with kernel density mapping. Monitor coverage metrics, FPA targets, node efficiency, and hive spacing with live environmental telemetry and actionable insights.',
   },
   {
-    image: '/Logo.png',
+    image: '/images/beehub/screenshot-flight-area.png',
     title: 'Bee Flight Area',
     description:
       'Live forage, map, and route planning for your selected apiary. View forage potential, effective and maximum flight radius, land type analysis, flight heatmaps, and forage share estimates.',
   },
   {
-    image: '/Logo.png',
+    image: '/images/beehub/screenshot-devices.png',
     title: 'Device Management',
     description:
       'Manage your BeeHUB devices and view recent readings. Monitor total inventory, active devices, offline status, battery levels, and real-time apiary weather telemetry including humidity, pressure, wind, and UV index.',
