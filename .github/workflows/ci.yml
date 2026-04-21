@@ -135,9 +135,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            VITE_SUPABASE_URL=${{ vars['VITE_SUPABASE_URL'] || 'https://ezfccfypwmuvbpujkqrg.supabase.co' }}
-            VITE_SUPABASE_ANON_KEY=${{ secrets['VITE_SUPABASE_ANON_KEY'] }}
-            VITE_API_URL=${{ vars['VITE_API_URL'] || 'https://ezfccfypwmuvbpujkqrg.supabase.co' }}
+            VITE_SUPABASE_URL=${{ vars.VITE_SUPABASE_URL || 'https://ezfccfypwmuvbpujkqrg.supabase.co' }}
+            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            VITE_API_URL=${{ vars.VITE_API_URL || 'https://ezfccfypwmuvbpujkqrg.supabase.co' }}
 
   docker-backend:
     runs-on: ubuntu-latest
