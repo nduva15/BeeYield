@@ -33,62 +33,15 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-type NetworkNode = {
-    id: string;
-    name: string;
-    region: string;
-    crop: string;
-    latitude: number;
-    longitude: number;
-    hiveCount: number;
-    acreage: number;
-    readiness: number;
-    signal: 'stable' | 'watch' | 'surge';
-};
+import {
+    KIBWEZI_HUB,
+    SATELLITES,
+    FALLBACK_NODES,
+    type NetworkNode,
+} from '@/data/networkContent';
 
 const EMPTY_APIARIES: any[] = [];
 const EMPTY_HIVES: any[] = [];
-
-const kibweziHub = { id: 'kibwezi-hq', name: "Kibwezi HQ", lat: -2.4167, lng: 37.9667 };
-
-const satellites = [
-    { id: "API-01", lat: -2.3867, lng: 37.9567, status: "Active" },
-    { id: "API-02", lat: -2.4367, lng: 37.9867, status: "Active" },
-    { id: "API-03", lat: -2.4067, lng: 37.9167, status: "Warning" },
-    { id: "API-04", lat: -2.4467, lng: 37.9467, status: "Active" },
-    { id: "API-05", lat: -2.3967, lng: 37.9967, status: "Active" },
-    { id: "API-06", lat: -2.4267, lng: 37.9967, status: "Active" },
-    { id: "API-07", lat: -2.4367, lng: 37.9267, status: "Active" },
-    { id: "API-08", lat: -2.3767, lng: 37.9767, status: "Active" },
-    { id: "API-09", lat: -2.4567, lng: 37.9667, status: "Active" }
-];
-
-const fallbackNodes: NetworkNode[] = [
-    {
-        id: kibweziHub.id,
-        name: kibweziHub.name,
-        region: 'Makueni County, Kenya',
-        crop: 'Mixed Forage & Acacia',
-        latitude: kibweziHub.lat,
-        longitude: kibweziHub.lng,
-        hiveCount: 250,
-        acreage: 6500,
-        readiness: 98,
-        signal: 'stable',
-    },
-    ...satellites.map(sat => ({
-        id: sat.id,
-        name: `Node ${sat.id}`,
-        region: 'Makueni County, Kenya',
-        crop: 'Acacia',
-        latitude: sat.lat,
-        longitude: sat.lng,
-        hiveCount: Math.floor(Math.random() * 50) + 10,
-        acreage: 120,
-        readiness: sat.status === 'Active' ? 95 : 60,
-        signal: sat.status === 'Active' ? 'surge' : 'watch',
-    } as NetworkNode))
-];
 
 const getHubIcon = () => {
     const color = '#10b981';
@@ -151,7 +104,7 @@ const GlobalHiveNetwork = () => {
                 } satisfies NetworkNode;
             });
 
-        return mapped.length ? mapped : fallbackNodes;
+        return mapped.length ? mapped : FALLBACK_NODES;
     }, [apiaries, hives]);
 
     React.useEffect(() => {
@@ -257,7 +210,7 @@ const GlobalHiveNetwork = () => {
                                 
                                 {!isHub && (
                                     <Polyline 
-                                        positions={[[kibweziHub.lat, kibweziHub.lng], [node.latitude, node.longitude]]} 
+                                        positions={[[KIBWEZI_HUB.lat, KIBWEZI_HUB.lng], [node.latitude, node.longitude]]} 
                                         pathOptions={{ color: '#10b981', weight: selectedNodeId === node.id ? 3 : 1.5, dashArray: '4,6', opacity: selectedNodeId === node.id ? 1 : 0.5 }} 
                                     />
                                 )}

@@ -2,12 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Cpu, Wifi, LayoutDashboard, ArrowRight,
-  Quote, Check, BookOpen, Mail, ChevronRight,
-  BarChart3, Thermometer, Mic, Globe, Activity,
-  ChevronDown, Calculator, Navigation, FileBarChart, Layers, Zap,
-  CheckCircle, CheckCircle2, Leaf, Shield, MapPin, Search, Handshake,
-  Sparkles, Map, ImageIcon, Volume2
+  ArrowRight, BookOpen, ChevronDown, CheckCircle, CheckCircle2, Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,58 +18,18 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 
-// BeeHUB real product & deployment photos
-const BEEHUB_APIARY_HERO = "/images/beehub/apiary-lavender.jpg";
-const BEEHUB_QUEEN_DETAIL = "/images/beehub/queen-product-detail.png";
-const BEEHUB_SENSE_UNIT = "/images/beehub/sense-unit.png";
-const BEEHUB_DEPLOYED = "/images/beehub/deployed-hive-bees.jpg";
-const BEEYIELD_DASHBOARD = "/images/beehub/beeyield-dashboard.png";
+import {
+  SHOWCASE_SLIDES,
+  FEATURE_BADGES,
+  PROFESSIONAL_TOOLS,
+  HOW_IT_WORKS,
+  POLLINATION_ADVANTAGES,
+  ADVANTAGE_TABLE,
+  AI_CAPABILITIES,
+  BEEHUB_IMAGES,
+} from "@/data/pollinationContent";
 
-/* ── Screenshot showcase data ──────────────────────────────────────── */
-const SHOWCASE_SLIDES = [
-  {
-    image: "/Logo.png",
-    title: "Quick Analysis",
-    description: "Fast statistical overview for decision-making. View activity status, brood strength, temperature, humidity, daily weight changes, and swarm/pest risk — all at a glance.",
-  },
-  {
-    image: "/Logo.png",
-    title: "Acoustic Audit",
-    description: "Record a short sample and check for unusual sound patterns. BeeYield AI processes spectral wave data at 94.8% confidence to detect pre-swarm signatures and colony anomalies.",
-  },
-  {
-    image: "/Logo.png",
-    title: "BeeYield AI",
-    description: "The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research.",
-  },
-  {
-    image: "/Logo.png",
-    title: "Platform Capabilities",
-    description: "20,000+ bee species covered, 300+ honey varieties, 50+ disease protocols, 750K+ research datasets, 91 million managed hives globally. Comprehensive database, image identification, and voice input.",
-  },
-  {
-    image: "/Logo.png",
-    title: "Coverage Area",
-    description: "Spatial overlay of your apiary with kernel density mapping. Monitor coverage metrics, FPA targets, node efficiency, and hive spacing with live environmental telemetry and actionable insights.",
-  },
-  {
-    image: "/Logo.png",
-    title: "Bee Flight Area",
-    description: "Live forage, map, and route planning for your selected apiary. View forage potential, effective and maximum flight radius, land type analysis, flight heatmaps, and forage share estimates.",
-  },
-  {
-    image: "/Logo.png",
-    title: "Device Management",
-    description: "Manage your BeeHUB devices and view recent readings. Monitor total inventory, active devices, offline status, battery levels, and real-time apiary weather telemetry including humidity, pressure, wind, and UV index.",
-  },
-];
 
-const FEATURE_BADGES = [
-  { label: "AI swarm detection", icon: Sparkles },
-  { label: "Flight-radius map", icon: Map },
-  { label: "Unlimited apiaries/hives", icon: Layers },
-  { label: "Image & sound analytics", icon: Volume2 },
-];
 
 /* ── Feature Showcase Section Component ────────────────────────────── */
 const FeatureShowcaseSection = () => {
@@ -197,99 +152,6 @@ const FeatureShowcaseSection = () => {
 const PrecisionPollination = () => {
   const [isProfessionalOpen, setIsProfessionalOpen] = useState(false);
 
-  const professionalTools = [
-    { label: 'Tactical Grid', icon: Layers, path: '/beeyield-dashboard', description: 'Live device monitoring' },
-    { label: 'Pollination Calcs', icon: Calculator, path: '/precision-pollination/calcs', description: 'Yield & FPA analysis' },
-    { label: 'Flight Mapping', icon: Navigation, path: '/precision-pollination/map', description: 'Geospatial movement' },
-    { label: 'Site Reports', icon: FileBarChart, path: '/precision-pollination/reports', description: 'Audit & compliance' }
-  ];
-
-  /* ── Data Arrays map exactly to Diseases array structure ────────────────────────────── */
-
-  const howItWorks = [
-    {
-        title: "BeeHUB Queen",
-        description: "Main unit with LTE/SIM and offline buffer. Measures internal/external temperature, internal humidity, acoustics, weight (via hive scale) and location. Alerts include vandalism/theft, sudden weight drops and acoustic anomalies.",
-        icon: <Cpu className="h-7 w-7" />,
-    },
-    {
-        title: "BeeHUB Sense",
-        description: "BLE expansion module that connects to the Queen or mobile/web app. Flexible add-ons for additional temperature/humidity points and industrial inputs.",
-        icon: <Mic className="h-7 w-7" />,
-    },
-    {
-        title: "Secure Transmission",
-        description: "The BeeHUB Queen sends telemetry info securely via LTE to our cloud system for real-time review, with offline buffering for remote locations.",
-        icon: <Wifi className="h-7 w-7" />,
-    },
-    {
-        title: "Dashboard Visibility",
-        description: "All key metrics — hive weight, sound spectrum/FFT, GPS location, battery level, and solar charging status — processed and displayed for complete accountability.",
-        icon: <LayoutDashboard className="h-7 w-7" />,
-    },
-  ];
-
-  const pollinationAdvantages = [
-    {
-        title: "Frames-Per-Acre Count",
-        description: "Knowing the exact strength of every hive in your field means pollination can be calculated using a precise frames-per-acre model.",
-        icon: <Calculator className="h-7 w-7" />,
-        badge: "Precision Calculation",
-    },
-    {
-        title: "Financial Prudence",
-        description: "It's accurate, efficient, and cost-effective. You stop paying for \"boxes\" and start paying for actual pollination power.",
-        icon: <Shield className="h-7 w-7" />,
-        badge: "Cost Effectiveness",
-    },
-    {
-        title: "Unmatched Transparency",
-        description: "From the day the bees are delivered until the day they are removed, we are accountable to you for optimal pollination outcomes.",
-        icon: <Search className="h-7 w-7" />,
-        badge: "Full Accountability",
-    }
-  ];
-
-  const advantageTable = [
-    {
-        feature: "Internal Temperature",
-        technology: "BeeHUB Sense tracks colony condition and brood development in real-time.",
-        benefit: "Early detection of stress, disease risk, and optimal brood-rearing conditions.",
-        icon: <Thermometer className="h-5 w-5" />,
-    },
-    {
-        feature: "Sound Spectrum (FFT)",
-        technology: "BeeHUB Queen captures acoustic signatures for pre-swarm detection and colony mood analysis.",
-        benefit: "Prevents swarming losses and identifies queenless colonies before visual inspection.",
-        icon: <Mic className="h-5 w-5" />,
-    },
-    {
-        feature: "Hive Weight",
-        technology: "Continuous weight monitoring tracks forage intake, harvest timing, robbing events, and migrations.",
-        benefit: "Optimal harvest timing and immediate alerts for robbing or sudden weight drops.",
-        icon: <BarChart3 className="h-5 w-5" />,
-    },
-    {
-        feature: "GPS Location",
-        technology: "BeeHUB Queen tracks moves, theft attempts, and maintains historical route data.",
-        benefit: "Anti-theft protection with instant vandalism alerts and geofencing capability.",
-        icon: <MapPin className="h-5 w-5" />,
-    },
-    {
-        feature: "Battery & Solar Status",
-        technology: "Device battery level and solar charging status monitored continuously for proactive maintenance.",
-        benefit: "Plan logistics and maintenance proactively — continuous operation with solar add-on.",
-        icon: <Activity className="h-5 w-5" />,
-    },
-  ];
-
-  const aiCapabilities = [
-    "Precision Calculation — accurate frames-per-acre modeling based on hive data",
-    "Financial Prudence — pay for actual pollination power, not just boxes",
-    "Accountability — rapid deployment and replacement of non-performing hives",
-    "Interactive Reporting — easy-to-understand metrics for drop points and activity",
-    "Complete Transparency — insight from the day bees are delivered until removal",
-  ];
 
   return (
     <BeeYieldPageShell className="bg-background text-foreground">
@@ -314,7 +176,7 @@ const PrecisionPollination = () => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-72 p-2 bg-white rounded-2xl border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)]" align="end" sideOffset={8}>
-              {professionalTools.map((tool) => (
+              {PROFESSIONAL_TOOLS.map((tool) => (
                 <DropdownMenuItem key={tool.path} asChild className="rounded-xl cursor-pointer">
                   <Link to={tool.path} className="flex items-start gap-4 p-3 hover:bg-neutral-50 transition-colors group outline-none">
                     <div className="mt-0.5 w-10 h-10 shrink-0 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center justify-center group-hover:bg-beeyield-green/10 group-hover:border-beeyield-green/20 group-hover:text-beeyield-green transition-all">
@@ -337,7 +199,7 @@ const PrecisionPollination = () => {
       ═══════════════════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
           <div className="absolute inset-0">
-              <img src={BEEHUB_APIARY_HERO} alt="BeeHUB sensors deployed in lavender apiary" className="w-full h-full object-cover" />
+              <img src={BEEHUB_IMAGES.apiaryHero} alt="BeeHUB sensors deployed in lavender apiary" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
           </div>
           <div className="container mx-auto px-4 relative z-10">
@@ -460,7 +322,7 @@ const PrecisionPollination = () => {
                   >
                       <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-900 group">
                           <img
-                              src={BEEHUB_DEPLOYED}
+                              src={BEEHUB_IMAGES.deployed}
                               alt="BeeHUB Queen deployed on active hive with bees"
                               className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform"
                               style={{ transitionDuration: '2000ms' }}
@@ -554,7 +416,7 @@ const PrecisionPollination = () => {
                       className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group"
                   >
                       <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
-                          <img src={BEEHUB_QUEEN_DETAIL} alt="BeeHUB Queen unit with sensors and cables" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <img src={BEEHUB_IMAGES.queenDetail} alt="BeeHUB Queen unit with sensors and cables" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       </div>
                       <div className="p-6 bg-white">
                           <Badge className="bg-beeyield-green/10 text-beeyield-green border-none text-[9px] font-bold px-3 py-1 rounded-lg mb-3">BeeHUB Queen</Badge>
@@ -569,7 +431,7 @@ const PrecisionPollination = () => {
                       className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group"
                   >
                       <div className="aspect-[4/3] overflow-hidden bg-neutral-50 flex items-center justify-center p-8">
-                          <img src={BEEHUB_SENSE_UNIT} alt="BeeHUB Sense expansion module" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
+                          <img src={BEEHUB_IMAGES.senseUnit} alt="BeeHUB Sense expansion module" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
                       </div>
                       <div className="p-6 bg-white">
                           <Badge className="bg-amber-500/10 text-amber-700 border-amber-200 text-[9px] font-bold px-3 py-1 rounded-lg mb-3">BeeHUB Sense</Badge>
@@ -579,7 +441,7 @@ const PrecisionPollination = () => {
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
-                  {howItWorks.map((item, index) => (
+                  {HOW_IT_WORKS.map((item, index) => (
                       <motion.div
                           key={index}
                           initial={{ opacity: 0, y: 20 }}
@@ -589,7 +451,7 @@ const PrecisionPollination = () => {
                           className="bg-white p-12 rounded-[2.5rem] border border-neutral-100 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] hover:border-beeyield-green/20 transition-all duration-500 group"
                       >
                           <div className="mb-10 inline-flex items-center justify-center p-6 bg-neutral-50 rounded-3xl group-hover:bg-beeyield-green/10 transition-colors text-beeyield-green">
-                              {item.icon}
+                              <item.icon className="h-7 w-7" />
                           </div>
                           <h3 className="text-xl font-bold text-neutral-900 mb-5 tracking-tight">{item.title}</h3>
                           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -619,7 +481,7 @@ const PrecisionPollination = () => {
               </div>
 
               <div className="space-y-8 max-w-5xl mx-auto">
-                  {pollinationAdvantages.map((adv, index) => (
+                  {POLLINATION_ADVANTAGES.map((adv, index) => (
                       <motion.div
                           key={index}
                           initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
@@ -630,7 +492,7 @@ const PrecisionPollination = () => {
                       >
                           <div className="shrink-0 flex flex-col items-center md:items-start gap-4">
                               <div className="h-16 w-16 rounded-2xl bg-white border border-neutral-100 flex items-center justify-center text-beeyield-green group-hover:bg-beeyield-green group-hover:text-white group-hover:border-beeyield-green transition-all shadow-sm">
-                                  {adv.icon}
+                                  <adv.icon className="h-7 w-7" />
                               </div>
                               <Badge className="bg-beeyield-green/10 text-beeyield-green border-none text-[9px] font-bold px-3 py-1 rounded-lg whitespace-nowrap">
                                   {adv.badge}
@@ -671,7 +533,7 @@ const PrecisionPollination = () => {
                       <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Pollination Benefit</span>
                   </div>
 
-                  {advantageTable.map((row, index) => (
+                  {ADVANTAGE_TABLE.map((row, index) => (
                       <motion.div
                           key={index}
                           initial={{ opacity: 0, y: 10 }}
@@ -682,7 +544,7 @@ const PrecisionPollination = () => {
                       >
                           <div className="flex items-center gap-4">
                               <div className="h-10 w-10 shrink-0 rounded-xl bg-beeyield-green/20 flex items-center justify-center text-beeyield-green">
-                                  {row.icon}
+                                  <row.icon className="h-5 w-5" />
                               </div>
                               <span className="font-bold text-sm">{row.feature}</span>
                           </div>
@@ -711,7 +573,7 @@ const PrecisionPollination = () => {
                           All the key metrics for each orchard, from the day the bees are delivered until the day the beekeepers remove them, are displayed on the dashboard giving growers complete confidence.
                       </p>
                       <div className="space-y-5">
-                          {aiCapabilities.map((cap, index) => (
+                          {AI_CAPABILITIES.map((cap, index) => (
                               <motion.div
                                   key={index}
                                   initial={{ opacity: 0, x: -15 }}
@@ -737,7 +599,7 @@ const PrecisionPollination = () => {
                       <div className="relative mx-auto max-w-lg">
                           <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.18)] border border-neutral-200 bg-white">
                               <img
-                                  src={BEEYIELD_DASHBOARD}
+                                  src={BEEHUB_IMAGES.dashboard}
                                   alt="BeeYield Apiary Dashboard showing weather telemetry, pollination planning, and Timothy Nduva verified beekeeper status"
                                   className="w-full h-auto"
                               />

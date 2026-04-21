@@ -591,14 +591,14 @@ const BeeYieldDashboard: React.FC = () => {
                 return <LabelGeneratorView onTabChange={handleTabChange} />;
             default:
                 return (
-                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-[#FFF9F0] rounded-[2.5rem] border border-dashed border-[#F4D03F]/20">
-                        <div className="w-16 h-16 bg-[#F9F7F2] rounded-2xl flex items-center justify-center mb-4">
-                            <span className="text-[8px] font-bold text-gray-300">© 2026 BeeYield AI Platform</span>
+                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">
+                        <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4">
+                            <span className="text-[8px] font-bold text-muted-foreground/40">© 2026 BeeYield AI Platform</span>
                         </div>
-                        <h3 className="text-lg font-medium text-[#1A1A1A]">
+                        <h3 className="text-lg font-medium text-foreground">
                             {navItems.find(i => i.id === activeTab)?.label || t('view_content')}
                         </h3>
-                        <p className="text-gray-500 mt-1 max-w-sm font-medium">
+                        <p className="text-muted-foreground mt-1 max-w-sm font-medium">
                             {t('under_development')}
                         </p>
                     </div>
@@ -608,7 +608,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     if (authLoading) {
         return (
-            <BeeYieldPageShell className="bg-[#FFF9F0] flex flex-col items-center justify-center gap-4 p-0 md:p-0 -m-4 md:-m-6">
+            <BeeYieldPageShell className="bg-background flex flex-col items-center justify-center gap-4 p-0 md:p-0 -m-4 md:-m-6">
                 <img src="/logo.png" alt="Loading..." className="h-16 w-auto animate-pulse" />
             </BeeYieldPageShell>
         );
@@ -621,20 +621,20 @@ const BeeYieldDashboard: React.FC = () => {
 
     if (!effectiveUser || !isBeeYieldActive) {
         return (
-            <BeeYieldPageShell className="bg-[#FFF9F0] flex flex-col items-center justify-center p-8 font-sans text-[#064e3b] antialiased">
+            <BeeYieldPageShell className="bg-background flex flex-col items-center justify-center p-8 font-sans text-foreground antialiased">
                 <div className="max-w-lg w-full text-center space-y-8">
-                    <div className="w-20 h-20 rounded-3xl bg-white border border-[#064e3b]/10 flex items-center justify-center mx-auto shadow-sm">
+                    <div className="w-20 h-20 rounded-3xl bg-card border border-border/40 flex items-center justify-center mx-auto shadow-sm">
                         <div className="flex flex-col">
-                            <span className="text-2xl font-bold text-[#1A1A1A] tracking-tighter leading-none">BeeYield <span className="text-[#F4D03F]">AI</span></span>
-                            <span className="text-[9px] font-bold text-[#F4D03F] mt-1 uppercase tracking-widest">Operational OS</span>
+                            <span className="text-2xl font-bold text-foreground tracking-tighter leading-none">BeeYield <span className="text-primary">AI</span></span>
+                            <span className="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest">Operational OS</span>
                         </div>
                     </div>
 
                     <div className="space-y-3">
-                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
+                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-foreground">
                             Sign in to continue
                         </h1>
-                        <p className="text-sm text-[#064e3b]/70 font-medium leading-relaxed">
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                             You need an account to access the BeeYield AI dashboard.
                         </p>
                     </div>
@@ -642,14 +642,14 @@ const BeeYieldDashboard: React.FC = () => {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <button
                             onClick={() => navigate('/login')}
-                            className="h-12 px-8 rounded-xl bg-[#10b981] text-[#1A1A1A] font-black text-sm tracking-tight hover:bg-[#0ea371] transition-colors flex items-center justify-center gap-2"
+                            className="h-12 px-8 rounded-xl bg-beeyield-green text-foreground font-black text-sm tracking-tight hover:bg-beeyield-green/90 transition-colors flex items-center justify-center gap-2"
                         >
                             <LockIcon className="w-4 h-4" />
                             Sign in
                         </button>
                         <button
                             onClick={() => navigate('/')}
-                            className="h-12 px-8 rounded-xl bg-white border border-[#064e3b]/10 text-[#064e3b] font-bold text-sm hover:bg-[#064e3b]/5 transition-colors"
+                            className="h-12 px-8 rounded-xl bg-card border border-border/40 text-foreground font-bold text-sm hover:bg-muted/50 transition-colors"
                         >
                             Back home
                         </button>
