@@ -31,13 +31,8 @@ const PollinationCalcs: React.FC = () => {
     const metrics = useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
 
     return (
-        <BeeYieldPageShell className="bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12 -m-0 md:-m-0">
+        <div className="space-y-12">
             <div className="max-w-7xl mx-auto space-y-12">
-                {/* Back Link */}
-                <Link to="/precision-pollination" className="inline-flex items-center gap-2 text-[10px] font-black text-[#10b981] hover:text-[#064e3b] transition-colors">
-                    <ArrowLeft className="w-4 h-4" />
-                    Back to Overview
-                </Link>
 
                 {/* Header */}
                 <div className="border-b-4 border-[#064e3b] pb-8">
@@ -336,7 +331,7 @@ const PollinationCalcs: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </BeeYieldPageShell>
+        </div>
     );
 };
 

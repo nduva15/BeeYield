@@ -19,10 +19,8 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 
-import {
   SHOWCASE_SLIDES,
   FEATURE_BADGES,
-  PROFESSIONAL_TOOLS,
   HOW_IT_WORKS,
   POLLINATION_ADVANTAGES,
   ADVANTAGE_TABLE,
@@ -157,43 +155,6 @@ const PrecisionPollination = () => {
   return (
     <BeeYieldPageShell className="bg-background text-foreground">
 
-      {/* ═══════════════════════════════════════════════════════════════
-          DYNAMIC NAV BAR & SUB-HEADER (Sleek Modernized)
-      ═══════════════════════════════════════════════════════════════ */}
-      <div className="sticky top-20 z-50 bg-white/80 backdrop-blur-xl border-b border-neutral-100 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hidden lg:block">
-        <div className="container mx-auto px-4 flex justify-between items-center max-w-7xl">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-beeyield-green/10 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-beeyield-green" />
-            </div>
-            <span className="font-bold text-xs tracking-tight text-neutral-900">Precision System 2.4</span>
-          </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-5 py-2 bg-neutral-900 text-white rounded-full font-bold text-[10px] hover:bg-neutral-800 transition-all shadow-md focus:outline-none">
-                Professional Suite
-                <ChevronDown className="w-3 h-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72 p-2 bg-white rounded-2xl border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)]" align="end" sideOffset={8}>
-              {PROFESSIONAL_TOOLS.map((tool) => (
-                <DropdownMenuItem key={tool.path} asChild className="rounded-xl cursor-pointer">
-                  <Link to={tool.path} className="flex items-start gap-4 p-3 hover:bg-neutral-50 transition-colors group outline-none">
-                    <div className="mt-0.5 w-10 h-10 shrink-0 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center justify-center group-hover:bg-beeyield-green/10 group-hover:border-beeyield-green/20 group-hover:text-beeyield-green transition-all">
-                      <tool.icon className="w-4 h-4 text-neutral-500 group-hover:text-beeyield-green" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm text-neutral-900 tracking-tight">{tool.label}</p>
-                      <p className="text-xs font-medium text-neutral-500 mt-0.5 leading-tight">{tool.description}</p>
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
 
       {/* ═══════════════════════════════════════════════════════════════
           HERO SECTION — EXACT MAP OF DISEASES HERO
