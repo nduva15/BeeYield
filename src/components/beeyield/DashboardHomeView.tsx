@@ -15,7 +15,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 import WeatherTelemetryPanel from './WeatherTelemetryPanel';
-
+import {
+    QUICK_ACCESS_VIEWS,
+    WEATHER_READINESS,
+    WEATHER_THRESHOLDS,
+} from '@/data/dashboardContent';
 interface DashboardHomeViewProps {
     devices: IoTDevice[];
     readings: SensorReading[];
@@ -122,26 +126,18 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         const wind = weatherCurrent?.wind_speed_kmh;
         const humidity = weatherCurrent?.humidity_pct;
 
-        if (typeof temperature === 'number' && temperature < 10) {
-            return {
-                label: 'Hold',
-                tone: 'border-[#f3c4be] bg-[#fff1ef] text-[#b45309]',
-                detail: 'Flight activity may stay grounded until temperatures recover.',
-            };
+        if (typeof temperature === 'number' && temperature < WEATHER_THRESHOLDS.coldTemperatureC) {
+            return WEATHER_READINESS.hold;
         }
 
-        if ((typeof wind === 'number' && wind > 22) || (typeof humidity === 'number' && humidity > 88)) {
-            return {
-                label: 'Watch',
-                tone: 'border-[#f4df9b] bg-[#fff7de] text-[#a16207]',
-                detail: 'Telemetry suggests moderate stress for foraging routes.',
-            };
+        if (
+            (typeof wind === 'number' && wind > WEATHER_THRESHOLDS.highWindKmh) ||
+            (typeof humidity === 'number' && humidity > WEATHER_THRESHOLDS.highHumidityPct)
+        ) {
+            return WEATHER_READINESS.watch;
         }
 
-        return {
-            label: 'Ready',
-            tone: 'border-[#cde7cf] bg-[#eefaf0] text-[#166534]',
-            detail: 'Conditions are supportive for inspections and active forage windows.',
+        return WEATHER_READINESS.ready;
         };
     }, [weatherCurrent?.humidity_pct, weatherCurrent?.temperature_c, weatherCurrent?.wind_speed_kmh]);
 
@@ -195,7 +191,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             onClick={() => onTabChange('assistant')}
                             className={cn(glass.btnSecondary, "gap-2")}
                         >
-                            <Hexagon className="w-4 h-4 text-[#F4D03F]" />
+                            <Hexagon className="w-4 h-4 text-primary" />
                             BeeYield AI
                         </button>
                         <button
@@ -217,7 +213,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                 {avatarUrl ? (
                                     <img src={avatarUrl} alt={fullName} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-muted/20 text-[#F4D03F] font-bold text-sm">
+                                    <div className="w-full h-full flex items-center justify-center bg-muted/20 text-primary font-bold text-sm">
                                         {fullName.charAt(0).toUpperCase()}
                                     </div>
                                 )}
@@ -235,11 +231,11 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
                         <div className="mt-4 flex gap-2">
                             <button onClick={() => onTabChange('settings')} className={cn(glass.btnSecondary, "flex-1 justify-center gap-2")}>
-                                <ShieldCheck className="w-4 h-4 text-[#F4D03F]" />
+                                <ShieldCheck className="w-4 h-4 text-primary" />
                                 Settings
                             </button>
                             <button onClick={() => onTabChange('support')} className={cn(glass.btnSecondary, "flex-1 justify-center gap-2")}>
-                                <Mail className="w-4 h-4 text-[#F4D03F]" />
+                                <Mail className="w-4 h-4 text-primary" />
                                 Support
                             </button>
                         </div>
@@ -256,14 +252,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            {[
-                                { id: 'devices', label: 'Devices', icon: Cpu, sub: 'Sensors & activity' },
-                                { id: 'meters', label: 'Meters', icon: Activity, sub: 'Usage & alarms' },
-                                { id: 'precision-pollination-folder', label: 'Pollination', icon: FileBarChart, sub: 'Plans & exports' },
-                                { id: 'task', label: 'My Task', icon: ClipboardList, sub: 'Tasks & setup' },
-                                { id: 'requests', label: 'Requests', icon: HelpCircle, sub: 'Support tickets' },
-                                { id: 'integrations', label: 'Integrations', icon: Puzzle, sub: 'QuickBooks / Shopify' },
-                            ].map((v) => (
+                            {QUICK_ACCESS_VIEWS.map((v) => (
                                 <button
                                     key={v.id}
                                     type="button"
@@ -273,8 +262,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-border/ flex items-center justify-center">
-                                            <v.icon className="w-5 h-5 text-[#F4D03F]" />
+                                        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-border/ flex items-center justify-center">
+                                            <v.icon className="w-5 h-5 text-primary" />
                                         </div>
                                         <div className="min-w-0">
                                             <div className="font-black text-[11px] tracking-tight text-foreground truncate">{v.label}</div>
@@ -295,7 +284,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     <div className="flex flex-wrap items-start justify-between gap-4">
                                         <div className="space-y-2">
                                             <div className="inline-flex items-center gap-2 rounded-full border border-border/ bg-muted/ px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
-                                                <CloudSun className="h-3.5 w-3.5 text-[#F4D03F]" />
+                                                <CloudSun className="h-3.5 w-3.5 text-primary" />
                                                 Home weather
                                             </div>
                                             <div>
@@ -332,7 +321,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="rounded-2xl border border-border/ bg-[#F4D03F]/10 p-3 text-[#8a6a00]">
+                                                <div className="rounded-2xl border border-border/ bg-primary/10 p-3 text-[#8a6a00]">
                                                     <CloudSun className="h-5 w-5" />
                                                 </div>
                                             </div>
@@ -354,7 +343,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                                     onClick={() => onTabChange('flight-map')}
                                                     className={cn(glass.btnSecondary, "h-9 px-3 text-[10px]")}
                                                 >
-                                                    <ArrowRight className="h-3.5 w-3.5 text-[#F4D03F]" />
+                                                    <ArrowRight className="h-3.5 w-3.5 text-primary" />
                                                     Flight map
                                                 </button>
                                             </div>
@@ -433,8 +422,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         ].map((card) => (
                             <div key={card.label} className={cn(glass.section, "p-5 bg-muted/")}>
                                 <div className="flex items-center justify-between mb-3">
-                                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 border border-border/ flex items-center justify-center">
-                                        <card.icon className="w-5 h-5 text-[#F4D03F]" />
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-border/ flex items-center justify-center">
+                                        <card.icon className="w-5 h-5 text-primary" />
                                     </div>
                                     <span className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-tight">{card.label}</span>
                                 </div>
@@ -449,8 +438,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     <div className={cn(glass.section, "overflow-hidden")}>
                         <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/">
-                                    <MapPin className="w-4 h-4 text-[#F4D03F]" />
+                                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-border/">
+                                    <MapPin className="w-4 h-4 text-primary" />
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-semibold text-foreground">Apiaries</h3>
@@ -482,11 +471,11 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     <div className={cn(glass.section, "overflow-hidden")}>
                         <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                             <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onTabChange('beeyield')}>
-                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/ group-hover:bg-[#F4D03F]/20 transition-all">
-                                    <Hexagon className="w-4 h-4 text-[#F4D03F]" />
+                                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-border/ group-hover:bg-primary/20 transition-all">
+                                    <Hexagon className="w-4 h-4 text-primary" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-foreground group-hover:text-[#F4D03F] transition-colors">Hives</h3>
+                                    <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Hives</h3>
                                     <p className="text-[11px] text-muted-foreground">{hives.length} records</p>
                                 </div>
                             </div>
@@ -506,7 +495,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         onClick={() => onTabChange('beeyield')}
                                         className="bg-muted/ border border-border/ rounded-xl p-3 cursor-pointer hover:border-border/ hover:bg-white transition-all group"
                                     >
-                                        <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-[#F4D03F] transition-colors">{h.hive_code}</div>
+                                        <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-primary transition-colors">{h.hive_code}</div>
                                         <div className="text-[10px] text-muted-foreground truncate">{h.status || 'Active'}</div>
                                     </div>
                                 ))
@@ -519,11 +508,11 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     <div className={cn(glass.section, "overflow-hidden")}>
                         <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                             <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onTabChange('harvests')}>
-                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/ group-hover:bg-[#F4D03F]/20 transition-all">
-                                    <Binary className="w-4 h-4 text-[#F4D03F]" />
+                                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-border/ group-hover:bg-primary/20 transition-all">
+                                    <Binary className="w-4 h-4 text-primary" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-semibold text-foreground group-hover:text-[#F4D03F] transition-colors">Traceability Batches</h3>
+                                    <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">Traceability Batches</h3>
                                     <p className="text-[11px] text-muted-foreground">{batches.length} records</p>
                                 </div>
                             </div>
@@ -541,10 +530,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     <button
                                         key={batch.id}
                                         onClick={() => onTabChange('harvests')}
-                                        className="w-full text-left bg-muted/ border border-border/ rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-[#F4D03F]/5 transition-all active:scale-[0.98] group"
+                                        className="w-full text-left bg-muted/ border border-border/ rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-primary/5 transition-all active:scale-[0.98] group"
                                     >
                                         <div className="min-w-0">
-                                            <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-[#F4D03F] transition-colors">
+                                            <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-primary transition-colors">
                                                 {batch.batch_code}
                                             </div>
                                             <div className="text-[10px] text-muted-foreground truncate">
@@ -570,8 +559,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
             <div className={cn(glass.section, "overflow-hidden mt-6")}>
                 <div className="px-5 py-4 border-b border-border/ flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/">
-                            <Hand className="w-4 h-4 text-[#F4D03F]" />
+                        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-border/">
+                            <Hand className="w-4 h-4 text-primary" />
                         </div>
                         <div>
                             <h3 className="text-sm font-semibold text-foreground">Harvests</h3>
@@ -592,10 +581,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             <button 
                                 key={h.id} 
                                 onClick={() => setSelectedHarvest(h)}
-                                className="w-full text-left bg-muted/ border border-border/ rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-[#F4D03F]/5 transition-all active:scale-[0.98] group"
+                                className="w-full text-left bg-muted/ border border-border/ rounded-xl p-3 flex items-center justify-between gap-4 hover:bg-primary/5 transition-all active:scale-[0.98] group"
                             >
                                 <div className="min-w-0">
-                                    <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-[#F4D03F] transition-colors">{h.batch_code || `BAT-${h.id.slice(-6).toUpperCase()}`}</div>
+                                    <div className="font-black text-[11px] tracking-tight text-foreground truncate group-hover:text-primary transition-colors">{h.batch_code || `BAT-${h.id.slice(-6).toUpperCase()}`}</div>
                                     <div className="text-[10px] text-muted-foreground truncate">{h.honey_type || '—'}</div>
                                 </div>
                                 <div className="flex items-center gap-3 flex-shrink-0">
@@ -726,7 +715,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         id="dash-edit-verified"
                                         checked={editForm.is_verified || false}
                                         onChange={e => setEditForm({ ...editForm, is_verified: e.target.checked })}
-                                        className="rounded bg-black/40 border-border/ text-[#F4D03F] focus:ring-[#F4D03F]/50 w-4 h-4"
+                                        className="rounded bg-black/40 border-border/ text-primary focus:ring-[#F4D03F]/50 w-4 h-4"
                                     />
                                     <Label htmlFor="dash-edit-verified" className="text-xs font-black text-muted-foreground/70 cursor-pointer">
                                         Verified Record
@@ -745,7 +734,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                 </div>
                                 <div className="space-y-1">
                                     <Label className={glass.microLabel}>Yield (KG)</Label>
-                                    <div className="text-sm font-bold text-[#1B9157]">{selectedHarvest.quantity_kg?.toFixed(1)} KG</div>
+                                    <div className="text-sm font-bold text-beeyield-green">{selectedHarvest.quantity_kg?.toFixed(1)} KG</div>
                                 </div>
                                 <div className="space-y-1">
                                     <Label className={glass.microLabel}>Honey Type</Label>

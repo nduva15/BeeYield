@@ -116,7 +116,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                     onClick={exportLedgerCsv}
                     className="h-8 px-3 bg-muted/ hover:bg-muted/ text-foreground/60 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 border border-border/"
                 >
-                    <Download className="w-3 h-3 text-[#F4D03F]" />
+                    <Download className="w-3 h-3 text-primary" />
                     Export
                 </button>
             </div>
@@ -131,7 +131,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
             <div className="h-[240px] w-full relative z-10">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-full space-y-2 opacity-20 italic">
-                        <Loader2 className="w-6 h-6 animate-spin text-[#F4D03F]" />
+                        <Loader2 className="w-6 h-6 animate-spin text-primary" />
                         <span className="text-sm font-semibold text-muted-foreground/90">Loading…</span>
                     </div>
                 ) : data.length === 0 ? (
@@ -197,7 +197,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                             {data.slice(0, 4).map((d, i) => (
                                 <div key={i} className="flex justify-between items-center p-3 bg-muted/ rounded-xl border border-[#1A1A1A]/5 italic">
                                     <div className="flex items-center gap-3">
-                                        <div className={cn("w-2 h-2 rounded-full", i % 2 === 0 ? "bg-[#F4D03F]" : "bg-[#F4D03F]/40")} />
+                                        <div className={cn("w-2 h-2 rounded-full", i % 2 === 0 ? "bg-primary" : "bg-primary/40")} />
                                         <span className="text-sm font-semibold text-foreground/70">{d.category}</span>
                                     </div>
                                     <span className="text-[11px] font-black tabular-nums">{d.total} <span className="text-[8px] opacity-30">{currency}</span></span>
@@ -208,14 +208,14 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full items-center p-4">
                         {[
-                            { label: 'Sales VAT', value: vatSummaryData.outputVat, icon: ArrowUpRight, color: 'text-[#F4D03F]' },
+                            { label: 'Sales VAT', value: vatSummaryData.outputVat, icon: ArrowUpRight, color: 'text-primary' },
                             { label: 'Expense VAT', value: vatSummaryData.inputVat, icon: ArrowDownRight, color: 'text-red-500/60' },
-                            { label: 'VAT balance', value: vatSummaryData.balance, icon: Target, color: 'text-[#1B9157]', highlight: true },
+                            { label: 'VAT balance', value: vatSummaryData.balance, icon: Target, color: 'text-beeyield-green', highlight: true },
                         ].map((item, i) => (
-                            <div key={i} className={cn("p-6 space-y-4 rounded-2xl border bg-muted/", item.highlight ? "border-[#1B9157]/20" : "border-[#1A1A1A]/5")}>
+                            <div key={i} className={cn("p-6 space-y-4 rounded-2xl border bg-muted/", item.highlight ? "border-beeyield-green/20" : "border-[#1A1A1A]/5")}>
                                 <div className="flex justify-between items-start">
                                     <item.icon className={cn("w-5 h-5", item.color)} />
-                                    <Badge className="bg-[#1A1A1A]/5 text-xs font-semibold text-foreground/50 border-none px-2">{i === 2 ? 'Summary' : 'VAT'}</Badge>
+                                    <Badge className="bg-foreground/5 text-xs font-semibold text-foreground/50 border-none px-2">{i === 2 ? 'Summary' : 'VAT'}</Badge>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs font-semibold text-foreground/50">{item.label}</p>
@@ -420,7 +420,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 icon={CreditCard}
                 label="Billing"
                 onBack={() => onTabChange('home')}
-                title={<>Billing <span className="text-[#F4D03F]">overview</span></>}
+                title={<>Billing <span className="text-primary">overview</span></>}
                 subtitle="Track revenue, costs, and invoices."
                 actions={
                     <Button
@@ -441,7 +441,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
 
             {loading ? (
                 <div className="py-20 flex flex-col items-center justify-center opacity-40">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F] mb-4" />
+                    <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
                     <span className="text-sm font-semibold text-muted-foreground/90">Loading billing data…</span>
                 </div>
             ) : (
@@ -450,10 +450,10 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         <div className="space-y-6 animate-in fade-in duration-500">
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                 {[
-                                    { label: 'Total Revenue', value: `${overview?.total_revenue?.toLocaleString()}`, icon: TrendingUp, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]' },
+                                    { label: 'Total Revenue', value: `${overview?.total_revenue?.toLocaleString()}`, icon: TrendingUp, color: 'text-beeyield-green', bg: 'bg-beeyield-green' },
                                     { label: 'Total Costs', value: `${overview?.total_costs?.toLocaleString()}`, icon: Banknote, color: 'text-red-500', bg: 'bg-red-500' },
-                                    { label: 'Net Result', value: `${overview?.net_result?.toLocaleString()}`, icon: Target, color: 'text-foreground', bg: 'bg-[#1A1A1A]' },
-                                    { label: 'Outstanding', value: `${overview?.outstanding_invoices}`, icon: FileText, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]' },
+                                    { label: 'Net Result', value: `${overview?.net_result?.toLocaleString()}`, icon: Target, color: 'text-foreground', bg: 'bg-foreground' },
+                                    { label: 'Outstanding', value: `${overview?.outstanding_invoices}`, icon: FileText, color: 'text-primary', bg: 'bg-primary' },
                                 ].map((stat, i) => (
                                     <div key={i} className={cn(glass.card, "p-4 space-y-1.5 bg-muted/ backdrop-blur-xl shadow-xl border-border/ rounded-[2rem] relative overflow-hidden group")}>
                                         <div className={cn("absolute top-0 left-0 w-full h-[3px] opacity-20", stat.bg)} />
@@ -483,7 +483,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                             <card.icon className="w-5 h-5 opacity-40 group-hover:opacity-100 transition-opacity" style={{ color: card.theme }} />
                                         </div>
                                         <div className="flex-1">
-                                            <h4 className="text-sm font-semibold group-hover:text-[#F4D03F] transition-colors">{card.title}</h4>
+                                            <h4 className="text-sm font-semibold group-hover:text-primary transition-colors">{card.title}</h4>
                                             <p className="text-xs text-muted-foreground">{card.sub}</p>
                                         </div>
                                         <ChevronRight className="w-4 h-4 text-foreground/20" />
@@ -497,11 +497,11 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         <div className="space-y-4 animate-in slide-in-from-bottom-2 duration-500">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="space-y-0.5">
-                                    <h3 className="text-lg font-bold text-foreground tracking-tight">Transaction <span className="text-[#1B9157]">history</span></h3>
+                                    <h3 className="text-lg font-bold text-foreground tracking-tight">Transaction <span className="text-beeyield-green">history</span></h3>
                                     <p className="text-sm text-muted-foreground">A record of your recent transactions.</p>
                                 </div>
                                 <div className="relative group w-full md:w-72">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/70 group-focus-within:text-[#1B9157] transition-all" />
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/70 group-focus-within:text-beeyield-green transition-all" />
                                     <input
                                         placeholder="Search records..."
                                         value={ledgerSearch}
@@ -529,7 +529,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                     <td className="px-6 py-4 text-[10px] font-medium text-muted-foreground/70 tabular-nums">#{(tx.id || i).toString().slice(0, 8)}</td>
                                                     <td className="px-6 py-4">
                                                         <div className="flex flex-col">
-                                                            <span className="text-xs font-bold text-foreground group-hover:text-[#1B9157] transition-colors">{tx.description || 'Service Payment'}</span>
+                                                            <span className="text-xs font-bold text-foreground group-hover:text-beeyield-green transition-colors">{tx.description || 'Service Payment'}</span>
                                                             <span className="text-xs text-muted-foreground mt-0.5">Ref: {tx.reference || 'Auto'}</span>
                                                         </div>
                                                     </td>
@@ -537,7 +537,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                         {new Date(tx.date || tx.created_at).toLocaleDateString()}
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className={cn("text-sm font-bold tabular-nums", tx.type === 'expense' ? 'text-red-500' : 'text-[#1B9157]')}>
+                                                        <span className={cn("text-sm font-bold tabular-nums", tx.type === 'expense' ? 'text-red-500' : 'text-beeyield-green')}>
                                                             {tx.type === 'expense' ? '-' : '+'}{tx.amount?.toLocaleString()} <span className="text-[10px] opacity-40">{currency}</span>
                                                         </span>
                                                     </td>
@@ -545,11 +545,11 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button
                                                                 onClick={() => { void handleSyncEntry(tx); }}
-                                                                className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-muted-foreground/70 hover:text-[#F4D03F] transition-colors shadow-sm"
+                                                                className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-muted-foreground/70 hover:text-primary transition-colors shadow-sm"
                                                                 aria-label="Sync transaction"
                                                                 title="Sync transaction"
                                                             >
-                                                                {syncingId === (tx.id || i) ? <Loader2 className="w-4 h-4 animate-spin text-[#F4D03F]" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                                                                {syncingId === (tx.id || i) ? <Loader2 className="w-4 h-4 animate-spin text-primary" /> : <RefreshCw className="w-3.5 h-3.5" />}
                                                             </button>
                                                             <button
                                                                 className="h-8 w-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-muted-foreground/70 hover:text-foreground transition-colors shadow-sm"
@@ -581,14 +581,14 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                     {activeSubTab === 'Subscription' && (
                         <div className="space-y-6 animate-in fade-in duration-500">
                             <div className={cn(glass.card, "p-6 relative overflow-hidden group border-gray-100 bg-muted/ backdrop-blur-md rounded-2xl shadow-sm")}>
-                                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#1B9157]/5 rounded-full blur-3xl" />
+                                <div className="absolute -top-10 -right-10 w-40 h-40 bg-beeyield-green/5 rounded-full blur-3xl" />
                                 <div className="relative z-10 flex flex-col md:flex-row gap-6 items-center">
-                                    <div className="w-12 h-12 rounded-xl bg-[#1B9157] flex items-center justify-center text-white shadow-lg shadow-[#1B9157]/20">
+                                    <div className="w-12 h-12 rounded-xl bg-beeyield-green flex items-center justify-center text-white shadow-lg shadow-[#1B9157]/20">
                                         <Zap className="w-6 h-6" />
                                     </div>
                                     <div className="flex-1 space-y-0.5 text-center md:text-left">
-                                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 px-2 py-0.5 rounded-md font-semibold text-xs">Current plan</Badge>
-                                        <h2 className="text-xl font-bold text-foreground tracking-tight">BeeYield <span className="text-[#F4D03F]">Pro</span></h2>
+                                        <Badge className="bg-beeyield-green/10 text-beeyield-green border-beeyield-green/20 px-2 py-0.5 rounded-md font-semibold text-xs">Current plan</Badge>
+                                        <h2 className="text-xl font-bold text-foreground tracking-tight">BeeYield <span className="text-primary">Pro</span></h2>
                                         <p className="text-sm text-muted-foreground">Enterprise scale · Unlimited analytics</p>
                                     </div>
                                     <div className="flex flex-col items-center md:items-end gap-1.5">
@@ -619,7 +619,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         <motion.div initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 30 }} className={cn(glass.card, "w-full max-w-xl p-0 overflow-hidden shadow-2xl bg-white border-gray-100 relative z-10 rounded-3xl")}>
                             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                                 <div>
-                                    <h3 className="text-xl font-bold text-foreground tracking-tight leading-none">{editingTransaction ? 'Edit' : 'New'} <span className="text-[#1B9157]">entry</span></h3>
+                                    <h3 className="text-xl font-bold text-foreground tracking-tight leading-none">{editingTransaction ? 'Edit' : 'New'} <span className="text-beeyield-green">entry</span></h3>
                                     <p className="text-sm text-muted-foreground mt-1">{editingTransaction ? 'Update this billing record and keep the ledger in sync.' : 'Add a record to your billing history.'}</p>
                                 </div>
                                 <button
@@ -667,7 +667,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
 
                                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-gray-100">
                                     <div className="flex items-center gap-2.5 opacity-40">
-                                        <ShieldCheck className="w-5 h-5 text-[#1B9157]" />
+                                        <ShieldCheck className="w-5 h-5 text-beeyield-green" />
                                         <p className="text-xs font-semibold text-muted-foreground/90">Secure entry</p>
                                     </div>
                                     <div className="flex gap-3 w-full md:w-auto">

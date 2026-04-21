@@ -135,7 +135,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         return (
             <BeeYieldPageShell className="space-y-0">
                 <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-                <Activity className="w-8 h-8 animate-spin text-[#F4D03F]" />
+                <Activity className="w-8 h-8 animate-spin text-primary" />
                 <span className="text-sm font-semibold text-muted-foreground/90 italic">Updating data...</span>
                 </div>
             </BeeYieldPageShell>
@@ -152,13 +152,13 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             <BeeYieldPageHeader
                 icon={Activity}
                 label="Apiary readings"
-                title={<>Apiary <span className="text-[#F4D03F]">Meters</span></>}
+                title={<>Apiary <span className="text-primary">Meters</span></>}
                 subtitle="Live readings from your devices."
                 onBack={() => onTabChange('home')}
                 actions={
                     <div className="flex items-center gap-3">
                         <div className="hidden sm:flex items-center gap-2 bg-muted/ px-3 py-1.5 rounded-xl border border-border/ shadow-sm backdrop-blur-md">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-beeyield-green animate-pulse" />
                             <span className="text-xs font-semibold text-muted-foreground">Live</span>
                         </div>
                     </div>
@@ -201,8 +201,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     
                     const colors = {
                         Water: "text-blue-500",
-                        Heat: "text-[#F4D03F]",
-                        Energy: "text-[#1B9157]"
+                        Heat: "text-primary",
+                        Energy: "text-beeyield-green"
                     };
 
                     return (
@@ -211,7 +211,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center border border-border/ bg-white shadow-sm group-hover:scale-105 transition-transform", colors[medium])}>
                                     <Icon className="w-4 h-4" />
                                 </div>
-                                <Badge className={cn("text-[8px] px-1.5 py-0.5 rounded-md border-none font-bold", alertCount > 0 ? "bg-red-500/10 text-red-500" : "bg-[#1B9157]/10 text-[#1B9157]")}>
+                                <Badge className={cn("text-[8px] px-1.5 py-0.5 rounded-md border-none font-bold", alertCount > 0 ? "bg-red-500/10 text-red-500" : "bg-beeyield-green/10 text-beeyield-green")}>
                                     {alertCount > 0 ? `${alertCount} Alarms` : 'Optimized'}
                                 </Badge>
                             </div>
@@ -275,8 +275,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <AreaChart data={trendData}>
                                     <defs>
                                         <linearGradient id="meterGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.2} />
-                                            <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
+                                            <stop offset="5%" stopColor="currentColor" className="text-primary" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="currentColor" className="text-primary" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -285,7 +285,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     <Tooltip
                                         contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '10px' }}
                                     />
-                                    <Area type="monotone" dataKey="value" stroke="#F4D03F" strokeWidth={3} fillOpacity={1} fill="url(#meterGrad)" />
+                                    <Area type="monotone" dataKey="value" stroke="currentColor" className="text-primary" strokeWidth={3} fillOpacity={1} fill="url(#meterGrad)" />
                                 </AreaChart>
                             </ResponsiveContainer>
                         )}
@@ -309,7 +309,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <div key={idx} className={cn("flex", msg.role === 'user' ? "justify-end" : "justify-start")}>
                                 <div className={cn(
                                     "px-4 py-2.5 rounded-2xl max-w-[90%] text-[10px] font-black tracking-wider leading-relaxed shadow-sm",
-                                    msg.role === 'user' ? "bg-[#1A1A1A] text-white rounded-tr-none" : "bg-white border border-border/ text-muted-foreground rounded-tl-none"
+                                    msg.role === 'user' ? "bg-foreground text-white rounded-tr-none" : "bg-white border border-border/ text-muted-foreground rounded-tl-none"
                                 )}>
                                     {msg.content}
                                 </div>
@@ -329,7 +329,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             onClick={handleSendMessage}
                             aria-label="Send telemetry query"
                             title="Send"
-                            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 bg-[#1A1A1A] text-white rounded-lg flex items-center justify-center shadow-md transition-transform hover:scale-105 active:scale-95"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 bg-foreground text-white rounded-lg flex items-center justify-center shadow-md transition-transform hover:scale-105 active:scale-95"
                         >
                             <Send className="w-3.5 h-3.5" />
                         </button>
@@ -341,7 +341,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             <div className={cn(glass.card, "p-0 overflow-hidden bg-muted/ border-border/ shadow-xl")}>
                 <div className="p-4 border-b border-border/ bg-muted/ flex justify-between items-center backdrop-blur-sm">
                     <div className="flex items-center gap-3">
-                        <TrendingUp className="w-4 h-4 text-[#1B9157]" />
+                        <TrendingUp className="w-4 h-4 text-beeyield-green" />
                         <h3 className="text-[11px] font-black text-foreground">Activity log</h3>
                     </div>
                     <Button onClick={() => onTabChange('meters-alarms')} variant="ghost" className="text-[8px] font-black text-muted-foreground hover:text-foreground hover:bg-muted/ rounded-xl px-3 h-7">
@@ -354,7 +354,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <div className="flex items-center gap-4">
                                 <div className={cn(
                                     "w-2 h-2 rounded-full",
-                                    event.severity === 'Critical' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" : "bg-[#1B9157]"
+                                    event.severity === 'Critical' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" : "bg-beeyield-green"
                                 )} />
                                 <div>
                                     <p className={cn("text-[11px] font-black tracking-tight italic", event.severity === 'Critical' ? "text-red-500" : "text-foreground")}>

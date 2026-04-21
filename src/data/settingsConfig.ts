@@ -43,8 +43,8 @@ export interface ModuleToggle {
 }
 
 export const MODULE_TOGGLES: ModuleToggle[] = [
-  { id: 'beehives', label: 'Commercial apiaries', desc: 'Hive health metrics and alerts.', icon: Hexagon, color: 'text-[#F4D03F]' },
-  { id: 'agro', label: 'Meteo & Bloom', desc: 'Satellite weather analytics.', icon: Globe, color: 'text-[#1B9157]' },
+  { id: 'beehives', label: 'Commercial apiaries', desc: 'Hive health metrics and alerts.', icon: Hexagon, color: 'text-primary' },
+  { id: 'agro', label: 'Meteo & Bloom', desc: 'Satellite weather analytics.', icon: Globe, color: 'text-beeyield-green' },
   { id: 'trackers', label: 'Hardware add-ons', desc: 'Solar device status and metrics.', icon: Cpu, color: 'text-blue-500' },
   { id: 'patients', label: 'Biometric Lab', desc: 'Advanced veterinary disease analysis.', icon: Activity, color: 'text-red-500' },
 ];
@@ -80,7 +80,7 @@ export interface BillingField {
 }
 
 export const BILLING_FIELDS: BillingField[] = [
-  { label: 'Revenue', key: 'total_revenue', icon: Receipt, color: 'text-[#1B9157]' },
+  { label: 'Revenue', key: 'total_revenue', icon: Receipt, color: 'text-beeyield-green' },
   { label: 'Costs', key: 'total_costs', icon: ArrowDownRight, color: 'text-red-500' },
-  { label: 'Net', key: 'net_result', icon: ArrowUpRight, color: 'text-[#F4D03F]' },
+  { label: 'Net', key: 'net_result', icon: ArrowUpRight, color: 'text-primary' },
 ];

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowRight, BookOpen, ChevronDown, CheckCircle, CheckCircle2, Zap,
+  Calculator, Shield, Cpu, Mic, LayoutDashboard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
