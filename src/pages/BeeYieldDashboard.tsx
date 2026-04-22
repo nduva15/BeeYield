@@ -229,7 +229,7 @@ const BeeYieldDashboard: React.FC = () => {
                     title: 'Strategy & Ops',
                     items: [
                         { id: 'intelligence', label: 'Insights', icon: Brain },
-                        { id: 'pollination-grid', label: 'Tactical Grid', icon: LayoutGrid },
+                        { id: 'pollination-grid', label: 'Precision Pollination', icon: LayoutGrid },
                         { id: 'pollination-calcs', label: 'Pollination Calcs', icon: Calculator },
                         { id: 'pollination-engine', label: 'Pollination planning', icon: Cpu },
                         { id: 'saturation-math', label: 'Coverage area', icon: Scale },
@@ -339,17 +339,17 @@ const BeeYieldDashboard: React.FC = () => {
             case 'precision-pollination-folder':
             case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
             case 'pollination-grid':
-            case 'precision-pollination-grid': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'precision-pollination-grid': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-intelligence':
             case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
-            case 'pollination-calcs': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'pollination-calcs': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'flight-mapping-tactical': return <FlightMapping />;
             case 'site-reports-tactical': return <PollinationReports />;
             case 'saturation-math': return <SpatialCoverageView />;
             case 'hpa-optimizer': return <HpaOptimizer />;
             case 'master-map': return <MasterMapView />;
-            case 'orchard-mapper': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'orchard-mapper': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
             case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
             case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;

@@ -24,6 +24,7 @@ const hiveIcon = L.divIcon({
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
 type LatLng = { lat: number; lng: number };
@@ -79,7 +80,7 @@ function polygonAreaM2(points: LatLng[]): number {
   return Math.abs((area * R * R) / 2);
 }
 
-export default function HivePlacementMap({ isOpen, onClose }: Props) {
+export default function HivePlacementMap({ isOpen, onClose, embedded }: Props) {
   const deviceId = useDeviceId();
   const [field, setField] = useState<LatLng[]>([]);
   const [hives, setHives] = useState<LatLng[]>([]);
@@ -150,7 +151,7 @@ export default function HivePlacementMap({ isOpen, onClose }: Props) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-3">
@@ -160,13 +161,15 @@ export default function HivePlacementMap({ isOpen, onClose }: Props) {
               <p className="text-xs text-muted-foreground">Draw your field, drop hives, see frames/acre + pollination coverage instantly</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          {!embedded && (
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Toolbar */}

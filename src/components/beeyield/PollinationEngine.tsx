@@ -17,11 +17,6 @@ import { useApiaries, useHives } from '@/hooks/useHives';
 import { useFlightPotential } from '@/hooks/useFlightPotential';
 import { beeyieldService, CropPollinationRequirement } from '@/services/beeyieldService';
 import {
-  BeeYieldBadge,
-  BeeYieldPageHeader,
-  BeeYieldPageShell,
-} from '@/components/beeyield/BeeYieldUI';
-import {
   calculateCurrentFPA,
   calculateSuccessProbability,
   estimateYieldLoss,
@@ -29,7 +24,7 @@ import {
 import { dashboardPollinationCropNames } from '@/data/beePollinationData';
 import { cn } from '@/lib/utils';
 import { resolveTargetFpa } from '@/lib/pollinationInsights';
-import { glass } from './GlassTheme';
+import { glass, PageHeader } from './GlassTheme';
 
 interface PollinationEngineProps {
   onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -73,7 +68,7 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; accen
           strokeLinecap="round"
           transform="rotate(-90 50 50)"
         />
-        <text x="50" y="52" textAnchor="middle" dominantBaseline="central" fontSize="20" fill="#1A1A1A" className="font-black">
+        <text x="50" y="52" textAnchor="middle" dominantBaseline="central" fontSize="20" fill="#E2E8F0" className="font-black">
           {Math.round(pct * 100)}%
         </text>
       </svg>
@@ -243,45 +238,41 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
   const loading = apiariesQuery.isLoading || hivesQuery.isLoading;
 
   return (
-    <BeeYieldPageShell>
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 pb-20">
-        <BeeYieldPageHeader
-          icon={Binary}
-          label="Pollination Planning"
-          title={
-            <>
-              Pollination <span className="text-[#1B9157]">Planning</span>
-            </>
-          }
-          subtitle="Scenario planning grounded in the selected apiary's acreage, hive inventory, and flight potential."
-          actions={
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <select
-                value={selectedApiaryId}
-                onChange={(event) => setSelectedApiaryId(event.target.value)}
-                className={cn(glass.input, 'h-10 min-w-[220px] bg-muted/')}
-                aria-label="Select apiary"
-                title="Select apiary"
-              >
-                {apiaries.map((apiary) => (
-                  <option key={apiary.id} value={apiary.id}>
-                    {apiary.name}
-                  </option>
-                ))}
-              </select>
-              <BeeYieldBadge variant="success">
-                {loading ? 'Loading...' : `${apiaryHives.length} live hives`}
-              </BeeYieldBadge>
-            </div>
-          }
-        />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={glass.page}>
+      <PageHeader
+        icon={Binary}
+        label="Pollination Planning"
+        title={<>Pollination <span className="text-primary">Planning</span></>}
+        subtitle="Scenario planning grounded in the selected apiary's acreage, hive inventory, and flight potential."
+        actions={
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <select
+              value={selectedApiaryId}
+              onChange={(event) => setSelectedApiaryId(event.target.value)}
+              className={cn(glass.input, 'h-10 min-w-[220px]')}
+              aria-label="Select apiary"
+              title="Select apiary"
+            >
+              {apiaries.map((apiary) => (
+                <option key={apiary.id} value={apiary.id}>
+                  {apiary.name}
+                </option>
+              ))}
+            </select>
+            <span className={cn(glass.badge, "bg-emerald-500/10 text-emerald-600 border-emerald-500/20")}>
+              {loading ? 'Loading...' : `${apiaryHives.length} live hives`}
+            </span>
+          </div>
+        }
+      />
 
+      <div className="space-y-6 relative z-10 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             {
               label: 'Acreage',
               value: acreage,
-              accent: 'accent-[#1B9157]',
+              accent: 'accent-primary',
               icon: MapPin,
               step: 1,
               min: 1,
@@ -292,7 +283,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
               label: 'Weather factor',
               value: weatherFactor,
               display: `${Math.round(weatherFactor * 100)}%`,
-              accent: 'accent-[#1B9157]',
+              accent: 'accent-primary',
               icon: TrendingUp,
               step: 0.05,
               min: 0.2,
@@ -303,7 +294,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
               label: 'Bloom intensity',
               value: bloomIntensity,
               display: `${Math.round(bloomIntensity * 100)}%`,
-              accent: 'accent-[#F4D03F]',
+              accent: 'accent-honey',
               icon: Sparkles,
               step: 0.05,
               min: 0.3,
@@ -314,8 +305,8 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
             <div key={control.label} className={cn(glass.section, 'p-4')}>
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <control.icon className="h-4 w-4" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.18em]">{control.label}</span>
+                  <control.icon className="h-4 w-4 text-foreground/70" />
+                  <span className={glass.microLabel}>{control.label}</span>
                 </div>
                 <span className="text-base font-black text-foreground">
                   {control.display || control.value}
@@ -336,18 +327,18 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
-            { scenario: schemeA, setScenario: setSchemeA, stats: statsA, accent: '#1B9157', muted: 'text-[#1B9157]' },
-            { scenario: schemeB, setScenario: setSchemeB, stats: statsB, accent: '#F4D03F', muted: 'text-[#F4D03F]' },
-          ].map(({ scenario, setScenario, stats, accent, muted }) => (
+            { scenario: schemeA, setScenario: setSchemeA, stats: statsA, accent: 'var(--primary)', accentClass: 'accent-primary', muted: 'text-primary' },
+            { scenario: schemeB, setScenario: setSchemeB, stats: statsB, accent: 'var(--honey)', accentClass: 'accent-honey', muted: 'text-honey' },
+          ].map(({ scenario, setScenario, stats, accent, accentClass, muted }) => (
             <div key={scenario.label} className={cn(glass.section, 'p-6 space-y-6')}>
-              <div className="flex items-center justify-between border-b border-border/ pb-4">
+              <div className="flex items-center justify-between border-b border-border pb-4">
                 <div>
                   <h3 className="text-sm font-black tracking-tight text-foreground">{scenario.label}</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">
+                  <p className={cn(glass.microLabel, "mt-1")}>
                     {selectedCrop || activeApiary?.forage_type || 'Crop not set'}
                   </p>
                 </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/ bg-muted/">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted/20">
                   <Target className="h-5 w-5" style={{ color: accent }} />
                 </div>
               </div>
@@ -355,7 +346,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
               <div className="space-y-5">
                 <div>
                   <div className="mb-2 flex items-center justify-between">
-                    <label className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Hives per acre</label>
+                    <label className={glass.microLabel}>Hives per acre</label>
                     <span className={cn('text-xl font-black tabular-nums', muted)}>{scenario.hivesPerAcre.toFixed(2)}</span>
                   </div>
                   <input
@@ -365,13 +356,13 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                     step="0.1"
                     value={scenario.hivesPerAcre}
                     onChange={(event) => setScenario((current) => ({ ...current, hivesPerAcre: Number(event.target.value) }))}
-                    className="w-full h-2 cursor-pointer accent-[#1B9157]"
+                    className={cn("w-full h-2 cursor-pointer", accentClass)}
                   />
                 </div>
 
                 <div>
                   <div className="mb-2 flex items-center justify-between">
-                    <label className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Frames per hive</label>
+                    <label className={glass.microLabel}>Frames per hive</label>
                     <span className={cn('text-xl font-black tabular-nums', muted)}>{scenario.framesPerHive}</span>
                   </div>
                   <input
@@ -386,20 +377,20 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                         return { ...current, framesPerHive: frames, colonyGrade: gradeFromFrames(frames) };
                       })
                     }
-                    className="w-full h-2 cursor-pointer accent-[#F4D03F]"
+                    className={cn("w-full h-2 cursor-pointer", accentClass)}
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 border-t border-border/ pt-4">
+              <div className="grid grid-cols-3 gap-4 border-t border-border pt-4">
                 <CircularGauge value={stats.successProb} max={100} label="Success" accent={accent} />
-                <div className="rounded-2xl border border-border/ bg-muted/ p-4 text-center">
-                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">FPA</p>
+                <div className="rounded-2xl border border-border bg-muted/30 p-4 text-center">
+                  <p className={glass.microLabel}>FPA</p>
                   <p className="mt-2 text-2xl font-black text-foreground">{stats.fpa.toFixed(1)}</p>
                 </div>
-                <div className="rounded-2xl border border-border/ bg-muted/ p-4 text-center">
-                  <p className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Yield loss</p>
-                  <p className="mt-2 text-2xl font-black text-red-600">-{stats.yieldLoss.toFixed(1)}%</p>
+                <div className="rounded-2xl border border-border bg-muted/30 p-4 text-center">
+                  <p className={glass.microLabel}>Yield loss</p>
+                  <p className="mt-2 text-2xl font-black text-red-500">-{stats.yieldLoss.toFixed(1)}%</p>
                 </div>
               </div>
 
@@ -407,7 +398,7 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
                 type="button"
                 onClick={() => handleCommitPlan(scenario, stats)}
                 disabled={isSaving}
-                className={cn(glass.btnPrimary, 'h-11 w-full rounded-2xl')}
+                className={cn(glass.btnPrimary, 'h-11 w-full rounded-xl')}
               >
                 {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                 <span>Save {scenario.label.toLowerCase()}</span>
@@ -419,25 +410,25 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
         <div className={cn(glass.card, 'p-6')}>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Plan comparison</p>
+              <p className={glass.microLabel}>Plan comparison</p>
               <h3 className="text-2xl font-black tracking-tight text-foreground">
-                Best projected result: <span className="text-[#1B9157]">{betterPlan.label}</span>
+                Best projected result: <span className="text-primary">{betterPlan.label}</span>
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground max-w-xl">
                 Target FPA is {targetFpa.toFixed(1)}. Current apiary inventory is {apiaryHives.length} hives across{' '}
                 {acreage} acres.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 lg:min-w-[320px]">
-              <div className="rounded-2xl border border-border/ bg-muted/ p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Yield delta</p>
+              <div className="rounded-2xl border border-border bg-muted/10 p-4">
+                <p className={glass.microLabel}>Yield delta</p>
                 <p className="mt-2 text-2xl font-black text-foreground">
                   {Math.abs(statsA.yieldLoss - statsB.yieldLoss).toFixed(1)}%
                 </p>
               </div>
-              <div className="rounded-2xl border border-border/ bg-muted/ p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Cost delta</p>
+              <div className="rounded-2xl border border-border bg-muted/10 p-4">
+                <p className={glass.microLabel}>Cost delta</p>
                 <p className="mt-2 text-2xl font-black text-foreground">
                   ${Math.abs(statsA.costPerAcre - statsB.costPerAcre).toFixed(0)}
                 </p>
@@ -446,17 +437,16 @@ const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) =>
           </div>
 
           <div className="mt-5 flex flex-wrap items-center gap-3">
-            <BeeYieldBadge>{selectedCrop || 'Crop not set'}</BeeYieldBadge>
-            <BeeYieldBadge variant="success">{activeApiary?.name || 'No apiary selected'}</BeeYieldBadge>
-            <BeeYieldBadge variant={flightPotential?.status === 'optimal' ? 'success' : 'warning'}>
+            <span className={glass.badge}>{selectedCrop || 'Crop not set'}</span>
+            <span className={cn(glass.badge, "bg-emerald-500/10 text-emerald-600 border-emerald-500/20")}>{activeApiary?.name || 'No apiary selected'}</span>
+            <span className={cn(glass.badge, flightPotential?.status === 'optimal' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20")}>
               {flightPotential?.status || 'Flight potential pending'}
-            </BeeYieldBadge>
+            </span>
           </div>
         </div>
-      </motion.div>
-    </BeeYieldPageShell>
+      </div>
+    </motion.div>
   );
 };
 
 export default PollinationEngine;
-

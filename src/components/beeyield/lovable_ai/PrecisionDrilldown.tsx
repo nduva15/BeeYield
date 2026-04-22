@@ -10,6 +10,7 @@ import { X, Target, Wind, Mountain, Compass } from "lucide-react";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
 type CropProfile = {
@@ -37,7 +38,7 @@ const CROP_PROFILES: CropProfile[] = [
   { name: "Sidr",                  flightRadius_m: 1000, recColoniesPerAcre: 1.0, bloomDays: 30, notes: "Premium honey crop; spread hives along wadis." },
 ];
 
-export default function PrecisionDrilldown({ isOpen, onClose }: Props) {
+export default function PrecisionDrilldown({ isOpen, onClose, embedded }: Props) {
   const [cropName, setCropName] = useState(CROP_PROFILES[0].name);
   const [acres, setAcres] = useState(20);
   const [hives, setHives] = useState(40);
@@ -99,7 +100,7 @@ export default function PrecisionDrilldown({ isOpen, onClose }: Props) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -109,13 +110,15 @@ export default function PrecisionDrilldown({ isOpen, onClose }: Props) {
               <p className="text-xs text-muted-foreground">Drop spacing • orientation • overlap • slope/wind modifiers</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          {!embedded && (
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Inputs */}
