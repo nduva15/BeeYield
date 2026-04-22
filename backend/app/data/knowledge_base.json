@@ -1,8 +1,8 @@
-{
+﻿{
   "metadata": {
-    "version": "6.0.0-ELITE",
-    "last_sync": "Tue Feb 10 23:12:40 2026",
-    "total_nodes": 383
+    "version": "6.1.0-ELITE",
+    "last_sync": "Tue Apr 22 05:00:00 2026",
+    "total_nodes": 386
   },
   "dna": {
     "company": "BeeYield",
@@ -1950,6 +1950,21 @@
       "source": "locations.ts",
       "subtopic": "Key Facts",
       "content": "s premier precision pollination hub. We optimize yields for mangoes, sisal, and legumes across the Kibwezi corridor using real-time IoT hive analytics.. Off Mombasa Road, Kibwezi, Makueni County, Kenya. Sustainable pollination and honey traceability across Makueni. Supporting thousands of smallholder farmers with tech-enabled solutions for a food-secure future.. Makueni Town Center, Makueni County, Kenya. Driving macadamia and coffee yields across Embu. Our precision pollination services help farmers achieve premium export quality through better flower set and IoT monitoring.. Embu Town Center, Embu County, Kenya. The avocado and coffee pollination leader in Meru. We partner with cooperatives to ensure consistent pollination across high-altitude farms.. Meru Town Center, Meru County, Kenya. Optimizing dryland fruit production and honey traceability in Machakos. Helping farmers leverage sustainable beekeeping for food security.. Machakos Town Center, Machakos County, Kenya"
+    }    ,
+    {
+      "source": "HoneyChain_Blockchain",
+      "subtopic": "Current Batch Registry (April 2026)",
+      "content": "BLOCKCHAIN TRACEABILITY LEDGER (Live Data - April 2026). All BeeYield honey batches use the BEE-YYYY-MM-NNNN format. Current registered batches on HoneyChain: BEE-2024-01-0001 (Kibwezi Premium Acacia, Jan 2024), BEE-2024-01-0100 (Organic Acacia, Jan 2024), BEE-2024-02-0200 (Savannah Gold, Feb 2024), BEE-2026-01-0418 (Kibwezi Premium Acacia Apisense Batch, Apr 2026), BEE-2026-01-0419 (Kibwezi Acacia Satellite Batch, Apr 2026), BEE-2026-01-0420 (Kibwezi Savannah Gold 2026, Apr 2026). All batches linked to Farmer F-MAT-001 (Timothy Nduva), Apiary A-KIB-SAVANNAH, Hive H-KIB-01-01. 2026 harvest: HRV-KIB-01-26, 18kg Acacia, April 15 2026."
+    },
+    {
+      "source": "HoneyChain_Blockchain",
+      "subtopic": "Batch Code Format",
+      "content": "BeeYield Batch Naming Convention: All honey batches follow the format BEE-YYYY-MM-NNNN. Legacy codes DEMO-001, KIB-ACACIA-24, KIB-GOLD-24 migrated to BEE-2024-01-0001, BEE-2024-01-0100, BEE-2024-02-0200. Each batch code maps to a unique block on the HoneyChain with immutable hash and complete audit trail."
+    },
+    {
+      "source": "BeeYieldDashboard_AI",
+      "subtopic": "Current Operations (April 2026)",
+      "content": "BeeYield current status April 2026: 184 hives across 5-acre apiary. 2026 harvest: 18kg from peak Acacia bloom. Active batches: BEE-2026-01-0418, BEE-2026-01-0419, BEE-2026-01-0420. IoT: BeeHUB sensors tracking temp 33-35C, humidity 42-48%, acoustic signatures, weight 28-31kg. Apisense partnership for 2026 Global Field Research. Disease detection 95% accuracy. Colony loss rate under 15%. All batches on HoneyChain with Polygon anchoring."
     }
   ]
 }

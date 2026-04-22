@@ -840,10 +840,10 @@ class HoneyBlockchain:
             })
 
             # 6. Create Batches
-            # DEMO-001 (Main Demo)
+            # BEE-2024-01-0001 (Main Demo — formerly DEMO-001)
             self.create_batch({
-                "batch_id": "BATCH-DEMO-001",
-                "batch_code": "DEMO-001",
+                "batch_id": "BATCH-BEE-2024-0001",
+                "batch_code": "BEE-2024-01-0001",
                 "honey_type": "Kibwezi Premium Acacia",
                 "harvest_id": "HRV-KIB-01-24",
                 "apiary_code": "KIB-01",
@@ -857,10 +857,10 @@ class HoneyBlockchain:
                 }
             })
 
-            # KIB-ACACIA-24
+            # BEE-2024-01-0100 (formerly KIB-ACACIA-24)
             self.create_batch({
-                "batch_id": "BATCH-KIB-001", 
-                "batch_code": "KIB-ACACIA-24", 
+                "batch_id": "BATCH-BEE-2024-0100", 
+                "batch_code": "BEE-2024-01-0100", 
                 "honey_type": "Organic Acacia",
                 "harvest_id": "HRV-KIB-01-24", 
                 "apiary_code": "KIB-01", 
@@ -872,14 +872,89 @@ class HoneyBlockchain:
                 }
             })
 
-            # KIB-GOLD-24
+            # BEE-2024-02-0200 (formerly KIB-GOLD-24)
             self.create_batch({
-                "batch_id": "BATCH-KIB-002", 
-                "batch_code": "KIB-GOLD-24", 
+                "batch_id": "BATCH-BEE-2024-0200", 
+                "batch_code": "BEE-2024-02-0200", 
                 "honey_type": "Savannah Gold",
                 "harvest_id": "HRV-KIB-01-24", 
                 "apiary_code": "KIB-01", 
                 "production_date": "2024-02-25",
+                "created_by": "SYSTEM",
+                "impact_stats": {
+                    "acres_pollinated": "25+ Acres",
+                    "beekeepers": "1 Beekeeper"
+                }
+            })
+
+            # ==================== 2026 Season Records ====================
+            # 7. Record 2026 Harvest (links to existing farmer/apiary/hive)
+            self.record_harvest({
+                "harvest_id": "HRV-KIB-01-26",
+                "hive_id": "H-KIB-01-01",
+                "apiary_id": "A-KIB-SAVANNAH",
+                "farmer_id": "F-MAT-001",
+                "harvester_name": "Timothy Nduva",
+                "harvest_date": "2026-04-15",
+                "quantity_kg": 18.0,
+                "left_for_bees_kg": 18.0,
+                "extraction_method": "Centrifuge",
+                "honey_type": "Acacia",
+                "bee_flower": "Acacia Tortilis",
+                "florage_type": "Acacia Tortilis",
+                "weather_conditions": "Clear, 28°C",
+                "notes": "Peak April bloom. Sensor-monitored extraction."
+            })
+
+            # 8. BEE-2026-01-0418 (Apisense Batch)
+            self.create_batch({
+                "batch_id": "BATCH-BEE-2026-0418",
+                "batch_code": "BEE-2026-01-0418",
+                "honey_type": "Kibwezi Premium Acacia (Apisense Batch)",
+                "harvest_id": "HRV-KIB-01-26",
+                "hive_id": "H-KIB-01-01",
+                "apiary_id": "A-KIB-SAVANNAH",
+                "farmer_id": "F-MAT-001",
+                "apiary_code": "KIB-01",
+                "production_date": "2026-04-18",
+                "created_by": "SYSTEM",
+                "impact_stats": {
+                    "acres_pollinated": "25+ Acres",
+                    "beekeepers": "1 Beekeeper",
+                    "bees_protected": "Yes",
+                    "carbon_sequestered": "1.2 Tons"
+                }
+            })
+
+            # 9. BEE-2026-01-0419
+            self.create_batch({
+                "batch_id": "BATCH-BEE-2026-0419",
+                "batch_code": "BEE-2026-01-0419",
+                "honey_type": "Kibwezi Acacia (Satellite Batch)",
+                "harvest_id": "HRV-KIB-01-26",
+                "hive_id": "H-KIB-01-01",
+                "apiary_id": "A-KIB-SAVANNAH",
+                "farmer_id": "F-MAT-001",
+                "apiary_code": "KIB-01",
+                "production_date": "2026-04-19",
+                "created_by": "SYSTEM",
+                "impact_stats": {
+                    "acres_pollinated": "25+ Acres",
+                    "beekeepers": "1 Beekeeper"
+                }
+            })
+
+            # 10. BEE-2026-01-0420
+            self.create_batch({
+                "batch_id": "BATCH-BEE-2026-0420",
+                "batch_code": "BEE-2026-01-0420",
+                "honey_type": "Kibwezi Savannah Gold 2026",
+                "harvest_id": "HRV-KIB-01-26",
+                "hive_id": "H-KIB-01-01",
+                "apiary_id": "A-KIB-SAVANNAH",
+                "farmer_id": "F-MAT-001",
+                "apiary_code": "KIB-01",
+                "production_date": "2026-04-20",
                 "created_by": "SYSTEM",
                 "impact_stats": {
                     "acres_pollinated": "25+ Acres",
