@@ -85,9 +85,9 @@ export default function SharedRun() {
       if (runErr || !runData) {
         setError("This shared harvest run could not be found. The link may be invalid or the run was deleted.");
       } else {
-        setRun(runData as SharedRunRow);
-        setVersions((vData || []) as RunVersion[]);
-        setComments((cData || []) as Comment[]);
+        setRun(runData as unknown as SharedRunRow);
+        setVersions((vData || []) as unknown as RunVersion[]);
+        setComments((cData || []) as unknown as Comment[]);
       }
       setLoading(false);
     })();
