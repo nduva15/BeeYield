@@ -344,24 +344,125 @@ const ESG = () => {
         </div>
       </section>
 
-      {/* Partner/Trust Footprint */}
-      <section className="py-24 bg-background border-b border-border">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-2xl mx-auto space-y-10">
-            <div className="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center mx-auto shadow-inner">
-              <ShieldCheck className="w-12 h-12 text-primary" />
+      {/* Biodiversity Resilience: Wild Pollinators */}
+      <section className="py-32 bg-[#0A0A0A] text-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-8"
+            >
+              <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 font-bold px-4 py-1">
+                Ecological Restoration
+              </Badge>
+              <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
+                Guardians of the <span className="text-emerald-500 italic">Wild.</span>
+              </h2>
+              <div className="space-y-6 text-lg text-neutral-400 font-medium leading-relaxed">
+                <p>
+                  Stable ecosystems are built on the foundations of diverse pollinator populations. While managed honeybees are vital, wild pollinators—including solitary bees, wasps, beetles, and moths—face unprecedented pressure from habitat loss and chemical-intensive agriculture.
+                </p>
+                <p>
+                  At BeeYield, we recognize that managed hives are only part of a complex biological legacy. We are committed to a vision where commercial success and wild biodiversity exist in a virtuous cycle.
+                </p>
+              </div>
+
+              <div className="pt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="p-6 border border-white/10 bg-white/5 rounded-3xl hover:bg-white/10 transition-colors group">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Cpu className="w-6 h-6 text-emerald-500" />
+                  </div>
+                  <h4 className="text-xl font-bold mb-2">BeeHUB Queen Telemetry</h4>
+                  <p className="text-sm text-neutral-500">Deploying LTE-enabled sensors across wild habitats to monitor environmental stability.</p>
+                </div>
+                <div className="p-6 border border-white/10 bg-white/5 rounded-3xl hover:bg-white/10 transition-colors group">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Mic className="w-6 h-6 text-amber-500" />
+                  </div>
+                  <h4 className="text-xl font-bold mb-2">Acoustic Audio Auditing</h4>
+                  <p className="text-sm text-neutral-500">Using bio-acoustic AI to track wild species presence with 94.8% confidence.</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute -inset-10 bg-emerald-500/20 blur-[100px] rounded-full opacity-30" />
+              <div className="relative border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl bg-neutral-900 aspect-square flex flex-col items-center justify-center p-12 text-center">
+                <div className="mb-8 p-6 bg-white/5 rounded-full border border-white/10 animate-pulse">
+                  <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                    <Activity className="w-12 h-12 text-emerald-500" />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-black mb-4 tracking-tight">Active Species Monitoring</h3>
+                <p className="text-neutral-500 max-w-sm mb-8 font-medium">
+                  By deploying BeeHUB IoT telemetry, we transition from observation to active safeguarding.
+                </p>
+                <div className="flex gap-4">
+                  <div className="text-center px-6 py-3 border border-white/10 rounded-2xl bg-white/5">
+                    <div className="text-2xl font-black text-emerald-500">20k+</div>
+                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Species Indexed</div>
+                  </div>
+                  <div className="text-center px-6 py-3 border border-white/10 rounded-2xl bg-white/5">
+                    <div className="text-2xl font-black text-amber-500">95%</div>
+                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Detection Acc.</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Governance Mandate */}
+      <section className="py-32 bg-white text-neutral-900 border-t-8 border-neutral-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center space-y-10">
+            <div className="inline-flex items-center gap-3 px-6 py-2 bg-neutral-900 text-white rounded-full text-xs font-black uppercase tracking-tighter">
+              <ShieldCheck className="w-4 h-4" />
+              Governance by Design
             </div>
-            <h3 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight">Verified by Design.</h3>
-            <p className="text-muted-foreground text-lg font-medium">
-              Every jar tracked. Every hive monitored. Every community supported. Partner with us to improve traceability and pollinator health.
+            <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85]">
+              Accountability <br /> <span className="text-neutral-400">in Action.</span>
+            </h2>
+            <p className="text-2xl font-medium leading-tight text-neutral-600 max-w-3xl mx-auto">
+              For BeeYield, ESG (Environmental, Social, and Governance) isn&apos;t just a corporate framework—it&apos;s the core of our technical architecture.
             </p>
-            <div className="flex flex-wrap justify-center gap-6 pt-4">
-              <Link to="/contact" className="px-10 py-5 bg-primary text-primary-foreground rounded-2xl font-semibold shadow-xl hover:bg-primary/90 transition-all">
-                Partner Engagement
-              </Link>
-              <Link to="/media" className="px-10 py-5 bg-background text-foreground border border-border rounded-2xl font-semibold hover:bg-muted transition-all">
-                Impact Media Room
-              </Link>
+
+            <div className="grid md:grid-cols-3 gap-1 grid-cols-1 border-4 border-neutral-900">
+              <div className="p-12 text-left space-y-4 hover:bg-neutral-50 transition-colors border-r-4 border-neutral-900">
+                <div className="w-12 h-12 bg-neutral-900 text-white flex items-center justify-center font-black rounded-none">E</div>
+                <h5 className="font-black uppercase text-xs tracking-widest">Environmental</h5>
+                <p className="text-sm font-medium text-neutral-500 leading-snug">Verified pesticide-free baselines and hive-level ecological health auditing.</p>
+              </div>
+              <div className="p-12 text-left space-y-4 hover:bg-neutral-50 transition-colors border-r-4 border-neutral-900">
+                <div className="w-12 h-12 bg-neutral-900 text-white flex items-center justify-center font-black rounded-none">S</div>
+                <h5 className="font-black uppercase text-xs tracking-widest">Social</h5>
+                <p className="text-sm font-medium text-neutral-500 leading-snug">Women-led engineering and inclusive economic growth in partner communities.</p>
+              </div>
+              <div className="p-12 text-left space-y-4 hover:bg-neutral-50 transition-colors">
+                <div className="w-12 h-12 bg-neutral-900 text-white flex items-center justify-center font-black rounded-none">G</div>
+                <h5 className="font-black uppercase text-xs tracking-widest">Governance</h5>
+                <p className="text-sm font-medium text-neutral-500 leading-snug">Radical transparency through immutable harvest and pollination tracking.</p>
+              </div>
+            </div>
+
+            <div className="pt-12">
+              <div className="inline-flex flex-wrap items-center justify-center gap-6">
+                <Link to="/contact" className="px-12 py-6 bg-[#064e3b] text-white font-black text-xs uppercase tracking-widest hover:bg-[#10b981] transition-colors shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none">
+                  Partner Engagement
+                </Link>
+                <Link to="/media" className="px-12 py-6 bg-white text-neutral-900 border-4 border-neutral-900 font-black text-xs uppercase tracking-widest hover:bg-neutral-100 transition-colors">
+                  Impact Media Room
+                </Link>
+              </div>
             </div>
           </div>
         </div>
