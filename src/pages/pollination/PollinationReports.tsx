@@ -3,103 +3,168 @@ import {
     FileBarChart,
     Terminal,
     Activity,
-    ArrowLeft
+    Download,
+    CheckCircle2,
+    AlertTriangle,
+    Clock,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
 
 const PollinationReports: React.FC = () => {
     return (
-        <div className="space-y-12">
-            <div className="max-w-7xl mx-auto space-y-12">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            <PageHeader
+                icon={FileBarChart}
+                label="Site reports"
+                title={<>Site <span className="text-primary">Reports</span></>}
+                subtitle="Enterprise audit, compliance documentation, and pollination performance analytics."
+                actions={
+                    <button className={cn(glass.btnSecondary, "gap-2")}>
+                        <Download className="w-4 h-4 text-primary" />
+                        Export All
+                    </button>
+                }
+            />
 
-                {/* Header */}
-                <div className="border-b-4 border-[#064e3b] pb-8">
-                    <h1 className="text-6xl font-black tracking-tighter leading-none">
-                        Site <span className="text-[#10b981]">Reports</span>
-                    </h1>
-                    <p className="text-[#064e3b]/40 font-black text-[10px] mt-4">
-                        Enterprise Audit & Compliance // v2.4.0
-                    </p>
-                </div>
-
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        {/* Bloom Report Card */}
-                        <div className="border-4 border-[#064e3b] bg-[#FFF9F0] overflow-hidden group shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                            <div className="bg-[#10b981] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
-                                <h4 className="text-xl font-black text-[#1A1A1A] tracking-tight">Bloom Saturation Report</h4>
-                                <Terminal className="w-5 h-5 text-[#1A1A1A]" />
+            {/* Report Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                {/* Bloom Saturation Report */}
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05, duration: 0.4 }}
+                    className={cn(glass.section, "overflow-hidden")}
+                >
+                    <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-emerald-500/5">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                <Terminal className="w-4 h-4 text-emerald-600" />
                             </div>
-                            <div className="p-10 space-y-8">
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black text-neutral-400">Period Coverage</span>
-                                    <span className="font-black text-lg">MAR 14 - MAR 28</span>
-                                </div>
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black text-neutral-400">Peak Saturation</span>
-                                    <span className="font-black text-lg text-[#10b981]">92.4%</span>
-                                </div>
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black text-neutral-400">Foraging Overlap</span>
-                                    <span className="font-black text-lg">88.1%</span>
-                                </div>
-                                <button className="w-full py-4 bg-[#064e3b] text-[#1A1A1A] font-black text-xs hover:bg-[#facc15] hover:text-[#1A1A1A] transition-none">
-                                    Export Geodata (.CSV)
-                                </button>
-                            </div>
+                            <h4 className="text-sm font-bold text-foreground">Bloom Saturation Report</h4>
                         </div>
-
-                        {/* Hive Performance Card */}
-                        <div className="border-4 border-[#064e3b] bg-[#FFF9F0] overflow-hidden group shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                            <div className="bg-[#facc15] p-6 border-b-4 border-[#064e3b] flex justify-between items-center">
-                                <h4 className="text-xl font-black text-[#064e3b] tracking-tight">Hive Efficiency Audit</h4>
-                                <Activity className="w-5 h-5 text-[#064e3b]" />
-                            </div>
-                            <div className="p-10 space-y-8">
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black text-neutral-400">Audit Units</span>
-                                    <span className="font-black text-lg">45 Nodes</span>
-                                </div>
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black text-neutral-400">Underperforming</span>
-                                    <span className="font-black text-lg text-red-500">2 Units</span>
-                                </div>
-                                <div className="flex justify-between items-end border-b-2 border-neutral-100 pb-4">
-                                    <span className="text-[10px] font-black text-neutral-400">Avg Colony Health</span>
-                                    <span className="font-black text-lg text-[#10b981]">Optimal</span>
-                                </div>
-                                <button className="w-full py-4 border-4 border-[#064e3b] text-[#064e3b] font-black text-xs hover:bg-[#064e3b] hover:text-[#1A1A1A] transition-none">
-                                    Run Deep Diagnostic
-                                </button>
-                            </div>
-                        </div>
+                        <span className={cn(glass.badge, "bg-emerald-500/10 text-emerald-600 border-emerald-500/20")}>Active</span>
                     </div>
-
-                    {/* Historical Timeline */}
-                    <div className="border-4 border-[#064e3b] p-8 bg-neutral-50 space-y-6">
-                        <h3 className="text-xl font-black border-b-2 border-black pb-4">Recent Audit Logs</h3>
-                        <div className="space-y-4 font-mono text-[10px]">
-                            <div className="flex gap-10">
-                                <span className="text-[#10b981] font-black">2026.03.14 09:42</span>
-                                <span className="text-neutral-400">System Message</span>
-                                <span className="font-bold">Automated bloom report generated for Sector 7G.</span>
+                    <div className="p-6 space-y-5">
+                        {[
+                            { label: 'Period Coverage', value: 'MAR 14 – MAR 28' },
+                            { label: 'Peak Saturation', value: '92.4%', highlight: true },
+                            { label: 'Foraging Overlap', value: '88.1%' },
+                        ].map((item, i) => (
+                            <div key={i} className="flex justify-between items-center py-2.5 border-b border-border last:border-b-0">
+                                <span className={glass.microLabel}>{item.label}</span>
+                                <span className={cn("text-sm font-bold", item.highlight ? "text-emerald-600" : "text-foreground")}>
+                                    {item.value}
+                                </span>
                             </div>
-                            <div className="flex gap-10">
-                                <span className="text-[#10b981] font-black">2026.03.13 14:10</span>
-                                <span className="text-neutral-400">System Message</span>
-                                <span className="font-bold">Wait time for Node_Alpha exceeding threshold (Colony Activity Spike).</span>
-                            </div>
-                            <div className="flex gap-10">
-                                <span className="text-red-500 font-black">2026.03.12 23:58</span>
-                                <span className="text-neutral-400">Audit Alert</span>
-                                <span className="font-bold">Manual override detected at Gate_Beta. Logging session.</span>
-                            </div>
-                        </div>
+                        ))}
+                        <button className={cn(glass.btnPrimary, "w-full mt-2 gap-2")}>
+                            <Download className="w-4 h-4" />
+                            Export Geodata (.CSV)
+                        </button>
                     </div>
-                </div>
+                </motion.div>
+
+                {/* Hive Efficiency Audit */}
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
+                    className={cn(glass.section, "overflow-hidden")}
+                >
+                    <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-primary/5">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                                <Activity className="w-4 h-4 text-primary" />
+                            </div>
+                            <h4 className="text-sm font-bold text-foreground">Hive Efficiency Audit</h4>
+                        </div>
+                        <span className={cn(glass.badge, "py-1")}>Review</span>
+                    </div>
+                    <div className="p-6 space-y-5">
+                        {[
+                            { label: 'Audit Units', value: '45 Nodes' },
+                            { label: 'Underperforming', value: '2 Units', danger: true },
+                            { label: 'Avg Colony Health', value: 'Optimal', highlight: true },
+                        ].map((item, i) => (
+                            <div key={i} className="flex justify-between items-center py-2.5 border-b border-border last:border-b-0">
+                                <span className={glass.microLabel}>{item.label}</span>
+                                <span className={cn(
+                                    "text-sm font-bold",
+                                    item.danger ? "text-red-500" : item.highlight ? "text-emerald-600" : "text-foreground"
+                                )}>
+                                    {item.value}
+                                </span>
+                            </div>
+                        ))}
+                        <button className={cn(glass.btnSecondary, "w-full mt-2 gap-2")}>
+                            <Activity className="w-4 h-4 text-primary" />
+                            Run Deep Diagnostic
+                        </button>
+                    </div>
+                </motion.div>
             </div>
-        </div>
+
+            {/* Audit Logs */}
+            <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.4 }}
+                className={cn(glass.section, "overflow-hidden relative z-10")}
+            >
+                <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 border border-border flex items-center justify-center">
+                            <Clock className="w-4 h-4 text-primary" />
+                        </div>
+                        <h3 className="text-sm font-bold text-foreground">Recent Audit Logs</h3>
+                    </div>
+                </div>
+                <div className="divide-y divide-border">
+                    {[
+                        {
+                            time: '2026.03.14 09:42',
+                            type: 'System',
+                            message: 'Automated bloom report generated for Sector 7G.',
+                            icon: CheckCircle2,
+                            iconClass: 'text-emerald-500',
+                        },
+                        {
+                            time: '2026.03.13 14:10',
+                            type: 'System',
+                            message: 'Wait time for Node_Alpha exceeding threshold (Colony Activity Spike).',
+                            icon: AlertTriangle,
+                            iconClass: 'text-amber-500',
+                        },
+                        {
+                            time: '2026.03.12 23:58',
+                            type: 'Audit Alert',
+                            message: 'Manual override detected at Gate_Beta. Logging session.',
+                            icon: AlertTriangle,
+                            iconClass: 'text-red-500',
+                        },
+                    ].map((log, i) => (
+                        <div key={i} className="px-5 py-4 flex items-start gap-4 hover:bg-muted/20 transition-colors">
+                            <div className={cn("w-8 h-8 rounded-lg bg-muted/30 border border-border flex items-center justify-center flex-shrink-0 mt-0.5")}>
+                                <log.icon className={cn("w-4 h-4", log.iconClass)} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <span className="text-[11px] font-bold text-primary tabular-nums">{log.time}</span>
+                                    <span className={cn(glass.badge, "text-[9px]")}>{log.type}</span>
+                                </div>
+                                <p className="text-[12px] font-medium text-foreground mt-1 leading-relaxed">{log.message}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </motion.div>
+        </motion.div>
     );
 };
 

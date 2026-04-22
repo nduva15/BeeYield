@@ -1,23 +1,23 @@
 import React from 'react';
 import {
     Activity,
-    ArrowLeft,
     Loader2,
     Map as MapIcon,
     MapPin,
     Navigation,
     RadioTower,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { glass, PageHeader } from '@/components/beeyield/GlassTheme';
 
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import WeatherTelemetryPanel from '@/components/beeyield/WeatherTelemetryPanel';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
@@ -134,9 +134,6 @@ const FlightMapping: React.FC = () => {
         [isUsingPublicMap, publicFlightMap, weatherSummary],
     );
     const locationOptions = privateSelectedApiary ? apiaries : selectedApiary ? [selectedApiary] : [];
-    const mapModeDescription = isUsingPublicMap
-        ? 'Public live map centered on Kibwezi, Kenya with backend weather enrichment'
-        : 'Real apiary telemetry, forecast enrichment, and route visibility';
 
     const mapCenter = React.useMemo<[number, number]>(() => {
         if (typeof selectedApiary?.latitude === 'number' && typeof selectedApiary?.longitude === 'number') {
@@ -185,7 +182,7 @@ const FlightMapping: React.FC = () => {
         if (typeof temperature === 'number' && temperature < 10) {
             return {
                 label: 'Grounded',
-                tone: 'text-[#b91c1c] bg-[#fee2e2] border-[#fecaca]',
+                tone: 'text-red-600 bg-red-500/10 border-red-500/20',
                 detail: 'Temperature is below safe bee flight threshold.',
             };
         }
@@ -193,7 +190,7 @@ const FlightMapping: React.FC = () => {
         if (typeof humidity === 'number' && humidity > 88) {
             return {
                 label: 'Limited',
-                tone: 'text-[#b45309] bg-[#fef3c7] border-[#fde68a]',
+                tone: 'text-amber-600 bg-amber-500/10 border-amber-500/20',
                 detail: 'Humidity is high enough to reduce foraging confidence.',
             };
         }
@@ -201,7 +198,7 @@ const FlightMapping: React.FC = () => {
         if (score >= 70) {
             return {
                 label: 'Optimal',
-                tone: 'text-[#047857] bg-[#d1fae5] border-[#a7f3d0]',
+                tone: 'text-emerald-600 bg-emerald-500/10 border-emerald-500/20',
                 detail: 'Conditions support active foraging and strong route confidence.',
             };
         }
@@ -209,18 +206,17 @@ const FlightMapping: React.FC = () => {
         if (score >= 40) {
             return {
                 label: 'Watch',
-                tone: 'text-[#92400e] bg-[#fef3c7] border-[#fde68a]',
+                tone: 'text-amber-600 bg-amber-500/10 border-amber-500/20',
                 detail: 'Conditions are usable, but routes should be checked before dispatch.',
             };
         }
 
         return {
             label: 'Pending',
-            tone: 'text-[#475569] bg-[#e2e8f0] border-[#cbd5e1]',
+            tone: 'text-muted-foreground bg-muted/20 border-border',
             detail: 'Waiting for stronger telemetry and weather alignment.',
         };
     }, [flightPotential?.score, resolvedWeatherSummary]);
-
 
     const activeSources = flightPotential?.active_sources || [];
     const linkedDevices = resolvedWeatherSummary?.linked_device_meta || [];
@@ -228,27 +224,25 @@ const FlightMapping: React.FC = () => {
     const telemetryReportingCount = isUsingPublicMap ? 1 : linkedDevices.filter((device) => !!device.last_observed_at).length;
 
     return (
-        <div className="space-y-8">
-            <div className="mx-auto max-w-7xl space-y-8">
-                <div className="flex flex-col gap-5 border-b-4 border-[#064e3b] pb-8 xl:flex-row xl:items-end xl:justify-between">
-                    <div>
-                        <h1 className="text-5xl font-black tracking-tighter leading-none md:text-6xl">
-                            Flight <span className="text-[#10b981]">Mapping</span>
-                        </h1>
-                        <p className="mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-[#064e3b]/45">
-                            {mapModeDescription}
-                        </p>
-                    </div>
-
-                    <div className="rounded-[28px] border-4 border-[#064e3b] bg-[#F7F1E4] p-4 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#064e3b]/55">
-                            Selected location
-                        </label>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={glass.page}
+        >
+            <PageHeader
+                icon={MapIcon}
+                label="Flight mapping"
+                title={<>Flight <span className="text-primary">Mapping</span></>}
+                subtitle={isUsingPublicMap
+                    ? 'Public live map centered on Kibwezi, Kenya with backend weather enrichment'
+                    : 'Real apiary telemetry, forecast enrichment, and route visibility'}
+                actions={
+                    <div className="flex items-center gap-2">
                         <select
                             value={selectedApiary?.id || ''}
                             onChange={(event) => setSelectedApiaryId(event.target.value)}
                             disabled={!privateSelectedApiary}
-                            className="mt-2 min-w-[280px] rounded-2xl border-2 border-[#064e3b]/20 bg-white px-4 py-3 text-sm font-bold text-[#064e3b] outline-none"
+                            className={cn(glass.select, "min-w-[200px]")}
                         >
                             {locationOptions.map((apiary) => (
                                 <option key={apiary.id} value={apiary.id}>
@@ -257,255 +251,293 @@ const FlightMapping: React.FC = () => {
                                 </option>
                             ))}
                         </select>
+                        <div className={cn(glass.badge, "py-1.5",
+                            apiariesLoading || isPublicMapLoading
+                                ? "bg-muted/20 text-muted-foreground border-border"
+                                : isUsingPublicMap
+                                    ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                    : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                        )}>
+                            <MapIcon className="w-3.5 h-3.5 mr-1.5" />
+                            {apiariesLoading || isPublicMapLoading ? 'Syncing' : isUsingPublicMap ? 'Public live' : 'Live'}
+                        </div>
                     </div>
-                </div>
+                }
+            />
 
-                <div className="grid gap-6 md:grid-cols-3">
-                    <div className="border-4 border-[#064e3b] bg-[#FFF9F0] p-6 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Active apiary</p>
-                        <h4 className="mt-2 text-2xl font-black">{selectedApiary?.name || 'Loading'}</h4>
-                        <p className="mt-2 text-sm font-semibold text-[#064e3b]/60">
-                            {selectedApiary?.location_name || 'Location pending'}
-                        </p>
-                    </div>
-                    <div className="border-4 border-[#064e3b] bg-[#FFF9F0] p-6 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Tracked hives</p>
-                        <h4 className="mt-2 text-2xl font-black">{hivesLoading && !isUsingPublicMap ? '...' : resolvedHives.length}</h4>
-                        <p className="mt-2 text-sm font-semibold text-[#064e3b]/60">
-                            {isUsingPublicMap ? `${positionedHives.length} live corridors mapped` : `${positionedHives.length} mapped with coordinates`}
-                        </p>
-                    </div>
-                    <div className="border-4 border-[#064e3b] bg-[#FFF9F0] p-6 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Linked telemetry</p>
-                        <h4 className="mt-2 text-2xl font-black">{weatherLoading && !isUsingPublicMap ? '...' : telemetryCount}</h4>
-                        <p className="mt-2 text-sm font-semibold text-[#064e3b]/60">
-                            {isUsingPublicMap ? 'Provider weather feed active for Kibwezi' : `${telemetryReportingCount} reporting recently`}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.95fr)]">
-                    <div className="relative overflow-hidden border-4 border-[#064e3b] bg-[#FFF9F0] shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                        <div className="flex items-center justify-between border-b-4 border-[#064e3b] px-5 py-4">
-                            <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">Live route canvas</p>
-                                <h3 className="mt-1 text-2xl font-black">Apiary flight map</h3>
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+                {[
+                    {
+                        label: 'Active apiary',
+                        value: selectedApiary?.name || 'Loading',
+                        sub: selectedApiary?.location_name || 'Location pending',
+                        icon: MapPin,
+                    },
+                    {
+                        label: 'Tracked hives',
+                        value: hivesLoading && !isUsingPublicMap ? '...' : resolvedHives.length,
+                        sub: isUsingPublicMap ? `${positionedHives.length} live corridors mapped` : `${positionedHives.length} mapped with coordinates`,
+                        icon: Navigation,
+                    },
+                    {
+                        label: 'Linked telemetry',
+                        value: weatherLoading && !isUsingPublicMap ? '...' : telemetryCount,
+                        sub: isUsingPublicMap ? 'Provider weather feed active for Kibwezi' : `${telemetryReportingCount} reporting recently`,
+                        icon: RadioTower,
+                    },
+                ].map((card, i) => (
+                    <motion.div
+                        key={card.label}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05, duration: 0.3 }}
+                        className={cn(glass.section, "p-5")}
+                    >
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="w-9 h-9 rounded-xl bg-primary/10 border border-border flex items-center justify-center">
+                                <card.icon className="w-4 h-4 text-primary" />
                             </div>
-                            <div className="inline-flex items-center gap-2 rounded-full border border-[#064e3b]/15 bg-white/80 px-3 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-[#064e3b]/55">
-                                <MapIcon className="h-4 w-4" />
-                                {apiariesLoading || isPublicMapLoading ? 'Syncing' : isUsingPublicMap ? 'Public live' : 'Live'}
+                            <span className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-tight">{card.label}</span>
+                        </div>
+                        <h4 className="text-xl font-bold text-foreground tracking-tight">{card.value}</h4>
+                        <p className="text-[11px] text-muted-foreground mt-1">{card.sub}</p>
+                    </motion.div>
+                ))}
+            </div>
+
+            {/* Map + Sidebar */}
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.95fr)] relative z-10">
+                {/* Map */}
+                <div className={cn(glass.section, "overflow-hidden flex flex-col")}>
+                    <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-border flex items-center justify-center">
+                                <MapIcon className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-foreground">Apiary flight map</h3>
+                                <p className="text-[10px] text-muted-foreground">Live route canvas</p>
                             </div>
                         </div>
+                        <div className={cn(glass.badge, "py-1.5",
+                            apiariesLoading || isPublicMapLoading
+                                ? "bg-muted/20 text-muted-foreground border-border"
+                                : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                        )}>
+                            <MapIcon className="w-3 h-3 mr-1.5" />
+                            {apiariesLoading || isPublicMapLoading ? 'Syncing' : isUsingPublicMap ? 'Public live' : 'Live'}
+                        </div>
+                    </div>
 
-                        <div className="relative h-[620px]">
-                            <MapContainer
-                                key={selectedApiary?.id || 'default-map'}
-                                center={mapCenter}
-                                zoom={13}
-                                style={{ height: '100%', width: '100%' }}
-                                scrollWheelZoom={false}
-                            >
-                                <TileLayer
-                                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                                    attribution="&copy; ESRI Satellite"
-                                />
+                    <div className="relative h-[620px] bg-card">
+                        <MapContainer
+                            key={selectedApiary?.id || 'default-map'}
+                            center={mapCenter}
+                            zoom={13}
+                            style={{ height: '100%', width: '100%' }}
+                            scrollWheelZoom={false}
+                        >
+                            <TileLayer
+                                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                                attribution="&copy; ESRI Satellite"
+                            />
 
-                                <Marker position={mapCenter}>
+                            <Marker position={mapCenter}>
+                                <Popup>
+                                    <div className="space-y-1 p-1">
+                                        <p className="text-xs font-bold">{selectedApiary?.name || 'Apiary'}</p>
+                                        <p className="text-[11px] text-gray-500">
+                                            {selectedApiary?.location_name || 'Primary apiary anchor'}
+                                        </p>
+                                    </div>
+                                </Popup>
+                            </Marker>
+
+                            {positionedHives.map((hive) => (
+                                <Marker key={hive.id} position={[hive.latitude as number, hive.longitude as number]}>
                                     <Popup>
                                         <div className="space-y-1 p-1">
-                                            <p className="text-xs font-black text-[#064e3b]">{selectedApiary?.name || 'Apiary'}</p>
-                                            <p className="text-[11px] font-semibold text-[#064e3b]/65">
-                                                {selectedApiary?.location_name || 'Primary apiary anchor'}
+                                            <p className="text-xs font-bold">{hive.hive_code || 'Hive'}</p>
+                                            <p className="text-[11px] text-gray-500">
+                                                {hive.status || 'Status pending'}
                                             </p>
                                         </div>
                                     </Popup>
                                 </Marker>
+                            ))}
 
-                                {positionedHives.map((hive) => (
-                                    <Marker key={hive.id} position={[hive.latitude as number, hive.longitude as number]}>
-                                        <Popup>
-                                            <div className="space-y-1 p-1">
-                                                <p className="text-xs font-black text-[#064e3b]">{hive.hive_code || 'Hive'}</p>
-                                                <p className="text-[11px] font-semibold text-[#064e3b]/65">
-                                                    {hive.status || 'Status pending'}
-                                                </p>
-                                            </div>
-                                        </Popup>
-                                    </Marker>
-                                ))}
+                            {routePoints.length > 1 && (
+                                <Polyline
+                                    positions={routePoints}
+                                    pathOptions={{
+                                        color: '#10b981',
+                                        weight: 4,
+                                        dashArray: '10 10',
+                                        opacity: 0.85,
+                                    }}
+                                />
+                            )}
 
-                                {routePoints.length > 1 && (
-                                    <Polyline
-                                        positions={routePoints}
-                                        pathOptions={{
-                                            color: '#10b981',
-                                            weight: 4,
-                                            dashArray: '10 10',
-                                            opacity: 0.85,
-                                        }}
-                                    />
-                                )}
+                            {coverageRadiusM ? (
+                                <Circle
+                                    center={mapCenter}
+                                    radius={coverageRadiusM}
+                                    pathOptions={{
+                                        color: '#F4D03F',
+                                        fillColor: '#F4D03F',
+                                        fillOpacity: 0.06,
+                                        weight: 2,
+                                        dashArray: '5 5',
+                                    }}
+                                />
+                            ) : null}
+                        </MapContainer>
 
-                                {coverageRadiusM ? (
-                                    <Circle
-                                        center={mapCenter}
-                                        radius={coverageRadiusM}
-                                        pathOptions={{
-                                            color: '#facc15',
-                                            fillColor: '#facc15',
-                                            fillOpacity: 0.06,
-                                            weight: 2,
-                                            dashArray: '5 5',
-                                        }}
-                                    />
-                                ) : null}
-                            </MapContainer>
-
-                            <div className="absolute bottom-6 right-6 z-[1000] space-y-3 rounded-[28px] border-4 border-[#064e3b] bg-[#FFF9F0] p-5 shadow-[6px_6px_0px_0px_#064e3b]">
-                                <h5 className="border-b-2 border-[#064e3b] pb-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/65">
-                                    Flight analysis
-                                </h5>
-                                <div className="flex items-center gap-3">
-                                    <div className="h-1 w-6 border-b-2 border-dashed border-[#10b981]" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.16em] text-[#064e3b]/60">
-                                        Suggested route
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="h-3 w-3 rotate-45 border-2 border-[#064e3b] bg-[#facc15]" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.16em] text-[#064e3b]/60">
-                                        Coverage zone
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="h-3 w-3 rounded-full bg-[#064e3b]" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.16em] text-[#064e3b]/60">
-                                        Apiary and hive anchors
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-6">
-                        <WeatherTelemetryPanel
-                            summary={resolvedWeatherSummary}
-                            isLoading={isUsingPublicMap ? isPublicMapLoading : weatherLoading}
-                            title="Flight map weather"
-                            compact
-                        />
-
-                        <div className="rounded-[32px] border-4 border-[#064e3b] bg-[#FFF9F0] p-6 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
-                            <div className="flex items-start justify-between gap-4">
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#064e3b]/45">
-                                        Flight readiness
-                                    </p>
-                                    <h3 className="mt-2 text-3xl font-black text-[#064e3b]">{readiness.label}</h3>
-                                </div>
-                                <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${readiness.tone}`}>
-                                    {isPotentialLoading ? 'Refreshing' : readiness.label}
+                        {/* Legend */}
+                        <div className="absolute bottom-6 right-6 z-[1000] space-y-2.5 rounded-xl border border-border bg-card/95 backdrop-blur-sm p-4 shadow-lg">
+                            <h5 className="border-b border-border pb-2 text-[10px] font-black text-muted-foreground/70 uppercase tracking-widest">
+                                Flight analysis
+                            </h5>
+                            <div className="flex items-center gap-3">
+                                <div className="h-0.5 w-5 border-b-2 border-dashed border-emerald-500" />
+                                <span className="text-[10px] font-semibold text-muted-foreground">
+                                    Suggested route
                                 </span>
                             </div>
-
-                            <p className="mt-3 text-sm font-semibold leading-6 text-[#064e3b]/65">{readiness.detail}</p>
-
-                            <div className="mt-6 rounded-[24px] border border-[#064e3b]/10 bg-[#F7F1E4] p-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">
-                                        Potential score
-                                    </span>
-                                    <span className="text-sm font-black text-[#064e3b]">
-                                        {isPotentialLoading ? '...' : `${Math.round(flightPotential?.score || 0)}%`}
-                                    </span>
-                                </div>
-                                <div className="mt-3 h-3 rounded-full bg-white/80">
-                                    <div
-                                        className="h-3 rounded-full bg-gradient-to-r from-[#facc15] via-[#10b981] to-[#064e3b] transition-all duration-500"
-                                        style={{ width: `${Math.max(4, Math.min(100, Math.round(flightPotential?.score || 0)))}%` }}
-                                    />
-                                </div>
-                                <p className="mt-3 text-sm font-semibold text-[#064e3b]/60">
-                                    {flightPotential?.recommendation || 'Waiting for telemetry-backed routing guidance.'}
-                                </p>
+                            <div className="flex items-center gap-3">
+                                <div className="h-3 w-3 rotate-45 border border-primary/40 bg-primary/30 rounded-[2px]" />
+                                <span className="text-[10px] font-semibold text-muted-foreground">
+                                    Coverage zone
+                                </span>
                             </div>
-
-                            <div className="mt-5 grid gap-3 md:grid-cols-2">
-                                <div className="rounded-[24px] border border-[#064e3b]/10 bg-[#F7F1E4] p-4">
-                                    <div className="flex items-center gap-2 text-[#064e3b]">
-                                        <Navigation className="h-4 w-4" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">
-                                            Active forage sources
-                                        </span>
-                                    </div>
-                                    <p className="mt-3 text-3xl font-black text-[#064e3b]">
-                                        {isPotentialLoading ? '...' : activeSources.length}
-                                    </p>
-                                    <p className="mt-1 text-sm font-semibold text-[#064e3b]/60">
-                                        Top nectar zones contributing to this route window
-                                    </p>
-                                </div>
-
-                                <div className="rounded-[24px] border border-[#064e3b]/10 bg-[#F7F1E4] p-4">
-                                    <div className="flex items-center gap-2 text-[#064e3b]">
-                                        <RadioTower className="h-4 w-4" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">
-                                            Reporting devices
-                                        </span>
-                                    </div>
-                                    <p className="mt-3 text-3xl font-black text-[#064e3b]">{telemetryCount}</p>
-                                    <p className="mt-1 text-sm font-semibold text-[#064e3b]/60">
-                                        {isUsingPublicMap ? 'Public live weather feed powering this map' : 'Devices linked to the selected apiary telemetry stream'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="mt-5 rounded-[24px] border border-[#064e3b]/10 bg-[#F7F1E4] p-4">
-                                <div className="flex items-center gap-2">
-                                    <Activity className="h-4 w-4 text-[#064e3b]" />
-                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#064e3b]/45">
-                                        Route notes
-                                    </p>
-                                </div>
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    {activeSources.length > 0 ? (
-                                        activeSources.slice(0, 4).map((source: any, index: number) => (
-                                            <span
-                                                key={`${source.name || 'source'}-${index}`}
-                                                className="inline-flex rounded-full border border-[#064e3b]/10 bg-white/75 px-3 py-1.5 text-xs font-bold text-[#064e3b]"
-                                            >
-                                                {source.name || 'Local forage'}
-                                            </span>
-                                        ))
-                                    ) : (
-                                        <span className="text-sm font-semibold text-[#064e3b]/60">
-                                            No active forage sources were returned for this apiary yet.
-                                        </span>
-                                    )}
-                                </div>
+                            <div className="flex items-center gap-3">
+                                <div className="h-3 w-3 rounded-full bg-foreground/60" />
+                                <span className="text-[10px] font-semibold text-muted-foreground">
+                                    Apiary and hive anchors
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {(apiariesLoading || isPublicMapLoading || (privateSelectedApiary && isPotentialLoading && !resolvedWeatherSummary)) && (
-                    <div className="flex items-center gap-3 rounded-[24px] border border-[#064e3b]/10 bg-[#F7F1E4] px-4 py-3 text-sm font-bold text-[#064e3b]">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Syncing flight map telemetry and weather summary
-                    </div>
-                )}
+                {/* Right sidebar */}
+                <div className="space-y-6">
+                    <WeatherTelemetryPanel
+                        summary={resolvedWeatherSummary}
+                        isLoading={isUsingPublicMap ? isPublicMapLoading : weatherLoading}
+                        title="Flight map weather"
+                        compact
+                    />
 
-                {!selectedApiary && !apiariesLoading && !isPublicMapLoading && (
-                    <div className="rounded-[28px] border-4 border-dashed border-[#064e3b]/20 bg-[#F7F1E4] p-8 text-center">
-                        <MapPin className="mx-auto h-8 w-8 text-[#064e3b]/45" />
-                        <h3 className="mt-3 text-2xl font-black text-[#064e3b]">Add an apiary to unlock live flight mapping</h3>
-                        <p className="mt-2 text-sm font-semibold text-[#064e3b]/60">
-                            This view now reads directly from your apiary coordinates, linked devices, and backend weather summary.
-                        </p>
+                    {/* Flight readiness */}
+                    <div className={cn(glass.section, "p-5")}>
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <p className={glass.microLabel}>Flight readiness</p>
+                                <h3 className="mt-2 text-2xl font-bold text-foreground">{readiness.label}</h3>
+                            </div>
+                            <span className={cn("rounded-lg border px-2.5 py-1 text-[10px] font-bold", readiness.tone)}>
+                                {isPotentialLoading ? 'Refreshing' : readiness.label}
+                            </span>
+                        </div>
+
+                        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{readiness.detail}</p>
+
+                        {/* Potential score */}
+                        <div className="mt-5 rounded-xl border border-border bg-muted/20 p-4">
+                            <div className="flex items-center justify-between">
+                                <span className={glass.microLabel}>Potential score</span>
+                                <span className="text-sm font-bold text-foreground">
+                                    {isPotentialLoading ? '...' : `${Math.round(flightPotential?.score || 0)}%`}
+                                </span>
+                            </div>
+                            <div className="mt-3 h-2 rounded-full bg-muted/30 overflow-hidden">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.max(4, Math.min(100, Math.round(flightPotential?.score || 0)))}%` }}
+                                    transition={{ duration: 1, ease: "easeOut" }}
+                                    className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-500 to-emerald-600"
+                                />
+                            </div>
+                            <p className="mt-3 text-[11px] text-muted-foreground">
+                                {flightPotential?.recommendation || 'Waiting for telemetry-backed routing guidance.'}
+                            </p>
+                        </div>
+
+                        {/* Two sub-cards */}
+                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                            <div className="rounded-xl border border-border bg-muted/20 p-4">
+                                <div className="flex items-center gap-2">
+                                    <Navigation className="h-4 w-4 text-primary" />
+                                    <span className={glass.microLabel}>Active forage sources</span>
+                                </div>
+                                <p className="mt-3 text-2xl font-bold text-foreground">
+                                    {isPotentialLoading ? '...' : activeSources.length}
+                                </p>
+                                <p className="mt-1 text-[11px] text-muted-foreground">
+                                    Top nectar zones contributing to this route window
+                                </p>
+                            </div>
+
+                            <div className="rounded-xl border border-border bg-muted/20 p-4">
+                                <div className="flex items-center gap-2">
+                                    <RadioTower className="h-4 w-4 text-primary" />
+                                    <span className={glass.microLabel}>Reporting devices</span>
+                                </div>
+                                <p className="mt-3 text-2xl font-bold text-foreground">{telemetryCount}</p>
+                                <p className="mt-1 text-[11px] text-muted-foreground">
+                                    {isUsingPublicMap ? 'Public live weather feed powering this map' : 'Devices linked to the selected apiary telemetry stream'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Route notes */}
+                        <div className="mt-4 rounded-xl border border-border bg-muted/20 p-4">
+                            <div className="flex items-center gap-2">
+                                <Activity className="h-4 w-4 text-primary" />
+                                <span className={glass.microLabel}>Route notes</span>
+                            </div>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                {activeSources.length > 0 ? (
+                                    activeSources.slice(0, 4).map((source: any, index: number) => (
+                                        <span
+                                            key={`${source.name || 'source'}-${index}`}
+                                            className={cn(glass.badge, "py-1")}
+                                        >
+                                            {source.name || 'Local forage'}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className="text-[11px] text-muted-foreground">
+                                        No active forage sources were returned for this apiary yet.
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                )}
+                </div>
             </div>
-        </div>
+
+            {/* Loading state */}
+            {(apiariesLoading || isPublicMapLoading || (privateSelectedApiary && isPotentialLoading && !resolvedWeatherSummary)) && (
+                <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/20 px-4 py-3 text-sm font-medium text-muted-foreground relative z-10">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    Syncing flight map telemetry and weather summary
+                </div>
+            )}
+
+            {/* Empty state */}
+            {!selectedApiary && !apiariesLoading && !isPublicMapLoading && (
+                <div className={glass.emptyState}>
+                    <MapPin className="h-8 w-8 text-primary/40" />
+                    <h3 className="text-lg font-bold text-foreground">Add an apiary to unlock live flight mapping</h3>
+                    <p className="text-sm text-muted-foreground max-w-md">
+                        This view now reads directly from your apiary coordinates, linked devices, and backend weather summary.
+                    </p>
+                </div>
+            )}
+        </motion.div>
     );
 };
 

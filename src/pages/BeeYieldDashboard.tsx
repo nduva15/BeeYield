@@ -89,6 +89,8 @@ import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
+import HarvestCalculator from '@/components/beeyield/lovable_ai/HarvestCalculator';
+import HivePlacementMap from '@/components/beeyield/lovable_ai/HivePlacementMap';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -340,13 +342,13 @@ const BeeYieldDashboard: React.FC = () => {
             case 'pollination-intelligence':
             case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
-            case 'pollination-calcs': return <PollinationCalcs />;
+            case 'pollination-calcs': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'flight-mapping-tactical': return <FlightMapping />;
             case 'site-reports-tactical': return <PollinationReports />;
             case 'saturation-math': return <SpatialCoverageView />;
             case 'hpa-optimizer': return <HpaOptimizer />;
             case 'master-map': return <MasterMapView />;
-            case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
+            case 'orchard-mapper': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
             case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
             case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
@@ -355,11 +357,11 @@ const BeeYieldDashboard: React.FC = () => {
             case 'bloom-phenology': return <BloomPhenology />;
             case 'acoustic-transformer': return <AcousticMoodTransformer />;
             case 'bee-calculator':
-            case 'calculator-suite': return <BeeCalculatorSuite />;
+            case 'calculator-suite': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'foraging-optimizer': return <ForagingOptimizer onTabChange={handleTabChange} />;
             case 'vpm-counter': return <VpmAutoCounter />;
             case 'bfh-forecast': return <BeeFlightHoursForecast />;
-            case 'yield-predict': return <PredictiveSuccessEngine onTabChange={handleTabChange} />;
+            case 'yield-predict': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'yard-ops': return <YardOperations onTabChange={handleTabChange} />;
