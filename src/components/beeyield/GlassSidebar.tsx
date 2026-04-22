@@ -53,10 +53,10 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                     className="flex items-center gap-3 w-full text-left group transition-colors"
                 >
                     <div className="w-9 h-9 flex items-center justify-center flex-shrink-0 bg-primary/10 rounded-xl border border-border p-1.5 transition-all group-hover:scale-110">
-                        <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
+                        <img src={Logo} alt="Beeeyield" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-base font-bold text-foreground tracking-tight leading-none">BeeYield <span className="text-[#F4D03F]">AI</span></span>
+                        <span className="text-base font-bold text-foreground tracking-tight leading-none">Beeeyield <span className="text-[#F4D03F]">Dashboard</span></span>
                         <span className="text-[10px] text-muted-foreground font-medium mt-0.5">Management Platform</span>
                     </div>
                 </button>
@@ -235,7 +235,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
             </div>
 
             <div className="py-2 text-center pb-4">
-                <span className="text-[10px] text-gray-300 font-medium">© 2026 BeeYield</span>
+                <span className="text-[10px] text-gray-300 font-medium">© 2026 Beeeyield</span>
             </div>
 
             <style>{`

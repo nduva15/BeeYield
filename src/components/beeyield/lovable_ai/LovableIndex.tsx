@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin } from "lucide-react";
 import { toast } from "sonner";
 const beeyieldLogo = "/logo.png";
 import { useTheme } from "@/hooks/use-theme";
@@ -15,6 +15,8 @@ import BeeDiseasesPage from "@/components/beeyield/lovable_ai/BeeDiseasesPage";
 import PollinationCharts from "@/components/beeyield/lovable_ai/PollinationCharts";
 import PollinationLookup from "@/components/beeyield/lovable_ai/PollinationLookup";
 import HarvestCalculator from "@/components/beeyield/lovable_ai/HarvestCalculator";
+import PrecisionDrilldown from "@/components/beeyield/lovable_ai/PrecisionDrilldown";
+import HivePlacementMap from "@/components/beeyield/lovable_ai/HivePlacementMap";
 
 type Message = {
   id: string;
@@ -118,6 +120,8 @@ export default function Index() {
   const [pollinationOpen, setPollinationOpen] = useState(false);
   const [lookupOpen, setLookupOpen] = useState(false);
   const [calculatorOpen, setCalculatorOpen] = useState(false);
+  const [drilldownOpen, setDrilldownOpen] = useState(false);
+  const [siteMapOpen, setSiteMapOpen] = useState(false);
 
   // Media state
   const [attachedImage, setAttachedImage] = useState<File | null>(null);
@@ -387,6 +391,20 @@ export default function Index() {
             <Calculator className="w-4 h-4" />
           </button>
           <button
+            onClick={() => setDrilldownOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Precision Pollination Drilldown"
+          >
+            <Target className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setSiteMapOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Precision Hive Placement Map"
+          >
+            <MapPin className="w-4 h-4" />
+          </button>
+          <button
             onClick={() => setAboutOpen(true)}
             className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
             title="About Beeyield AI"
@@ -626,7 +644,8 @@ export default function Index() {
       <PollinationCharts isOpen={pollinationOpen} onClose={() => setPollinationOpen(false)} />
       <PollinationLookup isOpen={lookupOpen} onClose={() => setLookupOpen(false)} />
       <HarvestCalculator isOpen={calculatorOpen} onClose={() => setCalculatorOpen(false)} />
+      <PrecisionDrilldown isOpen={drilldownOpen} onClose={() => setDrilldownOpen(false)} />
+      <HivePlacementMap isOpen={siteMapOpen} onClose={() => setSiteMapOpen(false)} />
     </div>
   );
 }
-

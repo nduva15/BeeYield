@@ -169,4 +169,3 @@ export default function KnowledgeDashboard({ onAsk }: KnowledgeDashboardProps) {
     </div>
   );
 }
-

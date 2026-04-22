@@ -417,14 +417,14 @@ const BeeYieldDashboard: React.FC = () => {
             <BeeYieldPageShell className="bg-background flex flex-col items-center justify-center p-8 font-sans text-foreground antialiased">
                 <div className="max-w-lg w-full text-center space-y-8">
                     <div className="w-20 h-20 rounded-3xl bg-card border border-border/40 flex items-center justify-center mx-auto shadow-sm">
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-bold text-foreground tracking-tighter leading-none">BeeYield <span className="text-primary">AI</span></span>
+                        <div className="flex flex-col text-center">
+                            <span className="text-2xl font-bold text-foreground tracking-tighter leading-none">Beeeyield <span className="text-primary">Dashboard</span></span>
                             <span className="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest">Operational OS</span>
                         </div>
                     </div>
                     <div className="space-y-3">
                         <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-foreground">Sign in to continue</h1>
-                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">You need an account to access the BeeYield AI dashboard.</p>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">You need an account to access the Beeeyield Dashboard.</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <button onClick={() => navigate('/login')} className="h-12 px-8 rounded-xl bg-beeyield-green text-foreground font-black text-sm tracking-tight hover:bg-beeyield-green/90 transition-colors flex items-center justify-center gap-2"><LockIcon className="w-4 h-4" />Sign in</button>

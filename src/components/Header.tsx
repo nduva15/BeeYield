@@ -114,7 +114,7 @@ const Header = () => {
           <Link
             to="/beeyield-dashboard"
             className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 group flex items-center justify-center"
-            title="BeeYield Dashboard"
+            title="Beeeyield Dashboard"
           >
             <Shield className="h-5 w-5 sm:h-5 sm:w-5 text-beeyield-green group-hover:text-beeyield-gold transition-colors" />
           </Link>

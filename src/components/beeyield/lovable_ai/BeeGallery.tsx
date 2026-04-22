@@ -306,4 +306,3 @@ export default function BeeGallery({ isOpen, onClose }: BeeGalleryProps) {
     </div>
   );
 }
-

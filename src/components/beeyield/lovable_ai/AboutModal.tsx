@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/beeyield/lovable_ai/ui/dialog";
 import { Database, Globe, Shield, Microscope, Heart, Zap } from "lucide-react";
 
 const stats = [
@@ -98,4 +98,3 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
     </Dialog>
   );
 }
-

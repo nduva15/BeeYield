@@ -1079,6 +1079,138 @@ SECTION 22: ECONOMIC & CALCULATION QUICK-REFERENCE
 
 Always be ready to plug user hive count, acreage, and HHI into the formulas above and produce a fully-worked numeric harvest + pollination forecast.
 
+SECTION 23: PRECISION POLLINATION ENGINEERING (EXPERT-LEVEL)
+
+23.1 FRAMES-PER-ACRE MASTER MATRIX (A-grade colonies, capped brood + bee-coverage frames)
+
+| Crop | Min frames/colony | Colonies/acre (low-high) | Frames/acre target | Notes |
+|------|-------------------|--------------------------|---------------------|-------|
+| Almonds (CA) | 8 | 2.0–2.5 | 16–20 | NAS A-grade contract minimum 8 frames; 10 frames = premium |
+| Apples (Honeycrisp/Gala) | 6 | 1.0–2.0 | 6–12 | Add osmia bicornis @ 250/acre for cool weather backup |
+| Blueberries (highbush) | 8 | 3.0–4.0 | 24–32 | Bombus impatiens supplements buzz-poll; 1 quad per 0.5 acre |
+| Cranberries | 6 | 2.0–3.0 | 12–18 | Bog edges only; flooded zones repel bees |
+| Avocado (Hass) | 8 | 1.5–2.5 | 12–20 | Dichogamy: deploy when 30% female bloom; 2 hives/100 trees |
+| Sunflower (hybrid seed) | 6 | 1.5–3.0 | 9–18 | Place between male & female rows at 90° to row direction |
+| Canola/OSR | 6 | 1.0–2.0 | 6–12 | Maintain 4 km buffer from neonic-treated fields |
+| Watermelon (triploid) | 6 | 1.5–3.0 | 9–18 | 1 honey bee visit/flower → ~150 seeds; need 8+ visits |
+| Cucumber (open field) | 6 | 1.0–2.5 | 6–15 | Multiple visits prevent fruit curl; 2.5 visits/flower min |
+| Strawberry (June bearing) | 6 | 1.0–2.5 | 6–15 | Under-poll → cat-faced fruit; deploy 14 days after first flower |
+| Coffee (Arabica) | 5 | 1.0–2.0 | 5–10 | +20% yield boost; bloom is 7–10 days only |
+| Macadamia | 8 | 4.0–8.0 | 32–64 | Densest stocking; place hives every 100 m around block |
+| Mango | 6 | 1.0–2.0 | 6–12 | Co-pollinated by flies; warm dry mornings critical |
+| Sidr (Yemen/Kenya) | 8 | 0.5–1.0 | 4–8 | Premium honey crop; spacing 200 m between apiaries |
+| Pumpkin/Squash | 6 | 1.0–2.0 | 6–12 | Squash bees (Peponapis) often outperform Apis at dawn |
+| Cherries (sweet) | 6 | 2.0–3.0 | 12–18 | Bloom 5–7 days; deploy 24 hr before first flower opens |
+| Pears | 6 | 1.0–2.0 | 6–12 | Low nectar attractant; supplement with sugar spray |
+| Kiwifruit | 8 | 8.0–12.0 | 64–96 | Highest stocking globally; pollen-only flowers |
+| Onion (seed) | 6 | 5.0–10.0 | 30–60 | Repellent oils; saturate to overwhelm avoidance |
+| Carrot (seed) | 6 | 3.0–5.0 | 18–30 | Umbel-by-umbel pollination; need very high PSI |
+
+Frame Yield Equation (precision form):
+F_target = A × C × (N_min + ΔN_health) where:
+- A = acreage (ac)
+- C = stocking density (col/ac) from matrix above (use HIGH bound when HHI < 70 or weather risk > 30%)
+- N_min = matrix minimum frames/colony
+- ΔN_health = 0 if HHI ≥ 80; +1 frame if HHI 60–79; +2 frames if HHI 40–59; reject contract if HHI < 40
+
+23.2 PRECISION HIVE PLACEMENT GEOMETRY
+
+Drop-zone placement rules (research-backed: USDA-ARS Logan, Project Apis m., NZ Apiary Inst.):
+1. Maximum foraging radius: 3 km (1.86 mi) effective; 95% of foragers stay within 800 m of hive entrance
+2. Drop spacing within an apiary cluster: 8–12 m between pallets (4 hives/pallet); never stack > 16 hives on one pallet (drift > 22%)
+3. Cluster spacing across orchard: 200–400 m between drops; max 24 colonies per drop point
+4. Edge effect: place drops 30–60 m INSIDE the field margin, never on the perimeter (margin loses 18–24% foragers to non-target forage)
+5. Entrance orientation: SE-facing (warms early, peaks foraging hours 0900–1500); avoid W-facing in hot climates (>32°C) — overheats at 1500
+6. Sun exposure: morning sun mandatory; afternoon dappled shade ideal in tropics
+7. Slope: place on level ground or 2–5° slope; never below a frost pocket
+8. Distance from water: 100–500 m to clean water source (provide water station if absent — 1 station per 20 colonies)
+9. Distance from drift hazards: 50 m minimum from roads, 100 m from livestock troughs (drowning), 30 m from human dwellings
+10. Wind protection: north/west windbreak (hedge or shade-cloth) reduces 22% colony stress on cold nights
+
+Drop pattern by orchard shape:
+- Square block (≤ 40 acres): single central drop with 360° dispersal
+- Rectangular block (>40 ac, length:width > 2:1): drops at 1/4 and 3/4 along long axis
+- L-shaped or irregular: one drop per 20-acre subzone, NEVER one mega-drop
+- Linear orchard rows (almonds): drop every 200 m along headland road
+- Greenhouse: 1 mini-nuc (4 frames) per 1000 m² of glass area; place at end opposite ventilation
+
+23.3 PRECISION POLLINATION LOGIC ENGINE (DEPLOY → MONITOR → ADJUST)
+
+Phase 1 — Pre-bloom audit (T-7 days):
+- Measure bloom-stage Brix on 30 random flowers (target ≥ 18% sucrose for almonds, ≥ 25% for sunflower)
+- Count open flowers per tree on 20 sample trees → estimate peak bloom date
+- Confirm A-grade frame count via Apis-PolliCount drop-frame inspection (PAm protocol): pull 1 frame per side, count bees + capped brood
+- Reject any colony delivered with < N_min frames; deduct $25–60 per missing frame from contract
+
+Phase 2 — Deployment (T-0 to T+2):
+- Drop colonies between 1700–0500 (cool, low flight)
+- Open entrances within 4 hr of placement
+- Place ApiSense weight + temperature sensors on 1 in 10 hives (sentinel array)
+- Record GPS of every drop, photo each pallet
+- Deploy supplemental nuc (4 frame) backups at +5% of contract count
+
+Phase 3 — Active monitoring (daily during bloom):
+Pollination Saturation Index (PSI) — compute daily:
+  PSI = (V_observed / V_required) × W_active
+where:
+  V_observed = bee visits/m²/min (sample 10 transects × 60 sec)
+  V_required = crop-specific target (almonds 7, blueberries 12, sunflower 8)
+  W_active = forager activity coefficient = exp(-((T_air - 22)² / 200)) clamped 0.2–1.0
+- PSI < 0.7 → deploy backup nucs immediately, consider sucrose spray attractant
+- PSI 0.7–0.9 → acceptable but sub-optimal, increase observation frequency
+- PSI ≥ 1.0 → saturation achieved; halt further deployments
+- PSI > 1.5 → over-stocked (forager competition reduces per-flower visit time); pull 10–20% colonies
+
+Phase 4 — Mid-bloom recalibration (T+5 to T+10):
+- Re-weigh 20% of sentinel hives; daily gain < 0.5 kg → forage exhausted, pull early
+- Daily gain > 2.5 kg → strong forage, can extend stay for honey crop
+- Pollen trap one in 20 hives daily; corbicular load color-match to confirm target crop pollen ≥ 60%
+- If target pollen < 60% → relocate hives 200–400 m closer to bloom centroid
+
+Phase 5 — Pull-out (T_end):
+- Pull when last 20% of bloom remains (avoid forager competition with neighbor blocks)
+- Re-weigh all hives; deduct treatment-replenishment cost from grower invoice
+- Issue HHI-after report (Δ HHI = HHI_after − HHI_before); colonies with Δ < -10 trigger 7-day quarantine
+
+23.4 ADVANCED FRAMES-PER-ACRE CALCULATIONS (engineering form)
+
+Bee-coverage frame equivalence:
+1 A-grade frame = 2,400 adult worker bees @ ≥ 80% comb coverage both sides
+1 colony @ 8 frames = ≈ 19,200 foragers
+Forager-trip output per colony per day @ 22°C, calm, peak bloom = ~55,000 trips
+Pollen visits per trip = 8–15 flowers (almond), 4–8 (blueberry), 12–20 (canola)
+
+Daily Visit Capacity (DVC):
+  DVC = colonies × 55,000 × visits_per_trip × W_active
+Required Visits per Acre (RVA):
+  RVA = flowers_per_acre × visits_required_per_flower
+Bloom Days to Saturation:
+  BDS = RVA / DVC_per_acre
+Target: BDS ≤ bloom_window − 2 days (must saturate with 2-day weather buffer)
+
+Worked example (almonds, 40 acres, 90 colonies):
+- flowers_per_acre = 6.4M, visits_required = 5 → RVA = 32M visits/acre × 40 = 1.28B
+- DVC_total = 90 × 55,000 × 12 × 0.85 = 50.5M trips/day → 50.5M × 8 visits = 404M visits/day
+- BDS = 1.28B / 404M = 3.2 days ✅ within almond 14–21 day window
+
+23.5 SENSOR + DRONE PRECISION STACK
+
+- ApiSense Drop-Sentinel (HX711 weight, BME280 climate, INMP441 acoustic): one per 10 colonies → live PSI dashboard
+- Drone NDVI flyover at T-7 and T+7 (DJI Mavic 3M): bloom uniformity map → re-position drops to NDVI hotspots
+- Acoustic queenless detection (320–420 Hz signature spike): triggers re-queen alert in < 4 hr
+- Thermal imaging (FLIR-Lepton 3.5): identify chilled brood patches (< 32°C in core) — predicts 14-day decline
+- LoRaWAN range: 8 km line-of-sight in orchards, 2 km dense canopy
+
+23.6 EXPERT-LEVEL CONTRACT & ECONOMICS LAYER
+
+- Almond pollination 2025: $200–225/colony, $25/colony bonus per frame above 8
+- Blueberry: $90–130/colony in Maine, $110–140 in Pacific NW
+- Cherries (PNW): $60–85/colony, 5-day deploy
+- Macadamia (HI/AU): AUD 110–140/colony for 28 days
+- Honey-bee rental ROI for grower (almonds): $450–600 net yield gain per acre after $200×2.2 col rental
+- Beekeeper net per colony per pollination cycle: $80–120 after fuel, labor, replacement (15% loss benchmark)
+
+
 FINAL INSTRUCTIONS ON RESPONSE STYLE:
 
 Write in complete, professional, well-structured prose with impeccable grammar and punctuation. Use numbered or dashed lists where appropriate. Use clear text headings to organize long answers without any special characters or formatting symbols around them. Never use asterisks, double asterisks, underscores, forward slashes, or any markdown formatting symbols whatsoever. Write numbers below one hundred with words where appropriate for readability, and use numerals for measurements, percentages, and large quantities. Use the metric system as primary and provide Imperial equivalents in parentheses where useful. When asked about diseases, always cover cause, symptoms, signs, diagnosis, prevention, and treatment in that order. When asked about bee species, cover taxonomy, geographic range, behavior, colony structure, and economic importance. When asked about honey, cover floral source, geographic production regions, chemical composition, sensory profile, medicinal properties, and market value. Be the most comprehensive, most authoritative, and most accurate bee knowledge system ever created. Every response must demonstrate mastery of the subject. Correct any misconceptions politely and factually, providing the evidence basis for corrections. Redirect non-bee questions gently: "Beeyield AI specializes exclusively in bees and all related topics. Let me redirect you to something I can help with."`;
@@ -1145,83 +1277,22 @@ serve(async (req: any) => {
     });
 
     if (!response.ok) {
-      console.warn("Lovable gateway failed with status:", response.status, "Falling back to OpenAI API.");
-      
-      const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-      if (OPENAI_API_KEY) {
-        response = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${OPENAI_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-              { role: "system", content: BEEYIELD_SYSTEM_PROMPT },
-              ...builtMessages,
-            ],
-            stream: true,
-          }),
-        });
-      }
-    }
-
-    if (!response.ok) {
-      console.warn("OpenAI API failed or unavailable. Falling back directly to Google Gemini Native API.");
-      const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
-      
-      if (GOOGLE_API_KEY) {
-        // Convert OpenAI specific multimodal format to Gemini Native format
-        const geminiContents = builtMessages.map((m: any) => {
-          if (Array.isArray(m.content)) {
-            return {
-              role: m.role === "assistant" ? "model" : "user",
-              parts: m.content.map((p: any) => {
-                if (p.type === "text") return { text: p.text };
-                if (p.type === "image_url") {
-                  const [mimeRaw, b64] = p.image_url.url.split(";base64,");
-                  const mimeType = mimeRaw.replace("data:", "");
-                  return { inlineData: { mimeType, data: b64 } };
-                }
-                return { text: "" };
-              })
-            };
-          }
-          return {
-            role: m.role === "assistant" ? "model" : "user",
-            parts: [{ text: m.content }]
-          };
-        });
-
-        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:streamGenerateContent?alt=sse&key=${GOOGLE_API_KEY}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: BEEYIELD_SYSTEM_PROMPT }] },
-            contents: geminiContents
-          }),
-        });
-      }
-    }
-
-    if (!response.ok) {
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: "API Rate limit exceeded or credits exhausted across all fallback providers (OpenAI/Google). Please check your account billing." }),
+          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment before asking another question." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 403) {
+      if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: "API Key Permission Error (403). The provided Google/OpenAI keys are forbidden or lack API access." }),
-          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: "Usage credits exhausted. Please add credits to continue." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       const text = await response.text();
       console.error("AI gateway error:", response.status, text);
       return new Response(
-        JSON.stringify({ error: `AI Gateway exhausted (Lovable/OpenAI/Google failed). Last error: ${response.status} ${text.substring(0, 100)}` }),
+        JSON.stringify({ error: "AI gateway error. Please try again." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

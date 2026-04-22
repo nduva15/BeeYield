@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
-import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2 } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree } from "lucide-react";
 import { toast } from "sonner";
-import jsPDF from "jspdf";
 import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { downloadPDF, downloadCSV, type AssumptionsBlock, type ExportPayload } from "@/lib/harvest-export";
 
 const CROP_OPTIONS = [
   "Almonds (CA)", "Apples", "Blueberries (highbush)", "Cranberries", "Avocado (Hass)",
@@ -32,6 +33,20 @@ type SavedRun = {
   region: string;
   local_estimate_kg: number | null;
   ai_forecast: string | null;
+  notes: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  assumptions: any | null;
+  created_at: string;
+};
+
+type RunVersion = {
+  id: string;
+  run_id: string;
+  version_label: string;
+  ai_forecast: string | null;
+  local_estimate_kg: number | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  assumptions: any | null;
   created_at: string;
 };
 
@@ -50,6 +65,16 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
   const [fillPct, setFillPct] = useState(75);
   const [hhi, setHhi] = useState(80);
   const [region, setRegion] = useState("Kenya / East Africa");
+  const [notes, setNotes] = useState("");
+
+  // Assumptions block — captured & shown in CSV/PDF/share
+  const [assumptions, setAssumptions] = useState<AssumptionsBlock>({
+    region_climate: "",
+    bloom_window: "",
+    hhi_source: "",
+    data_caveats: "",
+  });
+  const [assumptionsOpen, setAssumptionsOpen] = useState(false);
 
   // Local quick estimate
   const frame = FRAME_TYPES.find((f) => f.name === frameType)!;
@@ -74,6 +99,11 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [savedRuns, setSavedRuns] = useState<SavedRun[]>([]);
   const [saving, setSaving] = useState(false);
+  const [trendOnlyAI, setTrendOnlyAI] = useState(false);
+
+  // Versions per saved run
+  const [versionsByRun, setVersionsByRun] = useState<Record<string, RunVersion[]>>({});
+  const [selectedVersion, setSelectedVersion] = useState<Record<string, string>>({}); // runId -> versionId or "current"
 
   const loadRuns = useCallback(async () => {
     const { data, error } = await supabase
@@ -90,6 +120,15 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
     if (isOpen) loadRuns();
   }, [isOpen, loadRuns]);
 
+  const loadVersionsFor = useCallback(async (runId: string) => {
+    const { data } = await supabase
+      .from("harvest_run_versions")
+      .select("*")
+      .eq("run_id", runId)
+      .order("created_at", { ascending: false });
+    setVersionsByRun((prev) => ({ ...prev, [runId]: (data || []) as RunVersion[] }));
+  }, []);
+
   const buildPrompt = () =>
     `Use the BeeYield Harvest Math (Section 18) and Pollination PSI v2 model (Section 18) to produce a fully worked numeric forecast for the following operation. Show every formula step. Apply the 50/50 ethical harvest rule. Then add a Pollination Saturation Index assessment for the listed crop, recommended colonies vs supplied colonies, and a 7-bullet action plan.\n\n` +
     `INPUTS:\n` +
@@ -100,8 +139,15 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
     `- Honey frames per hive: ${framesPerHive}\n` +
     `- Average frame fill (capped %): ${fillPct}%\n` +
     `- Hive Health Index (HHI 0–100): ${hhi}\n` +
-    `- Region: ${region}\n\n` +
-    `Required output sections (markdown): ## Executive Summary, ## Situation Assessment, ## Recommendations (Prioritized), ## Implementation Plan, ## Risks & Mitigations, ## Metrics to Track, ## Sources & Assumptions.`;
+    `- Region: ${region}\n` +
+    (assumptions.region_climate || assumptions.bloom_window || assumptions.hhi_source || assumptions.data_caveats
+      ? `\nASSUMPTIONS:\n` +
+        (assumptions.region_climate ? `- Region/climate: ${assumptions.region_climate}\n` : "") +
+        (assumptions.bloom_window ? `- Bloom window: ${assumptions.bloom_window}\n` : "") +
+        (assumptions.hhi_source ? `- HHI source: ${assumptions.hhi_source}\n` : "") +
+        (assumptions.data_caveats ? `- Data caveats: ${assumptions.data_caveats}\n` : "")
+      : "") +
+    `\nRequired output sections (markdown): ## Executive Summary, ## Situation Assessment, ## Recommendations (Prioritized), ## Implementation Plan, ## Risks & Mitigations, ## Metrics to Track, ## Sources & Assumptions.`;
 
   const runAI = async () => {
     setAiLoading(true);
@@ -161,6 +207,9 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
       fill_pct: fillPct, hhi, region,
       local_estimate_kg: Number(apiaryHarvest.toFixed(2)),
       ai_forecast: aiText || null,
+      notes: notes.trim() || null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      assumptions: assumptions as any,
     });
     setSaving(false);
     if (error) {
@@ -171,6 +220,36 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
     loadRuns();
   };
 
+  // Save current AI forecast as a NEW VERSION on a saved run
+  const saveAsNewVersion = async (run: SavedRun) => {
+    if (!aiText) { toast.error("Generate an AI forecast first to save it as a new version"); return; }
+    const existing = versionsByRun[run.id] || [];
+    const nextN = existing.length + 1; // labels v1, v2, ... (excluding original on the run row itself)
+    const { error } = await supabase.from("harvest_run_versions").insert({
+      run_id: run.id,
+      version_label: `v${nextN}`,
+      ai_forecast: aiText,
+      local_estimate_kg: Number(apiaryHarvest.toFixed(2)),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      assumptions: assumptions as any,
+    });
+    if (error) { toast.error("Failed to save version"); return; }
+    toast.success(`Saved as v${nextN} on ${run.crop}`);
+    loadVersionsFor(run.id);
+  };
+
+  const copyShareLink = async (id: string) => {
+    const url = `${window.location.origin}/shared-run/${id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "BeeYield Harvest Forecast", url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success("Share link copied — send to your farm partners");
+      }
+    } catch { /* user cancelled */ }
+  };
+
   const loadRun = (r: SavedRun) => {
     setHives(r.hives);
     setAcres(Number(r.acres));
@@ -179,6 +258,8 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
     setFillPct(r.fill_pct);
     setHhi(r.hhi);
     setRegion(r.region);
+    setNotes(r.notes || "");
+    setAssumptions((r.assumptions as AssumptionsBlock) || { region_climate: "", bloom_window: "", hhi_source: "", data_caveats: "" });
     if (r.ai_forecast) {
       setAiText(r.ai_forecast);
       setAiOpen(true);
@@ -190,6 +271,35 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
     toast.success("Loaded saved run");
   };
 
+  const duplicateRun = (r: SavedRun) => {
+    setHives(r.hives);
+    setAcres(Number(r.acres));
+    setCrop(r.crop);
+    setFrameType(r.frame_type);
+    setFillPct(r.fill_pct);
+    setHhi(r.hhi);
+    setRegion(r.region);
+    setNotes((r.notes ? r.notes + "\n" : "") + "[clone] what-if scenario based on " + new Date(r.created_at).toLocaleDateString());
+    setAssumptions((r.assumptions as AssumptionsBlock) || { region_climate: "", bloom_window: "", hhi_source: "", data_caveats: "" });
+    setAiOpen(false);
+    setAiText("");
+    setHistoryOpen(false);
+    toast.success("Run cloned — tweak any parameter for a what-if scenario");
+  };
+
+  const trendData = useMemo(() => {
+    return [...savedRuns]
+      .filter((r) => (trendOnlyAI ? !!r.ai_forecast : true))
+      .reverse()
+      .map((r, i) => ({
+        idx: i + 1,
+        date: new Date(r.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+        hhi: r.hhi,
+        harvest: Number(r.local_estimate_kg ?? 0),
+        crop: r.crop,
+      }));
+  }, [savedRuns, trendOnlyAI]);
+
   const deleteRun = async (id: string) => {
     const { error } = await supabase.from("harvest_runs").delete().eq("id", id);
     if (error) { toast.error("Delete failed"); return; }
@@ -197,94 +307,66 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
     loadRuns();
   };
 
-  const exportPDF = () => {
-    const doc = new jsPDF({ unit: "pt", format: "a4" });
-    const margin = 48;
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    let y = margin;
+  // Build payload for export — for current calculator state
+  const buildPayload = (versionLabel?: string, overrideAi?: string | null, overrideAssumptions?: AssumptionsBlock | null): ExportPayload => ({
+    crop, hives, acres,
+    frame_type: frameType,
+    kgPerFrame: frame.kgPerFrame,
+    framesPerHive,
+    fillPct, hhi, region,
+    notes,
+    reserve, grossPerHive, netPerHive, ethicalPerHive, apiaryHarvest,
+    aiText: overrideAi !== undefined ? overrideAi : aiText,
+    versionLabel: versionLabel || "current",
+    assumptions: overrideAssumptions !== undefined ? overrideAssumptions : assumptions,
+  });
 
-    const ensureRoom = (h: number) => {
-      if (y + h > pageH - margin) { doc.addPage(); y = margin; }
-    };
-    const writeLine = (txt: string, size = 10, bold = false, color: [number, number, number] = [30, 30, 30]) => {
-      doc.setFont("helvetica", bold ? "bold" : "normal");
-      doc.setFontSize(size);
-      doc.setTextColor(...color);
-      const lines = doc.splitTextToSize(txt, pageW - margin * 2);
-      lines.forEach((ln: string) => {
-        ensureRoom(size + 4);
-        doc.text(ln, margin, y);
-        y += size + 4;
-      });
-    };
+  const exportPDF = () => { downloadPDF(buildPayload()); toast.success("PDF report exported"); };
+  const exportForecastCSV = () => { downloadCSV(buildPayload()); toast.success("CSV exported"); };
 
-    // Header
-    doc.setFillColor(245, 158, 11);
-    doc.rect(0, 0, pageW, 70, "F");
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.text("BeeYield Harvest Forecast", margin, 38);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(new Date().toLocaleString(), margin, 56);
-    y = 100;
-
-    writeLine("Inputs", 14, true, [180, 100, 0]);
-    writeLine(`Hives: ${hives}    Crop: ${crop}    Acres: ${acres}`);
-    writeLine(`Frame type: ${frameType} (${frame.kgPerFrame} kg/frame)    Frames/hive: ${framesPerHive}`);
-    writeLine(`Fill: ${fillPct}%    HHI: ${hhi}    Region: ${region}`);
-    y += 8;
-
-    writeLine("Worked Math (50/50 Ethical Rule)", 14, true, [180, 100, 0]);
-    writeLine(`H_frame  = ${frame.kgPerFrame} kg × (${fillPct}%/100) = ${(frame.kgPerFrame * fillPct / 100).toFixed(2)} kg/frame`);
-    writeLine(`H_gross  = ${framesPerHive} × ${(frame.kgPerFrame * fillPct / 100).toFixed(2)} = ${grossPerHive.toFixed(1)} kg/hive`);
-    writeLine(`Reserve  (${region}) = ${reserve} kg → Net = ${netPerHive.toFixed(1)} kg`);
-    writeLine(`Ethical  = min(50% × gross, net) = ${ethicalPerHive.toFixed(1)} kg/hive`);
-    writeLine(`Apiary   = ${ethicalPerHive.toFixed(1)} × ${hives} × (${hhi}/100) = ${apiaryHarvest.toFixed(0)} kg`, 11, true, [180, 100, 0]);
-    y += 8;
-
-    if (aiText) {
-      writeLine("Beeyield AI Forecast", 14, true, [180, 100, 0]);
-      // Strip markdown markers for cleaner PDF
-      const plain = aiText
-        .replace(/^#{1,6}\s+/gm, "")
-        .replace(/\*\*(.*?)\*\*/g, "$1")
-        .replace(/\*(.*?)\*/g, "$1")
-        .replace(/`([^`]+)`/g, "$1");
-      writeLine(plain, 10);
+  // Per-saved-run, version-aware export
+  const exportRunVersion = (r: SavedRun, fmt: "pdf" | "csv") => {
+    const verId = selectedVersion[r.id] || "current";
+    let aiTextOverride: string | null = r.ai_forecast;
+    let aLabel = "current";
+    let aAssumptions = (r.assumptions as AssumptionsBlock) || null;
+    if (verId !== "current") {
+      const v = (versionsByRun[r.id] || []).find((x) => x.id === verId);
+      if (v) {
+        aiTextOverride = v.ai_forecast;
+        aLabel = v.version_label;
+        aAssumptions = (v.assumptions as AssumptionsBlock) || null;
+      }
     }
-
-    // Footer
-    const total = doc.getNumberOfPages();
-    for (let i = 1; i <= total; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(150);
-      doc.text(`BeeYield • Page ${i} / ${total}`, pageW - margin, pageH - 20, { align: "right" });
-    }
-
-    const fname = `beeyield-harvest-${crop.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-${Date.now()}.pdf`;
-    doc.save(fname);
-    toast.success("PDF report exported");
+    // Reconstruct the same numeric math on the fly using the stored inputs
+    const f = FRAME_TYPES.find((x) => x.name === r.frame_type) || FRAME_TYPES[0];
+    const gross = f.kgPerFrame * 8 * (r.fill_pct / 100); // we don't store framesPerHive — use 8 default
+    const res = (reserveByRegion[r.region] ?? 8);
+    const net = Math.max(0, gross - res);
+    const eth = Math.min(0.5 * gross, net);
+    const apiary = Number(r.local_estimate_kg ?? eth * r.hives * (r.hhi / 100));
+    const payload: ExportPayload = {
+      crop: r.crop, hives: r.hives, acres: Number(r.acres),
+      frame_type: r.frame_type, kgPerFrame: f.kgPerFrame, framesPerHive: 8,
+      fillPct: r.fill_pct, hhi: r.hhi, region: r.region, notes: r.notes,
+      reserve: res, grossPerHive: gross, netPerHive: net, ethicalPerHive: eth, apiaryHarvest: apiary,
+      aiText: aiTextOverride, versionLabel: aLabel, assumptions: aAssumptions,
+    };
+    if (fmt === "pdf") { downloadPDF(payload); toast.success(`Exported ${aLabel} PDF`); }
+    else { downloadCSV(payload); toast.success(`Exported ${aLabel} CSV`); }
   };
 
   const sharePDF = async () => {
-    // Simple share: copy a text summary to clipboard
     const summary =
       `BeeYield Harvest Forecast\n` +
       `${hives} hives · ${crop} · ${acres} acres\n` +
       `Frame: ${frameType} @ ${fillPct}% fill · HHI ${hhi}\n` +
-      `Estimated apiary harvest: ${apiaryHarvest.toFixed(0)} kg (${ethicalPerHive.toFixed(1)} kg/hive ethical)\n`;
+      `Estimated apiary harvest: ${apiaryHarvest.toFixed(0)} kg (${ethicalPerHive.toFixed(1)} kg/hive ethical)\n` +
+      (notes.trim() ? `\nNotes: ${notes.trim()}\n` : "");
     try {
-      if (navigator.share) {
-        await navigator.share({ title: "BeeYield Harvest Forecast", text: summary });
-      } else {
-        await navigator.clipboard.writeText(summary);
-        toast.success("Summary copied to clipboard");
-      }
-    } catch { /* user canceled */ }
+      if (navigator.share) await navigator.share({ title: "BeeYield Harvest Forecast", text: summary });
+      else { await navigator.clipboard.writeText(summary); toast.success("Summary copied to clipboard"); }
+    } catch { /* canceled */ }
   };
 
   if (!isOpen) return null;
@@ -320,32 +402,142 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
 
         {historyOpen && (
           <div className="mb-6 p-4 rounded-xl border border-border bg-card">
-            <h3 className="font-display text-sm font-bold text-foreground mb-3">Saved harvest runs</h3>
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <h3 className="font-display text-sm font-bold text-foreground">Saved harvest runs</h3>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={trendOnlyAI}
+                  onChange={(e) => setTrendOnlyAI(e.target.checked)}
+                  className="accent-honey w-3.5 h-3.5"
+                />
+                Trend chart: AI-forecasted runs only
+              </label>
+            </div>
             {savedRuns.length === 0 ? (
               <p className="text-xs text-muted-foreground">No saved runs yet. Click Save below to track HHI improvements over time.</p>
             ) : (
-              <div className="space-y-2 max-h-72 overflow-y-auto custom-scroll">
-                {savedRuns.map((r) => (
-                  <div key={r.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border hover:border-primary/40 bg-muted/20">
-                    <button onClick={() => loadRun(r)} className="flex-1 text-left">
-                      <div className="text-sm font-medium text-foreground">
-                        {r.crop} · {r.hives} hives · <span className="text-honey">{Number(r.local_estimate_kg ?? 0).toFixed(0)} kg</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        HHI {r.hhi} · fill {r.fill_pct}% · {r.region} · {new Date(r.created_at).toLocaleDateString()}
-                        {r.ai_forecast ? " · AI ✓" : ""}
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => deleteRun(r.id)}
-                      className="w-8 h-8 rounded-lg border border-border hover:border-destructive/50 hover:text-destructive text-muted-foreground flex items-center justify-center"
-                      title="Delete run"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+              <>
+                {trendData.length >= 2 && (
+                  <div className="mb-4 p-4 rounded-lg border border-border bg-muted/10">
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingUp className="w-4 h-4 text-honey" />
+                      <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">HHI & Apiary harvest trend</h4>
+                    </div>
+                    <div className="h-56 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={trendData} margin={{ top: 5, right: 12, left: 0, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                          <YAxis yAxisId="left" stroke="hsl(var(--honey))" fontSize={11} domain={[0, 100]} label={{ value: "HHI", angle: -90, position: "insideLeft", fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
+                          <YAxis yAxisId="right" orientation="right" stroke="hsl(var(--primary))" fontSize={11} label={{ value: "kg", angle: 90, position: "insideRight", fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
+                          <Tooltip
+                            contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                            labelStyle={{ color: "hsl(var(--foreground))" }}
+                          />
+                          <Legend wrapperStyle={{ fontSize: 11 }} />
+                          <Line yAxisId="left" type="monotone" dataKey="hhi" name="HHI (0–100)" stroke="hsl(var(--honey))" strokeWidth={2} dot={{ r: 3 }} />
+                          <Line yAxisId="right" type="monotone" dataKey="harvest" name="Harvest (kg)" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                ))}
-              </div>
+                )}
+                <div className="space-y-2 max-h-96 overflow-y-auto custom-scroll">
+                  {savedRuns.map((r) => {
+                    const versions = versionsByRun[r.id] || [];
+                    const sel = selectedVersion[r.id] || "current";
+                    return (
+                      <div key={r.id} className="p-3 rounded-lg border border-border hover:border-primary/40 bg-muted/20">
+                        <div className="flex items-center justify-between gap-3">
+                          <button onClick={() => loadRun(r)} className="flex-1 text-left min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {r.crop} · {r.hives} hives · <span className="text-honey">{Number(r.local_estimate_kg ?? 0).toFixed(0)} kg</span>
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              HHI {r.hhi} · fill {r.fill_pct}% · {r.region} · {new Date(r.created_at).toLocaleDateString()}
+                              {r.ai_forecast ? " · AI ✓" : ""}
+                            </div>
+                            {r.notes && (
+                              <div className="text-xs text-foreground/70 mt-1 flex items-start gap-1.5">
+                                <StickyNote className="w-3 h-3 mt-0.5 shrink-0 text-honey" />
+                                <span className="line-clamp-2 italic">{r.notes}</span>
+                              </div>
+                            )}
+                          </button>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => { loadVersionsFor(r.id); }}
+                              className="w-8 h-8 rounded-lg border border-border hover:border-honey/50 hover:text-honey text-muted-foreground flex items-center justify-center"
+                              title="Load versions"
+                            >
+                              <ListTree className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => saveAsNewVersion(r)}
+                              className="w-8 h-8 rounded-lg border border-border hover:border-honey/50 hover:text-honey text-muted-foreground flex items-center justify-center"
+                              title="Save current AI forecast as new version on this run"
+                            >
+                              <GitBranch className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => copyShareLink(r.id)}
+                              className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 hover:text-primary text-muted-foreground flex items-center justify-center"
+                              title="Copy read-only share link for farm partners"
+                            >
+                              <Link2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => duplicateRun(r)}
+                              className="w-8 h-8 rounded-lg border border-border hover:border-honey/50 hover:text-honey text-muted-foreground flex items-center justify-center"
+                              title="Duplicate run for what-if scenario"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => deleteRun(r.id)}
+                              className="w-8 h-8 rounded-lg border border-border hover:border-destructive/50 hover:text-destructive text-muted-foreground flex items-center justify-center"
+                              title="Delete run"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Version selector + per-version export */}
+                        <div className="mt-2 flex items-center gap-2 flex-wrap text-xs">
+                          <span className="text-muted-foreground flex items-center gap-1"><GitBranch className="w-3 h-3" /> Version:</span>
+                          <select
+                            value={sel}
+                            onChange={(e) => setSelectedVersion((p) => ({ ...p, [r.id]: e.target.value }))}
+                            onFocus={() => { if (!versionsByRun[r.id]) loadVersionsFor(r.id); }}
+                            className="bg-background border border-border rounded px-2 h-7 text-xs"
+                          >
+                            <option value="current">current ({new Date(r.created_at).toLocaleDateString()})</option>
+                            {versions.map((v) => (
+                              <option key={v.id} value={v.id}>
+                                {v.version_label} · {new Date(v.created_at).toLocaleDateString()} · {Number(v.local_estimate_kg ?? 0).toFixed(0)} kg
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            onClick={() => exportRunVersion(r, "pdf")}
+                            className="px-2 h-7 rounded border border-border hover:border-honey/50 hover:text-honey text-muted-foreground flex items-center gap-1"
+                          >
+                            <FileDown className="w-3 h-3" /> PDF
+                          </button>
+                          <button
+                            onClick={() => exportRunVersion(r, "csv")}
+                            className="px-2 h-7 rounded border border-border hover:border-honey/50 hover:text-honey text-muted-foreground flex items-center gap-1"
+                          >
+                            <FileSpreadsheet className="w-3 h-3" /> CSV
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
         )}
@@ -384,6 +576,70 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
               <option>Temperate (US/EU)</option>
             </select>
           </Field>
+          <div className="md:col-span-2">
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1.5">
+              <StickyNote className="w-3 h-3 text-honey" /> Notes (what changed in this what-if scenario?)
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="e.g. Bumped HHI from 70 to 82 after Apivar treatment; tested wider frame fill assumption."
+              rows={2}
+              className={`${inputCls} resize-y min-h-[60px]`}
+            />
+          </div>
+        </div>
+
+        {/* Assumptions block — captured to CSV/PDF/share */}
+        <div className="mb-6 rounded-xl border border-honey/30 bg-honey/5 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setAssumptionsOpen((v) => !v)}
+            className="w-full flex items-center justify-between px-4 py-3 text-left"
+          >
+            <span className="text-sm font-semibold text-honey flex items-center gap-2">
+              <ListTree className="w-4 h-4" /> Assumptions ({assumptionsOpen ? "hide" : "edit"})
+            </span>
+            <span className="text-xs text-muted-foreground">
+              Region · bloom window · HHI source · caveats — included in CSV/PDF/share
+            </span>
+          </button>
+          {assumptionsOpen && (
+            <div className="px-4 pb-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Field label="Region / climate notes">
+                <input
+                  className={inputCls}
+                  value={assumptions.region_climate || ""}
+                  onChange={(e) => setAssumptions((a) => ({ ...a, region_climate: e.target.value }))}
+                  placeholder="e.g. Makueni semi-arid, 2025 long rains delayed 3 weeks"
+                />
+              </Field>
+              <Field label="Bloom window assumptions">
+                <input
+                  className={inputCls}
+                  value={assumptions.bloom_window || ""}
+                  onChange={(e) => setAssumptions((a) => ({ ...a, bloom_window: e.target.value }))}
+                  placeholder="e.g. Mango Mar 5–28, 24-day effective bloom"
+                />
+              </Field>
+              <Field label="HHI source">
+                <input
+                  className={inputCls}
+                  value={assumptions.hhi_source || ""}
+                  onChange={(e) => setAssumptions((a) => ({ ...a, hhi_source: e.target.value }))}
+                  placeholder="e.g. ApiSense IoT 30-day rolling avg, calibrated 2025-04-10"
+                />
+              </Field>
+              <Field label="Data caveats">
+                <input
+                  className={inputCls}
+                  value={assumptions.data_caveats || ""}
+                  onChange={(e) => setAssumptions((a) => ({ ...a, data_caveats: e.target.value }))}
+                  placeholder="e.g. frames/hive estimated, no scale data this round"
+                />
+              </Field>
+            </div>
+          )}
         </div>
 
         {/* Quick local estimate */}
@@ -411,22 +667,30 @@ export default function HarvestCalculator({ isOpen, onClose }: Props) {
           {aiLoading ? "Beeyield AI is forecasting..." : "Generate Full AI Forecast (Beeyield AI)"}
         </button>
 
-        {/* Action bar: Save / PDF / Share */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
           <button
             onClick={saveRun}
             disabled={saving}
             className="px-4 py-2.5 rounded-lg border border-honey/40 bg-honey/5 hover:bg-honey/10 text-honey font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            Save run to history
+            Save run
           </button>
           <button
             onClick={exportPDF}
             className="px-4 py-2.5 rounded-lg border border-border hover:border-primary/50 text-foreground font-medium text-sm flex items-center justify-center gap-2"
+            title="Export the full forecast card (inputs, worked math, AI forecast, assumptions, notes) as a PDF"
           >
             <FileDown className="w-4 h-4" />
-            Export PDF report
+            Export PDF
+          </button>
+          <button
+            onClick={exportForecastCSV}
+            className="px-4 py-2.5 rounded-lg border border-border hover:border-primary/50 text-foreground font-medium text-sm flex items-center justify-center gap-2"
+            title="Export numeric inputs + AI forecast + assumptions as CSV"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            Export CSV
           </button>
           <button
             onClick={sharePDF}
@@ -473,4 +737,3 @@ function Stat({ label, value, highlight = false }: { label: string; value: strin
     </div>
   );
 }
-

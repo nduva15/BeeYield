@@ -79,7 +79,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-3">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F4D03F]/10 border border-border rounded-lg">
-                            <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wider uppercase">BeeYield AI</span>
+                            <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wider uppercase">Beeeyield Dashboard</span>
                         </div>
                         <span className="text-gray-300">/</span>
                         <motion.span
