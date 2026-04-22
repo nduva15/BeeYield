@@ -6,12 +6,7 @@ import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useDevices } from '@/hooks/useDevices';
 import { useSensorReadings } from '@/hooks/useSensorReadings';
 import { useSensorAlerts } from '@/hooks/useSensorAlerts';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import {
+import { 
     LayoutGrid, MessageSquare, Box, LineChart, Signal, Bluetooth, Cpu, Usb, FileText, HelpCircle,
     Plus, Filter, SlidersHorizontal, MoreHorizontal, Battery, Wifi, Clock, AlertTriangle, CheckCircle2,
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
@@ -20,13 +15,10 @@ import {
     LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock as LockIcon, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
     Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck, Bug, Calendar, Heart
 } from "lucide-react";
-import { Target } from "lucide-react";
-import { Award } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import DashboardLayout from '@/components/beeyield/DashboardLayout';
 import { NavItem } from '@/components/beeyield/DashboardSidebar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { useSettings } from '@/contexts/SettingsContext';
@@ -40,80 +32,63 @@ import {
 } from '@/lib/beeyieldOnboarding';
 
 // View Imports
-import MyDevicesView from '@/components/beeyield/MyDevicesView';
-import DeviceDetailView from '@/components/beeyield/DeviceDetailView';
+import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 import LovableBeeYieldAI from '@/components/beeyield/lovable_ai/LovableIndex';
 import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
+import PollinationIntelligence from '@/components/beeyield/PollinationIntelligence';
+import PollinationEngine from '@/components/beeyield/PollinationEngine';
+import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
+import SpatialCoverageView from '@/components/beeyield/SpatialCoverageView';
+import HpaOptimizer from '@/components/beeyield/HpaOptimizer';
+import MasterMapView from '@/pages/MasterMapView';
+import OrchardMapper from '@/components/beeyield/OrchardMapper';
+import ForageZonesView from '@/components/beeyield/ForageZonesView';
+import HiveLogisticsSecurity from '@/components/beeyield/HiveLogisticsSecurity';
+import FlightMapping from '@/pages/pollination/FlightMapping';
+import PollinationReports from '@/pages/pollination/PollinationReports';
+import PollinationCalcs from '@/pages/pollination/PollinationCalcs';
+import DigitalHealthAudit from '@/components/beeyield/DigitalHealthAudit';
+import ComplianceReport from '@/components/beeyield/ComplianceReport';
+import SensorAlertsView from '@/components/beeyield/SensorAlertsView';
+import BloomPhenology from '@/pages/BloomPhenology';
+import AcousticMoodTransformer from '@/components/beeyield/AcousticMoodTransformer';
+import BeeCalculatorSuite from '@/pages/BeeCalculatorSuite';
+import ForagingOptimizer from '@/components/beeyield/ForagingOptimizer';
+import VpmAutoCounter from '@/components/beeyield/VpmAutoCounter';
+import BeeFlightHoursForecast from '@/components/beeyield/BeeFlightHoursForecast';
+import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
+import SensorHealthView from '@/components/beeyield/SensorHealthView';
+import ContinuousMonitor from '@/components/beeyield/ContinuousMonitor';
+import YardOperations from '@/components/beeyield/YardOperations';
+import GatewayHub from '@/components/beeyield/GatewayHub';
+import HiveTelemetryView from '@/components/beeyield/HiveTelemetryView';
+import ContractVerificationModule from '@/components/beeyield/ContractVerificationModule';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
+import InspectionsView from '@/components/beeyield/InspectionsView';
+import HarvestsView from '@/components/beeyield/HarvestsView';
+import FlightMapView from '@/components/beeyield/FlightMapView';
 import GlobalHiveNetwork from '@/pages/GlobalHiveNetwork';
+import VarroaView from '@/components/beeyield/VarroaView';
 import MeasurementDataView from '@/components/beeyield/MeasurementDataView';
-import SettingsView from '@/components/beeyield/SettingsView';
-import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
-import BloomTrackingView from '@/components/beeyield/BloomTrackingView';
-import {
-    BeeYieldOnlineView,
-    USBView
-} from '@/components/beeyield/RemainingViews';
+import { BeeYieldOnlineView, USBView } from '@/components/beeyield/RemainingViews';
 import { BluetoothConnectivityView } from '@/components/beeyield/BluetoothConnectivityView';
-
-import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
-import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
-
-import MyRequestsView from '@/components/beeyield/MyRequestsView';
+import MyDevicesView from '@/components/beeyield/MyDevicesView';
+import DeviceDetailView from '@/components/beeyield/DeviceDetailView';
 import MyNotesView from '@/components/beeyield/MyNotesView';
+import MyRequestsView from '@/components/beeyield/MyRequestsView';
 import MyTaskView from '@/components/beeyield/MyTaskView';
 import BuyBeeYieldHubView from '@/components/beeyield/BuyBeeYieldHubView';
 import MetersView from '@/components/beeyield/MetersView';
 import BillingView from '@/components/beeyield/BillingView';
+import IntegrationsView from '@/components/beeyield/IntegrationsView';
 import SupportCenterView from '@/components/beeyield/SupportCenterView';
-import ServerStatusView from '@/components/beeyield/ServerStatusView';
-import InspectionsView from '@/components/beeyield/InspectionsView';
-import HarvestsView from '@/components/beeyield/HarvestsView';
+import SettingsView from '@/components/beeyield/SettingsView';
 import ImageAnalysisView from '@/components/beeyield/ImageAnalysisView';
 import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
-import FlightMapView from '@/components/beeyield/FlightMapView';
-import VarroaView from '@/components/beeyield/VarroaView';
-import SensorHealthView from '@/components/beeyield/SensorHealthView';
-import ContinuousMonitor from '@/components/beeyield/ContinuousMonitor';
-import YardOperations from '@/components/beeyield/YardOperations';
-import GeospatialSecurity from '@/components/beeyield/GeospatialSecurity';
-import PollinationIntelligence from '@/components/beeyield/PollinationIntelligence';
-import OrchardMapper from '@/components/beeyield/OrchardMapper';
-import SeasonSummary from '@/components/beeyield/SeasonSummary';
-import PollinationEngine from '@/components/beeyield/PollinationEngine';
-import IntegrationsView from '@/components/beeyield/IntegrationsView';
-import SensorAlertsView from '@/components/beeyield/SensorAlertsView';
-
-import LiveActivityHeatmap from '@/components/beeyield/LiveActivityHeatmap';
-import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
-import HealthyHiveIndex from '@/components/beeyield/HealthyHiveIndex';
-import DeploymentPlanning from '@/components/beeyield/DeploymentPlanning';
-
-import ForagingOptimizer from '@/components/beeyield/ForagingOptimizer';
-import HiveLogisticsSecurity from '@/components/beeyield/HiveLogisticsSecurity';
-import DigitalHealthAudit from '@/components/beeyield/DigitalHealthAudit';
-import AcousticMoodTransformer from '@/components/beeyield/AcousticMoodTransformer';
-import BeeFlightHoursForecast from '@/components/beeyield/BeeFlightHoursForecast';
-import VpmAutoCounter from '@/components/beeyield/VpmAutoCounter';
-import VpmTicker from '@/components/beeyield/VpmTicker';
-import HpaOptimizer from '@/components/beeyield/HpaOptimizer';
-import FleetSecurity from '@/components/beeyield/FleetSecurity';
-import ComplianceReport from '@/components/beeyield/ComplianceReport';
-import BeeCalculatorPage from '@/components/beeyield/BeeCalculatorPage';
-import ForageZonesView from '@/components/beeyield/ForageZonesView';
-
-import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
-
-import HiveTelemetryView from '@/components/beeyield/HiveTelemetryView';
-import ContractVerificationModule from '@/components/beeyield/ContractVerificationModule';
-import GatewayHub from '@/components/beeyield/GatewayHub';
-import SpatialCoverageView from '@/components/beeyield/SpatialCoverageView';
-import MasterMapView from '@/pages/MasterMapView';
-import BeeCalculatorSuite from '@/pages/BeeCalculatorSuite';
-import BloomPhenology from '@/pages/BloomPhenology';
-
+import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
+import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -126,22 +101,15 @@ const BeeYieldDashboard: React.FC = () => {
     const effectiveUser = beeyieldUser || user;
     const effectiveEmail = beeyieldUser?.email || user?.email;
 
-    // Auth State
-    const [authMode, setAuthMode] = React.useState<AuthMode>('login');
-    const [dashboardOpenedAt] = React.useState(() => Date.now());
-
-    // Dashboard state (UI only)
     const [activeTab, setActiveTab] = React.useState('home');
     const [aiInitialMessage, setAiInitialMessage] = React.useState<string | null>(null);
-    const [showBanner, setShowBanner] = React.useState(true);
     const [viewParams, setViewParams] = React.useState<{ message?: string, action?: string } | null>(null);
+    const [dashboardOpenedAt] = React.useState(() => Date.now());
 
-    // Data Hooks
     const { data: rawApiaries, isLoading: apiariesLoading } = useApiaries();
     const { data: rawHives, isLoading: hivesLoading } = useHives();
     const { data: rawDevices, isLoading: devicesLoading } = useDevices();
     const { data: rawReadings, isLoading: readingsLoading } = useSensorReadings(undefined, 24 * 7);
-    const { data: alertsData } = useSensorAlerts(false); // Get active alerts for global badge
 
     const { apiaries, hives, devices, readings } = React.useMemo(() => ({
         apiaries: rawApiaries || [],
@@ -151,23 +119,25 @@ const BeeYieldDashboard: React.FC = () => {
     }), [rawApiaries, rawHives, rawDevices, rawReadings]);
 
     const loading = apiariesLoading || hivesLoading || devicesLoading || readingsLoading;
+    
     const requiredOnboardingStep = React.useMemo(() => resolveBeeYieldOnboardingStep({
         apiaries: apiaries.length,
         hives: hives.length,
         devices: devices.length,
     }), [apiaries.length, hives.length, devices.length]);
+
     const pendingOnboarding = React.useMemo(
         () => (effectiveEmail ? getBeeYieldPendingOnboarding(effectiveEmail) : null),
         [effectiveEmail]
     );
+
     const shouldForceOnboarding = React.useMemo(() => {
         if (!pendingOnboarding || !effectiveUser?.created_at) return false;
-
         const createdAtMs = new Date(effectiveUser.created_at).getTime();
         if (Number.isNaN(createdAtMs)) return false;
-
         return (dashboardOpenedAt - createdAtMs) <= NEW_ACCOUNT_ONBOARDING_WINDOW_MS;
     }, [dashboardOpenedAt, pendingOnboarding, effectiveUser?.created_at]);
+
     const onboardingStep = shouldForceOnboarding ? requiredOnboardingStep : null;
 
     const handleTabChange = (tab: string, message?: string, action?: string) => {
@@ -184,10 +154,7 @@ const BeeYieldDashboard: React.FC = () => {
         toast.success(t('disconnected_success'));
     };
 
-    // Data fetching (keep refresh for legacy internal needs if any, but hooks handle most)
-    const refreshTelemetryData = React.useCallback(async () => {
-        // No-op or trigger refetch if needed
-    }, []);
+    const refreshTelemetryData = React.useCallback(async () => {}, []);
 
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -205,16 +172,8 @@ const BeeYieldDashboard: React.FC = () => {
 
     React.useEffect(() => {
         if (authLoading || loading) return;
-
         const pendingState = effectiveEmail ? getBeeYieldPendingOnboarding(effectiveEmail) : null;
-        if (!pendingState) {
-            return;
-        }
-
-        if (!effectiveUser?.created_at) {
-            clearBeeYieldPendingOnboarding();
-            return;
-        }
+        if (!pendingState || !effectiveUser?.created_at) return;
 
         const accountCreatedAtMs = new Date(effectiveUser.created_at).getTime();
         if (Number.isNaN(accountCreatedAtMs) || (Date.now() - accountCreatedAtMs) > NEW_ACCOUNT_ONBOARDING_WINDOW_MS) {
@@ -245,11 +204,7 @@ const BeeYieldDashboard: React.FC = () => {
             hiveId: pendingState?.hiveId,
         });
 
-        const shouldRedirect =
-            activeTab !== target.tab ||
-            viewParams?.action !== target.action;
-
-        if (shouldRedirect) {
+        if (activeTab !== target.tab || viewParams?.action !== target.action) {
             handleTabChange(target.tab, undefined, target.action);
             const params = new URLSearchParams(window.location.search);
             params.set('tab', target.tab);
@@ -258,366 +213,204 @@ const BeeYieldDashboard: React.FC = () => {
         }
     }, [authLoading, loading, effectiveEmail, effectiveUser?.created_at, apiaries.length, hives.length, devices.length, activeTab, viewParams?.action]);
 
-    // Derived Stats
-    const totalDevices = devices.length;
-    const withMeasurement = devices.filter(d => readings.some(r => r.device_id === d.id)).length;
+    const navItems: NavItem[] = React.useMemo(() => [
+        { id: 'home', label: 'Home', icon: Home },
+        { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
+        { id: 'agro-intelligence', label: 'Strategic Insights', icon: LayoutGrid },
+        {
+            id: 'precision-pollination-folder',
+            label: 'Pollination',
+            icon: Calculator,
+            submenuItems: [
+                {
+                    title: 'Strategy & Ops',
+                    items: [
+                        { id: 'intelligence', label: 'Insights', icon: Brain },
+                        { id: 'pollination-grid', label: 'Tactical Grid', icon: LayoutGrid },
+                        { id: 'pollination-calcs', label: 'Pollination Calcs', icon: Calculator },
+                        { id: 'pollination-engine', label: 'Pollination planning', icon: Cpu },
+                        { id: 'saturation-math', label: 'Coverage area', icon: Scale },
+                        { id: 'hpa-optimizer', label: 'Performance planning', icon: Cpu },
+                    ]
+                },
+                {
+                    title: 'Field Logistics',
+                    items: [
+                        { id: 'master-map', label: 'Master Map', icon: Map },
+                        { id: 'orchard-mapper', label: 'Orchard Mapper', icon: Layers },
+                        { id: 'forage-zones', label: 'Forage zones', icon: MapPin },
+                        { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
+                        { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
+                    ]
+                },
+                {
+                    title: 'Health & Compliance',
+                    items: [
+                        { id: 'digital-audit', label: 'Health check', icon: FileCheck },
+                        { id: 'compliance-report', label: 'Compliance Report', icon: Award },
+                        { id: 'sensor-alerts', label: 'Sensor Alerts', icon: Bell },
+                        { id: 'bloom-tracking', label: 'Bloom Phenology', icon: Zap },
+                    ]
+                },
+                {
+                    title: 'Analysis & Yield',
+                    items: [
+                        { id: 'acoustic-transformer', label: 'Sound analysis', icon: Volume2 },
+                        { id: 'bee-calculator', label: 'Bee Calculator', icon: Calculator },
+                        { id: 'foraging-optimizer', label: 'Foraging guide', icon: Crosshair },
+                        { id: 'vpm-counter', label: 'Activity counter', icon: Camera },
+                        { id: 'bfh-forecast', label: 'Activity forecast', icon: Zap },
+                        { id: 'yield-predict', label: 'Production estimate', icon: BarChart3 },
+                    ]
+                },
+                {
+                    title: 'System View',
+                    items: [
+                        { id: 'sensor-vitals', label: 'Hive Health', icon: Heart },
+                        { id: 'continuous-monitor', label: 'Live Stream', icon: Activity },
+                        { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
+                        { id: 'gateway-hub', label: 'Device gateway', icon: Server },
+                        { id: 'hive-telemetry', label: 'Advanced sensor data', icon: Signal },
+                        { id: 'contract-verification', label: 'Verified contracts', icon: ShieldCheck },
+                    ]
+                },
+            ]
+        },
+        { id: 'places', label: 'Apiaries', icon: MapPin },
+        {
+            id: 'beeyield',
+            label: 'Hives',
+            icon: Hexagon,
+            submenuItems: [
+                { id: 'inspections', label: 'Inspections', icon: Search },
+                { id: 'harvests', label: 'Harvests', icon: Hand },
+                { id: 'flight-map', label: 'Flight Map', icon: Map },
+                { id: 'varroa', label: 'Varroa', icon: TrendingUp },
+                { id: 'sound', label: 'Sound', icon: Volume2 },
+                { id: 'image-analysis', label: 'Image Analysis', icon: Camera },
+                { id: 'health-guide', label: 'Health Guide', icon: BookOpen },
+                { id: 'reports-exports', label: 'Reports & Exports', icon: FileText },
+                { id: 'label-generator', label: 'Label Generator', icon: Tag },
+                { id: 'global-hive-network', label: 'Global Hive Network', icon: Globe },
+            ]
+        },
+        {
+            id: 'data',
+            label: 'Measurement Data',
+            icon: Activity,
+            submenuItems: [
+                { id: 'online', label: 'Online', icon: Signal },
+                { id: 'bluetooth', label: 'Bluetooth', icon: Bluetooth },
+                { id: 'devices', label: 'My Devices', icon: Cpu },
+                { id: 'usb', label: 'USB', icon: Usb },
+            ]
+        },
+        { id: 'notes', label: 'My Notes', icon: FileText },
+        { id: 'requests', label: 'My Requests', icon: HelpCircle },
+        { id: 'task', label: 'My Tasks', icon: ClipboardList },
+        { id: 'buy', label: 'Buy BeeYield Hub', icon: Cpu },
+        {
+            id: 'meters',
+            label: 'Meters',
+            icon: LayoutList,
+            submenuItems: [
+                { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
+                { id: 'meters-list', label: 'Meter List', icon: List },
+                { id: 'meters-alarms', label: 'Alarms/Events', icon: Bell },
+                { id: 'meters-payments', label: 'Payments', icon: Banknote },
+                { id: 'meters-reports', label: 'Reports', icon: FileText },
+                { id: 'meters-settings', label: 'Settings', icon: Settings },
+            ]
+        },
+        { id: 'billing', label: 'Billing', icon: Receipt },
+        { id: 'integrations', label: 'Integrations', icon: Puzzle },
+        { id: 'support', label: 'Support', icon: LifeBuoy },
+        { id: 'settings', label: 'Settings', icon: Settings },
+    ], []);
 
-    const now = new Date();
-    const oneDay = 24 * 60 * 60 * 1000;
-
-    const measuredIn24h = devices.filter(d => {
-        const lastReading = readings.find(r => r.device_id === d.id); // Assuming sorted or filtering approach
-        // Better: check if ANY reading for this device is within 24h
-        return readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay));
-    }).length;
-
-    const measuredIn48h = devices.filter(d => {
-        return readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 2));
-    }).length;
-
-    const measuredIn7Days = devices.filter(d => {
-        return readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 7));
-    }).length;
-
-    // Attention Needed Stats
-    const noMeasurement5Days = devices.filter(d => {
-        const hasRecent = readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 5));
-        return !hasRecent;
-    }).length;
-
-    const lowBattery = devices.filter(d => d.battery_level < 20).length;
-
-    // Navigation restored EXACTLY to previous historical arrangement
-    const navItems: NavItem[] = React.useMemo(() => {
-        const items: NavItem[] = [
-            { id: 'home', label: 'Home', icon: Home },
-            { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
-            { id: 'agro-intelligence', label: 'Strategic Insights', icon: LayoutGrid },
-            {
-                id: 'precision-pollination-folder',
-                label: 'Pollination',
-                icon: Calculator,
-                submenuItems: [
-                    {
-                        title: 'Strategy & Ops',
-                        items: [
-                            { id: 'intelligence', label: 'Insights', icon: Brain },
-                            { id: 'pollination-grid', label: 'Pollination overview', icon: LayoutGrid },
-                            { id: 'pollination-engine', label: 'Pollination planning', icon: Cpu },
-                            { id: 'saturation-math', label: 'Coverage area', icon: Scale },
-                            { id: 'hpa-optimizer', label: 'Performance planning', icon: Cpu },
-                        ]
-                    },
-                    {
-                        title: 'Field Logistics',
-                        items: [
-                            { id: 'master-map', label: 'Master Map', icon: Map },
-                            { id: 'orchard-mapper', label: 'Orchard Mapper', icon: Layers },
-                            { id: 'forage-zones', label: 'Forage zones', icon: MapPin },
-                            { id: 'fleet-security', label: 'Hive security', icon: ShieldCheck },
-                            { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
-                            { id: 'site-reports-tactical', label: 'Field reports', icon: FileBarChart },
-                        ]
-                    },
-                    {
-                        title: 'Health & Compliance',
-                        items: [
-                            { id: 'digital-audit', label: 'Health check', icon: FileCheck },
-                            { id: 'compliance-report', label: 'Compliance Report', icon: Award },
-                            { id: 'sensor-alerts', label: 'Sensor Alerts', icon: Bell },
-                            { id: 'bloom-tracking', label: 'Bloom Phenology', icon: Zap },
-                        ]
-                    },
-                    {
-                        title: 'Analysis & Yield',
-                        items: [
-                            { id: 'acoustic-transformer', label: 'Sound analysis', icon: Volume2 },
-                            { id: 'bee-calculator', label: 'Bee Calculator', icon: Calculator },
-                            { id: 'foraging-optimizer', label: 'Foraging guide', icon: Crosshair },
-                            { id: 'vpm-counter', label: 'Activity counter', icon: Camera },
-                            { id: 'bfh-forecast', label: 'Activity forecast', icon: Zap },
-                            { id: 'yield-predict', label: 'Production estimate', icon: BarChart3 },
-                        ]
-                    },
-                    {
-                        title: 'System View',
-                        items: [
-                            { id: 'sensor-vitals', label: 'Hive Health', icon: Heart },
-                            { id: 'continuous-monitor', label: 'Live Stream', icon: Activity },
-                            { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
-                            { id: 'gateway-hub', label: 'Device gateway', icon: Server },
-                            { id: 'hive-telemetry', label: 'Advanced sensor data', icon: Signal },
-                            { id: 'contract-verification', label: 'Verified contracts', icon: ShieldCheck },
-                        ]
-                    },
-                ]
-            },
-            { id: 'places', label: 'Apiaries', icon: MapPin },
-            {
-                id: 'beeyield',
-                label: 'Hives',
-                icon: Hexagon,
-                submenuItems: [
-                    { id: 'inspections', label: 'Inspections', icon: Search },
-                    { id: 'harvests', label: 'Harvests', icon: Hand },
-                    { id: 'flight-map', label: 'Flight Map', icon: Map },
-                    { id: 'varroa', label: 'Varroa', icon: TrendingUp },
-                    { id: 'sound', label: 'Sound', icon: Volume2 },
-                    { id: 'image-analysis', label: 'Image Analysis', icon: Camera },
-                    { id: 'health-guide', label: 'Health Guide', icon: BookOpen },
-                    { id: 'reports-exports', label: 'Reports & Exports', icon: FileText },
-                    { id: 'label-generator', label: 'Label Generator', icon: Tag },
-                    { id: 'global-hive-network', label: 'Global Hive Network', icon: Globe },
-                ]
-            },
-            {
-                id: 'data',
-                label: 'Measurement Data',
-                icon: Activity,
-                submenuItems: [
-                    { id: 'online', label: 'Online', icon: Signal },
-                    { id: 'bluetooth', label: 'Bluetooth', icon: Bluetooth },
-                    { id: 'devices', label: 'My Devices', icon: Cpu },
-                    { id: 'usb', label: 'USB', icon: Usb },
-                ]
-            },
-            { id: 'notes', label: 'My Notes', icon: FileText },
-            { id: 'requests', label: 'My Requests', icon: HelpCircle },
-            { id: 'task', label: 'My Tasks', icon: ClipboardList },
-            { id: 'buy', label: 'Buy BeeYield Hub', icon: Cpu },
-            {
-                id: 'meters',
-                label: 'Meters',
-                icon: LayoutList,
-                submenuItems: [
-                    { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
-                    { id: 'meters-list', label: 'Meter List', icon: List },
-                    { id: 'meters-alarms', label: 'Alarms/Events', icon: Bell },
-                    { id: 'meters-payments', label: 'Payments', icon: Banknote },
-                    { id: 'meters-reports', label: 'Reports', icon: FileText },
-                    { id: 'meters-settings', label: 'Settings', icon: Settings },
-                ]
-            },
-            { id: 'billing', label: 'Billing', icon: Receipt },
-            { id: 'integrations', label: 'Integrations', icon: Puzzle },
-            { id: 'support', label: 'Support', icon: LifeBuoy },
-            { id: 'settings', label: 'Settings', icon: Settings },
-        ];
-        return items;
-    }, []);
-
-    // Function to render content based on active tab
     const renderContent = () => {
         switch (activeTab) {
-            case 'home':
-                return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
-            case 'assistant':
-                return <LovableBeeYieldAI />;
-            case 'agro-intelligence':
-                return <AgroIntelligenceView onTabChange={handleTabChange} />;
+            case 'home': return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
+            case 'assistant': return <LovableBeeYieldAI />;
+            case 'agro-intelligence': return <AgroIntelligenceView onTabChange={handleTabChange} />;
             case 'precision-pollination-folder':
-            case 'precision-pollination-home':
-                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
-
-            case 'bloom-tracking':
-            case 'bloom-phenology':
-                return <BloomPhenology />;
-            case 'pollination-calcs':
-            case 'pollination-engine':
-                return <PollinationEngine onTabChange={handleTabChange} />;
-            case 'flight-mapping-tactical':
-                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="map" />;
-            case 'site-reports-tactical':
-                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="reports" />;
-
-            case 'intelligence':
-            case 'pollination-intelligence':
-                return <PollinationIntelligence onTabChange={handleTabChange} />;
-
-            case 'logistics-setup':
-            case 'master-map':
-                return <MasterMapView />;
-            case 'orchard-mapper':
-                return <OrchardMapper onTabChange={handleTabChange} />;
-            case 'forage-zones':
-                return <ForageZonesView onTabChange={handleTabChange} />;
-
-            case 'fleet-security':
-            case 'geospatial-security':
-            case 'deployment':
-                return <HiveLogisticsSecurity onTabChange={handleTabChange} />;
-
-            case 'acoustic-transformer':
-                return <AcousticMoodTransformer />;
-
-            case 'bee-calculator':
-            case 'calculator-suite':
-                return <BeeCalculatorSuite />;
-
-            case 'hpa-optimizer':
-                return <HpaOptimizer />;
-
-            case 'foraging-optimizer':
-                return <ForagingOptimizer onTabChange={handleTabChange} />;
-
-            case 'yield-predict':
-                return <PredictiveSuccessEngine onTabChange={handleTabChange} />;
-
-            case 'fleet-security-active':
-                return <FleetSecurity />;
-
-            case 'bfh-forecast':
-                return <BeeFlightHoursForecast />;
-
-            case 'vpm-counter':
-                return <VpmAutoCounter />;
-
-            case 'digital-audit':
-            case 'hhi-audit':
-                return <DigitalHealthAudit onTabChange={handleTabChange} />;
-
-            case 'compliance-report':
-                return <ComplianceReport onTabChange={handleTabChange} />;
-
-            case 'sensor-alerts':
-                return <SensorAlertsView />;
-
-            case 'sensor-vitals':
-                return <SensorHealthView onTabChange={handleTabChange} />;
-            case 'continuous-monitor':
-                return <ContinuousMonitor onTabChange={handleTabChange} />;
-            // Removed duplicate cases below to fix build errors
-
-
-            case 'hive-telemetry':
-                return <HiveTelemetryView />;
-            case 'contract-verification':
-                return <ContractVerificationModule />;
+            case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
             case 'pollination-grid':
-            case 'precision-pollination-grid':
-                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="grid" />;
-            case 'gateway-hub':
-                return <GatewayHub />;
-            case 'saturation-math':
-                return <SpatialCoverageView />;
-            case 'yard-ops':
-                return <YardOperations onTabChange={handleTabChange} />;
-
-            case 'places':
-                return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
-            case 'beeyield':
-                return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
-            case 'inspections':
-                return <InspectionsView onTabChange={handleTabChange} initialParams={viewParams} />;
-            case 'harvests':
-                return <HarvestsView onTabChange={handleTabChange} initialParams={viewParams} />;
-            case 'flight-map':
-                return <FlightMapView />;
-            case 'global-hive-network':
-                return <GlobalHiveNetwork />;
-            case 'varroa':
-                return <VarroaView />;
-            case 'pollination-solutions':
-                return <PollinationSolutions />;
-            case 'data':
-                return <MeasurementDataView onTabChange={handleTabChange} />;
-            case 'online':
-                return <BeeYieldOnlineView onTabChange={handleTabChange} />;
-            case 'bluetooth':
-                return <BluetoothConnectivityView onTabChange={handleTabChange} />;
-            case 'device': {
-                const deviceId = viewParams?.action;
-                if (!deviceId) return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
-                return (
-                    <DeviceDetailView
-                        deviceId={deviceId}
-                        devices={devices}
-                        readings={readings}
-                        apiaries={apiaries}
-                        hives={hives}
-                        onBack={() => handleTabChange('devices')}
-                        onRefresh={refreshTelemetryData}
-                    />
-                );
-            }
-            case 'devices':
-                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'device'} />;
-            case 'usb':
-                return <USBView onTabChange={handleTabChange} />;
-            case 'notes':
-                return <MyNotesView onTabChange={handleTabChange} />;
-            case 'requests':
-                return <MyRequestsView onTabChange={handleTabChange} />;
-            case 'task':
-                return <MyTaskView onTabChange={handleTabChange} />;
-            case 'buy':
-                return <BuyBeeYieldHubView onTabChange={handleTabChange} />;
-            case 'meters':
+            case 'precision-pollination-grid': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="grid" />;
+            case 'pollination-intelligence':
+            case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
+            case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
+            case 'pollination-calcs': return <PollinationCalcs />;
+            case 'flight-mapping-tactical': return <FlightMapping />;
+            case 'site-reports-tactical': return <PollinationReports />;
+            case 'saturation-math': return <SpatialCoverageView />;
+            case 'hpa-optimizer': return <HpaOptimizer />;
+            case 'master-map': return <MasterMapView />;
+            case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
+            case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
+            case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
+            case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
+            case 'sensor-alerts': return <SensorAlertsView />;
+            case 'bloom-tracking':
+            case 'bloom-phenology': return <BloomPhenology />;
+            case 'acoustic-transformer': return <AcousticMoodTransformer />;
+            case 'bee-calculator':
+            case 'calculator-suite': return <BeeCalculatorSuite />;
+            case 'foraging-optimizer': return <ForagingOptimizer onTabChange={handleTabChange} />;
+            case 'vpm-counter': return <VpmAutoCounter />;
+            case 'bfh-forecast': return <BeeFlightHoursForecast />;
+            case 'yield-predict': return <PredictiveSuccessEngine onTabChange={handleTabChange} />;
+            case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
+            case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
+            case 'yard-ops': return <YardOperations onTabChange={handleTabChange} />;
+            case 'gateway-hub': return <GatewayHub />;
+            case 'hive-telemetry': return <HiveTelemetryView />;
+            case 'contract-verification': return <ContractVerificationModule />;
+            case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
+            case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
+            case 'inspections': return <InspectionsView onTabChange={handleTabChange} />;
+            case 'harvests': return <HarvestsView onTabChange={handleTabChange} />;
+            case 'flight-map': return <FlightMapView />;
+            case 'global-hive-network': return <GlobalHiveNetwork />;
+            case 'varroa': return <VarroaView />;
+            case 'sound': return <SoundAnalysisView onTabChange={handleTabChange} />;
+            case 'image-analysis': return <ImageAnalysisView onTabChange={handleTabChange} />;
+            case 'health-guide': return <HealthGuideView onTabChange={handleTabChange} />;
+            case 'reports-exports': return <ReportsExportsView onTabChange={handleTabChange} />;
+            case 'label-generator': return <LabelGeneratorView onTabChange={handleTabChange} />;
+            case 'data': return <MeasurementDataView onTabChange={handleTabChange} />;
+            case 'online': return <BeeYieldOnlineView onTabChange={handleTabChange} />;
+            case 'bluetooth': return <BluetoothConnectivityView onTabChange={handleTabChange} />;
+            case 'usb': return <USBView onTabChange={handleTabChange} />;
+            case 'devices': return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
+            case 'device': return <DeviceDetailView deviceId={viewParams?.action || ''} devices={devices} readings={readings} apiaries={apiaries} hives={hives} onBack={() => handleTabChange('devices')} onRefresh={refreshTelemetryData} />;
+            case 'notes': return <MyNotesView onTabChange={handleTabChange} />;
+            case 'requests': return <MyRequestsView onTabChange={handleTabChange} />;
+            case 'task': return <MyTaskView onTabChange={handleTabChange} />;
+            case 'buy': return <BuyBeeYieldHubView onTabChange={handleTabChange} />;
+            case 'meters': 
             case 'meters-dashboard':
             case 'meters-list':
-            case 'meters-water':
-            case 'meters-heat':
-            case 'meters-energy':
-            case 'meters-other':
-            case 'meters-buildings':
-            case 'meters-apartments':
-            case 'meters-measurements':
-            case 'meters-charts':
-            case 'meters-consumption':
-            case 'meters-comparisons':
-            case 'meters-import':
             case 'meters-alarms':
             case 'meters-payments':
             case 'meters-reports':
-            case 'meters-settings':
-                return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
-            case 'billing':
-                return <BillingView onTabChange={handleTabChange} />;
-            case 'integrations':
-                return <IntegrationsView />;
-            case 'support':
-                return <SupportCenterView onTabChange={handleTabChange} />;
-            case 'settings': // Special case from top bar or banner
-                return <SettingsView onTabChange={handleTabChange} />;
-            case 'image-analysis':
-                return <ImageAnalysisView onTabChange={handleTabChange} />;
-            case 'sound':
-                return <SoundAnalysisView onTabChange={handleTabChange} />;
-            case 'health-guide':
-                return <HealthGuideView onTabChange={handleTabChange} />;
-            case 'reports-exports':
-                return <ReportsExportsView onTabChange={handleTabChange} />;
-            case 'label-generator':
-                return <LabelGeneratorView onTabChange={handleTabChange} />;
-            default:
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">
-                        <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4">
-                            <span className="text-[8px] font-bold text-muted-foreground/40">© 2026 BeeYield AI Platform</span>
-                        </div>
-                        <h3 className="text-lg font-medium text-foreground">
-                            {navItems.find(i => i.id === activeTab)?.label || t('view_content')}
-                        </h3>
-                        <p className="text-muted-foreground mt-1 max-w-sm font-medium">
-                            {t('under_development')}
-                        </p>
-                    </div>
-                );
+            case 'meters-settings': return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
+            case 'billing': return <BillingView onTabChange={handleTabChange} />;
+            case 'integrations': return <IntegrationsView />;
+            case 'support': return <SupportCenterView onTabChange={handleTabChange} />;
+            case 'settings': return <SettingsView onTabChange={handleTabChange} />;
+            default: return (
+                <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">
+                    <h3 className="text-lg font-medium text-foreground">{navItems.find(i => i.id === activeTab)?.label || t('view_content')}</h3>
+                    <p className="text-muted-foreground mt-1 max-w-sm font-medium">{t('under_development')}</p>
+                </div>
+            );
         }
     };
 
-    if (authLoading) {
-        return (
-            <BeeYieldPageShell className="bg-background flex flex-col items-center justify-center gap-4 p-0 md:p-0 -m-4 md:-m-6">
-                <img src="/logo.png" alt="Loading..." className="h-16 w-auto animate-pulse" />
-            </BeeYieldPageShell>
-        );
-    }
+    if (authLoading) return <BeeYieldPageShell className="bg-background flex flex-col items-center justify-center gap-4 p-0 md:p-0 -m-4 md:-m-6"><img src="/logo.png" alt="Loading..." className="h-16 w-auto animate-pulse" /></BeeYieldPageShell>;
 
-    // Check if user has initialized BeeYield access
     const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || ['timothynduva349@gmail.com', SUPER_ADMIN_EMAIL.toLowerCase()].includes(effectiveEmail?.toLowerCase() || '') || !!beeyieldUser;
-
-
 
     if (!effectiveUser || !isBeeYieldActive) {
         return (
@@ -629,30 +422,13 @@ const BeeYieldDashboard: React.FC = () => {
                             <span className="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest">Operational OS</span>
                         </div>
                     </div>
-
                     <div className="space-y-3">
-                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-foreground">
-                            Sign in to continue
-                        </h1>
-                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-                            You need an account to access the BeeYield AI dashboard.
-                        </p>
+                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-foreground">Sign in to continue</h1>
+                        <p className="text-sm text-muted-foreground font-medium leading-relaxed">You need an account to access the BeeYield AI dashboard.</p>
                     </div>
-
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <button
-                            onClick={() => navigate('/login')}
-                            className="h-12 px-8 rounded-xl bg-beeyield-green text-foreground font-black text-sm tracking-tight hover:bg-beeyield-green/90 transition-colors flex items-center justify-center gap-2"
-                        >
-                            <LockIcon className="w-4 h-4" />
-                            Sign in
-                        </button>
-                        <button
-                            onClick={() => navigate('/')}
-                            className="h-12 px-8 rounded-xl bg-card border border-border/40 text-foreground font-bold text-sm hover:bg-muted/50 transition-colors"
-                        >
-                            Back home
-                        </button>
+                        <button onClick={() => navigate('/login')} className="h-12 px-8 rounded-xl bg-beeyield-green text-foreground font-black text-sm tracking-tight hover:bg-beeyield-green/90 transition-colors flex items-center justify-center gap-2"><LockIcon className="w-4 h-4" />Sign in</button>
+                        <button onClick={() => navigate('/')} className="h-12 px-8 rounded-xl bg-card border border-border/40 text-foreground font-bold text-sm hover:bg-muted/50 transition-colors">Back home</button>
                     </div>
                 </div>
             </BeeYieldPageShell>
@@ -660,15 +436,7 @@ const BeeYieldDashboard: React.FC = () => {
     }
 
     return (
-        <DashboardLayout
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            onLogout={handleLogout}
-            navItems={navItems}
-            hideHeader={!!onboardingStep}
-            hideSidebar={!!onboardingStep}
-            hideBanner={!!onboardingStep}
-        >
+        <DashboardLayout activeTab={activeTab} onTabChange={handleTabChange} onLogout={handleLogout} navItems={navItems} hideHeader={!!onboardingStep} hideSidebar={!!onboardingStep} hideBanner={!!onboardingStep}>
             {renderContent()}
         </DashboardLayout>
     );

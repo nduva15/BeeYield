@@ -120,15 +120,7 @@ const PollinationCalcs: React.FC = () => {
 
                                 <div>
                                     <label htmlFor="pollination-calcs-bloom-intensity" className="text-[10px] font-black mb-3 block">Bloom Intensity (0.1 - 1.0)</label>
-                                    <input
-                                        id="pollination-calcs-bloom-intensity"
-                                        name="bloom_intensity"
-                                        autoComplete="off"
-                                        type="range"
-                                        min="0.1"
-                                        max="1.0"
-                                        step="0.1"
-                                        value={calcInputs.bloomIntensity}
+                                        value={calcInputs.bloomIntensity || 0.9}
                                         aria-label="Bloom intensity"
                                         title="Bloom intensity"
                                         onChange={(e) => setCalcInputs(prev => ({ ...prev, bloomIntensity: parseFloat(e.target.value) }))}
@@ -136,7 +128,7 @@ const PollinationCalcs: React.FC = () => {
                                     />
                                     <div className="flex justify-between mt-2 font-black text-[10px]">
                                         <span>Low</span>
-                                        <span className="text-[#10b981]">{Math.round(calcInputs.bloomIntensity * 100)}%</span>
+                                        <span className="text-[#10b981]">{Math.round((calcInputs.bloomIntensity || 0) * 100)}%</span>
                                         <span>Industrial</span>
                                     </div>
                                 </div>
@@ -151,7 +143,7 @@ const PollinationCalcs: React.FC = () => {
                                         min="0.1"
                                         max="1.0"
                                         step="0.1"
-                                        value={calcInputs.forageCondition}
+                                        value={calcInputs.forageCondition || 0.8}
                                         aria-label="Forage competition"
                                         title="Forage competition"
                                         onChange={(e) => setCalcInputs(prev => ({ ...prev, forageCondition: parseFloat(e.target.value) }))}
@@ -159,7 +151,7 @@ const PollinationCalcs: React.FC = () => {
                                     />
                                     <div className="flex justify-between mt-2 font-black text-[10px]">
                                         <span>High Comp</span>
-                                        <span className="text-[#064e3b]">{Math.round(calcInputs.forageCondition * 100)}%</span>
+                                        <span className="text-[#064e3b]">{Math.round((calcInputs.forageCondition || 0) * 100)}%</span>
                                         <span>Clear Sky</span>
                                     </div>
                                 </div>
@@ -276,7 +268,7 @@ const PollinationCalcs: React.FC = () => {
                         <button
                             onClick={() => setCalcInputs(prev => ({
                                 ...prev,
-                                hives: [...prev.hives, { frameCount: 8, isStrong: true, isLarge: false }]
+                                hives: [...(prev.hives || []), { frameCount: 8, isStrong: true, isLarge: false }]
                             }))}
                             className="px-6 py-2 border-4 border-black font-black text-xs hover:bg-[#FFF9F0] hover:text-[#1A1A1A] transition-none"
                         >
@@ -285,10 +277,10 @@ const PollinationCalcs: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {calcInputs.hives.map((hive, idx) => (
+                        {(calcInputs.hives || []).map((hive, idx) => (
                             <div key={idx} className="border-4 border-[#064e3b] p-6 bg-[#FFF9F0] space-y-4 relative group">
                                 <button
-                                    onClick={() => setCalcInputs(prev => ({ ...prev, hives: prev.hives.filter((_, i) => i !== idx) }))}
+                                    onClick={() => setCalcInputs(prev => ({ ...prev, hives: (prev.hives || []).filter((_, i) => i !== idx) }))}
                                     aria-label={`Remove unit ${idx + 1}`}
                                     title="Remove unit"
                                     className="absolute top-4 right-4 text-neutral-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-none"

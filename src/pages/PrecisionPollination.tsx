@@ -19,6 +19,7 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 
+import {
   SHOWCASE_SLIDES,
   FEATURE_BADGES,
   HOW_IT_WORKS,

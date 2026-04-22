@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Buffer } from 'buffer';
-import { Loader2 } from 'lucide-react'
 import { initPrefetch } from './prefetch'
 
 // Polyfill Buffer for browser environment
@@ -73,13 +72,7 @@ const Privacy = lazy(() => import('@/pages/Privacy'))
 const Terms = lazy(() => import('@/pages/Terms'))
 const IntegrationCallback = lazy(() => import('@/pages/IntegrationCallback'))
 
-// Pollination Professional Pages
-const PollinationCalcs = lazy(() => import('@/pages/pollination/PollinationCalcs'))
-const FlightMapping = lazy(() => import('@/pages/pollination/FlightMapping'))
-const PollinationReports = lazy(() => import('@/pages/pollination/PollinationReports'))
-
 import { PageLoader } from './components/PageLoader'
-
 
 const AnalyticsTracker = () => {
     const location = useLocation();
@@ -87,15 +80,8 @@ const AnalyticsTracker = () => {
 
     useEffect(() => {
         try {
-            // Avoid decoding the search string directly because malformed `%`
-            // sequences can throw URIError in some browsers/extensions.
             const hasMalformedPercentEncoding = /%(?![0-9A-Fa-f]{2})/.test(location.search);
             const safeSearch = hasMalformedPercentEncoding ? '' : location.search;
-
-            if (hasMalformedPercentEncoding) {
-                console.warn('[Analytics] Malformed search params detected, omitting from page view:', location.search);
-            }
-
             trackPageView(location.pathname + safeSearch);
         } catch (e) {
             console.warn('[Analytics] Failed to track page view:', e);
@@ -104,7 +90,6 @@ const AnalyticsTracker = () => {
 
     return null;
 };
-
 
 const container = document.getElementById('root')!
 const anyGlobal = globalThis as any
@@ -156,10 +141,6 @@ root.render(
                                                         <Route path="/diseases" element={<Diseases />} />
                                                         <Route path="/media" element={<Media />} />
 
-                                                        {/* Precision Pollination Professional Sub-routes */}
-                                                        <Route path="/precision-pollination/calcs" element={<PollinationCalcs />} />
-                                                        <Route path="/precision-pollination/map" element={<FlightMapping />} />
-                                                        <Route path="/precision-pollination/reports" element={<PollinationReports />} />
                                                         <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
                                                         <Route path="/bee-calculator" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />
                                                         <Route path="/calculator-suite" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />

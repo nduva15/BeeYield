@@ -91,10 +91,10 @@ export interface ProfessionalTool {
 }
 
 export const PROFESSIONAL_TOOLS: ProfessionalTool[] = [
-  { label: 'Tactical Grid', icon: Layers, path: '/beeyield-dashboard', description: 'Live device monitoring' },
-  { label: 'Pollination Calcs', icon: Calculator, path: '/precision-pollination/calcs', description: 'Yield & FPA analysis' },
-  { label: 'Flight Mapping', icon: Navigation, path: '/precision-pollination/map', description: 'Geospatial movement' },
-  { label: 'Site Reports', icon: FileBarChart, path: '/precision-pollination/reports', description: 'Audit & compliance' },
+  { label: 'Tactical Grid', icon: Layers, path: '/beeyield-dashboard?tab=pollination-grid', description: 'Live device monitoring' },
+  { label: 'Pollination Calcs', icon: Calculator, path: '/beeyield-dashboard?tab=pollination-calcs', description: 'Yield & FPA analysis' },
+  { label: 'Flight Mapping', icon: Navigation, path: '/beeyield-dashboard?tab=flight-mapping-tactical', description: 'Geospatial movement' },
+  { label: 'Site Reports', icon: FileBarChart, path: '/beeyield-dashboard?tab=site-reports-tactical', description: 'Audit & compliance' },
 ];
 
 /* ── How It Works Items ────────────────────────────────────────── */
