@@ -120,6 +120,14 @@ const PollinationCalcs: React.FC = () => {
 
                                 <div>
                                     <label htmlFor="pollination-calcs-bloom-intensity" className="text-[10px] font-black mb-3 block">Bloom Intensity (0.1 - 1.0)</label>
+                                    <input
+                                        id="pollination-calcs-bloom-intensity"
+                                        name="bloom_intensity"
+                                        autoComplete="off"
+                                        type="range"
+                                        min="0.1"
+                                        max="1.0"
+                                        step="0.1"
                                         value={calcInputs.bloomIntensity || 0.9}
                                         aria-label="Bloom intensity"
                                         title="Bloom intensity"
@@ -299,8 +307,11 @@ const PollinationCalcs: React.FC = () => {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => {
-                                            const newHives = [...calcInputs.hives];
-                                            newHives[idx].isStrong = !newHives[idx].isStrong;
+                                            const hives = calcInputs.hives || [];
+                                            const newHives = [...hives];
+                                            if (newHives[idx]) {
+                                                newHives[idx].isStrong = !newHives[idx].isStrong;
+                                            }
                                             setCalcInputs(prev => ({ ...prev, hives: newHives }));
                                         }}
                                         className={cn("flex-1 py-1 border-2 text-[8px] font-black", hive.isStrong ? "bg-[#10b981] text-[#1A1A1A] border-[#10b981]" : "border-[#064e3b]")}
@@ -309,8 +320,11 @@ const PollinationCalcs: React.FC = () => {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            const newHives = [...calcInputs.hives];
-                                            newHives[idx].isLarge = !newHives[idx].isLarge;
+                                            const hives = calcInputs.hives || [];
+                                            const newHives = [...hives];
+                                            if (newHives[idx]) {
+                                                newHives[idx].isLarge = !newHives[idx].isLarge;
+                                            }
                                             setCalcInputs(prev => ({ ...prev, hives: newHives }));
                                         }}
                                         className={cn("flex-1 py-1 border-2 text-[8px] font-black", hive.isLarge ? "bg-[#064e3b] text-[#1A1A1A] border-[#064e3b]" : "border-[#064e3b]")}
