@@ -150,15 +150,11 @@ const FeatureShowcaseSection = () => {
 
 
 const PrecisionPollination = () => {
-  const [isProfessionalOpen, setIsProfessionalOpen] = useState(false);
-
-
   return (
     <BeeYieldPageShell className="bg-background text-foreground">
 
-
       {/* ═══════════════════════════════════════════════════════════════
-          HERO SECTION — EXACT MAP OF DISEASES HERO
+          HERO SECTION
       ═══════════════════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
           <div className="absolute inset-0">
@@ -212,9 +208,8 @@ const PrecisionPollination = () => {
           </div>
       </section>
 
-
       {/* ═══════════════════════════════════════════════════════════════
-          PARTNERSHIP NARRATIVE MAP — "WHAT IS PRECISION POLLINATION"
+          PARTNERSHIP NARRATIVE
       ═══════════════════════════════════════════════════════════════ */}
       <section id="partnership" className="py-32 lg:py-48 relative overflow-hidden bg-white">
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neutral-100 to-transparent" />
@@ -249,7 +244,6 @@ const PrecisionPollination = () => {
                               </div>
                           </div>
                       </div>
-                      {/* Decorative corners */}
                       <div className="absolute -top-6 -left-6 w-32 h-32 border-t-2 border-l-2 border-beeyield-green/20 rounded-tl-[3rem] -z-10" />
                       <div className="absolute -bottom-6 -right-6 w-32 h-32 border-b-2 border-r-2 border-amber-400/20 rounded-br-[3rem] -z-10" />
                   </motion.div>
@@ -375,7 +369,6 @@ const PrecisionPollination = () => {
                   </p>
               </div>
 
-              {/* Product showcase grid — Queen detail + Sense unit */}
               <div className="grid md:grid-cols-2 gap-8 mb-20 max-w-4xl mx-auto">
                   <motion.div
                       initial={{ opacity: 0, y: 20 }}
@@ -497,7 +490,6 @@ const PrecisionPollination = () => {
               </div>
 
               <div className="max-w-6xl mx-auto space-y-4">
-                  {/* Table Header */}
                   <div className="hidden md:grid md:grid-cols-3 gap-4 px-8 pb-4 border-b border-white/10">
                       <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Metric</span>
                       <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Technology Tracking</span>
@@ -528,7 +520,7 @@ const PrecisionPollination = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          AI CAPABILITIES / DASHBOARD SHOWCASE MAP
+          AI CAPABILITIES / DASHBOARD SHOWCASE
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-white border-b border-neutral-100">
           <div className="container mx-auto px-4">
@@ -566,18 +558,15 @@ const PrecisionPollination = () => {
                       viewport={{ once: true }}
                       className="relative"
                   >
-                      {/* BeeYield Dashboard — actual system screenshot */}
                       <div className="relative mx-auto max-w-lg">
                           <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.18)] border border-neutral-200 bg-white">
                               <img
                                   src={BEEHUB_IMAGES.dashboard}
-                                  alt="BeeYield Apiary Dashboard showing weather telemetry, pollination planning, and Timothy Nduva verified beekeeper status"
+                                  alt="BeeYield Apiary Dashboard"
                                   className="w-full h-auto"
                               />
                           </div>
                       </div>
-
-                      {/* Floating badges */}
                       <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-3 flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-beeyield-green" />
                           <span className="text-xs font-bold text-neutral-900">Live Dashboard</span>
@@ -699,6 +688,7 @@ const PrecisionPollination = () => {
           </Button>
         </div>
       </section>
+
     </BeeYieldPageShell>
   );
 };
