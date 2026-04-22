@@ -459,20 +459,20 @@ const Diseases = () => {
                           Apisense System
                       </Badge>
                       <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-900 leading-tight">
-                          Intelligent protection <br />
-                          <span className="text-beeyield-green">of your bees</span>
+                        Intelligent protection <br />
+                        <span className="text-beeyield-green">of your bees</span>
                       </h2>
                       <p className="text-lg text-muted-foreground leading-relaxed pt-2">
-                          <strong className="text-neutral-900">Apisense</strong> is an innovative system that intelligently helps protect beehives from diseases and environmental threats.
+                        <strong className="text-neutral-900">Apisense</strong> is an innovative system that intelligently helps protect beehives from diseases and environmental threats.
                       </p>
                       <p className="text-lg text-muted-foreground leading-relaxed">
-                          By combining modern technologies, Apisense provides real-time monitoring of bee health – without disturbing their natural rhythm of life.
+                        By combining modern technologies, Apisense provides real-time monitoring of bee health – without disturbing their natural rhythm of life.
                       </p>
                       <p className="text-lg text-muted-foreground leading-relaxed">
-                          Apisense is a compact IoT device that can be easily installed inside a hive, together with an application that allows you to constantly monitor the condition of your apiary, no matter where you are.
+                        Apisense is a compact IoT device that can be easily installed inside a hive, together with an application that allows you to constantly monitor the condition of your apiary, no matter where you are.
                       </p>
                   </motion.div>
-
+ 
                   {/* Right Column */}
                   <motion.div 
                       initial={{ opacity: 0, y: 20 }}

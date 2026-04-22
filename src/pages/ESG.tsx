@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, Globe, Quote, Users, TreePine, Bug, Package, MapPin, Cpu, Code, Loader2, Download, ShieldCheck, Scale } from "lucide-react";
+import { Heart, Globe, Quote, Users, TreePine, Bug, Package, MapPin, Cpu, Code, Loader2, Download, ShieldCheck, Scale, Mic, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";

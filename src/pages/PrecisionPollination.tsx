@@ -297,6 +297,68 @@ const PrecisionPollination = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
+          THE BEEYIELD DIFFERENCE
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
+          <div className="container mx-auto px-4 relative z-10">
+              <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-16"
+              >
+                  <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+                      The BeeYield Difference
+                  </Badge>
+                  <h2 className="text-4xl lg:text-6xl font-black tracking-tighter mb-8 max-w-4xl mx-auto leading-[0.9]">
+                      Knowledge is power. <br />
+                      <span className="text-beeyield-green">Data is even better.</span>
+                  </h2>
+                  <p className="text-xl text-neutral-400 font-medium max-w-2xl mx-auto leading-relaxed">
+                      Knowing the exact strength of every hive in your field means pollination can be calculated using a <strong className="text-white font-bold">frames-per-acre model</strong> for a far more precise outcome. It’s accurate, efficient, and financially prudent.
+                  </p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                  <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 }}
+                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
+                  >
+                      <div className="text-7xl md:text-8xl font-black text-beeyield-green mb-4 tracking-tighter flex items-center justify-center">
+                          <Calculator className="h-20 w-20 text-beeyield-green" />
+                      </div>
+                      <div className="h-1 w-16 bg-beeyield-green/30 mx-auto mb-6 rounded-full" />
+                      <h3 className="text-xl font-bold mb-3 uppercase tracking-widest text-[10px]">Precision Calculation</h3>
+                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
+                          Accurate frames-per-acre modeling based on live hive strength data.
+                      </p>
+                  </motion.div>
+
+                  <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
+                  >
+                      <div className="text-7xl md:text-8xl font-black text-amber-400 mb-4 tracking-tighter flex items-center justify-center">
+                          <Shield className="h-20 w-20 text-amber-400" />
+                      </div>
+                      <div className="h-1 w-16 bg-amber-400/30 mx-auto mb-6 rounded-full" />
+                      <h3 className="text-xl font-bold mb-3 uppercase tracking-widest text-[10px]">Financial Prudence</h3>
+                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
+                          Stop paying for boxes and start paying for actual pollination power.
+                      </p>
+                  </motion.div>
+              </div>
+          </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
           HOW IT WORKS GRID MAP
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-32 bg-neutral-50/50 border-y border-neutral-100 relative">
@@ -585,11 +647,6 @@ const PrecisionPollination = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          BEEHUB FEATURE SHOWCASE — "Gain time before the swarm"
-      ═══════════════════════════════════════════════════════════════ */}
-      <FeatureShowcaseSection />
-
-      {/* ═══════════════════════════════════════════════════════════════
           CONTACT FORM
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-32 bg-neutral-50 relative overflow-hidden" id="in-hive-form">
@@ -605,63 +662,7 @@ const PrecisionPollination = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          THE BEEYIELD DIFFERENCE (MOVED TO FOOTER)
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-20 bg-neutral-900 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
-          <div className="container mx-auto px-4 relative z-10">
-              <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="text-center mb-12"
-              >
-                  <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
-                      The BeeYield Difference
-                  </Badge>
-                  <h2 className="text-3xl lg:text-4xl font-bold tracking-tight">
-                      Knowledge is power. <span className="text-beeyield-green">Data is even better.</span>
-                  </h2>
-              </motion.div>
-
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.1 }}
-                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
-                  >
-                      <div className="text-7xl md:text-8xl font-black text-beeyield-green mb-4 tracking-tighter flex items-center justify-center">
-                          <Calculator className="h-20 w-20 text-beeyield-green" />
-                      </div>
-                      <div className="h-1 w-16 bg-beeyield-green/30 mx-auto mb-6 rounded-full" />
-                      <h3 className="text-xl font-bold mb-3">Precision Calculation</h3>
-                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
-                          Knowing the exact strength of every hive in your field means pollination can be calculated using a <strong className="text-white">frames-per-acre model</strong> for a far more precise outcome.
-                      </p>
-                  </motion.div>
-
-                  <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.2 }}
-                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
-                  >
-                      <div className="text-7xl md:text-8xl font-black text-amber-400 mb-4 tracking-tighter flex items-center justify-center">
-                          <Shield className="h-20 w-20 text-amber-400" />
-                      </div>
-                      <div className="h-1 w-16 bg-amber-400/30 mx-auto mb-6 rounded-full" />
-                      <h3 className="text-xl font-bold mb-3">Financial Prudence</h3>
-                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
-                          It's accurate, efficient, and cost-effective. You <strong className="text-white">stop paying for "boxes"</strong> and start paying for actual pollination power.
-                      </p>
-                  </motion.div>
-              </div>
-          </div>
-      </section>
+      <FeatureShowcaseSection />
 
       {/* ═══════════════════════════════════════════════════════════════
           CUSTOMER SUCCESS
