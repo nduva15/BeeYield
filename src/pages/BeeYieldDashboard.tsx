@@ -91,6 +91,7 @@ import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
 import HarvestCalculator from '@/components/beeyield/lovable_ai/HarvestCalculator';
 import HivePlacementMap from '@/components/beeyield/lovable_ai/HivePlacementMap';
+import PrecisionDrilldown from '@/components/beeyield/lovable_ai/PrecisionDrilldown';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -338,7 +339,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'precision-pollination-folder':
             case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
             case 'pollination-grid':
-            case 'precision-pollination-grid': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="grid" />;
+            case 'precision-pollination-grid': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'pollination-intelligence':
             case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
