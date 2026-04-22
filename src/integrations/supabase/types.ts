@@ -70,10 +70,81 @@ export type Database = {
         }
         Relationships: []
       }
+      harvest_run_comments: {
+        Row: {
+          author_name: string
+          body: string
+          created_at: string
+          id: string
+          run_id: string
+        }
+        Insert: {
+          author_name?: string
+          body: string
+          created_at?: string
+          id?: string
+          run_id: string
+        }
+        Update: {
+          author_name?: string
+          body?: string
+          created_at?: string
+          id?: string
+          run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "harvest_run_comments_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "harvest_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      harvest_run_versions: {
+        Row: {
+          ai_forecast: string | null
+          assumptions: Json | null
+          created_at: string
+          id: string
+          local_estimate_kg: number | null
+          run_id: string
+          version_label: string
+        }
+        Insert: {
+          ai_forecast?: string | null
+          assumptions?: Json | null
+          created_at?: string
+          id?: string
+          local_estimate_kg?: number | null
+          run_id: string
+          version_label?: string
+        }
+        Update: {
+          ai_forecast?: string | null
+          assumptions?: Json | null
+          created_at?: string
+          id?: string
+          local_estimate_kg?: number | null
+          run_id?: string
+          version_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "harvest_run_versions_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "harvest_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       harvest_runs: {
         Row: {
           acres: number
           ai_forecast: string | null
+          assumptions: Json | null
           created_at: string
           crop: string
           device_id: string
@@ -83,11 +154,14 @@ export type Database = {
           hives: number
           id: string
           local_estimate_kg: number | null
+          notes: string | null
           region: string
+          site_layout: Json | null
         }
         Insert: {
           acres: number
           ai_forecast?: string | null
+          assumptions?: Json | null
           created_at?: string
           crop: string
           device_id: string
@@ -97,11 +171,14 @@ export type Database = {
           hives: number
           id?: string
           local_estimate_kg?: number | null
+          notes?: string | null
           region: string
+          site_layout?: Json | null
         }
         Update: {
           acres?: number
           ai_forecast?: string | null
+          assumptions?: Json | null
           created_at?: string
           crop?: string
           device_id?: string
@@ -111,7 +188,9 @@ export type Database = {
           hives?: number
           id?: string
           local_estimate_kg?: number | null
+          notes?: string | null
           region?: string
+          site_layout?: Json | null
         }
         Relationships: []
       }
