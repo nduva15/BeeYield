@@ -71,6 +71,7 @@ const MeasurementData = lazy(() => import('@/pages/MeasurementData'))
 const Privacy = lazy(() => import('@/pages/Privacy'))
 const Terms = lazy(() => import('@/pages/Terms'))
 const IntegrationCallback = lazy(() => import('@/pages/IntegrationCallback'))
+const SharedRun = lazy(() => import('@/pages/SharedRun'))
 
 import { PageLoader } from './components/PageLoader'
 
@@ -140,6 +141,7 @@ root.render(
                                                         <Route path="/pollination-request" element={<PollinationRequest />} />
                                                         <Route path="/diseases" element={<Diseases />} />
                                                         <Route path="/media" element={<Media />} />
+                                                        <Route path="/shared-run/:id" element={<SharedRun />} />
 
                                                         <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
                                                         <Route path="/bee-calculator" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />
