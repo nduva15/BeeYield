@@ -221,22 +221,15 @@ const FlightMapping: React.FC = () => {
         };
     }, [flightPotential?.score, resolvedWeatherSummary]);
 
+
     const activeSources = flightPotential?.active_sources || [];
     const linkedDevices = resolvedWeatherSummary?.linked_device_meta || [];
     const telemetryCount = isUsingPublicMap ? 1 : linkedDevices.length;
     const telemetryReportingCount = isUsingPublicMap ? 1 : linkedDevices.filter((device) => !!device.last_observed_at).length;
 
     return (
-        <BeeYieldPageShell className="bg-[#FFF9F0] text-[#064e3b] font-sans antialiased p-8 md:p-12 -m-0 md:-m-0">
+        <div className="space-y-8">
             <div className="mx-auto max-w-7xl space-y-8">
-                <Link
-                    to="/precision-pollination"
-                    className="inline-flex items-center gap-2 text-[10px] font-black text-[#10b981] transition-colors hover:text-[#064e3b]"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to Overview
-                </Link>
-
                 <div className="flex flex-col gap-5 border-b-4 border-[#064e3b] pb-8 xl:flex-row xl:items-end xl:justify-between">
                     <div>
                         <h1 className="text-5xl font-black tracking-tighter leading-none md:text-6xl">
@@ -512,7 +505,7 @@ const FlightMapping: React.FC = () => {
                     </div>
                 )}
             </div>
-        </BeeYieldPageShell>
+        </div>
     );
 };
 
