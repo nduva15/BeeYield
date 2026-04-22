@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import beeyieldLogo from '@/assets/Logo.png';
 
 export interface NavGroup {
     title: string;
@@ -136,12 +137,12 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 {/* Branding */}
                 <div className="h-24 flex items-center px-8 border-b border-border bg-card group cursor-pointer" onClick={() => onTabChange('home')}>
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl border border-border bg-muted/20 flex items-center justify-center shadow-sm group-hover:border-primary/30 transition-all">
-                            <img src="/logo.png" alt="Beeeyield Dashboard" className="w-8 h-8 object-contain" />
+                        <div className="w-12 h-12 rounded-xl border border-border bg-white flex items-center justify-center shadow-sm group-hover:border-primary/30 transition-all overflow-hidden">
+                            <img src={beeyieldLogo} alt="BeeYield Dashboard" className="w-9 h-9 object-contain" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-2xl font-bold text-foreground tracking-tighter leading-none">Beeeyield <span className="text-primary">Dashboard</span></span>
-                            <span className="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest">Operational OS</span>
+                            <span className="text-2xl font-bold text-foreground tracking-tighter leading-none">BeeYield <span className="text-primary">Dashboard</span></span>
+                            <span className="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest">Operational Intelligence OS</span>
                         </div>
                     </div>
                 </div>
@@ -177,7 +178,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                         <span className="text-[10px] font-bold">Sign Out</span>
                     </button>
                     <div className="pt-2 flex justify-center">
-                        <span className="text-[8px] font-bold text-muted-foreground/40">© 2026 Beeeyield Dashboard Platform</span>
+                        <span className="text-[8px] font-bold text-muted-foreground/40">© 2026 BeeYield Dashboard Platform</span>
                     </div>
                 </div>
             </aside>

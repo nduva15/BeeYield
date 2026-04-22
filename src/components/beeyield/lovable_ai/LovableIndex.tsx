@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin } from "lucide-react";
 import { toast } from "sonner";
-import beeyieldLogo from "@/assets/beeyield-logo.png";
+import beeyieldLogo from "@/assets/Logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useVoiceInput } from "@/hooks/use-voice-input";
@@ -348,10 +348,14 @@ export default function Index() {
             <History className="w-4 h-4" />
             <span className="text-xs font-medium">History</span>
           </button>
-          <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto" />
-          <div className="hidden sm:block">
-            <div className="font-display font-bold text-foreground text-base leading-tight">Beeyield AI</div>
-            <div className="text-xs text-muted-foreground">The World's Most Comprehensive Bee Knowledge System</div>
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-lg overflow-hidden">
+              <img src={beeyieldLogo} alt="BeeYield" className="w-9 h-9 object-contain" />
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="font-display text-lg font-black text-foreground tracking-tight leading-none uppercase">BeeYield AI</h1>
+              <p className="text-[10px] font-bold text-primary mt-1 uppercase tracking-widest opacity-80">Operational Intelligence OS</p>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -450,7 +454,9 @@ export default function Index() {
       <div className="flex-1 overflow-y-auto custom-scroll px-4 py-6 space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in max-w-3xl mx-auto w-full">
-            <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto mb-4 opacity-90" />
+            <div className="w-24 h-24 rounded-[2.5rem] bg-card border border-border/40 flex items-center justify-center mb-6 shadow-xl overflow-hidden animate-float">
+              <img src={beeyieldLogo} alt="BeeYield" className="w-16 h-16 object-contain" />
+            </div>
             <h1 className="font-display text-3xl font-bold text-honey mb-2">Welcome to Beeyield AI</h1>
             <p className="text-muted-foreground max-w-xl mb-8 text-sm leading-relaxed">
               The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.

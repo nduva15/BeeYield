@@ -5,6 +5,7 @@ import {
   DialogTitle,
 } from "@/components/beeyield/lovable_ai/ui/dialog";
 import { Database, Globe, Shield, Microscope, Heart, Zap } from "lucide-react";
+import beeyieldLogo from "@/assets/Logo.png";
 
 const stats = [
   { label: "Bee Species Covered", value: "20,000+", icon: "🐝" },
@@ -35,7 +36,7 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scroll">
         <DialogHeader>
           <DialogTitle className="text-2xl font-display text-honey flex items-center gap-2">
-            🐝 About Beeyield AI
+            <img src={beeyieldLogo} alt="" className="w-6 h-6 object-contain" /> About BeeYield AI
           </DialogTitle>
         </DialogHeader>
 

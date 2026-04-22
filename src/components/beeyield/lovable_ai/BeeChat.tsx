@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Loader2, Bot, User } from "lucide-react";
+import beeyieldLogo from "@/assets/Logo.png";
 import { Button } from "@/components/beeyield/lovable_ai/ui/button";
 import { toast } from "sonner";
 
@@ -133,7 +134,9 @@ export default function BeeChat() {
       <div className="flex-1 overflow-y-auto custom-scroll p-4 space-y-4">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
-            <div className="text-6xl mb-4 animate-fade-in">🐝</div>
+            <div className="w-20 h-20 rounded-3xl bg-card border border-border/40 flex items-center justify-center mb-6 shadow-xl overflow-hidden">
+              <img src={beeyieldLogo} alt="BeeYield" className="w-12 h-12 object-contain" />
+            </div>
             <h2 className="font-display text-2xl font-bold text-honey mb-2">Welcome to BeeGPT</h2>
             <p className="text-muted-foreground max-w-md mb-8 text-sm">
               The world's most comprehensive bee knowledge system. Ask me anything about bees, honey, diseases, research, and more.
@@ -158,8 +161,8 @@ export default function BeeChat() {
             className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             {msg.role === "assistant" && (
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-amber flex items-center justify-center text-sm">
-                🐝
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center overflow-hidden shadow-sm">
+                <img src={beeyieldLogo} alt="BeeYield" className="w-5 h-5 object-contain" />
               </div>
             )}
             <div
@@ -179,8 +182,8 @@ export default function BeeChat() {
 
         {isLoading && messages[messages.length - 1]?.role === "user" && (
           <div className="flex gap-3 justify-start">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-amber flex items-center justify-center text-sm">
-              🐝
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center overflow-hidden shadow-sm">
+              <img src={beeyieldLogo} alt="BeeYield" className="w-5 h-5 object-contain" />
             </div>
             <div className="chat-assistant px-4 py-3 flex items-center gap-1">
               <span className="typing-dot w-2 h-2 rounded-full bg-primary inline-block" />

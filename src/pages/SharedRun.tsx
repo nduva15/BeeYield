@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Loader2, ArrowLeft, Calculator, Sparkles, AlertTriangle, FileDown, FileSpreadsheet, MessageSquare, Send, GitBranch, Eye } from "lucide-react";
+import beeyieldLogo from "@/assets/Logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer";
 import { downloadPDF, downloadCSV, type AssumptionsBlock, type ExportPayload } from "@/lib/harvest-export";
@@ -166,10 +167,10 @@ export default function SharedRun() {
       {/* Branded header */}
       <header className="border-b border-border bg-gradient-amber">
         <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-background/20 backdrop-blur flex items-center justify-center">
-              <Calculator className="w-5 h-5 text-primary-foreground" />
-            </div>
+|          <div className="flex items-center gap-3">
+|            <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xl overflow-hidden">
+|              <img src={beeyieldLogo} alt="BeeYield" className="w-9 h-9 object-contain" />
+|            </div>
             <div>
               <h1 className="font-display text-xl font-bold text-primary-foreground">BeeYield Harvest Forecast</h1>
               <p className="text-xs text-primary-foreground/80 flex items-center gap-1.5">
