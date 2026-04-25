@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree } from "lucide-react";
+import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree, Target } from "lucide-react";
 import { toast } from "sonner";
-import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer";
+import MarkdownRenderer from "./MarkdownRenderer";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -90,6 +90,21 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
   const ethicalPerHive = Math.min(0.5 * grossPerHive, netPerHive);
   const colonyHealth = hhi / 100;
   const apiaryHarvest = ethicalPerHive * hives * colonyHealth;
+
+  // Frames/acre — Standard (rule-of-thumb) vs Precision (geometry + flight radius)
+  const CROP_FLIGHT_RADIUS_M: Record<string, number> = {
+    "Almonds (CA)": 800, "Apples": 700, "Blueberries (highbush)": 500, "Cranberries": 600,
+    "Avocado (Hass)": 600, "Sunflower (hybrid seed)": 1200, "Canola/Oilseed Rape": 1500,
+    "Watermelon": 700, "Cucumber": 500, "Strawberry": 400, "Coffee (Arabica)": 800,
+    "Macadamia": 600, "Mango": 700, "Sidr": 1000, "Mixed wildflower / honey only": 900,
+  };
+  const totalFrames = hives * framesPerHive;
+  const framesPerAcreStandard = acres > 0 ? totalFrames / acres : 0;
+  // Precision: use geometric coverage — 1 effective hive per π r² m² of foraging area
+  const cropRadius = CROP_FLIGHT_RADIUS_M[crop] ?? 700;
+  const acreM2 = 4046.86;
+  const effectiveHivesPerAcre = acreM2 / (Math.PI * cropRadius * cropRadius);
+  const framesPerAcrePrecision = effectiveHivesPerAcre * framesPerHive;
 
   // AI forecast
   const [aiOpen, setAiOpen] = useState(false);
@@ -320,6 +335,8 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
     aiText: overrideAi !== undefined ? overrideAi : aiText,
     versionLabel: versionLabel || "current",
     assumptions: overrideAssumptions !== undefined ? overrideAssumptions : assumptions,
+    framesPerAcreStandard,
+    framesPerAcrePrecision,
   });
 
   const exportPDF = () => { downloadPDF(buildPayload()); toast.success("PDF report exported"); };
@@ -646,11 +663,37 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
         </div>
 
         {/* Quick local estimate */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
           <Stat label="Gross / hive" value={`${grossPerHive.toFixed(1)} kg`} />
           <Stat label="Reserve held back" value={`${reserve} kg`} />
           <Stat label="Ethical / hive" value={`${ethicalPerHive.toFixed(1)} kg`} highlight />
           <Stat label="Apiary total (× HHI)" value={`${apiaryHarvest.toFixed(0)} kg`} highlight />
+        </div>
+
+        {/* Frames per acre — standard vs precision */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+          <div className="p-4 rounded-xl border border-border bg-muted/20">
+            <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5">
+              <Calculator className="w-3 h-3" /> Frames/acre · <b className="text-foreground">Standard</b>
+            </div>
+            <div className="font-display text-xl font-bold text-foreground">
+              {acres > 0 ? framesPerAcreStandard.toFixed(2) : "—"}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              total frames ({totalFrames}) ÷ {acres || 0} acres
+            </div>
+          </div>
+          <div className="p-4 rounded-xl border border-honey/40 bg-honey/5">
+            <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5">
+              <Target className="w-3 h-3 text-honey" /> Frames/acre · <b className="text-honey">Precision</b>
+            </div>
+            <div className="font-display text-xl font-bold text-honey">
+              {framesPerAcrePrecision.toFixed(2)}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1">
+              4046.86 m² ÷ (π × {cropRadius}²) × {framesPerHive} frames/hive
+            </div>
+          </div>
         </div>
 
         <div className="p-4 rounded-xl border border-border bg-card mb-6 text-sm text-muted-foreground font-mono space-y-1">
