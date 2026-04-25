@@ -1,11 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Loader2, ArrowLeft, Calculator, Sparkles, AlertTriangle, FileDown, FileSpreadsheet, MessageSquare, Send, GitBranch, Eye } from "lucide-react";
+import { Loader2, ArrowLeft, Calculator, Sparkles, AlertTriangle, FileDown, FileSpreadsheet, MessageSquare, Send, GitBranch, Eye, MapPin } from "lucide-react";
 import beeyieldLogo from "@/assets/Logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer";
 import { downloadPDF, downloadCSV, type AssumptionsBlock, type ExportPayload } from "@/lib/harvest-export";
 import { toast } from "sonner";
+import HivePlacementMap from "@/components/beeyield/lovable_ai/HivePlacementMap";
 
 type SharedRunRow = {
   id: string;
@@ -69,6 +70,7 @@ export default function SharedRun() {
   const [commentName, setCommentName] = useState("");
   const [commentBody, setCommentBody] = useState("");
   const [postingComment, setPostingComment] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
 
   useEffect(() => {
     let cancel = false;
@@ -167,10 +169,10 @@ export default function SharedRun() {
       {/* Branded header */}
       <header className="border-b border-border bg-gradient-amber">
         <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3">
-|          <div className="flex items-center gap-3">
-|            <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xl overflow-hidden">
-|              <img src={beeyieldLogo} alt="BeeYield" className="w-9 h-9 object-contain" />
-|            </div>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xl overflow-hidden">
+              <img src={beeyieldLogo} alt="BeeYield" className="w-9 h-9 object-contain" />
+            </div>
             <div>
               <h1 className="font-display text-xl font-bold text-primary-foreground">BeeYield Harvest Forecast</h1>
               <p className="text-xs text-primary-foreground/80 flex items-center gap-1.5">
@@ -232,7 +234,17 @@ export default function SharedRun() {
                 <button onClick={handleExportCSV} className="px-2 h-8 rounded border border-border hover:border-honey/50 hover:text-honey text-muted-foreground flex items-center gap-1 text-xs">
                   <FileSpreadsheet className="w-3 h-3" /> CSV
                 </button>
+                <button onClick={() => setMapOpen(true)} className="px-2 h-8 rounded border border-primary/40 text-primary hover:bg-primary/10 flex items-center gap-1 text-xs" title="Open the saved field & hive layout for this version">
+                  <MapPin className="w-3 h-3" /> Map
+                </button>
               </div>
+              <HivePlacementMap
+                isOpen={mapOpen}
+                onClose={() => setMapOpen(false)}
+                readOnly
+                initialRunId={run.id}
+                initialVersionId={selectedVersion}
+              />
             </div>
             <h2 className="font-display text-2xl font-bold text-foreground mb-4">
               {run.crop} · {run.hives} hives
