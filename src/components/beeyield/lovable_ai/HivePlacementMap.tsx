@@ -1,14 +1,22 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { X, MapPin, Trash2, Save, Loader2, Plus, Layers, FileDown, MessageSquare, Send, GitBranch } from "lucide-react";
-import { MapContainer, TileLayer, Marker, Polygon, Circle, useMapEvents, useMap } from "react-leaflet";
+import { Fragment, useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { X, MapPin, Trash2, Save, Loader2, Plus, Layers, FileDown, MessageSquare, Send, GitBranch, Flower2, Plane, Activity } from "lucide-react";
+import { MapContainer, TileLayer, Marker, Polygon, Circle, Polyline, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import {
+  DEFAULT_MOA_FILTERS,
+  coerceMoaFilters,
+  haversineMeters,
+  normalizeCropLabel,
+  resolveCropRadius,
+  withinDateRange,
+  type MoaFilters,
+} from "@/lib/pollination";
 
-// Fix default marker icons for Vite/CRA bundlers
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -18,13 +26,28 @@ L.Icon.Default.mergeOptions({
 
 const hiveIcon = L.divIcon({
   className: "",
-  html: `<div style="background:hsl(43,74%,49%);border:2px solid white;width:20px;height:20px;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:10px;">🐝</div>`,
+  html: `<div style="background:hsl(43,74%,49%);border:2px solid white;width:20px;height:20px;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:10px;">H</div>`,
   iconSize: [20, 20],
   iconAnchor: [10, 10],
 });
+
 const commentIcon = L.divIcon({
   className: "",
-  html: `<div style="background:hsl(217,91%,60%);border:2px solid white;width:18px;height:18px;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:10px;">💬</div>`,
+  html: `<div style="background:hsl(217,91%,60%);border:2px solid white;width:18px;height:18px;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:10px;">C</div>`,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
+
+const bloomIcon = L.divIcon({
+  className: "",
+  html: `<div style="background:hsl(142,71%,45%);border:2px solid white;width:18px;height:18px;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:10px;">B</div>`,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
+
+const flightIcon = L.divIcon({
+  className: "",
+  html: `<div style="background:hsl(262,83%,58%);border:2px solid white;width:18px;height:18px;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:10px;">F</div>`,
   iconSize: [18, 18],
   iconAnchor: [9, 9],
 });
@@ -32,30 +55,20 @@ const commentIcon = L.divIcon({
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
-  /** Read-only shared-run view (no editing, no save controls) */
   readOnly?: boolean;
-  /** When set, the map auto-loads this saved run's layout (for shared links) */
   initialRunId?: string;
-  /** When set + initialRunId is set, the map loads layout from this version's site_layout */
   initialVersionId?: string;
 }
 
 type LatLng = { lat: number; lng: number };
 type Mode = "field" | "hive" | "comment";
 
-const CROP_RADIUS_M: Record<string, number> = {
-  Almonds: 800, Apples: 700, Blueberries: 500, Cranberries: 600, Avocado: 600,
-  Sunflower: 1200, Canola: 1500, Watermelon: 700, Cucumber: 500, Strawberry: 400,
-  Coffee: 800, Macadamia: 600, Mango: 700, Sidr: 1000,
-};
-
 type SiteLayout = {
   crop: string;
   framesPerHive: number;
   flight_radius_m: number;
-  field: LatLng[];
-  hives: LatLng[];
+  field: LatLng[] | [number, number][];
+  hives: LatLng[] | [number, number][];
   stats?: { acres: number; framesPerAcre: number; coveragePct: number };
   saved_at?: string;
 };
@@ -73,27 +86,80 @@ type AnchoredComment = {
   created_at: string;
 };
 
-function ClickHandler({ mode, onClick }: { mode: Mode; onClick: (latlng: LatLng) => void }) {
+type VersionRow = {
+  id: string;
+  version_label: string;
+  created_at: string;
+  site_layout: SiteLayout | null;
+  moa_filters: unknown | null;
+};
+
+type BloomObservation = {
+  id: string;
+  crop: string;
+  region: string;
+  observed_on: string;
+  intensity: number;
+  bloom_start: string | null;
+  peak_bloom: string | null;
+  bloom_end: string | null;
+  zone_label: string | null;
+  anchor_lat: number | null;
+  anchor_lng: number | null;
+  run_id: string | null;
+  version_id: string | null;
+};
+
+type FlightLog = {
+  id: string;
+  hive_label: string;
+  observed_at: string;
+  bees_per_minute: number;
+  pollen_loads: number;
+  flight_distance_m: number | null;
+  flight_bearing_deg: number | null;
+  flight_path: Array<{ lat: number; lng: number }> | null;
+  hive_lat: number | null;
+  hive_lng: number | null;
+  storage_level_pct: number | null;
+  nutrition_score: number | null;
+  florage_source: string | null;
+  florage_indicator: string | null;
+  foraging_zone: string | null;
+  run_id: string | null;
+  version_id: string | null;
+};
+
+type FocusPoint = {
+  kind: "hive" | "comment" | "bloom" | "flight";
+  label: string;
+  point: LatLng;
+};
+
+function ClickHandler({ onClick }: { onClick: (latlng: LatLng) => void }) {
   useMapEvents({
-    click(e) { onClick({ lat: e.latlng.lat, lng: e.latlng.lng }); },
+    click(event) {
+      onClick({ lat: event.latlng.lat, lng: event.latlng.lng });
+    },
   });
   return null;
 }
 
 function MapInvalidator({ trigger }: { trigger: number }) {
   const map = useMap();
-  useEffect(() => { setTimeout(() => map.invalidateSize(), 0); }, [trigger, map]);
+  useEffect(() => {
+    setTimeout(() => map.invalidateSize(), 0);
+  }, [trigger, map]);
   return null;
 }
 
-function FitBounds({ field, hives }: { field: LatLng[]; hives: LatLng[] }) {
+function FitBounds({ points }: { points: LatLng[] }) {
   const map = useMap();
   useEffect(() => {
-    const all = [...field, ...hives];
-    if (all.length === 0) return;
-    const bounds = L.latLngBounds(all.map((p) => [p.lat, p.lng] as [number, number]));
+    if (points.length === 0) return;
+    const bounds = L.latLngBounds(points.map((point) => [point.lat, point.lng] as [number, number]));
     if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40] });
-  }, [field, hives, map]);
+  }, [points, map]);
   return null;
 }
 
@@ -111,7 +177,32 @@ function polygonAreaM2(points: LatLng[]): number {
   return Math.abs((area * R * R) / 2);
 }
 
-export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly = false, initialRunId, initialVersionId }: Props) {
+function coercePoint(value: unknown): LatLng | null {
+  if (!value) return null;
+  if (Array.isArray(value) && value.length >= 2) {
+    return { lat: Number(value[0]), lng: Number(value[1]) };
+  }
+  if (typeof value === "object" && value !== null) {
+    const raw = value as { lat?: unknown; lng?: unknown };
+    if (typeof raw.lat === "number" && typeof raw.lng === "number") {
+      return { lat: raw.lat, lng: raw.lng };
+    }
+  }
+  return null;
+}
+
+function coercePoints(values: SiteLayout["field"] | SiteLayout["hives"] | null | undefined): LatLng[] {
+  if (!Array.isArray(values)) return [];
+  return values.map(coercePoint).filter(Boolean) as LatLng[];
+}
+
+export default function HivePlacementMap({
+  isOpen,
+  onClose,
+  readOnly = false,
+  initialRunId,
+  initialVersionId,
+}: Props) {
   const deviceId = useDeviceId();
   const [field, setField] = useState<LatLng[]>([]);
   const [hives, setHives] = useState<LatLng[]>([]);
@@ -121,22 +212,34 @@ export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly =
   const [tile, setTile] = useState<"sat" | "street">("sat");
   const [savedRunId, setSavedRunId] = useState<string>(initialRunId || "");
   const [savedRuns, setSavedRuns] = useState<{ id: string; crop: string; created_at: string }[]>([]);
-  const [versions, setVersions] = useState<{ id: string; version_label: string; created_at: string }[]>([]);
+  const [versions, setVersions] = useState<VersionRow[]>([]);
   const [selectedVersion, setSelectedVersion] = useState<string>(initialVersionId || "current");
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
-
-  // Comments
   const [comments, setComments] = useState<AnchoredComment[]>([]);
   const [draftAnchor, setDraftAnchor] = useState<LatLng | null>(null);
   const [draftAuthor, setDraftAuthor] = useState("");
   const [draftBody, setDraftBody] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
+  const [blooms, setBlooms] = useState<BloomObservation[]>([]);
+  const [flights, setFlights] = useState<FlightLog[]>([]);
+  const [focus, setFocus] = useState<FocusPoint | null>(null);
+  const [moaFilters, setMoaFilters] = useState<MoaFilters>(DEFAULT_MOA_FILTERS("Almonds"));
 
   const mapWrapRef = useRef<HTMLDivElement>(null);
+  const exportWrapRef = useRef<HTMLDivElement>(null);
+  const hydratingFiltersRef = useRef(false);
   const defaultCenter: [number, number] = [-2.4, 37.95];
-  const radius = CROP_RADIUS_M[cropKey] ?? 700;
+  const radius = resolveCropRadius(cropKey);
+
+  useEffect(() => {
+    if (initialRunId) setSavedRunId(initialRunId);
+  }, [initialRunId]);
+
+  useEffect(() => {
+    if (initialVersionId) setSelectedVersion(initialVersionId);
+  }, [initialVersionId]);
 
   const stats = useMemo(() => {
     const areaM2 = polygonAreaM2(field);
@@ -144,10 +247,8 @@ export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly =
     const framesTotal = hives.length * framesPerHive;
     const framesPerAcre = acres > 0 ? framesTotal / acres : 0;
     const grossCoverage = hives.length * Math.PI * radius * radius;
-    const overlapFactor = grossCoverage > 0 ? Math.min(1, areaM2 / grossCoverage) : 0;
-    const effectiveCoverage = grossCoverage * overlapFactor;
-    const coveragePct = areaM2 > 0 ? Math.min(100, (effectiveCoverage / areaM2) * 100) : 0;
-    return { areaM2, acres, framesTotal, framesPerAcre, coveragePct };
+    const coveragePct = areaM2 > 0 ? Math.min(100, (Math.min(areaM2, grossCoverage) / areaM2) * 100) : 0;
+    return { areaM2, acres, framesTotal, framesPerAcre, coveragePct, grossCoverage };
   }, [field, hives, framesPerHive, radius]);
 
   const loadRuns = useCallback(async () => {
@@ -162,132 +263,171 @@ export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly =
   }, [deviceId, readOnly]);
 
   const applyLayout = useCallback((layout: SiteLayout | null | undefined) => {
-    if (!layout) { setField([]); setHives([]); return; }
-    setField(layout.field || []);
-    setHives(layout.hives || []);
-    if (layout.crop) setCropKey(layout.crop);
+    if (!layout) {
+      setField([]);
+      setHives([]);
+      return;
+    }
+    setField(coercePoints(layout.field));
+    setHives(coercePoints(layout.hives));
+    if (layout.crop) setCropKey(normalizeCropLabel(layout.crop));
     if (layout.framesPerHive) setFramesPerHive(layout.framesPerHive);
   }, []);
 
-  const loadRunLayoutAndComments = useCallback(async (runId: string, versionId: string) => {
-    const [{ data: runRow }, { data: vData }, { data: cData }] = await Promise.all([
-      supabase.from("harvest_runs").select("site_layout, crop").eq("id", runId).maybeSingle(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (supabase.from("harvest_run_versions") as any).select("id, version_label, site_layout, created_at").eq("run_id", runId).order("created_at", { ascending: false }),
+  const loadRunContext = useCallback(async (runId: string, versionId: string) => {
+    const [{ data: runRow }, { data: versionRows }, { data: commentRows }, { data: bloomRows }, { data: flightRows }] = await Promise.all([
+      supabase.from("harvest_runs").select("site_layout,crop,moa_filters").eq("id", runId).maybeSingle(),
+      supabase.from("harvest_run_versions").select("id,version_label,created_at,site_layout,moa_filters").eq("run_id", runId).order("created_at", { ascending: false }),
       supabase.from("harvest_run_comments").select("*").eq("run_id", runId).order("created_at", { ascending: true }),
+      supabase.from("bloom_observations").select("*").eq("run_id", runId).order("observed_on", { ascending: false }).limit(100),
+      supabase.from("bee_flight_logs").select("*").eq("run_id", runId).order("observed_at", { ascending: false }).limit(200),
     ]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const versions = (vData || []) as any[];
-    setVersions(versions.map((v) => ({ id: v.id, version_label: v.version_label, created_at: v.created_at })));
-    setComments((cData || []) as AnchoredComment[]);
-    if (versionId === "current") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      applyLayout((runRow as any)?.site_layout as SiteLayout | null);
-    } else {
-      const v = versions.find((x) => x.id === versionId);
-      applyLayout(v?.site_layout as SiteLayout | null);
-    }
-  }, [applyLayout]);
+
+    const versionsTyped = (versionRows || []) as VersionRow[];
+    setVersions(versionsTyped);
+    setComments((commentRows || []) as AnchoredComment[]);
+    setBlooms((bloomRows || []) as BloomObservation[]);
+    setFlights((flightRows || []) as FlightLog[]);
+
+    const activeVersion = versionId === "current" ? null : versionsTyped.find((row) => row.id === versionId) || null;
+    applyLayout((activeVersion?.site_layout || runRow?.site_layout) as SiteLayout | null);
+
+    const cropFallback = normalizeCropLabel(
+      (activeVersion?.site_layout as SiteLayout | null)?.crop || runRow?.crop || cropKey,
+    );
+    hydratingFiltersRef.current = true;
+    setMoaFilters(coerceMoaFilters(activeVersion?.moa_filters ?? runRow?.moa_filters, cropFallback));
+    setTimeout(() => {
+      hydratingFiltersRef.current = false;
+    }, 0);
+    setFocus(null);
+  }, [applyLayout, cropKey]);
 
   useEffect(() => { if (isOpen) loadRuns(); }, [isOpen, loadRuns]);
-  useEffect(() => {
-    if (isOpen && savedRunId) loadRunLayoutAndComments(savedRunId, selectedVersion);
-  }, [isOpen, savedRunId, selectedVersion, loadRunLayoutAndComments]);
 
-  const handleClick = (ll: LatLng) => {
+  useEffect(() => {
+    if (!isOpen || !savedRunId) return;
+    loadRunContext(savedRunId, selectedVersion);
+  }, [isOpen, savedRunId, selectedVersion, loadRunContext]);
+
+  useEffect(() => {
+    if (!savedRunId || readOnly || hydratingFiltersRef.current) return;
+    const timeout = setTimeout(async () => {
+      const payload = { moa_filters: moaFilters };
+      if (selectedVersion === "current") {
+        await supabase.from("harvest_runs").update(payload).eq("id", savedRunId);
+      } else {
+        await supabase.from("harvest_run_versions").update(payload).eq("id", selectedVersion);
+      }
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [savedRunId, selectedVersion, moaFilters, readOnly]);
+
+  const handleClick = (point: LatLng) => {
     if (readOnly && mode !== "comment") return;
-    if (mode === "field") setField((prev) => [...prev, ll]);
-    else if (mode === "hive") setHives((prev) => [...prev, ll]);
-    else if (mode === "comment") setDraftAnchor(ll);
+    if (mode === "field") setField((prev) => [...prev, point]);
+    else if (mode === "hive") setHives((prev) => [...prev, point]);
+    else if (mode === "comment") setDraftAnchor(point);
   };
 
-  const reset = () => { setField([]); setHives([]); };
+  const reset = () => {
+    setField([]);
+    setHives([]);
+    setFocus(null);
+  };
 
   const persistToRun = async (asVersion: boolean) => {
-    if (!savedRunId) { toast.error("Pick a saved harvest run to attach this layout to"); return; }
+    if (!savedRunId) {
+      toast.error("Pick a saved harvest run to attach this layout to");
+      return;
+    }
+
     setSaving(true);
     const payload: SiteLayout = {
-      crop: cropKey, framesPerHive, flight_radius_m: radius,
-      field, hives,
+      crop: cropKey,
+      framesPerHive,
+      flight_radius_m: radius,
+      field,
+      hives,
       stats: { acres: stats.acres, framesPerAcre: stats.framesPerAcre, coveragePct: stats.coveragePct },
       saved_at: new Date().toISOString(),
     };
+
     if (asVersion) {
       const nextN = versions.length + 1;
       const { error } = await supabase.from("harvest_run_versions").insert({
         run_id: savedRunId,
         version_label: `layout-v${nextN}`,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        site_layout: payload as any,
+        site_layout: payload,
+        moa_filters: moaFilters,
       });
       setSaving(false);
-      if (error) { toast.error("Failed to save version"); return; }
+      if (error) {
+        toast.error("Failed to save version");
+        return;
+      }
       toast.success(`Saved layout-v${nextN} to harvest run`);
-      loadRunLayoutAndComments(savedRunId, "current");
+      loadRunContext(savedRunId, "current");
     } else {
       const { error } = await supabase.from("harvest_runs").update({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        site_layout: payload as any,
+        site_layout: payload,
+        moa_filters: moaFilters,
       }).eq("id", savedRunId);
       setSaving(false);
-      if (error) { toast.error("Failed to save layout"); return; }
+      if (error) {
+        toast.error("Failed to save layout");
+        return;
+      }
       toast.success("Site layout saved to harvest run");
     }
   };
 
   const exportMapPDF = async () => {
-    if (!mapWrapRef.current) return;
+    if (!exportWrapRef.current) return;
     setExporting(true);
     try {
-      const canvas = await html2canvas(mapWrapRef.current, { useCORS: true, allowTaint: true, scale: 1.5, logging: false });
+      const canvas = await html2canvas(exportWrapRef.current, { useCORS: true, allowTaint: true, scale: 1.4, logging: false });
       const img = canvas.toDataURL("image/jpeg", 0.92);
       const doc = new jsPDF({ unit: "pt", format: "a4", orientation: "landscape" });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
-      const margin = 36;
+      const margin = 28;
 
-      // Header band
       doc.setFillColor(245, 158, 11);
-      doc.rect(0, 0, pageW, 60, "F");
+      doc.rect(0, 0, pageW, 56, "F");
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
-      doc.text("BeeYield Hive Placement Map", margin, 32);
-      doc.setFontSize(9);
+      doc.text("BeeYield MOA Map Export", margin, 30);
       doc.setFont("helvetica", "normal");
-      const verLabel = selectedVersion === "current"
+      doc.setFontSize(9);
+      const versionLabel = selectedVersion === "current"
         ? "current"
-        : versions.find((v) => v.id === selectedVersion)?.version_label || "current";
-      doc.text(`${new Date().toLocaleString()}  ·  Version: ${verLabel}  ·  Crop: ${cropKey}  ·  Flight radius: ${radius} m`, margin, 50);
+        : versions.find((version) => version.id === selectedVersion)?.version_label || "current";
+      doc.text(`${new Date().toLocaleString()} · Version: ${versionLabel} · Crop: ${cropKey} · Radius: ${radius} m`, margin, 46);
 
-      // Map image
       const imgW = pageW - margin * 2;
       const imgH = (canvas.height / canvas.width) * imgW;
-      const targetH = Math.min(imgH, pageH - 60 - margin - 90);
+      const targetH = Math.min(imgH, pageH - 56 - margin - 70);
       const targetW = (canvas.width / canvas.height) * targetH;
-      doc.addImage(img, "JPEG", (pageW - targetW) / 2, 70, targetW, targetH);
+      doc.addImage(img, "JPEG", (pageW - targetW) / 2, 66, targetW, targetH);
 
-      // Stats footer
-      const y0 = 70 + targetH + 14;
+      const footerY = 66 + targetH + 16;
       doc.setTextColor(30, 30, 30);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.text("Coverage stats", margin, y0);
+      doc.text("Coverage summary", margin, footerY);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.text(`Field area: ${stats.acres.toFixed(2)} ac (${stats.areaM2.toFixed(0)} m²)`, margin, y0 + 16);
-      doc.text(`Hives placed: ${hives.length}  ·  Frames/hive: ${framesPerHive}  ·  Total frames: ${stats.framesTotal}`, margin, y0 + 30);
-      doc.text(`Frames per acre: ${stats.framesPerAcre.toFixed(2)}`, margin, y0 + 44);
-      doc.text(`Effective pollination coverage: ${stats.coveragePct.toFixed(1)}%`, margin, y0 + 58);
+      doc.text(`Field area: ${stats.acres.toFixed(2)} ac (${stats.areaM2.toFixed(0)} m²)`, margin, footerY + 16);
+      doc.text(`Hives: ${hives.length} · Frames/hive: ${framesPerHive} · Frames/acre: ${stats.framesPerAcre.toFixed(2)}`, margin, footerY + 30);
+      doc.text(`Coverage: ${stats.coveragePct.toFixed(1)}% · Bloom records: ${filteredBlooms.length} · Flight records: ${filteredFlights.length}`, margin, footerY + 44);
+      doc.text(`MOA filters: ${moaFilters.crop} · ${moaFilters.dateFrom || "open"} to ${moaFilters.dateTo || "open"}`, margin, footerY + 58);
 
-      doc.setFontSize(8);
-      doc.setTextColor(150);
-      doc.text(`BeeYield • Hive Placement • ${verLabel}`, pageW - margin, pageH - 14, { align: "right" });
-
-      doc.save(`beeyield-map-${cropKey.toLowerCase()}-${verLabel}-${Date.now()}.pdf`);
+      doc.save(`beeyield-moa-map-${cropKey.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`);
       toast.success("Map PDF exported");
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
       toast.error("Failed to export map PDF");
     } finally {
       setExporting(false);
@@ -295,47 +435,97 @@ export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly =
   };
 
   const postComment = async () => {
-    if (!savedRunId) { toast.error("Open a saved harvest run to comment"); return; }
-    if (!draftBody.trim()) { toast.error("Write a comment first"); return; }
+    if (!savedRunId) {
+      toast.error("Open a saved harvest run to comment");
+      return;
+    }
+    if (!draftBody.trim()) {
+      toast.error("Write a comment first");
+      return;
+    }
     setPosting(true);
-    const author = draftAuthor.trim() || "Partner";
     const insert = {
       run_id: savedRunId,
       parent_id: replyTo,
-      author_name: author,
+      author_name: draftAuthor.trim() || "Partner",
       body: draftBody.trim(),
       anchor_type: draftAnchor ? "map" : "general",
       anchor_lat: draftAnchor?.lat ?? null,
       anchor_lng: draftAnchor?.lng ?? null,
       anchor_step: null,
     };
-    const { data, error } = await supabase
-      .from("harvest_run_comments")
-      .insert(insert)
-      .select("*")
-      .single();
+    const { data, error } = await supabase.from("harvest_run_comments").insert(insert).select("*").single();
     setPosting(false);
-    if (error || !data) { toast.error("Failed to post comment"); return; }
-    setComments((p) => [...p, data as AnchoredComment]);
-    setDraftBody(""); setDraftAnchor(null); setReplyTo(null);
+    if (error || !data) {
+      toast.error("Failed to post comment");
+      return;
+    }
+    setComments((prev) => [...prev, data as AnchoredComment]);
+    setDraftBody("");
+    setDraftAnchor(null);
+    setReplyTo(null);
     toast.success(replyTo ? "Reply posted" : "Comment posted");
   };
 
-  const mapComments = comments.filter((c) => c.anchor_type === "map" && c.anchor_lat != null && c.anchor_lng != null);
+  const activeBlooms = useMemo(() => {
+    return blooms.filter((row) => (selectedVersion === "current" ? !row.version_id : row.version_id === selectedVersion || !row.version_id));
+  }, [blooms, selectedVersion]);
+
+  const activeFlights = useMemo(() => {
+    return flights.filter((row) => (selectedVersion === "current" ? !row.version_id : row.version_id === selectedVersion || !row.version_id));
+  }, [flights, selectedVersion]);
+
+  const locationMatches = useCallback((point: LatLng | null, target: LatLng | null) => {
+    if (!point || !target) return true;
+    return haversineMeters(point, target) <= Math.max(250, radius * 0.75);
+  }, [radius]);
+
+  const filteredBlooms = useMemo(() => {
+    const focusPoint = focus?.point || null;
+    return activeBlooms.filter((row) => {
+      const cropMatch = normalizeCropLabel(row.crop).toLowerCase().includes(normalizeCropLabel(moaFilters.crop || cropKey).toLowerCase());
+      const dateMatch = withinDateRange(`${row.observed_on}T00:00:00`, moaFilters.dateFrom, moaFilters.dateTo);
+      const anchor = row.anchor_lat != null && row.anchor_lng != null ? { lat: row.anchor_lat, lng: row.anchor_lng } : null;
+      return cropMatch && dateMatch && locationMatches(focusPoint, anchor);
+    });
+  }, [activeBlooms, moaFilters, cropKey, focus, locationMatches]);
+
+  const filteredFlights = useMemo(() => {
+    const focusPoint = focus?.point || null;
+    return activeFlights.filter((row) => {
+      const dateMatch = withinDateRange(row.observed_at, moaFilters.dateFrom, moaFilters.dateTo);
+      const anchor = row.hive_lat != null && row.hive_lng != null ? { lat: row.hive_lat, lng: row.hive_lng } : null;
+      return dateMatch && locationMatches(focusPoint, anchor);
+    });
+  }, [activeFlights, moaFilters, focus, locationMatches]);
+
   const threaded = useMemo(() => {
     const byParent: Record<string, AnchoredComment[]> = {};
-    comments.forEach((c) => {
-      const k = c.parent_id || "root";
-      (byParent[k] = byParent[k] || []).push(c);
+    comments.forEach((comment) => {
+      const key = comment.parent_id || "root";
+      (byParent[key] = byParent[key] || []).push(comment);
     });
     return byParent;
   }, [comments]);
 
+  const combinedFitPoints = useMemo(() => {
+    const bloomPoints = filteredBlooms
+      .map((row) => (row.anchor_lat != null && row.anchor_lng != null ? { lat: row.anchor_lat, lng: row.anchor_lng } : null))
+      .filter(Boolean) as LatLng[];
+    const flightPoints = filteredFlights
+      .map((row) => (row.hive_lat != null && row.hive_lng != null ? { lat: row.hive_lat, lng: row.hive_lng } : null))
+      .filter(Boolean) as LatLng[];
+    const commentPoints = comments
+      .map((comment) => (comment.anchor_lat != null && comment.anchor_lng != null ? { lat: comment.anchor_lat, lng: comment.anchor_lng } : null))
+      .filter(Boolean) as LatLng[];
+    return [...field, ...hives, ...bloomPoints, ...flightPoints, ...commentPoints];
+  }, [field, hives, filteredBlooms, filteredFlights, comments]);
+
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
-      <div className="max-w-6xl mx-auto p-6">
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <MapPin className="w-7 h-7 text-honey" />
@@ -344,139 +534,73 @@ export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly =
                 Precision Hive Placement Map {readOnly && <span className="text-xs text-muted-foreground ml-2">(read-only)</span>}
               </h1>
               <p className="text-xs text-muted-foreground">
-                {readOnly ? "Viewing the saved layout for this shared harvest run" : "Draw your field, drop hives, see frames/acre + pollination coverage"}
+                Map, bloom phenology, bee-flight telemetry, and coverage panels stay synced per saved run version.
               </p>
             </div>
           </div>
-          {!embedded && (
-            <button
-              onClick={onClose}
-              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground" aria-label="Close">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
-        {/* Toolbar */}
         <div className="flex items-center gap-2 mb-3 flex-wrap p-3 rounded-xl border border-border bg-muted/20">
           {!readOnly && (
             <>
-              <button
-                onClick={() => setMode("field")}
-                className={`px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border ${mode === "field" ? "border-honey bg-honey/15 text-honey" : "border-border text-muted-foreground hover:text-foreground"}`}
-              >
+              <button onClick={() => setMode("field")} className={`px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border ${mode === "field" ? "border-honey bg-honey/15 text-honey" : "border-border text-muted-foreground hover:text-foreground"}`}>
                 <Plus className="w-3.5 h-3.5" /> Add field corner
               </button>
-              <button
-                onClick={() => setMode("hive")}
-                className={`px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border ${mode === "hive" ? "border-honey bg-honey/15 text-honey" : "border-border text-muted-foreground hover:text-foreground"}`}
-              >
+              <button onClick={() => setMode("hive")} className={`px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border ${mode === "hive" ? "border-honey bg-honey/15 text-honey" : "border-border text-muted-foreground hover:text-foreground"}`}>
                 <MapPin className="w-3.5 h-3.5" /> Drop hive
               </button>
             </>
           )}
-          <button
-            onClick={() => setMode("comment")}
-            className={`px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border ${mode === "comment" ? "border-primary bg-primary/15 text-primary" : "border-border text-muted-foreground hover:text-foreground"}`}
-            title="Click the map to drop a comment pin"
-          >
+          <button onClick={() => setMode("comment")} className={`px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border ${mode === "comment" ? "border-primary bg-primary/15 text-primary" : "border-border text-muted-foreground hover:text-foreground"}`}>
             <MessageSquare className="w-3.5 h-3.5" /> Pin comment
           </button>
           <span className="mx-1 h-6 border-l border-border" />
-          <select
-            value={cropKey}
-            onChange={(e) => setCropKey(e.target.value)}
-            disabled={readOnly}
-            className="bg-background border border-border rounded-lg px-2 h-9 text-xs disabled:opacity-50"
-            title="Crop (sets flight radius)"
-          >
-            {Object.keys(CROP_RADIUS_M).map((c) => <option key={c}>{c}</option>)}
+          <select value={cropKey} onChange={(event) => { const nextCrop = normalizeCropLabel(event.target.value); setCropKey(nextCrop); setMoaFilters((prev) => ({ ...prev, crop: nextCrop })); }} disabled={readOnly} className="bg-background border border-border rounded-lg px-2 h-9 text-xs disabled:opacity-50">
+            {["Almonds", "Apples", "Blueberries", "Avocado", "Sunflower", "Coffee", "Macadamia", "Mango", "Sidr"].map((crop) => <option key={crop}>{crop}</option>)}
           </select>
           <label className="text-xs text-muted-foreground flex items-center gap-1.5">
             Frames/hive
-            <input
-              type="number" min={1} max={30} value={framesPerHive}
-              onChange={(e) => setFramesPerHive(Math.max(1, +e.target.value || 1))}
-              disabled={readOnly}
-              className="w-16 bg-background border border-border rounded-lg px-2 h-9 text-xs disabled:opacity-50"
-            />
+            <input type="number" min={1} max={30} value={framesPerHive} onChange={(event) => setFramesPerHive(Math.max(1, +event.target.value || 1))} disabled={readOnly} className="w-16 bg-background border border-border rounded-lg px-2 h-9 text-xs disabled:opacity-50" />
           </label>
-          <button
-            onClick={() => setTile((t) => (t === "sat" ? "street" : "sat"))}
-            className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-border text-muted-foreground hover:text-foreground"
-          >
+          <button onClick={() => setTile((current) => (current === "sat" ? "street" : "sat"))} className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-border text-muted-foreground hover:text-foreground">
             <Layers className="w-3.5 h-3.5" /> {tile === "sat" ? "Satellite" : "Street"}
           </button>
           {!readOnly && (
-            <button
-              onClick={reset}
-              className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-border text-muted-foreground hover:text-destructive"
-            >
+            <button onClick={reset} className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-border text-muted-foreground hover:text-destructive">
               <Trash2 className="w-3.5 h-3.5" /> Reset
             </button>
           )}
           <span className="mx-1 h-6 border-l border-border" />
           {!readOnly && (
-            <select
-              value={savedRunId}
-              onChange={(e) => { setSavedRunId(e.target.value); setSelectedVersion("current"); }}
-              className="bg-background border border-border rounded-lg px-2 h-9 text-xs max-w-[220px]"
-            >
-              <option value="">Attach to harvest run…</option>
-              {savedRuns.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.crop} · {new Date(r.created_at).toLocaleDateString()}
-                </option>
-              ))}
+            <select value={savedRunId} onChange={(event) => { setSavedRunId(event.target.value); setSelectedVersion("current"); }} className="bg-background border border-border rounded-lg px-2 h-9 text-xs max-w-[220px]">
+              <option value="">Attach to harvest run...</option>
+              {savedRuns.map((run) => <option key={run.id} value={run.id}>{run.crop} · {new Date(run.created_at).toLocaleDateString()}</option>)}
             </select>
           )}
           {savedRunId && (
-            <select
-              value={selectedVersion}
-              onChange={(e) => setSelectedVersion(e.target.value)}
-              className="bg-background border border-border rounded-lg px-2 h-9 text-xs max-w-[220px]"
-              title="Version"
-            >
+            <select value={selectedVersion} onChange={(event) => setSelectedVersion(event.target.value)} className="bg-background border border-border rounded-lg px-2 h-9 text-xs max-w-[220px]">
               <option value="current">current layout</option>
-              {versions.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.version_label} · {new Date(v.created_at).toLocaleDateString()}
-                </option>
-              ))}
+              {versions.map((version) => <option key={version.id} value={version.id}>{version.version_label} · {new Date(version.created_at).toLocaleDateString()}</option>)}
             </select>
           )}
           {!readOnly && (
             <>
-              <button
-                onClick={() => persistToRun(false)}
-                disabled={saving || !savedRunId}
-                className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-honey/40 bg-honey/10 text-honey hover:bg-honey/20 disabled:opacity-50"
-              >
+              <button onClick={() => persistToRun(false)} disabled={saving || !savedRunId} className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-honey/40 bg-honey/10 text-honey hover:bg-honey/20 disabled:opacity-50">
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save layout
               </button>
-              <button
-                onClick={() => persistToRun(true)}
-                disabled={saving || !savedRunId}
-                className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-honey/40 text-honey hover:bg-honey/10 disabled:opacity-50"
-                title="Snapshot this layout as a new version"
-              >
+              <button onClick={() => persistToRun(true)} disabled={saving || !savedRunId} className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-honey/40 text-honey hover:bg-honey/10 disabled:opacity-50">
                 <GitBranch className="w-3.5 h-3.5" /> Save as new version
               </button>
             </>
           )}
-          <button
-            onClick={exportMapPDF}
-            disabled={exporting}
-            className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-primary/40 text-primary hover:bg-primary/10 disabled:opacity-50"
-            title="Export the satellite map + polygon + hives + stats as a PDF"
-          >
+          <button onClick={exportMapPDF} disabled={exporting} className="px-3 h-9 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-primary/40 text-primary hover:bg-primary/10 disabled:opacity-50">
             {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />} Export Map PDF
           </button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
           <Stat label="Field corners" value={`${field.length}`} />
           <Stat label="Field area" value={`${stats.acres.toFixed(2)} ac`} highlight />
@@ -485,106 +609,174 @@ export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly =
           <Stat label="Coverage" value={`${stats.coveragePct.toFixed(0)}%`} highlight />
         </div>
 
-        {/* Map */}
-        <div ref={mapWrapRef} className="rounded-xl overflow-hidden border border-border" style={{ height: 520 }}>
-          <MapContainer center={defaultCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
-            <MapInvalidator trigger={isOpen ? 1 : 0} />
-            <FitBounds field={field} hives={hives} />
-            {tile === "sat" ? (
-              <TileLayer
-                attribution='Tiles &copy; Esri'
-                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                crossOrigin
-              />
-            ) : (
-              <TileLayer
-                attribution='&copy; OpenStreetMap contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                crossOrigin
-              />
-            )}
-            <ClickHandler mode={mode} onClick={handleClick} />
+        <div ref={exportWrapRef} className="grid grid-cols-1 xl:grid-cols-5 gap-4 items-start">
+          <div className="xl:col-span-3">
+            <div ref={mapWrapRef} className="rounded-xl overflow-hidden border border-border" style={{ height: 560 }}>
+              <MapContainer center={defaultCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
+                <MapInvalidator trigger={isOpen ? 1 : 0} />
+                <FitBounds points={combinedFitPoints} />
+                {tile === "sat" ? (
+                  <TileLayer attribution='Tiles © Esri' url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" crossOrigin />
+                ) : (
+                  <TileLayer attribution='© OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{y}/{x}.png" crossOrigin />
+                )}
+                <ClickHandler onClick={handleClick} />
 
-            {field.length >= 3 && (
-              <Polygon
-                positions={field.map((p) => [p.lat, p.lng] as [number, number])}
-                pathOptions={{ color: "hsl(43,74%,49%)", fillColor: "hsl(43,74%,49%)", fillOpacity: 0.18, weight: 2 }}
-              />
+                {field.length >= 3 && (
+                  <Polygon positions={field.map((point) => [point.lat, point.lng] as [number, number])} pathOptions={{ color: "hsl(43,74%,49%)", fillColor: "hsl(43,74%,49%)", fillOpacity: 0.18, weight: 2 }} />
+                )}
+                {hives.map((hive, index) => (
+                  <Fragment key={`hive-wrap-${index}`}>
+                    <Marker
+                      position={[hive.lat, hive.lng]}
+                      icon={hiveIcon}
+                      eventHandlers={{ click: () => setFocus({ kind: "hive", label: `Hive ${index + 1}`, point: hive }) }}
+                    />
+                    <Circle center={[hive.lat, hive.lng]} radius={radius} pathOptions={{ color: "hsl(43,74%,49%)", fillColor: "hsl(43,74%,49%)", fillOpacity: 0.05, weight: 1, dashArray: "4 4" }} />
+                  </Fragment>
+                ))}
+                {comments.filter((comment) => comment.anchor_lat != null && comment.anchor_lng != null).map((comment) => (
+                  <Marker
+                    key={`comment-${comment.id}`}
+                    position={[comment.anchor_lat as number, comment.anchor_lng as number]}
+                    icon={commentIcon}
+                    eventHandlers={{ click: () => setFocus({ kind: "comment", label: comment.author_name, point: { lat: comment.anchor_lat as number, lng: comment.anchor_lng as number } }) }}
+                  />
+                ))}
+                {filteredBlooms.slice(0, 25).map((row) => row.anchor_lat != null && row.anchor_lng != null ? (
+                  <Marker
+                    key={`bloom-${row.id}`}
+                    position={[row.anchor_lat, row.anchor_lng]}
+                    icon={bloomIcon}
+                    eventHandlers={{ click: () => setFocus({ kind: "bloom", label: row.zone_label || row.crop, point: { lat: row.anchor_lat as number, lng: row.anchor_lng as number } }) }}
+                  />
+                ) : null)}
+                {filteredFlights.slice(0, 25).map((row) => (
+                  row.hive_lat != null && row.hive_lng != null ? (
+                    <Marker
+                      key={`flight-${row.id}`}
+                      position={[row.hive_lat, row.hive_lng]}
+                      icon={flightIcon}
+                      eventHandlers={{ click: () => setFocus({ kind: "flight", label: row.hive_label, point: { lat: row.hive_lat as number, lng: row.hive_lng as number } }) }}
+                    />
+                  ) : null
+                ))}
+                {filteredFlights.map((row) => Array.isArray(row.flight_path) && row.flight_path.length >= 2 ? (
+                  <Polyline
+                    key={`path-${row.id}`}
+                    positions={row.flight_path.map((point) => [point.lat, point.lng] as [number, number])}
+                    pathOptions={{ color: "hsl(262,83%,58%)", weight: 2, opacity: 0.75 }}
+                  />
+                ) : null)}
+                {draftAnchor && <Marker position={[draftAnchor.lat, draftAnchor.lng]} icon={commentIcon} />}
+              </MapContainer>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Click hive, bloom, flight, or comment pins to sync the right-side MOA panels to that location and time window.
+            </p>
+          </div>
+
+          <div className="xl:col-span-2 space-y-4">
+            <section className="p-4 rounded-xl border border-border bg-card">
+              <h3 className="font-display text-sm font-bold text-foreground mb-3">MOA filters</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-3">
+                <Field label="Crop">
+                  <input value={moaFilters.crop} onChange={(event) => setMoaFilters((prev) => ({ ...prev, crop: event.target.value }))} className={inputCls} />
+                </Field>
+                <Field label="Date from">
+                  <input type="date" value={moaFilters.dateFrom} onChange={(event) => setMoaFilters((prev) => ({ ...prev, dateFrom: event.target.value }))} className={inputCls} />
+                </Field>
+                <Field label="Date to">
+                  <input type="date" value={moaFilters.dateTo} onChange={(event) => setMoaFilters((prev) => ({ ...prev, dateTo: event.target.value }))} className={inputCls} />
+                </Field>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <Toggle label="Coverage" checked={moaFilters.showCoverage} onChange={(checked) => setMoaFilters((prev) => ({ ...prev, showCoverage: checked }))} />
+                  <Toggle label="Bloom" checked={moaFilters.showBloom} onChange={(checked) => setMoaFilters((prev) => ({ ...prev, showBloom: checked }))} />
+                  <Toggle label="Flight" checked={moaFilters.showFlight} onChange={(checked) => setMoaFilters((prev) => ({ ...prev, showFlight: checked }))} />
+                  <Toggle label="Comments" checked={moaFilters.showComments} onChange={(checked) => setMoaFilters((prev) => ({ ...prev, showComments: checked }))} />
+                </div>
+              </div>
+            </section>
+
+            {focus && (
+              <section className="p-4 rounded-xl border border-primary/30 bg-primary/5">
+                <div className="text-xs text-primary font-semibold mb-1">Map focus</div>
+                <div className="text-sm text-foreground">{focus.kind} · {focus.label}</div>
+                <div className="text-xs text-muted-foreground font-mono">{focus.point.lat.toFixed(5)}, {focus.point.lng.toFixed(5)}</div>
+              </section>
             )}
-            {field.length >= 1 && field.length < 3 &&
-              field.map((p, i) => (<Marker key={`fc-${i}`} position={[p.lat, p.lng]} />))
-            }
-            {hives.map((h, i) => (<Marker key={`h-${i}`} position={[h.lat, h.lng]} icon={hiveIcon} />))}
-            {hives.map((h, i) => (
-              <Circle
-                key={`hc-${i}`}
-                center={[h.lat, h.lng]}
-                radius={radius}
-                pathOptions={{ color: "hsl(43,74%,49%)", fillColor: "hsl(43,74%,49%)", fillOpacity: 0.06, weight: 1, dashArray: "4 4" }}
-              />
-            ))}
-            {mapComments.map((c) => (
-              <Marker key={`c-${c.id}`} position={[c.anchor_lat as number, c.anchor_lng as number]} icon={commentIcon} />
-            ))}
-            {draftAnchor && (
-              <Marker position={[draftAnchor.lat, draftAnchor.lng]} icon={commentIcon} />
+
+            {moaFilters.showCoverage && (
+              <Panel icon={<Activity className="w-4 h-4 text-honey" />} title="Coverage panel">
+                <Line label="Crop" value={cropKey} />
+                <Line label="Radius" value={`${radius} m`} />
+                <Line label="Coverage" value={`${stats.coveragePct.toFixed(1)}%`} />
+                <Line label="Bloom records" value={`${filteredBlooms.length}`} />
+                <Line label="Flight records" value={`${filteredFlights.length}`} />
+              </Panel>
             )}
-          </MapContainer>
+
+            {moaFilters.showBloom && (
+              <Panel icon={<Flower2 className="w-4 h-4 text-honey" />} title="Bloom panel">
+                {filteredBlooms.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No bloom observations match the selected run version, date range, and map focus.</p>
+                ) : (
+                  filteredBlooms.slice(0, 6).map((row) => (
+                    <div key={row.id} className="p-3 rounded-lg border border-border bg-muted/20">
+                      <div className="text-sm font-semibold text-foreground">{row.zone_label || row.crop}</div>
+                      <div className="text-xs text-muted-foreground">{row.observed_on} · intensity {row.intensity}%</div>
+                      <div className="text-xs text-muted-foreground">start {row.bloom_start || "—"} · peak {row.peak_bloom || "—"} · end {row.bloom_end || "—"}</div>
+                    </div>
+                  ))
+                )}
+              </Panel>
+            )}
+
+            {moaFilters.showFlight && (
+              <Panel icon={<Plane className="w-4 h-4 text-honey" />} title="Bee-flight panel">
+                {filteredFlights.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No flight logs match the selected run version, date range, and map focus.</p>
+                ) : (
+                  filteredFlights.slice(0, 6).map((row) => (
+                    <div key={row.id} className="p-3 rounded-lg border border-border bg-muted/20">
+                      <div className="text-sm font-semibold text-foreground">{row.hive_label} · {row.bees_per_minute}/min</div>
+                      <div className="text-xs text-muted-foreground">{new Date(row.observed_at).toLocaleString()} · {row.florage_source || "—"} · {row.foraging_zone || "unknown"} zone</div>
+                      <div className="text-xs text-muted-foreground">distance {row.flight_distance_m ?? "—"} m · storage {row.storage_level_pct ?? "—"}% · nutrition {row.nutrition_score ?? "—"}/100</div>
+                    </div>
+                  ))
+                )}
+              </Panel>
+            )}
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          {readOnly
-            ? `Read-only layout. Switch to "Pin comment" to leave anchored feedback.`
-            : `Click on the map to ${mode === "field" ? "add the next field corner" : mode === "hive" ? "drop a hive marker" : "drop a comment pin"}. Dashed circles show each hive's foraging radius for ${cropKey} (${radius} m).`}
-        </p>
 
-        {/* Comments panel */}
-        {savedRunId && (
+        {savedRunId && moaFilters.showComments && (
           <section className="mt-6 p-5 rounded-xl border border-border bg-card">
             <h3 className="font-display text-base font-bold text-foreground mb-3 flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-honey" /> Threaded comments ({comments.length})
             </h3>
-
             <div className="space-y-2 mb-4">
-              <input
-                type="text"
-                value={draftAuthor}
-                onChange={(e) => setDraftAuthor(e.target.value)}
-                placeholder="Your name (optional)"
-                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm"
-              />
-              <textarea
-                value={draftBody}
-                onChange={(e) => setDraftBody(e.target.value)}
-                placeholder={replyTo ? "Write your reply…" : draftAnchor ? `Comment pinned at ${draftAnchor.lat.toFixed(5)}, ${draftAnchor.lng.toFixed(5)}` : "General comment, or click the map (with Pin comment mode) to anchor it"}
-                rows={3}
-                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm resize-y min-h-[64px]"
-              />
+              <input value={draftAuthor} onChange={(event) => setDraftAuthor(event.target.value)} placeholder="Your name (optional)" className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm" />
+              <textarea value={draftBody} onChange={(event) => setDraftBody(event.target.value)} placeholder={replyTo ? "Write your reply..." : draftAnchor ? `Comment pinned at ${draftAnchor.lat.toFixed(5)}, ${draftAnchor.lng.toFixed(5)}` : "General comment, or click the map with Pin comment mode to anchor it"} rows={3} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm resize-y min-h-[64px]" />
               <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  onClick={postComment}
-                  disabled={posting || !draftBody.trim()}
-                  className="px-3 py-2 rounded-lg bg-honey/15 hover:bg-honey/25 text-honey border border-honey/40 text-sm font-medium flex items-center gap-2 disabled:opacity-50"
-                >
+                <button onClick={postComment} disabled={posting || !draftBody.trim()} className="px-3 py-2 rounded-lg bg-honey/15 hover:bg-honey/25 text-honey border border-honey/40 text-sm font-medium flex items-center gap-2 disabled:opacity-50">
                   {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   {replyTo ? "Post reply" : "Post comment"}
                 </button>
                 {(draftAnchor || replyTo) && (
-                  <button
-                    onClick={() => { setDraftAnchor(null); setReplyTo(null); }}
-                    className="px-3 py-2 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground"
-                  >
+                  <button onClick={() => { setDraftAnchor(null); setReplyTo(null); }} className="px-3 py-2 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground">
                     Clear anchor / reply
                   </button>
                 )}
               </div>
             </div>
 
-            {(threaded["root"] || []).length === 0 ? (
+            {(threaded.root || []).length === 0 ? (
               <p className="text-xs text-muted-foreground italic">No comments yet — be the first to leave one.</p>
             ) : (
               <div className="space-y-2">
-                {(threaded["root"] || []).map((c) => (
-                  <CommentNode key={c.id} c={c} replies={threaded[c.id] || []} onReply={(id) => setReplyTo(id)} />
+                {(threaded.root || []).map((comment) => (
+                  <CommentNode key={comment.id} comment={comment} replies={threaded[comment.id] || []} onReply={setReplyTo} onFocus={(point) => setFocus(point)} />
                 ))}
               </div>
             )}
@@ -595,39 +787,50 @@ export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly =
   );
 }
 
-function CommentNode({ c, replies, onReply }: { c: AnchoredComment; replies: AnchoredComment[]; onReply: (id: string) => void }) {
+function CommentNode({
+  comment,
+  replies,
+  onReply,
+  onFocus,
+}: {
+  comment: AnchoredComment;
+  replies: AnchoredComment[];
+  onReply: (id: string) => void;
+  onFocus: (focus: FocusPoint) => void;
+}) {
   return (
     <div className="p-3 rounded-lg border border-border bg-muted/20">
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-1 gap-2 flex-wrap">
-        <span className="font-semibold text-honey flex items-center gap-1.5">
-          {c.author_name}
-          {c.anchor_type === "map" && (
-            <span className="text-[10px] font-normal px-1.5 py-0.5 rounded bg-primary/15 text-primary">📍 map pin</span>
-          )}
-          {c.anchor_type === "step" && c.anchor_step != null && (
-            <span className="text-[10px] font-normal px-1.5 py-0.5 rounded bg-primary/15 text-primary">step {c.anchor_step}</span>
-          )}
-        </span>
-        <span>{new Date(c.created_at).toLocaleString()}</span>
+        <span className="font-semibold text-honey">{comment.author_name}</span>
+        <span>{new Date(comment.created_at).toLocaleString()}</span>
       </div>
-      <p className="text-sm text-foreground whitespace-pre-wrap">{c.body}</p>
-      {c.anchor_type === "map" && c.anchor_lat != null && c.anchor_lng != null && (
-        <p className="text-[11px] text-muted-foreground mt-1 font-mono">📍 {c.anchor_lat.toFixed(5)}, {c.anchor_lng.toFixed(5)}</p>
+      <p className="text-sm text-foreground whitespace-pre-wrap">{comment.body}</p>
+      {comment.anchor_lat != null && comment.anchor_lng != null && (
+        <button
+          onClick={() => onFocus({ kind: "comment", label: comment.author_name, point: { lat: comment.anchor_lat as number, lng: comment.anchor_lng as number } })}
+          className="mt-2 text-[11px] text-primary hover:underline"
+        >
+          Focus map on {comment.anchor_lat.toFixed(5)}, {comment.anchor_lng.toFixed(5)}
+        </button>
       )}
-      <button
-        onClick={() => onReply(c.id)}
-        className="mt-2 text-xs text-primary hover:underline"
-      >
-        Reply
-      </button>
+      <button onClick={() => onReply(comment.id)} className="mt-2 block text-xs text-primary hover:underline">Reply</button>
       {replies.length > 0 && (
         <div className="mt-3 ml-4 space-y-2 border-l-2 border-border pl-3">
-          {replies.map((r) => (
-            <CommentNode key={r.id} c={r} replies={[]} onReply={onReply} />
+          {replies.map((reply) => (
+            <CommentNode key={reply.id} comment={reply} replies={[]} onReply={onReply} onFocus={onFocus} />
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+function Panel({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
+  return (
+    <section className="p-4 rounded-xl border border-border bg-card">
+      <div className="flex items-center gap-2 mb-3">{icon}<h3 className="font-display text-sm font-bold text-foreground">{title}</h3></div>
+      <div className="space-y-2">{children}</div>
+    </section>
   );
 }
 
@@ -639,3 +842,32 @@ function Stat({ label, value, highlight = false }: { label: string; value: strin
     </div>
   );
 }
+
+function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
+  return (
+    <label className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-border bg-muted/20 cursor-pointer">
+      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="accent-honey" />
+      <span className="text-xs text-foreground">{label}</span>
+    </label>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-xs text-muted-foreground mb-1.5 block">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function Line({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 text-xs">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="text-foreground font-semibold text-right">{value}</span>
+    </div>
+  );
+}
+
+const inputCls = "w-full bg-background border border-border rounded-lg px-3 py-2 text-sm outline-none";

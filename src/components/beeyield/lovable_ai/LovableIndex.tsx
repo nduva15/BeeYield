@@ -359,25 +359,105 @@ export default function Index() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-            <SelectContent>
-              <SelectItem value="baseline" className="text-xs">AI: Baseline</SelectItem>
-              <SelectItem value="expert" className="text-xs">AI: Expert Mode</SelectItem>
-              <SelectItem value="flight-only" className="text-xs">AI: Flight-only</SelectItem>
-              <SelectItem value="research" className="text-xs">AI: Research Hub</SelectItem>
-            </SelectContent>
-          </Select>
-
+          <button
+            onClick={() => setGalleryOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Bee Species Gallery"
+          >
+            <Bug className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setDiseasesOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Bee Diseases & Health"
+          >
+            <HeartPulse className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setPollinationOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Pollination Data & Charts"
+          >
+            <BarChart3 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setLookupOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Pollination Stocking Density Lookup"
+          >
+            <Flower2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setCalculatorOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Harvest Calculator"
+          >
+            <Calculator className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setDrilldownOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Precision Pollination Drilldown"
+          >
+            <Target className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setSiteMapOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Precision Hive Placement Map"
+          >
+            <MapPin className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setFlightTrackerOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Bee Flight Tracker"
+          >
+            <Plane className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setBloomPhenologyOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="Bloom Phenology"
+          >
+            <Sprout className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setAboutOpen(true)}
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+            title="About Beeyield AI"
+          >
+            <Info className="w-4 h-4" />
+          </button>
+          {messages.length > 0 && (
+            <button
+              onClick={() => {
+                const text = messages.map(m => `${m.role === "user" ? "You" : "Beeyield AI"}: ${m.content}`).join("\n\n");
+                const blob = new Blob([text], { type: "text/plain" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `beeyield-chat-${new Date().toISOString().slice(0, 10)}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+                toast.success("Chat exported");
+              }}
+              className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
+              title="Export chat"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+          )}
           <button
             onClick={toggleTheme}
-            className="w-9 h-9 rounded-full border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground bg-background outline-none"
+            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           >
             {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-          
           <button
             onClick={resetChat}
-            className="text-xs font-medium text-foreground border border-border hover:border-primary/50 px-4 py-2 rounded-lg transition-all bg-background"
+            className="text-xs text-muted-foreground hover:text-foreground border border-border hover:border-primary/50 px-3 py-1.5 rounded-lg transition-all"
           >
             New Chat
           </button>

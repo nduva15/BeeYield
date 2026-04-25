@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree, Target } from "lucide-react";
 import { toast } from "sonner";
-import MarkdownRenderer from "./MarkdownRenderer";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { downloadPDF, downloadCSV, type AssumptionsBlock, type ExportPayload } from "@/lib/harvest-export";
+import { PROMPT_VARIANTS, type PromptVariant, coercePromptVariant } from "@/lib/pollination";
 
 const CROP_OPTIONS = [
   "Almonds (CA)", "Apples", "Blueberries (highbush)", "Cranberries", "Avocado (Hass)",
@@ -32,8 +33,10 @@ type SavedRun = {
   hhi: number;
   region: string;
   local_estimate_kg: number | null;
+  moa_filters: unknown | null;
   ai_forecast: string | null;
   notes: string | null;
+  prompt_variant: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   assumptions: any | null;
   created_at: string;
@@ -45,6 +48,7 @@ type RunVersion = {
   version_label: string;
   ai_forecast: string | null;
   local_estimate_kg: number | null;
+  prompt_variant: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   assumptions: any | null;
   created_at: string;
@@ -53,10 +57,10 @@ type RunVersion = {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
+  onOpenPlanning?: () => void;
 }
 
-export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) {
+export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: Props) {
   const deviceId = useDeviceId();
   const [hives, setHives] = useState(10);
   const [acres, setAcres] = useState(0);
@@ -67,6 +71,7 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
   const [hhi, setHhi] = useState(80);
   const [region, setRegion] = useState("Kenya / East Africa");
   const [notes, setNotes] = useState("");
+  const [promptVariant, setPromptVariant] = useState<PromptVariant>("baseline");
 
   // Assumptions block — captured & shown in CSV/PDF/share
   const [assumptions, setAssumptions] = useState<AssumptionsBlock>({
@@ -105,6 +110,7 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
   const acreM2 = 4046.86;
   const effectiveHivesPerAcre = acreM2 / (Math.PI * cropRadius * cropRadius);
   const framesPerAcrePrecision = effectiveHivesPerAcre * framesPerHive;
+
 
   // AI forecast
   const [aiOpen, setAiOpen] = useState(false);
@@ -145,8 +151,23 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
     setVersionsByRun((prev) => ({ ...prev, [runId]: (data || []) as RunVersion[] }));
   }, []);
 
+  const variantGuidance = useMemo(() => {
+    switch (promptVariant) {
+      case "bloom-only":
+        return "Prioritize bloom phenology, deployment timing, bloom-stage risk, and timing-sensitive contract actions. Keep flight analysis secondary.";
+      case "flight-only":
+        return "Prioritize bee-flight activity, forager throughput, movement radius, hive-entrance counts, and activity-derived deployment actions. Keep bloom analysis secondary.";
+      case "bloom-flight":
+        return "Blend bloom phenology and bee-flight telemetry equally. Explicitly connect bloom timing shifts to activity counter trends, movement reach, and placement changes.";
+      default:
+        return "Use the balanced BeeYield baseline model across harvest math, pollination planning, and risk management.";
+    }
+  }, [promptVariant]);
+
   const buildPrompt = () =>
     `Use the BeeYield Harvest Math (Section 18) and Pollination PSI v2 model (Section 18) to produce a fully worked numeric forecast for the following operation. Show every formula step. Apply the 50/50 ethical harvest rule. Then add a Pollination Saturation Index assessment for the listed crop, recommended colonies vs supplied colonies, and a 7-bullet action plan.\n\n` +
+    `PROMPT VARIANT: ${promptVariant}\n` +
+    `VARIANT GUIDANCE: ${variantGuidance}\n\n` +
     `INPUTS:\n` +
     `- Hive count: ${hives}\n` +
     `- Crop / forage: ${crop}\n` +
@@ -176,7 +197,7 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [{ role: "user", content: buildPrompt() }] }),
+        body: JSON.stringify({ messages: [{ role: "user", content: buildPrompt() }], promptVariant }),
       });
       if (!resp.ok || !resp.body) {
         const err = await resp.json().catch(() => ({}));
@@ -224,6 +245,7 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
       local_estimate_kg: Number(apiaryHarvest.toFixed(2)),
       ai_forecast: aiText || null,
       notes: notes.trim() || null,
+      prompt_variant: promptVariant,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       assumptions: assumptions as any,
     });
@@ -246,6 +268,7 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
       version_label: `v${nextN}`,
       ai_forecast: aiText,
       local_estimate_kg: Number(apiaryHarvest.toFixed(2)),
+      prompt_variant: promptVariant,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       assumptions: assumptions as any,
     });
@@ -275,6 +298,7 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
     setHhi(r.hhi);
     setRegion(r.region);
     setNotes(r.notes || "");
+    setPromptVariant(coercePromptVariant(r.prompt_variant));
     setAssumptions((r.assumptions as AssumptionsBlock) || { region_climate: "", bloom_window: "", hhi_source: "", data_caveats: "" });
     if (r.ai_forecast) {
       setAiText(r.ai_forecast);
@@ -390,7 +414,7 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -408,15 +432,13 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
             >
               <History className="w-3.5 h-3.5" /> History ({savedRuns.length})
             </button>
-            {!embedded && (
-              <button
-                onClick={onClose}
-                className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-                aria-label="Close"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
@@ -714,6 +736,18 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
         </button>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+          <div className="col-span-2 md:col-span-2">
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+              BeeGPT prompt variant
+            </label>
+            <select value={promptVariant} onChange={(e) => setPromptVariant(e.target.value as PromptVariant)} className={inputCls}>
+              {PROMPT_VARIANTS.map((variant) => (
+                <option key={variant.id} value={variant.id}>
+                  {variant.label} - {variant.description}
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             onClick={saveRun}
             disabled={saving}
@@ -745,11 +779,23 @@ export default function HarvestCalculator({ isOpen, onClose, embedded }: Props) 
             <Sparkles className="w-4 h-4" />
             Share summary
           </button>
+          {onOpenPlanning && (
+            <button
+              onClick={onOpenPlanning}
+              className="col-span-2 md:col-span-4 px-4 py-2.5 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 font-medium text-sm flex items-center justify-center gap-2"
+            >
+              <Target className="w-4 h-4" />
+              Open Pollination Planning
+            </button>
+          )}
         </div>
 
         {aiOpen && (
           <div className="p-5 rounded-xl border border-honey/30 bg-card">
-            <h3 className="font-display text-base font-bold text-honey mb-3">Beeyield AI Forecast</h3>
+            <h3 className="font-display text-base font-bold text-honey mb-3">
+              Beeyield AI Forecast
+              <span className="ml-2 text-xs font-normal text-muted-foreground">Variant: {PROMPT_VARIANTS.find((variant) => variant.id === promptVariant)?.label}</span>
+            </h3>
             {aiText ? (
               <MarkdownRenderer content={aiText} />
             ) : (

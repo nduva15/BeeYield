@@ -10,7 +10,6 @@ import { X, Target, Wind, Mountain, Compass } from "lucide-react";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
   onOpenPlanning?: () => void;
 }
 
@@ -45,7 +44,7 @@ const COMPASS_DIRS = [
   { label: "W", deg: 270 }, { label: "NW", deg: 315 },
 ];
 
-export default function PrecisionDrilldown({ isOpen, onClose, embedded, onOpenPlanning }: Props) {
+export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: Props) {
   const [cropName, setCropName] = useState(CROP_PROFILES[0].name);
   const [acres, setAcres] = useState(20);
   const [hives, setHives] = useState(40);
@@ -118,7 +117,7 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded, onOpenPl
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -137,15 +136,13 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded, onOpenPl
                 Open Pollination Planning
               </button>
             )}
-            {!embedded && (
-              <button
-                onClick={onClose}
-                className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-                aria-label="Close"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
@@ -314,9 +311,9 @@ function WindCompass({ windDirDeg, entranceDeg, onChange }: { windDirDeg: number
       <circle cx={cx} cy={cy} r={r} fill="hsl(var(--muted))" stroke="hsl(var(--border))" />
       {/* N marker */}
       <text x={cx} y={10} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">N</text>
-      <text x={size - 6} y={cx + 3} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">E</text>
+      <text x={size - 6} y={cy + 3} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">E</text>
       <text x={cx} y={size - 2} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">S</text>
-      <text x={6} y={cx + 3} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">W</text>
+      <text x={6} y={cy + 3} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">W</text>
       {/* wind arrow */}
       <line x1={fromX} y1={fromY} x2={dwX} y2={dwY} stroke="hsl(var(--primary))" strokeWidth={2} markerEnd="url(#arr)" />
       {/* entrance pointer (dashed) */}

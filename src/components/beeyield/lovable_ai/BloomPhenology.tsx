@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { X, Flower2, Plus, Trash2, Loader2, FileSpreadsheet, Sparkles } from "lucide-react";
+import { X, Flower2, Plus, Loader2, FileSpreadsheet, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -22,13 +22,26 @@ type Obs = {
   id: string; crop: string; region: string;
   bloom_start: string | null; peak_bloom: string | null; bloom_end: string | null;
   intensity: number; notes: string | null; ai_insights: string | null; created_at: string;
+  observed_on: string; zone_label: string | null; anchor_lat: number | null; anchor_lng: number | null;
+  run_id: string | null; version_id: string | null;
 };
+
+type RunRow = { id: string; crop: string; created_at: string };
+type RunVersion = { id: string; version_label: string; created_at: string };
 
 export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [obs, setObs] = useState<Obs[]>([]);
+  const [runs, setRuns] = useState<RunRow[]>([]);
+  const [versions, setVersions] = useState<RunVersion[]>([]);
+  const [selectedRunId, setSelectedRunId] = useState("");
+  const [selectedVersionId, setSelectedVersionId] = useState("current");
   const [crop, setCrop] = useState(Object.keys(PHENOLOGY)[0]);
   const [region, setRegion] = useState("Kenya / East Africa");
+  const [observedOn, setObservedOn] = useState(new Date().toISOString().slice(0, 10));
+  const [zoneLabel, setZoneLabel] = useState("");
+  const [anchorLat, setAnchorLat] = useState("");
+  const [anchorLng, setAnchorLng] = useState("");
   const [bloomStart, setBloomStart] = useState("");
   const [peakBloom, setPeakBloom] = useState("");
   const [bloomEnd, setBloomEnd] = useState("");
@@ -40,10 +53,26 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
 
   const load = useCallback(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data } = await (supabase as any).from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50);
-    if (data) setObs(data as Obs[]);
+    const [obsRes, runRes] = await Promise.all([
+      (supabase as any).from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
+      supabase.from("harvest_runs").select("id,crop,created_at").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
+    ]);
+    if (obsRes.data) setObs(obsRes.data as Obs[]);
+    if (runRes.data) setRuns(runRes.data as RunRow[]);
   }, [deviceId]);
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+
+  useEffect(() => {
+    if (!selectedRunId) { setVersions([]); return; }
+    (async () => {
+      const { data } = await supabase
+        .from("harvest_run_versions")
+        .select("id,version_label,created_at")
+        .eq("run_id", selectedRunId)
+        .order("created_at", { ascending: false });
+      setVersions((data || []) as RunVersion[]);
+    })();
+  }, [selectedRunId]);
 
   const baseline = PHENOLOGY[crop];
 
@@ -54,7 +83,7 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
+        body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "bloom-only" }),
       });
       if (!resp.ok || !resp.body) { toast.error("AI request failed"); setAiLoading(false); return; }
       const reader = resp.body.getReader(); const decoder = new TextDecoder();
@@ -82,6 +111,12 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from("bloom_observations").insert({
       device_id: deviceId, crop, region,
+      run_id: selectedRunId || null,
+      version_id: selectedVersionId !== "current" ? selectedVersionId : null,
+      observed_on: observedOn,
+      zone_label: zoneLabel || null,
+      anchor_lat: anchorLat ? Number(anchorLat) : null,
+      anchor_lng: anchorLng ? Number(anchorLng) : null,
       bloom_start: bloomStart || null, peak_bloom: peakBloom || null, bloom_end: bloomEnd || null,
       intensity, notes: notes || null, ai_insights: aiText || null,
     });
@@ -112,8 +147,24 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 rounded-xl border border-border bg-muted/30">
+          <Field label="Saved run">
+            <select value={selectedRunId} onChange={(e) => { setSelectedRunId(e.target.value); setSelectedVersionId("current"); }} className={inputCls}>
+              <option value="">Not linked to a run</option>
+              {runs.map((run) => <option key={run.id} value={run.id}>{run.crop} · {new Date(run.created_at).toLocaleDateString()}</option>)}
+            </select>
+          </Field>
+          <Field label="Saved version">
+            <select value={selectedVersionId} onChange={(e) => setSelectedVersionId(e.target.value)} className={inputCls} disabled={!selectedRunId}>
+              <option value="current">Current run</option>
+              {versions.map((version) => <option key={version.id} value={version.id}>{version.version_label}</option>)}
+            </select>
+          </Field>
           <Field label="Crop"><select value={crop} onChange={(e) => setCrop(e.target.value)} className={inputCls}>{Object.keys(PHENOLOGY).map((c) => <option key={c}>{c}</option>)}</select></Field>
           <Field label="Region"><input value={region} onChange={(e) => setRegion(e.target.value)} className={inputCls} /></Field>
+          <Field label="Observed on"><input type="date" value={observedOn} onChange={(e) => setObservedOn(e.target.value)} className={inputCls} /></Field>
+          <Field label="Zone / block label"><input value={zoneLabel} onChange={(e) => setZoneLabel(e.target.value)} className={inputCls} placeholder="North block, bloom strip A, etc." /></Field>
+          <Field label="Anchor latitude"><input type="number" value={anchorLat} onChange={(e) => setAnchorLat(e.target.value)} className={inputCls} placeholder="-2.4078" /></Field>
+          <Field label="Anchor longitude"><input type="number" value={anchorLng} onChange={(e) => setAnchorLng(e.target.value)} className={inputCls} placeholder="37.9658" /></Field>
           <Field label="Observed bloom start"><input type="date" value={bloomStart} onChange={(e) => setBloomStart(e.target.value)} className={inputCls} /></Field>
           <Field label="Observed peak bloom"><input type="date" value={peakBloom} onChange={(e) => setPeakBloom(e.target.value)} className={inputCls} /></Field>
           <Field label="Observed bloom end"><input type="date" value={bloomEnd} onChange={(e) => setBloomEnd(e.target.value)} className={inputCls} /></Field>
@@ -122,7 +173,7 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
         </div>
 
         <div className="p-4 rounded-xl border border-honey/30 bg-honey/5 mb-4 text-sm">
-          <label className="text-honey font-bold">Expert baseline for {crop}:</label> start <b>{baseline.start}</b> · peak <b>{baseline.peak}</b> · end <b>{baseline.end}</b><br />
+          <b className="text-honey">Expert baseline for {crop}:</b> start <b>{baseline.start}</b> · peak <b>{baseline.peak}</b> · end <b>{baseline.end}</b><br />
           <span className="text-muted-foreground">{baseline.notes}</span>
         </div>
 
@@ -141,7 +192,12 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
               {obs.map((o) => (
                 <div key={o.id} className="p-3 rounded-lg border border-border bg-muted/20 text-sm">
                   <div className="font-semibold text-foreground">{o.crop} · {o.region}</div>
-                  <div className="text-xs text-muted-foreground">start {o.bloom_start || "—"} · peak {o.peak_bloom || "—"} · end {o.bloom_end || "—"} · intensity {o.intensity}%</div>
+                  <div className="text-xs text-muted-foreground">observed {o.observed_on} · start {o.bloom_start || "—"} · peak {o.peak_bloom || "—"} · end {o.bloom_end || "—"} · intensity {o.intensity}%</div>
+                  {(o.zone_label || (o.anchor_lat != null && o.anchor_lng != null)) && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {o.zone_label ? `zone ${o.zone_label}` : "mapped"}{o.anchor_lat != null && o.anchor_lng != null ? ` · ${o.anchor_lat.toFixed(5)}, ${o.anchor_lng.toFixed(5)}` : ""}
+                    </div>
+                  )}
                   {o.notes && <div className="text-xs italic mt-1">{o.notes}</div>}
                 </div>
               ))}
