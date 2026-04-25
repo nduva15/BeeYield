@@ -11,6 +11,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   embedded?: boolean;
+  onOpenPlanning?: () => void;
 }
 
 type CropProfile = {
@@ -38,27 +39,32 @@ const CROP_PROFILES: CropProfile[] = [
   { name: "Sidr",                  flightRadius_m: 1000, recColoniesPerAcre: 1.0, bloomDays: 30, notes: "Premium honey crop; spread hives along wadis." },
 ];
 
-export default function PrecisionDrilldown({ isOpen, onClose, embedded }: Props) {
+const COMPASS_DIRS = [
+  { label: "N", deg: 0 }, { label: "NE", deg: 45 }, { label: "E", deg: 90 },
+  { label: "SE", deg: 135 }, { label: "S", deg: 180 }, { label: "SW", deg: 225 },
+  { label: "W", deg: 270 }, { label: "NW", deg: 315 },
+];
+
+export default function PrecisionDrilldown({ isOpen, onClose, embedded, onOpenPlanning }: Props) {
   const [cropName, setCropName] = useState(CROP_PROFILES[0].name);
   const [acres, setAcres] = useState(20);
   const [hives, setHives] = useState(40);
   const [fieldShape, setFieldShape] = useState<"square" | "rectangular_2x1" | "long_strip_4x1">("rectangular_2x1");
   const [windKmh, setWindKmh] = useState(12);
+  const [windDirDeg, setWindDirDeg] = useState(90); // FROM where wind blows; default E
+  const [fieldOrientationDeg, setFieldOrientationDeg] = useState(0); // long axis bearing (0=N–S, 90=E–W)
   const [slopePct, setSlopePct] = useState(4);
-  const [orientationDeg, setOrientationDeg] = useState(135); // SE-facing
+  const [orientationDeg, setOrientationDeg] = useState(135); // hive entrance orientation; SE-facing default
   const [edgeBufferM, setEdgeBufferM] = useState(20);
 
   const crop = CROP_PROFILES.find((c) => c.name === cropName)!;
 
   const math = useMemo(() => {
-    // 1 acre = 4046.86 m² ; convert acres to area and derive geometry
     const totalArea = acres * 4046.86;
     const ratio = fieldShape === "square" ? 1 : fieldShape === "rectangular_2x1" ? 2 : 4;
-    // length = sqrt(area * ratio), width = length / ratio
     const L = Math.sqrt(totalArea * ratio);
     const W = L / ratio;
 
-    // Drop spacing target — pair-wise 2× radius gives full overlap; we use 1.4× for 70 % overlap (industry sweet spot)
     const targetSpacing = crop.flightRadius_m * 1.4;
     const dropsAlongL = Math.max(1, Math.round(L / targetSpacing));
     const dropsAlongW = Math.max(1, Math.round(W / targetSpacing));
@@ -66,36 +72,48 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded }: Props)
 
     const hivesPerDrop = Math.max(1, Math.round(hives / totalDrops));
 
-    // Coverage: each colony covers π r² ; clip to 1 hive/colony non-overlap area then sum
     const singleCoverage = Math.PI * crop.flightRadius_m * crop.flightRadius_m;
     const grossCoverage = singleCoverage * hives;
-    // Overlap factor — empirical: when coverage > area, effective coverage saturates
     const overlapFactor = grossCoverage > 0 ? Math.min(1, totalArea / grossCoverage) : 0;
     const effectiveCoverage = grossCoverage * overlapFactor;
     const coveragePct = Math.min(100, (effectiveCoverage / totalArea) * 100);
 
-    // Modifiers
-    // Wind: subtract 2 % flight efficiency per km/h above 8
+    // Wind & slope penalties
     const windPenalty = Math.max(0, windKmh - 8) * 0.02;
-    // Slope: 1 % efficiency loss per 1 % grade above 3 %
     const slopePenalty = Math.max(0, slopePct - 3) * 0.01;
-    const orientationFactor = Math.cos(((orientationDeg - 135) * Math.PI) / 180); // 1.0 at SE, drops away
-    const orientationBonus = 0.04 * Math.max(0, orientationFactor); // up to +4 %
 
-    const efficiency = Math.max(0.4, 1 - windPenalty - slopePenalty + orientationBonus);
+    // Orientation efficiency derived from wind-relative angle.
+    // Ideal: hive entrance faces AWAY from prevailing wind AND toward sun (SE).
+    // Compute angle between entrance bearing and "downwind" direction (windDirDeg+180).
+    const downwind = (windDirDeg + 180) % 360;
+    const rawDelta = Math.abs(orientationDeg - downwind);
+    const angleFromDownwind = Math.min(rawDelta, 360 - rawDelta); // 0..180
+    // Cosine score: 1 when entrance is fully downwind, -1 when into the wind.
+    const windAlignScore = Math.cos((angleFromDownwind * Math.PI) / 180);
+    // Combine with thermal bonus for SE-ish orientation
+    const thermalBonus = Math.max(0, Math.cos(((orientationDeg - 135) * Math.PI) / 180));
+    // Up to +5% if perfectly aligned downwind, up to -5% if into wind; +2% thermal if SE
+    const orientationBonus = 0.05 * windAlignScore + 0.02 * thermalBonus;
 
-    // Recommended hives for full coverage given crop stocking density
+    // Field orientation vs wind: long axis perpendicular to wind = drift, parallel = good
+    const windAxisDelta = Math.abs(((fieldOrientationDeg - windDirDeg + 360) % 180) - 90);
+    const fieldWindAlign = windAxisDelta / 90; // 0 = perpendicular (bad), 1 = parallel (good)
+    const fieldDriftPenalty = (1 - fieldWindAlign) * 0.03 * Math.min(1, windKmh / 20);
+
+    const efficiency = Math.max(0.4, 1 - windPenalty - slopePenalty + orientationBonus - fieldDriftPenalty);
+
     const recHives = Math.ceil(crop.recColoniesPerAcre * acres);
 
     return {
       L, W, totalArea,
       targetSpacing, dropsAlongL, dropsAlongW, totalDrops, hivesPerDrop,
       singleCoverage, grossCoverage, effectiveCoverage, coveragePct,
-      windPenalty, slopePenalty, orientationBonus, efficiency,
+      windPenalty, slopePenalty, orientationBonus, fieldDriftPenalty, efficiency,
+      angleFromDownwind, windAlignScore, fieldWindAlign,
       recHives,
       hiveDeficit: recHives - hives,
     };
-  }, [acres, hives, crop, fieldShape, windKmh, slopePct, orientationDeg]);
+  }, [acres, hives, crop, fieldShape, windKmh, windDirDeg, fieldOrientationDeg, slopePct, orientationDeg]);
 
   if (!isOpen) return null;
 
@@ -107,18 +125,28 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded }: Props)
             <Target className="w-7 h-7 text-honey" />
             <div>
               <h1 className="font-display text-2xl font-bold text-honey">Precision Pollination Drilldown</h1>
-              <p className="text-xs text-muted-foreground">Drop spacing • orientation • overlap • slope/wind modifiers</p>
+              <p className="text-xs text-muted-foreground">Drop spacing • orientation • overlap • wind compass • slope modifiers</p>
             </div>
           </div>
-          {!embedded && (
-            <button
-              onClick={onClose}
-              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {onOpenPlanning && (
+              <button
+                onClick={onOpenPlanning}
+                className="px-3 h-9 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 text-xs font-medium"
+              >
+                Open Pollination Planning
+              </button>
+            )}
+            {!embedded && (
+              <button
+                onClick={onClose}
+                className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Inputs */}
@@ -144,7 +172,7 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded }: Props)
           <Field label={`Edge buffer: ${edgeBufferM} m`}>
             <input type="range" min={0} max={80} value={edgeBufferM} onChange={(e) => setEdgeBufferM(+e.target.value)} className="w-full accent-honey" />
           </Field>
-          <Field label={`Hive entrance orientation: ${orientationDeg}° (135° = SE optimal)`}>
+          <Field label={`Hive entrance orientation: ${orientationDeg}° (${bearingLabel(orientationDeg)})`}>
             <input type="range" min={0} max={359} value={orientationDeg} onChange={(e) => setOrientationDeg(+e.target.value)} className="w-full accent-honey" />
           </Field>
           <Field label={`Avg wind: ${windKmh} km/h`}>
@@ -152,6 +180,26 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded }: Props)
           </Field>
           <Field label={`Slope: ${slopePct}%`}>
             <input type="range" min={0} max={25} value={slopePct} onChange={(e) => setSlopePct(+e.target.value)} className="w-full accent-honey" />
+          </Field>
+          <Field label={`Field long axis bearing: ${fieldOrientationDeg}° (${bearingLabel(fieldOrientationDeg)})`}>
+            <input type="range" min={0} max={179} value={fieldOrientationDeg} onChange={(e) => setFieldOrientationDeg(+e.target.value)} className="w-full accent-honey" />
+          </Field>
+          <Field label={`Prevailing wind FROM: ${windDirDeg}° (${bearingLabel(windDirDeg)})`}>
+            <div className="flex items-center gap-3">
+              <WindCompass windDirDeg={windDirDeg} entranceDeg={orientationDeg} onChange={setWindDirDeg} />
+              <div className="flex-1 grid grid-cols-4 gap-1">
+                {COMPASS_DIRS.map((d) => (
+                  <button
+                    key={d.label}
+                    type="button"
+                    onClick={() => setWindDirDeg(d.deg)}
+                    className={`text-[11px] py-1 rounded border ${windDirDeg === d.deg ? "border-honey bg-honey/15 text-honey" : "border-border text-muted-foreground hover:text-foreground"}`}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </Field>
         </div>
 
@@ -198,13 +246,18 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded }: Props)
               effective = min(field area, gross × overlap factor) = <b>{math.effectiveCoverage.toFixed(0)} m²</b><br />
               coverage% = effective / field = <b>{math.coveragePct.toFixed(1)} %</b>
             </Step>
-            <Step n={7} label="Efficiency modifiers">
-              <div className="flex flex-wrap gap-3 text-xs">
-                <span className="px-2 py-1 rounded bg-muted/50 flex items-center gap-1.5"><Wind className="w-3 h-3" /> wind penalty −{(math.windPenalty * 100).toFixed(0)} %</span>
-                <span className="px-2 py-1 rounded bg-muted/50 flex items-center gap-1.5"><Mountain className="w-3 h-3" /> slope penalty −{(math.slopePenalty * 100).toFixed(0)} %</span>
-                <span className="px-2 py-1 rounded bg-muted/50 flex items-center gap-1.5"><Compass className="w-3 h-3" /> orientation bonus +{(math.orientationBonus * 100).toFixed(0)} %</span>
+            <Step n={7} label="Wind compass orientation efficiency">
+              entrance bearing = {orientationDeg}° ({bearingLabel(orientationDeg)})<br />
+              prevailing wind FROM {windDirDeg}° → downwind = {(windDirDeg + 180) % 360}°<br />
+              angle of entrance from downwind = <b>{math.angleFromDownwind.toFixed(0)}°</b> (cos = {math.windAlignScore.toFixed(2)})<br />
+              field axis vs wind alignment = <b>{(math.fieldWindAlign * 100).toFixed(0)}%</b> parallel<br />
+              <div className="flex flex-wrap gap-3 text-xs mt-2">
+                <span className="px-2 py-1 rounded bg-muted/50 flex items-center gap-1.5"><Wind className="w-3 h-3" /> wind speed penalty −{(math.windPenalty * 100).toFixed(0)}%</span>
+                <span className="px-2 py-1 rounded bg-muted/50 flex items-center gap-1.5"><Mountain className="w-3 h-3" /> slope penalty −{(math.slopePenalty * 100).toFixed(0)}%</span>
+                <span className="px-2 py-1 rounded bg-muted/50 flex items-center gap-1.5"><Compass className="w-3 h-3" /> orientation bonus {math.orientationBonus >= 0 ? "+" : ""}{(math.orientationBonus * 100).toFixed(0)}%</span>
+                <span className="px-2 py-1 rounded bg-muted/50 flex items-center gap-1.5"><Wind className="w-3 h-3" /> field-drift penalty −{(math.fieldDriftPenalty * 100).toFixed(0)}%</span>
               </div>
-              net efficiency = max(0.40, 1 − wind − slope + orient) = <b>{(math.efficiency * 100).toFixed(0)} %</b>
+              net efficiency = max(0.40, 1 − wind − slope + orient − drift) = <b>{(math.efficiency * 100).toFixed(0)} %</b>
             </Step>
             <Step n={8} label="Stocking check vs PSI v2">
               recommended hives for {acres} ac of {crop.name} = ceil({crop.recColoniesPerAcre} × {acres}) = <b>{math.recHives}</b><br />
@@ -218,6 +271,63 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded }: Props)
         </div>
       </div>
     </div>
+  );
+}
+
+function bearingLabel(deg: number): string {
+  const dirs = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+  const idx = Math.round(((deg % 360) / 22.5)) % 16;
+  return dirs[idx];
+}
+
+function WindCompass({ windDirDeg, entranceDeg, onChange }: { windDirDeg: number; entranceDeg: number; onChange: (d: number) => void }) {
+  const size = 110;
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2 - 6;
+
+  const handleClick = (e: React.MouseEvent<SVGElement>) => {
+    const rect = (e.currentTarget as SVGElement).getBoundingClientRect();
+    const x = e.clientX - rect.left - cx;
+    const y = e.clientY - rect.top - cy;
+    // angle from north, clockwise
+    const angle = (Math.atan2(x, -y) * 180) / Math.PI;
+    const normalized = (angle + 360) % 360;
+    onChange(Math.round(normalized));
+  };
+
+  // wind arrow points TOWARD downwind direction (where wind goes), but we mark FROM at perimeter
+  const fromRad = ((windDirDeg - 90) * Math.PI) / 180;
+  const fromX = cx + r * Math.cos(fromRad);
+  const fromY = cy + r * Math.sin(fromRad);
+  const downwindRad = ((windDirDeg + 180 - 90) * Math.PI) / 180;
+  const dwX = cx + r * 0.8 * Math.cos(downwindRad);
+  const dwY = cy + r * 0.8 * Math.sin(downwindRad);
+
+  // entrance arrow
+  const entRad = ((entranceDeg - 90) * Math.PI) / 180;
+  const entX = cx + r * 0.9 * Math.cos(entRad);
+  const entY = cy + r * 0.9 * Math.sin(entRad);
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} onClick={handleClick} className="cursor-crosshair flex-shrink-0">
+      <circle cx={cx} cy={cy} r={r} fill="hsl(var(--muted))" stroke="hsl(var(--border))" />
+      {/* N marker */}
+      <text x={cx} y={10} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">N</text>
+      <text x={size - 6} y={cx + 3} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">E</text>
+      <text x={cx} y={size - 2} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">S</text>
+      <text x={6} y={cx + 3} textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))">W</text>
+      {/* wind arrow */}
+      <line x1={fromX} y1={fromY} x2={dwX} y2={dwY} stroke="hsl(var(--primary))" strokeWidth={2} markerEnd="url(#arr)" />
+      {/* entrance pointer (dashed) */}
+      <line x1={cx} y1={cy} x2={entX} y2={entY} stroke="hsl(43 74% 49%)" strokeWidth={2} strokeDasharray="3 3" />
+      <defs>
+        <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 Z" fill="hsl(var(--primary))" />
+        </marker>
+      </defs>
+      <circle cx={cx} cy={cy} r={3} fill="hsl(43 74% 49%)" />
+    </svg>
   );
 }
 
