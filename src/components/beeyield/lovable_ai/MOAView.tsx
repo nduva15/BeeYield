@@ -274,9 +274,9 @@ Required sections:
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "h-full flex flex-col bg-background/50 backdrop-blur-md rounded-[2.5rem] border border-border overflow-hidden" : "fixed inset-0 z-50 bg-background overflow-hidden flex flex-col"}>
+    <div className={embedded ? "h-full flex flex-col bg-card/60 backdrop-blur-xl rounded-2xl border border-border/50 overflow-hidden" : "fixed inset-0 z-50 bg-background overflow-hidden flex flex-col"}>
       {/* Header */}
-      <div className="flex-shrink-0 border-b border-border bg-card px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
+      <div className={`flex-shrink-0 border-b border-border px-4 py-2 flex items-center justify-between gap-3 flex-wrap ${embedded ? 'bg-card/50 backdrop-blur-sm rounded-t-2xl' : 'bg-card'}`}>
         <div className="flex items-center gap-2">
           <Layers className="w-5 h-5 text-honey" />
           <div>
@@ -305,7 +305,9 @@ Required sections:
               <Save className="w-3 h-3" /> Save filters
             </button>
           )}
-          <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
       </div>
 
@@ -342,7 +344,7 @@ Required sections:
       ) : (
         <div className="flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden">
           {/* Map */}
-          <div ref={mapWrapRef} className="md:col-span-3 relative border-r border-border">
+          <div ref={mapWrapRef} className={`md:col-span-3 relative border-r border-border ${embedded ? 'min-h-[500px]' : ''}`}>
             <MapContainer center={center} zoom={15} style={{ width: "100%", height: "100%" }}>
               <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="Esri Satellite" />
               {polygon.length >= 3 && <Polygon positions={polygon} pathOptions={{ color: "#facc15", fillOpacity: 0.15 }} />}
