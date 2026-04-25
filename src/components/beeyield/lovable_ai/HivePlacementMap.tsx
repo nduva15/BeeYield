@@ -172,18 +172,20 @@ export default function HivePlacementMap({ isOpen, onClose, embedded, readOnly =
   const loadRunLayoutAndComments = useCallback(async (runId: string, versionId: string) => {
     const [{ data: runRow }, { data: vData }, { data: cData }] = await Promise.all([
       supabase.from("harvest_runs").select("site_layout, crop").eq("id", runId).maybeSingle(),
-      supabase.from("harvest_run_versions").select("id, version_label, site_layout, created_at").eq("run_id", runId).order("created_at", { ascending: false }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from("harvest_run_versions") as any).select("id, version_label, site_layout, created_at").eq("run_id", runId).order("created_at", { ascending: false }),
       supabase.from("harvest_run_comments").select("*").eq("run_id", runId).order("created_at", { ascending: true }),
     ]);
-    setVersions((vData || []).map((v) => ({ id: v.id, version_label: v.version_label, created_at: v.created_at })));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const versions = (vData || []) as any[];
+    setVersions(versions.map((v) => ({ id: v.id, version_label: v.version_label, created_at: v.created_at })));
     setComments((cData || []) as AnchoredComment[]);
     if (versionId === "current") {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       applyLayout((runRow as any)?.site_layout as SiteLayout | null);
     } else {
-      const v = (vData || []).find((x) => x.id === versionId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      applyLayout((v as any)?.site_layout as SiteLayout | null);
+      const v = versions.find((x) => x.id === versionId);
+      applyLayout(v?.site_layout as SiteLayout | null);
     }
   }, [applyLayout]);
 
