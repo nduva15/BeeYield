@@ -338,12 +338,12 @@ const BeeYieldDashboard: React.FC = () => {
             case 'agro-intelligence': return <AgroIntelligenceView onTabChange={handleTabChange} />;
             case 'precision-pollination-folder':
             case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
+            case 'pollination-calcs': return <PollinationCalcs />;
             case 'pollination-grid':
             case 'precision-pollination-grid': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-intelligence':
             case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
-            case 'pollination-calcs': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'flight-mapping-tactical': return <FlightMapping />;
             case 'site-reports-tactical': return <PollinationReports />;
             case 'saturation-math': return <SpatialCoverageView />;
@@ -358,11 +358,12 @@ const BeeYieldDashboard: React.FC = () => {
             case 'bloom-phenology': return <BloomPhenology />;
             case 'acoustic-transformer': return <AcousticMoodTransformer />;
             case 'bee-calculator':
-            case 'calculator-suite': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'calculator-suite': return <BeeCalculatorSuite />;
+            case 'harvest-calculator': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'foraging-optimizer': return <ForagingOptimizer onTabChange={handleTabChange} />;
             case 'vpm-counter': return <VpmAutoCounter />;
             case 'bfh-forecast': return <BeeFlightHoursForecast />;
-            case 'yield-predict': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'yield-predict': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'yard-ops': return <YardOperations onTabChange={handleTabChange} />;
