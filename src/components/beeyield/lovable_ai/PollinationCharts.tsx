@@ -66,16 +66,17 @@ const tabs = [
 interface PollinationChartsProps {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
-export default function PollinationCharts({ isOpen, onClose }: PollinationChartsProps) {
+export default function PollinationCharts({ isOpen, onClose, embedded }: PollinationChartsProps) {
   const [activeTab, setActiveTab] = useState("crops");
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4 flex flex-col" onClick={(e) => e.stopPropagation()}>
+    <div className={embedded ? "h-full bg-background/50 backdrop-blur-md rounded-[2.5rem] border border-border overflow-y-auto custom-scroll" : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"} onClick={onClose}>
+      <div className={embedded ? "w-full h-full flex flex-col" : "bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4 flex flex-col"} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4 flex-shrink-0">
           <div>

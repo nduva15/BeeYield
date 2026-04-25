@@ -89,13 +89,18 @@ import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
-import MOAView from '@/components/beeyield/lovable_ai/MOAView';
-import FloragePage from '@/components/beeyield/lovable_ai/FloragePage';
-import ActivityCounter from '@/components/beeyield/lovable_ai/ActivityCounter';
-import ActivityForecaster from '@/components/beeyield/lovable_ai/ActivityForecaster';
 import PollinationPlanning from '@/components/beeyield/lovable_ai/PollinationPlanning';
+import PollinationLookup from '@/components/beeyield/lovable_ai/PollinationLookup';
+import PollinationCharts from '@/components/beeyield/lovable_ai/PollinationCharts';
+import BeeDiseasesPage from '@/components/beeyield/lovable_ai/BeeDiseasesPage';
+import BeeGallery from '@/components/beeyield/lovable_ai/BeeGallery';
 import BloomPhenologyEmbed from '@/components/beeyield/lovable_ai/BloomPhenology';
 import FlightTrackerEmbed from '@/components/beeyield/lovable_ai/BeeFlightTracker';
+import HarvestCalculator from '@/components/beeyield/lovable_ai/HarvestCalculator';
+import ActivityCounter from '@/components/beeyield/lovable_ai/ActivityCounter';
+import ActivityForecaster from '@/components/beeyield/lovable_ai/ActivityForecaster';
+import HivePlacementMap from '@/components/beeyield/lovable_ai/HivePlacementMap';
+import PrecisionDrilldown from '@/components/beeyield/lovable_ai/PrecisionDrilldown';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -263,7 +268,8 @@ const BeeYieldDashboard: React.FC = () => {
                     title: 'Analysis & Yield',
                     items: [
                         { id: 'acoustic-transformer', label: 'Sound analysis', icon: Volume2 },
-                        { id: 'bee-calculator', label: 'Bee Calculator', icon: Calculator },
+                        { id: 'pollination-lookup', label: 'PSI Lookup', icon: Search },
+                        { id: 'pollination-analytics', label: 'Pollination Data', icon: BarChart3 },
                         { id: 'foraging-optimizer', label: 'Foraging guide', icon: Crosshair },
                         { id: 'vpm-counter', label: 'Activity counter', icon: Camera },
                         { id: 'bfh-forecast', label: 'Activity forecast', icon: Zap },
@@ -279,6 +285,8 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'gateway-hub', label: 'Device gateway', icon: Server },
                         { id: 'hive-telemetry', label: 'Advanced sensor data', icon: Signal },
                         { id: 'contract-verification', label: 'Verified contracts', icon: ShieldCheck },
+                        { id: 'bee-diseases', label: 'Pathogen Database', icon: AlertTriangle },
+                        { id: 'bee-gallery', label: 'Bee Species', icon: Bug },
                     ]
                 },
             ]
@@ -347,7 +355,9 @@ const BeeYieldDashboard: React.FC = () => {
             case 'pollination-intelligence':
             case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
-            case 'pollination-calcs': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'pollination-calcs':
+            case 'bee-calculator':
+            case 'yield-predict': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'activity-counter':
             case 'vpm-counter': return <ActivityCounter isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'activity-forecast':
@@ -358,17 +368,16 @@ const BeeYieldDashboard: React.FC = () => {
             case 'florage-page': return <FloragePage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-planning':
             case 'pollination-engine': return <PollinationPlanning isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'pollination-lookup': return <PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'pollination-analytics': return <PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'bloom-tracking':
             case 'bloom-phenology': return <BloomPhenologyEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'flight-mapping-tactical':
             case 'flight-tracker': return <FlightTrackerEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'acoustic-transformer': return <AcousticMoodTransformer />;
-            case 'bee-calculator':
-            case 'calculator-suite': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
-            case 'foraging-optimizer': return <ForagingOptimizer onTabChange={handleTabChange} />;
-            case 'vpm-counter': return <VpmAutoCounter />;
-            case 'bfh-forecast': return <BeeFlightHoursForecast />;
-            case 'yield-predict': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'bee-diseases': return <BeeDiseasesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'bee-gallery': return <BeeGallery isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
+            case 'precision-drilldown': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'yard-ops': return <YardOperations onTabChange={handleTabChange} />;

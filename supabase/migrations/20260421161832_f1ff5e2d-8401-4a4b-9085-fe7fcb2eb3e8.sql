@@ -1,0 +1,1 @@
+ALTER TABLE public.harvest_runs ADD COLUMN notes TEXT;

@@ -1,0 +1,1 @@
+ALTER TABLE public.harvest_run_versions ADD COLUMN IF NOT EXISTS moa_filters jsonb;
