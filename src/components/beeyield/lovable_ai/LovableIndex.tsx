@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Leaf, Zap, LineChart } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout } from "lucide-react";
 import { toast } from "sonner";
 import beeyieldLogo from "@/assets/Logo.png";
 import { useTheme } from "@/hooks/use-theme";
@@ -19,8 +19,6 @@ import PrecisionDrilldown from "@/components/beeyield/lovable_ai/PrecisionDrilld
 import HivePlacementMap from "@/components/beeyield/lovable_ai/HivePlacementMap";
 import BeeFlightTracker from "@/components/beeyield/lovable_ai/BeeFlightTracker";
 import BloomPhenology from "@/components/beeyield/lovable_ai/BloomPhenology";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Message = {
   id: string;
@@ -361,88 +359,6 @@ export default function Index() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-background outline-none">
-              <Menu className="w-4 h-4" />
-              <span className="text-xs font-medium">Tools</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[280px]">
-              <DropdownMenuLabel className="text-honey text-sm font-semibold">Knowledge & Reference</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setGalleryOpen(true)} className="cursor-pointer gap-2">
-                <Bug className="w-4 h-4" /> Bee Species Gallery
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDiseasesOpen(true)} className="cursor-pointer gap-2">
-                <HeartPulse className="w-4 h-4" /> Bee Diseases & Health
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setPollinationOpen(true)} className="cursor-pointer gap-2">
-                <BarChart3 className="w-4 h-4" /> Pollination Data & Charts
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLookupOpen(true)} className="cursor-pointer gap-2">
-                <Flower2 className="w-4 h-4" /> Stocking Density Lookup
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-honey text-sm font-semibold">Precision Apiary Tools</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setCalculatorOpen(true)} className="cursor-pointer gap-2">
-                <Calculator className="w-4 h-4" /> Harvest Calculator
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDrilldownOpen(true)} className="cursor-pointer gap-2">
-                <Target className="w-4 h-4" /> Precision Pollination Drilldown
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSiteMapOpen(true)} className="cursor-pointer gap-2">
-                <MapPin className="w-4 h-4" /> Hive Placement Map
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-honey text-sm font-semibold">Bloom & Flight Expert</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setBloomPhenologyOpen(true)} className="cursor-pointer gap-2">
-                <Sprout className="w-4 h-4" /> Bloom Phenology
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFlightTrackerOpen(true)} className="cursor-pointer gap-2">
-                <Plane className="w-4 h-4" /> Bee Flight & Activity Tracker
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Multi-Objective View coming soon")} className="cursor-pointer gap-2">
-                <Layers className="w-4 h-4" /> MOA — Multi-Objective View
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Florage Database coming soon")} className="cursor-pointer gap-2">
-                <Leaf className="w-4 h-4" /> Florage Database
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Quick Activity Counter coming soon")} className="cursor-pointer gap-2">
-                <Zap className="w-4 h-4" /> Quick Activity Counter
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Bee Activity Forecaster coming soon")} className="cursor-pointer gap-2">
-                <LineChart className="w-4 h-4" /> Bee Activity Forecaster
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info("Pollination Planning coming soon")} className="cursor-pointer gap-2">
-                <Target className="w-4 h-4" /> Pollination Planning
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer gap-2">
-                <Info className="w-4 h-4" /> About Beeyield AI
-              </DropdownMenuItem>
-              {messages.length > 0 && (
-                <DropdownMenuItem onClick={() => {
-                  const text = messages.map(m => `${m.role === "user" ? "You" : "Beeyield AI"}: ${m.content}`).join("\n\n");
-                  const blob = new Blob([text], { type: "text/plain" });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = `beeyield-chat-${new Date().toISOString().slice(0, 10)}.txt`;
-                  a.click();
-                  URL.revokeObjectURL(url);
-                  toast.success("Chat exported");
-                }} className="cursor-pointer gap-2">
-                  <Download className="w-4 h-4" /> Export Chat
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Select defaultValue="flight-only">
-            <SelectTrigger className="w-[140px] h-9 border-border bg-background hover:border-primary/50 transition-all text-xs focus:ring-0 focus:ring-offset-0">
-              <SelectValue placeholder="Select mode" />
-            </SelectTrigger>
             <SelectContent>
               <SelectItem value="baseline" className="text-xs">AI: Baseline</SelectItem>
               <SelectItem value="expert" className="text-xs">AI: Expert Mode</SelectItem>
