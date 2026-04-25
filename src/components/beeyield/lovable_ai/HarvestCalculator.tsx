@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree, Target } from "lucide-react";
 import { toast } from "sonner";
-import MarkdownRenderer from "@/components/MarkdownRenderer";
+import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -58,9 +58,10 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
+  embedded?: boolean;
 }
 
-export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: Props) {
+export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, embedded }: Props) {
   const deviceId = useDeviceId();
   const [hives, setHives] = useState(10);
   const [acres, setAcres] = useState(0);
@@ -414,7 +415,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "h-full bg-background/50 backdrop-blur-md rounded-[2.5rem] border border-border overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

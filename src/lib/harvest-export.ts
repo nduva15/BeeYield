@@ -26,6 +26,9 @@ export type ExportPayload = {
   aiText?: string | null;
   versionLabel?: string;
   assumptions?: AssumptionsBlock | null;
+  // Standard vs precision frames/acre
+  framesPerAcreStandard?: number | null;
+  framesPerAcrePrecision?: number | null;
 };
 
 const csvEscape = (v: string | number) => {
@@ -53,6 +56,8 @@ export function buildHarvestCSV(p: ExportPayload): string {
     ["Net per hive (kg)", p.netPerHive.toFixed(2)],
     ["Ethical per hive (kg)", p.ethicalPerHive.toFixed(2)],
     ["Apiary total (kg)", p.apiaryHarvest.toFixed(2)],
+    ["Frames/acre (standard)", p.framesPerAcreStandard != null ? p.framesPerAcreStandard.toFixed(2) : ""],
+    ["Frames/acre (precision)", p.framesPerAcrePrecision != null ? p.framesPerAcrePrecision.toFixed(2) : ""],
     ["Notes", p.notes || ""],
     ["[Assumptions] Region/climate", a.region_climate || ""],
     ["[Assumptions] Bloom window", a.bloom_window || ""],
@@ -127,6 +132,12 @@ export function downloadPDF(p: ExportPayload) {
   writeLine(`Reserve  (${p.region}) = ${p.reserve} kg → Net = ${p.netPerHive.toFixed(1)} kg`);
   writeLine(`Ethical  = min(50% × gross, net) = ${p.ethicalPerHive.toFixed(1)} kg/hive`);
   writeLine(`Apiary   = ${p.ethicalPerHive.toFixed(1)} × ${p.hives} × (${p.hhi}/100) = ${p.apiaryHarvest.toFixed(0)} kg`, 11, true, [180, 100, 0]);
+  if (p.framesPerAcreStandard != null || p.framesPerAcrePrecision != null) {
+    y += 4;
+    writeLine("Frames per acre", 12, true, [180, 100, 0]);
+    if (p.framesPerAcreStandard != null) writeLine(`Standard mode: ${p.framesPerAcreStandard.toFixed(2)} frames/ac (rule-of-thumb)`);
+    if (p.framesPerAcrePrecision != null) writeLine(`Precision mode: ${p.framesPerAcrePrecision.toFixed(2)} frames/ac (geometric coverage-based)`);
+  }
   y += 8;
 
   // Assumptions block

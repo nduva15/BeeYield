@@ -29,7 +29,7 @@ type Obs = {
 type RunRow = { id: string; crop: string; created_at: string };
 type RunVersion = { id: string; version_label: string; created_at: string };
 
-export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BloomPhenology({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [obs, setObs] = useState<Obs[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);
@@ -136,7 +136,7 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "h-full bg-background/50 backdrop-blur-md rounded-[2.5rem] border border-border overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3"><Flower2 className="w-7 h-7 text-honey" />

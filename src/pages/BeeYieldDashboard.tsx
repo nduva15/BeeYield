@@ -89,9 +89,13 @@ import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
-import HarvestCalculator from '@/components/beeyield/lovable_ai/HarvestCalculator';
-import HivePlacementMap from '@/components/beeyield/lovable_ai/HivePlacementMap';
-import PrecisionDrilldown from '@/components/beeyield/lovable_ai/PrecisionDrilldown';
+import MOAView from '@/components/beeyield/lovable_ai/MOAView';
+import FloragePage from '@/components/beeyield/lovable_ai/FloragePage';
+import ActivityCounter from '@/components/beeyield/lovable_ai/ActivityCounter';
+import ActivityForecaster from '@/components/beeyield/lovable_ai/ActivityForecaster';
+import PollinationPlanning from '@/components/beeyield/lovable_ai/PollinationPlanning';
+import BloomPhenologyEmbed from '@/components/beeyield/lovable_ai/BloomPhenology';
+import FlightTrackerEmbed from '@/components/beeyield/lovable_ai/BeeFlightTracker';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -344,18 +348,20 @@ const BeeYieldDashboard: React.FC = () => {
             case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
             case 'pollination-calcs': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'flight-mapping-tactical': return <FlightMapping />;
-            case 'site-reports-tactical': return <PollinationReports />;
-            case 'saturation-math': return <SpatialCoverageView />;
-            case 'hpa-optimizer': return <HpaOptimizer />;
-            case 'master-map': return <MasterMapView />;
-            case 'orchard-mapper': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
-            case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
-            case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
-            case 'sensor-alerts': return <SensorAlertsView />;
+            case 'activity-counter':
+            case 'vpm-counter': return <ActivityCounter isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'activity-forecast':
+            case 'bfh-forecast': return <ActivityForecaster isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'moa-viewer':
+            case 'moa-view': return <MOAView isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'florage-database':
+            case 'florage-page': return <FloragePage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'pollination-planning':
+            case 'pollination-engine': return <PollinationPlanning isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'bloom-tracking':
-            case 'bloom-phenology': return <BloomPhenology />;
+            case 'bloom-phenology': return <BloomPhenologyEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'flight-mapping-tactical':
+            case 'flight-tracker': return <FlightTrackerEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'acoustic-transformer': return <AcousticMoodTransformer />;
             case 'bee-calculator':
             case 'calculator-suite': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;

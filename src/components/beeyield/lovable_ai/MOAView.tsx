@@ -47,13 +47,14 @@ interface Props {
   readOnly?: boolean;
   initialRunId?: string;
   initialVersionId?: string;
+  embedded?: boolean;
 }
 
 const DEFAULT_FILTERS: Filters = {
   showCoverage: true, showBloom: true, showFlight: true, showDiagnostics: true, selectedHive: null,
 };
 
-export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId }: Props) {
+export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId, embedded }: Props) {
   const deviceId = useDeviceId();
   const [runs, setRuns] = useState<Run[]>([]);
   const [versions, setVersions] = useState<Version[]>([]);
@@ -273,7 +274,7 @@ Required sections:
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background overflow-hidden flex flex-col">
+    <div className={embedded ? "h-full flex flex-col bg-background/50 backdrop-blur-md rounded-[2.5rem] border border-border overflow-hidden" : "fixed inset-0 z-50 bg-background overflow-hidden flex flex-col"}>
       {/* Header */}
       <div className="flex-shrink-0 border-b border-border bg-card px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">

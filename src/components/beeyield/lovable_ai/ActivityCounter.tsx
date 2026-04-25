@@ -6,7 +6,7 @@ import { useDeviceId } from "@/hooks/use-device-id";
 
 // Lightweight one-tap activity counter — quicker workflow than the full BeeFlightTracker.
 // Tap "+1" each time a bee exits the entrance during the 60-second window.
-export default function ActivityCounter({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function ActivityCounter({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [count, setCount] = useState(0);
   const [running, setRunning] = useState(false);
@@ -51,7 +51,7 @@ export default function ActivityCounter({ isOpen, onClose }: { isOpen: boolean; 
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className={embedded ? "h-full flex items-center justify-center p-4 bg-background/50 backdrop-blur-md rounded-[2.5rem] border border-border overflow-hidden" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4"}>
       <div className="bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2"><Plane className="w-5 h-5 text-honey" /><h2 className="font-display text-lg font-bold text-honey">Quick Activity Counter</h2></div>

@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import beeyieldLogo from "@/assets/Logo.png";
+import beeyieldLogo from "@/assets/beeyield-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useVoiceInput } from "@/hooks/use-voice-input";
@@ -19,6 +27,11 @@ import PrecisionDrilldown from "@/components/beeyield/lovable_ai/PrecisionDrilld
 import HivePlacementMap from "@/components/beeyield/lovable_ai/HivePlacementMap";
 import BeeFlightTracker from "@/components/beeyield/lovable_ai/BeeFlightTracker";
 import BloomPhenology from "@/components/beeyield/lovable_ai/BloomPhenology";
+import MOAView from "@/components/beeyield/lovable_ai/MOAView";
+import FloragePage from "@/components/beeyield/lovable_ai/FloragePage";
+import ActivityCounter from "@/components/beeyield/lovable_ai/ActivityCounter";
+import ActivityForecaster from "@/components/beeyield/lovable_ai/ActivityForecaster";
+import PollinationPlanning from "@/components/beeyield/lovable_ai/PollinationPlanning";
 
 type Message = {
   id: string;
@@ -49,6 +62,7 @@ async function streamBeeyield(
   imageType: string | null,
   audioBase64: string | null,
   audioType: string | null,
+  promptVariant: string,
   onDelta: (text: string) => void,
   onDone: () => void,
   onError: (err: string) => void
@@ -59,7 +73,7 @@ async function streamBeeyield(
       "Content-Type": "application/json",
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType }),
+    body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType, promptVariant }),
   });
 
   if (!resp.ok) {
@@ -105,7 +119,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export default function Index() {
+export default function LovableIndex() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -126,6 +140,12 @@ export default function Index() {
   const [siteMapOpen, setSiteMapOpen] = useState(false);
   const [flightTrackerOpen, setFlightTrackerOpen] = useState(false);
   const [bloomPhenologyOpen, setBloomPhenologyOpen] = useState(false);
+  const [moaOpen, setMoaOpen] = useState(false);
+  const [floragePageOpen, setFloragePageOpen] = useState(false);
+  const [activityCounterOpen, setActivityCounterOpen] = useState(false);
+  const [activityForecasterOpen, setActivityForecasterOpen] = useState(false);
+  const [pollinationPlanningOpen, setPollinationPlanningOpen] = useState(false);
+  const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
   const [attachedImage, setAttachedImage] = useState<File | null>(null);
@@ -269,6 +289,7 @@ export default function Index() {
         imgType,
         audioBase64,
         audioType,
+        promptVariant,
         (chunk) => {
           assistantContent += chunk;
           setMessages((p) => {
@@ -359,76 +380,73 @@ export default function Index() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setGalleryOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Bee Species Gallery"
-          >
-            <Bug className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setDiseasesOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Bee Diseases & Health"
-          >
-            <HeartPulse className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setPollinationOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Pollination Data & Charts"
-          >
-            <BarChart3 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setLookupOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Pollination Stocking Density Lookup"
-          >
-            <Flower2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setCalculatorOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Harvest Calculator"
-          >
-            <Calculator className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setDrilldownOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Precision Pollination Drilldown"
-          >
-            <Target className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setSiteMapOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Precision Hive Placement Map"
-          >
-            <MapPin className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setFlightTrackerOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Bee Flight Tracker"
-          >
-            <Plane className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setBloomPhenologyOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="Bloom Phenology"
-          >
-            <Sprout className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setAboutOpen(true)}
-            className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
-            title="About Beeyield AI"
-          >
-            <Info className="w-4 h-4" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted"
+                title="Open expert tools menu"
+              >
+                <Menu className="w-4 h-4" />
+                <span className="text-xs font-medium hidden sm:inline">Tools</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64 bg-popover border-border z-50">
+              <DropdownMenuLabel className="text-honey">Knowledge & Reference</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => setGalleryOpen(true)} className="cursor-pointer">
+                <Bug className="w-4 h-4 mr-2" /> Bee Species Gallery
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDiseasesOpen(true)} className="cursor-pointer">
+                <HeartPulse className="w-4 h-4 mr-2" /> Bee Diseases & Health
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setPollinationOpen(true)} className="cursor-pointer">
+                <BarChart3 className="w-4 h-4 mr-2" /> Pollination Data & Charts
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLookupOpen(true)} className="cursor-pointer">
+                <Flower2 className="w-4 h-4 mr-2" /> Stocking Density Lookup
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-honey">Precision Apiary Tools</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => setCalculatorOpen(true)} className="cursor-pointer">
+                <Calculator className="w-4 h-4 mr-2" /> Harvest Calculator
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDrilldownOpen(true)} className="cursor-pointer">
+                <Target className="w-4 h-4 mr-2" /> Precision Pollination Drilldown
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSiteMapOpen(true)} className="cursor-pointer">
+                <MapPin className="w-4 h-4 mr-2" /> Hive Placement Map
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-honey">Bloom & Flight Expert</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => setBloomPhenologyOpen(true)} className="cursor-pointer">
+                <Sprout className="w-4 h-4 mr-2" /> Bloom Phenology
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFlightTrackerOpen(true)} className="cursor-pointer">
+                <Plane className="w-4 h-4 mr-2" /> Bee Flight & Activity Tracker
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setMoaOpen(true)} className="cursor-pointer">
+                <Layers className="w-4 h-4 mr-2" /> MOA — Multi-Objective View
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFloragePageOpen(true)} className="cursor-pointer">
+                <Sprout className="w-4 h-4 mr-2" /> Florage Database
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActivityCounterOpen(true)} className="cursor-pointer">
+                <Plane className="w-4 h-4 mr-2" /> Quick Activity Counter
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setActivityForecasterOpen(true)} className="cursor-pointer">
+                <BarChart3 className="w-4 h-4 mr-2" /> Bee Activity Forecaster
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setPollinationPlanningOpen(true)} className="cursor-pointer">
+                <Target className="w-4 h-4 mr-2" /> Pollination Planning
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
+                <Info className="w-4 h-4 mr-2" /> About Beeyield AI
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           {messages.length > 0 && (
             <button
               onClick={() => {
@@ -448,6 +466,17 @@ export default function Index() {
               <Download className="w-4 h-4" />
             </button>
           )}
+          <select
+            value={promptVariant}
+            onChange={(e) => setPromptVariant(e.target.value as typeof promptVariant)}
+            className="bg-background border border-border rounded-lg px-2 py-1.5 text-xs text-foreground hover:border-primary/50"
+            title="BeeGPT prompt variant"
+          >
+            <option value="baseline">AI: Baseline</option>
+            <option value="bloom">AI: Bloom-only</option>
+            <option value="flight">AI: Flight-only</option>
+            <option value="bloom_flight">AI: Bloom + Flight</option>
+          </select>
           <button
             onClick={toggleTheme}
             className="w-8 h-8 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center transition-all text-muted-foreground hover:text-foreground"
@@ -661,11 +690,16 @@ export default function Index() {
       <BeeDiseasesPage isOpen={diseasesOpen} onClose={() => setDiseasesOpen(false)} />
       <PollinationCharts isOpen={pollinationOpen} onClose={() => setPollinationOpen(false)} />
       <PollinationLookup isOpen={lookupOpen} onClose={() => setLookupOpen(false)} />
-      <HarvestCalculator isOpen={calculatorOpen} onClose={() => setCalculatorOpen(false)} />
-      <PrecisionDrilldown isOpen={drilldownOpen} onClose={() => setDrilldownOpen(false)} />
+      <HarvestCalculator isOpen={calculatorOpen} onClose={() => setCalculatorOpen(false)} onOpenPlanning={() => setPollinationPlanningOpen(true)} />
+      <PrecisionDrilldown isOpen={drilldownOpen} onClose={() => setDrilldownOpen(false)} onOpenPlanning={() => setPollinationPlanningOpen(true)} />
       <HivePlacementMap isOpen={siteMapOpen} onClose={() => setSiteMapOpen(false)} />
       <BeeFlightTracker isOpen={flightTrackerOpen} onClose={() => setFlightTrackerOpen(false)} />
       <BloomPhenology isOpen={bloomPhenologyOpen} onClose={() => setBloomPhenologyOpen(false)} />
+      <MOAView isOpen={moaOpen} onClose={() => setMoaOpen(false)} />
+      <FloragePage isOpen={floragePageOpen} onClose={() => setFloragePageOpen(false)} />
+      <ActivityCounter isOpen={activityCounterOpen} onClose={() => setActivityCounterOpen(false)} />
+      <ActivityForecaster isOpen={activityForecasterOpen} onClose={() => setActivityForecasterOpen(false)} />
+      <PollinationPlanning isOpen={pollinationPlanningOpen} onClose={() => setPollinationPlanningOpen(false)} />
     </div>
   );
 }

@@ -11,6 +11,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
+  embedded?: boolean;
 }
 
 type CropProfile = {
@@ -44,7 +45,7 @@ const COMPASS_DIRS = [
   { label: "W", deg: 270 }, { label: "NW", deg: 315 },
 ];
 
-export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: Props) {
+export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, embedded }: Props) {
   const [cropName, setCropName] = useState(CROP_PROFILES[0].name);
   const [acres, setAcres] = useState(20);
   const [hives, setHives] = useState(40);
@@ -117,7 +118,7 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "h-full bg-background/50 backdrop-blur-md rounded-[2.5rem] border border-border overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

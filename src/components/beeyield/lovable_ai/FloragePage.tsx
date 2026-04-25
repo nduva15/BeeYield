@@ -46,10 +46,10 @@ const FLORAGE: Array<{ name: string; latin: string; bloom: string; nectar: numbe
   { name: "Vetch (Hairy)", latin: "Vicia villosa", bloom: "May–Jul", nectar: 8, pollen: 7, radius: 800, notes: "Nitrogen-fixing cover crop; bee magnet" },
 ];
 
-export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function FloragePage({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "h-full bg-background/50 backdrop-blur-md rounded-[2.5rem] border border-border overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
