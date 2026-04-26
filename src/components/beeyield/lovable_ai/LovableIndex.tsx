@@ -35,6 +35,7 @@ import PollinationPlanning from "@/components/beeyield/lovable_ai/PollinationPla
 import PollinationCalcs from "@/components/beeyield/lovable_ai/PollinationCalcs";
 import AlertsPage from "@/components/beeyield/lovable_ai/AlertsPage";
 import MOACompare from "@/components/beeyield/lovable_ai/MOACompare";
+import SoundAnalysisView from "@/components/beeyield/SoundAnalysisView";
 
 type Message = {
   id: string;
@@ -151,6 +152,7 @@ export default function Index() {
   const [pollinationCalcsOpen, setPollinationCalcsOpen] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [moaCompareOpen, setMoaCompareOpen] = useState(false);
+  const [soundAnalysisOpen, setSoundAnalysisOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -455,6 +457,9 @@ export default function Index() {
               <DropdownMenuItem onClick={() => setAlertsOpen(true)} className="cursor-pointer">
                 <Bug className="w-4 h-4 mr-2" /> Alerts
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSoundAnalysisOpen(true)} className="cursor-pointer">
+                <Volume2 className="w-4 h-4 mr-2" /> Acoustic Hive Audit
+              </DropdownMenuItem>
 
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
@@ -718,6 +723,7 @@ export default function Index() {
       <PollinationCalcs isOpen={pollinationCalcsOpen} onClose={() => setPollinationCalcsOpen(false)} />
       <AlertsPage isOpen={alertsOpen} onClose={() => setAlertsOpen(false)} />
       <MOACompare isOpen={moaCompareOpen} onClose={() => setMoaCompareOpen(false)} />
+      <SoundAnalysisView isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />
     </div>
   );
 }

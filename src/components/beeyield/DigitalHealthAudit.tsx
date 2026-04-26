@@ -10,11 +10,51 @@ interface DigitalHealthAuditProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
 }
 
+const GUIDE_STOP_WORDS = new Set(['healthy', 'normal', 'unknown', 'low risk', 'moderate risk', 'high risk']);
+
+const extractGuideTerm = (value: unknown): string | null => {
+    if (!value) return null;
+
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        return trimmed ? trimmed : null;
+    }
+
+    if (typeof value === 'object') {
+        const candidate = [value.label, value.name, value.condition, value.disease, value.indicator, value.type]
+            .find((entry) => typeof entry === 'string' && entry.trim().length > 0);
+        return typeof candidate === 'string' ? candidate.trim() : null;
+    }
+
+    return null;
+};
+
+const buildGuideTerms = (results: any): string[] => {
+    const candidates = [
+        ...(Array.isArray(results?.disease_indicators) ? results.disease_indicators : []),
+        ...(Array.isArray(results?.detections) ? results.detections : []),
+        results?.health_status,
+    ]
+        .map(extractGuideTerm)
+        .filter((value): value is string => Boolean(value))
+        .filter((value) => !GUIDE_STOP_WORDS.has(value.toLowerCase()));
+
+    return Array.from(new Set(candidates));
+};
+
 const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) => {
     const [isScanning, setIsScanning] = useState(false);
     const [scanResults, setScanResults] = useState<null | any>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const guideTerms = buildGuideTerms(scanResults);
+    const primaryGuideTerm = guideTerms[0];
+    const healthGuideMessage = primaryGuideTerm
+        ? `Review the health guide entry for ${primaryGuideTerm} and follow the recommended field actions from this audit.`
+        : 'Review the health guide for disease protocols and field actions related to this audit.';
+    const healthGuideAction = guideTerms.length > 0
+        ? `audit-focus:${guideTerms.join('|')}`
+        : 'audit-focus';
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -189,6 +229,47 @@ const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) 
                                                 </div>
                                             ))}
                                         </div>
+                                    </div>
+
+                                    <div className={cn(glass.card, "p-5 md:p-6 space-y-4")}>
+                                        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                                            <div className="space-y-2">
+                                                <div className={cn(glass.badge, "bg-[#F4D03F]/10 text-foreground border-[#F4D03F]/20")}>
+                                                    <ShieldCheck className="w-3.5 h-3.5 mr-2" />
+                                                    Health Guide Handoff
+                                                </div>
+                                                <p className="text-sm font-bold text-foreground">
+                                                    {primaryGuideTerm
+                                                        ? `Open the protocol for ${primaryGuideTerm}.`
+                                                        : 'Open the guide to review matching disease protocols.'}
+                                                </p>
+                                                <p className="text-[11px] font-semibold text-muted-foreground leading-relaxed">
+                                                    {Array.isArray(scanResults.recommendations) && scanResults.recommendations.length > 0
+                                                        ? scanResults.recommendations[0]
+                                                        : 'Use the guide to confirm treatment, spread risk, and next field actions before the next inspection.'}
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => onTabChange?.('health-guide', healthGuideMessage, healthGuideAction)}
+                                                className={cn(glass.btnPrimary, "min-w-[220px]")}
+                                            >
+                                                Open Health Guide
+                                                <ArrowRight className="w-4 h-4 ml-2" />
+                                            </button>
+                                        </div>
+                                        {guideTerms.length > 1 && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {guideTerms.slice(0, 4).map((term) => (
+                                                    <span
+                                                        key={term}
+                                                        className="px-2.5 py-1 rounded-full border border-border/ bg-muted/20 text-[10px] font-black uppercase tracking-wider text-foreground/70"
+                                                    >
+                                                        {term}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             ) : (

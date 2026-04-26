@@ -392,6 +392,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'forage-zones': return <ForageZonesView />;
             case 'site-reports-tactical': return <PollinationReports />;
             case 'precision-drilldown': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
             case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
             case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
@@ -407,9 +408,11 @@ const BeeYieldDashboard: React.FC = () => {
             case 'flight-map': return <FlightMapView />;
             case 'global-hive-network': return <GlobalHiveNetwork />;
             case 'varroa': return <VarroaView />;
+            case 'acoustic-transformer':
+            case 'sound-analysis':
             case 'sound': return <SoundAnalysisView onTabChange={handleTabChange} />;
             case 'image-analysis': return <ImageAnalysisView onTabChange={handleTabChange} />;
-            case 'health-guide': return <HealthGuideView onTabChange={handleTabChange} />;
+            case 'health-guide': return <HealthGuideView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'reports-exports': return <ReportsExportsView onTabChange={handleTabChange} />;
             case 'label-generator': return <LabelGeneratorView onTabChange={handleTabChange} />;
             case 'data': return <MeasurementDataView onTabChange={handleTabChange} />;

@@ -10,7 +10,71 @@ import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/Bee
 import { motion, AnimatePresence } from 'framer-motion';
 import { getGuideFallbackImage, getGuideImage } from '@/lib/beeGuideImages';
 
-const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) => void }> = ({ onTabChange }) => {
+interface HealthGuideViewProps {
+    onTabChange: (tab: string, message?: string, action?: string) => void;
+    initialParams?: { message?: string; action?: string } | null;
+}
+
+const normalizeSearchValue = (value: unknown): string => String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+const parseGuideFocus = (action?: string): { tab: 'diseases' | 'species'; terms: string[] } | null => {
+    if (!action?.startsWith('audit-focus')) return null;
+    const [, rawTerms = ''] = action.split(':');
+    const terms = rawTerms
+        .split('|')
+        .map((term) => term.trim())
+        .filter(Boolean);
+
+    return {
+        tab: 'diseases',
+        terms,
+    };
+};
+
+const scoreGuideEntry = (entry: any, terms: string[]): number => {
+    const name = normalizeSearchValue(entry?.name);
+    const metadata = normalizeSearchValue([
+        entry?.type,
+        entry?.commonName,
+        entry?.scientificName,
+        entry?.riskLevel,
+        entry?.causes,
+        entry?.detection,
+        entry?.treatment,
+        ...(Array.isArray(entry?.symptoms) ? entry.symptoms : []),
+        ...(Array.isArray(entry?.hostSpecies) ? entry.hostSpecies : []),
+        ...(Array.isArray(entry?.responseSteps) ? entry.responseSteps : []),
+    ].join(' '));
+
+    return terms.reduce((score, term) => {
+        const normalizedTerm = normalizeSearchValue(term);
+        if (!normalizedTerm) return score;
+        if (name === normalizedTerm) return score + 12;
+        if (name.includes(normalizedTerm)) return score + 8;
+        if (metadata.includes(normalizedTerm)) return score + 4;
+        return score;
+    }, 0);
+};
+
+const findBestGuideMatch = (entries: any[], terms: string[]): any | null => {
+    let bestMatch: any | null = null;
+    let bestScore = 0;
+
+    entries.forEach((entry) => {
+        const score = scoreGuideEntry(entry, terms);
+        if (score > bestScore) {
+            bestScore = score;
+            bestMatch = entry;
+        }
+    });
+
+    return bestMatch;
+};
+
+const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialParams }) => {
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
     const [activeTab, setActiveTab] = React.useState<'diseases' | 'species'>('diseases');
     const [diseaseData, setDiseaseData] = React.useState<any[]>([]);
@@ -79,6 +143,26 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
         }
     }, [activeTab, diseaseData, selectedItem, speciesData]);
 
+    React.useEffect(() => {
+        if (loading) return;
+
+        const focus = parseGuideFocus(initialParams?.action);
+        if (!focus) return;
+
+        setActiveTab(focus.tab);
+        setDiseaseTypeFilter('all');
+        setSpeciesCategoryFilter('all');
+
+        if (focus.terms.length === 0) {
+            setSearch('');
+            return;
+        }
+
+        const bestMatch = findBestGuideMatch(diseaseData, focus.terms);
+        setSearch(focus.terms.join(' '));
+        setSelectedItem(bestMatch);
+    }, [diseaseData, initialParams?.action, loading]);
+
     return (
         <BeeYieldPageShell className={glass.page}>
             <BeeYieldPageHeader
@@ -88,6 +172,18 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                 subtitle="Curated pathology database and species reference gallery."
                 onBack={() => onTabChange('home')}
             />
+
+            {initialParams?.message && (
+                <div className={cn(glass.card, "mt-6 p-5 flex items-start gap-4")}>
+                    <div className="w-10 h-10 rounded-2xl bg-[#F4D03F]/10 border border-[#F4D03F]/20 flex items-center justify-center shrink-0">
+                        <ShieldCheck className="w-5 h-5 text-[#F4D03F]" />
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">Audit Context</p>
+                        <p className="text-sm font-bold text-foreground">{initialParams.message}</p>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
                 {/* Search & Filter */}
@@ -166,10 +262,13 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                             <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">
                                 {activeTab === 'diseases' ? 'Pathology Database' : 'Species Reference'}
                             </label>
-                            <Select onValueChange={(val) => {
-                                const source = activeTab === 'diseases' ? filteredDiseaseData : filteredSpeciesData;
-                                setSelectedItem(source.find((entry) => entry.id === val) || null);
-                            }}>
+                            <Select
+                                value={selectedItem?.id || undefined}
+                                onValueChange={(val) => {
+                                    const source = activeTab === 'diseases' ? filteredDiseaseData : filteredSpeciesData;
+                                    setSelectedItem(source.find((entry) => entry.id === val) || null);
+                                }}
+                            >
                                 <SelectTrigger className={cn(glass.input, "h-12")}>
                                     <SelectValue placeholder={activeTab === 'diseases' ? 'Select Disease...' : 'Select Bee Type...'} />
                                 </SelectTrigger>

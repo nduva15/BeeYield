@@ -359,7 +359,10 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     status={humidStatus}
                     trend="stable"
                 />
-                <div className={cn(glass.card, "p-5 flex flex-col justify-between group transition-all bg-white shadow-sm overflow-hidden")}>
+                <div 
+                    onClick={() => onTabChange('sound')}
+                    className={cn(glass.card, "p-5 flex flex-col justify-between group transition-all bg-white shadow-sm overflow-hidden cursor-pointer hover:border-[#F4D03F]/50")}
+                >
                     <div className="flex items-start justify-between mb-2">
                         <div className="space-y-1">
                             <p className="text-[10px] font-bold tracking-wider text-muted-foreground/70">Hive Sound</p>
@@ -369,7 +372,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             <p className="text-[10px] font-bold text-muted-foreground/70">{acoustic.label}</p>
                         </div>
                         <div className={cn(
-                            "w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm",
+                            "w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm group-hover:scale-105 transition-transform",
                             selectedHive.acoustic === 'Healthy' ? "bg-emerald-50 border-emerald-100 text-emerald-600" :
                                 selectedHive.acoustic === 'Swarm Risk' ? "bg-amber-50 border-amber-100 text-amber-600" :
                                     "bg-red-50 border-red-100 text-red-600"
@@ -377,10 +380,11 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             <Volume2 className="w-5 h-5" />
                         </div>
                     </div>
-                    <div className="flex items-end gap-1 h-12 border-t border-gray-50 pt-3 mt-4">
-                        <div className="w-full text-[10px] font-bold text-muted-foreground/70">
-                            No acoustic waveform data available yet.
+                    <div className="flex items-center justify-between border-t border-gray-50 pt-3 mt-4">
+                        <div className="text-[10px] font-bold text-muted-foreground/70 group-hover:text-[#F4D03F] transition-colors">
+                            Launch Acoustic Audit
                         </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#F4D03F] group-hover:translate-x-1 transition-all" />
                     </div>
                 </div>
             </div>

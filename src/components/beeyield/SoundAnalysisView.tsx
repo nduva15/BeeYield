@@ -2,8 +2,9 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import {
-    Mic2, Upload, RefreshCw, Play, Square, CheckCircle2, AlertCircle, Activity, Database, ShieldCheck, Cpu, ArrowRight, Terminal, Hexagon, Zap
+    Mic2, Upload, RefreshCw, Play, Square, CheckCircle2, AlertCircle, Activity, Database, ShieldCheck, Cpu, ArrowRight, Terminal, Hexagon, Zap, X
 } from 'lucide-react';
+import { Dialog, DialogContent } from './lovable_ai/ui/dialog';
 import { toast } from 'sonner';
 import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,9 +13,17 @@ import beeyieldService, { Hive } from '@/services/beeyieldService';
 
 interface SoundAnalysisViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
+    isOpen?: boolean;
+    onClose?: () => void;
+    embedded?: boolean;
 }
 
-const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) => {
+const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ 
+    onTabChange,
+    isOpen = true,
+    onClose = () => {},
+    embedded = false
+}) => {
     const [recording, setRecording] = React.useState(false);
     const [analyzing, setAnalyzing] = React.useState(false);
     const [result, setResult] = React.useState<null | { label: 'Healthy' | 'Warning'; confidence?: number }>(null);
@@ -128,22 +137,24 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
         }
     };
 
-    return (
-        <div className={glass.page}>
-            {/* Header */}
-            <PageHeader
-                title="Acoustic Audit"
-                subtitle="Record a short sample and check for unusual sound patterns."
-                icon={Zap}
-                color="text-[#F4D03F]"
-                bg="bg-[#F4D03F]/10"
-                borderColor="border-border/"
-                action={
-                    <div className={cn(glass.badge, "px-3 py-1.5 border-border/ bg-[#F4D03F]/5 text-[#F4D03F]")}>
-                        SPECTRUM: 100-800HZ
-                    </div>
-                }
-            />
+    const content = (
+        <div className={cn(glass.page, embedded && "p-0")}>
+            {/* Header - hide if embedded */}
+            {!embedded && (
+                <PageHeader
+                    title="Acoustic Audit"
+                    subtitle="Record a short sample and check for unusual sound patterns."
+                    icon={Zap}
+                    color="text-[#F4D03F]"
+                    bg="bg-[#F4D03F]/10"
+                    borderColor="border-border/"
+                    action={
+                        <div className={cn(glass.badge, "px-3 py-1.5 border-border/ bg-[#F4D03F]/5 text-[#F4D03F]")}>
+                            SPECTRUM: 100-800HZ
+                        </div>
+                    }
+                />
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Control Panel */}
@@ -345,6 +356,24 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                 </div>
             </div>
         </div>
+    );
+
+    if (embedded) return content;
+
+    return (
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="max-w-6xl h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none custom-scroll overflow-x-hidden">
+                <div className="relative">
+                    <button
+                        onClick={onClose}
+                        className="absolute top-6 right-6 z-50 p-2 rounded-full bg-background/80 backdrop-blur-md border border-border hover:bg-muted transition-all"
+                    >
+                        <X className="w-4 h-4 text-foreground" />
+                    </button>
+                    {content}
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 };
 
