@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { ChevronDown, LogOut, Settings, Sun, Moon, Lock as LockIcon } from "lucide-react";
 import { NavItem } from './DashboardSidebar';
 import { useTheme } from '@/contexts/ThemeContext';
+import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/assets/Logo.png';
 import { useAuth } from '@/contexts/AuthContext';
@@ -195,41 +196,41 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
             </div>
 
             {/* User Profile Summary */}
-            <div className="mx-3 mb-2 p-3 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-[1.5rem] shadow-sm">
+            <div className="mx-3 mb-3 p-4 bg-muted/40 backdrop-blur-md border border-border/40 rounded-[2rem] shadow-sm">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-card border border-border/50 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
+                    <div className="w-10 h-10 rounded-2xl bg-white border border-border/40 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
                         {user?.user_metadata?.avatar_url ? (
                             <img src={user.user_metadata.avatar_url} alt={user?.user_metadata?.full_name} className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#F4D03F] text-white font-black text-[11px]">
+                            <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-black text-xs">
                                 {(user?.user_metadata?.first_name || user?.email || 'U').charAt(0).toUpperCase()}
                             </div>
                         )}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-[12px] font-black text-foreground truncate">
+                        <p className="text-[13px] font-black text-foreground truncate leading-tight">
                             {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
                         </p>
-                        <p className="text-[9px] font-bold text-[#1B9157] tracking-wider uppercase opacity-70">
+                        <p className="text-[9px] font-black text-[#1B9157] tracking-widest uppercase mt-0.5">
                             Verified Beekeeper
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 px-3">
+            <div className="grid grid-cols-2 gap-2.5 px-3">
                 <button
                     onClick={() => onTabChange('settings')}
-                    className="h-9 flex items-center justify-center gap-2 bg-sidebar text-muted-foreground hover:text-gray-700 hover:bg-primary/10 rounded-lg transition-all border border-border/50 hover:border-border text-[12px] font-medium"
+                    className={cn(glass.btnSecondary, "text-[11px] font-black uppercase tracking-tight h-10 border-border shadow-none bg-muted/20")}
                 >
-                    <Settings className="w-3.5 h-3.5" />
+                    <Settings className="w-4 h-4 text-primary" />
                     Settings
                 </button>
                 <button
                     onClick={onLogout}
-                    className="h-9 flex items-center justify-center gap-2 bg-sidebar text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-lg transition-all border border-border/50 hover:border-red-200 text-[12px] font-medium"
+                    className={cn(glass.btnSecondary, "text-[11px] font-black uppercase tracking-tight h-10 border-border shadow-none bg-muted/20 hover:bg-red-500/5 hover:text-red-500 hover:border-red-500/30 group")}
                 >
-                    <LogOut className="w-3.5 h-3.5" />
+                    <LogOut className="w-4 h-4 text-muted-foreground group-hover:text-red-500" />
                     Sign Out
                 </button>
             </div>

@@ -68,6 +68,15 @@ const average = (values: number[]) => values.length
     ? values.reduce((sum, value) => sum + value, 0) / values.length
     : 0;
 
+const BUFFER_BARS = Array.from({ length: 24 }, (_, index) => ({
+    id: index,
+    heights: [
+        8 + (index % 5) * 3,
+        16 + (index % 7) * 2,
+        10 + (index % 4) * 4,
+    ],
+}));
+
 const GlobalHiveNetwork = () => {
     const { data: apiariesData } = useApiaries();
     const { data: hivesData } = useHives();
@@ -265,20 +274,16 @@ const GlobalHiveNetwork = () => {
                                 </div>
                                 
                                 <div className="h-12 w-full flex items-end gap-1 mb-4">
-                                    {[...Array(24)].map((_, i) => (
+                                    {BUFFER_BARS.map((bar) => (
                                         <motion.div
-                                            key={i}
+                                            key={bar.id}
                                             animate={{ 
-                                                height: [
-                                                    Math.random() * 20 + 5, 
-                                                    Math.random() * 30 + 10, 
-                                                    Math.random() * 20 + 5
-                                                ] 
+                                                height: bar.heights
                                             }}
                                             transition={{ 
                                                 duration: 1.5, 
                                                 repeat: Infinity, 
-                                                delay: i * 0.05,
+                                                delay: bar.id * 0.05,
                                                 ease: "easeInOut"
                                             }}
                                             className="flex-1 bg-beeyield-green/40 rounded-t-sm"

@@ -117,7 +117,15 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
     setLoading(false);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const timeoutId = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isOpen, load]);
 
   const startEdit = (p: FloragePlant) => {
     setEditing(p);
