@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Bell, Plus, Trash2, BellRing, BellOff, Check } from "lucide-react";
+import { X, Bell, Plus, Trash2, BellRing, BellOff, Check, Download, FileText, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
@@ -42,6 +42,9 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
   const [showNew, setShowNew] = useState(false);
   const [draft, setDraft] = useState(EMPTY_RULE);
   const [pushPerm, setPushPerm] = useState<NotificationPermission>("default");
+  
+  const [filterDays, setFilterDays] = useState<number>(30);
+  const [filterHive, setFilterHive] = useState<string>("All");
 
   useEffect(() => {
     if ("Notification" in window) setPushPerm(Notification.permission);
@@ -100,6 +103,42 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
     load();
   };
 
+  const uniqueHives = Array.from(new Set([...rules, ...events].map(x => x.hive_label)));
+  const nowMs = Date.now();
+  const filteredEvents = events.filter(e => {
+      if (filterHive !== "All" && e.hive_label !== filterHive) return false;
+      if (filterDays > 0) {
+          const eTime = new Date(e.created_at).getTime();
+          if ((nowMs - eTime) / 86400000 > filterDays) return false;
+      }
+      return true;
+  });
+
+  const handleExportCSV = () => {
+    let csv = "--- ACTIVE ALERT RULES ---\nHive,Metric,Comparator,Threshold,Window (hours),Enabled\n";
+    rules.forEach(r => {
+      csv += `"${r.hive_label}","${r.metric}","${r.comparator}",${r.threshold},${r.window_hours},${r.enabled}\n`;
+    });
+    
+    csv += "\n--- TRIGGERED EVENTS ---\nDate,Hive,Metric,Value,Message,Acknowledged\n";
+    filteredEvents.forEach(e => {
+      csv += `"${new Date(e.created_at).toLocaleString()}","${e.hive_label}","${e.metric}",${e.value || ""},"${e.message.replace(/"/g, '""')}",${e.acknowledged}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `beeyield-alerts-${Date.now()}.csv`;
+    a.click();
+    toast.success("CSV generated successfully");
+  };
+
+  const handleExportPDF = () => {
+    window.print();
+    toast.success("Preparing PDF print format");
+  };
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
@@ -121,6 +160,25 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
             <button onClick={() => setShowNew(true)} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />New rule</button>
             <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
           </div>
+        </div>
+
+        <div className="mb-4 flex flex-col sm:flex-row gap-3 p-3 rounded-lg bg-card border border-border items-start sm:items-center justify-between text-sm print:hidden">
+            <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="w-4 h-4"/> Filter Events:</div>
+                <select value={filterDays} onChange={e => setFilterDays(Number(e.target.value))} className="bg-background border border-border rounded px-2 py-1 text-xs outline-none focus:border-honey/50 transition-colors">
+                    <option value={7}>Last 7 Days</option>
+                    <option value={30}>Last 30 Days</option>
+                    <option value={0}>All Time</option>
+                </select>
+                <select value={filterHive} onChange={e => setFilterHive(e.target.value)} className="bg-background border border-border rounded px-2 py-1 text-xs max-w-[120px] outline-none focus:border-honey/50 transition-colors">
+                    <option value="All">All Hives</option>
+                    {uniqueHives.map(h => <option key={h} value={h}>{h}</option>)}
+                </select>
+            </div>
+            <div className="flex items-center gap-2">
+                <button onClick={handleExportCSV} className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs flex items-center gap-1.5 transition-colors text-muted-foreground hover:text-foreground"><Download className="w-3.5 h-3.5"/>CSV</button>
+                <button onClick={handleExportPDF} className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs flex items-center gap-1.5 transition-colors text-muted-foreground hover:text-foreground"><FileText className="w-3.5 h-3.5"/>PDF</button>
+            </div>
         </div>
 
         {showNew && (
@@ -180,10 +238,10 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
           </div>
 
           <div>
-            <h3 className="text-xs uppercase text-muted-foreground font-semibold mb-2">Recent events ({events.length})</h3>
+            <h3 className="text-xs uppercase text-muted-foreground font-semibold mb-2">Recent events ({filteredEvents.length})</h3>
             <div className="space-y-2">
-              {events.length === 0 && <div className="p-4 rounded-xl border border-dashed border-border text-xs text-muted-foreground text-center">No events yet.</div>}
-              {events.map((e) => (
+              {filteredEvents.length === 0 && <div className="p-4 rounded-xl border border-dashed border-border text-xs text-muted-foreground text-center">No filtered events.</div>}
+              {filteredEvents.map((e) => (
                 <div key={e.id} className={`p-3 rounded-xl border ${e.acknowledged ? "border-border opacity-50" : "border-destructive/30 bg-destructive/5"}`}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
