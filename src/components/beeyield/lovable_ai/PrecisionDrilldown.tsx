@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
-import { X, Target, Wind, Mountain, Compass, ChevronRight } from "lucide-react";
+import { X, Target, Wind, Mountain, Compass, ChevronRight, Info } from "lucide-react";
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldCard, BeeYieldBadge } from "../BeeYieldUI";
+import { cn } from "@/lib/utils";
 
 interface Props {
   isOpen: boolean;
@@ -38,7 +40,6 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, em
   const [fieldOrientationDeg, setFieldOrientationDeg] = useState(0);
   const [slopePct, setSlopePct] = useState(4);
   const [orientationDeg, setOrientationDeg] = useState(135);
-  const [edgeBufferM, setEdgeBufferM] = useState(20);
 
   const crop = CROP_PROFILES.find((c) => c.name === cropName)!;
 
@@ -89,21 +90,35 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, em
     };
   }, [acres, hives, crop, fieldShape, windKmh, windDirDeg, fieldOrientationDeg, slopePct, orientationDeg]);
 
-  const content = (
-    <div className={embedded ? "" : "max-h-[85vh] overflow-y-auto custom-scroll"}>
-      <div className="mb-8">
-        <h2 className="font-display text-2xl font-bold text-foreground">Precision Drilldown</h2>
-        <p className="text-sm text-muted-foreground">High-performance placement modeling with local variables</p>
-      </div>
+  if (!isOpen) return null;
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Input Column */}
+  const content = (
+    <BeeYieldPageShell className={embedded ? "p-0 md:p-0 -m-0 min-h-0 pb-0" : ""}>
+      <BeeYieldPageHeader
+        icon={Compass}
+        label="Science"
+        title="Precision Drilldown"
+        subtitle="High-performance placement modeling with local ecological variables."
+        onBack={onClose}
+        actions={
+          onOpenPlanning && (
+            <button onClick={onOpenPlanning} className="px-4 py-2 rounded-xl bg-honey text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-md">
+              <ChevronRight className="w-4 h-4" /> Planning Module
+            </button>
+          )
+        }
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+        <div className="lg:col-span-12 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <Stat label="Total Drops" value={`${math.totalDrops}`} highlight />
+            <Stat label="Hives/Drop" value={`${math.hivesPerDrop}`} highlight />
+            <Stat label="Coverage" value={`${math.coveragePct.toFixed(0)}%`} highlight={math.coveragePct < 70} />
+            <Stat label="Net Efficiency" value={`${(math.efficiency * 100).toFixed(0)}%`} />
+        </div>
+
         <div className="lg:col-span-5 space-y-6">
-          <div className="space-y-4 p-6 rounded-3xl border border-honey/20 bg-honey/5 backdrop-blur-sm">
-            <h3 className="text-xs font-black text-honey uppercase tracking-widest flex items-center gap-2">
-              <Compass className="w-4 h-4" /> Field Variables
-            </h3>
-            
+          <BeeYieldSection title="Field Parameters" icon={Mountain}>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Target Crop">
                 <select value={cropName} onChange={(e) => setCropName(e.target.value)} className={inputCls}>
@@ -124,70 +139,81 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, em
                 <input type="number" value={hives} onChange={(e) => setHives(Math.max(1, +e.target.value))} className={inputCls} />
               </Field>
             </div>
+          </BeeYieldSection>
 
-            <div className="space-y-4 pt-2">
-              <Slider label="Wind Speed" value={windKmh} unit="km/h" max={40} onChange={setWindKmh} />
-              <Slider label="Ground Slope" value={slopePct} unit="%" max={20} onChange={setSlopePct} />
-              <div className="flex items-center gap-4 py-2">
-                <WindCompass windDirDeg={windDirDeg} entranceDeg={orientationDeg} onChange={setWindDirDeg} />
-                <div className="flex-1 space-y-2">
-                   <div className="text-[10px] font-black text-muted-foreground uppercase">Prevailing Wind FROM</div>
-                   <div className="grid grid-cols-4 gap-1">
-                      {COMPASS_DIRS.map(d => (
-                        <button key={d.label} onClick={() => setWindDirDeg(d.deg)} className={`text-[10px] font-bold py-1 rounded-lg border ${windDirDeg === d.deg ? 'bg-honey border-honey text-white' : 'bg-white border-border text-muted-foreground'}`}>{d.label}</button>
-                      ))}
-                   </div>
+          <BeeYieldSection title="Environmental Load" icon={Wind}>
+             <div className="space-y-4">
+                <Slider label="Static Wind" value={windKmh} unit="km/h" max={40} onChange={setWindKmh} />
+                <Slider label="Ground Slope" value={slopePct} unit="%" max={20} onChange={setSlopePct} />
+                
+                <div className="flex items-center gap-6 py-4">
+                    <WindCompass windDirDeg={windDirDeg} entranceDeg={orientationDeg} onChange={setWindDirDeg} />
+                    <div className="flex-1 space-y-2">
+                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">Wind Direction (FROM)</label>
+                        <div className="grid grid-cols-4 gap-1.5">
+                            {COMPASS_DIRS.map(d => (
+                                <button key={d.label} onClick={() => setWindDirDeg(d.deg)} className={cn("text-[9px] font-black py-1.5 rounded-lg border transition-all", windDirDeg === d.deg ? "bg-honey border-honey text-white shadow-md shadow-honey/20" : "bg-white border-border text-muted-foreground hover:border-honey/30")}>{d.label}</button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
+             </div>
+          </BeeYieldSection>
         </div>
 
-        {/* Results Column */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Stat label="Total Drops" value={`${math.totalDrops}`} highlight />
-            <Stat label="Hives/Drop" value={`${math.hivesPerDrop}`} highlight />
-            <Stat label="Coverage" value={`${math.coveragePct.toFixed(0)}%`} highlight={math.coveragePct < 70} />
-            <Stat label="Net Efficiency" value={`${(math.efficiency * 100).toFixed(0)}%`} />
-          </div>
+          <BeeYieldSection title="Mathematical Validation" icon={Info}>
+              <div className="space-y-6">
+                  <div className="p-5 rounded-2xl bg-muted/20 border border-border">
+                        <ol className="space-y-6">
+                            <Step n={1} label="Spatial Geometry">
+                                Field Boundary: {math.L.toFixed(0)}m × {math.W.toFixed(0)}m (Total Area: {math.totalArea.toLocaleString()}m²)
+                            </Step>
+                            <Step n={2} label="Biotic Flight Radius">
+                                {crop.name}: {crop.flightRadius_m}m forage reach | Theoretical Overlap: {math.targetSpacing.toFixed(0)}m
+                            </Step>
+                            <Step n={3} label="Penalty Matrix">
+                                Wind Attrition: -{(math.windPenalty * 100).toFixed(0)}% | Altimetric Load: -{(math.slopePenalty * 100).toFixed(0)}%
+                                <br />Orientation Bonus: {math.orientationBonus >= 0 ? '+' : ''}{(math.orientationBonus * 100).toFixed(0)}%
+                            </Step>
+                            <Step n={4} label="Stocking Verdict">
+                                Recommended Stocking: {math.recHives} colonies | Deployment Status: 
+                                <BeeYieldBadge variant={math.hiveDeficit > 0 ? "error" : "success"} className="ml-2 font-black uppercase text-[9px] tracking-widest">
+                                    {math.hiveDeficit > 0 ? `${math.hiveDeficit} Units Short` : 'Optimal Load'}
+                                </BeeYieldBadge>
+                            </Step>
+                        </ol>
+                  </div>
 
-          <div className="p-6 rounded-3xl border border-border bg-white shadow-sm space-y-4">
-             <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest border-b border-border pb-2">Mathematical Workflow</h3>
-             <ol className="space-y-4">
-               <Step n={1} label="Spatial Geometry">
-                 Area: {math.totalArea.toFixed(0)}m² | Matrix: {math.L.toFixed(0)}m × {math.W.toFixed(0)}m
-               </Step>
-               <Step n={2} label="Foraging Radius">
-                 {crop.name}: {crop.flightRadius_m}m radius | Overlap Spacing: {math.targetSpacing.toFixed(0)}m
-               </Step>
-               <Step n={3} label="Penalty Adjustments">
-                 Wind: -{(math.windPenalty * 100).toFixed(0)}% | Slope: -{(math.slopePenalty * 100).toFixed(0)}%
-                 <br />Orientation Bonus: {math.orientationBonus >= 0 ? '+' : ''}{(math.orientationBonus * 100).toFixed(0)}%
-               </Step>
-               <Step n={4} label="Stocking Verdict">
-                 Recommended: {math.recHives} hives | Status: <span className={math.hiveDeficit > 0 ? 'text-destructive font-bold' : 'text-green-600 font-bold'}>{math.hiveDeficit > 0 ? `${math.hiveDeficit} Short` : 'Optimal'}</span>
-               </Step>
-             </ol>
-          </div>
-
-          {onOpenPlanning && (
-            <button onClick={onOpenPlanning} className="w-full py-4 rounded-2xl bg-honey text-white font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-honey/20 transition-all">
-              Launch Detailed Planning Module <ChevronRight className="w-5 h-5" />
-            </button>
-          )}
+                  <BeeYieldCard className="p-8 border-honey/40 bg-honey/10">
+                      <div className="text-[10px] font-black text-honey uppercase tracking-[0.2em] mb-4">Precision Deployment Map</div>
+                      <div className="aspect-video bg-white/50 rounded-2xl border border-honey/20 flex flex-col items-center justify-center text-center p-6 relative overflow-hidden group">
+                           <div className="absolute inset-0 bg-honey/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                           <div className="w-12 h-12 rounded-full bg-honey/10 text-honey flex items-center justify-center mb-3">
+                               <Compass className="w-6 h-6 animate-spin-slow" />
+                           </div>
+                           <p className="text-xs font-black text-foreground uppercase tracking-widest">Dynamic Coverage Model</p>
+                           <p className="text-[10px] text-muted-foreground mt-2 max-w-[200px]">Optimal placement for {math.totalDrops} drops identified across the {math.totalArea.toLocaleString()}m² matrix.</p>
+                      </div>
+                  </BeeYieldCard>
+              </div>
+          </BeeYieldSection>
         </div>
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 
   if (embedded) return content;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-      <div className={`bg-white rounded-3xl w-full max-w-6xl shadow-2xl relative transition-all transform ${isOpen ? 'scale-100' : 'scale-95'}`}>
-        <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors z-10"><X className="w-5 h-5" /></button>
-        <div className="p-8">{content}</div>
+    <div className={cn("fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity p-4", isOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
+      <div className={cn("bg-white rounded-[2.5rem] w-full h-[95vh] max-w-6xl shadow-2xl relative transition-all transform overflow-hidden", isOpen ? "scale-100" : "scale-95")}>
+        <button onClick={onClose} className="absolute top-10 right-10 p-2 rounded-full hover:bg-muted transition-colors z-50 text-muted-foreground hover:text-foreground">
+          <X className="w-6 h-6" />
+        </button>
+        <div className="h-full overflow-y-auto custom-scroll p-10">
+          {content}
+        </div>
       </div>
     </div>
   );
@@ -195,33 +221,33 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, em
 
 function Stat({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className={`p-4 rounded-2xl border ${highlight ? "border-amber-500/20 bg-amber-50" : "border-border bg-muted/20"}`}>
+    <BeeYieldCard className={cn("p-5 border-border/50 bg-muted/10", highlight && "border-amber-500/20 bg-amber-50")}>
       <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{label}</div>
-      <div className={`text-xl font-black ${highlight ? "text-amber-600" : "text-foreground"}`}>{value}</div>
-    </div>
+      <div className={cn("text-2xl font-black tabular-nums", highlight ? "text-amber-600" : "text-foreground")}>{value}</div>
+    </BeeYieldCard>
   );
 }
 
 function Step({ n, label, children }: { n: number; label: string; children: React.ReactNode }) {
   return (
     <li className="flex gap-4">
-      <div className="w-8 h-8 rounded-xl bg-honey/10 text-honey text-xs font-black flex items-center justify-center flex-shrink-0">{n}</div>
-      <div>
-        <div className="text-xs font-black text-foreground uppercase tracking-wider mb-1">{label}</div>
+      <div className="w-8 h-8 rounded-xl bg-honey/10 text-honey text-[10px] font-black flex items-center justify-center flex-shrink-0 border border-honey/20">{n}</div>
+      <div className="flex-1">
+        <div className="text-[10px] font-black text-foreground uppercase tracking-wider mb-0.5">{label}</div>
         <div className="text-[11px] text-muted-foreground font-bold">{children}</div>
       </div>
     </li>
   );
 }
 
-function Slider({ label, value, unit, max, onChange }: any) {
+function Slider({ label, value, unit, max, onChange }: { label: string; value: number; unit: string; max: number; onChange: (v: number) => void }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex justify-between text-[10px] font-black uppercase text-muted-foreground">
+    <div className="space-y-2">
+      <div className="flex justify-between text-[10px] font-black uppercase text-muted-foreground tracking-widest px-1">
         <span>{label}</span>
         <span className="text-honey">{value}{unit}</span>
       </div>
-      <input type="range" min={0} max={max} value={value} onChange={e => onChange(+e.target.value)} className="w-full h-1.5 bg-honey/10 rounded-lg appearance-none cursor-pointer accent-honey" />
+      <input type="range" min={0} max={max} value={value} onChange={e => onChange(+e.target.value)} className="w-full h-1.5 bg-honey/10 rounded-full appearance-none cursor-pointer accent-honey" />
     </div>
   );
 }
@@ -229,19 +255,19 @@ function Slider({ label, value, unit, max, onChange }: any) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{label}</label>
+      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">{label}</label>
       {children}
     </div>
   );
 }
 
-const inputCls = "w-full bg-white border border-border rounded-xl px-3 py-2 text-xs font-bold focus:border-honey/40 outline-none transition-all";
+const inputCls = "w-full bg-white border border-border rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-honey/40 transition-all shadow-sm";
 
 function WindCompass({ windDirDeg, entranceDeg, onChange }: any) {
-  const size = 110;
+  const size = 120;
   const cx = size / 2;
   const cy = size / 2;
-  const r = size / 2 - 6;
+  const r = size / 2 - 10;
   const handleClick = (e: any) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left - cx;
@@ -260,16 +286,16 @@ function WindCompass({ windDirDeg, entranceDeg, onChange }: any) {
   const entY = cy + r * 0.9 * Math.sin(entRad);
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} onClick={handleClick} className="cursor-crosshair flex-shrink-0 bg-white rounded-full border border-border shadow-inner">
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} onClick={handleClick} className="cursor-crosshair flex-shrink-0 bg-white rounded-full border border-border shadow-md">
       <circle cx={cx} cy={cy} r={r} fill="transparent" stroke="hsl(var(--border))" strokeDasharray="2 4" />
       <text x={cx} y={15} textAnchor="middle" fontSize="9" fontWeight="900" fill="hsl(var(--muted-foreground))">N</text>
       <text x={size-15} y={cy+3} textAnchor="middle" fontSize="9" fontWeight="900" fill="hsl(var(--muted-foreground))">E</text>
       <text x={cx} y={size-8} textAnchor="middle" fontSize="9" fontWeight="900" fill="hsl(var(--muted-foreground))">S</text>
       <text x={15} y={cy+3} textAnchor="middle" fontSize="9" fontWeight="900" fill="hsl(var(--muted-foreground))">W</text>
-      <line x1={fromX} y1={fromY} x2={dwX} y2={dwY} stroke="hsl(var(--honey))" strokeWidth={3} markerEnd="url(#arr)" />
+      <line x1={fromX} y1={fromY} x2={dwX} y2={dwY} stroke="hsl(var(--honey))" strokeWidth={3} markerEnd="url(#arr2)" />
       <line x1={cx} y1={cy} x2={entX} y2={entY} stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="3 3" />
       <defs>
-        <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+        <marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
           <path d="M0,0 L0,6 L6,3 Z" fill="hsl(var(--honey))" />
         </marker>
       </defs>

@@ -1,98 +1,160 @@
-import { useState, useEffect, useRef } from "react";
-import { X, Plane, Play, Pause, RotateCcw, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Activity, Play, Pause, RotateCcw, Save, Trash2, Calendar, ClipboardCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldCard, BeeYieldBadge } from "../BeeYieldUI";
+import { cn } from "@/lib/utils";
 
-// Lightweight one-tap activity counter — quicker workflow than the full BeeFlightTracker.
-// Tap "+1" each time a bee exits the entrance during the 60-second window.
-export default function ActivityCounter({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+interface Log {
+  id: string;
+  hive_label: string;
+  count: number;
+  duration_seconds: number;
+  created_at: string;
+}
+
+export default function ActivityCounter({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
-  const [count, setCount] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [seconds, setSeconds] = useState(60);
   const [hiveLabel, setHiveLabel] = useState("Hive 1");
-  const [florage, setFlorage] = useState("");
-  const intervalRef = useRef<number | null>(null);
+  const [count, setCount] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [logs, setLogs] = useState<Log[]>([]);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!running) return;
-    intervalRef.current = window.setInterval(() => {
-      setSeconds((s) => {
-        if (s <= 1) { setRunning(false); window.clearInterval(intervalRef.current!); toast.success(`Counter complete: ${count} bees/min`); return 0; }
-        return s - 1;
-      });
-    }, 1000);
-    return () => { if (intervalRef.current) window.clearInterval(intervalRef.current); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running]);
+    let interval: any;
+    if (isRunning) {
+      interval = setInterval(() => setSeconds((s) => s + 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning]);
 
-  const reset = () => { setCount(0); setSeconds(60); setRunning(false); };
-
-  const save = async () => {
-    if (count === 0) { toast.error("Run a count first"); return; }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any).from("bee_flight_logs").insert({
-      device_id: deviceId, hive_label: hiveLabel, bees_per_minute: count,
-      pollen_loads: 0, florage_source: florage || null, observed_at: new Date().toISOString(),
-    });
-    if (error) { toast.error("Save failed"); return; }
-    toast.success(`Saved ${count}/min for ${hiveLabel}`);
-    reset();
+  const loadLogs = async () => {
+    const { data } = await supabase.from("activity_logs").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20);
+    if (data) setLogs(data as Log[]);
   };
 
-  // Activity band interpretation
-  const band =
-    count < 20 ? { label: "Weak / dearth", colour: "text-destructive", note: "Investigate queen status, weather, dearth." } :
-    count < 60 ? { label: "Normal early/late season", colour: "text-foreground", note: "Healthy baseline activity." } :
-    count < 120 ? { label: "Healthy mid-season", colour: "text-honey", note: "Good nectar flow." } :
-    count < 250 ? { label: "Strong nectar flow", colour: "text-honey font-bold", note: "Confirm super capacity." } :
-    { label: "Peak / robbing risk", colour: "text-destructive font-bold", note: "Inspect for swarm prep or robbing." };
+  useEffect(() => {
+    if (isOpen) loadLogs();
+  }, [isOpen]);
+
+  const saveLog = async () => {
+    if (count === 0) { toast.error("Count is zero"); return; }
+    setSaving(true);
+    const { error } = await supabase.from("activity_logs").insert({
+      device_id: deviceId, hive_label: hiveLabel, count, duration_seconds: seconds,
+    });
+    setSaving(false);
+    if (error) { toast.error("Failed to save"); return; }
+    toast.success("Activity logged");
+    setCount(0); setSeconds(0); setIsRunning(false);
+    loadLogs();
+  };
+
+  const deleteLog = async (id: string) => {
+    await supabase.from("activity_logs").delete().eq("id", id);
+    loadLogs();
+  };
 
   if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2"><Plane className="w-5 h-5 text-honey" /><h2 className="font-display text-lg font-bold text-honey">Quick Activity Counter</h2></div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
-        </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <input value={hiveLabel} onChange={(e) => setHiveLabel(e.target.value)} className="bg-background border border-border rounded-lg px-3 py-2 text-sm" placeholder="Hive label" />
-          <input value={florage} onChange={(e) => setFlorage(e.target.value)} className="bg-background border border-border rounded-lg px-3 py-2 text-sm" placeholder="Florage (e.g. clover)" />
-        </div>
-
-        <div className="text-center py-6 mb-4 rounded-xl bg-muted/40 border border-border">
-          <div className="text-6xl font-display font-bold text-honey">{count}</div>
-          <div className="text-xs text-muted-foreground mt-1">bees / minute</div>
-          <div className="text-xs text-muted-foreground mt-3">Time left: <b className="text-foreground">{seconds}s</b></div>
-        </div>
-
-        <button
-          onClick={() => running && setCount(count + 1)}
-          disabled={!running}
-          className="w-full py-6 rounded-xl bg-gradient-amber text-primary-foreground text-2xl font-bold mb-3 disabled:opacity-40 active:scale-95 transition-transform"
-        >
-          <Plus className="w-6 h-6 inline mr-2" /> +1 bee
-        </button>
-
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <button onClick={() => { setSeconds(60); setRunning(true); }} className="px-3 py-2 rounded-lg border border-honey/40 text-honey text-xs flex items-center justify-center gap-1"><Play className="w-3 h-3" /> Start</button>
-          <button onClick={() => setRunning(false)} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center justify-center gap-1"><Pause className="w-3 h-3" /> Pause</button>
-          <button onClick={reset} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center justify-center gap-1"><RotateCcw className="w-3 h-3" /> Reset</button>
-        </div>
-
-        {count > 0 && (
-          <div className="p-3 rounded-lg border border-honey/30 bg-honey/5 mb-3 text-xs">
-            <b className={band.colour}>{band.label}</b><br />
-            <span className="text-muted-foreground">{band.note}</span>
+  const content = (
+    <BeeYieldPageShell className={embedded ? "p-0 md:p-0 -m-0 min-h-0 pb-0" : ""}>
+      <BeeYieldPageHeader
+        icon={Activity}
+        label="Telemetry"
+        title="Physical Counter"
+        subtitle="Manual forager-day assessment for colony strength calibration."
+        onBack={onClose}
+        actions={
+          <div className="flex items-center gap-2">
+            <button onClick={() => { setCount(0); setSeconds(0); setIsRunning(false); }} className="px-3 py-1.5 rounded-xl border border-border bg-white text-muted-foreground text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-muted transition-all">
+              <RotateCcw className="w-3.5 h-3.5" /> Reset
+            </button>
+            <button onClick={saveLog} disabled={saving || count === 0} className="px-3 py-1.5 rounded-xl bg-honey text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-md disabled:opacity-50">
+              <Save className="w-3.5 h-3.5" /> Save Data
+            </button>
           </div>
-        )}
+        }
+      />
 
-        <button onClick={save} disabled={count === 0} className="w-full px-4 py-2.5 rounded-lg bg-gradient-amber text-primary-foreground font-semibold text-sm disabled:opacity-50">Save to Bee Flight Logs</button>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+        <div className="lg:col-span-12">
+            <BeeYieldCard className="p-10 border-honey/40 bg-honey/10 relative overflow-hidden text-center cursor-pointer select-none active:scale-[0.98] transition-transform" onClick={() => isRunning && setCount(c => c + 1)}>
+                <div className="relative z-10">
+                    <div className="text-[10px] font-black text-honey uppercase tracking-[0.3em] mb-4">Bee Traffic Count</div>
+                    <div className="text-8xl font-black text-foreground tabular-nums tracking-tighter">{count}</div>
+                    <div className="mt-4 text-sm font-bold text-muted-foreground uppercase tracking-widest">
+                        {seconds}s <span className="opacity-50 mx-2">|</span> {(count / (seconds || 1) * 60).toFixed(1)} bpm
+                    </div>
+                    <div className="mt-8 flex justify-center gap-4">
+                        <button onClick={(e) => { e.stopPropagation(); setIsRunning(!isRunning); }} className={cn("px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl", isRunning ? "bg-white text-honey border border-honey/20 shadow-honey/10" : "bg-honey text-white shadow-honey/30")}>
+                            {isRunning ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+                            {isRunning ? "Pause Session" : "Start Counting"}
+                        </button>
+                    </div>
+                    {!isRunning && count === 0 && (
+                        <p className="mt-6 text-[10px] font-black text-honey/60 uppercase tracking-widest animate-pulse">Press Start to Begin Observation</p>
+                    )}
+                    {isRunning && (
+                        <p className="mt-6 text-[10px] font-black text-honey uppercase tracking-widest animate-bounce">Tap Anywhere to Count</p>
+                    )}
+                </div>
+            </BeeYieldCard>
+        </div>
 
-        <p className="text-[10px] text-muted-foreground mt-3 text-center">Linked to: Bee Flight Tracker · MOA Activity panel · Activity Forecaster · Pollination Planning</p>
+        <div className="lg:col-span-4 space-y-6">
+            <BeeYieldSection title="Sesssion Configuration" icon={ClipboardCheck}>
+                <div className="space-y-4">
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Hive Subject</label>
+                        <input value={hiveLabel} onChange={(e) => setHiveLabel(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-white border border-border text-sm font-bold outline-none focus:border-honey/40 transition-all shadow-sm" />
+                    </div>
+                    <BeeYieldCard className="p-4 border-border/50 bg-muted/10">
+                        <p className="text-[10px] text-muted-foreground leading-relaxed font-bold">Standard BeeYield protocols recommend 60-second observations at solar noon for peak accuracy.</p>
+                    </BeeYieldCard>
+                </div>
+            </BeeYieldSection>
+        </div>
+
+        <div className="lg:col-span-8 space-y-6">
+            <BeeYieldSection title="Historical Observations" icon={Calendar}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto custom-scroll pr-2">
+                    {logs.map((log) => (
+                        <BeeYieldCard key={log.id} className="p-4 border-border/60 bg-white hover:border-honey/40 transition-all group">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h4 className="text-xs font-black text-foreground uppercase truncate tracking-tight">{log.hive_label}</h4>
+                                    <div className="text-[10px] text-honey font-black uppercase mt-0.5">{log.count} bees <span className="text-muted-foreground mx-1">·</span> {log.duration_seconds}s</div>
+                                    <div className="text-[9px] text-muted-foreground font-bold mt-1 uppercase italic">{new Date(log.created_at).toLocaleString()}</div>
+                                </div>
+                                <button onClick={() => deleteLog(log.id)} className="w-8 h-8 rounded-lg bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        </BeeYieldCard>
+                    ))}
+                    {logs.length === 0 && <p className="col-span-full py-12 text-center text-xs text-muted-foreground italic border-2 border-dashed border-border rounded-2xl">No recorded sessions in this device brain.</p>}
+                </div>
+            </BeeYieldSection>
+        </div>
+      </div>
+    </BeeYieldPageShell>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div className={cn("fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity p-4", isOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
+      <div className={cn("bg-white rounded-[2.5rem] w-full h-[85vh] max-w-4xl shadow-2xl relative transition-all transform overflow-hidden", isOpen ? "scale-100" : "scale-95")}>
+        <button onClick={onClose} className="absolute top-8 right-8 p-2 rounded-full hover:bg-muted transition-colors z-50 text-muted-foreground hover:text-foreground">
+          <X className="w-5 h-5" />
+        </button>
+        <div className="h-full overflow-y-auto custom-scroll p-8">
+          {content}
+        </div>
       </div>
     </div>
   );
