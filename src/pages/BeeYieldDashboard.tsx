@@ -389,7 +389,9 @@ const BeeYieldDashboard: React.FC = () => {
             case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
             case 'master-map': return <MasterMapView />;
             case 'forage-zones': return <ForageZonesView />;
+            case 'site-reports-tactical': return <PollinationReports />;
             case 'precision-drilldown': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
             case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
