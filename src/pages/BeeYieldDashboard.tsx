@@ -34,7 +34,6 @@ import {
 // View Imports
 import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 import LovableBeeYieldAI from '@/components/beeyield/lovable_ai/LovableIndex';
-import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
 import PollinationIntelligence from '@/components/beeyield/PollinationIntelligence';
 import PollinationEngine from '@/components/beeyield/PollinationEngine';
 import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
@@ -232,7 +231,6 @@ const BeeYieldDashboard: React.FC = () => {
     const navItems: NavItem[] = React.useMemo(() => [
         { id: 'home', label: 'Home', icon: Home },
         { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
-        { id: 'agro-intelligence', label: 'Strategic Insights', icon: LayoutGrid },
         {
             id: 'precision-pollination-folder',
             label: 'Pollination',
@@ -355,7 +353,6 @@ const BeeYieldDashboard: React.FC = () => {
         switch (activeTab) {
             case 'home': return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'assistant': return <LovableBeeYieldAI />;
-            case 'agro-intelligence': return <AgroIntelligenceView onTabChange={handleTabChange} />;
             case 'precision-pollination-folder':
             case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
             case 'pollination-grid':
