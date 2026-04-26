@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { X, CloudSun, Loader2, Sparkles, Plane } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { X, CloudSun, Loader2, Sparkles, Plane, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, ComposedChart } from "recharts";
 import MarkdownRenderer from "./MarkdownRenderer";
+import { supabase } from "@/integrations/supabase/client";
+import { useDeviceId } from "@/hooks/use-device-id";
+import { evaluateAlerts } from "./AlertsPage";
 
 // Open-Meteo: free, no API key. Hourly temp + wind + precip for next 7 days.
 // Activity prediction model: bees/min ≈ baseline × tempFactor × windFactor × precipFactor × florageFactor
@@ -13,7 +16,9 @@ import MarkdownRenderer from "./MarkdownRenderer";
 
 type Forecast = { date: string; hour: number; tempC: number; windKmh: number; precipMm: number; predictedBpm: number; band: string };
 
-export default function ActivityForecaster({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const deviceId = useDeviceId();
+  const [hiveLabel, setHiveLabel] = useState("Hive 1");
   const [lat, setLat] = useState("-2.4078");
   const [lng, setLng] = useState("37.9658");
   const [baseline, setBaseline] = useState(100);
@@ -22,6 +27,7 @@ export default function ActivityForecaster({ isOpen, onClose, embedded }: { isOp
   const [loading, setLoading] = useState(false);
   const [aiText, setAiText] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
+  const [history, setHistory] = useState<{ date: string; predicted: number; actual: number | null }[]>([]);
 
   const fetchForecast = async () => {
     setLoading(true); setAiText("");
@@ -48,9 +54,70 @@ export default function ActivityForecaster({ isOpen, onClose, embedded }: { isOp
       }
       setForecast(out);
       toast.success(`Loaded ${out.length} hourly forecasts`);
+
+      // Persist daily snapshots + evaluate alerts (today only, to avoid spam)
+      const dayMap = new Map<string, Forecast[]>();
+      for (const f of out) {
+        const key = `2025-${f.date}`; // simple ISO; year not critical for compare
+        if (!dayMap.has(key)) dayMap.set(key, []);
+        dayMap.get(key)!.push(f);
+      }
+      const today = new Date().toISOString().slice(0, 10);
+      const snapshots = Array.from(dayMap.entries()).map(([dateKey, pts]) => ({
+        device_id: deviceId,
+        hive_label: hiveLabel,
+        forecast_for_date: dateKey,
+        predicted_bees_per_min: Math.round(pts.reduce((s, p) => s + p.predictedBpm, 0) / pts.length),
+        temp_c: Math.round((pts.reduce((s, p) => s + p.tempC, 0) / pts.length) * 10) / 10,
+        wind_kmh: Math.round((pts.reduce((s, p) => s + p.windKmh, 0) / pts.length) * 10) / 10,
+        precip_mm: Math.round((pts.reduce((s, p) => s + p.precipMm, 0) / pts.length) * 10) / 10,
+        band: pts[0]?.band || "normal",
+      }));
+      await supabase.from("forecast_snapshots").insert(snapshots);
+      const todaySnap = snapshots.find((s) => s.forecast_for_date.endsWith(today.slice(5)));
+      if (todaySnap) {
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "predicted_bees_per_min", value: todaySnap.predicted_bees_per_min });
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "wind_kmh", value: todaySnap.wind_kmh });
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "temp_c", value: todaySnap.temp_c });
+      }
+      loadHistory();
     } catch (e) { console.error(e); toast.error("Forecast failed"); }
     finally { setLoading(false); }
   };
+
+  const loadHistory = useCallback(async () => {
+    const sevenAgo = new Date(); sevenAgo.setDate(sevenAgo.getDate() - 7);
+    const [{ data: snaps }, { data: actuals }] = await Promise.all([
+      supabase.from("forecast_snapshots").select("forecast_for_date,predicted_bees_per_min")
+        .eq("device_id", deviceId).eq("hive_label", hiveLabel)
+        .gte("created_at", sevenAgo.toISOString()).order("forecast_for_date", { ascending: true }),
+      supabase.from("bee_flight_logs").select("observed_at,bees_per_minute")
+        .eq("device_id", deviceId).eq("hive_label", hiveLabel)
+        .gte("observed_at", sevenAgo.toISOString()).order("observed_at", { ascending: true }),
+    ]);
+    // Aggregate by date
+    const map = new Map<string, { predicted: number[]; actual: number[] }>();
+    for (const s of (snaps as { forecast_for_date: string; predicted_bees_per_min: number }[]) || []) {
+      const d = s.forecast_for_date.slice(0, 10);
+      if (!map.has(d)) map.set(d, { predicted: [], actual: [] });
+      map.get(d)!.predicted.push(s.predicted_bees_per_min);
+    }
+    for (const a of (actuals as { observed_at: string; bees_per_minute: number }[]) || []) {
+      const d = a.observed_at.slice(0, 10);
+      if (!map.has(d)) map.set(d, { predicted: [], actual: [] });
+      map.get(d)!.actual.push(a.bees_per_minute);
+    }
+    const rows = Array.from(map.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, v]) => ({
+        date: date.slice(5),
+        predicted: v.predicted.length ? Math.round(v.predicted.reduce((s, x) => s + x, 0) / v.predicted.length) : 0,
+        actual: v.actual.length ? Math.round(v.actual.reduce((s, x) => s + x, 0) / v.actual.length) : null,
+      }));
+    setHistory(rows);
+  }, [deviceId, hiveLabel]);
+
+  useEffect(() => { if (isOpen) loadHistory(); }, [isOpen, loadHistory]);
 
   const runAI = async () => {
     if (forecast.length === 0) { toast.error("Fetch forecast first"); return; }
@@ -107,7 +174,7 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
 
   if (!isOpen) return null;
   return (
-    <div className={embedded ? "h-full bg-card/60 backdrop-blur-xl rounded-2xl border border-border/50 overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -120,7 +187,8 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
           <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 p-4 rounded-xl border border-border bg-muted/30">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4 p-4 rounded-xl border border-border bg-muted/30">
+          <Field label="Hive label"><input value={hiveLabel} onChange={(e) => setHiveLabel(e.target.value)} className={inputCls} /></Field>
           <Field label="Latitude"><input value={lat} onChange={(e) => setLat(e.target.value)} className={inputCls} /></Field>
           <Field label="Longitude"><input value={lng} onChange={(e) => setLng(e.target.value)} className={inputCls} /></Field>
           <Field label="Baseline bees/min"><input type="number" value={baseline} onChange={(e) => setBaseline(+e.target.value)} className={inputCls} /></Field>
@@ -151,7 +219,26 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
           </div>
         )}
 
+        {history.length > 0 && (
+          <div className="p-4 rounded-xl border border-border bg-card mb-4">
+            <h3 className="font-display text-sm font-bold text-foreground mb-3 flex items-center gap-2"><HistoryIcon className="w-4 h-4 text-honey" /> Last 7 days · predicted vs actual ({hiveLabel})</h3>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={history}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }} />
+                <Legend />
+                <Line type="monotone" dataKey="predicted" stroke="hsl(38,92%,50%)" strokeWidth={2} name="Predicted bees/min" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="actual" stroke="hsl(142,71%,45%)" strokeWidth={2} name="Actual logged" dot={{ r: 3 }} connectNulls />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className="mt-2 text-[11px] text-muted-foreground">Actuals come from <b>Bee Flight Tracker</b> entries for this hive label. Days with no entry show predicted only.</div>
+          </div>
+        )}
+
         {aiText && <div className="p-5 rounded-xl border border-honey/30 bg-card mb-4"><MarkdownRenderer content={aiText} /></div>}
+
 
         <div className="p-3 rounded-lg border border-honey/30 bg-honey/5 text-xs">
           <b className="text-honey">Linked tools:</b> Forecast feeds <b>Pollination Planning</b> (effective forager-days), <b>MOA View</b> (activity panel), and <b>Bee Flight Tracker</b> (compare predicted vs observed).

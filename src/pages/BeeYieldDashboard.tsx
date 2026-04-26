@@ -89,7 +89,7 @@ import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
-// Replaced old PollinationPlanning import with unified PollinationEngine
+import PollinationPlanning from '@/components/beeyield/lovable_ai/PollinationPlanning';
 import PollinationLookup from '@/components/beeyield/lovable_ai/PollinationLookup';
 import PollinationCharts from '@/components/beeyield/lovable_ai/PollinationCharts';
 import BeeDiseasesPage from '@/components/beeyield/lovable_ai/BeeDiseasesPage';
@@ -372,7 +372,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'florage-database':
             case 'florage-page': return <FloragePage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'site-map': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'pollination-planning': return <PollinationEngine isOpen={true} onClose={() => handleTabChange('home')} embedded={true} onTabChange={handleTabChange} />;
+            case 'pollination-planning': return <PollinationEngine onTabChange={handleTabChange} embedded={true} />;
             case 'pollination-lookup': return <PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-analytics': return <PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'bloom-tracking':

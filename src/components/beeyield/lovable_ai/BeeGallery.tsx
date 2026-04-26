@@ -141,10 +141,9 @@ const ALL_CATEGORIES = ["All", ...Array.from(new Set(BEE_SPECIES.map((b) => b.ca
 interface BeeGalleryProps {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
 }
 
-export default function BeeGallery({ isOpen, onClose, embedded }: BeeGalleryProps) {
+export default function BeeGallery({ isOpen, onClose }: BeeGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -168,9 +167,9 @@ export default function BeeGallery({ isOpen, onClose, embedded }: BeeGalleryProp
   const selected = selectedIndex !== null ? BEE_SPECIES[selectedIndex] : null;
 
   return (
-    <div className={embedded ? "h-full bg-card/60 backdrop-blur-xl rounded-2xl border border-border/50 overflow-y-auto custom-scroll" : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"} onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className={embedded ? "w-full h-full flex flex-col" : "bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4 flex flex-col"}
+        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

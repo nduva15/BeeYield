@@ -9,8 +9,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
+} from "@/components/beeyield/lovable_ai/ui/alert-dialog";
+import { Input } from "@/components/beeyield/lovable_ai/ui/input";
 
 export type Conversation = {
   id: string;

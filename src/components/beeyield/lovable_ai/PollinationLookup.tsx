@@ -42,12 +42,11 @@ const CROPS: Crop[] = [
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
 }
 
 type Mode = "single" | "compare";
 
-export default function PollinationLookup({ isOpen, onClose, embedded }: Props) {
+export default function PollinationLookup({ isOpen, onClose }: Props) {
   const [mode, setMode] = useState<Mode>("single");
   const [cropName, setCropName] = useState(CROPS[0].name);
   const [acres, setAcres] = useState<number>(10);
@@ -222,7 +221,7 @@ export default function PollinationLookup({ isOpen, onClose, embedded }: Props) 
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "h-full bg-card/60 backdrop-blur-xl rounded-2xl border border-border/50 overflow-y-auto custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

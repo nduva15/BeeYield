@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/beeyield/lovable_ai/ui/dropdown-menu";
 import { toast } from "sonner";
 const beeyieldLogo = "/logo.png";
 import { useTheme } from "@/hooks/use-theme";
@@ -32,6 +32,9 @@ import FloragePage from "@/components/beeyield/lovable_ai/FloragePage";
 import ActivityCounter from "@/components/beeyield/lovable_ai/ActivityCounter";
 import ActivityForecaster from "@/components/beeyield/lovable_ai/ActivityForecaster";
 import PollinationPlanning from "@/components/beeyield/lovable_ai/PollinationPlanning";
+import PollinationCalcs from "@/components/beeyield/lovable_ai/PollinationCalcs";
+import AlertsPage from "@/components/beeyield/lovable_ai/AlertsPage";
+import MOACompare from "@/components/beeyield/lovable_ai/MOACompare";
 
 type Message = {
   id: string;
@@ -119,7 +122,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export default function LovableIndex() {
+export default function Index() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -145,6 +148,9 @@ export default function LovableIndex() {
   const [activityCounterOpen, setActivityCounterOpen] = useState(false);
   const [activityForecasterOpen, setActivityForecasterOpen] = useState(false);
   const [pollinationPlanningOpen, setPollinationPlanningOpen] = useState(false);
+  const [pollinationCalcsOpen, setPollinationCalcsOpen] = useState(false);
+  const [alertsOpen, setAlertsOpen] = useState(false);
+  const [moaCompareOpen, setMoaCompareOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -440,6 +446,15 @@ export default function LovableIndex() {
               <DropdownMenuItem onClick={() => setPollinationPlanningOpen(true)} className="cursor-pointer">
                 <Target className="w-4 h-4 mr-2" /> Pollination Planning
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setPollinationCalcsOpen(true)} className="cursor-pointer">
+                <Calculator className="w-4 h-4 mr-2" /> Pollination Calcs
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setMoaCompareOpen(true)} className="cursor-pointer">
+                <Layers className="w-4 h-4 mr-2" /> MOA Run Comparison
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAlertsOpen(true)} className="cursor-pointer">
+                <Bug className="w-4 h-4 mr-2" /> Alerts
+              </DropdownMenuItem>
 
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
@@ -700,6 +715,9 @@ export default function LovableIndex() {
       <ActivityCounter isOpen={activityCounterOpen} onClose={() => setActivityCounterOpen(false)} />
       <ActivityForecaster isOpen={activityForecasterOpen} onClose={() => setActivityForecasterOpen(false)} />
       <PollinationPlanning isOpen={pollinationPlanningOpen} onClose={() => setPollinationPlanningOpen(false)} />
+      <PollinationCalcs isOpen={pollinationCalcsOpen} onClose={() => setPollinationCalcsOpen(false)} />
+      <AlertsPage isOpen={alertsOpen} onClose={() => setAlertsOpen(false)} />
+      <MOACompare isOpen={moaCompareOpen} onClose={() => setMoaCompareOpen(false)} />
     </div>
   );
 }
