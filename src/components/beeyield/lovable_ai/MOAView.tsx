@@ -334,13 +334,13 @@ Required sections:
       </div>
 
       {loading ? (
-        <div className="flex-1 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-honey" /></div>
+        <div className="flex-1 min-h-0 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-honey" /></div>
       ) : !run ? (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm p-6 text-center">
+        <div className="flex-1 min-h-0 flex items-center justify-center text-muted-foreground text-sm p-6 text-center">
           No saved harvest runs yet. Save a run from the Harvest Calculator to load the MOA view.
         </div>
       ) : (
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden">
+        <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-5 overflow-hidden">
           {/* Map */}
           <div ref={mapWrapRef} className="md:col-span-3 relative border-r border-border">
             <MapContainer center={center} zoom={15} style={{ width: "100%", height: "100%" }}>

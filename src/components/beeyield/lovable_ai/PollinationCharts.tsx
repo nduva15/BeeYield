@@ -114,7 +114,7 @@ export default function PollinationCharts({ isOpen, onClose }: PollinationCharts
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                     <YAxis type="category" dataKey="crop" tick={{ fontSize: 11, fill: "hsl(var(--foreground))" }} width={75} />
-                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(v: number) => [`${v}%`, "Dependency"]} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [`${v}%`, "Dependency"]} />
                     <Bar dataKey="dependency" fill="hsl(45, 93%, 47%)" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -150,12 +150,12 @@ export default function PollinationCharts({ isOpen, onClose }: PollinationCharts
                 <div className="h-[350px] w-full md:w-1/2">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={REGIONAL_VALUE} dataKey="value" nameKey="region" cx="50%" cy="50%" outerRadius={130} label={({ region, value }) => `${region}: $${value}B`} labelLine={{ stroke: "hsl(var(--muted-foreground))" }} style={{ fontSize: 10 }}>
+                      <Pie data={REGIONAL_VALUE} dataKey="value" nameKey="region" cx="50%" cy="50%" outerRadius={130} label={(props: any) => `${props.region}: $${props.value}B`} labelLine={{ stroke: "hsl(var(--muted-foreground))" }} style={{ fontSize: 10 }}>
                         {REGIONAL_VALUE.map((_, i) => (
                           <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(v: number) => [`$${v}B`, "Value"]} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                      <Tooltip formatter={(v: any) => [`$${v}B`, "Value"]} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -210,7 +210,7 @@ export default function PollinationCharts({ isOpen, onClose }: PollinationCharts
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                     <YAxis domain={[30, 55]} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(v: number) => [`${v}%`, "Colony Loss"]} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [`${v}%`, "Colony Loss"]} />
                     <Line type="monotone" dataKey="loss" stroke="hsl(0, 70%, 55%)" strokeWidth={2} dot={{ fill: "hsl(0, 70%, 55%)", r: 4 }} activeDot={{ r: 6 }} />
                   </LineChart>
                 </ResponsiveContainer>
