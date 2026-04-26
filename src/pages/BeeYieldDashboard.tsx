@@ -85,7 +85,7 @@ import IntegrationsView from '@/components/beeyield/IntegrationsView';
 import SupportCenterView from '@/components/beeyield/SupportCenterView';
 import SettingsView from '@/components/beeyield/SettingsView';
 import ImageAnalysisView from '@/components/beeyield/ImageAnalysisView';
-import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
+import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView.tsx';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
@@ -410,7 +410,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'varroa': return <VarroaView />;
             case 'acoustic-transformer':
             case 'sound-analysis':
-            case 'sound': return <SoundAnalysisView onTabChange={handleTabChange} />;
+            case 'sound': return <SoundAnalysisView onTabChange={handleTabChange} embedded={true} />;
             case 'image-analysis': return <ImageAnalysisView onTabChange={handleTabChange} />;
             case 'health-guide': return <HealthGuideView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'reports-exports': return <ReportsExportsView onTabChange={handleTabChange} />;

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Thermometer, Droplets, Activity, AlertTriangle, CheckCircle2, Volume2, Cpu, ChevronLeft, ChevronRight, Clock, Zap, Shield, ArrowUp, ArrowDown, Minus, Layers
+    Thermometer, Droplets, Activity, AlertTriangle, CheckCircle2, Volume2, Cpu, ChevronLeft, ChevronRight, Clock, Zap, Shield, ArrowUp, ArrowDown, Minus, Layers, ArrowRight
 } from 'lucide-react';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ComposedChart, Bar
@@ -154,13 +154,13 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 
                 return {
                     id: h.id,
-                    name: h.name,
+                    name: h.hive_code,
                     code: h.hive_code || h.id.slice(0, 8),
                     temp: latest?.temperature || 35.0,
                     humidity: latest?.humidity || 60,
-                    acoustic: h.health_status || 'Healthy',
+                    acoustic: h.status || 'Healthy',
                     alert: hasAlert,
-                    lastSeen: latest ? formatDistanceToNow(new Date(latest.created_at), { addSuffix: true }) : 'No signal'
+                    lastSeen: latest ? formatDistanceToNow(new Date(latest.timestamp), { addSuffix: true }) : 'No signal'
                 };
             });
 

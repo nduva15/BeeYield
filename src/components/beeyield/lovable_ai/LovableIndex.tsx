@@ -35,7 +35,7 @@ import PollinationPlanning from "@/components/beeyield/lovable_ai/PollinationPla
 import PollinationCalcs from "@/components/beeyield/lovable_ai/PollinationCalcs";
 import AlertsPage from "@/components/beeyield/lovable_ai/AlertsPage";
 import MOACompare from "@/components/beeyield/lovable_ai/MOACompare";
-import SoundAnalysisView from "@/components/beeyield/SoundAnalysisView";
+import SoundAnalysisView from "@/components/beeyield/SoundAnalysisView.tsx";
 
 type Message = {
   id: string;
