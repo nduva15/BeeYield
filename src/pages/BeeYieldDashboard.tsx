@@ -377,6 +377,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'pollination-planning-ai': return <PollinationPlanning isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-planning': return <PollinationEngine onTabChange={handleTabChange} embedded={true} />;
             case 'saturation-math': return <SpatialCoverageView />;
+            case 'hpa-optimizer': return <HpaOptimizer />;
             case 'pollination-lookup': return <PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-analytics': return <PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'foraging-optimizer': return <ForagingOptimizer onTabChange={handleTabChange} />;
