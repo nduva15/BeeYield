@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { X, Sprout, Flower2, Plus, Pencil, Trash2, Upload, Download, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { isOptionalSupabaseTableMissing } from "@/integrations/supabase/legacy-table-guard";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
 
@@ -64,6 +65,14 @@ const EMPTY_DRAFT: Omit<FloragePlant, "id" | "is_default"> = {
   name: "", latin: "", bloom: "", nectar: 5, pollen: 5, radius: 800, notes: "",
 };
 
+function buildFallbackPlants(): FloragePlant[] {
+  return DEFAULT_FLORAGE.map((plant, index) => ({
+    id: `fallback-${index}`,
+    ...plant,
+    is_default: true,
+  }));
+}
+
 export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [plants, setPlants] = useState<FloragePlant[]>([]);
@@ -84,11 +93,19 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
       .eq("device_id", deviceId)
       .order("is_default", { ascending: false })
       .order("name", { ascending: true });
+
     if (error) {
       toast.error("Failed to load florage");
       setLoading(false);
       return;
     }
+
+    if (isOptionalSupabaseTableMissing("florage_plants")) {
+      setPlants(buildFallbackPlants());
+      setLoading(false);
+      return;
+    }
+
     if (!data || data.length === 0) {
       // Seed defaults
       const seed = DEFAULT_FLORAGE.map((p) => ({ ...p, device_id: deviceId, is_default: true }));

@@ -1,77 +1,113 @@
-import { Helmet } from 'react-helmet';
+import { useEffect } from "react";
 
 interface SEOProps {
-    title: string;
-    description?: string;
-    keywords?: string;
-    image?: string;
-    url?: string;
-    canonical?: string;
-    schema?: object;
-    type?: string;
+  title: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+  url?: string;
+  canonical?: string;
+  schema?: object;
+  type?: string;
+}
+
+const DEFAULT_DESCRIPTION =
+  "BeeYield - Your Partner in Pollination. Premium precision pollination services, sustainable beekeeping, and traceable raw honey from Kenya to the World.";
+const DEFAULT_KEYWORDS =
+  "precision pollination, honey traceability, sustainable beekeeping, Kibwezi, Makueni, Kenya honey, African agriculture, IoT bees";
+
+function upsertMeta(selector: string, attributes: Record<string, string>) {
+  if (typeof document === "undefined") return;
+
+  let element = document.head.querySelector(selector) as HTMLMetaElement | null;
+  if (!element) {
+    element = document.createElement("meta");
+    document.head.appendChild(element);
+  }
+
+  Object.entries(attributes).forEach(([key, value]) => {
+    element?.setAttribute(key, value);
+  });
+}
+
+function upsertLink(selector: string, attributes: Record<string, string>) {
+  if (typeof document === "undefined") return;
+
+  let element = document.head.querySelector(selector) as HTMLLinkElement | null;
+  if (!element) {
+    element = document.createElement("link");
+    document.head.appendChild(element);
+  }
+
+  Object.entries(attributes).forEach(([key, value]) => {
+    element?.setAttribute(key, value);
+  });
 }
 
 const SEO = ({
-    title,
-    description = "BeeYield - Your Partner in Pollination. Premium precision pollination services, sustainable beekeeping, and traceable raw honey from Kenya to the World.",
-    keywords = "precision pollination, honey traceability, sustainable beekeeping, Kibwezi, Makueni, Kenya honey, African agriculture, IoT bees",
-    image = "/logo.png",
-    url,
-    canonical,
-    schema,
-    type = "website"
+  title,
+  description = DEFAULT_DESCRIPTION,
+  keywords = DEFAULT_KEYWORDS,
+  image = "/logo.png",
+  url,
+  canonical,
+  schema,
+  type = "website",
 }: SEOProps) => {
-    const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://beeyield.com';
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const siteUrl = window.location.origin || "https://beeyield.com";
     const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
-    const fullImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
+    const fullImage = image.startsWith("http") ? image : `${siteUrl}${image}`;
     const canonicalUrl = canonical || fullUrl;
 
-    return (
-        <Helmet>
-            {/* Standard Metadata */}
-            <title>{title} | BeeYield — Your Partner in Pollination</title>
-            <meta name="description" content={description} />
-            <meta name="keywords" content={keywords} />
-            <link rel="canonical" href={canonicalUrl} />
+    document.title = `${title} | BeeYield - Your Partner in Pollination`;
 
-            {/* GEO Metadata - Targeted at Honey Origin (Kibwezi, Kenya) */}
-            <meta name="geo.region" content="KE" />
-            <meta name="geo.placename" content="Kibwezi, Makueni County, Kenya" />
-            <meta name="geo.position" content="-2.4214;37.9545" />
-            <meta name="ICBM" content="-2.4214, 37.9545" />
+    upsertMeta('meta[name="description"]', { name: "description", content: description });
+    upsertMeta('meta[name="keywords"]', { name: "keywords", content: keywords });
+    upsertLink('link[rel="canonical"]', { rel: "canonical", href: canonicalUrl });
 
-            {/* Answer Engine Optimization (AEO) hints */}
-            <meta name="search-engine" content="beeyield-aeo" />
-            <meta name="audience" content="farmers, apiarists, sustainable consumers, global researchers" />
+    upsertMeta('meta[name="geo.region"]', { name: "geo.region", content: "KE" });
+    upsertMeta('meta[name="geo.placename"]', { name: "geo.placename", content: "Kibwezi, Makueni County, Kenya" });
+    upsertMeta('meta[name="geo.position"]', { name: "geo.position", content: "-2.4214;37.9545" });
+    upsertMeta('meta[name="ICBM"]', { name: "ICBM", content: "-2.4214, 37.9545" });
 
-            {/* Open Graph / Facebook */}
-            <meta property="og:type" content={type} />
-            <meta property="og:url" content={fullUrl} />
-            <meta property="og:title" content={`${title} | BeeYield`} />
-            <meta property="og:description" content={description} />
-            <meta property="og:image" content={fullImage} />
-            <meta property="og:locale" content="en_KE" />
-            <meta property="og:site_name" content="BeeYield" />
+    upsertMeta('meta[name="search-engine"]', { name: "search-engine", content: "beeyield-aeo" });
+    upsertMeta('meta[name="audience"]', { name: "audience", content: "farmers, apiarists, sustainable consumers, global researchers" });
 
-            {/* Twitter */}
-            <meta property="twitter:card" content="summary_large_image" />
-            <meta property="twitter:url" content={fullUrl} />
-            <meta property="twitter:title" content={`${title} | BeeYield`} />
-            <meta property="twitter:description" content={description} />
-            <meta property="twitter:image" content={fullImage} />
-            <meta name="twitter:label1" content="Region" />
-            <meta name="twitter:data1" content="Kenya, Africa" />
-            <meta name="twitter:label2" content="Expertise" />
-            <meta name="twitter:data2" content="Precision Pollination & IoT IoT" />
+    upsertMeta('meta[property="og:type"]', { property: "og:type", content: type });
+    upsertMeta('meta[property="og:url"]', { property: "og:url", content: fullUrl });
+    upsertMeta('meta[property="og:title"]', { property: "og:title", content: `${title} | BeeYield` });
+    upsertMeta('meta[property="og:description"]', { property: "og:description", content: description });
+    upsertMeta('meta[property="og:image"]', { property: "og:image", content: fullImage });
+    upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: "en_KE" });
+    upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: "BeeYield" });
 
-            {/* Structured Data (Schema.org / JSON-LD) */}
-            {schema && (
-                <script type="application/ld+json">
-                    {JSON.stringify(schema)}
-                </script>
-            )}
-        </Helmet>
-    );
+    upsertMeta('meta[property="twitter:card"]', { property: "twitter:card", content: "summary_large_image" });
+    upsertMeta('meta[property="twitter:url"]', { property: "twitter:url", content: fullUrl });
+    upsertMeta('meta[property="twitter:title"]', { property: "twitter:title", content: `${title} | BeeYield` });
+    upsertMeta('meta[property="twitter:description"]', { property: "twitter:description", content: description });
+    upsertMeta('meta[property="twitter:image"]', { property: "twitter:image", content: fullImage });
+    upsertMeta('meta[name="twitter:label1"]', { name: "twitter:label1", content: "Region" });
+    upsertMeta('meta[name="twitter:data1"]', { name: "twitter:data1", content: "Kenya, Africa" });
+    upsertMeta('meta[name="twitter:label2"]', { name: "twitter:label2", content: "Expertise" });
+    upsertMeta('meta[name="twitter:data2"]', { name: "twitter:data2", content: "Precision Pollination & IoT IoT" });
+
+    const schemaId = "beeyield-seo-schema";
+    const existingSchema = document.getElementById(schemaId);
+    if (existingSchema) existingSchema.remove();
+
+    if (schema) {
+      const script = document.createElement("script");
+      script.id = schemaId;
+      script.type = "application/ld+json";
+      script.text = JSON.stringify(schema);
+      document.head.appendChild(script);
+    }
+  }, [canonical, description, image, keywords, schema, title, type, url]);
+
+  return null;
 };
 
 export default SEO;
