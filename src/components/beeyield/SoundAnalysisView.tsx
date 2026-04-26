@@ -185,7 +185,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({
     ];
 
     const content = (
-        <BeeYieldPageShell className={cn(embedded && 'p-0 md:p-0 -m-0 min-h-0 pb-0')}>
+        <BeeYieldPageShell embedded={embedded}>
             <BeeYieldPageHeader
                 icon={Zap}
                 label="Sound analysis"
