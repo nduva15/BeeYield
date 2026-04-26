@@ -1,184 +1,254 @@
-import { useState, useMemo } from "react";
-import { X, TrendingUp, Sparkles, Loader2, Info, Calendar, BarChart3, CloudRain, Sun, Wind } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import MarkdownRenderer from "./MarkdownRenderer";
+import { useState, useEffect, useCallback } from "react";
+import { X, CloudSun, Loader2, Sparkles, Plane, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
-import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldCard, BeeYieldBadge } from "../BeeYieldUI";
-import { cn } from "@/lib/utils";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, ComposedChart } from "recharts";
+import MarkdownRenderer from "./MarkdownRenderer";
+import { supabase } from "@/integrations/supabase/client";
+import { useDeviceId } from "@/hooks/use-device-id";
+import { evaluateAlerts } from "./AlertsPage";
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+// Open-Meteo: free, no API key. Hourly temp + wind + precip for next 7 days.
+// Activity prediction model: bees/min ≈ baseline × tempFactor × windFactor × precipFactor × florageFactor
+//   tempFactor: 0 below 12°C, ramps to 1.0 at 18-28°C, drops to 0.5 above 35°C
+//   windFactor: 1.0 below 8 km/h, drops linearly to 0.3 at 30 km/h, 0 above
+//   precipFactor: 1.0 dry, 0.4 light rain (<1mm), 0 above
+//   florageFactor: user-supplied 0.5–1.5 (low/avg/high)
 
-export default function ActivityForecaster({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
-  const [temp, setTemp] = useState(24);
-  const [wind, setWind] = useState(12);
-  const [precip, setPrecip] = useState(0);
-  const [bloomIntensity, setBloomIntensity] = useState(70);
-  const [aiText, setAiText] = useState("");
+type Forecast = { date: string; hour: number; tempC: number; windKmh: number; precipMm: number; predictedBpm: number; band: string };
+
+export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const deviceId = useDeviceId();
+  const [hiveLabel, setHiveLabel] = useState("Hive 1");
+  const [lat, setLat] = useState("-2.4078");
+  const [lng, setLng] = useState("37.9658");
+  const [baseline, setBaseline] = useState(100);
+  const [florageScore, setFlorageScore] = useState(1.0);
+  const [forecast, setForecast] = useState<Forecast[]>([]);
   const [loading, setLoading] = useState(false);
+  const [aiText, setAiText] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [history, setHistory] = useState<{ date: string; predicted: number; actual: number | null }[]>([]);
 
-  const forecast = useMemo(() => {
-    return DAYS.map((day, idx) => {
-      const tempFactor = Math.max(0, 1 - Math.abs(temp - 25) / 20);
-      const windFactor = Math.max(0, 1 - wind / 40);
-      const rainFactor = Math.max(0, 1 - precip / 10);
-      const bloomFactor = bloomIntensity / 100;
-      
-      const v = 80 * tempFactor * windFactor * rainFactor * bloomFactor;
-      const variation = 1 + (Math.sin(idx * 1.5) * 0.15);
-      return { day, score: Math.round(v * variation) };
-    });
-  }, [temp, wind, precip, bloomIntensity]);
-
-  const runAI = async () => {
+  const fetchForecast = async () => {
     setLoading(true); setAiText("");
     try {
-      const prompt = `As Beeyield AI, forecast forager activity based on:\n- Temp: ${temp}°C\n- Wind: ${wind} km/h\n- Precip: ${precip}mm\n- Bloom: ${bloomIntensity}%\n\nProvide a 7-day outlook, explain the weather-flight tradeoffs, and suggest hive movement or forager-day contract timing.`;
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
-      });
-      if (!resp.ok || !resp.body) { toast.error("AI error"); setLoading(false); return; }
-      const reader = resp.body.getReader(); const decoder = new TextDecoder();
-      let acc = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const json = line.slice(6).trim();
-            if (json === "[DONE]") break;
-            try { const p = JSON.parse(json); const c = p.choices?.[0]?.delta?.content; if (c) { acc += c; setAiText(acc); } } catch {}
-          }
-        }
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,wind_speed_10m,precipitation&forecast_days=7&timezone=auto`;
+      const r = await fetch(url);
+      if (!r.ok) { toast.error("Open-Meteo request failed"); setLoading(false); return; }
+      const data = await r.json();
+      const times: string[] = data.hourly?.time || [];
+      const temps: number[] = data.hourly?.temperature_2m || [];
+      const winds: number[] = data.hourly?.wind_speed_10m || [];
+      const precs: number[] = data.hourly?.precipitation || [];
+      const out: Forecast[] = [];
+      for (let i = 0; i < times.length; i++) {
+        const t = temps[i]; const w = winds[i]; const p = precs[i];
+        const hour = parseInt(times[i].slice(11, 13));
+        if (hour < 7 || hour > 19) continue; // bees inactive at night
+        const tF = t < 12 ? 0 : t < 18 ? (t - 12) / 6 : t < 28 ? 1 : t < 35 ? 1 - (t - 28) * 0.07 : 0.5;
+        const wF = w < 8 ? 1 : w < 30 ? 1 - ((w - 8) * 0.7 / 22) : 0;
+        const pF = p < 0.1 ? 1 : p < 1 ? 0.4 : 0;
+        const bpm = Math.round(baseline * tF * wF * pF * florageScore);
+        const band = bpm < 20 ? "weak" : bpm < 60 ? "normal" : bpm < 120 ? "healthy" : bpm < 250 ? "strong" : "peak";
+        out.push({ date: times[i].slice(5, 10), hour, tempC: t, windKmh: w, precipMm: p, predictedBpm: bpm, band });
       }
-    } catch { toast.error("Inference failed"); }
+      setForecast(out);
+      toast.success(`Loaded ${out.length} hourly forecasts`);
+
+      // Persist daily snapshots + evaluate alerts (today only, to avoid spam)
+      const dayMap = new Map<string, Forecast[]>();
+      for (const f of out) {
+        const key = `2025-${f.date}`; // simple ISO; year not critical for compare
+        if (!dayMap.has(key)) dayMap.set(key, []);
+        dayMap.get(key)!.push(f);
+      }
+      const today = new Date().toISOString().slice(0, 10);
+      const snapshots = Array.from(dayMap.entries()).map(([dateKey, pts]) => ({
+        device_id: deviceId,
+        hive_label: hiveLabel,
+        forecast_for_date: dateKey,
+        predicted_bees_per_min: Math.round(pts.reduce((s, p) => s + p.predictedBpm, 0) / pts.length),
+        temp_c: Math.round((pts.reduce((s, p) => s + p.tempC, 0) / pts.length) * 10) / 10,
+        wind_kmh: Math.round((pts.reduce((s, p) => s + p.windKmh, 0) / pts.length) * 10) / 10,
+        precip_mm: Math.round((pts.reduce((s, p) => s + p.precipMm, 0) / pts.length) * 10) / 10,
+        band: pts[0]?.band || "normal",
+      }));
+      await supabase.from("forecast_snapshots").insert(snapshots);
+      const todaySnap = snapshots.find((s) => s.forecast_for_date.endsWith(today.slice(5)));
+      if (todaySnap) {
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "predicted_bees_per_min", value: todaySnap.predicted_bees_per_min });
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "wind_kmh", value: todaySnap.wind_kmh });
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "temp_c", value: todaySnap.temp_c });
+      }
+      loadHistory();
+    } catch (e) { console.error(e); toast.error("Forecast failed"); }
     finally { setLoading(false); }
   };
 
-  if (!isOpen) return null;
+  const loadHistory = useCallback(async () => {
+    const sevenAgo = new Date(); sevenAgo.setDate(sevenAgo.getDate() - 7);
+    const [{ data: snaps }, { data: actuals }] = await Promise.all([
+      supabase.from("forecast_snapshots").select("forecast_for_date,predicted_bees_per_min")
+        .eq("device_id", deviceId).eq("hive_label", hiveLabel)
+        .gte("created_at", sevenAgo.toISOString()).order("forecast_for_date", { ascending: true }),
+      supabase.from("bee_flight_logs").select("observed_at,bees_per_minute")
+        .eq("device_id", deviceId).eq("hive_label", hiveLabel)
+        .gte("observed_at", sevenAgo.toISOString()).order("observed_at", { ascending: true }),
+    ]);
+    // Aggregate by date
+    const map = new Map<string, { predicted: number[]; actual: number[] }>();
+    for (const s of (snaps as { forecast_for_date: string; predicted_bees_per_min: number }[]) || []) {
+      const d = s.forecast_for_date.slice(0, 10);
+      if (!map.has(d)) map.set(d, { predicted: [], actual: [] });
+      map.get(d)!.predicted.push(s.predicted_bees_per_min);
+    }
+    for (const a of (actuals as { observed_at: string; bees_per_minute: number }[]) || []) {
+      const d = a.observed_at.slice(0, 10);
+      if (!map.has(d)) map.set(d, { predicted: [], actual: [] });
+      map.get(d)!.actual.push(a.bees_per_minute);
+    }
+    const rows = Array.from(map.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, v]) => ({
+        date: date.slice(5),
+        predicted: v.predicted.length ? Math.round(v.predicted.reduce((s, x) => s + x, 0) / v.predicted.length) : 0,
+        actual: v.actual.length ? Math.round(v.actual.reduce((s, x) => s + x, 0) / v.actual.length) : null,
+      }));
+    setHistory(rows);
+  }, [deviceId, hiveLabel]);
 
-  const content = (
-    <BeeYieldPageShell className={embedded ? "p-0 md:p-0 -m-0 min-h-0 pb-0" : ""}>
-      <BeeYieldPageHeader
-        icon={TrendingUp}
-        label="Analytics"
-        title="Activity Forecaster"
-        subtitle="Climate-driven flight simulation and forager-day projections."
-        onBack={onClose}
-        actions={
-          <button onClick={runAI} disabled={loading} className="px-4 py-2 rounded-xl bg-honey text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-md disabled:opacity-50">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Neural Outlook
-          </button>
+  useEffect(() => { if (isOpen) loadHistory(); }, [isOpen, loadHistory]);
+
+  const runAI = async () => {
+    if (forecast.length === 0) { toast.error("Fetch forecast first"); return; }
+    setAiLoading(true); setAiText("");
+    const peakDay = [...new Set(forecast.map(f => f.date))].map(d => {
+      const dayPoints = forecast.filter(f => f.date === d);
+      const avgBpm = Math.round(dayPoints.reduce((s, p) => s + p.predictedBpm, 0) / dayPoints.length);
+      return { date: d, avgBpm };
+    });
+    const prompt = `As Beeyield AI, write a **7-Day Bee Activity Forecast Report** for an apiary at lat ${lat}, lng ${lng}.
+
+Inputs:
+- Baseline activity: ${baseline} bees/min (peak-season estimate)
+- Florage abundance multiplier: ${florageScore}× (1.0 = average, >1 abundant, <1 dearth)
+- Daily averages (predicted bees/min, daylight hours only): ${peakDay.map(d => `${d.date}=${d.avgBpm}`).join(", ")}
+
+Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); (3) hive-management actions per day band (feed, inspect, harvest, swarm-watch); (4) supplementary feeding recommendations.`;
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "flight" }),
+      });
+      if (!resp.ok || !resp.body) { toast.error("AI failed"); setAiLoading(false); return; }
+      const reader = resp.body.getReader(); const decoder = new TextDecoder();
+      let buf = ""; let acc = ""; let done = false;
+      while (!done) {
+        const { done: rd, value } = await reader.read();
+        if (rd) break;
+        buf += decoder.decode(value, { stream: true });
+        let nl: number;
+        while ((nl = buf.indexOf("\n")) !== -1) {
+          let line = buf.slice(0, nl); buf = buf.slice(nl + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const j = line.slice(6).trim();
+          if (j === "[DONE]") { done = true; break; }
+          try { const p = JSON.parse(j); const c = p.choices?.[0]?.delta?.content; if (c) { acc += c; setAiText(acc); } } catch { /* partial */ }
         }
-      />
+      }
+    } catch { toast.error("AI failed"); }
+    finally { setAiLoading(false); }
+  };
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
-        <div className="lg:col-span-5 space-y-6">
-          <BeeYieldSection title="Environmental Drivers" icon={Sun}>
-             <div className="space-y-6">
-                <Slider label="Ambient Temp" icon={Sun} value={temp} unit="°C" min={10} max={45} onChange={setTemp} />
-                <Slider label="Wind Velocity" icon={Wind} value={wind} unit=" km/h" min={0} max={50} onChange={setWind} />
-                <Slider label="Precipitation" icon={CloudRain} value={precip} unit="mm" min={0} max={30} onChange={setPrecip} />
-                <Slider label="Bloom Load" icon={Sparkles} value={bloomIntensity} unit="%" min={0} max={100} onChange={setBloomIntensity} />
-             </div>
-          </BeeYieldSection>
+  const dailyAverage = [...new Set(forecast.map(f => f.date))].map(d => {
+    const pts = forecast.filter(f => f.date === d);
+    return {
+      date: d,
+      avgBpm: Math.round(pts.reduce((s, p) => s + p.predictedBpm, 0) / pts.length),
+      avgTemp: Math.round((pts.reduce((s, p) => s + p.tempC, 0) / pts.length) * 10) / 10,
+      avgWind: Math.round((pts.reduce((s, p) => s + p.windKmh, 0) / pts.length) * 10) / 10,
+    };
+  });
 
-          <BeeYieldCard className="p-6 border-border/50 bg-muted/10">
-              <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <Info className="w-3.5 h-3.5" /> Modeling Logic
-              </h4>
-              <p className="text-[11px] text-muted-foreground leading-relaxed font-bold">
-                  Flight efficiency drops geometrically above 35°C or in winds exceeding 20km/h. Bloom load interacts with temperature to determine the 'Foraging Magnetism' score.
-              </p>
-          </BeeYieldCard>
-        </div>
-
-        <div className="lg:col-span-7 space-y-6">
-          <BeeYieldCard className="p-6 border-border/60 bg-white shadow-sm overflow-hidden">
-             <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h3 className="text-xs font-black text-foreground uppercase tracking-widest">7-Day Activity Projection</h3>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wide">Standardized Forager-Performance Units (FPU)</p>
-                </div>
-                <BarChart3 className="w-5 h-5 text-honey" />
-             </div>
-             <div className="h-64 mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={forecast}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                        <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={10} fontWeight="900" />
-                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} fontWeight="900" />
-                        <Tooltip cursor={{ fill: 'hsl(var(--honey)/0.05)' }} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", fontSize: 10, borderRadius: 12 }} />
-                        <Bar dataKey="score" radius={[6, 6, 0, 0]}>
-                            {forecast.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.score > 50 ? 'hsl(var(--honey))' : 'hsl(var(--muted-foreground))'} fillOpacity={0.8} />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
-             </div>
-          </BeeYieldCard>
-
-          {aiText || loading ? (
-              <BeeYieldCard className="p-8 border-honey/30 bg-card overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-                   <div className="flex items-center gap-2 mb-4 border-b border-honey/10 pb-4">
-                        <Sparkles className="w-4 h-4 text-honey" />
-                        <h3 className="text-xs font-black text-honey uppercase tracking-widest">Neural Flight Analysis</h3>
-                   </div>
-                   {loading && !aiText ? (
-                       <div className="py-12 flex flex-col items-center justify-center">
-                            <Loader2 className="w-10 h-10 animate-spin text-honey mb-4" />
-                            <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Scanning Satellite Weather...</p>
-                       </div>
-                   ) : (
-                       <div className="prose prose-sm max-w-none prose-p:text-muted-foreground prose-headings:text-foreground prose-strong:text-honey">
-                            <MarkdownRenderer content={aiText} />
-                       </div>
-                   )}
-              </BeeYieldCard>
-          ) : (
-            <BeeYieldCard className="p-8 border-border/40 bg-muted/5 text-center flex flex-col items-center">
-                 <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mb-4">
-                    <Sparkles className="w-6 h-6 text-honey" />
-                 </div>
-                 <p className="text-xs font-bold text-muted-foreground max-w-[280px]">Run the AI Outlook to get climate-specific hive deployment and contract timing recommendations.</p>
-            </BeeYieldCard>
-          )}
-        </div>
-      </div>
-    </BeeYieldPageShell>
-  );
-
-  if (embedded) return content;
-
+  if (!isOpen) return null;
   return (
-    <div className={cn("fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity p-4", isOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
-      <div className={cn("bg-white rounded-[2.5rem] w-full h-[90vh] max-w-6xl shadow-2xl relative transition-all transform overflow-hidden", isOpen ? "scale-100" : "scale-95")}>
-        <button onClick={onClose} className="absolute top-10 right-10 p-2 rounded-full hover:bg-muted transition-colors z-50 text-muted-foreground hover:text-foreground">
-          <X className="w-6 h-6" />
-        </button>
-        <div className="h-full overflow-y-auto custom-scroll p-10">
-          {content}
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-5xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <CloudSun className="w-7 h-7 text-honey" />
+            <div>
+              <h1 className="font-display text-2xl font-bold text-honey">Bee Activity Forecaster</h1>
+              <p className="text-xs text-muted-foreground">7-day activity prediction · Open-Meteo weather × florage × baseline</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4 p-4 rounded-xl border border-border bg-muted/30">
+          <Field label="Hive label"><input value={hiveLabel} onChange={(e) => setHiveLabel(e.target.value)} className={inputCls} /></Field>
+          <Field label="Latitude"><input value={lat} onChange={(e) => setLat(e.target.value)} className={inputCls} /></Field>
+          <Field label="Longitude"><input value={lng} onChange={(e) => setLng(e.target.value)} className={inputCls} /></Field>
+          <Field label="Baseline bees/min"><input type="number" value={baseline} onChange={(e) => setBaseline(+e.target.value)} className={inputCls} /></Field>
+          <Field label={`Florage score: ${florageScore.toFixed(1)}×`}><input type="range" min={0.5} max={1.5} step={0.1} value={florageScore} onChange={(e) => setFlorageScore(+e.target.value)} className="w-full accent-honey" /></Field>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+          <button onClick={fetchForecast} disabled={loading} className="px-4 py-2.5 rounded-lg bg-gradient-amber text-primary-foreground font-semibold flex items-center justify-center gap-2 disabled:opacity-50">{loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CloudSun className="w-4 h-4" />} Fetch 7-day forecast</button>
+          <button onClick={runAI} disabled={aiLoading || forecast.length === 0} className="px-4 py-2.5 rounded-lg border border-honey/40 bg-honey/5 text-honey font-medium flex items-center justify-center gap-2 disabled:opacity-50">{aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} AI forecast narrative</button>
+        </div>
+
+        {dailyAverage.length > 0 && (
+          <div className="p-4 rounded-xl border border-border bg-card mb-4">
+            <h3 className="font-display text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Plane className="w-4 h-4 text-honey" /> Daily predicted activity</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <ComposedChart data={dailyAverage}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                <YAxis yAxisId="left" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                <YAxis yAxisId="right" orientation="right" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }} />
+                <Legend />
+                <Area yAxisId="left" type="monotone" dataKey="avgBpm" stroke="hsl(38,92%,50%)" fill="hsl(38,92%,50%)" fillOpacity={0.3} name="Predicted bees/min" />
+                <Line yAxisId="right" type="monotone" dataKey="avgTemp" stroke="hsl(0,84%,60%)" strokeWidth={2} name="Avg °C" dot={false} />
+                <Line yAxisId="right" type="monotone" dataKey="avgWind" stroke="hsl(217,91%,60%)" strokeWidth={2} name="Wind km/h" dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {history.length > 0 && (
+          <div className="p-4 rounded-xl border border-border bg-card mb-4">
+            <h3 className="font-display text-sm font-bold text-foreground mb-3 flex items-center gap-2"><HistoryIcon className="w-4 h-4 text-honey" /> Last 7 days · predicted vs actual ({hiveLabel})</h3>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={history}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }} />
+                <Legend />
+                <Line type="monotone" dataKey="predicted" stroke="hsl(38,92%,50%)" strokeWidth={2} name="Predicted bees/min" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="actual" stroke="hsl(142,71%,45%)" strokeWidth={2} name="Actual logged" dot={{ r: 3 }} connectNulls />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className="mt-2 text-[11px] text-muted-foreground">Actuals come from <b>Bee Flight Tracker</b> entries for this hive label. Days with no entry show predicted only.</div>
+          </div>
+        )}
+
+        {aiText && <div className="p-5 rounded-xl border border-honey/30 bg-card mb-4"><MarkdownRenderer content={aiText} /></div>}
+
+
+        <div className="p-3 rounded-lg border border-honey/30 bg-honey/5 text-xs">
+          <b className="text-honey">Linked tools:</b> Forecast feeds <b>Pollination Planning</b> (effective forager-days), <b>MOA View</b> (activity panel), and <b>Bee Flight Tracker</b> (compare predicted vs observed).
         </div>
       </div>
     </div>
   );
 }
 
-function Slider({ label, icon: Icon, value, unit, min, max, onChange }: any) {
-    return (
-        <div className="space-y-2">
-            <div className="flex justify-between items-center text-[10px] font-black uppercase text-muted-foreground tracking-widest px-1">
-                <div className="flex items-center gap-1.5">
-                    <Icon className="w-3 h-3" />
-                    <span>{label}</span>
-                </div>
-                <span className="text-honey">{value}{unit}</span>
-            </div>
-            <input type="range" min={min} max={max} value={value} onChange={e => onChange(+e.target.value)} className="w-full h-1.5 bg-honey/10 rounded-full appearance-none cursor-pointer accent-honey" />
-        </div>
-    );
+const inputCls = "w-full bg-background border border-border rounded-lg px-3 py-2 text-sm outline-none";
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return <div><label className="text-xs text-muted-foreground mb-1.5 block">{label}</label>{children}</div>;
 }

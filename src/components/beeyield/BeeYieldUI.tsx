@@ -42,11 +42,25 @@ export function BeeYieldCard({
 export function BeeYieldSection({
   children,
   className,
+  title,
+  icon: Icon,
 }: {
   children: React.ReactNode;
   className?: string;
+  title?: React.ReactNode;
+  icon?: LucideIcon;
 }) {
-  return <section className={cn(glass.section, className)}>{children}</section>;
+  return (
+    <section className={cn(glass.section, className)}>
+      {title && (
+        <div className="flex items-center gap-2 mb-4 border-b border-border/50 pb-2">
+          {Icon && <Icon className="w-4 h-4 text-primary" />}
+          <h3 className="text-sm font-black text-foreground tracking-tight uppercase tracking-[0.1em]">{title}</h3>
+        </div>
+      )}
+      {children}
+    </section>
+  );
 }
 
 type HeaderBadge =

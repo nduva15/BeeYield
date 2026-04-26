@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { X, BarChart3, PieChart as PieChartIcon, TrendingUp, Calendar, Info } from "lucide-react";
+import { X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend, AreaChart, Area } from "recharts";
-import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldCard } from "../BeeYieldUI";
-import { cn } from "@/lib/utils";
 
 const CROP_DATA = [
   { crop: "Almonds", dependency: 100, value: 5.6 },
@@ -17,6 +15,15 @@ const CROP_DATA = [
   { crop: "Coffee", dependency: 40, value: 19.3 },
   { crop: "Cocoa", dependency: 30, value: 5.1 },
   { crop: "Cotton", dependency: 20, value: 8.7 },
+];
+
+const REGIONAL_VALUE = [
+  { region: "Asia-Pacific", value: 198 },
+  { region: "Europe", value: 142 },
+  { region: "North America", value: 89 },
+  { region: "Latin America", value: 71 },
+  { region: "Africa", value: 48 },
+  { region: "Middle East", value: 29 },
 ];
 
 const SEASONAL_DATA = [
@@ -47,172 +54,185 @@ const COLONY_LOSS = [
   { year: "2024", loss: 46.1 },
 ];
 
-const COLORS = ["hsl(45, 93%, 47%)", "hsl(30, 90%, 50%)", "hsl(142, 71%, 45%)", "hsl(200, 80%, 50%)", "hsl(280, 60%, 55%)", "hsl(0, 70%, 55%)", "hsl(10, 80%, 60%)"];
+const PIE_COLORS = ["hsl(45, 93%, 47%)", "hsl(30, 90%, 50%)", "hsl(142, 71%, 45%)", "hsl(200, 80%, 50%)", "hsl(280, 60%, 55%)", "hsl(0, 70%, 55%)"];
 
-export default function PollinationCharts({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
-  const [activeTab, setActiveTab] = useState("value");
+const tabs = [
+  { id: "crops", label: "Crop Dependencies" },
+  { id: "regions", label: "Economic Value" },
+  { id: "seasonal", label: "Seasonal Patterns" },
+  { id: "losses", label: "Colony Losses" },
+];
+
+interface PollinationChartsProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function PollinationCharts({ isOpen, onClose }: PollinationChartsProps) {
+  const [activeTab, setActiveTab] = useState("crops");
 
   if (!isOpen) return null;
 
-  const content = (
-    <BeeYieldPageShell className={embedded ? "p-0 md:p-0 -m-0 min-h-0 pb-0" : ""}>
-      <BeeYieldPageHeader
-        icon={BarChart3}
-        label="Analytics"
-        title="Pollination Charts"
-        subtitle="Economic value mapping and biological dependency distribution."
-        onBack={onClose}
-        actions={
-            <div className="flex bg-muted/50 p-1 rounded-xl border border-border">
-                {[
-                    { id: "value", label: "Value", icon: BarChart3 },
-                    { id: "dependency", label: "Dependency", icon: PieChartIcon },
-                    { id: "seasonal", label: "Seasonal", icon: Calendar },
-                    { id: "losses", label: "Losses", icon: TrendingUp }
-                ].map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={cn("px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center gap-2",
-                            activeTab === tab.id ? "bg-white text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                        )}
-                    >
-                        <tab.icon className="w-3 h-3" /> {tab.label}
-                    </button>
-                ))}
-            </div>
-        }
-      />
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4 flex flex-col" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-border px-6 py-4 flex-shrink-0">
+          <div>
+            <h2 className="font-display text-lg font-bold text-foreground">🌸 Pollination Data & Analytics</h2>
+            <p className="text-xs text-muted-foreground">Interactive charts • Crop dependencies • Economic impact • Seasonal trends</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-      <div className="mt-8">
-        {activeTab === "value" && (
-          <div className="space-y-6">
-            <BeeYieldCard className="p-8 border-border bg-white shadow-sm">
-              <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-6">Economic Value of Pollination (US$ Billions)</h3>
-              <div className="h-[450px]">
+        {/* Tabs */}
+        <div className="px-6 pt-3 flex gap-2 flex-shrink-0 border-b border-border pb-3">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${activeTab === t.id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Chart content */}
+        <div className="flex-1 overflow-y-auto custom-scroll p-6">
+          {activeTab === "crops" && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-display text-base font-bold text-foreground mb-1">Crop Pollination Dependency (%)</h3>
+                <p className="text-xs text-muted-foreground mb-4">Percentage of crop yield dependent on bee pollination</p>
+              </div>
+              <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={CROP_DATA} layout="vertical" margin={{ left: 20, right: 30 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
-                    <XAxis type="number" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }} />
-                    <YAxis dataKey="crop" type="category" width={90} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }} />
-                    <Tooltip cursor={{ fill: 'hsl(var(--honey)/0.05)' }} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 10, fontWeight: "bold" }} />
-                    <Bar dataKey="value" fill="hsl(var(--honey))" radius={[0, 4, 4, 0]} />
+                  <BarChart data={CROP_DATA} layout="vertical" margin={{ left: 80 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis type="category" dataKey="crop" tick={{ fontSize: 11, fill: "hsl(var(--foreground))" }} width={75} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(v: number) => [`${v}%`, "Dependency"]} />
+                    <Bar dataKey="dependency" fill="hsl(45, 93%, 47%)" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </BeeYieldCard>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-               <SummaryStat label="Global Value" value="$577B" />
-               <SummaryStat label="Pollinator Need" value="75%" />
-               <SummaryStat label="Food Crops" value="87 Items" />
-               <SummaryStat label="Food from Bees" value="35%" />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+                <div className="rounded-xl border border-border p-3 text-center">
+                  <div className="text-xl font-bold text-honey">$577B</div>
+                  <div className="text-xs text-muted-foreground">Global pollination value/yr</div>
+                </div>
+                <div className="rounded-xl border border-border p-3 text-center">
+                  <div className="text-xl font-bold text-honey">75%</div>
+                  <div className="text-xs text-muted-foreground">Crops need pollinators</div>
+                </div>
+                <div className="rounded-xl border border-border p-3 text-center">
+                  <div className="text-xl font-bold text-honey">87</div>
+                  <div className="text-xs text-muted-foreground">Leading food crops</div>
+                </div>
+                <div className="rounded-xl border border-border p-3 text-center">
+                  <div className="text-xl font-bold text-honey">35%</div>
+                  <div className="text-xs text-muted-foreground">Global food from bees</div>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {activeTab === "dependency" && (
-          <BeeYieldCard className="p-8 border-border bg-white shadow-sm">
-            <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-6">Apid Pollination Dependency Matrix (%)</h3>
-            <div className="h-[500px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={CROP_DATA.slice(0, 7)}
-                    cx="50%" cy="50%"
-                    innerRadius={80} outerRadius={140}
-                    paddingAngle={8}
-                    dataKey="dependency"
-                    nameKey="crop"
-                  >
-                    {CROP_DATA.slice(0, 7).map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="white" strokeWidth={2} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 11, fontWeight: "bold" }} />
-                  <Legend wrapperStyle={{ fontSize: 10, fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }} />
-                </PieChart>
-              </ResponsiveContainer>
+          {activeTab === "regions" && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-display text-base font-bold text-foreground mb-1">Economic Value of Pollination by Region</h3>
+                <p className="text-xs text-muted-foreground mb-4">Annual pollination services value in billions USD</p>
+              </div>
+              <div className="flex flex-col md:flex-row gap-6 items-center">
+                <div className="h-[350px] w-full md:w-1/2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={REGIONAL_VALUE} dataKey="value" nameKey="region" cx="50%" cy="50%" outerRadius={130} label={({ region, value }) => `${region}: $${value}B`} labelLine={{ stroke: "hsl(var(--muted-foreground))" }} style={{ fontSize: 10 }}>
+                        {REGIONAL_VALUE.map((_, i) => (
+                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(v: number) => [`$${v}B`, "Value"]} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="w-full md:w-1/2 space-y-2">
+                  {REGIONAL_VALUE.map((r, i) => (
+                    <div key={r.region} className="flex items-center gap-3 rounded-lg border border-border px-3 py-2">
+                      <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: PIE_COLORS[i] }} />
+                      <span className="text-sm text-foreground flex-1">{r.region}</span>
+                      <span className="text-sm font-bold text-foreground">${r.value}B</span>
+                    </div>
+                  ))}
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 mt-3">
+                    <span className="text-sm font-bold text-honey">Total: $577B/year</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </BeeYieldCard>
-        )}
+          )}
 
-        {activeTab === "seasonal" && (
-          <BeeYieldCard className="p-8 border-border bg-white shadow-sm">
-            <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-6 border-b border-border pb-4 flex items-center gap-2"><Calendar className="w-4 h-4 text-honey" /> Seasonal Biotic Dynamics</h3>
-            <div className="h-[450px] mt-6">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={SEASONAL_DATA}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }} />
-                  <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }} />
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 10, fontWeight: "bold" }} />
-                  <Legend wrapperStyle={{ fontSize: 10, fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }} />
-                  <Area type="monotone" dataKey="honeyBees" stackId="1" stroke="hsl(45, 93%, 47%)" fill="hsl(45, 93%, 47%)" fillOpacity={0.6} name="Managed Honey Bees" />
-                  <Area type="monotone" dataKey="wildBees" stackId="1" stroke="hsl(142, 71%, 45%)" fill="hsl(142, 71%, 45%)" fillOpacity={0.6} name="Wild Solitary Bees" />
-                  <Area type="monotone" dataKey="bumblebees" stackId="1" stroke="hsl(280, 60%, 55%)" fill="hsl(280, 60%, 55%)" fillOpacity={0.6} name="Bombus Augmentation" />
-                </AreaChart>
-              </ResponsiveContainer>
+          {activeTab === "seasonal" && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-display text-base font-bold text-foreground mb-1">Seasonal Pollination Activity Index</h3>
+                <p className="text-xs text-muted-foreground mb-4">Relative pollination activity by pollinator type throughout the year (Northern Hemisphere)</p>
+              </div>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={SEASONAL_DATA}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    <Area type="monotone" dataKey="honeyBees" stackId="1" stroke="hsl(45, 93%, 47%)" fill="hsl(45, 93%, 47%)" fillOpacity={0.6} name="Honey Bees" />
+                    <Area type="monotone" dataKey="wildBees" stackId="1" stroke="hsl(142, 71%, 45%)" fill="hsl(142, 71%, 45%)" fillOpacity={0.6} name="Wild Bees" />
+                    <Area type="monotone" dataKey="bumblebees" stackId="1" stroke="hsl(280, 60%, 55%)" fill="hsl(280, 60%, 55%)" fillOpacity={0.6} name="Bumblebees" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </BeeYieldCard>
-        )}
+          )}
 
-        {activeTab === "losses" && (
-          <div className="space-y-6">
-            <BeeYieldCard className="p-8 border-border bg-white shadow-sm">
-               <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-6 border-b border-border pb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-red-500" /> Global Colony Attrition Rates</h3>
-               <div className="h-[450px] mt-6">
+          {activeTab === "losses" && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-display text-base font-bold text-foreground mb-1">US Annual Colony Loss Rate (%)</h3>
+                <p className="text-xs text-muted-foreground mb-4">Managed honey bee colony losses reported by the Bee Informed Partnership</p>
+              </div>
+              <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={COLONY_LOSS}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis dataKey="year" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }} />
-                    <YAxis domain={[30, 55]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }} />
-                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 10, fontWeight: "bold" }} formatter={(v: any) => [`${v}%`, "Colony Loss"]} />
-                    <Line type="monotone" dataKey="loss" stroke="hsl(0, 70%, 55%)" strokeWidth={3} dot={{ fill: "hsl(0, 70%, 55%)", r: 5, strokeWidth: 2, stroke: "white" }} activeDot={{ r: 7 }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis domain={[30, 55]} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} formatter={(v: number) => [`${v}%`, "Colony Loss"]} />
+                    <Line type="monotone" dataKey="loss" stroke="hsl(0, 70%, 55%)" strokeWidth={2} dot={{ fill: "hsl(0, 70%, 55%)", r: 4 }} activeDot={{ r: 6 }} />
                   </LineChart>
                 </ResponsiveContainer>
-               </div>
-            </BeeYieldCard>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <BeeYieldCard className="p-5 border-red-500/20 bg-red-50">
-                    <div className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-1">Peak Critical Loss</div>
-                    <div className="text-2xl font-black text-red-700">48.2% <span className="text-sm opacity-50">(2023)</span></div>
-                </BeeYieldCard>
-                <BeeYieldCard className="p-5 border-border bg-muted/5">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">10-Year Average</div>
-                    <div className="text-2xl font-black text-foreground">42.4%</div>
-                </BeeYieldCard>
-                <BeeYieldCard className="p-5 border-honey/20 bg-honey/5">
-                    <div className="text-[10px] font-black text-honey uppercase tracking-widest mb-1">Stability Threshold</div>
-                    <div className="text-2xl font-black text-honey">~15.0%</div>
-                </BeeYieldCard>
+              </div>
+              <div className="grid grid-cols-3 gap-3 mt-2">
+                <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-center">
+                  <div className="text-xl font-bold text-destructive">48.2%</div>
+                  <div className="text-xs text-muted-foreground">Peak loss (2023)</div>
+                </div>
+                <div className="rounded-xl border border-border p-3 text-center">
+                  <div className="text-xl font-bold text-foreground">42.4%</div>
+                  <div className="text-xs text-muted-foreground">10-year average</div>
+                </div>
+                <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-center">
+                  <div className="text-xl font-bold text-honey">~15%</div>
+                  <div className="text-xs text-muted-foreground">Acceptable threshold</div>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    </BeeYieldPageShell>
-  );
-
-  if (embedded) return content;
-
-  return (
-    <div className={cn("fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity p-4", isOpen ? "opacity-100" : "opacity-0 pointer-events-none")}>
-      <div className={cn("bg-white rounded-[2.5rem] w-full h-[90vh] max-w-6xl shadow-2xl relative transition-all transform overflow-hidden", isOpen ? "scale-100" : "scale-95")}>
-        <button onClick={onClose} className="absolute top-10 right-10 p-2 rounded-full hover:bg-muted transition-colors z-50 text-muted-foreground hover:text-foreground">
-          <X className="w-6 h-6" />
-        </button>
-        <div className="h-full overflow-y-auto custom-scroll p-10">
-          {content}
+          )}
         </div>
       </div>
     </div>
   );
-}
-
-function SummaryStat({ label, value }: { label: string; value: string }) {
-    return (
-        <BeeYieldCard className="p-5 border-border/50 bg-muted/10 text-center">
-            <div className="text-xl font-black text-honey mb-1">{value}</div>
-            <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{label}</div>
-        </BeeYieldCard>
-    );
 }
