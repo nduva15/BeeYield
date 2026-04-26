@@ -45,6 +45,7 @@ import OrchardMapper from '@/components/beeyield/OrchardMapper';
 import ForageZonesView from '@/components/beeyield/ForageZonesView';
 import HiveLogisticsSecurity from '@/components/beeyield/HiveLogisticsSecurity';
 import FlightMapping from '@/pages/pollination/FlightMapping';
+import PollinationPlanning from '@/components/beeyield/lovable_ai/PollinationPlanning';
 import PollinationReports from '@/pages/pollination/PollinationReports';
 import PollinationCalcs from '@/components/beeyield/lovable_ai/PollinationCalcs';
 import DigitalHealthAudit from '@/components/beeyield/DigitalHealthAudit';
@@ -242,6 +243,7 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'intelligence', label: 'Insights', icon: Brain },
                         { id: 'pollination-grid', label: 'Precision Pollination', icon: LayoutGrid },
                         { id: 'pollination-calcs', label: 'Pollination Calcs', icon: Calculator },
+                        { id: 'pollination-planning-ai', label: 'AI Pollination Plan', icon: Sparkles },
                         { id: 'pollination-engine', label: 'Pollination planning', icon: Cpu },
                         { id: 'saturation-math', label: 'Coverage area', icon: Scale },
                         { id: 'hpa-optimizer', label: 'Performance planning', icon: Cpu },
@@ -372,6 +374,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'florage-database':
             case 'florage-page': return <FloragePage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'site-map': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'pollination-planning-ai': return <PollinationPlanning isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-planning': return <PollinationEngine onTabChange={handleTabChange} embedded={true} />;
             case 'pollination-lookup': return <PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-analytics': return <PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
