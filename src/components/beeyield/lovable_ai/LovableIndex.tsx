@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/beeyield/lovable_ai/ui/dropdown-menu";
 import { toast } from "sonner";
-import beeyieldLogo from "@/assets/beeyield-logo.png";
+import beeyieldLogo from "@/assets/Logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useVoiceInput } from "@/hooks/use-voice-input";
