@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import { X, Layers, MapPin, Flower2, Plane, Calculator, Loader2, FileDown, Sparkles, Save } from "lucide-react";
+import { X, Layers, MapPin, Flower2, Plane, Calculator, Loader2, FileDown, Sparkles, Save, Info, Activity } from "lucide-react";
 import { MapContainer, TileLayer, Polygon, Marker, Circle, Popup } from "react-leaflet";
 import L from "leaflet";
 import html2canvas from "html2canvas";
@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import MarkdownRenderer from "./MarkdownRenderer";
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldBadge, BeeYieldCard } from "../BeeYieldUI";
+import { cn } from "@/lib/utils";
 
 const CROP_RADIUS: Record<string, number> = {
   Almonds: 800, Apples: 600, Blueberries: 500, Avocado: 700,
@@ -65,7 +67,6 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
   const [diagLoading, setDiagLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const mapWrapRef = useRef<HTMLDivElement>(null);
-  const panelsRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -79,7 +80,7 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
     }
     const [r, b, f] = await Promise.all(queries);
     if (r.data) {
-      setRuns(r.data);
+      setRuns(r.data as unknown as Run[]);
       const target = initialRunId || r.data[0]?.id || "";
       if (target) setSelectedRunId(target);
     }
@@ -144,61 +145,60 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
   const acreM2 = (run?.acres || 0) * 4046.86;
   const coveragePct = acreM2 > 0 ? Math.min(100, (coverageM2 / acreM2) * 100) : 0;
 
-  const exportPDF = async (includePanels: boolean) => {
+  const exportPDF = async () => {
     if (!mapWrapRef.current) return;
     setExporting(true);
     try {
       const mapCanvas = await html2canvas(mapWrapRef.current, { useCORS: true, allowTaint: true, scale: 1.5, logging: false });
       const pdf = new jsPDF("landscape", "mm", "a4");
       const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      pdf.setFillColor(250, 204, 21);
+      pdf.setFillColor(255, 185, 0);
       pdf.rect(0, 0, pageW, 14, "F");
       pdf.setTextColor(20, 20, 20);
       pdf.setFontSize(13); pdf.setFont("helvetica", "bold");
-      pdf.text(`Beeyield · MOA Export · ${run?.crop || ""} · ${run?.region || ""}`, 8, 9);
-      pdf.addImage(mapCanvas.toDataURL("image/jpeg", 0.85), "JPEG", 8, 20, includePanels ? pageW * 0.6 : pageW-16, 150);
+      pdf.text(`BeeYield MOA Export · ${run?.crop || ""} · ${run?.region || ""}`, 8, 9);
+      pdf.addImage(mapCanvas.toDataURL("image/jpeg", 0.85), "JPEG", 8, 20, pageW - 16, 150);
       pdf.save(`beeyield-moa-export.pdf`);
       toast.success("PDF Generated");
     } finally { setExporting(false); }
   };
 
   const content = (
-    <div className="flex flex-col h-full bg-background">
-      <div className="flex-shrink-0 p-4 border-b border-border flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Layers className="w-6 h-6 text-honey" />
-          <div>
-            <h2 className="font-display text-xl font-bold text-foreground">Multi-Objective View</h2>
-            <p className="text-xs text-muted-foreground">High-fidelity spatial synchronization</p>
+    <BeeYieldPageShell className={cn("flex flex-col h-full bg-background", embedded ? "p-0 md:p-0 -m-0 min-h-0 pb-0" : "")}>
+      <BeeYieldPageHeader
+        icon={Layers}
+        label="MOA Intelligence"
+        title="Multi-Objective View"
+        subtitle="High-fidelity spatial synchronization of flight activity, bloom, and coverage."
+        onBack={onClose}
+        actions={
+          <div className="flex items-center gap-2">
+             <button onClick={exportPDF} disabled={exporting} className="px-3 py-1.5 rounded-xl border border-border bg-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-muted transition-all">
+               {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />} PDF
+             </button>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-           <button onClick={() => exportPDF(true)} className="px-3 py-1.5 rounded-lg border border-border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-muted">
-             <FileDown className="w-3.5 h-3.5" /> PDF
-           </button>
-           <button onClick={onClose} className="p-2 rounded-lg hover:bg-muted text-muted-foreground"><X className="w-5 h-5" /></button>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="flex-shrink-0 bg-muted/30 p-2 px-4 border-b border-border flex items-center gap-4 flex-wrap">
-        <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase">
-          Run:
-          <select value={selectedRunId} onChange={(e) => setSelectedRunId(e.target.value)} className="bg-white border border-border rounded px-2 py-0.5 text-foreground font-bold">
+      <div className="flex-shrink-0 bg-honey/5 p-3 px-6 border-y border-honey/20 flex items-center gap-6 flex-wrap mt-4">
+        <div className="flex items-center gap-3">
+          <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Active Run</label>
+          <select value={selectedRunId} onChange={(e) => setSelectedRunId(e.target.value)} className="bg-white border border-border rounded-lg px-3 py-1 text-xs font-bold focus:border-honey transition-all outline-none">
             {runs.map(r => <option key={r.id} value={r.id}>{r.crop} - {r.region}</option>)}
           </select>
         </div>
-        <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase">
-          Version:
-          <select value={selectedVersionId} onChange={(e) => setSelectedVersionId(e.target.value)} className="bg-white border border-border rounded px-2 py-0.5 text-foreground font-bold">
+        <div className="flex items-center gap-3">
+          <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Version</label>
+          <select value={selectedVersionId} onChange={(e) => setSelectedVersionId(e.target.value)} className="bg-white border border-border rounded-lg px-3 py-1 text-xs font-bold focus:border-honey transition-all outline-none">
             {versions.map(v => <option key={v.id} value={v.id}>{v.version_label}</option>)}
           </select>
         </div>
-        <div className="flex gap-4 ml-auto">
+        <div className="h-4 w-px bg-border/50 hidden md:block" />
+        <div className="flex gap-4">
           {["showCoverage", "showBloom", "showFlight"].map(k => (
-             <label key={k} className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase cursor-pointer">
-               <input type="checkbox" checked={!!(filters as any)[k]} onChange={e => setFilters({...filters, [k]: e.target.checked})} className="accent-honey" />
-               {k.replace('show', '')}
+             <label key={k} className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-widest cursor-pointer group">
+               <input type="checkbox" checked={!!(filters as any)[k]} onChange={e => setFilters({...filters, [k]: e.target.checked})} className="w-4 h-4 rounded border-honey/30 text-honey focus:ring-honey" />
+               <span className="group-hover:text-honey transition-colors">{k.replace('show', '')}</span>
              </label>
           ))}
         </div>
@@ -217,80 +217,84 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
           </MapContainer>
         </div>
 
-        <div className="w-full lg:w-96 flex-shrink-0 bg-white overflow-y-auto custom-scroll p-6 space-y-6">
+        <div className="w-full lg:w-96 flex-shrink-0 bg-white overflow-y-auto custom-scroll p-8 space-y-8">
           {filters.showCoverage && (
-            <Panel icon={<Calculator className="w-4 h-4 text-honey" />} title="Spatial Metrics">
-               <Stat label="Total Coverage" value={`${coveragePct.toFixed(1)}%`} progress={coveragePct} />
-               <Stat label="Field Area" value={`${run?.acres || 0} Ac`} />
-               <Stat label="Hive Density" value={`${(hivesArr.length / (run?.acres || 1)).toFixed(1)}/ac`} />
-            </Panel>
+            <BeeYieldCard className="p-0 border-none shadow-none space-y-6">
+                <div className="flex items-center gap-3 border-b border-border pb-3">
+                    <Calculator className="w-4 h-4 text-honey" />
+                    <h3 className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">Spatial Metrics</h3>
+                </div>
+                <div className="space-y-4">
+                    <Stat label="Total Coverage" value={`${coveragePct.toFixed(1)}%`} progress={coveragePct} />
+                    <Stat label="Field Area" value={`${run?.acres || 0} Ac`} />
+                    <Stat label="Hive Density" value={`${(hivesArr.length / (run?.acres || 1)).toFixed(1)}/ac`} />
+                </div>
+            </BeeYieldCard>
           )}
 
           {filters.showBloom && (
-            <Panel icon={<Flower2 className="w-4 h-4 text-honey" />} title={`Bloom Dynamics`}>
-              {filteredBlooms.slice(0, 3).map(b => (
-                <div key={b.id} className="p-3 rounded-xl border border-border bg-muted/20 space-y-1">
-                   <div className="flex justify-between text-xs font-black uppercase">
-                     <span>Intensity</span>
-                     <span className="text-honey">{b.intensity}%</span>
-                   </div>
-                   <div className="h-1.5 bg-honey/10 rounded-full overflow-hidden">
-                     <div className="h-full bg-honey" style={{ width: `${b.intensity}%` }} />
-                   </div>
-                   <div className="text-[10px] text-muted-foreground font-bold">{new Date(b.created_at).toLocaleDateString()}</div>
+            <BeeYieldCard className="p-0 border-none shadow-none space-y-6">
+                <div className="flex items-center gap-3 border-b border-border pb-3">
+                    <Flower2 className="w-4 h-4 text-honey" />
+                    <h3 className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">Bloom Dynamics</h3>
                 </div>
-              ))}
-            </Panel>
+                <div className="space-y-3">
+                    {filteredBlooms.slice(0, 3).map(b => (
+                        <div key={b.id} className="p-4 rounded-2xl border border-border bg-honey/5 flex items-center justify-between group hover:border-honey/40 transition-all">
+                            <div>
+                                <div className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mb-1">{new Date(b.created_at).toLocaleDateString()}</div>
+                                <div className="text-sm font-black text-foreground">{b.intensity}% Intensive</div>
+                            </div>
+                            <div className="w-10 h-10 rounded-xl bg-honey/10 flex items-center justify-center">
+                                <Activity className="w-5 h-5 text-honey" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </BeeYieldCard>
           )}
 
           {filters.showFlight && (
-            <Panel icon={<Plane className="w-4 h-4 text-honey" />} title="Flight Observations">
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 rounded-xl bg-honey/5 border border-honey/20">
-                     <div className="text-[9px] font-black text-muted-foreground uppercase mb-1">Bees/Min</div>
-                     <div className="text-lg font-black text-honey">{totalBeesPerMin}</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-honey/5 border border-honey/20">
-                     <div className="text-[9px] font-black text-muted-foreground uppercase mb-1">Pollen Load</div>
-                     <div className="text-lg font-black text-honey">{avgPollen}%</div>
-                  </div>
-               </div>
-            </Panel>
+            <BeeYieldCard className="p-0 border-none shadow-none space-y-6">
+                <div className="flex items-center gap-3 border-b border-border pb-3">
+                    <Plane className="w-4 h-4 text-honey" />
+                    <h3 className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">Flight Observations</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-honey/5 border border-honey/20">
+                        <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Bees/Min</div>
+                        <div className="text-xl font-black text-honey tracking-tight">{totalBeesPerMin}</div>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-honey/5 border border-honey/20">
+                        <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Pollen</div>
+                        <div className="text-xl font-black text-honey tracking-tight">{avgPollen}%</div>
+                    </div>
+                </div>
+            </BeeYieldCard>
           )}
         </div>
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 
   if (embedded) return content;
 
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-      <div className={`bg-white rounded-3xl w-full h-[95vh] max-w-[95vw] shadow-2xl relative transition-all transform overflow-hidden ${isOpen ? 'scale-100' : 'scale-95'}`}>
+      <div className={`bg-white rounded-[2.5rem] w-full h-[95vh] max-w-[95vw] shadow-2xl relative transition-all transform overflow-hidden ${isOpen ? 'scale-100' : 'scale-95'}`}>
+        <button onClick={onClose} className="absolute top-8 right-8 p-2 rounded-full hover:bg-muted transition-colors z-[1001]"><X className="w-5 h-5" /></button>
         {content}
       </div>
     </div>
   );
 }
 
-function Panel({ icon, title, children }: any) {
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2 border-b border-border pb-2">
-        {icon}
-        <h3 className="text-xs font-black text-foreground uppercase tracking-widest">{title}</h3>
-      </div>
-      <div className="space-y-3">{children}</div>
-    </div>
-  );
-}
-
 function Stat({ label, value, progress }: any) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <div className="flex justify-between items-end">
-        <span className="text-[10px] font-black text-muted-foreground uppercase">{label}</span>
-        <span className="text-sm font-black text-foreground">{value}</span>
+        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{label}</span>
+        <span className="text-base font-black text-foreground tracking-tight">{value}</span>
       </div>
       {progress !== undefined && (
         <div className="h-1.5 bg-muted rounded-full overflow-hidden">

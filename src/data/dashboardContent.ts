@@ -9,7 +9,7 @@
 
 import type { LucideIcon } from 'lucide-react';
 import {
-  Cpu, Activity, FileBarChart, ClipboardList, HelpCircle, Puzzle,
+  Cpu, Activity, FileBarChart, ClipboardList, HelpCircle, Puzzle, Hexagon, Volume2, ShieldCheck, Thermometer, Layers, MapPin
 } from 'lucide-react';
 
 /* ── Quick-Access View Shortcuts ───────────────────────────────── */
@@ -22,12 +22,15 @@ export interface QuickAccessView {
 }
 
 export const QUICK_ACCESS_VIEWS: QuickAccessView[] = [
+  { id: 'assistant', label: 'BeeYield AI', icon: Hexagon, sub: 'Talk to the hive' },
+  { id: 'acoustic-transformer', label: 'Sound Analysis', icon: Volume2, sub: 'Health acoustics' },
+  { id: 'digital-audit', label: 'Health Check', icon: ShieldCheck, sub: 'Compliance & Safety' },
+  { id: 'bloom-tracking', label: 'Bloom Tracking', icon: Thermometer, sub: 'Phenology data' },
+  { id: 'moa-view', label: 'MOA View', icon: Layers, sub: 'Multi-objective sync' },
+  { id: 'places', label: 'Apiaries', icon: MapPin, sub: 'Manage locations' },
   { id: 'devices', label: 'Devices', icon: Cpu, sub: 'Sensors & activity' },
   { id: 'meters', label: 'Meters', icon: Activity, sub: 'Usage & alarms' },
   { id: 'precision-pollination-folder', label: 'Pollination', icon: FileBarChart, sub: 'Plans & exports' },
-  { id: 'task', label: 'My Task', icon: ClipboardList, sub: 'Tasks & setup' },
-  { id: 'requests', label: 'Requests', icon: HelpCircle, sub: 'Support tickets' },
-  { id: 'integrations', label: 'Integrations', icon: Puzzle, sub: 'QuickBooks / Shopify' },
 ];
 
 /* ── Weather Readiness Thresholds ──────────────────────────────── */

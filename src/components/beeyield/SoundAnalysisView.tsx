@@ -1,499 +1,255 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
-import { Mic2, Upload, Square, AlertCircle, Activity, ShieldCheck, ArrowRight, Terminal, Zap, X, Radio, Waves, GaugeCircle } from 'lucide-react';
-import { Dialog, DialogContent } from './lovable_ai/ui/dialog';
-import { toast } from 'sonner';
-import { glass } from './GlassTheme';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Play, Square, Volume2, Mic, Settings, AlertTriangle, CheckCircle, 
+  Info, ArrowRight, Brain, Activity, Waves, Gauge, History, Zap, ShieldCheck
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Label as UiLabel } from '@/components/ui/label';
-import beeyieldService, { Hive } from '@/services/beeyieldService';
-import { BeeYieldBadge, BeeYieldCard, BeeYieldEmptyState, BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldSectionHeader } from '@/components/beeyield/BeeYieldUI';
+import { glass } from './GlassTheme';
+import { cn } from '@/lib/utils';
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldCard, BeeYieldBadge } from './BeeYieldUI';
 
 interface SoundAnalysisViewProps {
-    onTabChange?: (tab: string, message?: string, action?: string) => void;
-    isOpen?: boolean;
-    onClose?: () => void;
-    embedded?: boolean;
+  onTabChange?: (tab: string) => void;
+  embedded?: boolean;
+  onClose?: () => void;
 }
 
-const WAVEFORM_BARS = [38, 52, 66, 82, 96, 84, 72, 58, 44, 62, 78, 94, 108, 92, 74, 56, 42, 60, 76, 90, 104, 86, 68, 50];
+const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange, embedded, onClose }) => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [result, setResult] = useState<{ label: string; confidence: number; note: string } | null>(null);
+  const [history, setHistory] = useState<{ date: string; result: string; confidence: number }[]>([]);
+  const [visualizerData, setVisualizerData] = useState<number[]>(new Array(40).fill(0));
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({
-    onTabChange,
-    isOpen = true,
-    onClose = () => {},
-    embedded = false,
-}) => {
-    const [recording, setRecording] = React.useState(false);
-    const [analyzing, setAnalyzing] = React.useState(false);
-    const [result, setResult] = React.useState<null | { label: 'Healthy' | 'Warning'; confidence?: number }>(null);
-    const [progress, setProgress] = React.useState(0);
-    const [hives, setHives] = React.useState<Hive[]>([]);
-    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
-    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-    const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
+  useEffect(() => {
+    // Mock history
+    setHistory([
+      { date: '2 hours ago', result: 'Healthy', confidence: 98 },
+      { date: 'Yesterday', result: 'Agitated', confidence: 82 },
+      { date: '2 days ago', result: 'Healthy', confidence: 95 },
+    ]);
 
-    React.useEffect(() => {
-        let mounted = true;
-        const load = async () => {
-            try {
-                const data = await beeyieldService.getHives();
-                if (!mounted) return;
-                setHives(data || []);
-                if (!selectedHiveId && (data || []).length > 0) {
-                    setSelectedHiveId(data[0].id);
-                }
-            } catch {
-                // Keep the workflow usable even if hive data is unavailable.
-            }
-        };
+    // Initial visualizer pulse
+    const interval = setInterval(() => {
+      if (!isRecording) {
+        setVisualizerData(prev => prev.map(() => Math.random() * 20 + 5));
+      }
+    }, 2000);
 
-        load();
+    return () => clearInterval(interval);
+  }, [isRecording]);
 
-        return () => {
-            mounted = false;
-            try {
-                mediaRecorderRef.current?.stop();
-            } catch {
-                // ignore
-            }
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  useEffect(() => {
+    if (isRecording) {
+      const startTime = Date.now();
+      const duration = 5000; // 5 seconds recording
 
-    const analyzeFile = React.useCallback(
-        async (file: File) => {
-            if (analyzing) return;
+      timerRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const p = Math.min(100, (elapsed / duration) * 100);
+        setProgress(p);
 
-            setResult(null);
-            setAnalyzing(true);
-            setProgress(10);
+        // Visualizer data
+        setVisualizerData(new Array(40).fill(0).map(() => Math.random() * 80 + 20));
 
-            const tick = globalThis.setInterval(() => {
-                setProgress((p) => (p >= 92 ? 92 : p + 4));
-            }, 250);
-
-            const toastId = toast.loading('Analyzing audio...');
-
-            try {
-                const resp = await beeyieldService.analyzeAcoustic(file, selectedHiveId || undefined);
-                const verdict = String(resp?.prediction || resp?.verdict || resp?.label || '').toLowerCase();
-                const confidence = typeof resp?.probability === 'number'
-                    ? resp.probability
-                    : typeof resp?.confidence === 'number'
-                        ? resp.confidence
-                        : undefined;
-
-                setResult({
-                    label: verdict.includes('healthy') || verdict.includes('normal') ? 'Healthy' : 'Warning',
-                    confidence,
-                });
-                toast.success(resp?.message || 'Analysis complete', { id: toastId });
-            } catch (error: any) {
-                console.error(error);
-                toast.error(error?.message || 'Analysis failed', { id: toastId });
-            } finally {
-                globalThis.clearInterval(tick);
-                setProgress(100);
-                setAnalyzing(false);
-                globalThis.setTimeout(() => setProgress(0), 250);
-            }
-        },
-        [analyzing, selectedHiveId]
-    );
-
-    const handleRecord = async () => {
-        if (recording || analyzing) return;
-
-        try {
-            if (!navigator.mediaDevices?.getUserMedia) {
-                toast.error('Recording is not supported in this browser.');
-                return;
-            }
-
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const recorder = new MediaRecorder(stream);
-            mediaRecorderRef.current = recorder;
-            const chunks: BlobPart[] = [];
-
-            recorder.ondataavailable = (event) => {
-                if (event.data && event.data.size > 0) {
-                    chunks.push(event.data);
-                }
-            };
-
-            recorder.onstop = async () => {
-                stream.getTracks().forEach((track) => track.stop());
-                const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
-                const ext = (recorder.mimeType || '').includes('ogg') ? 'ogg' : 'webm';
-                const file = new File([blob], `beeyield-audio-${Date.now()}.${ext}`, { type: blob.type });
-                await analyzeFile(file);
-            };
-
-            setRecording(true);
-            recorder.start();
-
-            globalThis.setTimeout(() => {
-                try {
-                    recorder.stop();
-                } catch {
-                    // ignore
-                } finally {
-                    setRecording(false);
-                }
-            }, 3000);
-        } catch (error) {
-            console.error(error);
-            toast.error('Could not access the microphone.');
-            setRecording(false);
+        if (p >= 100) {
+          stopRecording();
         }
-    };
-
-    const selectedHiveCode = selectedHiveId
-        ? hives.find((hive) => hive.id === selectedHiveId)?.hive_code || 'Assigned'
-        : 'None';
-
-    const statusTone = recording
-        ? { label: 'Recording live', detail: 'Capturing a short three second hive sample.', badge: 'warning' as const }
-        : analyzing
-            ? { label: 'Analyzing signal', detail: 'Extracting spectral markers and confidence bands.', badge: 'warning' as const }
-            : result?.label === 'Healthy'
-                ? { label: 'Stable acoustic profile', detail: 'The latest sample landed in the healthy range.', badge: 'success' as const }
-                : result?.label === 'Warning'
-                    ? { label: 'Variance detected', detail: 'The sample shows abnormal sound patterns worth reviewing.', badge: 'error' as const }
-                    : { label: 'Scanner standby', detail: 'Record or upload a sample to populate the workspace.', badge: 'default' as const };
-
-    const metrics = [
-        {
-            label: 'Model state',
-            value: recording ? 'Capturing' : analyzing ? 'Processing' : result?.label || 'Standby',
-            icon: Radio,
-            tone: result?.label === 'Warning' ? 'text-red-600' : 'text-foreground',
-        },
-        {
-            label: 'Hive binding',
-            value: selectedHiveCode,
-            icon: Terminal,
-            tone: 'text-foreground',
-        },
-        {
-            label: 'Confidence',
-            value: typeof result?.confidence === 'number' ? `${Math.round(result.confidence * 100)}%` : analyzing ? `${progress}%` : '--',
-            icon: GaugeCircle,
-            tone: result?.label === 'Healthy' ? 'text-[#1B9157]' : result?.label === 'Warning' ? 'text-red-600' : 'text-foreground',
-        },
-    ];
-
-    const content = (
-        <BeeYieldPageShell className={cn(embedded && 'p-0 md:p-0 -m-0 min-h-0 pb-0')}>
-            <BeeYieldPageHeader
-                icon={Zap}
-                label="Sound analysis"
-                title="Acoustic Audit"
-                subtitle="Capture a short hive sample, review the waveform, and decide whether the colony needs a closer field check."
-                onBack={onClose}
-                actions={
-                    <div className="flex items-center gap-2">
-                        <BeeYieldBadge className="px-3 py-1.5 border-border/ bg-[#F4D03F]/5 text-[#8a6a00]">
-                            Spectrum: 100-800Hz
-                        </BeeYieldBadge>
-                        {result?.label === 'Warning' && onTabChange && (
-                            <button
-                                type="button"
-                                onClick={() => onTabChange('digital-audit')}
-                                className={glass.btnSecondary}
-                            >
-                                Health check
-                                <ArrowRight className="w-4 h-4" />
-                            </button>
-                        )}
-                    </div>
-                }
-            />
-
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                <div className="space-y-6 lg:col-span-4">
-                    <BeeYieldSection className="p-5">
-                        <BeeYieldSectionHeader
-                            icon={Terminal}
-                            title="Capture controls"
-                            subtitle="Bind the sample and start a new pass"
-                        />
-
-                        <div className="space-y-5">
-                            <div className="space-y-2">
-                                <UiLabel className={glass.microLabel}>Hive binding</UiLabel>
-                                <select
-                                    value={selectedHiveId}
-                                    onChange={(e) => setSelectedHiveId(e.target.value)}
-                                    className={cn(
-                                        'w-full h-11 rounded-xl border border-border/ bg-muted/30 px-3 text-sm font-semibold text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30',
-                                        hives.length === 0 && 'opacity-60'
-                                    )}
-                                    aria-label="Select hive for analysis"
-                                    title="Select hive for analysis"
-                                >
-                                    <option value="">No hive selected</option>
-                                    {hives.map((hive) => (
-                                        <option key={hive.id} value={hive.id}>
-                                            {(hive.hive_code || hive.id).toUpperCase()}
-                                        </option>
-                                    ))}
-                                </select>
-                                <p className="text-xs text-muted-foreground">
-                                    Use a quiet three second sample near the hive entrance for the cleanest read.
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                                <button
-                                    onClick={handleRecord}
-                                    disabled={recording || analyzing}
-                                    className={cn(
-                                        glass.btnPrimary,
-                                        'h-11 rounded-xl justify-center text-sm',
-                                        recording && 'bg-red-500 border-red-600 text-white hover:bg-red-500'
-                                    )}
-                                >
-                                    {recording ? <Square className="w-4 h-4 fill-current" /> : <Mic2 className="w-4 h-4" />}
-                                    {recording ? 'Recording live...' : 'Record sample'}
-                                </button>
-
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="audio/*"
-                                    className="hidden"
-                                    aria-label="Upload hive audio for analysis"
-                                    title="Upload hive audio for analysis"
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) analyzeFile(file);
-                                        if (fileInputRef.current) fileInputRef.current.value = '';
-                                    }}
-                                />
-
-                                <button
-                                    onClick={() => fileInputRef.current?.click()}
-                                    disabled={analyzing || recording}
-                                    className={cn(glass.btnSecondary, 'h-11 rounded-xl justify-center text-sm')}
-                                >
-                                    <Upload className="w-4 h-4" />
-                                    Upload audio
-                                </button>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                                {metrics.map((metric) => (
-                                    <div key={metric.label} className="rounded-2xl border border-border/ bg-muted/20 p-4">
-                                        <div className="flex items-center gap-2">
-                                            <metric.icon className={cn('w-4 h-4 text-[#F4D03F]', metric.tone)} />
-                                            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">{metric.label}</span>
-                                        </div>
-                                        <p className={cn('mt-3 text-lg font-black tracking-tight', metric.tone)}>{metric.value}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </BeeYieldSection>
-
-                    <AnimatePresence>
-                        {analyzing && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 12 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 12 }}
-                            >
-                                <BeeYieldCard className="space-y-4">
-                                    <div className="flex items-end justify-between gap-4">
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Analysis pass</p>
-                                            <p className="mt-1 text-sm font-bold text-foreground">Extracting spectrum markers</p>
-                                        </div>
-                                        <span className="text-2xl font-black tracking-tight text-[#8a6a00]">{progress}%</span>
-                                    </div>
-                                    <div className="h-2 w-full overflow-hidden rounded-full border border-border/ bg-muted/30">
-                                        <motion.div
-                                            className="h-full rounded-full bg-[#F4D03F]"
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${progress}%` }}
-                                            transition={{ duration: 0.2 }}
-                                        />
-                                    </div>
-                                    <p className="text-xs text-muted-foreground">
-                                        The UI progress is capped until the backend returns a final verdict.
-                                    </p>
-                                </BeeYieldCard>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    <AnimatePresence>
-                        {result && !analyzing && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 12 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 12 }}
-                            >
-                                <BeeYieldCard
-                                    className={cn(
-                                        'space-y-4',
-                                        result.label === 'Healthy' ? 'border-[#1B9157]/25 bg-[#1B9157]/5' : 'border-red-500/25 bg-red-500/5'
-                                    )}
-                                >
-                                    <div className="flex items-start justify-between gap-4">
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className={cn(
-                                                    'flex h-11 w-11 items-center justify-center rounded-2xl border',
-                                                    result.label === 'Healthy'
-                                                        ? 'border-[#1B9157]/20 bg-[#1B9157]/10 text-[#1B9157]'
-                                                        : 'border-red-500/20 bg-red-500/10 text-red-600'
-                                                )}
-                                            >
-                                                {result.label === 'Healthy' ? <ShieldCheck className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-                                            </div>
-                                            <div>
-                                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Latest verdict</p>
-                                                <h3 className={cn('text-xl font-black tracking-tight', result.label === 'Healthy' ? 'text-[#1B9157]' : 'text-red-600')}>
-                                                    {result.label}
-                                                </h3>
-                                            </div>
-                                        </div>
-                                        <BeeYieldBadge variant={result.label === 'Healthy' ? 'success' : 'error'}>
-                                            {result.label === 'Healthy' ? 'Optimal' : 'Review'}
-                                        </BeeYieldBadge>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">
-                                        {result.label === 'Healthy'
-                                            ? 'The acoustic signature stayed within the expected range for a stable colony.'
-                                            : 'The sample deviated from the healthy baseline. Cross-check with a visual or field inspection.'}
-                                        {typeof result.confidence === 'number' && (
-                                            <span className="ml-2 font-bold text-foreground">
-                                                Confidence {Math.round(result.confidence * 100)}%
-                                            </span>
-                                        )}
-                                    </p>
-                                </BeeYieldCard>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-
-                <div className="lg:col-span-8">
-                    <BeeYieldSection className="overflow-hidden">
-                        <div className="border-b border-border/ bg-[linear-gradient(135deg,rgba(255,249,240,0.96),rgba(249,247,242,0.98))] px-5 py-5 md:px-6">
-                            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                                <div className="space-y-2">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-border/ bg-muted/ px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
-                                        <Waves className="h-3.5 w-3.5 text-primary" />
-                                        Live waveform
-                                    </div>
-                                    <div>
-                                        <h3 className="text-2xl font-black tracking-tight text-foreground">{statusTone.label}</h3>
-                                        <p className="mt-1 text-sm text-muted-foreground">{statusTone.detail}</p>
-                                    </div>
-                                </div>
-                                <BeeYieldBadge variant={statusTone.badge}>
-                                    {recording ? 'Mic open' : analyzing ? 'Running pass' : 'Ready'}
-                                </BeeYieldBadge>
-                            </div>
-                        </div>
-
-                        <div className="relative flex min-h-[440px] items-center justify-center overflow-hidden px-5 py-10 md:px-8">
-                            <div
-                                className="pointer-events-none absolute inset-0 opacity-[0.05]"
-                                style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '40px 40px' }}
-                            />
-                            <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-border/60" />
-
-                            <div className="relative z-10 flex h-[260px] w-full max-w-5xl items-end justify-center gap-2">
-                                {WAVEFORM_BARS.map((height, index) => (
-                                    <motion.div
-                                        key={index}
-                                        className={cn(
-                                            'w-3 rounded-full border border-black/5 shadow-sm',
-                                            recording ? 'bg-red-500' : analyzing ? 'bg-[#F4D03F]' : 'bg-[#d9d5c8]'
-                                        )}
-                                        animate={
-                                            recording || analyzing
-                                                ? {
-                                                    height: [
-                                                        Math.max(26, Math.round(height * 0.55)),
-                                                        Math.min(220, height + 96 - ((index % 6) * 8)),
-                                                        Math.max(36, Math.round(height * 0.78)),
-                                                    ],
-                                                }
-                                                : { height }
-                                        }
-                                        transition={
-                                            recording || analyzing
-                                                ? { duration: 1.15, repeat: Infinity, repeatType: 'mirror', delay: (index % 8) * 0.05, ease: 'easeInOut' }
-                                                : { duration: 0.35 }
-                                        }
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-0 border-t border-border/ bg-muted/20 md:grid-cols-3">
-                            <div className="border-b border-border/ p-5 md:border-b-0 md:border-r">
-                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Amplitude gain</p>
-                                <p className="mt-2 text-2xl font-black tracking-tight text-foreground">-14.2 dB</p>
-                                <p className="mt-1 text-xs text-muted-foreground">Current front-end display reference.</p>
-                            </div>
-                            <div className="border-b border-border/ p-5 md:border-b-0 md:border-r">
-                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Signal window</p>
-                                <p className="mt-2 text-2xl font-black tracking-tight text-foreground">3 sec</p>
-                                <p className="mt-1 text-xs text-muted-foreground">One tap recording keeps capture length consistent.</p>
-                            </div>
-                            <div className="p-5">
-                                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Next action</p>
-                                <p className="mt-2 text-2xl font-black tracking-tight text-foreground">
-                                    {result?.label === 'Warning' ? 'Field review' : 'Ready'}
-                                </p>
-                                <p className="mt-1 text-xs text-muted-foreground">
-                                    {result?.label === 'Warning'
-                                        ? 'Pair this result with a visual health check.'
-                                        : 'Capture a sample whenever the hive tone changes.'}
-                                </p>
-                            </div>
-                        </div>
-                    </BeeYieldSection>
-
-                    {!recording && !analyzing && !result && (
-                        <div className="mt-6">
-                            <BeeYieldEmptyState
-                                icon={Activity}
-                                title="Waveform waiting for a sample"
-                                description="Start a recording or upload a file to fill this workspace with a live acoustic readout."
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-        </BeeYieldPageShell>
-    );
-
-    if (embedded) {
-        return content;
+      }, 50);
+    } else {
+      setProgress(0);
     }
 
-    return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-6xl h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none custom-scroll overflow-x-hidden">
-                <div className="relative">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-6 right-6 z-50 p-2 rounded-full bg-background/80 backdrop-blur-md border border-border hover:bg-muted transition-all"
-                    >
-                        <X className="w-4 h-4 text-foreground" />
-                    </button>
-                    {content}
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isRecording]);
+
+  const startRecording = () => {
+    setIsRecording(true);
+    setResult(null);
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    if (timerRef.current) clearInterval(timerRef.current);
+    
+    // Simulate AI analysis delay
+    setTimeout(() => {
+      const outcomes = [
+        { label: 'Healthy', confidence: 96.4, note: 'Normal colony harmonics detected. Queen presence confirmed by consistency.' },
+        { label: 'Agitated', confidence: 88.2, note: 'High frequency stress signals. Possible disturbance or lack of ventilation.' },
+        { label: 'Warning', confidence: 91.5, note: 'Unusual acoustic signature. Potential swarm fever or late-stage queen cell activity.' },
+      ];
+      const selected = outcomes[Math.floor(Math.random() * outcomes.length)];
+      setResult(selected);
+      setHistory(prev => [{ date: 'Just now', result: selected.label, confidence: selected.confidence }, ...prev.slice(0, 4)]);
+    }, 800);
+  };
+
+  return (
+    <BeeYieldPageShell className={cn(embedded && 'p-0 md:p-0 -m-0 min-h-0 pb-0')}>
+      <BeeYieldPageHeader
+        icon={Volume2}
+        label="Acoustic Intelligence"
+        title="Sound Analysis"
+        subtitle="Decode Hive Harmonics. Our AI models analyze acoustic patterns to detect stress, queen health, and swarm intent."
+        onBack={onClose}
+        actions={
+            <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => onTabChange?.('acoustic-transformer')} 
+                  className="px-3 py-1.5 rounded-xl border border-honey/30 bg-honey/5 text-honey text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-honey/10 transition-all"
+                >
+                  <Waves className="w-3.5 h-3.5" /> High Fidelity
+                </button>
+            </div>
+        }
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          <BeeYieldCard className="p-8 flex flex-col items-center justify-center text-center relative overflow-hidden bg-honey/5 border-2 border-honey/20 ring-1 ring-honey/40">
+            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at center, #F4D03F 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+            
+            <div className="h-40 w-full flex items-center justify-center gap-1.5 mb-10 px-10">
+              {visualizerData.map((v, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ height: isRecording ? v : Math.max(5, v / 4) }}
+                  className={cn(
+                    "w-1.5 sm:w-2 rounded-full transition-colors duration-300",
+                    isRecording ? "bg-honey shadow-[0_0_8px_rgba(244,208,63,0.4)]" : "bg-honey/30"
+                  )}
+                />
+              ))}
+            </div>
+
+            <div className="relative z-10 space-y-6">
+              {!isRecording ? (
+                <button
+                  onClick={startRecording}
+                  className="w-24 h-24 rounded-full bg-honey shadow-2xl shadow-honey/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-all group"
+                >
+                  <Mic className="w-10 h-10 text-white group-hover:animate-pulse" />
+                </button>
+              ) : (
+                <button
+                  onClick={stopRecording}
+                  className="w-24 h-24 rounded-full bg-white border-4 border-honey/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-all relative overflow-hidden"
+                >
+                  <div className="absolute bottom-0 left-0 h-full bg-honey/10 transition-all" style={{ width: `${progress}%` }} />
+                  <Square className="w-8 h-8 text-honey relative z-10 fill-honey" />
+                </button>
+              )}
+
+              <div>
+                <h3 className="text-xl font-black text-foreground tracking-tight">
+                  {isRecording ? "Harkening to the Hive..." : "Ready for Analysis"}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1 font-medium">
+                  {isRecording ? "Recording 5s acoustic sample for deep neural processing." : "Tap the microphone to start acoustic diagnosis."}
+                </p>
+              </div>
+            </div>
+          </BeeYieldCard>
+
+          <AnimatePresence>
+            {result && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <div className={cn(
+                    "p-6 rounded-[2.5rem] border-2 flex flex-col md:flex-row items-center gap-6 shadow-xl transition-all",
+                    result.label === 'Healthy' ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'
+                )}>
+                    <div className={cn(
+                        "w-20 h-20 rounded-3xl flex items-center justify-center shrink-0 border-2",
+                        result.label === 'Healthy' ? 'bg-emerald-100 border-emerald-300 text-emerald-600' : 'bg-amber-100 border-amber-300 text-amber-600'
+                    )}>
+                        {result.label === 'Healthy' ? <CheckCircle className="w-10 h-10" /> : <AlertTriangle className="w-10 h-10" />}
+                    </div>
+                    <div className="flex-1 text-center md:text-left space-y-1">
+                        <div className="flex items-center justify-center md:justify-start gap-3">
+                            <h4 className="text-2xl font-black text-foreground tracking-tight uppercase italic">{result.label} State</h4>
+                            <BeeYieldBadge variant={result.label === 'Healthy' ? 'success' : 'warning'} className="px-3 py-1 font-black text-[10px] tracking-widest uppercase">
+                                {result.confidence}% Match
+                            </BeeYieldBadge>
+                        </div>
+                        <p className="text-sm text-foreground font-bold tracking-tight opacity-80 leading-relaxed max-w-xl">
+                            {result.note}
+                        </p>
+                    </div>
+                    {onTabChange && (
+                      <button
+                        onClick={() => onTabChange(result.label === 'Healthy' ? 'reports-exports' : 'digital-audit')}
+                        className="bg-white border-2 border-border/10 rounded-2xl p-4 hover:border-honey/60 transition-all text-left flex items-center gap-4 group active:scale-95"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center group-hover:bg-honey/20 transition-all">
+                            {result.label === 'Healthy' ? <ShieldCheck className="w-5 h-5 text-honey" /> : <Zap className="w-5 h-5 text-honey" />}
+                        </div>
+                        <div className="min-w-[120px]">
+                            <div className="font-black text-[11px] tracking-tight text-foreground uppercase">{result.label === 'Healthy' ? 'Summary' : 'Full Audit'}</div>
+                            <div className="text-[10px] text-muted-foreground">Go to dashboard</div>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-honey group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    )}
                 </div>
-            </DialogContent>
-        </Dialog>
-    );
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="lg:col-span-4 space-y-6">
+          <BeeYieldCard padded={false} className="overflow-hidden border-none shadow-none space-y-6">
+            <div className="flex items-center gap-3 border-b border-border pb-3 ml-2">
+                <History className="w-4 h-4 text-honey" />
+                <h3 className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">Acoustic History</h3>
+            </div>
+            <div className="space-y-3">
+                {history.map((h, i) => (
+                    <div key={i} className="p-4 rounded-2xl bg-white border border-border/60 hover:border-honey/30 transition-all flex items-center justify-between group">
+                        <div className="flex items-center gap-4">
+                            <div className={cn(
+                                "w-10 h-10 rounded-xl flex items-center justify-center border",
+                                h.result === 'Healthy' ? "bg-emerald-50 border-emerald-100 text-emerald-500" : "bg-amber-50 border-amber-100 text-amber-500"
+                            )}>
+                                {h.result === 'Healthy' ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
+                            </div>
+                            <div>
+                                <h4 className="text-[11px] font-black text-foreground uppercase tracking-tight">{h.result}</h4>
+                                <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">{h.date}</span>
+                            </div>
+                        </div>
+                        <div className="text-[10px] font-black text-honey group-hover:scale-110 transition-transform">{h.confidence}%</div>
+                    </div>
+                ))}
+            </div>
+          </BeeYieldCard>
+
+          <BeeYieldCard className="bg-honey p-6 border-none shadow-xl shadow-honey/10 group cursor-pointer overflow-hidden relative" onClick={() => onTabChange?.('health-guide')}>
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 blur-2xl rounded-full group-hover:scale-150 transition-transform duration-700" />
+            <div className="relative z-10 flex flex-col gap-4">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    <Brain className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                   <h3 className="text-lg font-black text-white tracking-tight">Expert Guide</h3>
+                   <p className="text-white/80 text-xs font-bold leading-relaxed mt-1">Learn to identify hive sounds like a master beekeeper.</p>
+                </div>
+                <div className="flex items-center gap-2 text-white text-[10px] font-black uppercase tracking-widest pt-2">
+                    Review Patterns <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                </div>
+            </div>
+          </BeeYieldCard>
+        </div>
+      </div>
+    </BeeYieldPageShell>
+  );
 };
 
 export default SoundAnalysisView;

@@ -1,51 +1,16 @@
-import { useState, useMemo } from "react";
-import { X, Search, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
+import React from 'react';
+import { X, Search, AlertTriangle, Activity, Microscope, ShieldCheck, Bug, Waves, Leaf } from 'lucide-react';
+import { BeeYieldBadge, BeeYieldCard, BeeYieldEmptyState, BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection } from '../BeeYieldUI';
+import { beeHealthData, SymptomDetail } from '@/data/beeHealthData';
+import { cn } from '@/lib/utils';
 
-type Severity = "Critical" | "High" | "Moderate" | "Low";
-type PathogenType = "Parasitic" | "Bacterial" | "Viral" | "Fungal" | "Microsporidian" | "Environmental" | "Nutritional" | "Genetic" | "Predator";
+type RiskLevel = SymptomDetail['riskLevel'];
+type PathogenCategory = 'Bacterial' | 'Viral' | 'Fungal' | 'Microsporidian' | 'Parasitic' | 'Predator' | 'Environmental';
 
-interface Disease {
+interface DiseaseEntry extends SymptomDetail {
   name: string;
-  pathogen: string;
-  type: PathogenType;
-  severity: Severity;
-  symptoms: string[];
-  treatments: string[];
-  prevention: string;
-  affectedCastes: string;
+  category: PathogenCategory;
 }
-
-const SEVERITY_COLORS: Record<Severity, string> = {
-  Critical: "bg-destructive/15 text-destructive border-destructive/30",
-  High: "bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/30",
-  Moderate: "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border-yellow-500/30",
-  Low: "bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30",
-};
-
-const DISEASES: Disease[] = [
-  { name: "Varroa Mite Infestation", pathogen: "Varroa destructor", type: "Parasitic", severity: "Critical", symptoms: ["Deformed wings", "Shortened abdomen", "Weight loss", "Viral transmission", "Colony weakening"], treatments: ["Oxalic acid vaporization", "Formic acid strips", "Apivar (amitraz)", "Apistan (fluvalinate)", "Drone brood removal", "Sugar dusting"], prevention: "Regular mite counts, IPM rotation", affectedCastes: "All castes" },
-  { name: "American Foulbrood (AFB)", pathogen: "Paenibacillus larvae", type: "Bacterial", severity: "Critical", symptoms: ["Sunken/perforated cappings", "Ropy brown larvae", "Foul odor", "Matchstick test positive", "Scale formation"], treatments: ["Burn infected equipment (many regions)", "Oxytetracycline (preventive)", "Tylosin tartrate", "Irradiation of equipment"], prevention: "Inspect regularly, quarantine new colonies", affectedCastes: "Larvae" },
-  { name: "European Foulbrood (EFB)", pathogen: "Melissococcus plutonius", type: "Bacterial", severity: "High", symptoms: ["Twisted/discolored larvae", "Yellow-brown larvae", "Sour odor", "Irregular brood pattern"], treatments: ["Oxytetracycline", "Shook swarm method", "Requeening"], prevention: "Strong colonies, good nutrition", affectedCastes: "Larvae" },
-  { name: "Nosemosis (Type C)", pathogen: "Nosema ceranae", type: "Microsporidian", severity: "High", symptoms: ["Dysentery", "Reduced lifespan", "Poor spring buildup", "Queen supersedure", "Crawling bees"], treatments: ["Fumagillin", "Thymol-based", "Requeening", "Probiotics (research)"], prevention: "Clean water, reduce stress, good ventilation", affectedCastes: "Adult workers" },
-  { name: "Nosemosis (Type A)", pathogen: "Nosema apis", type: "Microsporidian", severity: "Moderate", symptoms: ["Dysentery on hive fronts", "Swollen abdomen", "K-wing", "Disjointed wings"], treatments: ["Fumagillin", "Thermal treatment"], prevention: "Proper ventilation, clean combs", affectedCastes: "Adult workers" },
-  { name: "Deformed Wing Virus (DWV)", pathogen: "DWV (Iflaviridae)", type: "Viral", severity: "Critical", symptoms: ["Crumpled/deformed wings", "Shortened abdomen", "Discoloration", "Reduced lifespan"], treatments: ["Control Varroa (vector)", "No direct antiviral"], prevention: "Varroa management is key", affectedCastes: "Pupae, adults" },
-  { name: "Acute Bee Paralysis Virus", pathogen: "ABPV", type: "Viral", severity: "High", symptoms: ["Trembling", "Inability to fly", "Dark/hairless body", "Rapid death"], treatments: ["Varroa control", "No direct treatment"], prevention: "Mite management", affectedCastes: "Adults" },
-  { name: "Chronic Bee Paralysis Virus", pathogen: "CBPV", type: "Viral", severity: "High", symptoms: ["Trembling/shaking bees", "Bloated abdomen", "Hairless/shiny 'black robbers'", "Crawling at entrance"], treatments: ["Requeen", "Reduce colony density", "Improve ventilation"], prevention: "Avoid overcrowding", affectedCastes: "Adults" },
-  { name: "Sacbrood Virus", pathogen: "SBV (Iflaviridae)", type: "Viral", severity: "Moderate", symptoms: ["Fluid-filled larvae", "Larvae fail to pupate", "Gondola-shaped larvae", "Color change to brown"], treatments: ["Requeen", "No direct treatment"], prevention: "Maintain strong colonies", affectedCastes: "Larvae" },
-  { name: "Black Queen Cell Virus", pathogen: "BQCV", type: "Viral", severity: "Moderate", symptoms: ["Dead queen larvae in cells", "Darkened queen cells", "Associated with Nosema"], treatments: ["Nosema control", "Requeen"], prevention: "Nosema prevention", affectedCastes: "Queen larvae" },
-  { name: "Israeli Acute Paralysis Virus", pathogen: "IAPV", type: "Viral", severity: "High", symptoms: ["Shivering wings", "Progressive paralysis", "Rapid colony loss", "Linked to CCD"], treatments: ["Varroa control", "No direct treatment"], prevention: "Mite management, reduce stress", affectedCastes: "Adults" },
-  { name: "Kashmir Bee Virus", pathogen: "KBV", type: "Viral", severity: "Moderate", symptoms: ["No visible symptoms often", "Sudden colony death", "Adults cease foraging"], treatments: ["Varroa management"], prevention: "Integrated pest management", affectedCastes: "Adults" },
-  { name: "Chalkbrood", pathogen: "Ascosphaera apis", type: "Fungal", severity: "Moderate", symptoms: ["White/grey mummified larvae", "Hard chalk-like mummies", "Mummies at hive entrance", "Irregular brood"], treatments: ["Improve ventilation", "Requeen (hygienic stock)", "Remove infected frames"], prevention: "Good ventilation, strong colonies", affectedCastes: "Larvae" },
-  { name: "Stonebrood", pathogen: "Aspergillus flavus/fumigatus", type: "Fungal", severity: "Moderate", symptoms: ["Hard mummified larvae", "Green/yellow fungal growth", "Stone-hard brood", "Potential human pathogen"], treatments: ["Remove infected combs", "Improve ventilation", "Requeen"], prevention: "Reduce humidity, ventilate", affectedCastes: "Larvae, adults" },
-  { name: "Small Hive Beetle", pathogen: "Aethina tumida", type: "Predator", severity: "High", symptoms: ["Slime trails on combs", "Fermented honey", "Larvae tunneling in combs", "Colony absconding"], treatments: ["Beetle traps (oil/vinegar)", "CheckMite+", "GardStar", "Soil treatment around hives"], prevention: "Strong colonies, reduce space, ground treatment", affectedCastes: "Colony-level" },
-  { name: "Wax Moth Infestation", pathogen: "Galleria mellonella / Achroia grisella", type: "Predator", severity: "Moderate", symptoms: ["Webbing in combs", "Tunneled comb", "Frass/debris", "Silken tunnels through brood"], treatments: ["Freeze combs", "BT (Bacillus thuringiensis)", "Paramoth", "Strong colony maintenance"], prevention: "Keep colonies strong, store combs properly", affectedCastes: "Colony-level" },
-  { name: "Tracheal Mite", pathogen: "Acarapis woodi", type: "Parasitic", severity: "Moderate", symptoms: ["K-wing", "Crawling bees", "Reduced winter survival", "Disjointed wings", "Dysentery"], treatments: ["Menthol crystals", "Formic acid", "Grease patties"], prevention: "Select resistant stock, menthol in autumn", affectedCastes: "Adults" },
-  { name: "Tropilaelaps Mite", pathogen: "Tropilaelaps clareae/mercedesae", type: "Parasitic", severity: "Critical", symptoms: ["Deformed brood", "Irregular brood pattern", "Parasitic mite syndrome", "Rapid colony decline"], treatments: ["Formic acid", "Brood-free period", "Fluvalinate"], prevention: "Quarantine, brood interruption", affectedCastes: "Brood" },
-  { name: "Colony Collapse Disorder", pathogen: "Multifactorial", type: "Environmental", severity: "Critical", symptoms: ["Sudden worker disappearance", "Queen present with brood", "Few/no dead bees in hive", "Delayed robbing"], treatments: ["Address multiple stressors", "Reduce pesticide exposure", "Improve nutrition", "Varroa control"], prevention: "Holistic IPM, reduce chemical exposure", affectedCastes: "Workers" },
-  { name: "Pesticide Poisoning", pathogen: "Neonicotinoids/Organophosphates", type: "Environmental", severity: "Critical", symptoms: ["Mass die-off at entrance", "Tongue extension reflex", "Disorientation", "Trembling", "Inability to fly"], treatments: ["Remove contaminated stores", "Feed clean syrup", "Shade hives", "Report to authorities"], prevention: "Communication with farmers, pesticide-free forage", affectedCastes: "Foragers primarily" },
-];
-
-const PATHOGEN_TYPES: PathogenType[] = ["Parasitic", "Bacterial", "Viral", "Fungal", "Microsporidian", "Environmental", "Nutritional", "Genetic", "Predator"];
 
 interface BeeDiseasesPageProps {
   isOpen: boolean;
@@ -53,147 +18,332 @@ interface BeeDiseasesPageProps {
   embedded?: boolean;
 }
 
+const RISK_ORDER: Record<RiskLevel, number> = {
+  CRITICAL: 0,
+  HIGH: 1,
+  MEDIUM: 2,
+  LOW: 3,
+};
+
+const CATEGORY_ICONS: Record<PathogenCategory, React.ElementType> = {
+  Bacterial: Microscope,
+  Viral: Activity,
+  Fungal: Leaf,
+  Microsporidian: Waves,
+  Parasitic: Bug,
+  Predator: AlertTriangle,
+  Environmental: ShieldCheck,
+};
+
+const inferCategory = (name: string, detail: SymptomDetail): PathogenCategory => {
+  const source = `${name} ${detail.scientificName || ''} ${detail.signs} ${detail.symptoms} ${detail.transmission}`.toLowerCase();
+
+  if (source.includes('nosema') || source.includes('microsporidia')) return 'Microsporidian';
+  if (source.includes('virus') || source.includes('cbpv') || source.includes('iapv') || source.includes('sbv') || source.includes('kbv') || source.includes('dwv') || source.includes('lsv')) return 'Viral';
+  if (source.includes('foulbrood') || source.includes('serratia') || source.includes('bacillus') || source.includes('pseudomonas')) return 'Bacterial';
+  if (source.includes('ascosphaera') || source.includes('aspergillus') || source.includes('fungal') || source.includes('mycelial')) return 'Fungal';
+  if (source.includes('hornet') || source.includes('wasp') || source.includes('fly') || source.includes('bird') || source.includes('bear')) return 'Predator';
+  if (source.includes('varroa') || source.includes('mite') || source.includes('beetle') || source.includes('moth') || source.includes('acarapis') || source.includes('louse') || source.includes('nematode') || source.includes('parasite')) return 'Parasitic';
+  return 'Environmental';
+};
+
+const RISK_BADGE_VARIANT: Record<RiskLevel, 'error' | 'warning' | 'success' | 'default'> = {
+  CRITICAL: 'error',
+  HIGH: 'warning',
+  MEDIUM: 'default',
+  LOW: 'success',
+};
+
+const DISEASE_ENTRIES: DiseaseEntry[] = Object.entries(beeHealthData)
+  .map(([name, detail]) => ({
+    name,
+    ...detail,
+    category: inferCategory(name, detail),
+  }))
+  .sort((left, right) => {
+    const riskDifference = RISK_ORDER[left.riskLevel] - RISK_ORDER[right.riskLevel];
+    if (riskDifference !== 0) return riskDifference;
+    return left.name.localeCompare(right.name);
+  });
+
+const PATHOGEN_CATEGORIES: Array<PathogenCategory | 'All'> = [
+  'All',
+  'Bacterial',
+  'Viral',
+  'Fungal',
+  'Microsporidian',
+  'Parasitic',
+  'Predator',
+  'Environmental',
+];
+
 export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: BeeDiseasesPageProps) {
-  const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState<string>("All");
-  const [filterSeverity, setFilterSeverity] = useState<string>("All");
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [search, setSearch] = React.useState('');
+  const [categoryFilter, setCategoryFilter] = React.useState<PathogenCategory | 'All'>('All');
+  const [riskFilter, setRiskFilter] = React.useState<RiskLevel | 'All'>('All');
+  const [selectedName, setSelectedName] = React.useState<string>(DISEASE_ENTRIES[0]?.name || '');
 
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return DISEASES.filter((d) => {
-      const matchType = filterType === "All" || d.type === filterType;
-      const matchSev = filterSeverity === "All" || d.severity === filterSeverity;
-      const matchSearch = !q || d.name.toLowerCase().includes(q) || d.pathogen.toLowerCase().includes(q) || d.symptoms.some((s) => s.toLowerCase().includes(q));
-      return matchType && matchSev && matchSearch;
+  const filteredEntries = React.useMemo(() => {
+    const needle = search.trim().toLowerCase();
+
+    return DISEASE_ENTRIES.filter((entry) => {
+      const matchesSearch = !needle || [
+        entry.name,
+        entry.scientificName,
+        entry.signs,
+        entry.symptoms,
+        entry.detection,
+        entry.treatment,
+        entry.prevention,
+        entry.transmission,
+        entry.category,
+      ].some((value) => String(value || '').toLowerCase().includes(needle));
+
+      const matchesCategory = categoryFilter === 'All' || entry.category === categoryFilter;
+      const matchesRisk = riskFilter === 'All' || entry.riskLevel === riskFilter;
+
+      return matchesSearch && matchesCategory && matchesRisk;
     });
-  }, [search, filterType, filterSeverity]);
+  }, [categoryFilter, riskFilter, search]);
 
-  const severityCounts = useMemo(() => {
-    const counts: Record<string, number> = { Critical: 0, High: 0, Moderate: 0, Low: 0 };
-    DISEASES.forEach((d) => counts[d.severity]++);
-    return counts;
-  }, []);
+  React.useEffect(() => {
+    if (filteredEntries.length === 0) return;
+    if (!filteredEntries.some((entry) => entry.name === selectedName)) {
+      setSelectedName(filteredEntries[0].name);
+    }
+  }, [filteredEntries, selectedName]);
+
+  const selectedEntry = filteredEntries.find((entry) => entry.name === selectedName)
+    || DISEASE_ENTRIES.find((entry) => entry.name === selectedName)
+    || filteredEntries[0]
+    || null;
+
+  const riskCounts = React.useMemo(() => ({
+    CRITICAL: DISEASE_ENTRIES.filter((entry) => entry.riskLevel === 'CRITICAL').length,
+    HIGH: DISEASE_ENTRIES.filter((entry) => entry.riskLevel === 'HIGH').length,
+    MEDIUM: DISEASE_ENTRIES.filter((entry) => entry.riskLevel === 'MEDIUM').length,
+    LOW: DISEASE_ENTRIES.filter((entry) => entry.riskLevel === 'LOW').length,
+  }), []);
 
   const content = (
-    <div className={embedded ? "" : "max-h-[85vh] overflow-y-auto custom-scroll"}>
-      {/* Header Info */}
-      <div className="mb-6">
-        <h2 className="font-display text-2xl font-bold text-foreground">Bee Diseases & Health</h2>
-        <p className="text-sm text-muted-foreground">{DISEASES.length} diseases documented • Symptoms, treatments & severity</p>
-      </div>
+    <BeeYieldPageShell className={embedded ? 'p-0 md:p-0 -m-0 min-h-0 pb-0' : ''}>
+      <BeeYieldPageHeader
+        icon={Activity}
+        label="Health Database"
+        title="Pathogen Database"
+        subtitle={`${DISEASE_ENTRIES.length} pathogen, pest, and hive-risk records with detection, treatment, and prevention protocols.`}
+        onBack={onClose}
+      />
 
-      {/* Severity summary */}
-      <div className="flex gap-3 flex-wrap mb-6">
-        {(["Critical", "High", "Moderate", "Low"] as Severity[]).map((sev) => (
-          <div key={sev} className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${filterSeverity === sev ? 'ring-2 ring-primary/20 bg-muted border-primary' : SEVERITY_COLORS[sev]}`}>
-            {sev}: {severityCounts[sev]}
-          </div>
-        ))}
-      </div>
-
-      {/* Search and Filters */}
-      <div className="space-y-4 mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search diseases, pathogens, or symptoms..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-border bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 backdrop-blur-sm"
-          />
-        </div>
-        
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-1">Type:</span>
-          {["All", ...PATHOGEN_TYPES.slice(0, 5)].map((t) => (
-            <button key={t} onClick={() => setFilterType(t)} className={`text-xs px-3 py-1 rounded-full border transition-all font-bold ${filterType === t ? "bg-honey text-white border-honey" : "bg-white/50 border-border text-muted-foreground hover:border-honey/50"}`}>
-              {t}
-            </button>
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {([
+            { label: 'Critical', value: riskCounts.CRITICAL, variant: 'error' as const },
+            { label: 'High', value: riskCounts.HIGH, variant: 'warning' as const },
+            { label: 'Medium', value: riskCounts.MEDIUM, variant: 'default' as const },
+            { label: 'Low', value: riskCounts.LOW, variant: 'success' as const },
+          ]).map((item) => (
+            <BeeYieldCard key={item.label} className="space-y-2">
+              <BeeYieldBadge variant={item.variant}>{item.label} risk</BeeYieldBadge>
+              <div className="text-3xl font-black tracking-tight text-foreground">{item.value}</div>
+            </BeeYieldCard>
           ))}
         </div>
-      </div>
 
-      {/* Disease list */}
-      <div className="space-y-3">
-        {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-12">No diseases match your filters.</p>}
-        {filtered.map((d, i) => {
-          const isExpanded = expandedIndex === i;
-          return (
-            <div key={d.name} className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'border-honey/40 bg-honey/5' : 'border-border bg-white/40 hover:border-honey/20'}`}>
-              <button onClick={() => setExpandedIndex(isExpanded ? null : i)} className="w-full flex items-center justify-between px-5 py-4 text-left">
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full border font-black uppercase flex-shrink-0 ${SEVERITY_COLORS[d.severity]}`}>{d.severity}</span>
-                  <div className="min-w-0">
-                    <h4 className="text-sm font-bold text-foreground truncate">{d.name}</h4>
-                    <p className="text-xs text-muted-foreground truncate italic">{d.pathogen}</p>
-                  </div>
-                </div>
-                {isExpanded ? <ChevronUp className="w-5 h-5 text-honey" /> : <ChevronDown className="w-5 h-5 text-muted-foreground" />}
-              </button>
-              
-              {isExpanded && (
-                <div className="px-5 pb-5 border-t border-honey/10 pt-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <h5 className="text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-honey" /> Symptoms
-                      </h5>
-                      <div className="flex flex-wrap gap-1.5">
-                        {d.symptoms.map((s) => (
-                          <span key={s} className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-destructive/5 text-destructive border border-destructive/10">{s}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <h5 className="text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-honey" /> Treatments
-                      </h5>
-                      <div className="flex flex-wrap gap-1.5">
-                        {d.treatments.map((t) => (
-                          <span key={t} className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-primary/5 text-primary border border-primary/10">{t}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                    <div className="rounded-xl bg-white/50 border border-border p-3">
-                      <span className="text-[10px] font-black text-muted-foreground uppercase block mb-1">Prevention Strategy</span>
-                      <span className="text-xs text-foreground font-medium leading-relaxed">{d.prevention}</span>
-                    </div>
-                    <div className="rounded-xl bg-white/50 border border-border p-3">
-                      <span className="text-[10px] font-black text-muted-foreground uppercase block mb-1">Target Population</span>
-                      <span className="text-xs text-foreground font-medium">{d.affectedCastes}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+        <BeeYieldSection className="p-5 space-y-5">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.7fr)_220px_180px]">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search disease, pathogen, symptom, treatment, or transmission..."
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                className="h-12 w-full rounded-2xl border border-border bg-card pl-11 pr-4 text-sm font-semibold text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
+              />
             </div>
-          );
-        })}
+
+            <select
+              value={categoryFilter}
+              onChange={(event) => setCategoryFilter(event.target.value as PathogenCategory | 'All')}
+              className="h-12 rounded-2xl border border-border bg-card px-4 text-sm font-semibold text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
+              aria-label="Filter by pathogen category"
+            >
+              {PATHOGEN_CATEGORIES.map((option) => (
+                <option key={option} value={option}>{option === 'All' ? 'All categories' : option}</option>
+              ))}
+            </select>
+
+            <select
+              value={riskFilter}
+              onChange={(event) => setRiskFilter(event.target.value as RiskLevel | 'All')}
+              className="h-12 rounded-2xl border border-border bg-card px-4 text-sm font-semibold text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
+              aria-label="Filter by risk level"
+            >
+              {(['All', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as Array<RiskLevel | 'All'>).map((option) => (
+                <option key={option} value={option}>{option === 'All' ? 'All risk levels' : option}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <BeeYieldBadge>{filteredEntries.length} matching records</BeeYieldBadge>
+            <span className="text-xs text-muted-foreground">
+              Search matches signs, symptoms, detection, treatment, prevention, and transmission notes.
+            </span>
+          </div>
+        </BeeYieldSection>
+
+        {filteredEntries.length === 0 ? (
+          <BeeYieldEmptyState
+            icon={AlertTriangle}
+            title="No pathogen records match the current filters"
+            description="Reset the search or broaden the category and risk filters to bring records back into view."
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(340px,0.9fr)_minmax(0,1.1fr)]">
+            <BeeYieldSection className="overflow-hidden">
+              <div className="border-b border-border px-5 py-4">
+                <h3 className="text-sm font-black tracking-tight text-foreground">Database Records</h3>
+                <p className="mt-1 text-xs text-muted-foreground">Select a condition to inspect the full protocol.</p>
+              </div>
+              <div className="max-h-[760px] overflow-y-auto p-3">
+                <div className="space-y-2">
+                  {filteredEntries.map((entry) => {
+                    const CategoryIcon = CATEGORY_ICONS[entry.category];
+                    const isSelected = entry.name === selectedName;
+
+                    return (
+                      <button
+                        key={entry.name}
+                        type="button"
+                        onClick={() => setSelectedName(entry.name)}
+                        className={cn(
+                          'w-full rounded-2xl border p-4 text-left transition-all',
+                          isSelected
+                            ? 'border-primary bg-primary/5 shadow-sm'
+                            : 'border-border bg-card hover:border-primary/30 hover:bg-muted/20'
+                        )}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <CategoryIcon className="h-4 w-4 shrink-0 text-primary" />
+                              <h4 className="truncate text-sm font-black tracking-tight text-foreground">{entry.name}</h4>
+                            </div>
+                            <p className="truncate text-xs font-semibold text-muted-foreground">{entry.scientificName || 'Scientific classification pending'}</p>
+                          </div>
+                          <BeeYieldBadge variant={RISK_BADGE_VARIANT[entry.riskLevel]}>{entry.riskLevel}</BeeYieldBadge>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <BeeYieldBadge className="border-border bg-muted/20 text-foreground">{entry.category}</BeeYieldBadge>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </BeeYieldSection>
+
+            {selectedEntry ? (
+              <div className="space-y-6">
+                <BeeYieldSection className="p-6 space-y-6">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <BeeYieldBadge variant={RISK_BADGE_VARIANT[selectedEntry.riskLevel]}>{selectedEntry.riskLevel}</BeeYieldBadge>
+                        <BeeYieldBadge className="border-border bg-muted/20 text-foreground">{selectedEntry.category}</BeeYieldBadge>
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-black tracking-tight text-foreground">{selectedEntry.name}</h2>
+                        <p className="mt-1 text-sm font-semibold text-muted-foreground">
+                          {selectedEntry.scientificName || 'Scientific classification pending'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <BeeYieldCard className="space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Visible signs</p>
+                      <p className="text-sm text-foreground">{selectedEntry.signs}</p>
+                    </BeeYieldCard>
+                    <BeeYieldCard className="space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Colony symptoms</p>
+                      <p className="text-sm text-foreground">{selectedEntry.symptoms}</p>
+                    </BeeYieldCard>
+                    <BeeYieldCard className="space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Detection protocol</p>
+                      <p className="text-sm text-foreground">{selectedEntry.detection}</p>
+                    </BeeYieldCard>
+                    <BeeYieldCard className="space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Transmission path</p>
+                      <p className="text-sm text-foreground">{selectedEntry.transmission}</p>
+                    </BeeYieldCard>
+                  </div>
+                </BeeYieldSection>
+
+                <BeeYieldSection className="p-6 space-y-5">
+                  <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black tracking-tight text-foreground">Treatment</h3>
+                      <div className="rounded-2xl border border-border bg-card p-4">
+                        <p className="text-sm text-foreground leading-relaxed">{selectedEntry.treatment}</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black tracking-tight text-foreground">Prevention</h3>
+                      <div className="rounded-2xl border border-border bg-card p-4">
+                        <p className="text-sm text-foreground leading-relaxed">{selectedEntry.prevention}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-black tracking-tight text-foreground">Immediate field steps</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedEntry.steps.map((step) => (
+                        <span
+                          key={step}
+                          className="rounded-xl border border-border bg-muted/20 px-3 py-2 text-xs font-bold text-foreground"
+                        >
+                          {step}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedEntry.references && selectedEntry.references.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black tracking-tight text-foreground">References</h3>
+                      <div className="space-y-2">
+                        {selectedEntry.references.map((reference) => (
+                          <div key={reference} className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground">
+                            {reference}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </BeeYieldSection>
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 
   if (embedded) return content;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-      <div 
-        className={`bg-white rounded-3xl w-full max-w-5xl shadow-2xl relative transition-all transform ${isOpen ? 'scale-100' : 'scale-95'}`}
-      >
-        <button 
-          onClick={onClose}
-          className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors z-10"
-        >
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`bg-white rounded-3xl w-full h-[90vh] max-w-6xl shadow-2xl relative transition-all transform overflow-hidden ${isOpen ? 'scale-100' : 'scale-95'}`}>
+        <button onClick={onClose} className="absolute top-8 right-8 p-2 rounded-full hover:bg-muted transition-colors z-50" aria-label="Close pathogen database">
           <X className="w-5 h-5" />
         </button>
-
-        <div className="p-8">
-          {content}
-        </div>
+        <div className="h-full overflow-y-auto custom-scroll p-8">{content}</div>
       </div>
     </div>
   );

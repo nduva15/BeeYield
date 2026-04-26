@@ -4,28 +4,39 @@ import { glass, PageHeader as GlassPageHeader } from '@/components/beeyield/Glas
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, LucideIcon } from 'lucide-react';
+import { Loader2, LucideIcon, Hexagon } from 'lucide-react';
 
 export function BeeYieldPageShell({
   children,
   className,
+  embedded
 }: {
   children: React.ReactNode;
   className?: string;
+  embedded?: boolean;
 }) {
-  return <div className={cn(glass.page, className)}>{children}</div>;
+  return <div className={cn(glass.page, embedded && "p-0 md:p-0 -m-0 min-h-0 pb-0", className)}>{children}</div>;
 }
 
 export function BeeYieldCard({
   children,
   className,
   padded = true,
+  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
   padded?: boolean;
+  onClick?: () => void;
 }) {
-  return <div className={cn(glass.card, padded && 'p-5', className)}>{children}</div>;
+  return (
+    <div 
+      className={cn(glass.card, padded && 'p-5', onClick && "cursor-pointer", className)} 
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function BeeYieldSection({
@@ -52,8 +63,9 @@ export function BeeYieldPageHeader(props: {
   badge?: HeaderBadge;
   onBack?: () => void;
   onRefresh?: () => void;
+  onTabChange?: (tab: string) => void;
 }) {
-  const { title, subtitle, icon, label, actions, action, badge, onBack, onRefresh } = props;
+  const { title, subtitle, icon, label, actions, action, badge, onBack, onRefresh, onTabChange } = props;
 
   const badgeNode = badge ? (
     <span className={cn(
@@ -69,6 +81,15 @@ export function BeeYieldPageHeader(props: {
   const headerActions = (
     <div className="flex items-center gap-2.5">
       {badgeNode}
+      {onTabChange && (
+        <button
+          onClick={() => onTabChange('assistant')}
+          className={cn(glass.btnPrimary, "gap-2 shadow-lg shadow-primary/20 h-9 px-4 text-sm")}
+        >
+          <Hexagon className="w-4 h-4" />
+          BeeYield AI
+        </button>
+      )}
       {onRefresh && (
         <Button variant="outline" size="sm" className={cn(glass.btnSecondary, "h-9")} onClick={onRefresh}>
           Refresh

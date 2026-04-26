@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { X, ChevronLeft, ChevronRight, Bug, Search } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Bug, Search, Image as ImageIcon } from "lucide-react";
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldBadge, BeeYieldCard } from "../BeeYieldUI";
 
 // Image imports
 import westernHoneyBee from "@/assets/bees/western-honey-bee.jpg";
@@ -112,64 +113,59 @@ export default function BeeGallery({ isOpen, onClose, embedded = false }: BeeGal
   const selected = selectedIndex !== null ? BEE_SPECIES[selectedIndex] : null;
 
   const content = (
-    <div className={embedded ? "" : "max-h-[85vh] overflow-y-auto custom-scroll"}>
-      {/* Header Info */}
-      <div className="mb-6">
-        <h2 className="font-display text-2xl font-bold text-foreground">Bee Species Gallery</h2>
-        <p className="text-sm text-muted-foreground">{BEE_SPECIES.length} species documented • High-fidelity research data</p>
-      </div>
+    <BeeYieldPageShell className={embedded ? "p-0 md:p-0 -m-0 min-h-0 pb-0" : ""}>
+      <BeeYieldPageHeader
+        icon={ImageIcon}
+        label="Science Gallery"
+        title="Species Database"
+        subtitle={`${BEE_SPECIES.length} species documented with high-fidelity research data.`}
+        onBack={selectedIndex !== null ? () => setSelectedIndex(null) : onClose}
+      />
 
       {selected ? (
-        /* Detail View */
         <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-          <button
-            onClick={() => setSelectedIndex(null)}
-            className="text-xs font-black text-honey uppercase tracking-widest mb-6 flex items-center gap-1 hover:opacity-70 transition-opacity"
-          >
-            <ChevronLeft className="w-4 h-4" /> Back to grid
-          </button>
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="w-full lg:w-72 h-72 rounded-3xl overflow-hidden border-2 border-honey/20 shadow-xl shadow-honey/5 flex-shrink-0">
+           <div className="flex flex-col lg:flex-row gap-8">
+            <div className="w-full lg:w-96 h-96 rounded-3xl overflow-hidden border border-border shadow-xl flex-shrink-0">
               <img src={selected.image} alt={selected.name} className="w-full h-full object-cover" />
             </div>
-            <div className="flex-1 space-y-4">
+            <div className="flex-1 space-y-6">
               <div>
-                <h3 className="font-display text-3xl font-bold text-foreground mb-1">{selected.name}</h3>
-                <p className="text-sm text-honey italic font-medium">{selected.scientific}</p>
-                <div className="flex gap-2 mt-2">
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded-lg bg-muted border border-border uppercase tracking-widest">{selected.category}</span>
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded-lg bg-green-500/10 text-green-600 border border-green-500/20 uppercase tracking-widest">Active</span>
+                <h3 className="text-3xl font-black text-foreground tracking-tight mb-1">{selected.name}</h3>
+                <p className="text-sm text-honey italic font-black uppercase tracking-widest">{selected.scientific}</p>
+                <div className="flex gap-2 mt-4">
+                  <BeeYieldBadge className="px-3 py-1 font-black uppercase text-[10px] tracking-widest">{selected.category}</BeeYieldBadge>
+                  <BeeYieldBadge variant="success" className="px-3 py-1 font-black uppercase text-[10px] tracking-widest">Active Database</BeeYieldBadge>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">{selected.description}</p>
+              <p className="text-base text-muted-foreground leading-relaxed font-medium">{selected.description}</p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-2xl bg-muted/30 border border-border p-4">
-                  <span className="text-[10px] font-black text-muted-foreground uppercase block mb-1">Global Habitat</span>
-                  <span className="text-xs text-foreground font-bold">{selected.habitat}</span>
-                </div>
-                <div className="rounded-2xl bg-muted/30 border border-border p-4">
-                  <span className="text-[10px] font-black text-muted-foreground uppercase block mb-1">Key Traits</span>
-                  <div className="flex flex-wrap gap-1.5 mt-1">
+                <BeeYieldCard className="bg-muted/20 border-border/50">
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">Global Habitat</span>
+                  <span className="text-sm text-foreground font-black tracking-tight">{selected.habitat}</span>
+                </BeeYieldCard>
+                <BeeYieldCard className="bg-muted/20 border-border/50">
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">Scientific Traits</span>
+                  <div className="flex flex-wrap gap-2 mt-1">
                     {selected.traits.map((t) => (
-                      <span key={t} className="text-[9px] font-black px-1.5 py-0.5 rounded bg-white border border-border uppercase">{t}</span>
+                      <span key={t} className="text-[10px] font-black px-2 py-1 rounded-lg bg-white border border-border uppercase tracking-tight">{t}</span>
                     ))}
                   </div>
-                </div>
+                </BeeYieldCard>
               </div>
               
-              <div className="flex gap-2 pt-4 border-t border-border">
+              <div className="flex gap-3 pt-6 border-t border-border">
                 <button
                   disabled={selectedIndex === 0}
                   onClick={() => setSelectedIndex((i) => (i !== null && i > 0 ? i - 1 : i))}
-                  className="px-4 py-2 rounded-xl border border-border bg-white text-xs font-bold hover:border-honey/30 transition-all flex items-center gap-2 disabled:opacity-30"
+                  className="px-6 py-3 rounded-2xl border border-border bg-white text-xs font-black uppercase tracking-widest hover:border-honey transition-all flex items-center gap-2 disabled:opacity-30"
                 >
                   <ChevronLeft className="w-4 h-4" /> Previous
                 </button>
                 <button
                   disabled={selectedIndex === BEE_SPECIES.length - 1}
                   onClick={() => setSelectedIndex((i) => (i !== null && i < BEE_SPECIES.length - 1 ? i + 1 : i))}
-                  className="px-4 py-2 rounded-xl border border-border bg-white text-xs font-bold hover:border-honey/30 transition-all flex items-center gap-2 disabled:opacity-30"
+                  className="px-6 py-3 rounded-2xl border border-border bg-white text-xs font-black uppercase tracking-widest hover:border-honey transition-all flex items-center gap-2 disabled:opacity-30"
                 >
                   Next <ChevronRight className="w-4 h-4" />
                 </button>
@@ -178,29 +174,28 @@ export default function BeeGallery({ isOpen, onClose, embedded = false }: BeeGal
           </div>
         </div>
       ) : (
-        /* Grid View */
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-start">
-            <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <div className="relative w-full sm:w-96 group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-honey transition-colors" />
               <input
                 type="text"
-                placeholder="Search species..."
+                placeholder="Filter search by species name or traits..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-border bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-honey/20"
+                className="w-full pl-12 pr-4 py-3.5 text-sm rounded-2xl border border-border bg-white font-bold transition-all focus:border-honey/50 outline-none"
               />
             </div>
             
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex gap-2 flex-wrap">
               {ALL_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`text-xs px-3.5 py-1.5 rounded-full border transition-all font-bold ${
+                  className={`text-[10px] px-4 py-2 rounded-xl border transition-all font-black uppercase tracking-widest ${
                     activeCategory === cat
                       ? "bg-honey text-white border-honey"
-                      : "bg-white/50 border-border text-muted-foreground hover:border-honey/30 hover:text-foreground"
+                      : "bg-white border-border text-muted-foreground hover:border-honey/30"
                   }`}
                 >
                   {cat}
@@ -209,58 +204,41 @@ export default function BeeGallery({ isOpen, onClose, embedded = false }: BeeGal
             </div>
           </div>
 
-          {filtered.length === 0 ? (
-            <div className="py-20 text-center">
-              <Bug className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
-              <p className="text-sm text-muted-foreground">No species match your search criteria.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filtered.map(({ bee, i }) => (
-                <button
-                  key={bee.scientific}
-                  onClick={() => setSelectedIndex(i)}
-                  className="text-left rounded-3xl border border-border hover:border-honey/40 bg-white/40 hover:bg-white transition-all group overflow-hidden shadow-sm hover:shadow-honey/5"
-                >
-                  <div className="aspect-[4/5] overflow-hidden">
-                    <img
-                      src={bee.image}
-                      alt={bee.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h4 className="text-sm font-bold text-foreground group-hover:text-honey transition-colors leading-tight mb-1">
-                      {bee.name}
-                    </h4>
-                    <p className="text-[10px] text-muted-foreground italic truncate">{bee.scientific}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {filtered.map(({ bee, i }) => (
+              <button
+                key={bee.scientific}
+                onClick={() => setSelectedIndex(i)}
+                className="text-left rounded-3xl border border-border hover:border-honey/50 bg-white hover:bg-muted/10 transition-all group overflow-hidden shadow-sm hover:shadow-honey/10"
+              >
+                <div className="aspect-[4/5] overflow-hidden">
+                  <img
+                    src={bee.image}
+                    alt={bee.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+                <div className="p-5">
+                  <h4 className="text-sm font-black text-foreground group-hover:text-honey transition-colors leading-tight mb-1 uppercase tracking-tight">
+                    {bee.name}
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest italic truncate">{bee.scientific}</p>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       )}
-    </div>
+    </BeeYieldPageShell>
   );
 
   if (embedded) return content;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-      <div 
-        className={`bg-white rounded-3xl w-full max-w-6xl shadow-2xl relative transition-all transform ${isOpen ? 'scale-100' : 'scale-95'}`}
-      >
-        <button 
-          onClick={onClose}
-          className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors z-10"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="p-8">
-          {content}
-        </div>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`bg-white rounded-3xl w-full h-[90vh] max-w-6xl shadow-2xl relative transition-all transform overflow-hidden ${isOpen ? 'scale-100' : 'scale-95'}`}>
+        <button onClick={onClose} className="absolute top-8 right-8 p-2 rounded-full hover:bg-muted transition-colors z-50"><X className="w-5 h-5" /></button>
+        <div className="h-full overflow-y-auto custom-scroll p-8">{content}</div>
       </div>
     </div>
   );

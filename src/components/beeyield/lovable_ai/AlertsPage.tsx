@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Bell, Plus, Trash2, BellRing, BellOff, Check, Download, FileText, Filter } from "lucide-react";
+import { X, Bell, Plus, Trash2, BellRing, BellOff, Check, Download, FileText, Filter, Activity } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
+import { BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldBadge, BeeYieldCard } from "../BeeYieldUI";
 
 type AlertRule = {
   id: string;
@@ -111,17 +112,15 @@ export default function AlertsPage({ isOpen, onClose, embedded }: { isOpen: bool
     load();
   };
 
-  const uniqueHives = Array.from(new Set([...rules, ...events].map(x => x.hive_label)));
-  const filteredEvents = events.filter(e => {
-      if (filterHive !== "All" && e.hive_label !== filterHive) return false;
-      if (filterDays > 0) {
-          const eTime = new Date(e.created_at).getTime();
-          if ((filterNowMs - eTime) / 86400000 > filterDays) return false;
-      }
-      return true;
-  });
-
   const handleExportCSV = () => {
+    const filteredEvents = events.filter(e => {
+        if (filterHive !== "All" && e.hive_label !== filterHive) return false;
+        if (filterDays > 0) {
+            const eTime = new Date(e.created_at).getTime();
+            if ((filterNowMs - eTime) / 86400000 > filterDays) return false;
+        }
+        return true;
+    });
     let csv = "Date,Hive,Metric,Value,Message,Acknowledged\n";
     filteredEvents.forEach(e => {
       csv += `"${new Date(e.created_at).toLocaleString()}","${e.hive_label}","${e.metric}",${e.value || ""},"${e.message.replace(/"/g, '""')}",${e.acknowledged}\n`;
@@ -135,145 +134,147 @@ export default function AlertsPage({ isOpen, onClose, embedded }: { isOpen: bool
   };
 
   const content = (
-    <div className={embedded ? "custom-scroll" : "max-h-[85vh] overflow-y-auto custom-scroll"}>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="font-display text-2xl font-bold text-foreground">Health & Alerts</h2>
-          <p className="text-sm text-muted-foreground">Threshold-based notifications for apiary performance</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {pushPerm !== "granted" ? (
-            <button onClick={requestPush} className="px-3 py-1.5 rounded-lg border border-honey/30 text-honey text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 hover:bg-honey/5 transition-all">
-              <BellRing className="w-3.5 h-3.5" /> Enable Push
-            </button>
-          ) : (
-            <div className="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-green-500/20">
-              <Check className="w-3.5 h-3.5" /> Active
-            </div>
-          )}
-          <button onClick={() => setShowNew(true)} className="px-3 py-1.5 rounded-lg bg-honey text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 hover:opacity-90 transition-all shadow-lg shadow-honey/20">
-            <Plus className="w-3.5 h-3.5" /> New Rule
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Rules Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border pb-2">
-            <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-              <Plus className="w-3 h-3" /> Alert Rules
-            </h3>
-            <span className="text-[10px] font-bold text-honey bg-honey/10 px-2 py-0.5 rounded-full">{rules.length} Active</span>
-          </div>
-
-          {showNew && (
-            <div className="p-5 rounded-2xl border-2 border-honey/20 bg-honey/5 animate-in zoom-in-95 duration-200">
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-muted-foreground uppercase">Hive Label</label>
-                  <input value={draft.hive_label} onChange={(e) => setDraft({ ...draft, hive_label: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-white border border-border text-xs font-bold" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-muted-foreground uppercase">Metric</label>
-                  <select value={draft.metric} onChange={(e) => setDraft({ ...draft, metric: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-white border border-border text-xs font-bold">
-                    {METRICS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-muted-foreground uppercase">Comparator</label>
-                  <select value={draft.comparator} onChange={(e) => setDraft({ ...draft, comparator: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-white border border-border text-xs font-bold">
-                    <option value="lt">Below</option>
-                    <option value="gt">Above</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-muted-foreground uppercase">Threshold</label>
-                  <input type="number" step="0.1" value={draft.threshold} onChange={(e) => setDraft({ ...draft, threshold: Number(e.target.value) })} className="w-full px-3 py-2 rounded-xl bg-white border border-border text-xs font-bold" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={addRule} className="px-4 py-2 rounded-xl bg-honey text-white text-[10px] font-black uppercase tracking-widest flex-1">Save Rule</button>
-                <button onClick={() => setShowNew(false)} className="px-4 py-2 rounded-xl bg-muted text-muted-foreground text-[10px] font-black uppercase tracking-widest border border-border">Cancel</button>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-3">
-            {rules.map((r) => (
-              <div key={r.id} className={`p-4 rounded-2xl border transition-all ${r.enabled ? "border-honey/20 bg-white/40 shadow-sm" : "border-border bg-muted/20 opacity-60"}`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${r.enabled ? 'bg-honey/10 text-honey' : 'bg-muted text-muted-foreground'}`}>
-                      <BellRing className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-foreground">{r.hive_label}</h4>
-                      <p className="text-[10px] text-muted-foreground font-medium uppercase">
-                        {metricLabel(r.metric)} {cmpLabel(r.comparator)} <span className="text-honey font-bold">{r.threshold}</span>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => testFire(r)} className="w-8 h-8 rounded-lg hover:bg-honey/10 text-honey transition-colors flex items-center justify-center" title="Test signal">⚡</button>
-                    <button onClick={() => toggleRule(r)} className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground transition-colors flex items-center justify-center">
-                      {r.enabled ? <BellRing className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
-                    </button>
-                    <button onClick={() => deleteRule(r.id)} className="w-8 h-8 rounded-lg hover:bg-destructive/10 text-destructive transition-colors flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Events Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border pb-2">
-            <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-              <Bell className="w-3 h-3" /> Recent Signals
-            </h3>
-            <button onClick={handleExportCSV} className="text-[10px] font-black text-muted-foreground uppercase hover:text-honey transition-colors flex items-center gap-1.5">
-              <Download className="w-3.5 h-3.5" /> Export
+    <BeeYieldPageShell className={embedded ? "p-0 md:p-0 -m-0 min-h-0 pb-0" : ""}>
+      <BeeYieldPageHeader
+        icon={Bell}
+        label="Safety Engine"
+        title="Health & Alerts"
+        subtitle="Automatic threshold monitoring and browser-level critical signals."
+        onBack={onClose}
+        actions={
+          <div className="flex items-center gap-2">
+            {pushPerm !== "granted" ? (
+              <button onClick={requestPush} className="px-3 py-1.5 rounded-xl border border-honey/30 bg-honey/5 text-honey text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-honey/10 transition-all">
+                <BellRing className="w-3.5 h-3.5" /> Enable Push
+              </button>
+            ) : (
+              <BeeYieldBadge variant="success" className="px-3 py-1.5 font-black uppercase text-[10px] tracking-widest">
+                Push Active
+              </BeeYieldBadge>
+            )}
+            <button onClick={() => setShowNew(true)} className="px-3 py-1.5 rounded-xl bg-honey text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-90 transition-all shadow-md">
+              <Plus className="w-3.5 h-3.5" /> New Rule
             </button>
           </div>
+        }
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+        <div className="lg:col-span-12">
+            {showNew && (
+                <BeeYieldCard className="mb-8 border-2 border-honey/20 bg-honey/5 animate-in zoom-in-95 duration-200">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Hive Label</label>
+                    <input value={draft.hive_label} onChange={(e) => setDraft({ ...draft, hive_label: e.target.value })} className="w-full px-4 py-3 rounded-xl bg-white border border-border text-sm font-bold outline-none focus:border-honey/40 transition-all" />
+                    </div>
+                    <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Metric</label>
+                    <select value={draft.metric} onChange={(e) => setDraft({ ...draft, metric: e.target.value })} className="w-full h-11 px-3 rounded-xl bg-white border border-border text-sm font-bold outline-none focus:border-honey/40 transition-all">
+                        {METRICS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                    </select>
+                    </div>
+                    <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Comparator</label>
+                    <select value={draft.comparator} onChange={(e) => setDraft({ ...draft, comparator: e.target.value })} className="w-full h-11 px-3 rounded-xl bg-white border border-border text-sm font-bold outline-none focus:border-honey/40 transition-all">
+                        <option value="lt">Below</option>
+                        <option value="gt">Above</option>
+                    </select>
+                    </div>
+                    <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Threshold</label>
+                    <input type="number" step="0.1" value={draft.threshold} onChange={(e) => setDraft({ ...draft, threshold: Number(e.target.value) })} className="w-full px-4 py-3 rounded-xl bg-white border border-border text-sm font-bold outline-none focus:border-honey/40 transition-all" />
+                    </div>
+                </div>
+                <div className="flex gap-3">
+                    <button onClick={addRule} className="px-6 py-3 rounded-2xl bg-honey text-white text-[11px] font-black uppercase tracking-widest flex-1 shadow-md hover:opacity-90 transition-all">Create Policy</button>
+                    <button onClick={() => setShowNew(false)} className="px-6 py-3 rounded-2xl bg-white text-muted-foreground text-[11px] font-black uppercase tracking-widest border border-border hover:bg-muted transition-all">Cancel</button>
+                </div>
+                </BeeYieldCard>
+            )}
+        </div>
+
+        <div className="lg:col-span-5 space-y-6">
+            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2 ml-1">
+                <Activity className="w-3 h-3 text-honey" /> Monitoring Policies
+            </h3>
+            <div className="space-y-3">
+                {rules.map((r) => (
+                <BeeYieldCard key={r.id} className={cn("p-5 border-border/50", !r.enabled && "opacity-60 bg-muted/20")}>
+                    <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className={cn("w-10 h-10 rounded-2xl border flex items-center justify-center", r.enabled ? 'bg-honey/10 border-honey/20 text-honey' : 'bg-muted border-border text-muted-foreground')}>
+                            <BellRing className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-black text-foreground uppercase tracking-tight">{r.hive_label}</h4>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5">
+                                {metricLabel(r.metric)} {cmpLabel(r.comparator)} <span className="text-honey">{r.threshold}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <button onClick={() => testFire(r)} className="w-9 h-9 rounded-xl hover:bg-honey/10 text-honey border border-transparent hover:border-honey/20 transition-all flex items-center justify-center" title="Test signal">⚡</button>
+                        <button onClick={() => toggleRule(r)} className="w-9 h-9 rounded-xl hover:bg-muted border border-transparent hover:border-border transition-all flex items-center justify-center">
+                            {r.enabled ? <BellRing className="w-4 h-4 text-honey" /> : <BellOff className="w-4 h-4 text-muted-foreground" />}
+                        </button>
+                        <button onClick={() => deleteRule(r.id)} className="w-9 h-9 rounded-xl hover:bg-red-500/10 text-red-500 border border-transparent hover:border-red-500/20 transition-all flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                    </div>
+                </BeeYieldCard>
+                ))}
+            </div>
+        </div>
+
+        <div className="lg:col-span-7 space-y-6">
+            <div className="flex items-center justify-between ml-1">
+                <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-2">
+                    <Bell className="w-3 h-3 text-honey" /> Critical Signals
+                </h3>
+                <button onClick={handleExportCSV} className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-honey transition-colors flex items-center gap-2">
+                    <Download className="w-4 h-4" /> Download Logs
+                </button>
+            </div>
 
           <div className="space-y-3">
-            {filteredEvents.map((e) => (
-              <div key={e.id} className={`p-4 rounded-2xl border transition-all ${e.acknowledged ? "border-border bg-muted/10 opacity-60" : "border-destructive/20 bg-destructive/5"}`}>
-                <div className="flex items-start justify-between">
+            {events.map((e) => (
+              <BeeYieldCard key={e.id} className={cn("p-5 border-border/50", e.acknowledged && "opacity-60 grayscale bg-muted/10")}>
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`w-1.5 h-1.5 rounded-full ${e.acknowledged ? 'bg-muted-foreground' : 'bg-destructive animate-pulse'}`} />
-                      <h4 className="text-sm font-bold text-foreground">{e.hive_label}</h4>
+                    <div className="flex items-center gap-2 mb-2">
+                       <BeeYieldBadge variant={e.acknowledged ? 'default' : 'error'} className="px-2 py-0.5 font-black uppercase text-[8px] tracking-widest">
+                        {e.acknowledged ? 'CLEARED' : 'UNREAD'}
+                      </BeeYieldBadge>
+                      <h4 className="text-sm font-black text-foreground uppercase tracking-tight">{e.hive_label}</h4>
                     </div>
-                    <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">{e.message}</p>
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className="text-[9px] font-black text-muted-foreground uppercase">{new Date(e.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                      <span className="text-[9px] font-black text-honey uppercase tracking-wider bg-honey/10 px-1.5 py-0.5 rounded-md">{e.metric}</span>
+                    <p className="text-xs text-foreground font-bold leading-relaxed">{e.message}</p>
+                    <div className="flex items-center gap-4 mt-4">
+                      <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{new Date(e.created_at).toLocaleString()}</span>
+                      <div className="h-1 w-1 rounded-full bg-border" />
+                      <span className="text-[9px] font-black text-honey uppercase tracking-widest">{e.metric}</span>
                     </div>
                   </div>
                   {!e.acknowledged && (
-                    <button onClick={() => ackEvent(e.id)} className="w-8 h-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all flex items-center justify-center">
-                      <Check className="w-4 h-4" />
+                    <button onClick={() => ackEvent(e.id)} className="w-10 h-10 rounded-2xl bg-honey/10 text-honey border border-honey/20 hover:bg-honey hover:text-white transition-all flex items-center justify-center shadow-sm">
+                      <Check className="w-5 h-5 font-black" />
                     </button>
                   )}
                 </div>
-              </div>
+              </BeeYieldCard>
             ))}
           </div>
         </div>
       </div>
-    </div>
+    </BeeYieldPageShell>
   );
 
   if (embedded) return content;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-      <div className={`bg-white rounded-3xl w-full max-w-5xl shadow-2xl relative transition-all transform ${isOpen ? 'scale-100' : 'scale-95'}`}>
-        <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors z-10"><X className="w-5 h-5" /></button>
-        <div className="p-8">{content}</div>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`bg-white rounded-3xl w-full h-[90vh] max-w-6xl shadow-2xl relative transition-all transform overflow-hidden ${isOpen ? 'scale-100' : 'scale-95'}`}>
+        <button onClick={onClose} className="absolute top-8 right-8 p-2 rounded-full hover:bg-muted transition-colors z-50"><X className="w-5 h-5" /></button>
+        <div className="h-full overflow-y-auto custom-scroll p-8">{content}</div>
       </div>
     </div>
   );

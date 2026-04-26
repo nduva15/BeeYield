@@ -408,7 +408,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'flight-map': return <FlightMapView />;
             case 'global-hive-network': return <GlobalHiveNetwork />;
             case 'varroa': return <VarroaView />;
-            case 'acoustic-transformer':
+            case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} />;
             case 'sound-analysis':
             case 'sound': return <SoundAnalysisView onTabChange={handleTabChange} embedded={true} />;
             case 'image-analysis': return <ImageAnalysisView onTabChange={handleTabChange} />;
