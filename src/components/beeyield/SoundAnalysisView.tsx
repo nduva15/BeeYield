@@ -191,6 +191,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({
                 label="Sound analysis"
                 title="Acoustic Audit"
                 subtitle="Capture a short hive sample, review the waveform, and decide whether the colony needs a closer field check."
+                onBack={onClose}
                 actions={
                     <div className="flex items-center gap-2">
                         <BeeYieldBadge className="px-3 py-1.5 border-border/ bg-[#F4D03F]/5 text-[#8a6a00]">

@@ -85,7 +85,7 @@ import IntegrationsView from '@/components/beeyield/IntegrationsView';
 import SupportCenterView from '@/components/beeyield/SupportCenterView';
 import SettingsView from '@/components/beeyield/SettingsView';
 import ImageAnalysisView from '@/components/beeyield/ImageAnalysisView';
-import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView.tsx';
+import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
@@ -389,7 +389,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'bee-gallery': return <BeeGallery isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
             case 'master-map': return <MasterMapView />;
-            case 'forage-zones': return <ForageZonesView />;
+            case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
             case 'site-reports-tactical': return <PollinationReports />;
             case 'precision-drilldown': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;

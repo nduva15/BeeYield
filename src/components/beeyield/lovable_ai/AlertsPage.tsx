@@ -66,12 +66,7 @@ export default function AlertsPage({ isOpen, onClose, embedded }: { isOpen: bool
 
   useEffect(() => {
     if (!isOpen) return;
-
-    const timeoutId = window.setTimeout(() => {
-      void load();
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
+    load();
   }, [isOpen, load]);
 
   const requestPush = async () => {
@@ -127,277 +122,206 @@ export default function AlertsPage({ isOpen, onClose, embedded }: { isOpen: bool
   });
 
   const handleExportCSV = () => {
-    let csv = "--- ACTIVE ALERT RULES ---\nHive,Metric,Comparator,Threshold,Window (hours),Enabled\n";
-    rules.forEach(r => {
-      csv += `"${r.hive_label}","${r.metric}","${r.comparator}",${r.threshold},${r.window_hours},${r.enabled}\n`;
-    });
-    
-    csv += "\n--- TRIGGERED EVENTS ---\nDate,Hive,Metric,Value,Message,Acknowledged\n";
+    let csv = "Date,Hive,Metric,Value,Message,Acknowledged\n";
     filteredEvents.forEach(e => {
       csv += `"${new Date(e.created_at).toLocaleString()}","${e.hive_label}","${e.metric}",${e.value || ""},"${e.message.replace(/"/g, '""')}",${e.acknowledged}\n`;
     });
-
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `beeyield-alerts-${Date.now()}.csv`;
     a.click();
-    toast.success("CSV generated successfully");
   };
 
-  const handleExportPDF = () => {
-    window.print();
-    toast.success("Preparing PDF print format");
-  };
+  const content = (
+    <div className={embedded ? "custom-scroll" : "max-h-[85vh] overflow-y-auto custom-scroll"}>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="font-display text-2xl font-bold text-foreground">Health & Alerts</h2>
+          <p className="text-sm text-muted-foreground">Threshold-based notifications for apiary performance</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {pushPerm !== "granted" ? (
+            <button onClick={requestPush} className="px-3 py-1.5 rounded-lg border border-honey/30 text-honey text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 hover:bg-honey/5 transition-all">
+              <BellRing className="w-3.5 h-3.5" /> Enable Push
+            </button>
+          ) : (
+            <div className="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-green-500/20">
+              <Check className="w-3.5 h-3.5" /> Active
+            </div>
+          )}
+          <button onClick={() => setShowNew(true)} className="px-3 py-1.5 rounded-lg bg-honey text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 hover:opacity-90 transition-all shadow-lg shadow-honey/20">
+            <Plus className="w-3.5 h-3.5" /> New Rule
+          </button>
+        </div>
+      </div>
 
-  if (!isOpen) return null;
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Rules Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <Plus className="w-3 h-3" /> Alert Rules
+            </h3>
+            <span className="text-[10px] font-bold text-honey bg-honey/10 px-2 py-0.5 rounded-full">{rules.length} Active</span>
+          </div>
+
+          {showNew && (
+            <div className="p-5 rounded-2xl border-2 border-honey/20 bg-honey/5 animate-in zoom-in-95 duration-200">
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-muted-foreground uppercase">Hive Label</label>
+                  <input value={draft.hive_label} onChange={(e) => setDraft({ ...draft, hive_label: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-white border border-border text-xs font-bold" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-muted-foreground uppercase">Metric</label>
+                  <select value={draft.metric} onChange={(e) => setDraft({ ...draft, metric: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-white border border-border text-xs font-bold">
+                    {METRICS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-muted-foreground uppercase">Comparator</label>
+                  <select value={draft.comparator} onChange={(e) => setDraft({ ...draft, comparator: e.target.value })} className="w-full px-3 py-2 rounded-xl bg-white border border-border text-xs font-bold">
+                    <option value="lt">Below</option>
+                    <option value="gt">Above</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-muted-foreground uppercase">Threshold</label>
+                  <input type="number" step="0.1" value={draft.threshold} onChange={(e) => setDraft({ ...draft, threshold: Number(e.target.value) })} className="w-full px-3 py-2 rounded-xl bg-white border border-border text-xs font-bold" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={addRule} className="px-4 py-2 rounded-xl bg-honey text-white text-[10px] font-black uppercase tracking-widest flex-1">Save Rule</button>
+                <button onClick={() => setShowNew(false)} className="px-4 py-2 rounded-xl bg-muted text-muted-foreground text-[10px] font-black uppercase tracking-widest border border-border">Cancel</button>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {rules.map((r) => (
+              <div key={r.id} className={`p-4 rounded-2xl border transition-all ${r.enabled ? "border-honey/20 bg-white/40 shadow-sm" : "border-border bg-muted/20 opacity-60"}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${r.enabled ? 'bg-honey/10 text-honey' : 'bg-muted text-muted-foreground'}`}>
+                      <BellRing className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-foreground">{r.hive_label}</h4>
+                      <p className="text-[10px] text-muted-foreground font-medium uppercase">
+                        {metricLabel(r.metric)} {cmpLabel(r.comparator)} <span className="text-honey font-bold">{r.threshold}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => testFire(r)} className="w-8 h-8 rounded-lg hover:bg-honey/10 text-honey transition-colors flex items-center justify-center" title="Test signal">⚡</button>
+                    <button onClick={() => toggleRule(r)} className="w-8 h-8 rounded-lg hover:bg-muted text-muted-foreground transition-colors flex items-center justify-center">
+                      {r.enabled ? <BellRing className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+                    </button>
+                    <button onClick={() => deleteRule(r.id)} className="w-8 h-8 rounded-lg hover:bg-destructive/10 text-destructive transition-colors flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Events Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <Bell className="w-3 h-3" /> Recent Signals
+            </h3>
+            <button onClick={handleExportCSV} className="text-[10px] font-black text-muted-foreground uppercase hover:text-honey transition-colors flex items-center gap-1.5">
+              <Download className="w-3.5 h-3.5" /> Export
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {filteredEvents.map((e) => (
+              <div key={e.id} className={`p-4 rounded-2xl border transition-all ${e.acknowledged ? "border-border bg-muted/10 opacity-60" : "border-destructive/20 bg-destructive/5"}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`w-1.5 h-1.5 rounded-full ${e.acknowledged ? 'bg-muted-foreground' : 'bg-destructive animate-pulse'}`} />
+                      <h4 className="text-sm font-bold text-foreground">{e.hive_label}</h4>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">{e.message}</p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-[9px] font-black text-muted-foreground uppercase">{new Date(e.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                      <span className="text-[9px] font-black text-honey uppercase tracking-wider bg-honey/10 px-1.5 py-0.5 rounded-md">{e.metric}</span>
+                    </div>
+                  </div>
+                  {!e.acknowledged && (
+                    <button onClick={() => ackEvent(e.id)} className="w-8 h-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all flex items-center justify-center">
+                      <Check className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (embedded) return content;
+
   return (
-    <div className={embedded ? "h-full overflow-y-auto rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Bell className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Alerts</h1>
-              <p className="text-xs text-muted-foreground">Threshold-based notifications for predicted activity, weather, and bloom conditions</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {pushPerm !== "granted" ? (
-              <button onClick={requestPush} className="px-3 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5"><BellRing className="w-3.5 h-3.5" />Enable browser push</button>
-            ) : (
-              <span className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-500 text-xs flex items-center gap-1.5"><Check className="w-3.5 h-3.5" />Push enabled</span>
-            )}
-            <button onClick={() => setShowNew(true)} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />New rule</button>
-            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
-          </div>
-        </div>
-
-        <div className="mb-4 flex flex-col sm:flex-row gap-3 p-3 rounded-lg bg-card border border-border items-start sm:items-center justify-between text-sm print:hidden">
-            <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-1.5 text-muted-foreground"><Filter className="w-4 h-4"/> Filter Events:</div>
-                <select value={filterDays} onChange={e => setFilterDays(Number(e.target.value))} className="bg-background border border-border rounded px-2 py-1 text-xs outline-none focus:border-honey/50 transition-colors">
-                    <option value={7}>Last 7 Days</option>
-                    <option value={30}>Last 30 Days</option>
-                    <option value={0}>All Time</option>
-                </select>
-                <select value={filterHive} onChange={e => setFilterHive(e.target.value)} className="bg-background border border-border rounded px-2 py-1 text-xs max-w-[120px] outline-none focus:border-honey/50 transition-colors">
-                    <option value="All">All Hives</option>
-                    {uniqueHives.map(h => <option key={h} value={h}>{h}</option>)}
-                </select>
-            </div>
-            <div className="flex items-center gap-2">
-                <button onClick={handleExportCSV} className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs flex items-center gap-1.5 transition-colors text-muted-foreground hover:text-foreground"><Download className="w-3.5 h-3.5"/>CSV</button>
-                <button onClick={handleExportPDF} className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs flex items-center gap-1.5 transition-colors text-muted-foreground hover:text-foreground"><FileText className="w-3.5 h-3.5"/>PDF</button>
-            </div>
-        </div>
-
-        {showNew && (
-          <div className="mb-6 p-4 rounded-xl border border-primary/30 bg-primary/5">
-            <h3 className="font-semibold text-sm mb-3">New alert rule</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              <label className="text-xs">Hive label
-                <input value={draft.hive_label} onChange={(e) => setDraft({ ...draft, hive_label: e.target.value })} className="mt-1 w-full px-3 py-2 rounded-lg bg-background border border-border text-sm" />
-              </label>
-              <label className="text-xs">Metric
-                <select value={draft.metric} onChange={(e) => setDraft({ ...draft, metric: e.target.value })} className="mt-1 w-full px-3 py-2 rounded-lg bg-background border border-border text-sm">
-                  {METRICS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-                </select>
-              </label>
-              <label className="text-xs">Comparator
-                <select value={draft.comparator} onChange={(e) => setDraft({ ...draft, comparator: e.target.value })} className="mt-1 w-full px-3 py-2 rounded-lg bg-background border border-border text-sm">
-                  <option value="lt">below</option>
-                  <option value="gt">above</option>
-                  <option value="eq">equals</option>
-                </select>
-              </label>
-              <label className="text-xs">Threshold
-                <input type="number" step="0.1" value={draft.threshold} onChange={(e) => setDraft({ ...draft, threshold: Number(e.target.value) })} className="mt-1 w-full px-3 py-2 rounded-lg bg-background border border-border text-sm" />
-              </label>
-              <label className="text-xs">Window (hours)
-                <input type="number" value={draft.window_hours} onChange={(e) => setDraft({ ...draft, window_hours: Number(e.target.value) })} className="mt-1 w-full px-3 py-2 rounded-lg bg-background border border-border text-sm" />
-              </label>
-            </div>
-            <div className="flex gap-2 mt-3">
-              <button onClick={addRule} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold">Save rule</button>
-              <button onClick={() => { setShowNew(false); setDraft(EMPTY_RULE); }} className="px-3 py-2 rounded-lg border border-border text-xs">Cancel</button>
-            </div>
-          </div>
-        )}
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <h3 className="text-xs uppercase text-muted-foreground font-semibold mb-2">Rules ({rules.length})</h3>
-            <div className="space-y-2">
-              {rules.length === 0 && <div className="p-4 rounded-xl border border-dashed border-border text-xs text-muted-foreground text-center">No alert rules yet.</div>}
-              {rules.map((r) => (
-                <div key={r.id} className={`p-3 rounded-xl border ${r.enabled ? "border-honey/30 bg-honey/5" : "border-border bg-muted/30 opacity-60"}`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 text-sm">
-                      <div className="font-semibold text-foreground">{r.hive_label}</div>
-                      <div className="text-xs text-muted-foreground">{METRICS.find((m) => m.value === r.metric)?.label || r.metric} {cmpLabel(r.comparator)} <b className="text-honey">{r.threshold}</b> · window {r.window_hours}h</div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => testFire(r)} className="p-1.5 rounded hover:bg-muted text-xs" title="Test fire">⚡</button>
-                      <button onClick={() => toggleRule(r)} className="p-1.5 rounded hover:bg-muted" title={r.enabled ? "Disable" : "Enable"}>{r.enabled ? <BellRing className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}</button>
-                      <button onClick={() => deleteRule(r.id)} className="p-1.5 rounded hover:bg-destructive/10 text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-xs uppercase text-muted-foreground font-semibold mb-2">Recent events ({filteredEvents.length})</h3>
-            <div className="space-y-2">
-              {filteredEvents.length === 0 && <div className="p-4 rounded-xl border border-dashed border-border text-xs text-muted-foreground text-center">No filtered events.</div>}
-              {filteredEvents.map((e) => (
-                <div key={e.id} className={`p-3 rounded-xl border ${e.acknowledged ? "border-border opacity-50" : "border-destructive/30 bg-destructive/5"}`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <div className="text-sm font-semibold text-foreground">{e.hive_label} <span className="text-xs text-muted-foreground">· {e.metric}</span></div>
-                      <div className="text-xs text-muted-foreground">{e.message}</div>
-                      <div className="text-[10px] text-muted-foreground mt-1">{new Date(e.created_at).toLocaleString()}</div>
-                    </div>
-                    {!e.acknowledged && <button onClick={() => ackEvent(e.id)} className="p-1.5 rounded hover:bg-muted text-xs" title="Acknowledge"><Check className="w-3.5 h-3.5" /></button>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 p-3 rounded-xl border border-primary/30 bg-primary/5 text-xs text-muted-foreground">
-          <b className="text-primary">How it works:</b> Activity Forecaster writes daily forecast snapshots; opening the Forecaster (or the Alerts page) re-evaluates rules against the latest predictions, weather, and bloom data. Triggered events appear here and as toasts; if browser push is enabled, you get a notification even when the tab is in the background.
-        </div>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+      <div className={`bg-white rounded-3xl w-full max-w-5xl shadow-2xl relative transition-all transform ${isOpen ? 'scale-100' : 'scale-95'}`}>
+        <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-colors z-10"><X className="w-5 h-5" /></button>
+        <div className="p-8">{content}</div>
       </div>
     </div>
   );
 }
 
 function cmpLabel(c: string) { return c === "lt" ? "<" : c === "gt" ? ">" : "="; }
-
-function metricLabel(metric: string) {
-  return METRICS.find((entry) => entry.value === metric)?.label || metric;
-}
-
-function canNotifyBrowser() {
-  return typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted";
-}
-
-function notifyBrowser(message: string) {
-  if (!canNotifyBrowser()) return;
-  new Notification("BeeYield Alert", { body: message, icon: "/favicon.ico" });
-}
-
-function dedupeStorageKey(deviceId: string, ruleId: string, sample: AlertSample) {
-  return [
-    NOTIFICATION_DEDUPE_PREFIX,
-    deviceId,
-    ruleId,
-    sample.hive_label,
-    sample.metric,
-    sample.snapshotDate || "no-snapshot-date",
-  ].join(":");
-}
-
-function hasLocalNotificationRecord(key: string) {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(key) === "1";
-}
-
-function markLocalNotificationRecord(key: string) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(key, "1");
-}
-
-function isMissingSnapshotDateColumn(error: unknown) {
-  const message = error instanceof Error ? error.message : String(error || "");
-  return message.toLowerCase().includes("snapshot_date");
-}
+function metricLabel(metric: string) { return METRICS.find((entry) => entry.value === metric)?.label || metric; }
+function canNotifyBrowser() { return typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted"; }
+function notifyBrowser(message: string) { if (!canNotifyBrowser()) return; new Notification("BeeYield Alert", { body: message, icon: "/favicon.ico" }); }
+function dedupeStorageKey(deviceId: string, ruleId: string, sample: AlertSample) { return [NOTIFICATION_DEDUPE_PREFIX, deviceId, ruleId, sample.hive_label, sample.metric, sample.snapshotDate || "no-snapshot-date"].join(":"); }
+function hasLocalNotificationRecord(key: string) { if (typeof window === "undefined") return false; return localStorage.getItem(key) === "1"; }
+function markLocalNotificationRecord(key: string) { if (typeof window === "undefined") return; localStorage.setItem(key, "1"); }
+function isMissingSnapshotDateColumn(error: unknown) { const message = error instanceof Error ? error.message : String(error || ""); return message.toLowerCase().includes("snapshot_date"); }
 
 async function hasExistingSnapshotEvent(deviceId: string, ruleId: string, sample: AlertSample) {
   if (!sample.snapshotDate) return false;
-
-  const { data, error } = await (supabase as any)
-    .from("alert_events")
-    .select("id")
-    .eq("device_id", deviceId)
-    .eq("rule_id", ruleId)
-    .eq("hive_label", sample.hive_label)
-    .eq("metric", sample.metric)
-    .eq("snapshot_date", sample.snapshotDate)
-    .limit(1);
-
-  if (error) {
-    if (isMissingSnapshotDateColumn(error)) return false;
-    console.error("hasExistingSnapshotEvent:", error);
-    return false;
-  }
-
+  const { data, error } = await (supabase as any).from("alert_events").select("id").eq("device_id", deviceId).eq("rule_id", ruleId).eq("hive_label", sample.hive_label).eq("metric", sample.metric).eq("snapshot_date", sample.snapshotDate).limit(1);
+  if (error) return false;
   return Array.isArray(data) && data.length > 0;
 }
 
 async function insertAlertEvent(deviceId: string, rule: AlertRule, sample: AlertSample, message: string) {
-  const payload = {
-    device_id: deviceId,
-    rule_id: rule.id,
-    hive_label: rule.hive_label,
-    metric: rule.metric,
-    value: sample.value,
-    message,
-    snapshot_date: sample.snapshotDate || null,
-  };
-
+  const payload = { device_id: deviceId, rule_id: rule.id, hive_label: rule.hive_label, metric: rule.metric, value: sample.value, message, snapshot_date: sample.snapshotDate || null };
   const { error } = await (supabase as any).from("alert_events").insert(payload);
   if (!error) return;
-
   if (isMissingSnapshotDateColumn(error)) {
-    const { error: fallbackError } = await supabase.from("alert_events").insert({
-      device_id: deviceId,
-      rule_id: rule.id,
-      hive_label: rule.hive_label,
-      metric: rule.metric,
-      value: sample.value,
-      message,
-    });
+    const { error: fallbackError } = await supabase.from("alert_events").insert({ device_id: deviceId, rule_id: rule.id, hive_label: rule.hive_label, metric: rule.metric, value: sample.value, message });
     if (fallbackError) throw fallbackError;
     return;
   }
-
   throw error;
 }
 
-// Exported helper for the Forecaster to call when it produces a new prediction
 export async function evaluateAlerts(deviceId: string, sample: AlertSample) {
   if (sample.value === null || sample.value === undefined || Number.isNaN(sample.value)) return;
-
-  const { data: rules } = await supabase
-    .from("alert_rules")
-    .select("*")
-    .eq("device_id", deviceId)
-    .eq("enabled", true)
-    .eq("metric", sample.metric)
-    .eq("hive_label", sample.hive_label);
-
+  const { data: rules } = await supabase.from("alert_rules").select("*").eq("device_id", deviceId).eq("enabled", true).eq("metric", sample.metric).eq("hive_label", sample.hive_label);
   if (!rules || rules.length === 0) return;
-
   for (const r of rules as AlertRule[]) {
     const v = sample.value;
     const fires = (r.comparator === "lt" && v < r.threshold) || (r.comparator === "gt" && v > r.threshold) || (r.comparator === "eq" && Math.abs(v - r.threshold) < 0.01);
     if (!fires) continue;
-
     const dateSuffix = sample.snapshotDate ? ` for ${sample.snapshotDate}` : "";
     const msg = `${r.hive_label}: ${metricLabel(sample.metric)} = ${v.toFixed(1)} (${cmpLabel(r.comparator)} ${r.threshold})${dateSuffix}`;
     const localKey = dedupeStorageKey(deviceId, r.id, sample);
-
     if (sample.snapshotDate && (hasLocalNotificationRecord(localKey) || await hasExistingSnapshotEvent(deviceId, r.id, sample))) {
       markLocalNotificationRecord(localKey);
       continue;
     }
-
     await insertAlertEvent(deviceId, r, sample, msg);
     toast.warning(msg);
     notifyBrowser(msg);

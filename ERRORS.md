@@ -1,21 +1,27 @@
-# ERRORS.md - Automatic Error Tracking & Learning
+# BeeYield Development Error Log
 
-## [2026-04-20 16:37] - LovableIndex.tsx Code Corruption
+## [2026-04-26 11:35] - Build Failure: ENOENT SoundAnalysisView
 
-- **Type**: Agent
+- **Type**: Agent/Process
 - **Severity**: High
-- **File**: `src/components/beeyield/lovable_ai/LovableIndex.tsx`
+- **File**: `src/pages/BeeYieldDashboard.tsx:88`, `src/components/beeyield/lovable_ai/LovableIndex.tsx:38`
 - **Agent**: Antigravity
-- **Root Cause**: The `multi_replace_file_content` tool replaced a larger block than intended due to overlapping or mismatched target content, leading to a loss of core JSX logic.
+- **Root Cause**: Vite production build (Rollup) failed to resolve the `SoundAnalysisView.tsx` file when imported without an extension, despite it being a valid pattern in development. This occurred after the component was refactored.
 - **Error Message**: 
-  ```tsx
-  // Resulting corrupted code snippet
-  408:             title="Our Story"
-  409:           >
-  410:                 <div className="text-xs text-muted-foreground bg-muted border border-border rounded-lg px-3 py-1.5 self-end flex items-center gap-2">
   ```
-- **Fix Applied**: Fully reconstructed the file using previous view_file history and verified integrity.
-- **Prevention**: Be more precise with line ranges and avoid large multi-line TargetContent blocks when using multi_replace_file_content.
+  [vite:load-fallback] Could not load .../SoundAnalysisView (imported by BeeYieldDashboard.tsx): ENOENT: no such file or directory
+  ```
+- **Fix Applied**: Explicitly added the `.tsx` extension to the import statements in both files.
+- **Prevention**: When creating or significantly refactoring core components that are used across multi-chunk layouts, use explicit extensions or ensure index exports are clean to assist the Rollup bundler.
 - **Status**: Fixed
 
----
+## [2026-04-26 11:35] - TypeScript Errors in SensorHealthView
+
+- **Type**: Logic/Syntax
+- **Severity**: Medium
+- **File**: `src/components/beeyield/SensorHealthView.tsx`
+- **Agent**: Antigravity
+- **Root Cause**: Using non-existent properties on `Hive` (`name`, `health_status`) and `SensorReading` (`created_at`) types due to a mismatch between implementation and the service layer's interface definition. Missing import for `ArrowRight`.
+- **Fix Applied**: Refactored property access to use `hive_code`, `status`, and `timestamp` respectively. Added `ArrowRight` to `lucide-react` imports.
+- **Prevention**: Always verify component properties against the `beeyieldService.ts` interfaces before committing UI changes.
+- **Status**: Fixed

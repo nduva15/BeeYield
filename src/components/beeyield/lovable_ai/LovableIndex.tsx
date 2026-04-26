@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Mic2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,7 +35,7 @@ import PollinationPlanning from "@/components/beeyield/lovable_ai/PollinationPla
 import PollinationCalcs from "@/components/beeyield/lovable_ai/PollinationCalcs";
 import AlertsPage from "@/components/beeyield/lovable_ai/AlertsPage";
 import MOACompare from "@/components/beeyield/lovable_ai/MOACompare";
-import SoundAnalysisView from "@/components/beeyield/SoundAnalysisView.tsx";
+import SoundAnalysisView from "@/components/beeyield/SoundAnalysisView";
 
 type Message = {
   id: string;
@@ -458,7 +458,7 @@ export default function Index() {
                 <Bug className="w-4 h-4 mr-2" /> Alerts
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setSoundAnalysisOpen(true)} className="cursor-pointer">
-                <Volume2 className="w-4 h-4 mr-2" /> Acoustic Hive Audit
+                <Mic2 className="w-4 h-4 mr-2" /> Acoustic Hive Audit
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />

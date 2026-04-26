@@ -20,7 +20,11 @@ import {
 } from '@/hooks/useReports';
 import { getApiaryDisplayName, getHiveDisplayName } from '@/lib/beeyieldDisplay';
 
-const ReportsExportsView: React.FC = () => {
+interface ReportsExportsViewProps {
+    onTabChange?: (tab: string, message?: string, action?: string) => void;
+}
+
+const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) => {
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
     const { data: apiaries = [] } = useApiaries();
