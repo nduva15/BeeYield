@@ -45,7 +45,6 @@ import OrchardMapper from '@/components/beeyield/OrchardMapper';
 import ForageZonesView from '@/components/beeyield/ForageZonesView';
 import HiveLogisticsSecurity from '@/components/beeyield/HiveLogisticsSecurity';
 import FlightMapping from '@/pages/pollination/FlightMapping';
-import PollinationPlanning from '@/components/beeyield/lovable_ai/PollinationPlanning';
 import PollinationReports from '@/pages/pollination/PollinationReports';
 import PollinationCalcs from '@/components/beeyield/lovable_ai/PollinationCalcs';
 import DigitalHealthAudit from '@/components/beeyield/DigitalHealthAudit';
