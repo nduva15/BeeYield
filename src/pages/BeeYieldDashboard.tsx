@@ -46,7 +46,7 @@ import ForageZonesView from '@/components/beeyield/ForageZonesView';
 import HiveLogisticsSecurity from '@/components/beeyield/HiveLogisticsSecurity';
 import FlightMapping from '@/pages/pollination/FlightMapping';
 import PollinationReports from '@/pages/pollination/PollinationReports';
-import PollinationCalcs from '@/pages/pollination/PollinationCalcs';
+import PollinationCalcs from '@/components/beeyield/lovable_ai/PollinationCalcs';
 import DigitalHealthAudit from '@/components/beeyield/DigitalHealthAudit';
 import ComplianceReport from '@/components/beeyield/ComplianceReport';
 import SensorAlertsView from '@/components/beeyield/SensorAlertsView';
@@ -360,7 +360,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'pollination-intelligence':
             case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
-            case 'pollination-calcs':
+            case 'pollination-calcs': return <PollinationCalcs isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'bee-calculator':
             case 'yield-predict': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'activity-counter':

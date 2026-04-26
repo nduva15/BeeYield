@@ -23,7 +23,7 @@ const STOCKING: Record<string, { hivesPerHa: number; expectedYieldKgPerHa: numbe
   general:    { hivesPerHa: 3,   expectedYieldKgPerHa: 15,  bloomDays: 21, transportNote: "Generic baseline — refine with local florage" },
 };
 
-export default function PollinationCalcs({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function PollinationCalcs({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [crop, setCrop] = useState("almond");
   const [hectares, setHectares] = useState(10);
@@ -107,7 +107,7 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "h-full overflow-y-auto rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
               <p className="text-xs text-muted-foreground">Hives needed · transport · expected yield · timeline</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">
