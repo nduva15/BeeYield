@@ -113,7 +113,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {/* Quick Action */}
                 <button
                     onClick={onQuickAction}
-                    className={cn(glass.btnPrimary, "hidden sm:flex h-10 px-4 text-xs gap-2 rounded-xl")}
+                    className={cn(glass.btnPrimary, "hidden sm:flex px-4 shadow-none")}
                 >
                     <Plus className="w-4 h-4" />
                     <span className="hidden md:inline">New Record</span>

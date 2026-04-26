@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown, LogOut, Settings, Sun, Moon, Lock as LockIcon } from "lucide-react";
+import { ChevronDown, LogOut, Settings, Sun, Moon, Lock as LockIcon, ShieldCheck } from "lucide-react";
 import { NavItem } from './DashboardSidebar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { glass } from './GlassTheme';
@@ -195,44 +195,39 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 </div>
             </div>
 
-            {/* User Profile Summary */}
-            <div className="mx-3 mb-3 p-4 bg-muted/40 backdrop-blur-md border border-border/40 rounded-[2rem] shadow-sm">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-white border border-border/40 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
-                        {user?.user_metadata?.avatar_url ? (
-                            <img src={user.user_metadata.avatar_url} alt={user?.user_metadata?.full_name} className="w-full h-full object-cover" />
+            <div className={cn(glass.section, "mx-3 mb-5 p-5 bg-card/60 backdrop-blur-md shadow-sm")}>
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-border flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt={fullName} className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-black text-xs">
-                                {(user?.user_metadata?.first_name || user?.email || 'U').charAt(0).toUpperCase()}
+                            <div className="w-full h-full flex items-center justify-center bg-muted/20 text-primary font-bold text-sm">
+                                {fullName.charAt(0).toUpperCase()}
                             </div>
                         )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-black text-foreground truncate leading-tight">
-                            {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
-                        </p>
-                        <p className="text-[9px] font-black text-[#1B9157] tracking-widest uppercase mt-0.5">
-                            Verified Beekeeper
-                        </p>
+                    <div>
+                        <h3 className="text-sm font-semibold text-foreground truncate max-w-[120px]">{fullName}</h3>
+                        <p className="text-[11px] text-muted-foreground">Your signed-in details</p>
                     </div>
                 </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2.5 px-3">
-                <button
-                    onClick={() => onTabChange('settings')}
-                    className={cn(glass.btnSecondary, "text-[11px] font-black uppercase tracking-tight h-10 border-border shadow-none bg-muted/20")}
-                >
-                    <Settings className="w-4 h-4 text-primary" />
-                    Settings
-                </button>
-                <button
-                    onClick={onLogout}
-                    className={cn(glass.btnSecondary, "text-[11px] font-black uppercase tracking-tight h-10 border-border shadow-none bg-muted/20 hover:bg-red-500/5 hover:text-red-500 hover:border-red-500/30 group")}
-                >
-                    <LogOut className="w-4 h-4 text-muted-foreground group-hover:text-red-500" />
-                    Sign Out
-                </button>
+                
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => onTabChange('settings')}
+                        className={cn(glass.btnSecondary, "flex-1 justify-center")}
+                    >
+                        <ShieldCheck className="w-4 h-4 text-primary" />
+                        Settings
+                    </button>
+                    <button
+                        onClick={onLogout}
+                        className={cn(glass.btnSecondary, "flex-1 justify-center hover:bg-red-500/5 hover:text-red-500 hover:border-red-500/20 group")}
+                    >
+                        <LogOut className="w-4 h-4 text-muted-foreground group-hover:text-red-500" />
+                        Logout
+                    </button>
+                </div>
             </div>
 
             <div className="py-2 text-center pb-4">
