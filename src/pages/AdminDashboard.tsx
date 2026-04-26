@@ -41,6 +41,7 @@ import { PaymentsTab } from '@/components/admin/tabs/PaymentsTab';
 import { AccountsTab } from '@/components/admin/tabs/AccountsTab';
 import { InvoicesTab } from '@/components/admin/tabs/InvoicesTab';
 import { RecruitmentTab } from '@/components/admin/tabs/RecruitmentTab';
+import { ReferenceLibraryTab } from '@/components/admin/tabs/ReferenceLibraryTab';
 import { Container, Grid, Col, Section } from '@/components/ui/layout';
 import ContentDashboard from '@/components/beeyield/ContentDashboard';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
@@ -1115,6 +1116,7 @@ const AdminDashboard: React.FC = () => {
             label: 'Content',
             icon: MessageSquare,
             children: [
+                { id: 'reference-library', label: 'Reference Library', icon: Database },
                 { id: 'pollination', label: 'Pollination', icon: Bug },
                 { id: 'contact', label: 'Contact', icon: MessageSquare },
                 { id: 'newsletter', label: 'Newsletter', icon: Mail },
@@ -1165,6 +1167,7 @@ const AdminDashboard: React.FC = () => {
                             <TabsTrigger value="pollination">Pollination</TabsTrigger>
                             <TabsTrigger value="contact">Contact</TabsTrigger>
                             <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
+                            <TabsTrigger value="reference-library">Reference Library</TabsTrigger>
                             {isSuperAdmin && <TabsTrigger value="team">Team</TabsTrigger>}
                         </TabsList>
                     </div>
@@ -3670,6 +3673,10 @@ const AdminDashboard: React.FC = () => {
 
                     <TabsContent value="documents">
                         <DocumentsRegistryTab />
+                    </TabsContent>
+
+                    <TabsContent value="reference-library" className="space-y-6">
+                        <ReferenceLibraryTab />
                     </TabsContent>
 
                     <TabsContent value="payments">

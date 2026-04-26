@@ -213,19 +213,33 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
         band: points[0]?.band || "normal",
       }));
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase as any).from("forecast_snapshots").insert(snapshots);
 
-      const today = new Date().toISOString().slice(0, 10);
-      const todaySnap = snapshots.find((snapshot) => snapshot.forecast_for_date === today);
-      if (todaySnap) {
+      for (const snapshot of snapshots) {
         await evaluateAlerts(deviceId, {
           hive_label: hiveLabel,
           metric: "predicted_bees_per_min",
-          value: todaySnap.predicted_bees_per_min,
+          value: snapshot.predicted_bees_per_min,
+          snapshotDate: snapshot.forecast_for_date,
         });
-        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "wind_kmh", value: todaySnap.wind_kmh });
-        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "temp_c", value: todaySnap.temp_c });
+        await evaluateAlerts(deviceId, {
+          hive_label: hiveLabel,
+          metric: "wind_kmh",
+          value: snapshot.wind_kmh,
+          snapshotDate: snapshot.forecast_for_date,
+        });
+        await evaluateAlerts(deviceId, {
+          hive_label: hiveLabel,
+          metric: "temp_c",
+          value: snapshot.temp_c,
+          snapshotDate: snapshot.forecast_for_date,
+        });
+        await evaluateAlerts(deviceId, {
+          hive_label: hiveLabel,
+          metric: "precip_mm",
+          value: snapshot.precip_mm,
+          snapshotDate: snapshot.forecast_for_date,
+        });
       }
 
       await loadHistory();
@@ -242,7 +256,6 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const [{ data: snaps }, { data: actuals }] = await Promise.all([
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (supabase as any)
         .from("forecast_snapshots")
         .select("created_at,forecast_for_date,predicted_bees_per_min,temp_c,wind_kmh,precip_mm,band,hive_label")

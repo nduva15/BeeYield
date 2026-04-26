@@ -24,6 +24,13 @@ type AlertEvent = {
   created_at: string;
 };
 
+type AlertSample = {
+  hive_label: string;
+  metric: string;
+  value: number | null;
+  snapshotDate?: string | null;
+};
+
 const METRICS = [
   { value: "predicted_bees_per_min", label: "Predicted bees/min" },
   { value: "actual_bees_per_min", label: "Actual bees/min" },
@@ -34,6 +41,7 @@ const METRICS = [
 ];
 
 const EMPTY_RULE = { hive_label: "Hive 1", metric: "predicted_bees_per_min", comparator: "lt", threshold: 30, window_hours: 48, enabled: true };
+const NOTIFICATION_DEDUPE_PREFIX = "beeyield-alert-notification";
 
 export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
@@ -41,14 +49,11 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
   const [events, setEvents] = useState<AlertEvent[]>([]);
   const [showNew, setShowNew] = useState(false);
   const [draft, setDraft] = useState(EMPTY_RULE);
-  const [pushPerm, setPushPerm] = useState<NotificationPermission>("default");
+  const [pushPerm, setPushPerm] = useState<NotificationPermission>(() => ("Notification" in window ? Notification.permission : "default"));
   
   const [filterDays, setFilterDays] = useState<number>(30);
   const [filterHive, setFilterHive] = useState<string>("All");
-
-  useEffect(() => {
-    if ("Notification" in window) setPushPerm(Notification.permission);
-  }, []);
+  const [filterNowMs] = useState<number>(() => Date.now());
 
   const load = useCallback(async () => {
     const [{ data: r }, { data: e }] = await Promise.all([
@@ -59,7 +64,15 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
     setEvents((e as AlertEvent[]) || []);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const timeoutId = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isOpen, load]);
 
   const requestPush = async () => {
     if (!("Notification" in window)) { toast.error("Notifications not supported"); return; }
@@ -99,17 +112,16 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
       device_id: deviceId, rule_id: r.id, hive_label: r.hive_label, metric: r.metric, value: r.threshold, message: msg,
     });
     toast.warning(msg);
-    if (pushPerm === "granted") new Notification("BeeYield Alert", { body: msg, icon: "/favicon.ico" });
+    notifyBrowser(msg);
     load();
   };
 
   const uniqueHives = Array.from(new Set([...rules, ...events].map(x => x.hive_label)));
-  const nowMs = Date.now();
   const filteredEvents = events.filter(e => {
       if (filterHive !== "All" && e.hive_label !== filterHive) return false;
       if (filterDays > 0) {
           const eTime = new Date(e.created_at).getTime();
-          if ((nowMs - eTime) / 86400000 > filterDays) return false;
+          if ((filterNowMs - eTime) / 86400000 > filterDays) return false;
       }
       return true;
   });
@@ -267,8 +279,101 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
 
 function cmpLabel(c: string) { return c === "lt" ? "<" : c === "gt" ? ">" : "="; }
 
+function metricLabel(metric: string) {
+  return METRICS.find((entry) => entry.value === metric)?.label || metric;
+}
+
+function canNotifyBrowser() {
+  return typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted";
+}
+
+function notifyBrowser(message: string) {
+  if (!canNotifyBrowser()) return;
+  new Notification("BeeYield Alert", { body: message, icon: "/favicon.ico" });
+}
+
+function dedupeStorageKey(deviceId: string, ruleId: string, sample: AlertSample) {
+  return [
+    NOTIFICATION_DEDUPE_PREFIX,
+    deviceId,
+    ruleId,
+    sample.hive_label,
+    sample.metric,
+    sample.snapshotDate || "no-snapshot-date",
+  ].join(":");
+}
+
+function hasLocalNotificationRecord(key: string) {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(key) === "1";
+}
+
+function markLocalNotificationRecord(key: string) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(key, "1");
+}
+
+function isMissingSnapshotDateColumn(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error || "");
+  return message.toLowerCase().includes("snapshot_date");
+}
+
+async function hasExistingSnapshotEvent(deviceId: string, ruleId: string, sample: AlertSample) {
+  if (!sample.snapshotDate) return false;
+
+  const { data, error } = await (supabase as any)
+    .from("alert_events")
+    .select("id")
+    .eq("device_id", deviceId)
+    .eq("rule_id", ruleId)
+    .eq("hive_label", sample.hive_label)
+    .eq("metric", sample.metric)
+    .eq("snapshot_date", sample.snapshotDate)
+    .limit(1);
+
+  if (error) {
+    if (isMissingSnapshotDateColumn(error)) return false;
+    console.error("hasExistingSnapshotEvent:", error);
+    return false;
+  }
+
+  return Array.isArray(data) && data.length > 0;
+}
+
+async function insertAlertEvent(deviceId: string, rule: AlertRule, sample: AlertSample, message: string) {
+  const payload = {
+    device_id: deviceId,
+    rule_id: rule.id,
+    hive_label: rule.hive_label,
+    metric: rule.metric,
+    value: sample.value,
+    message,
+    snapshot_date: sample.snapshotDate || null,
+  };
+
+  const { error } = await (supabase as any).from("alert_events").insert(payload);
+  if (!error) return;
+
+  if (isMissingSnapshotDateColumn(error)) {
+    const { error: fallbackError } = await supabase.from("alert_events").insert({
+      device_id: deviceId,
+      rule_id: rule.id,
+      hive_label: rule.hive_label,
+      metric: rule.metric,
+      value: sample.value,
+      message,
+    });
+    if (fallbackError) throw fallbackError;
+    return;
+  }
+
+  throw error;
+}
+
 // Exported helper for the Forecaster to call when it produces a new prediction
-export async function evaluateAlerts(deviceId: string, sample: { hive_label: string; metric: string; value: number }) {
+export async function evaluateAlerts(deviceId: string, sample: AlertSample) {
+  if (sample.value === null || sample.value === undefined || Number.isNaN(sample.value)) return;
+
   const { data: rules } = await supabase
     .from("alert_rules")
     .select("*")
@@ -276,18 +381,26 @@ export async function evaluateAlerts(deviceId: string, sample: { hive_label: str
     .eq("enabled", true)
     .eq("metric", sample.metric)
     .eq("hive_label", sample.hive_label);
+
   if (!rules || rules.length === 0) return;
+
   for (const r of rules as AlertRule[]) {
     const v = sample.value;
     const fires = (r.comparator === "lt" && v < r.threshold) || (r.comparator === "gt" && v > r.threshold) || (r.comparator === "eq" && Math.abs(v - r.threshold) < 0.01);
     if (!fires) continue;
-    const msg = `${r.hive_label}: ${sample.metric} = ${v.toFixed(1)} (${cmpLabel(r.comparator)} ${r.threshold})`;
-    await supabase.from("alert_events").insert({
-      device_id: deviceId, rule_id: r.id, hive_label: r.hive_label, metric: r.metric, value: v, message: msg,
-    });
-    toast.warning(msg);
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification("BeeYield Alert", { body: msg, icon: "/favicon.ico" });
+
+    const dateSuffix = sample.snapshotDate ? ` for ${sample.snapshotDate}` : "";
+    const msg = `${r.hive_label}: ${metricLabel(sample.metric)} = ${v.toFixed(1)} (${cmpLabel(r.comparator)} ${r.threshold})${dateSuffix}`;
+    const localKey = dedupeStorageKey(deviceId, r.id, sample);
+
+    if (sample.snapshotDate && (hasLocalNotificationRecord(localKey) || await hasExistingSnapshotEvent(deviceId, r.id, sample))) {
+      markLocalNotificationRecord(localKey);
+      continue;
     }
+
+    await insertAlertEvent(deviceId, r, sample, msg);
+    toast.warning(msg);
+    notifyBrowser(msg);
+    markLocalNotificationRecord(localKey);
   }
 }

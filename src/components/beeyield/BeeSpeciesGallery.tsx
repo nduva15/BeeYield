@@ -11,6 +11,7 @@ type BeeSpeciesRecord = {
     name: string;
     commonName?: string;
     scientificName?: string;
+    category?: string;
     location?: string;
     suitability?: string;
     healthProfile?: string;
@@ -52,7 +53,7 @@ const mapSpeciesRecord = (bee: BeeSpeciesRecord): GallerySpecies => ({
     name: bee.commonName || bee.name,
     scientificName: bee.scientificName || bee.name,
     image: getGuideImage(bee),
-    category: inferCategory(bee),
+    category: bee.category || inferCategory(bee),
     conservationStatus: bee.is_extinct ? 'Extinct' : 'Active record',
     description: bee.healthProfile || bee.suitability || DEFAULT_DESCRIPTION,
     traits: Array.isArray(bee.traits) ? bee.traits : [],

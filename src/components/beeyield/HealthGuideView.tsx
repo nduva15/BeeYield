@@ -3,6 +3,7 @@ import { Bug, Dna, Microscope, Activity, ShieldCheck, Stethoscope } from 'lucide
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import beeyieldService from '@/services/beeyieldService';
 import { BeeSpeciesGallery } from './BeeSpeciesGallery';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
@@ -15,17 +16,68 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
     const [diseaseData, setDiseaseData] = React.useState<any[]>([]);
     const [speciesData, setSpeciesData] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [search, setSearch] = React.useState('');
+    const [diseaseTypeFilter, setDiseaseTypeFilter] = React.useState('all');
+    const [speciesCategoryFilter, setSpeciesCategoryFilter] = React.useState('all');
 
     React.useEffect(() => {
-        beeyieldService.getHealthGuide('diseases').then(d => setDiseaseData(d || []));
-        beeyieldService.getHealthGuide('species').then(s => {
-            setSpeciesData(s || []);
+        Promise.all([
+            beeyieldService.getHealthGuide('diseases'),
+            beeyieldService.getHealthGuide('species'),
+        ]).then(([diseases, species]) => {
+            setDiseaseData(diseases || []);
+            setSpeciesData(species || []);
             setLoading(false);
         });
     }, []);
 
     const selectedItemImage = React.useMemo(() => getGuideImage(selectedItem), [selectedItem]);
     const selectedItemFallbackImage = React.useMemo(() => getGuideFallbackImage(selectedItem), [selectedItem]);
+    const diseaseTypeOptions = React.useMemo(
+        () => ['all', ...Array.from(new Set(diseaseData.map((entry) => entry.type).filter(Boolean)))],
+        [diseaseData],
+    );
+    const speciesCategoryOptions = React.useMemo(
+        () => ['all', ...Array.from(new Set(speciesData.map((entry) => entry.category).filter(Boolean)))],
+        [speciesData],
+    );
+
+    const filteredDiseaseData = React.useMemo(() => {
+        const needle = search.trim().toLowerCase();
+        return diseaseData.filter((entry) => {
+            const matchesSearch = !needle || [
+                entry.name,
+                entry.type,
+                entry.riskLevel,
+                entry.causes,
+            ].some((value) => String(value || '').toLowerCase().includes(needle));
+            const matchesType = diseaseTypeFilter === 'all' || entry.type === diseaseTypeFilter;
+            return matchesSearch && matchesType;
+        });
+    }, [diseaseData, diseaseTypeFilter, search]);
+
+    const filteredSpeciesData = React.useMemo(() => {
+        const needle = search.trim().toLowerCase();
+        return speciesData.filter((entry) => {
+            const matchesSearch = !needle || [
+                entry.name,
+                entry.commonName,
+                entry.scientificName,
+                entry.category,
+                entry.location,
+            ].some((value) => String(value || '').toLowerCase().includes(needle));
+            const matchesCategory = speciesCategoryFilter === 'all' || entry.category === speciesCategoryFilter;
+            return matchesSearch && matchesCategory;
+        });
+    }, [search, speciesCategoryFilter, speciesData]);
+
+    React.useEffect(() => {
+        if (!selectedItem) return;
+        const pool = activeTab === 'diseases' ? diseaseData : speciesData;
+        if (!pool.some((entry) => entry.id === selectedItem.id)) {
+            setSelectedItem(null);
+        }
+    }, [activeTab, diseaseData, selectedItem, speciesData]);
 
     return (
         <BeeYieldPageShell className={glass.page}>
@@ -42,27 +94,100 @@ const HealthGuideView: React.FC<{ onTabChange: (tab: string, message?: string) =
                 <div className="lg:col-span-4 space-y-6">
                     <div className={cn(glass.section, "p-6 space-y-6")}>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">Pathology Database</label>
-                            <Select onValueChange={(val) => { setActiveTab('diseases'); setSelectedItem(diseaseData.find(d => d.id === val)); }}>
+                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">Reference Mode</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('diseases')}
+                                    className={cn(
+                                        "rounded-2xl border px-4 py-3 text-xs font-black uppercase tracking-wider transition-colors",
+                                        activeTab === 'diseases'
+                                            ? "border-[#F4D03F] bg-[#F4D03F] text-foreground"
+                                            : "border-border/ bg-card text-muted-foreground hover:text-foreground",
+                                    )}
+                                >
+                                    Diseases
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('species')}
+                                    className={cn(
+                                        "rounded-2xl border px-4 py-3 text-xs font-black uppercase tracking-wider transition-colors",
+                                        activeTab === 'species'
+                                            ? "border-[#F4D03F] bg-[#F4D03F] text-foreground"
+                                            : "border-border/ bg-card text-muted-foreground hover:text-foreground",
+                                    )}
+                                >
+                                    Species
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">Search Reference</label>
+                            <Input
+                                value={search}
+                                onChange={(event) => setSearch(event.target.value)}
+                                placeholder={activeTab === 'diseases' ? 'Search diseases, causes, risk...' : 'Search species, taxonomy, range...'}
+                                className={cn(glass.input, "h-12 text-sm font-semibold")}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">
+                                {activeTab === 'diseases' ? 'Disease Type' : 'Species Category'}
+                            </label>
+                            <Select
+                                value={activeTab === 'diseases' ? diseaseTypeFilter : speciesCategoryFilter}
+                                onValueChange={(value) => {
+                                    if (activeTab === 'diseases') {
+                                        setDiseaseTypeFilter(value);
+                                    } else {
+                                        setSpeciesCategoryFilter(value);
+                                    }
+                                }}
+                            >
                                 <SelectTrigger className={cn(glass.input, "h-12")}>
-                                    <SelectValue placeholder="Select Disease..." />
+                                    <SelectValue placeholder={activeTab === 'diseases' ? 'Filter disease types...' : 'Filter species categories...'} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-border/ bg-muted/ backdrop-blur-xl">
-                                    {diseaseData.map(d => <SelectItem key={d.id} value={d.id} className="text-xs font-bold">{d.name}</SelectItem>)}
+                                    {(activeTab === 'diseases' ? diseaseTypeOptions : speciesCategoryOptions).map((option) => (
+                                        <SelectItem key={option} value={option} className="text-xs font-bold">
+                                            {option === 'all'
+                                                ? (activeTab === 'diseases' ? 'All disease types' : 'All species categories')
+                                                : option}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">Species Reference</label>
-                            <Select onValueChange={(val) => { setActiveTab('species'); setSelectedItem(speciesData.find(s => s.id === val)); }}>
+                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">
+                                {activeTab === 'diseases' ? 'Pathology Database' : 'Species Reference'}
+                            </label>
+                            <Select onValueChange={(val) => {
+                                const source = activeTab === 'diseases' ? filteredDiseaseData : filteredSpeciesData;
+                                setSelectedItem(source.find((entry) => entry.id === val) || null);
+                            }}>
                                 <SelectTrigger className={cn(glass.input, "h-12")}>
-                                    <SelectValue placeholder="Select Bee Type..." />
+                                    <SelectValue placeholder={activeTab === 'diseases' ? 'Select Disease...' : 'Select Bee Type...'} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-border/ bg-muted/ backdrop-blur-xl">
-                                    {speciesData.map(s => <SelectItem key={s.id} value={s.id} className="text-xs font-bold">{s.name}</SelectItem>)}
+                                    {(activeTab === 'diseases' ? filteredDiseaseData : filteredSpeciesData).map((entry) => (
+                                        <SelectItem key={entry.id} value={entry.id} className="text-xs font-bold">
+                                            {activeTab === 'diseases'
+                                                ? `${entry.name}${entry.type ? ` • ${entry.type}` : ''}`
+                                                : `${entry.commonName || entry.name}${entry.scientificName ? ` • ${entry.scientificName}` : ''}`}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
+                            <p className="text-[11px] font-semibold text-muted-foreground">
+                                {activeTab === 'diseases'
+                                    ? `${filteredDiseaseData.length} disease records match the current filters.`
+                                    : `${filteredSpeciesData.length} species records match the current filters.`}
+                            </p>
                         </div>
                     </div>
 

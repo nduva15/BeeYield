@@ -8,7 +8,7 @@ from app.api.api_v1.endpoints import (
     services, jobs, notes, admin, iot,
     admin_extended, meters, beeyield, pollination, inspections, reports, billing,
     settings, payments, labels, bluetooth, measurements,
-    requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations, usb_hub, health_guide,
+    requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations, usb_hub, reference_library,
     yield_forecast
 )
 
@@ -27,7 +27,7 @@ api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 
 # BeeYield Dashboard (User-specific data)
 api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
-api_router.include_router(health_guide.router, prefix="/beeyield/health", tags=["BeeYield Health Guide"])
+api_router.include_router(reference_library.public_router, prefix="/beeyield/health", tags=["BeeYield Health Guide"])
 api_router.include_router(yield_forecast.router, prefix="/beeyield/yield-forecast", tags=["Yield Forecast"])
 api_router.include_router(bluetooth.router, prefix="/beeyield/bluetooth", tags=["Bluetooth"])
 api_router.include_router(requests.router, prefix="/beeyield/requests", tags=["Support Requests"])
@@ -107,6 +107,7 @@ api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])
 
 # Admin
 api_router.include_router(admin.router, prefix="/admin", tags=["Admin"])
+api_router.include_router(reference_library.admin_router, prefix="/admin/reference-library", tags=["Reference Library"])
 
 # Admin Extended (Activity Logs, Documents, Payments, Tracing History)
 api_router.include_router(admin_extended.router, prefix="/admin", tags=["Admin Extended"])
