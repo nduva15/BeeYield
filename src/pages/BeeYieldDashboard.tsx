@@ -96,6 +96,7 @@ import BeeDiseasesPage from '@/components/beeyield/lovable_ai/BeeDiseasesPage';
 import BeeGallery from '@/components/beeyield/lovable_ai/BeeGallery';
 import BloomPhenologyEmbed from '@/components/beeyield/lovable_ai/BloomPhenology';
 import FlightTrackerEmbed from '@/components/beeyield/lovable_ai/BeeFlightTracker';
+import AlertsPage from '@/components/beeyield/lovable_ai/AlertsPage';
 import HarvestCalculator from '@/components/beeyield/lovable_ai/HarvestCalculator';
 import ActivityCounter from '@/components/beeyield/lovable_ai/ActivityCounter';
 import ActivityForecaster from '@/components/beeyield/lovable_ai/ActivityForecaster';
@@ -388,6 +389,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'master-map': return <MasterMapView />;
             case 'forage-zones': return <ForageZonesView />;
             case 'precision-drilldown': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'yard-ops': return <YardOperations onTabChange={handleTabChange} />;

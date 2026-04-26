@@ -43,7 +43,7 @@ const METRICS = [
 const EMPTY_RULE = { hive_label: "Hive 1", metric: "predicted_bees_per_min", comparator: "lt", threshold: 30, window_hours: 48, enabled: true };
 const NOTIFICATION_DEDUPE_PREFIX = "beeyield-alert-notification";
 
-export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function AlertsPage({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [rules, setRules] = useState<AlertRule[]>([]);
   const [events, setEvents] = useState<AlertEvent[]>([]);
@@ -153,7 +153,7 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "h-full overflow-y-auto rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xl custom-scroll" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
