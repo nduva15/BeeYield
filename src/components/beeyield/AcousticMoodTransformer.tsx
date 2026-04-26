@@ -16,7 +16,7 @@ import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
 import beeyieldService from '@/services/beeyieldService';
 import { toast } from 'sonner';
 
-const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
+const AcousticMoodTransformer: React.FC<any> = ({ onTabChange, embedded }: any) => {
     const [soundData, setSoundData] = React.useState<{ freq: number; db: number }[]>([]);
     const [status, setStatus] = React.useState<'healthy' | 'missing-queen' | 'swarm-risk'>('healthy');
     const [confidence, setConfidence] = React.useState<number | null>(null);
@@ -125,7 +125,7 @@ const AcousticMoodTransformer: React.FC<any> = ({ onTabChange }: any) => {
     const StatusIcon = STATUS_MAP[status].icon;
 
     return (
-        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+        <BeeYieldPageShell embedded={embedded} className={cn(!embedded && 'p-4 lg:p-6 pb-20', 'space-y-6')}>
             <BeeYieldPageHeader
                 icon={BrainCircuit}
                 label="Sound Analysis"

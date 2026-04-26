@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 
 interface AcousticSpectralViewProps {
     onTabChange?: (tab: string, message?: string, action?: string) => void;
+    embedded?: boolean;
 }
 
 const generateSpectralData = () => {
@@ -16,7 +17,7 @@ const generateSpectralData = () => {
     }));
 };
 
-const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
+const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = ({ onTabChange, embedded }) => {
     const [spectralData, setSpectralData] = React.useState(generateSpectralData());
 
     React.useEffect(() => {
@@ -27,7 +28,7 @@ const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
     }, []);
 
     return (
-        <BeeYieldPageShell className={glass.page}>
+        <BeeYieldPageShell embedded={embedded}>
             {/* Header */}
             <BeeYieldPageHeader
                 title="Hive Sound"

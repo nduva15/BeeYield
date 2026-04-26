@@ -15,7 +15,7 @@ export function BeeYieldPageShell({
   className?: string;
   embedded?: boolean;
 }) {
-  return <div className={cn(glass.page, embedded && "p-0 md:p-0 -m-0 min-h-0 pb-0", className)}>{children}</div>;
+  return <div className={cn(glass.page, embedded && "p-0 md:p-0 m-0 md:m-0 min-h-0 pb-0", className)}>{children}</div>;
 }
 
 export function BeeYieldCard({

@@ -86,6 +86,7 @@ import SupportCenterView from '@/components/beeyield/SupportCenterView';
 import SettingsView from '@/components/beeyield/SettingsView';
 import ImageAnalysisView from '@/components/beeyield/ImageAnalysisView';
 import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
+import AcousticSpectralView from '@/components/beeyield/AcousticSpectralView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
@@ -408,7 +409,8 @@ const BeeYieldDashboard: React.FC = () => {
             case 'flight-map': return <FlightMapView />;
             case 'global-hive-network': return <GlobalHiveNetwork />;
             case 'varroa': return <VarroaView />;
-            case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} />;
+            case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} embedded={true} />;
+            case 'acoustic-spectral': return <AcousticSpectralView onTabChange={handleTabChange} embedded={true} />;
             case 'sound-analysis':
             case 'sound': return <SoundAnalysisView onTabChange={handleTabChange} embedded={true} />;
             case 'image-analysis': return <ImageAnalysisView onTabChange={handleTabChange} />;
