@@ -391,7 +391,7 @@ const Team = () => {
             <section className="bg-neutral-50 py-24 border-t border-neutral-200 text-center">
                 <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold text-neutral-900 mb-8 tracking-tight">Join the Mission</h2>
-                    <Button size="lg" className="h-14 px-12 bg-neutral-900 text-white rounded-2xl font-bold shadow-xl hover:bg-neutral-800 transition-all">
+                    <Button size="lg" className="h-14 px-12 bg-neutral-900 text-beeyield-green font-bold text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20">
                         Contact the Directorate <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                 </div>
