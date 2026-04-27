@@ -281,16 +281,16 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-            {/* Crops We Pollinate */}
+            {/* Crops Section - Compact & Premium */}
             <section className="py-24 bg-muted/20">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16 space-y-3">
                         <Badge variant="outline" className="text-[#F4D03F] border-amber-200 bg-amber-50/50 px-4 py-1">Our Expertise</Badge>
-                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Crops We <span className="text-[#F4D03F]">Pollinate</span></h2>
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter">Crops We <span className="text-[#F4D03F]">Pollinate</span></h2>
                         <p className="text-muted-foreground max-w-2xl mx-auto font-medium">Selected crops where we monitor bloom conditions and pollination activity.</p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 max-w-7xl mx-auto">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 max-w-7xl mx-auto">
                         {pollinationCrops.map((crop, index) => (
                             <Link
                                 key={index}
@@ -306,10 +306,10 @@ const PollinationServices = () => {
                                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-neutral-900/10 to-transparent" />
 
                                 <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-3 group-hover:translate-y-0 transition-transform duration-500">
-                                    <Badge className="mb-2 bg-[#F4D03F] text-neutral-900 text-[9px] font-bold border-none px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                    <Badge className="mb-2 bg-[#F4D03F] text-neutral-900 text-[9px] font-black border-none px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500">
                                         {crop.beeDependence.split('(')[0].trim()}
                                     </Badge>
-                                    <h3 className="font-bold text-lg text-white leading-tight tracking-tight">
+                                    <h3 className="font-black text-lg text-[#1A1A1A] leading-tight tracking-tighter">
                                         {crop.cropName}
                                     </h3>
                                     <div className="h-0.5 w-0 group-hover:w-12 bg-[#F4D03F] transition-all duration-700 mt-2 rounded-full" />
@@ -320,7 +320,7 @@ const PollinationServices = () => {
 
                     <div className="mt-20 text-center">
                         <Link to="/contact">
-                            <Button size="lg" className="bg-neutral-900 hover:bg-neutral-800 text-[#F4D03F] font-bold rounded-2xl px-12 h-14 shadow-2xl text-[10px] transition-all hover:scale-105 active:scale-95">
+                            <Button size="lg" className="bg-neutral-900 hover:bg-neutral-800 text-[#1A1A1A] font-black rounded-2xl px-12 h-14 shadow-2xl text-[10px] transition-all hover:scale-105 active:scale-95">
                                 Start Pollination Project
                             </Button>
                         </Link>
