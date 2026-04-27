@@ -25,3 +25,18 @@
 - **Fix Applied**: Refactored property access to use `hive_code`, `status`, and `timestamp` respectively. Added `ArrowRight` to `lucide-react` imports.
 - **Prevention**: Always verify component properties against the `beeyieldService.ts` interfaces before committing UI changes.
 - **Status**: Fixed
+
+## [2026-04-27 09:17] - Runtime Error: ReferenceError Home is not defined
+
+- **Type**: Agent
+- **Severity**: Medium
+- **File**: `src/pages/Team.tsx:302`
+- **Agent**: Antigravity
+- **Root Cause**: Added the `Home` icon from `lucide-react` to the new "Our Story" section in `Team.tsx` but failed to include it in the top-level import list.
+- **Error Message**: 
+  ```
+  Uncaught ReferenceError: Home is not defined
+  ```
+- **Fix Applied**: Added `Home` to the `lucide-react` import destructuring in `Team.tsx`.
+- **Prevention**: Always audit `lucide-react` imports after adding new icons to a component using multi-replace or manual edits.
+- **Status**: Fixed
