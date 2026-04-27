@@ -34,8 +34,7 @@ import {
   Award,
   ChevronRight,
   Mail,
-  Zap,
-  Radio
+  Zap
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
@@ -104,15 +103,15 @@ const HeroSection = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Badge className="bg-beeyield-green/10 text-beeyield-green mb-6 hover:bg-beeyield-green/20 transition-colors font-black text-[10px] px-4 py-1.5 rounded-full border border-beeyield-green/20">
-              2026 Global Field Research • Powered by Apisense
+              Verifiable Purity • Smart Beekeeping
             </Badge>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-neutral-900 leading-[0.85] tracking-tighter mb-6 drop-shadow-sm">
-              Real-Time <span className="text-beeyield-green block">Telemetry</span>
+              The Purest <span className="text-beeyield-green block">Harvest</span>
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-500 mb-10 max-w-lg leading-relaxed font-medium">
-              Experience the world's most transparent honey. Fully traceable from the Kibwezi hive to your home using <span className="text-beeyield-gold font-bold">Apisense IoT integration</span>.
+              Experience the world's most transparent honey. Powered by <span className="text-beeyield-gold font-bold">HoneyChain™</span> and a commitment to protecting 50% of the surplus for the bees.
             </p>
 
             {/* CTA Group */}
@@ -170,19 +169,18 @@ const HeroSection = () => {
                 </motion.div>
               </div>
 
-              {/* Apisense Connected Badge */}
+              {/* Verified Origin Badge */}
               <motion.div
                 animate={{ y: [0, -15, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute top-10 -right-4 lg:-right-12 z-20 bg-[#FFF9F0]/90 backdrop-blur-md p-6 rounded-[2.5rem] shadow-2xl border border-amber-200/50 flex flex-col items-center gap-2"
+                className="absolute top-10 -right-4 lg:-right-12 z-20 bg-[#FFF9F0]/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-[#F4D03F]/100 flex flex-col items-center gap-2"
               >
-                <div className="relative w-12 h-12 bg-neutral-900 rounded-2xl flex items-center justify-center shadow-lg">
-                  <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-beeyield-green shadow-[0_0_8px_rgba(74,222,128,0.8)] animate-pulse" />
-                  <Radio className="w-6 h-6 text-beeyield-gold" />
+                <div className="w-12 h-12 bg-beeyield-green rounded-2xl flex items-center justify-center shadow-lg">
+                  <ShieldCheck className="w-6 h-6 text-[#1A1A1A]" />
                 </div>
-                <div className="text-center mt-1">
-                  <span className="block text-xl font-black text-neutral-900 leading-tight">Apisense</span>
-                  <span className="block text-[9px] font-black text-beeyield-gold tracking-widest uppercase mt-0.5">Connected</span>
+                <div className="text-center">
+                  <span className="block text-sm font-black text-neutral-900">Verified</span>
+                  <span className="block text-[8px] font-black text-beeyield-gold">Origin</span>
                 </div>
               </motion.div>
             </div>
@@ -294,7 +292,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
                   <div className="flex items-end justify-between gap-4 pt-4 border-t border-dashed border-neutral-100">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-neutral-400">Price</span>
-                      <span className="text-xl font-black text-beeyield-green">{formatPrice(product.variants?.[0]?.price_kes ?? 0)}</span>
+                      <span className="text-xl font-black text-beeyield-green">{formatPrice(product.variants[0].price_kes)}</span>
                     </div>
 
                     <Button
@@ -501,10 +499,10 @@ const HeritageSection = () => {
             </h2>
             <div className="space-y-6">
               <p className="text-neutral-600 leading-relaxed text-base font-medium">
-                BeeYield was founded with a simple goal: to make beekeeping better through technology and honest reporting. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead the <strong className="text-beeyield-green">2026 Global Field Research</strong> program in partnership with Apisense.
+                BeeYield was founded with a simple goal: to make beekeeping better through technology and honest reporting. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong className="text-beeyield-green">50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive.
               </p>
               <p className="text-neutral-600 leading-relaxed text-base font-medium">
-                Every jar you hold features <strong className="text-beeyield-gold">95% Proven Detection Accuracy</strong>, allowing you to trace your honey back to the very hive it came from, see the internal telemetry records, and verified seals of the Kibwezi Corridor.
+                Every jar you hold features <strong className="text-beeyield-gold">Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
               </p>
             </div>
           </motion.div>
@@ -513,135 +511,62 @@ const HeritageSection = () => {
     </section>
   );
 };
-// Features Section - Apisense Integration
+
+// Features Section - 3 cards
 const FeaturesSection = () => {
-    const navigate = useNavigate();
-    const features = [
-        {
-            icon: ShieldCheck,
-            title: "95% Detection Accuracy",
-            description: "Apisense IoT units mounted in the Kibwezi corridor achieve up to 95% accuracy in detecting early-stage signs of Foulbrood, Nosema, and Varroa destructor before visible symptoms appear.",
-            color: "text-beeyield-green bg-beeyield-green/10",
-            link: "/diseases"
-        },
-        {
-            icon: Activity,
-            title: "85% Vector Spread Prediction",
-            description: "Through continuous localized monitoring, the Apisense system predicts the vector spread of diseases across the apiary with up to 85% accuracy, enabling proactive containment.",
-            color: "text-amber-500 bg-amber-500/10",
-            link: "/diseases"
-        },
-        {
-            icon: Radio,
-            title: "Non-Invasive Air Diagnostics",
-            description: "Our 2026 Global Field Research partnership ensures every hive is monitored by specialized, non-invasive IoT sensors that continuously analyze the air composition without disturbing the bees.",
-            color: "text-neutral-900 bg-neutral-200",
-            link: "/diseases"
-        },
-    ];
-
-    return (
-        <section className="py-24 bg-[#FFF9F0]">
-            <div className="container mx-auto px-4 sm:px-6">
-                <div className="text-center mb-16">
-                    <Badge className="bg-beeyield-green/10 text-beeyield-green mb-4 px-4 py-1.5 font-black text-[10px]">Powered by Apisense AI</Badge>
-                    <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tighter">
-                        Revolutionizing <span className="text-beeyield-green">Hive Diagnostics</span>
-                    </h2>
-                    <p className="text-muted-foreground mt-4 font-medium max-w-2xl mx-auto">BeeYield is proud to be a key participant in the 2026 Global Field Research program, integrating Apisense's state-of-the-art IoT disease sensors.</p>
-                </div>
-                <div className="grid md:grid-cols-3 gap-8">
-                    {features.map((feature, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                            whileHover={{ y: -10 }}
-                            className="bg-white rounded-[2.5rem] p-10 text-left shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl transition-all flex flex-col items-start border border-transparent hover:border-neutral-100 group"
-                        >
-                            <div className={`w-16 h-16 mb-8 ${feature.color} rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
-                                <feature.icon className="h-8 w-8" />
-                            </div>
-                            <h3 className="text-xl font-black text-neutral-900 mb-4 tracking-tight group-hover:text-beeyield-green transition-colors">{feature.title}</h3>
-                            <p className="text-sm text-neutral-500 mb-8 leading-relaxed font-medium flex-grow">{feature.description}</p>
-                            
-                            <Button
-                                variant="link"
-                                className="text-beeyield-green font-black p-0 h-auto gap-2 text-xs group/btn"
-                                onClick={() => navigate(feature.link)}
-                            >
-                                Learn More <ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1" />
-                            </Button>
-                        </motion.div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
-};
-
-// New Telemetry Pulse Dashboard Section
-const TelemetryPulseSection = () => {
-  const metrics = [
-    { label: "Internal Node Temp", value: "34.2°C", status: "Optimal" },
-    { label: "Internal Humidity", value: "42%", status: "Stable" },
-    { label: "VOC Concentration", value: "420ppb", status: "Nominal" },
-    { label: "Acoustic Signature", value: "780Hz", status: "Active" }
+  const navigate = useNavigate();
+  const features = [
+    {
+      icon: ShieldCheck,
+      title: "Honey Journey Tracking",
+      description: "Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.",
+      color: "text-beeyield-green bg-beeyield-green/10"
+    },
+    {
+      icon: Leaf,
+      title: "50/50 Harvest Promise",
+      description: "We only harvest what the bees can spare, leaving 50% of the surplus to ensure colony survival.",
+      color: "text-beeyield-gold bg-beeyield-gold/10"
+    },
+    {
+      icon: Droplets,
+      title: "Hive Health Monitoring",
+      description: "Sensors help us spot stress or disease early, so we can support the colony before it affects the harvest.",
+      color: "text-beeyield-orange bg-beeyield-orange/10"
+    },
   ];
 
   return (
-    <section className="py-24 bg-neutral-900 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(74,222,128,0.05)_0%,transparent_70%)] pointer-events-none" />
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="bg-white/5 backdrop-blur-3xl rounded-[3rem] p-8 md:p-16 border border-white/10 shadow-2xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <Badge className="bg-beeyield-gold/20 text-beeyield-gold border-none mb-6 px-4 py-1.5 font-black text-[10px]">Live Laboratory</Badge>
-              <h2 className="text-4xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-[0.9]">
-                Kibwezi Telemetry <span className="text-beeyield-green block">Pulse Dashboard</span>
-              </h2>
-              <p className="text-neutral-400 text-lg mb-10 max-w-lg leading-relaxed font-medium">
-                Our 2026 Global Field Research partnership with Apisense allows us to monitor colony health with zero delay.
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                {metrics.map((m, i) => (
-                  <div key={i} className="bg-white/5 rounded-2xl p-6 border border-white/5 hover:border-beeyield-green/30 transition-colors">
-                    <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mb-1">{m.label}</p>
-                    <p className="text-2xl font-black text-white">{m.value}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                       <div className="w-1.5 h-1.5 rounded-full bg-beeyield-green animate-pulse" />
-                       <span className="text-[8px] font-black text-beeyield-green uppercase">{m.status}</span>
-                    </div>
-                  </div>
-                ))}
+    <section className="py-24 bg-[#FFF9F0]">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="grid md:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ y: -10 }}
+              className="bg-neutral-50 rounded-[2.5rem] p-10 text-left hover:bg-[#FFF9F0] hover:shadow-2xl transition-all flex flex-col items-start border border-transparent hover:border-neutral-100 group"
+            >
+              <div className={`w-16 h-16 mb-8 ${feature.color} rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                <feature.icon className="h-8 w-8" />
               </div>
-            </div>
-            
-            <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-beeyield-green/20 to-transparent rounded-[2.5rem] border border-white/5 p-8 flex items-center justify-center overflow-hidden">
-                <div className="relative w-full h-full flex items-center justify-center">
-                   {/* Mock Circular Signal Visual */}
-                   <motion.div 
-                     animate={{ rotate: 360 }}
-                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                     className="absolute w-64 h-64 border-2 border-dashed border-beeyield-green/30 rounded-full"
-                   />
-                   <motion.div 
-                     animate={{ rotate: -360 }}
-                     transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                     className="absolute w-48 h-48 border border-beeyield-gold/20 rounded-full"
-                   />
-                   <div className="relative z-10 text-center">
-                     <Radio className="w-16 h-16 text-beeyield-green mb-4 mx-auto animate-pulse" />
-                     <p className="text-white font-black tracking-widest text-[10px] uppercase">Receiving LTE Sync</p>
-                     <p className="text-neutral-500 font-bold text-[8px] uppercase mt-1">From Node 04 Central</p>
-                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
+              <h3 className="text-xl font-black text-neutral-900 mb-4 tracking-tight group-hover:text-beeyield-green transition-colors">{feature.title}</h3>
+              <p className="text-sm text-neutral-500 mb-8 leading-relaxed font-medium flex-grow">{feature.description}</p>
+
+              {feature.title === "Honey Journey Tracking" && (
+                <Button
+                  variant="link"
+                  className="text-beeyield-green font-black p-0 h-auto gap-2 text-xs group/btn"
+                  onClick={() => navigate("/traceability")}
+                >
+                  Verify Now <ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1" />
+                </Button>
+              )}
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -651,6 +576,7 @@ const TelemetryPulseSection = () => {
 // Flash Sale Section with countdown
 const FlashSaleSection = () => {
   const navigate = useNavigate();
+  const [timeLeft, setTimeLeft] = useState({ hours: 20, minutes: 40, seconds: 7 });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -1195,12 +1121,19 @@ const HoneyLanding = () => {
         products={products}
       />
 
-      <FeaturesSection />
-      <TelemetryPulseSection />
-      <FeaturedProductsSection handleAddToCart={handleAddToCart} formatPrice={formatPrice} products={products} />
-      <FlashSaleSection />
-      <HeritageSection />
       <TestimonialSection />
+      <HeritageSection />
+      <FeaturesSection />
+
+      <AllProductsSection
+        selectedSizes={selectedSizes}
+        setSelectedSizes={setSelectedSizes}
+        handleAddToCart={handleAddToCart}
+        formatPrice={formatPrice}
+        products={products}
+      />
+
+      <FlashSaleSection />
       <FAQSection />
       <NewsletterSection />
     </BeeYieldPageShell>
