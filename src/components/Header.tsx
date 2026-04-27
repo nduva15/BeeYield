@@ -182,7 +182,7 @@ const Header = () => {
                     { label: 'Commitment', to: '/commitment' },
                     { label: 'Contact', to: '/contact' },
                     { label: 'ESG', to: '/esg' },
-                    { label: 'Global Network', to: '/global-hive-network' },
+
                     { label: 'Impact', to: '/impact' },
                     { label: 'Media', to: '/media' },
                     { label: 'Team', to: '/team' },
@@ -297,7 +297,7 @@ const Header = () => {
                 { label: 'Impact', to: '/impact' },
                 { label: 'ESG', to: '/esg' },
                 { label: 'Commitment', to: '/commitment' },
-                { label: 'Global Network', to: '/global-hive-network' },
+
                 { label: 'Team', to: '/team' },
                 { label: 'Careers', to: '/careers' },
                 { label: 'Media', to: '/media' },

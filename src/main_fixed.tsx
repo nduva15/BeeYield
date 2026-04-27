@@ -1,4 +1,4 @@
-﻿import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Buffer } from 'buffer';
 import { Loader2 } from 'lucide-react'
@@ -37,7 +37,7 @@ const Impact = lazy(() => import('@/pages/Impact'))
 const ESG = lazy(() => import('@/pages/ESG'))
 const Commitment = lazy(() => import('@/pages/Commitment'))
 const OurStory = lazy(() => import('@/pages/OurStory'))
-const GlobalHiveNetwork = lazy(() => import('@/pages/GlobalHiveNetwork'))
+
 const Traceability = lazy(() => import('@/pages/Traceability'))
 const PrecisionPollination = lazy(() => import('@/pages/PrecisionPollination'))
 const PollinationSolutions = lazy(() => import('@/pages/PollinationSolutions'))
@@ -99,7 +99,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                     <Route path="/esg" element={<ESG />} />
                                                     <Route path="/commitment" element={<Commitment />} />
                                                     <Route path="/ourstory" element={<OurStory />} />
-                                                    <Route path="/global-hive-network" element={<GlobalHiveNetwork />} />
                                                     <Route path="/traceability" element={<Traceability />} />
                                                     <Route path="/precision-pollination" element={<PrecisionPollination />} />
                                                     <Route path="/pollination-solutions" element={<PollinationSolutions />} />

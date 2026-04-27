@@ -67,7 +67,7 @@ import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
 import InspectionsView from '@/components/beeyield/InspectionsView';
 import HarvestsView from '@/components/beeyield/HarvestsView';
 import FlightMapView from '@/components/beeyield/FlightMapView';
-import GlobalHiveNetwork from '@/pages/GlobalHiveNetwork';
+
 import VarroaView from '@/components/beeyield/VarroaView';
 import MeasurementDataView from '@/components/beeyield/MeasurementDataView';
 import { BeeYieldOnlineView, USBView } from '@/components/beeyield/RemainingViews';
@@ -312,7 +312,7 @@ const BeeYieldDashboard: React.FC = () => {
                 { id: 'health-guide', label: 'Health Guide', icon: BookOpen },
                 { id: 'reports-exports', label: 'Reports & Exports', icon: FileText },
                 { id: 'label-generator', label: 'Label Generator', icon: Tag },
-                { id: 'global-hive-network', label: 'Global Hive Network', icon: Globe },
+
             ]
         },
         {
@@ -404,7 +404,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'inspections': return <InspectionsView onTabChange={handleTabChange} />;
             case 'harvests': return <HarvestsView onTabChange={handleTabChange} />;
             case 'flight-map': return <FlightMapView />;
-            case 'global-hive-network': return <GlobalHiveNetwork />;
+
             case 'varroa': return <VarroaView />;
             case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} embedded={true} />;
             case 'acoustic-spectral': return <AcousticSpectralView onTabChange={handleTabChange} embedded={true} />;
