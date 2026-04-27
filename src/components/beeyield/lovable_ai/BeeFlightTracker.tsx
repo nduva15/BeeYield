@@ -40,7 +40,7 @@ type Log = {
 type RunRow = { id: string; crop: string; created_at: string };
 type RunVersion = { id: string; version_label: string; created_at: string };
 
-export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [logs, setLogs] = useState<Log[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);

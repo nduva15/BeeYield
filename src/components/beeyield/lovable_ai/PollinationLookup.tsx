@@ -42,6 +42,7 @@ const CROPS: Crop[] = [
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
 type Mode = "single" | "compare";

@@ -64,7 +64,7 @@ const EMPTY_DRAFT: Omit<FloragePlant, "id" | "is_default"> = {
   name: "", latin: "", bloom: "", nectar: 5, pollen: 5, radius: 800, notes: "",
 };
 
-export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [plants, setPlants] = useState<FloragePlant[]>([]);
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("florage_plants")
       .select("*")
       .eq("device_id", deviceId)
@@ -92,10 +92,10 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
     if (!data || data.length === 0) {
       // Seed defaults
       const seed = DEFAULT_FLORAGE.map((p) => ({ ...p, device_id: deviceId, is_default: true }));
-      const { data: seeded } = await supabase.from("florage_plants").insert(seed).select("*");
-      setPlants((seeded as FloragePlant[]) || []);
+      const { data: seeded } = await (supabase as any).from("florage_plants").insert(seed).select("*");
+      setPlants(((seeded || []) as unknown as FloragePlant[]));
     } else {
-      setPlants(data as FloragePlant[]);
+      setPlants((data as unknown as FloragePlant[]));
     }
     setLoading(false);
   }, [deviceId]);
@@ -120,13 +120,13 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
       return;
     }
     if (editing && editing.id !== "new") {
-      const { error } = await supabase.from("florage_plants").update({
+      const { error } = await (supabase as any).from("florage_plants").update({
         ...draft, notes: draft.notes || null, updated_at: new Date().toISOString(),
       }).eq("id", editing.id);
       if (error) { toast.error(error.message); return; }
       toast.success("Updated");
     } else {
-      const { error } = await supabase.from("florage_plants").insert({
+      const { error } = await (supabase as any).from("florage_plants").insert({
         ...draft, notes: draft.notes || null, device_id: deviceId, is_default: false,
       });
       if (error) { toast.error(error.message); return; }
@@ -138,7 +138,7 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
 
   const remove = async (p: FloragePlant) => {
     if (!confirm(`Delete ${p.name}?`)) return;
-    const { error } = await supabase.from("florage_plants").delete().eq("id", p.id);
+    const { error } = await (supabase as any).from("florage_plants").delete().eq("id", p.id);
     if (error) { toast.error(error.message); return; }
     toast.success("Deleted");
     load();
@@ -199,7 +199,7 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
   const importCsv = async () => {
     if (csvErrors.length || csvPreview.length === 0) { toast.error("Fix validation errors first"); return; }
     const payload = csvPreview.map((r) => ({ ...r, notes: r.notes || null, device_id: deviceId, is_default: false }));
-    const { error } = await supabase.from("florage_plants").insert(payload);
+    const { error } = await (supabase as any).from("florage_plants").insert(payload);
     if (error) { toast.error(error.message); return; }
     toast.success(`Imported ${payload.length} plants`);
     setCsvText(""); setCsvPreview([]); setCsvErrors([]); setShowImport(false);
@@ -265,7 +265,7 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
               <input type="number" value={draft.radius} onChange={(e) => setDraft({ ...draft, radius: Number(e.target.value) })} placeholder="Radius (m)" className="px-3 py-2 rounded-lg bg-background border border-border text-xs" />
               <label className="text-xs flex items-center gap-2">Nectar <input type="number" min={0} max={10} value={draft.nectar} onChange={(e) => setDraft({ ...draft, nectar: Number(e.target.value) })} className="w-16 px-2 py-1 rounded bg-background border border-border" /></label>
               <label className="text-xs flex items-center gap-2">Pollen <input type="number" min={0} max={10} value={draft.pollen} onChange={(e) => setDraft({ ...draft, pollen: Number(e.target.value) })} className="w-16 px-2 py-1 rounded bg-background border border-border" /></label>
-              <input value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Notes" className="md:col-span-2 px-3 py-2 rounded-lg bg-background border border-border text-xs" />
+              <input value={draft.notes ?? ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Notes" className="md:col-span-2 px-3 py-2 rounded-lg bg-background border border-border text-xs" />
             </div>
             <div className="flex gap-2 mt-3">
               <button onClick={save} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save</button>

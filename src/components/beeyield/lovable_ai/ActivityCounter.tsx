@@ -6,7 +6,7 @@ import { useDeviceId } from "@/hooks/use-device-id";
 
 // Lightweight one-tap activity counter — quicker workflow than the full BeeFlightTracker.
 // Tap "+1" each time a bee exits the entrance during the 60-second window.
-export default function ActivityCounter({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function ActivityCounter({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [count, setCount] = useState(0);
   const [running, setRunning] = useState(false);

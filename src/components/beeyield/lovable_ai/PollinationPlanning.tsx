@@ -32,7 +32,7 @@ const CROP_DATA: Record<string, { radius: number; contractPerAc: number; demand:
   Canola:     { radius: 1500, contractPerAc: 0.5, demand: 0.6, setBoost: 0.25 },
 };
 
-export default function PollinationPlanning({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function PollinationPlanning({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const [crop, setCrop] = useState("Almonds");
   const [acres, setAcres] = useState(40);
   const [region, setRegion] = useState("California Central Valley");

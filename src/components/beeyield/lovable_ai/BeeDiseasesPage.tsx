@@ -81,6 +81,7 @@ const PATHOGEN_TYPES: PathogenType[] = ["Parasitic", "Bacterial", "Viral", "Fung
 interface BeeDiseasesPageProps {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
 export default function BeeDiseasesPage({ isOpen, onClose }: BeeDiseasesPageProps) {

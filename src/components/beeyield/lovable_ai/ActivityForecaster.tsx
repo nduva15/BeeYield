@@ -16,7 +16,7 @@ import { evaluateAlerts } from "./AlertsPage";
 
 type Forecast = { date: string; hour: number; tempC: number; windKmh: number; precipMm: number; predictedBpm: number; band: string };
 
-export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [hiveLabel, setHiveLabel] = useState("Hive 1");
   const [lat, setLat] = useState("-2.4078");
@@ -73,7 +73,7 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
         precip_mm: Math.round((pts.reduce((s, p) => s + p.precipMm, 0) / pts.length) * 10) / 10,
         band: pts[0]?.band || "normal",
       }));
-      await supabase.from("forecast_snapshots").insert(snapshots);
+      await (supabase as any).from("forecast_snapshots").insert(snapshots);
       const todaySnap = snapshots.find((s) => s.forecast_for_date.endsWith(today.slice(5)));
       if (todaySnap) {
         await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "predicted_bees_per_min", value: todaySnap.predicted_bees_per_min });
@@ -88,7 +88,7 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
   const loadHistory = useCallback(async () => {
     const sevenAgo = new Date(); sevenAgo.setDate(sevenAgo.getDate() - 7);
     const [{ data: snaps }, { data: actuals }] = await Promise.all([
-      supabase.from("forecast_snapshots").select("forecast_for_date,predicted_bees_per_min")
+      (supabase as any).from("forecast_snapshots").select("forecast_for_date,predicted_bees_per_min")
         .eq("device_id", deviceId).eq("hive_label", hiveLabel)
         .gte("created_at", sevenAgo.toISOString()).order("forecast_for_date", { ascending: true }),
       supabase.from("bee_flight_logs").select("observed_at,bees_per_minute")
@@ -97,7 +97,7 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
     ]);
     // Aggregate by date
     const map = new Map<string, { predicted: number[]; actual: number[] }>();
-    for (const s of (snaps as { forecast_for_date: string; predicted_bees_per_min: number }[]) || []) {
+    for (const s of ((snaps || []) as { forecast_for_date: string; predicted_bees_per_min: number }[])) {
       const d = s.forecast_for_date.slice(0, 10);
       if (!map.has(d)) map.set(d, { predicted: [], actual: [] });
       map.get(d)!.predicted.push(s.predicted_bees_per_min);

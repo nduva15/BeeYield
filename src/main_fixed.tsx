@@ -79,7 +79,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                 <WishlistProvider>
                                     <Toaster />
                                     <Sonner />
-                                    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                    <BrowserRouter>
                                         <ScrollToTop />
                                         <Layout>
                                             <Suspense fallback={<PageLoader />}>

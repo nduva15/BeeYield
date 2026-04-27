@@ -55,6 +55,7 @@ const flightIcon = L.divIcon({
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
   readOnly?: boolean;
   initialRunId?: string;
   initialVersionId?: string;

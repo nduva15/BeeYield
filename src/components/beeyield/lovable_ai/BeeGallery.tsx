@@ -141,6 +141,7 @@ const ALL_CATEGORIES = ["All", ...Array.from(new Set(BEE_SPECIES.map((b) => b.ca
 interface BeeGalleryProps {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
 export default function BeeGallery({ isOpen, onClose }: BeeGalleryProps) {

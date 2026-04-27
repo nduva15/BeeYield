@@ -35,7 +35,7 @@ const METRICS = [
 
 const EMPTY_RULE = { hive_label: "Hive 1", metric: "predicted_bees_per_min", comparator: "lt", threshold: 30, window_hours: 48, enabled: true };
 
-export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [rules, setRules] = useState<AlertRule[]>([]);
   const [events, setEvents] = useState<AlertEvent[]>([]);
@@ -49,11 +49,11 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
 
   const load = useCallback(async () => {
     const [{ data: r }, { data: e }] = await Promise.all([
-      supabase.from("alert_rules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }),
-      supabase.from("alert_events").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
+      (supabase as any).from("alert_rules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }),
+      (supabase as any).from("alert_events").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
     ]);
-    setRules((r as AlertRule[]) || []);
-    setEvents((e as AlertEvent[]) || []);
+    setRules(((r || []) as unknown as AlertRule[]));
+    setEvents(((e || []) as unknown as AlertEvent[]));
   }, [deviceId]);
 
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
@@ -67,32 +67,32 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
   };
 
   const addRule = async () => {
-    const { error } = await supabase.from("alert_rules").insert({ ...draft, device_id: deviceId });
+    const { error } = await (supabase as any).from("alert_rules").insert({ ...draft, device_id: deviceId });
     if (error) { toast.error(error.message); return; }
     toast.success("Alert created");
     setShowNew(false); setDraft(EMPTY_RULE); load();
   };
 
   const toggleRule = async (r: AlertRule) => {
-    await supabase.from("alert_rules").update({ enabled: !r.enabled }).eq("id", r.id);
+    await (supabase as any).from("alert_rules").update({ enabled: !r.enabled }).eq("id", r.id);
     load();
   };
 
   const deleteRule = async (id: string) => {
     if (!confirm("Delete this alert?")) return;
-    await supabase.from("alert_rules").delete().eq("id", id);
+    await (supabase as any).from("alert_rules").delete().eq("id", id);
     toast.success("Deleted");
     load();
   };
 
   const ackEvent = async (id: string) => {
-    await supabase.from("alert_events").update({ acknowledged: true }).eq("id", id);
+    await (supabase as any).from("alert_events").update({ acknowledged: true }).eq("id", id);
     load();
   };
 
   const testFire = async (r: AlertRule) => {
     const msg = `TEST: ${r.hive_label} ${METRICS.find((m) => m.value === r.metric)?.label} ${cmpLabel(r.comparator)} ${r.threshold}`;
-    await supabase.from("alert_events").insert({
+    await (supabase as any).from("alert_events").insert({
       device_id: deviceId, rule_id: r.id, hive_label: r.hive_label, metric: r.metric, value: r.threshold, message: msg,
     });
     toast.warning(msg);
@@ -211,7 +211,7 @@ function cmpLabel(c: string) { return c === "lt" ? "<" : c === "gt" ? ">" : "=";
 
 // Exported helper for the Forecaster to call when it produces a new prediction
 export async function evaluateAlerts(deviceId: string, sample: { hive_label: string; metric: string; value: number }) {
-  const { data: rules } = await supabase
+  const { data: rules } = await (supabase as any)
     .from("alert_rules")
     .select("*")
     .eq("device_id", deviceId)
@@ -219,12 +219,12 @@ export async function evaluateAlerts(deviceId: string, sample: { hive_label: str
     .eq("metric", sample.metric)
     .eq("hive_label", sample.hive_label);
   if (!rules || rules.length === 0) return;
-  for (const r of rules as AlertRule[]) {
+  for (const r of (rules as unknown as AlertRule[])) {
     const v = sample.value;
     const fires = (r.comparator === "lt" && v < r.threshold) || (r.comparator === "gt" && v > r.threshold) || (r.comparator === "eq" && Math.abs(v - r.threshold) < 0.01);
     if (!fires) continue;
     const msg = `${r.hive_label}: ${sample.metric} = ${v.toFixed(1)} (${cmpLabel(r.comparator)} ${r.threshold})`;
-    await supabase.from("alert_events").insert({
+    await (supabase as any).from("alert_events").insert({
       device_id: deviceId, rule_id: r.id, hive_label: r.hive_label, metric: r.metric, value: v, message: msg,
     });
     toast.warning(msg);
