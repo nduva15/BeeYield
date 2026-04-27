@@ -19,8 +19,6 @@ import {
   BeeYieldBadge,
   BeeYieldEmptyState,
   BeeYieldLoading,
-  BeeYieldPageHeader,
-  BeeYieldPageShell,
 } from '@/components/beeyield/BeeYieldUI';
 import {
   describeCoverageAction,
@@ -29,7 +27,7 @@ import {
 } from '@/lib/pollinationInsights';
 import { beeyieldService, CropPollinationRequirement } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
-import { glass } from './GlassTheme';
+import { glass, PageHeader } from './GlassTheme';
 import WeatherTelemetryPanel from './WeatherTelemetryPanel';
 import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
 
@@ -160,16 +158,12 @@ const SpatialCoverageView: React.FC = () => {
   const loading = apiariesQuery.isLoading || hivesLoading || alertsQuery.isLoading;
 
   return (
-    <BeeYieldPageShell>
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 pb-20">
-        <BeeYieldPageHeader
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={glass.page}>
+      <div className="space-y-6 pb-20">
+        <PageHeader
           icon={Navigation}
           label="Coverage Area"
-          title={
-            <>
-              Coverage <span className="text-[#1B9157]">Area</span>
-            </>
-          }
+          title={<>Coverage <span className="text-primary">Area</span></>}
           subtitle="Selected-apiary coverage density, hive spacing, and live environmental context."
           onRefresh={handleRefresh}
           actions={
@@ -477,10 +471,9 @@ const SpatialCoverageView: React.FC = () => {
             </div>
           </div>
         </div>
-      </motion.div>
-    </BeeYieldPageShell>
+      </div>
+    </motion.div>
   );
 };
 
 export default SpatialCoverageView;
-
