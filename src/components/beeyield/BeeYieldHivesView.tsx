@@ -370,6 +370,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, init
                 summary={weatherSummary}
                 isLoading={weatherLoading}
                 title="Hive weather telemetry"
+                compact
             />
 
             {/* ── Filter Bar ── */}
@@ -697,4 +698,3 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, init
 };
 
 export default BeeYieldHivesView;
-

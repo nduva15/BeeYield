@@ -819,7 +819,7 @@ export interface Harvest {
 export interface HarvestCreateInput {
     hive_id?: string | null;
     apiary_id?: string;
-    farmer_id?: string;
+    farmer_id?: string | null;
     harvest_date: string;
     quantity_kg: number;
     quantity_left_for_bees_kg?: number;

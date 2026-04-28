@@ -298,7 +298,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: A
                                                     <div className="flex items-center gap-4">
                                                         <div className="flex flex-col items-end">
                                                             <div className="flex items-center gap-2">
-                                                                <Thermometer className="w-3.5 h-3.5 text-red-500 opacity-40 group-hover:opacity-100 transition-all" />
+                                                                 <Thermometer className="w-3.5 h-3.5 text-red-500 opacity-40 group-hover:opacity-100 transition-all" />
                                                                 <span className="text-sm font-bold tabular-nums text-foreground/70 italic group-hover:text-foreground">
                                                                     {((hive as any).latest_temp)?.toFixed(1) || '--'}°C
                                                                 </span>
@@ -540,6 +540,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
                         summary={weatherSummary}
                         isLoading={weatherLoading}
                         title={weatherApiary ? `${weatherApiary.name} weather telemetry` : 'Apiary weather telemetry'}
+                        compact
                     />
                 </>
             )}
@@ -692,4 +693,3 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
 };
 
 export default MyPlacesView;
-

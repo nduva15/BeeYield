@@ -360,6 +360,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
                 summary={weatherSummary}
                 isLoading={weatherLoading}
                 title="Harvest weather telemetry"
+                compact
             />
 
             <Tabs defaultValue="harvests" className="w-full space-y-6">
@@ -1138,4 +1139,3 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams, onTabChange 
 };
 
 export default HarvestsView;
-

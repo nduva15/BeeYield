@@ -73,7 +73,15 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
     const handleSaveEdit = () => {
         if (!selectedHarvest) return;
-        updateHarvest({ id: selectedHarvest.id, data: editForm }, {
+        // Strip null values and cast to input type
+        const sanitized = Object.fromEntries(
+            Object.entries(editForm).filter(([k, v]) => 
+                v !== null && 
+                !['id', 'created_at', 'updated_at', 'hive', 'farmer', 'apiary'].includes(k)
+            )
+        ) as any;
+
+        updateHarvest({ id: selectedHarvest.id, data: sanitized }, {
             onSuccess: () => {
                 setIsEditing(false);
                 setSelectedHarvest({ ...selectedHarvest, ...editForm } as Harvest);
@@ -330,6 +338,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                 summary={weatherSummary}
                                 isLoading={isWeatherLoading}
                                 title="Primary telemetry stream"
+                                compact
                                 className="border-0 bg-transparent p-0 shadow-none"
                             />
                         </div>
