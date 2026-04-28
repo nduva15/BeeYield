@@ -5,6 +5,7 @@ import {
   Layers,
   MapPin,
   Navigation,
+  RefreshCw,
   Satellite,
   Target,
   Thermometer,
@@ -19,6 +20,7 @@ import {
   BeeYieldBadge,
   BeeYieldEmptyState,
   BeeYieldLoading,
+  BeeYieldPageShell,
 } from '@/components/beeyield/BeeYieldUI';
 import {
   describeCoverageAction,
@@ -42,7 +44,11 @@ const getNumeric = (...values: Array<number | string | null | undefined>) => {
 const EMPTY_APIARIES: any[] = [];
 const EMPTY_ALERTS: any[] = [];
 
-const SpatialCoverageView: React.FC = () => {
+interface SpatialCoverageViewProps {
+  embedded?: boolean;
+}
+
+const SpatialCoverageView: React.FC<SpatialCoverageViewProps> = ({ embedded = false }) => {
   const [viewMode, setViewMode] = React.useState<'kernel' | 'nodes'>('kernel');
   const [selectedApiaryId, setSelectedApiaryId] = React.useState('');
   const [selectedHiveId, setSelectedHiveId] = React.useState<string | null>(null);
@@ -158,27 +164,37 @@ const SpatialCoverageView: React.FC = () => {
   const loading = apiariesQuery.isLoading || hivesLoading || alertsQuery.isLoading;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={glass.page}>
-      <div className="space-y-6 pb-20">
+    <BeeYieldPageShell embedded={embedded}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-20">
         <PageHeader
           icon={Navigation}
           label="Coverage Area"
           title={<>Coverage <span className="text-primary">Area</span></>}
           subtitle="Selected-apiary coverage density, hive spacing, and live environmental context."
-          onRefresh={handleRefresh}
           actions={
-            <div className="flex items-center gap-3 rounded-2xl border border-border/ bg-muted/ px-4 py-2 shadow-sm">
-              <div className="flex items-center gap-2 border-r border-gray-100 pr-3">
-                <Wind className="h-4 w-4 text-blue-500" />
-                <span className="text-[10px] font-black text-muted-foreground">
-                  {weatherLoading ? '...' : weatherWind !== null ? `${Math.round(weatherWind)} km/h` : 'No wind'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Thermometer className="h-4 w-4 text-orange-500" />
-                <span className="text-[10px] font-black text-muted-foreground">
-                  {weatherLoading ? '...' : weatherTemperature !== null ? `${Math.round(weatherTemperature)}°C` : 'No temp'}
-                </span>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleRefresh}
+                className={cn(glass.btnSecondary, "h-9 w-9 p-0 items-center justify-center")}
+                title="Refresh metrics"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </button>
+              
+              <div className="hidden sm:flex items-center gap-3 rounded-xl border border-border bg-muted/20 px-3 py-1.5 shadow-sm">
+                <div className="flex items-center gap-2 border-r border-border/50 pr-3">
+                  <Wind className="h-3.5 w-3.5 text-blue-500" />
+                  <span className="text-[10px] font-black text-muted-foreground uppercase opacity-80">
+                    {weatherLoading ? '...' : weatherWind !== null ? `${Math.round(weatherWind)} km/h` : 'No wind'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Thermometer className="h-3.5 w-3.5 text-orange-500" />
+                  <span className="text-[10px] font-black text-muted-foreground uppercase opacity-80">
+                    {weatherLoading ? '...' : weatherTemperature !== null ? `${Math.round(weatherTemperature)}°C` : 'No temp'}
+                  </span>
+                </div>
               </div>
             </div>
           }
@@ -187,10 +203,10 @@ const SpatialCoverageView: React.FC = () => {
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           <div className="xl:col-span-8">
             <div className={cn(glass.section, 'overflow-hidden')}>
-              <div className="flex items-center justify-between border-b border-border/ px-5 py-4 bg-muted/">
+              <div className="flex items-center justify-between border-b border-border/ px-5 py-4 bg-muted/10">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1B9157]/20 bg-[#1B9157]/10">
-                    <Layers className="h-5 w-5 text-[#1B9157]" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10">
+                    <Layers className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="text-sm font-black tracking-tight text-foreground">Spatial Overlay</h3>
@@ -200,31 +216,31 @@ const SpatialCoverageView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 rounded-xl border border-border/ bg-muted/ p-1">
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-muted/30 p-1">
                   <button
                     type="button"
                     onClick={() => setViewMode('kernel')}
                     className={cn(
-                      'rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
-                      viewMode === 'kernel' ? 'bg-[#1A1A1A] text-white' : 'text-muted-foreground hover:bg-[#F4D03F]/10',
+                      'rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
+                      viewMode === 'kernel' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-primary/10',
                     )}
                   >
-                    Kernel
+                    Density
                   </button>
                   <button
                     type="button"
                     onClick={() => setViewMode('nodes')}
                     className={cn(
-                      'rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
-                      viewMode === 'nodes' ? 'bg-[#1A1A1A] text-white' : 'text-muted-foreground hover:bg-[#F4D03F]/10',
+                      'rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
+                      viewMode === 'nodes' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-primary/10',
                     )}
                   >
-                    Nodes
+                    Layout
                   </button>
                 </div>
               </div>
 
-              <div className="relative min-h-[520px] bg-muted/20 p-5">
+              <div className="relative min-h-[520px] bg-muted/5 p-5">
                 {loading && !nodePositions.length ? (
                   <BeeYieldLoading label="Loading coverage map..." />
                 ) : !selectedApiary ? (
@@ -241,11 +257,11 @@ const SpatialCoverageView: React.FC = () => {
                   />
                 ) : (
                   <>
-                    <div className="absolute left-5 top-5 z-10 space-y-2">
+                    <div className="absolute left-5 top-5 z-20 space-y-2">
                       <select
                         value={selectedApiaryId}
                         onChange={(event) => setSelectedApiaryId(event.target.value)}
-                        className={cn(glass.input, 'h-10 min-w-[220px] bg-muted/')}
+                        className={cn(glass.input, 'h-10 min-w-[220px] bg-card')}
                         aria-label="Select apiary"
                         title="Select apiary"
                       >
@@ -260,124 +276,132 @@ const SpatialCoverageView: React.FC = () => {
                       </BeeYieldBadge>
                     </div>
 
-                    <svg viewBox="0 0 500 380" className="h-full w-full">
-                      <path
-                        d="M55,55 L445,55 L425,330 L85,350 Z"
-                        fill="rgba(255,255,255,0.9)"
-                        stroke="#DAD7CD"
-                        strokeWidth="1.5"
-                        strokeDasharray="6 6"
-                      />
+                    <div className="relative w-full h-[480px] overflow-hidden">
+                      <svg viewBox="0 0 500 380" className="h-full w-full">
+                        <path
+                          d="M55,55 L445,55 L425,330 L85,350 Z"
+                          fill="rgba(var(--primary), 0.02)"
+                          stroke="rgba(var(--border), 0.5)"
+                          strokeWidth="1.5"
+                          strokeDasharray="6 6"
+                        />
 
-                      {viewMode === 'kernel' &&
-                        nodePositions.map((node) => (
-                          <circle
-                            key={`coverage-${node.id}`}
-                            cx={node.x}
-                            cy={node.y}
-                            r={node.radius}
-                            fill={node.active ? 'rgba(27, 145, 87, 0.12)' : 'rgba(239, 68, 68, 0.08)'}
-                            stroke={node.active ? 'rgba(27, 145, 87, 0.24)' : 'rgba(239, 68, 68, 0.18)'}
-                            strokeDasharray="4 4"
-                          />
-                        ))}
+                        {viewMode === 'kernel' &&
+                          nodePositions.map((node) => (
+                            <circle
+                              key={`coverage-${node.id}`}
+                              cx={node.x}
+                              cy={node.y}
+                              r={node.radius}
+                              fill={node.active ? 'rgba(var(--primary), 0.12)' : 'rgba(var(--destructive), 0.08)'}
+                              stroke={node.active ? 'rgba(var(--primary), 0.24)' : 'rgba(var(--destructive), 0.18)'}
+                              strokeDasharray="4 4"
+                            />
+                          ))}
 
-                      {nodePositions.map((node) => (
-                        <g
-                          key={node.id}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => setSelectedHiveId(node.id)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter' || event.key === ' ') {
-                              event.preventDefault();
-                              setSelectedHiveId(node.id);
-                            }
-                          }}
-                          className="cursor-pointer"
-                        >
-                          <circle
-                            cx={node.x}
-                            cy={node.y}
-                            r={Math.max(22, node.radius * 0.42)}
-                            fill="transparent"
-                          />
-                          {selectedNode?.id === node.id && (
+                        {nodePositions.map((node) => (
+                          <g
+                            key={node.id}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => setSelectedHiveId(node.id)}
+                            onKeyDown={(event) => {
+                              if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                setSelectedHiveId(node.id);
+                              }
+                            }}
+                            className="cursor-pointer group"
+                          >
                             <circle
                               cx={node.x}
                               cy={node.y}
-                              r="15"
-                              fill="rgba(244, 208, 63, 0.18)"
-                              stroke="#F4D03F"
-                              strokeWidth="1.5"
+                              r={Math.max(22, node.radius * 0.42)}
+                              fill="transparent"
                             />
-                          )}
-                          <circle
-                            cx={node.x}
-                            cy={node.y}
-                            r={selectedNode?.id === node.id ? '10' : '8'}
-                            fill={node.active ? '#1B9157' : '#EF4444'}
-                            stroke="#1A1A1A"
-                            strokeWidth={selectedNode?.id === node.id ? '2' : '1'}
-                          />
-                          <text
-                            x={node.x + 12}
-                            y={node.y + 4}
-                            fontSize="8"
-                            fontWeight="900"
-                            fill="#1A1A1A"
-                          >
-                            {node.label}
-                          </text>
-                        </g>
-                      ))}
-                    </svg>
+                            {selectedNode?.id === node.id && (
+                              <circle
+                                cx={node.x}
+                                cy={node.y}
+                                r="15"
+                                fill="rgba(var(--primary), 0.18)"
+                                stroke="rgb(var(--primary))"
+                                strokeWidth="1.5"
+                                className="animate-pulse"
+                              />
+                            )}
+                            <circle
+                              cx={node.x}
+                              cy={node.y}
+                              r={selectedNode?.id === node.id ? '10' : '8'}
+                              fill={node.active ? 'rgb(var(--primary))' : 'rgb(var(--destructive))'}
+                              stroke="rgb(var(--background))"
+                              strokeWidth={selectedNode?.id === node.id ? '2' : '1'}
+                              className="transition-all duration-300 group-hover:scale-125"
+                            />
+                            <text
+                              x={node.x + 12}
+                              y={node.y + 4}
+                              fontSize="8"
+                              fontWeight="900"
+                              fill="currentColor"
+                              className="opacity-80 uppercase tracking-widest text-[8px]"
+                            >
+                              {node.label}
+                            </text>
+                          </g>
+                        ))}
+                      </svg>
+                    </div>
 
-                    <div className="absolute bottom-5 left-5 rounded-2xl border border-border/ bg-muted/ p-4 shadow-lg">
-                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Coverage legend</p>
-                      <div className="mt-3 space-y-2">
-                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground/90">
-                          <span className="h-3 w-3 rounded-full bg-[#1B9157]" />
-                          Active hive coverage
+                    <div className="absolute bottom-5 left-5 rounded-xl border border-border bg-card/80 backdrop-blur-md p-4 shadow-xl z-20">
+                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70 mb-3">Coverage legend</p>
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-3 text-[11px] font-bold text-foreground/80">
+                          <span className="h-3 w-3 rounded-full bg-primary" />
+                          Optimal distribution
                         </div>
-                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground/90">
-                          <span className="h-3 w-3 rounded-full bg-[#EF4444]" />
-                          Hive needs attention
+                        <div className="flex items-center gap-3 text-[11px] font-bold text-foreground/80">
+                          <span className="h-3 w-3 rounded-full bg-destructive" />
+                          Critical gap detected
                         </div>
                       </div>
                     </div>
 
-                    <div className="absolute bottom-5 right-5 max-w-[280px] rounded-2xl border border-border/ bg-muted/ p-4 shadow-lg">
-                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#1B9157]">Selected hive</p>
+                    <div className="absolute bottom-5 right-5 max-w-[280px] rounded-xl border border-border bg-card/80 backdrop-blur-md p-4 shadow-xl z-20">
+                      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-primary mb-3">Focused Node</p>
                       {selectedNode ? (
-                        <div className="mt-3 space-y-2">
+                        <div className="space-y-3">
                           <div>
                             <p className="text-sm font-black text-foreground">{selectedNode.hive.hive_code}</p>
-                            <p className="text-[10px] font-bold text-muted-foreground">{selectedNode.hive.status || 'Unspecified status'}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <span className={cn("w-1.5 h-1.5 rounded-full", selectedNode.active ? "bg-primary" : "bg-destructive")} />
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{selectedNode.hive.status || 'Unspecified'}</p>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-2 gap-3">
+                          <div className="grid grid-cols-2 gap-4 pt-1 border-t border-border/40">
                             <div>
-                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Frames</p>
-                              <p className="text-[11px] font-black text-foreground">{selectedNode.hive.frame_count || 'N/A'}</p>
+                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/60">Strength</p>
+                              <p className="text-[11px] font-black text-foreground">{selectedNode.hive.frame_count || 'N/A'} Frames</p>
                             </div>
                             <div>
-                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Placement</p>
+                              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/60">Telemetry</p>
                               <p className="text-[11px] font-black text-foreground">
-                                {selectedNode.hive.latitude != null && selectedNode.hive.longitude != null ? 'Saved GPS' : 'Coverage node'}
+                                {selectedNode.hive.latitude != null ? 'GPS Active' : 'Beacon Only'}
                               </p>
                             </div>
                           </div>
-                          <div>
-                            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Precision coordinates</p>
-                            <p className="text-[11px] font-black text-foreground">
+                          <div className="pt-2 border-t border-border/40">
+                            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground/60 mb-1">Precision Lat/Lng</p>
+                            <p className="text-[11px] font-black text-foreground font-mono opacity-80">
                               {selectedNode.hive.latitude != null && selectedNode.hive.longitude != null
-                                ? `${Number(selectedNode.hive.latitude).toFixed(6)}, ${Number(selectedNode.hive.longitude).toFixed(6)}`
-                                : 'No saved hive coordinates yet'}
+                                ? `${Number(selectedNode.hive.latitude).toFixed(5)}, ${Number(selectedNode.hive.longitude).toFixed(5)}`
+                                : 'Coordinates pending synchronization'}
                             </p>
                           </div>
                         </div>
                       ) : (
-                        <p className="mt-3 text-[11px] font-bold text-muted-foreground">Select a node to inspect hive placement.</p>
+                        <p className="text-[11px] font-bold text-muted-foreground italic">Interactive: Click any node to inspect.</p>
                       )}
                     </div>
                   </>
@@ -389,8 +413,8 @@ const SpatialCoverageView: React.FC = () => {
           <div className="xl:col-span-4 space-y-6">
             <div className={cn(glass.section, 'p-6')}>
               <div className="flex items-center gap-3 border-b border-border/ pb-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1B9157]/20 bg-[#1B9157]/10">
-                  <Activity className="h-5 w-5 text-[#1B9157]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10">
+                  <Activity className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-sm font-black tracking-tight text-foreground">Coverage Metrics</h3>
@@ -399,30 +423,33 @@ const SpatialCoverageView: React.FC = () => {
               </div>
 
               <div className="mt-5 grid grid-cols-2 gap-4">
-                <div className="space-y-1">
+                <div className="space-y-1 bg-muted/20 p-3 rounded-xl border border-border/50">
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Current FPA</p>
                   <p className="text-2xl font-black text-foreground">{coverage.currentFpa.toFixed(1)}</p>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1 bg-primary/5 p-3 rounded-xl border border-primary/20">
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Target FPA</p>
-                  <p className="text-2xl font-black text-[#1B9157]">{coverage.targetFpa.toFixed(1)}</p>
+                  <p className="text-2xl font-black text-primary">{(coverage.targetFpa || 0).toFixed(1)}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Coverage Gap</p>
-                  <p className="text-2xl font-black text-red-600">{coverage.coverageGapPercent.toFixed(0)}%</p>
+                <div className="space-y-1 bg-destructive/5 p-3 rounded-xl border border-destructive/20 text-destructive">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] opacity-70">Gap Index</p>
+                  <p className="text-2xl font-black">{coverage.coverageGapPercent.toFixed(0)}%</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Node Efficiency</p>
-                  <p className="text-2xl font-black text-[#1B9157]">{coverage.nodeEfficiency.toFixed(0)}%</p>
+                <div className="space-y-1 bg-muted/20 p-3 rounded-xl border border-border/50">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">Efficiency</p>
+                  <p className="text-2xl font-black text-foreground opacity-90">{coverage.nodeEfficiency.toFixed(0)}%</p>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-border/ bg-muted/ p-4">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-[#F4D03F]" />
-                  <h4 className="text-xs font-black tracking-tight text-foreground">Actionable Insight</h4>
+              <div className="mt-6 p-4 rounded-xl border border-primary/20 bg-primary/5 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Target className="w-12 h-12 text-primary" />
                 </div>
-                <p className="mt-3 text-xs leading-relaxed text-muted-foreground/90">{describeCoverageAction(coverage)}</p>
+                <div className="flex items-center gap-2 relative z-10">
+                  <AlertCircle className="h-4 w-4 text-primary" />
+                  <h4 className="text-[10px] font-black tracking-widest text-primary uppercase">Strategic Insight</h4>
+                </div>
+                <p className="mt-3 text-sm font-bold leading-relaxed text-foreground/80 relative z-10">{describeCoverageAction(coverage)}</p>
               </div>
             </div>
 
@@ -435,44 +462,46 @@ const SpatialCoverageView: React.FC = () => {
 
             <div className={cn(glass.card, 'p-6')}>
               <div className="flex items-center gap-3 border-b border-border/ pb-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/ bg-[#F4D03F]/10">
-                  <Satellite className="h-5 w-5 text-[#F4D03F]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10">
+                  <Satellite className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black tracking-tight text-foreground">Flight Weather Context</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">Telemetry-backed route signals</p>
+                  <h3 className="text-sm font-black tracking-tight text-foreground">Foraging Route Quality</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/70">Atmospheric resistance</p>
                 </div>
               </div>
 
               <div className="mt-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Wind resistance</span>
-                  <span className="text-sm font-black text-foreground">{windStatus}</span>
+                <div className="flex items-center justify-between border-b border-border/40 pb-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Wind Gradient</span>
+                  <span className={cn("text-sm font-black", windStatus === 'High' ? "text-destructive" : "text-foreground")}>{windStatus}</span>
                 </div>
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div className="flex items-center justify-between border-b border-border/40 pb-3">
                   <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Humidity load</span>
                   <span className="text-sm font-black text-foreground">
                     {weatherHumidity !== null ? `${Math.round(weatherHumidity)}%` : 'Unavailable'}
                   </span>
                 </div>
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Foraging radius</span>
-                  <span className="text-sm font-black text-[#1B9157]">{foragingRadius}</span>
+                <div className="flex items-center justify-between border-b border-border/40 pb-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Coverage radius</span>
+                  <span className="text-sm font-black text-primary">{foragingRadius}</span>
                 </div>
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Linked devices</span>
-                  <span className="text-sm font-black text-foreground">{telemetryLinks}</span>
+                <div className="flex items-center justify-between border-b border-border/40 pb-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Sensor link active</span>
+                  <span className="text-sm font-black text-foreground">{telemetryLinks} Hives</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Open alerts</span>
-                  <span className="text-sm font-black text-red-600">{activeAlerts.filter((alert) => !alert.resolved).length}</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Unresolved alerts</span>
+                  <span className={cn("text-sm font-black", activeAlerts.length > 0 ? "text-destructive" : "text-primary")}>
+                    {activeAlerts.filter((alert) => !alert.resolved).length}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </BeeYieldPageShell>
   );
 };
 

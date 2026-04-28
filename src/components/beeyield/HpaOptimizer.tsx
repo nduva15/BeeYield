@@ -32,7 +32,11 @@ const framesByGrade: Record<ColonyGrade, number> = {
 const EMPTY_APIARIES: any[] = [];
 const EMPTY_HIVES: any[] = [];
 
-const HpaOptimizer: React.FC = () => {
+interface HpaOptimizerProps {
+  embedded?: boolean;
+}
+
+const HpaOptimizer: React.FC<HpaOptimizerProps> = ({ embedded = false }) => {
   const [selectedApiaryId, setSelectedApiaryId] = React.useState('');
   const [acreage, setAcreage] = React.useState(1);
   const [treesPerAcre, setTreesPerAcre] = React.useState(110);
@@ -98,14 +102,14 @@ const HpaOptimizer: React.FC = () => {
   const shortfall = Math.max(0, requiredHives - hives.length);
 
   return (
-    <BeeYieldPageShell>
+    <BeeYieldPageShell embedded={embedded}>
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 pb-20">
         <BeeYieldPageHeader
           icon={Target}
           label="Performance Planning"
           title={
             <>
-              Hive Density <span className="text-[#1B9157]">Planner</span>
+              Hive Density <span className="text-primary">Planner</span>
             </>
           }
           subtitle="Right-size hive density with live apiary acreage and crop pollination requirements."
@@ -133,8 +137,8 @@ const HpaOptimizer: React.FC = () => {
           <div className={cn(glass.section, 'p-6 space-y-6')}>
             <section className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/ bg-[#F4D03F]/10">
-                  <MapPin className="h-5 w-5 text-[#1B9157]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-primary/5">
+                  <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-sm font-black tracking-tight text-foreground">Field Inputs</h3>
@@ -151,7 +155,7 @@ const HpaOptimizer: React.FC = () => {
                     type="number"
                     value={acreage}
                     onChange={(event) => setAcreage(Math.max(1, Number(event.target.value) || 1))}
-                    className={cn(glass.input, 'h-11 w-full bg-white')}
+                    className={cn(glass.input, 'h-11 w-full bg-card')}
                   />
                 </div>
 
@@ -163,7 +167,7 @@ const HpaOptimizer: React.FC = () => {
                     type="number"
                     value={treesPerAcre}
                     onChange={(event) => setTreesPerAcre(Math.max(1, Number(event.target.value) || 1))}
-                    className={cn(glass.input, 'h-11 w-full bg-white')}
+                    className={cn(glass.input, 'h-11 w-full bg-card')}
                   />
                 </div>
 
@@ -171,7 +175,7 @@ const HpaOptimizer: React.FC = () => {
                   <label className="mb-2 block text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">
                     Orchard density
                   </label>
-                  <div className="flex gap-2 rounded-2xl border border-border/ bg-muted/ p-1">
+                  <div className="flex gap-2 rounded-2xl border border-border bg-muted/30 p-1">
                     {(['low', 'medium', 'high'] as const).map((option) => (
                       <button
                         key={option}
@@ -179,7 +183,7 @@ const HpaOptimizer: React.FC = () => {
                         onClick={() => setTreeDensity(option)}
                         className={cn(
                           'flex-1 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
-                          treeDensity === option ? 'bg-[#1A1A1A] text-white' : 'text-muted-foreground hover:bg-[#F4D03F]/10',
+                          treeDensity === option ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-primary/10',
                         )}
                       >
                         {option}
@@ -190,10 +194,10 @@ const HpaOptimizer: React.FC = () => {
               </div>
             </section>
 
-            <section className="space-y-4 border-t border-border/ pt-6">
+            <section className="space-y-4 border-t border-border pt-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#1B9157]/20 bg-[#1B9157]/10">
-                  <Trees className="h-5 w-5 text-[#1B9157]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10">
+                  <Trees className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-sm font-black tracking-tight text-foreground">Crop Profile</h3>
@@ -210,8 +214,8 @@ const HpaOptimizer: React.FC = () => {
                     className={cn(
                       'flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-[11px] font-black transition-all',
                       variety === crop.crop_name
-                        ? 'border-[#1B9157] bg-[#1B9157] text-white'
-                        : 'border-border/ bg-muted/ text-foreground hover:border-[#1B9157]/30',
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-card text-foreground hover:border-primary/30',
                     )}
                   >
                     <span>{crop.crop_name}</span>
@@ -223,17 +227,17 @@ const HpaOptimizer: React.FC = () => {
           </div>
 
           <div className={cn(glass.card, 'p-6 md:p-8')}>
-            <div className="flex flex-col gap-4 border-b border-border/ pb-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-2xl font-black tracking-tight text-foreground">
-                  Density <span className="text-[#1B9157]">Results</span>
+                  Density <span className="text-primary">Results</span>
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   {activeApiary?.name || 'Select an apiary'} using {variety || 'crop profile pending'}
                 </p>
               </div>
 
-              <div className="flex rounded-2xl border border-border/ bg-muted/ p-1">
+              <div className="flex rounded-2xl border border-border bg-muted/30 p-1">
                 {(['Grade A', 'Grade B', 'Grade C'] as ColonyGrade[]).map((grade) => (
                   <button
                     key={grade}
@@ -241,7 +245,7 @@ const HpaOptimizer: React.FC = () => {
                     onClick={() => setColonyGrade(grade)}
                     className={cn(
                       'rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] transition-all',
-                      colonyGrade === grade ? 'bg-[#F4D03F] text-foreground' : 'text-muted-foreground hover:bg-[#F4D03F]/10',
+                      colonyGrade === grade ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-primary/10',
                     )}
                   >
                     {grade}
@@ -257,7 +261,7 @@ const HpaOptimizer: React.FC = () => {
                   value: targetFpa.toFixed(1),
                   hint: 'Frames per acre',
                   icon: Scale,
-                  accent: 'text-[#1B9157]',
+                  accent: 'text-primary',
                 },
                 {
                   label: 'Required Hives',
@@ -271,12 +275,12 @@ const HpaOptimizer: React.FC = () => {
                   value: `${attainment.toFixed(0)}%`,
                   hint: `${shortfall} hive shortfall`,
                   icon: Target,
-                  accent: shortfall > 0 ? 'text-red-600' : 'text-[#1B9157]',
+                  accent: shortfall > 0 ? 'text-destructive' : 'text-primary',
                 },
               ].map((card) => (
-                <div key={card.label} className={cn(glass.card, 'p-6')}>
+                <div key={card.label} className={cn(glass.card, 'p-6 bg-muted/5')}>
                   <div className="flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/ bg-muted/">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card">
                       <card.icon className={cn('h-5 w-5', card.accent)} />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">{card.label}</span>
@@ -290,14 +294,14 @@ const HpaOptimizer: React.FC = () => {
             </div>
 
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-border/ bg-muted/ p-5">
+              <div className="rounded-2xl border border-border bg-muted/20 p-5">
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Current deployment</p>
                 <p className="mt-3 text-3xl font-black tracking-tight text-foreground">{currentHpa.toFixed(2)}</p>
                 <p className="mt-2 text-xs text-muted-foreground">Hives per acre with the current apiary inventory.</p>
               </div>
-              <div className="rounded-2xl border border-border/ bg-[#1A1A1A] p-5 text-white">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Planning note</p>
-                <p className="mt-3 text-sm leading-relaxed">
+              <div className="rounded-2xl border border-border bg-primary/5 p-5">
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary/70">Planning note</p>
+                <p className="mt-3 text-sm leading-relaxed font-medium">
                   {shortfall > 0
                     ? `Add ${shortfall} more hive${shortfall === 1 ? '' : 's'} or increase frame strength to hit the target pollination density.`
                     : 'Current hive inventory is already meeting or exceeding the target density for this crop profile.'}
@@ -320,4 +324,3 @@ const HpaOptimizer: React.FC = () => {
 };
 
 export default HpaOptimizer;
-

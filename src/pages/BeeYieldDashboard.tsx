@@ -374,8 +374,8 @@ const BeeYieldDashboard: React.FC = () => {
             case 'site-map': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-planning-ai': return <PollinationPlanning isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-planning': return <PollinationEngine onTabChange={handleTabChange} embedded={true} />;
-            case 'saturation-math': return <SpatialCoverageView />;
-            case 'hpa-optimizer': return <HpaOptimizer />;
+            case 'saturation-math': return <SpatialCoverageView embedded={true} />;
+            case 'hpa-optimizer': return <HpaOptimizer embedded={true} />;
             case 'pollination-lookup': return <PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'pollination-analytics': return <PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'foraging-optimizer': return <ForagingOptimizer onTabChange={handleTabChange} />;
@@ -405,7 +405,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'harvests': return <HarvestsView onTabChange={handleTabChange} />;
             case 'flight-map': return <FlightMapView />;
 
-            case 'varroa': return <VarroaView />;
+            case 'varroa': return <VarroaView embedded={true} />;
             case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} embedded={true} />;
             case 'acoustic-spectral': return <AcousticSpectralView onTabChange={handleTabChange} embedded={true} />;
             case 'sound-analysis':
