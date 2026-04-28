@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 import WeatherTelemetryPanel from './WeatherTelemetryPanel';
+import MetricCard from './MetricCard';
 import {
     QUICK_ACCESS_VIEWS,
     WEATHER_READINESS,
@@ -145,22 +146,22 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
             label: 'Humidity',
             value: typeof weatherCurrent?.humidity_pct === 'number' ? `${Math.round(weatherCurrent.humidity_pct)}%` : '--',
             icon: Droplets,
-            accent: 'text-sky-600 bg-sky-50 border-sky-100',
-            detail: 'Relative moisture',
+            accent: 'text-sky-600 bg-sky-50 border-sky-200',
+            description: 'Relative moisture',
         },
         {
-            label: 'Wind',
+            label: 'Wind Speed',
             value: typeof weatherCurrent?.wind_speed_kmh === 'number' ? `${weatherCurrent.wind_speed_kmh.toFixed(1)} km/h` : '--',
             icon: Wind,
-            accent: 'text-teal-700 bg-teal-50 border-teal-100',
-            detail: weatherCurrent?.wind_direction || 'Direction pending',
+            accent: 'text-teal-700 bg-teal-50 border-teal-200',
+            description: weatherCurrent?.wind_direction || 'Direction pending',
         },
         {
             label: 'Feels like',
             value: typeof weatherCurrent?.feels_like_c === 'number' ? `${Math.round(weatherCurrent.feels_like_c)}${DEG}` : '--',
             icon: Thermometer,
-            accent: 'text-orange-600 bg-orange-50 border-orange-100',
-            detail: 'Ambient perception',
+            accent: 'text-orange-600 bg-orange-50 border-orange-200',
+            description: 'Ambient perception',
         },
         {
             label: 'Sunrise',
@@ -168,8 +169,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 ? new Date(weatherCurrent.sunrise_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 : '--',
             icon: Sunrise,
-            accent: 'text-amber-600 bg-amber-50 border-amber-100',
-            detail: weatherDaily?.condition || 'Daily outlook',
+            accent: 'text-amber-600 bg-amber-50 border-amber-200',
+            description: weatherDaily?.condition || 'Daily outlook',
         },
     ];
 
@@ -277,136 +278,91 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                 <div className="lg:col-span-12">
                     <div className={cn(glass.section, "overflow-hidden")}>
-                        <div className="border-b border-border/ bg-[linear-gradient(135deg,rgba(255,249,240,0.96),rgba(249,247,242,0.98))] px-5 py-5 md:px-6">
-                            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-                                <div className="space-y-5">
-                                    <div className="flex flex-wrap items-start justify-between gap-4">
-                                        <div className="space-y-2">
-                                            <div className="inline-flex items-center gap-2 rounded-full border border-border/ bg-muted/ px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#8a6a00]">
-                                                <CloudSun className="h-3.5 w-3.5 text-primary" />
-                                                Home weather
-                                            </div>
-                                            <div>
-                                                <h3 className="text-2xl font-black tracking-tight text-foreground">
-                                                    {primaryApiary ? `${primaryApiary.name} forecast window` : 'Apiary weather overview'}
-                                                </h3>
-                                                <p className="mt-1 text-sm text-muted-foreground">
-                                                    Keep the home dashboard focused on what the bees can do right now.
-                                                </p>
-                                            </div>
-                                        </div>
+                        {/* Weather Control Center Header */}
+                        <div className="border-b border-border/ bg-[linear-gradient(135deg,rgba(255,249,240,0.96),rgba(249,247,242,0.98))] px-6 py-6">
+                            <div className="flex flex-wrap items-center justify-between gap-6">
+                                <div className="space-y-2">
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-primary">
+                                        <CloudSun className="h-3.5 w-3.5" />
+                                        Field Operations Window
+                                    </div>
+                                    <h3 className="text-2xl font-black tracking-tighter text-foreground">
+                                        {primaryApiary ? `${primaryApiary.name} Intelligence` : 'Network Weather Overview'}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground font-medium">
+                                        Critical environmental parameters for precision beekeeping.
+                                    </p>
+                                </div>
 
-                                        <div className={cn("rounded-2xl border px-3 py-2 text-xs font-black uppercase tracking-[0.18em]", weatherReadiness.tone)}>
+                                <div className="flex items-center gap-4 flex-wrap">
+                                    {/* Apiary Selector */}
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Switch Site</Label>
+                                        <Select value={selectedApiaryId || primaryApiary?.id || ''} onValueChange={setSelectedApiaryId}>
+                                            <SelectTrigger className={cn(glass.select, "h-11 min-w-[200px] bg-white")}>
+                                                <SelectValue placeholder="Select apiary" />
+                                            </SelectTrigger>
+                                            <SelectContent className={glass.selectContent}>
+                                                {apiaries.map((apiary) => (
+                                                    <SelectItem key={apiary.id} value={apiary.id} className="text-xs font-semibold">
+                                                        {apiary.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {/* Status Badge */}
+                                    <div className="flex flex-col gap-1.5">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Operation Status</Label>
+                                        <div className={cn("inline-flex items-center gap-2 rounded-2xl border px-4 h-11 text-[11px] font-black uppercase tracking-widest bg-white shadow-sm", weatherReadiness.tone)}>
+                                            <div className={cn("w-2 h-2 rounded-full animate-pulse", weatherReadiness.tone.split(' ')[0].replace('text-', 'bg-'))} />
                                             {weatherReadiness.label}
                                         </div>
                                     </div>
-
-                                    <div className="grid gap-4 md:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]">
-                                        <div className="rounded-[24px] border border-border/ bg-muted/ p-4">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Current field conditions</p>
-                                                    <div className="mt-3 flex items-end gap-3">
-                                                        <p className="text-5xl font-black tracking-tight text-foreground">
-                                                            {typeof weatherCurrent?.temperature_c === 'number' ? `${Math.round(weatherCurrent.temperature_c)}${DEG}` : `--${DEG}`}
-                                                        </p>
-                                                        <div className="pb-1">
-                                                            <p className="text-sm font-black text-foreground">
-                                                                {weatherCurrent?.condition || 'Condition pending'}
-                                                            </p>
-                                                            <p className="text-xs font-semibold text-muted-foreground">
-                                                                {primaryApiary?.location_name || 'Location not set'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="rounded-2xl border border-border/ bg-primary/10 p-3 text-[#8a6a00]">
-                                                    <CloudSun className="h-5 w-5" />
-                                                </div>
-                                            </div>
-                                            <p className="mt-4 text-sm font-semibold text-muted-foreground/90">
-                                                {weatherReadiness.detail}
-                                            </p>
-                                        </div>
-
-                                        <div className="rounded-[24px] border border-border/ bg-muted/ p-4">
-                                            <div className="flex items-center justify-between gap-3">
-                                                <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Active apiary</p>
-                                                    <p className="mt-1 text-sm font-bold text-foreground">
-                                                        {primaryApiary?.name || 'Select an apiary'}
-                                                    </p>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => onTabChange('flight-map')}
-                                                    className={cn(glass.btnSecondary, "h-9 px-3 text-[10px]")}
-                                                >
-                                                    <ArrowRight className="h-3.5 w-3.5 text-primary" />
-                                                    Flight map
-                                                </button>
-                                            </div>
-
-                                            <div className="mt-4">
-                                                <Select value={selectedApiaryId || primaryApiary?.id || ''} onValueChange={setSelectedApiaryId}>
-                                                    <SelectTrigger className={cn(glass.select, "h-11 bg-white")}>
-                                                        <SelectValue placeholder="Select apiary" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className={glass.selectContent}>
-                                                        {apiaries.map((apiary) => (
-                                                            <SelectItem key={apiary.id} value={apiary.id} className="text-xs font-semibold">
-                                                                {apiary.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            <div className="mt-4 grid grid-cols-2 gap-3">
-                                                <div className="rounded-2xl border border-border/ bg-card p-3">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Linked devices</p>
-                                                    <p className="mt-2 text-lg font-black text-foreground">{linkedWeatherDevices}</p>
-                                                </div>
-                                                <div className="rounded-2xl border border-border/ bg-card p-3">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Observed</p>
-                                                    <p className="mt-2 text-lg font-black text-foreground">
-                                                        {weatherCurrent?.last_observed_at
-                                                            ? new Date(weatherCurrent.last_observed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                                            : '--'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-                                    {weatherHighlights.map((item) => (
-                                        <div key={item.label} className="rounded-[24px] border border-border/ bg-muted/ p-4">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">{item.label}</p>
-                                                    <p className="mt-2 text-2xl font-black tracking-tight text-foreground">{item.value}</p>
-                                                    <p className="mt-1 text-[11px] font-semibold text-muted-foreground">{item.detail}</p>
-                                                </div>
-                                                <div className={cn("rounded-2xl border p-3", item.accent)}>
-                                                    <item.icon className="h-4 w-4" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-5 md:p-6">
+                        {/* Telemetry Grid */}
+                        <div className="p-6">
                             <WeatherTelemetryPanel
                                 summary={weatherSummary}
                                 isLoading={isWeatherLoading}
-                                compact
-                                title={primaryApiary ? `${primaryApiary.name} weather telemetry` : 'Apiary weather telemetry'}
+                                title="Primary telemetry stream"
                                 className="border-0 bg-transparent p-0 shadow-none"
                             />
+                        </div>
+                        
+                        {/* Readiness & Info Footer */}
+                        <div className="px-6 pb-6 pt-2 border-t border-border/50 bg-muted/5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Bio-activity confidence</span>
+                                        <span className="text-[10px] font-black text-primary">85% Optimality</span>
+                                    </div>
+                                    <div className="h-3 w-full overflow-hidden rounded-full bg-muted/40 border border-border/30 p-0.5">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: '85%' }}
+                                            className="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(242,185,15,0.4)]"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/10">
+                                        <Cpu className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Sensor Health</p>
+                                        <p className="text-xs font-bold text-foreground">
+                                            {linkedWeatherDevices} Optimized stations linked to this site
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -177,7 +177,10 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
                     </div>
                 </div>
 
-                <div className="grid gap-4 grid-cols-2 md:grid-cols-4 xl:grid-cols-4">
+                <div className={cn(
+                    "grid gap-4 grid-cols-2",
+                    compact ? "xl:grid-cols-2" : "md:grid-cols-4 xl:grid-cols-4"
+                )}>
                     <MetricCard
                         icon={<Droplets />}
                         label="Humidity"

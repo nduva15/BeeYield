@@ -1,47 +1,75 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { LucideIcon, TrendingUp } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
+import { glass } from './GlassTheme';
 
 interface MetricCardProps {
     title?: string;
+    label?: string; // Support both naming conventions
     value: string | number;
     trend?: string;
-    description: string;
-    icon: LucideIcon;
+    description?: string;
+    detail?: string; // Support both naming conventions
+    icon: LucideIcon | React.ReactNode;
+    accent?: string;
     className?: string;
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({
     title,
+    label,
     value,
     trend,
     description,
+    detail,
     icon: Icon,
+    accent,
     className
 }) => {
-    return (
-        <div className={cn("bg-card border-2 border-black rounded-none p-6 relative overflow-hidden group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-none", className)}>
-            <div className="flex justify-between items-start mb-6">
-                <div className="p-3 bg-card text-foreground rounded-none">
-                    <Icon className="w-6 h-6" />
-                </div>
-                {trend && (
-                    <div className="flex items-center gap-1 text-foreground bg-[#FF4F00] px-2 py-1 border-2 border-black font-black text-[10px]">
-                        <TrendingUp className="w-3 h-3" />
-                        {trend}
-                    </div>
-                )}
-            </div>
+    const displayLabel = label || title;
+    const displayDetail = detail || description;
 
-            <div className="space-y-2">
-                <h3 className="text-4xl font-black text-foreground tracking-tighter leading-none">{value}</h3>
-                <p className="text-neutral-500 text-[10px] font-bold">
-                    {description}
-                </p>
+    return (
+        <div className={cn(
+            glass.card,
+            "flex flex-col h-full transition-all duration-300 hover:border-primary/30 min-h-[140px]",
+            className
+        )}>
+            <div className="flex items-center justify-between mb-4 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground/70">
+                    {displayLabel}
+                </span>
+                <div className={cn(
+                    "p-2 rounded-lg shrink-0",
+                    accent || "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(242,185,15,0.1)]"
+                )}>
+                    {React.isValidElement(Icon) ? (
+                        React.cloneElement(Icon as React.ReactElement, { className: "h-4 w-4" })
+                    ) : (
+                        Icon && <Icon className="h-4 w-4" />
+                    )}
+                </div>
+            </div>
+            
+            <div className="flex-1 flex flex-col justify-end">
+                <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-black tracking-tighter text-foreground tabular-nums">
+                        {value}
+                    </span>
+                    {trend && (
+                        <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+                            {trend}
+                        </span>
+                    )}
+                </div>
+                {displayDetail && (
+                    <p className="text-[10px] font-bold text-muted-foreground/60 mt-2 uppercase tracking-wider line-clamp-1">
+                        {displayDetail}
+                    </p>
+                )}
             </div>
         </div>
     );
 };
 
 export default MetricCard;
-
