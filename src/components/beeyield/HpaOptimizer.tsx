@@ -93,7 +93,7 @@ const HpaOptimizer: React.FC<HpaOptimizerProps> = ({ embedded = false }) => {
 
   const densityMultiplier = treeDensity === 'high' ? 1.15 : treeDensity === 'low' ? 0.9 : 1;
   const adjustedTreesPerAcre = Math.round(treesPerAcre * densityMultiplier);
-  const targetFpa = resolveTargetFpa(variety || activeApiary?.forage_type, cropRequirements);
+  const targetFpa = resolveTargetFpa(variety || activeApiary?.forage_type, cropRequirements) || 8;
   const framesPerHive = selectedRequirement?.target_frames_per_hive || framesByGrade[colonyGrade];
   const requiredHives = Math.max(1, Math.ceil((acreage * targetFpa) / Math.max(1, framesPerHive)));
   const recommendedHpa = requiredHives / Math.max(1, acreage);

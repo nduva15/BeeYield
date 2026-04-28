@@ -23,7 +23,8 @@ import {
     Sparkles,
     Wand2,
     FlaskConical,
-    Leaf
+    Leaf,
+    Activity
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -38,7 +39,8 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    Legend
+    Legend,
+    ReferenceLine
 } from 'recharts';
 import {
     runTrajectory,
@@ -259,7 +261,10 @@ const VarroaView: React.FC<VarroaViewProps> = ({ embedded = false }) => {
              risk: point.scenarioRisk,
              brood: point.allBrood,
              infestation: point.infectionPer100,
-             alcoholWash: point.alcoholWash
+             alcoholWash: point.alcoholWash,
+             miteFall: point.dailyMiteFall,
+             population: point.adultBees,
+             treatment: point.treatmentEffect,
         }));
     }, [simulationResult]);
 
@@ -351,96 +356,128 @@ const VarroaView: React.FC<VarroaViewProps> = ({ embedded = false }) => {
                         </div>
                     </section>
 
-                    {/* Chart Section */}
-                    <section className={cn(glass.card, 'p-6')}>
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 className="text-xl font-black tracking-tight">Predictive Trajectory</h3>
-                                <p className="text-sm text-foreground/60">Simulated mite growth over {simInputs.simulationDays} days</p>
+                    {/* Multi-Chart Section */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Primary Population Chart */}
+                        <section className={cn(glass.card, 'p-6')}>
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-black tracking-tight">Mite Population</h3>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">Total simulation load</p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                                        <span className="text-[10px] font-bold uppercase text-foreground/40">Mites</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-orange-400" />
+                                        <span className="text-[10px] font-bold uppercase text-foreground/40">Brood</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-blue-500" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">Mites</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-orange-400" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">Brood</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">Risk %</span>
-                                </div>
+                            <div className="h-[280px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                                        <XAxis dataKey="day" hide />
+                                        <YAxis stroke="rgba(0,0,0,0.4)" fontSize={10} tickLine={false} axisLine={false} />
+                                        <Tooltip contentStyle={{ backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: '16px', border: 'none', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }} />
+                                        <Line type="monotone" dataKey="mites" stroke="#3b82f6" strokeWidth={3} dot={false} />
+                                        <Line type="monotone" dataKey="brood" stroke="#fb923c" strokeWidth={2} strokeDasharray="4 4" dot={false} />
+                                    </LineChart>
+                                </ResponsiveContainer>
                             </div>
-                        </div>
+                        </section>
 
-                        <div className="h-[400px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                                    <XAxis
-                                        dataKey="day"
-                                        stroke="rgba(0,0,0,0.4)"
-                                        fontSize={10}
-                                        tickLine={false}
-                                        axisLine={false}
-                                        tickFormatter={(val) => `D${val}`}
-                                    />
-                                    <YAxis
-                                        yAxisId="left"
-                                        stroke="rgba(0,0,0,0.4)"
-                                        fontSize={10}
-                                        tickLine={false}
-                                        axisLine={false}
-                                    />
-                                    <YAxis
-                                        yAxisId="right"
-                                        orientation="right"
-                                        stroke="rgba(0,0,0,0.4)"
-                                        fontSize={10}
-                                        tickLine={false}
-                                        axisLine={false}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: 'rgba(255,255,255,0.9)',
-                                            borderRadius: '20px',
-                                            border: 'none',
-                                            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                                            padding: '12px 16px'
-                                        }}
-                                        labelStyle={{ fontWeight: 'black', marginBottom: '4px' }}
-                                    />
-                                    <Line
-                                        yAxisId="left"
-                                        type="monotone"
-                                        dataKey="mites"
-                                        stroke="#3b82f6"
-                                        strokeWidth={3}
-                                        dot={false}
-                                        activeDot={{ r: 6, fill: '#3b82f6', stroke: '#fff' }}
-                                    />
-                                    <Line
-                                        yAxisId="left"
-                                        type="monotone"
-                                        dataKey="brood"
-                                        stroke="#fb923c"
-                                        strokeWidth={2}
-                                        strokeDasharray="4 4"
-                                        dot={false}
-                                    />
-                                    <Line
-                                        yAxisId="right"
-                                        type="monotone"
-                                        dataKey="risk"
-                                        stroke="#ef4444"
-                                        strokeWidth={3}
-                                        dot={false}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </section>
+                        {/* Infestation & Risk Chart */}
+                        <section className={cn(glass.card, 'p-6')}>
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-black tracking-tight">Infestation Index</h3>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">Risk % vs Exposure</p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                                        <span className="text-[10px] font-bold uppercase text-foreground/40">Risk</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+                                        <span className="text-[10px] font-bold uppercase text-foreground/40">Infection</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="h-[280px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                                        <XAxis dataKey="day" hide />
+                                        <YAxis stroke="rgba(0,0,0,0.4)" fontSize={10} tickLine={false} axisLine={false} />
+                                        <Tooltip contentStyle={{ backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: '16px', border: 'none' }} />
+                                        <Line type="monotone" dataKey="risk" stroke="#ef4444" strokeWidth={3} dot={false} />
+                                        <Line type="monotone" dataKey="infection" stroke="#a855f7" strokeWidth={2} dot={false} />
+                                        <ReferenceLine y={3} stroke="#ef4444" strokeDasharray="3 3" label={{ value: 'Threshold', position: 'insideRight', fill: '#ef4444', fontSize: 10 }} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </section>
+
+                        {/* Daily Mite Fall */}
+                        <section className={cn(glass.card, 'p-6')}>
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-black tracking-tight">Daily Mite Fall</h3>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">Sticky board proxy</p>
+                                </div>
+                                <div className="p-2 rounded-xl bg-orange-500/10 text-orange-600">
+                                    <History className="w-4 h-4" />
+                                </div>
+                            </div>
+                            <div className="h-[280px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                                        <XAxis dataKey="day" hide />
+                                        <YAxis stroke="rgba(0,0,0,0.4)" fontSize={10} tickLine={false} axisLine={false} />
+                                        <Tooltip contentStyle={{ backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: '16px', border: 'none' }} />
+                                        <Line type="stepAfter" dataKey="miteFall" stroke="#f97316" strokeWidth={3} dot={false} fill="url(#colorFall)" />
+                                        <defs>
+                                            <linearGradient id="colorFall" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#f97316" stopOpacity={0.1}/>
+                                                <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                                            </linearGradient>
+                                        </defs>
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </section>
+
+                        {/* Colony Population */}
+                        <section className={cn(glass.card, 'p-6')}>
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-black tracking-tight">Colony Vitality</h3>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">Adult bee population</p>
+                                </div>
+                                <div className="p-2 rounded-xl bg-[#1B9157]/10 text-[#1B9157]">
+                                    <Activity className="w-4 h-4" />
+                                </div>
+                            </div>
+                            <div className="h-[280px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                                        <XAxis dataKey="day" hide />
+                                        <YAxis domain={['auto', 'auto']} stroke="rgba(0,0,0,0.4)" fontSize={10} tickLine={false} axisLine={false} />
+                                        <Tooltip contentStyle={{ backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: '16px', border: 'none' }} />
+                                        <Line type="monotone" dataKey="population" stroke="#16a34a" strokeWidth={3} dot={false} />
+                                        <Line type="monotone" dataKey="treatment" stroke="#3b82f6" strokeWidth={1} strokeDasharray="3 3" dot={false} hide={simInputs.treatmentType === 'None'} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </section>
+                    </div>
 
                     {/* Simulation Parameters */}
                     <section className={cn(glass.card, 'p-6')}>

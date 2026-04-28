@@ -327,7 +327,7 @@ function buildSimulationAdjustments(inputs: VarroaModelInputs, runIndex: number)
     };
 }
 
-function runTrajectory(inputs: VarroaModelInputs, adjustments: SimulationAdjustments): SimulationCoreOutput {
+export function runTrajectory(inputs: VarroaModelInputs, adjustments: SimulationAdjustments): SimulationCoreOutput {
     const strengthFactor = strengthFactorMap[inputs.colonyStrength];
     const reinvasionFactor = reinvasionFactorMap[inputs.reinvasionPressure];
     const hygieneFactor = hygieneFactorMap[inputs.hygieneProfile];
@@ -511,7 +511,7 @@ function runTrajectory(inputs: VarroaModelInputs, adjustments: SimulationAdjustm
     };
 }
 
-function calculateTreatmentWindows(timeline: VarroaModelPoint[], treatmentProfile: TreatmentProfile) {
+export function calculateTreatmentWindows(timeline: VarroaModelPoint[], treatmentProfile: TreatmentProfile) {
     return timeline
         .slice(0, Math.max(timeline.length - 7, 1))
         .map((point, index) => {
