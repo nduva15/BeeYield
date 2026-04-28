@@ -15,7 +15,7 @@ type LocalEntity = { id: string; created_at?: string; updated_at?: string };
  * The product requirement is: no mock/demo/local fallback data.
  * Keep helper functions for minimal diff, but make them no-ops.
  */
-const DISABLE_LOCAL_FALLBACK = true;
+const DISABLE_LOCAL_FALLBACK = import.meta.env.PROD || true;
 
 const LS_KEYS = {
     apiaries: 'beeyield_local_apiaries_v1',

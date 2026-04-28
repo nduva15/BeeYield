@@ -1,4 +1,5 @@
-import React from 'react';
+﻿import React from 'react';
+import ErrorBoundary from '@/components/beeyield/ErrorBoundary';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
@@ -350,6 +351,14 @@ const BeeYieldDashboard: React.FC = () => {
     ], []);
 
     const renderContent = () => {
+        return (
+            <ErrorBoundary>
+                {renderBaseContent()}
+            </ErrorBoundary>
+        );
+    };
+
+    const renderBaseContent = () => {
         switch (activeTab) {
             case 'home': return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'assistant': return <LovableBeeYieldAI />;
