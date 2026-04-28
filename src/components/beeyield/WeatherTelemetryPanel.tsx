@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { glass } from './GlassTheme';
+import { Badge } from '@/components/ui/badge';
 import { ApiaryWeatherSummary, WeatherMetricSource } from '@/services/beeyieldService';
 
 const DEG = '\u00B0';
