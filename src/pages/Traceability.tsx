@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award,
+  QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award, ClipboardList,
   CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock as LockIcon, FileDown, Wheat, TreePine, Scale, Cpu,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -296,12 +296,12 @@ const Traceability = () => {
   }, [traceData]);
 
   const traceabilityFeatures = [
-    { icon: Home, label: "Hive Location", description: "Know exactly which hive your honey came from" },
-    { icon: Users, label: "Beekeeper", description: "Meet the guardian who nurtured your honey" },
-    { icon: Leaf, label: "Flower Source", description: "Discover the blooms that flavored your jar" },
-    { icon: Droplets, label: "Water Source", description: "Trace the pure water that sustained the colony" },
-    { icon: MapPin, label: "Geographic Origin", description: "GPS coordinates of every harvest" },
-    { icon: Calendar, label: "Harvest Date", description: "Know when your honey was collected" },
+    { icon: MapPin, label: "Hive-to-Jar Tracking", description: "GPS-verified tracking of every honey batch from apiary to shelf — in real time" },
+    { icon: Calendar, label: "Digital Harvest Logbooks", description: "Timestamped records of every harvest with moisture levels, weights, and inspector data" },
+    { icon: Shield, label: "Compliance Records", description: "Automatically generated audit-ready documentation for food safety and export standards" },
+    { icon: Globe, label: "GPS-verified Apiaries", description: "Precise coordinates logged for every apiary, hive, and harvest activity" },
+    { icon: LockIcon, label: "Immutable Audit Trail", description: "Complete chain-of-custody showing who harvested what, when, and where — permanently recorded" },
+    { icon: Leaf, label: "Field Condition Logging", description: "Real-time weather, flora, and colony health data captured where the work actually happens" },
   ];
 
   const growthMilestone = companyStory?.milestones?.find((milestone) => /hives/i.test(milestone.title) || /hives/i.test(milestone.description));
@@ -347,50 +347,65 @@ const Traceability = () => {
           ]
         }}
       />
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden py-24 sm:py-32">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(circle_at_20%_80%,#ecfdf5_0%,transparent_50%)] opacity-40 pointer-events-none" />
+      {/* ─── HERO ─── */}
+      <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/80 to-white/95" />
 
-          {/* Vertical Text Accent */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1 }}
-            className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
-          >
-            <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-              Provenance
-            </span>
-          </motion.div>
-        </div>
-
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 text-[#1B9157] text-[11px] font-black mb-8 border border-green-100 shadow-sm"
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+            <motion.img
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              src={LOGO}
+              alt="BeeYield Logo"
+              className="h-24 md:h-36 w-auto mb-12 drop-shadow-2xl"
+            />
+            <Badge className="mb-6 bg-amber-500/10 text-amber-700 border-amber-200 px-5 py-2 font-semibold text-[10px] rounded-full backdrop-blur-sm">
+              Verified Harvest Operations
+            </Badge>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-6xl font-bold mb-8 tracking-tight text-neutral-900"
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Verified Harvest System
+              Verified Honey. <br />
+              <span className="text-beeyield-green">Traced</span> from Hive.
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto"
+            >
+              BeeYield delivers GPS-verified honey provenance, timestamped harvest entries, and audit-ready compliance in one platform — designed for real field conditions, not paperwork.
+            </motion.p>
+
+            {/* Stats Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap items-center justify-center gap-4 md:gap-6"
+            >
+              {[
+                { value: "100%", label: "GPS-Verified" },
+                { value: "Real-Time", label: "Field Tracking" },
+                { value: "Audit-Ready", label: "Compliance" },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + i * 0.1 }}
+                  className="flex items-center gap-3 px-5 py-3 bg-white border border-neutral-100 rounded-2xl shadow-sm"
+                >
+                  <span className="text-xl font-bold text-beeyield-green">{stat.value}</span>
+                  <span className="text-[11px] font-bold text-neutral-500">{stat.label}</span>
+                </motion.div>
+              ))}
             </motion.div>
-
-            <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
-              Authentic <span className="text-[#F4D03F]">Honey.</span> <br />
-              <span className="text-[#1B9157]">See</span> the Harvest.
-            </h1>
-
-            <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed font-medium">
-              See the records for yourself. Every jar of BeeYield is backed by permanent harvest data, including exact moisture levels and hive health.
-            </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -1410,6 +1425,121 @@ const Traceability = () => {
           </div>
         </div>
       </div>
+
+      {/* ─── SUBTITLE & BLURB ─── */}
+      <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-24">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">Built for Field Reality</Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-4">
+              Traceability Built for <span className="text-beeyield-green">Real</span> Beekeeping
+            </h2>
+            <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
+            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              BeeYield's verified operations platform captures real harvest data where it happens — with GPS verification, instant logging, and automatic compliance documentation for every jar.
+            </p>
+          </div>
+
+          {/* ─── FEATURES GRID ─── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {traceabilityFeatures.map((feature, index) => (
+              <motion.div
+                key={feature.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group bg-white p-10 rounded-[2rem] border border-neutral-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-xl hover:border-beeyield-green/20 transition-all duration-500"
+              >
+                <div className="mb-10 inline-flex items-center justify-center p-6 bg-neutral-50 rounded-3xl group-hover:bg-beeyield-green/10 transition-colors text-beeyield-green">
+                  <feature.icon className="h-7 w-7" />
+                </div>
+                <h3 className="text-xl font-bold text-neutral-900 mb-5 tracking-tight">{feature.label}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── HOW IT WORKS ─── */}
+      <section className="py-32 bg-neutral-50/50 border-y border-neutral-100 relative">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-24">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+              Traceability Process
+            </Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-4">How It Works</h2>
+            <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
+            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">From hive to jar, every step is verified and permanently recorded.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {[
+              { step: "1", title: "Record Harvest", desc: "Log field activities with GPS location, timestamp, moisture levels, and harvest weight.", icon: ClipboardList },
+              { step: "2", title: "Verify Provenance", desc: "Confirm every batch is GPS-verified with hive origin, flora source, and colony health data.", icon: ShieldCheck },
+              { step: "3", title: "Generate Logbooks", desc: "Create comprehensive digital records with the full operational history of each batch.", icon: FileDown },
+              { step: "4", title: "Audit-Ready Reports", desc: "Get compliance documentation ready for regulatory review, export certification, or customer inquiry.", icon: Award },
+            ].map((item, index) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white p-12 rounded-[2.5rem] border border-neutral-100 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] hover:border-beeyield-green/20 transition-all duration-500 group text-center"
+              >
+                <div className="mb-10 inline-flex items-center justify-center p-6 bg-neutral-50 rounded-3xl group-hover:bg-beeyield-green/10 transition-colors text-beeyield-green relative">
+                  <item.icon className="h-7 w-7" />
+                  <div className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-neutral-900 text-white text-[10px] font-bold flex items-center justify-center shadow-md">
+                    {item.step}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-neutral-900 mb-5 tracking-tight">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA ─── */}
+      <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-6">
+              Get Started with <br />
+              <span className="text-beeyield-green">Verified</span> Honey Traceability
+            </h2>
+            <p className="text-lg text-white/70 leading-relaxed mb-12 max-w-2xl mx-auto">
+              Deploy BeeYield's hive-to-jar traceability, GPS-verified harvest records, and field logging system for compliance and operational confidence.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                onClick={() => {
+                  const traceSection = document.getElementById("qrCode");
+                  traceSection?.scrollIntoView({ behavior: "smooth" });
+                  traceSection?.focus();
+                }}
+                className="h-14 px-10 bg-neutral-900 text-beeyield-green font-bold text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20 border border-white/10"
+              >
+                <Search className="mr-2 h-4 w-4" />
+                Trace a Batch Now
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => navigate("/beeyield")}
+                className="h-14 px-10 border-neutral-200 text-neutral-900 font-bold text-xs rounded-2xl hover:bg-neutral-50 transition-all backdrop-blur-sm"
+              >
+                Explore BeeYield Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </BeeYieldPageShell>
   );
 };

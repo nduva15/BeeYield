@@ -35,15 +35,15 @@ import {
   Monitor,
   Package,
 } from "lucide-react";
-import { Product } from "@/services/shopService";
+import { CATALOG, Product } from "@/data/catalog";
+import { BrandedProductImage } from "@/components/BrandedProductImage";
 import { toast } from "sonner";
 import { submitNewsletterSubscription } from "@/services/contactService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
-// Education products from Shop
-const initialEducationProducts: Product[] = [
-  // ... existing products ...
-];
+// Canonical Education products from Catalog
+const educationProducts: Product[] = CATALOG.filter(p => p.category === 'education');
+
 
 // Stats data
 const stats = [
@@ -53,15 +53,7 @@ const stats = [
   { value: "24/7", label: "Access Available", icon: Monitor },
 ];
 
-// Partner logos (text placeholders)
-const partners = [
-  "AGRITECH INSTITUTE",
-  "GLOBAL HIVE ALLIANCE",
-  "APIARY SCIENCE LABS",
-  "UNIVERSITY OF AGRO",
-  "NATURE CONSERVANCY",
-  "BEE RESEARCH ORG",
-];
+
 
 // Workshop categories
 const workshops = [
@@ -79,7 +71,7 @@ const workshops = [
   },
   {
     title: "Specialization",
-    description: "Advanced courses for commercial apiaries and research",
+    description: "Advanced courses for commercial apiaries",
     icon: Award,
     color: "bg-blue-100 text-blue-700"
   },
@@ -114,30 +106,8 @@ const BeeLearn = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const { getProducts } = await import("@/services/shopService");
-        const eduData = await getProducts("education");
-        // Also check 'learn' category if 'education' is empty
-        let finalData = eduData;
-        if (!finalData || finalData.length === 0) {
-          finalData = await getProducts("learn");
-        }
-
-        if (finalData && finalData.length > 0) {
-          setProducts(finalData);
-        } else {
-          setProducts(initialEducationProducts); // Fallback to hardcoded if no data
-        }
-      } catch (error) {
-        console.error("Failed to fetch education products:", error);
-        setProducts(initialEducationProducts); // Fallback to hardcoded on error
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProducts();
+    // We use the data from CATALOG directly to ensure it matches the shop items
+    setProducts(educationProducts);
   }, []);
 
   // Handlers
@@ -491,29 +461,77 @@ const BeeLearn = () => {
               {/* Floating Product Card - Right Bottom */}
               <div className="absolute right-0 bottom-8 lg:-right-8 lg:bottom-16 bg-[#FFF9F0]/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 max-w-[220px] animate-in slide-in-from-right duration-700 delay-450">
                 <Badge className="mb-2 bg-amber-600 text-[#1A1A1A] text-[10px]">Best Seller</Badge>
-                <p className="font-bold text-neutral-900 text-sm mb-1">Commercial Apiary Management</p>
+                <p className="font-bold text-neutral-900 text-sm mb-1">{educationProducts.find(p => p.id === 'edu-8')?.name || 'Complete Beekeeper Bundle'}</p>
                 <p className="text-xs text-neutral-500 mb-2">Video Course + PDF Bundle</p>
-                <p className="text-xl font-black text-[#F4D03F]">KES 14,900</p>
+                <p className="text-xl font-black text-[#F4D03F]">KES {(educationProducts.find(p => p.id === 'edu-8')?.variants[0]?.price_kes || 15000).toLocaleString()}</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof - Partners */}
+      {/* SHOP BEELEARN SECTION - PDFs */}
       <section className="py-12 border-y border-neutral-100 bg-neutral-50/50">
         <div className="container mx-auto px-4">
-          <p className="text-center text-sm font-medium text-neutral-500 mb-8">
-            Curriculum accredited by leading agricultural institutes
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-16">
-            {partners.map((partner, index) => (
-              <span
-                key={index}
-                className="text-neutral-400 font-bold text-xs lg:text-sm hover:text-neutral-600 transition-colors cursor-default"
-              >
-                {partner}
-              </span>
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-black text-neutral-900 line-clamp-1">Shop <span className="text-[#1B9157]">BeeLearn</span></h2>
+              <p className="text-sm text-neutral-500 font-medium">Digital field guides and technical manuals</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link to="/shop" className="text-xs font-bold text-[#1B9157] hover:underline flex items-center mt-2 md:mt-0">
+                View all in Shop
+                <ChevronRight className="h-3 w-3 ml-1" />
+              </Link>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {educationProducts
+              .filter(p => 
+                p.variants[0]?.size.toLowerCase().includes('pdf') || 
+                p.badge?.toLowerCase().includes('digital') ||
+                p.id === 'edu-8'
+              )
+              .slice(0, 4)
+              .map((pdf) => (
+              <div key={pdf.id} className="bg-[#FAF9F6] rounded-[40px] p-2 border border-neutral-100 shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col h-full transform hover:-translate-y-1">
+                <div className="aspect-square rounded-[32px] overflow-hidden bg-[#E8E4D9] relative mb-2">
+                  <BrandedProductImage 
+                    src={pdf.images[0]} 
+                    alt={pdf.name} 
+                    category="education"
+                    className="w-full h-full" 
+                  />
+                  <div className="absolute top-3 right-3 flex flex-col gap-2 items-end z-20">
+                    <Badge className="bg-red-500 text-white text-[8px] font-black border-none px-2 py-0.5 rounded-lg shadow-lg uppercase tracking-wider">PDF GUIDE</Badge>
+                  </div>
+                </div>
+                
+                <div className="px-4 py-2 flex-grow">
+                  <h4 className="text-xs font-black text-neutral-900 mb-1 line-clamp-1 group-hover:text-[#F4D03F] transition-colors uppercase tracking-tight">{pdf.name}</h4>
+                  <p className="text-[9px] text-neutral-500 line-clamp-2 leading-relaxed mb-4 font-medium">{pdf.description}</p>
+                </div>
+
+                <div className="mt-auto px-4 pb-4 flex items-end justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Price</span>
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-bold text-neutral-900">KES</span>
+                      <span className="text-2xl font-black text-neutral-900 leading-none">
+                        {pdf.variants[0]?.price_kes?.toLocaleString() || "0"}
+                      </span>
+                    </div>
+                  </div>
+                  <Button 
+                    size="sm"
+                    onClick={() => handleAddToCart(pdf)}
+                    className="h-10 w-10 p-0 rounded-2xl bg-[#F4D03F] hover:bg-amber-400 text-[#1A1A1A] shadow-md transition-all duration-300"
+                  >
+                    <ShoppingCart className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -702,50 +720,76 @@ const BeeLearn = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {(products.length > 0 ? products : initialEducationProducts).map((product) => (
-                <Card key={product.id} className="group border-none shadow-xl shadow-amber-900/5 bg-[#FFF9F0] rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-amber-900/10 transition-all duration-500 flex flex-col h-full">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
-                    <img
+              {educationProducts.map((product) => (
+                <Card key={product.id} className="group border-none shadow-sm bg-[#FAF9F6] rounded-[40px] overflow-hidden hover:shadow-xl transition-all duration-500 flex flex-col h-full p-2">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-[#E8E4D9] rounded-[32px] mx-1 mt-1">
+                    <BrandedProductImage
                       src={product.images[0]}
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      category="education"
+                      className="w-full h-full"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                    <Badge className="absolute top-4 left-4 bg-[#FFF9F0]/90 backdrop-blur-md text-neutral-900 border-none font-bold text-[10px] px-3 py-1.5 rounded-xl shadow-sm">
-                      {product.badge}
-                    </Badge>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleWishlist({
-                          id: product.id,
-                          name: product.name,
-                          description: product.description,
-                          price: product.variants[0].price_kes,
-                          image: product.images[0],
-                          category: product.category,
-                          badge: product.badge || '',
-                          inStock: true
-                        });
-                      }}
-                      aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
-                      className={`absolute top-4 right-4 p-2.5 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 ${isInWishlist(product.id)
-                        ? "bg-[#F4D03F] text-[#1A1A1A]"
-                        : "bg-[#FFF9F0]/80 hover:bg-[#F4D03F] hover:text-[#1A1A1A] text-neutral-400 group-hover:opacity-100 opacity-0"
-                        }`}
-                    >
-                      <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
-                    </button>
+                    <div className="absolute inset-0 bg-black/5" />
+                    
+                    {/* Top Badges */}
+                    <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWishlist({
+                            id: product.id,
+                            name: product.name,
+                            description: product.description,
+                            price: product.variants[0].price_kes,
+                            image: product.images[0],
+                            category: product.category,
+                            badge: product.badge || '',
+                            inStock: true
+                          });
+                        }}
+                        className="p-2 rounded-full bg-white/80 backdrop-blur-md shadow-sm text-neutral-400 hover:text-red-500 transition-colors"
+                      >
+                        <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current text-red-500" : ""}`} />
+                      </button>
+                      
+                      <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-amber-100/50 shadow-sm">
+                        <CheckCircle className="h-3 w-3 text-[#F4D03F]" />
+                        <span className="text-[10px] font-bold text-neutral-900 whitespace-nowrap">Verified Quality</span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Image Badges */}
+                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                      <Badge className={`
+                        ${product.id === 'edu-1' ? 'bg-[#1B9157]' : 
+                          product.id === 'edu-2' ? 'bg-[#0A4D2E]' : 
+                          product.id === 'edu-3' ? 'bg-[#3182CE]' : 
+                          'bg-[#1B9157]'} 
+                        text-white border-none font-black text-[9px] px-3 py-1 rounded-lg uppercase tracking-wider
+                      `}>
+                        {product.id === 'edu-1' ? 'DIGITAL' : 
+                         product.id === 'edu-2' ? 'PROFESSIONAL' : 
+                         product.id === 'edu-3' ? 'VIDEO COURSE' : 
+                         'BESTSELLER'}
+                      </Badge>
+                      
+                      <div className="bg-[#E2F7ED] text-[#1B9157] text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157] animate-pulse" />
+                        In Stock
+                      </div>
+                    </div>
                   </div>
 
                   <CardContent className="p-6 flex flex-col flex-grow">
                     <div className="flex items-center gap-1 mb-3">
                       {renderStars(product.rating)}
-                      <span className="text-[10px] font-bold text-neutral-400 ml-1">({product.review_count})</span>
+                      <span className="text-[11px] font-bold text-neutral-500 ml-1">
+                        {product.rating} ({product.review_count})
+                      </span>
                     </div>
 
                     <div className="flex-grow mb-6">
-                      <h3 className="text-lg font-black text-neutral-900 mb-2 leading-tight group-hover:text-[#F4D03F] transition-colors">
+                      <h3 className="text-xl font-black text-neutral-900 mb-3 leading-[1.2] tracking-tight truncate">
                         {product.name}
                       </h3>
                       <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed font-medium">
@@ -753,19 +797,29 @@ const BeeLearn = () => {
                       </p>
                     </div>
 
-                    <div className="mt-auto pt-6 border-t border-neutral-50 flex items-center justify-between">
-                      <div>
-                        <p className="text-[10px] text-neutral-400 font-bold mb-0.5">Price</p>
-                        <p className="text-xl font-black text-[#F4D03F]">
-                          {formatPrice(product.variants[0].price_kes)}
-                        </p>
+                    <div className="bg-neutral-50/50 rounded-2xl p-3 mb-6 flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest px-1">Edition:</span>
+                      <span className="text-[11px] font-black text-neutral-900 bg-white px-3 py-1 rounded-lg shadow-sm border border-neutral-100">
+                        {product.variants[0]?.size || "Digital Access"}
+                      </span>
+                    </div>
+
+                    <div className="mt-auto flex items-end justify-between gap-4">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Price</span>
+                        <div className="flex flex-col">
+                          <span className="text-[11px] font-bold text-neutral-900">KES</span>
+                          <span className="text-2xl font-black text-neutral-900 leading-none">
+                            {product.variants[0]?.price_kes?.toLocaleString() || "0"}
+                          </span>
+                        </div>
                       </div>
                       <Button
-                        size="sm"
                         onClick={() => handleAddToCart(product)}
-                        className="h-10 w-10 p-0 rounded-2xl bg-neutral-900 hover:bg-amber-600 text-[#1A1A1A] shadow-lg shadow-neutral-900/10 transition-all duration-300"
+                        className="h-14 flex-grow bg-[#F4D03F] hover:bg-amber-400 text-[#1A1A1A] font-black rounded-2xl shadow-[0_8px_20px_-8px_rgba(244,208,63,0.6)] transform active:scale-95 transition-all text-xs"
                       >
-                        <ShoppingCart className="h-4 w-4" />
+                        <ShoppingCart className="h-5 w-5 mr-2" />
+                        ADD TO CART
                       </Button>
                     </div>
                   </CardContent>

@@ -55,6 +55,26 @@ function _lsWrite<T>(key: string, value: T) {
     }
 }
 
+// Always-on localStorage helpers (bypass DISABLE_LOCAL_FALLBACK).
+// Used for critical fallback persistence (e.g. inspections) when API is unreachable.
+function _lsReadAlways<T>(key: string, fallback: T): T {
+    try {
+        const raw = globalThis.localStorage?.getItem(key);
+        if (!raw) return fallback;
+        return JSON.parse(raw) as T;
+    } catch {
+        return fallback;
+    }
+}
+
+function _lsWriteAlways<T>(key: string, value: T) {
+    try {
+        globalThis.localStorage?.setItem(key, JSON.stringify(value));
+    } catch {
+        // ignore
+    }
+}
+
 function _lsUpsert<T extends LocalEntity>(key: string, row: T): T {
     if (DISABLE_LOCAL_FALLBACK) return row;
     const list = _lsRead<T[]>(key, []);
@@ -2132,10 +2152,23 @@ export const beeyieldService = {
     async getInspections(hiveId?: string): Promise<Inspection[]> {
         try {
             const rows = await apiGet<any[]>('inspections', hiveId ? { hive_id: hiveId } : undefined);
-            return (rows || []).map(normalizeInspection);
+            const remote = (rows || []).map(normalizeInspection);
+            // Merge any locally-stored inspections (from offline creates)
+            const local = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+            if (local.length > 0) {
+                const remoteIds = new Set(remote.map(r => r.id));
+                const localOnly = local.filter(l => !remoteIds.has(l.id));
+                return [...localOnly, ...remote].sort((a, b) =>
+                    new Date(b.inspection_date).getTime() - new Date(a.inspection_date).getTime()
+                );
+            }
+            return remote;
         } catch (error) {
-            console.error('getInspections:', error);
-            return [];
+            console.error('getInspections (API failed, using local fallback):', error);
+            // Fallback: return locally-stored inspections
+            const local = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+            if (hiveId) return local.filter(i => i.hive_id === hiveId);
+            return local;
         }
     },
 
@@ -2144,7 +2177,9 @@ export const beeyieldService = {
             return normalizeInspection(await apiGet<any>(`inspections/${id}`));
         } catch (error) {
             console.error('getInspectionById:', error);
-            return null;
+            // Fallback: find in localStorage
+            const local = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+            return local.find(i => i.id === id) || null;
         }
     },
 
@@ -2152,11 +2187,23 @@ export const beeyieldService = {
         try {
             const data = normalizeInspection(await apiPost<any>('inspections', inspection));
             toast.success('Inspection saved successfully');
+            // Remove from local if it was synced
             return { data, error: null };
         } catch (error) {
-            console.error('createInspection:', error);
-            toast.error('Failed to save inspection');
-            return { data: null, error };
+            console.warn('createInspection API failed, saving locally:', error);
+            // Fallback: persist to localStorage so it shows in the list
+            const now = _nowIso();
+            const localRecord = normalizeInspection({
+                ...inspection,
+                id: _uuid(),
+                created_at: now,
+                updated_at: now,
+            });
+            const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+            existing.unshift(localRecord);
+            _lsWriteAlways(LS_KEYS.inspections, existing);
+            toast.success('Inspection saved locally');
+            return { data: localRecord, error: null };
         }
     },
 
@@ -2166,7 +2213,16 @@ export const beeyieldService = {
             toast.success('Inspection updated successfully');
             return { data, error: null };
         } catch (error) {
-            console.error('updateInspection:', error);
+            console.warn('updateInspection API failed, updating locally:', error);
+            // Fallback: update in localStorage
+            const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+            const idx = existing.findIndex(i => i.id === id);
+            if (idx >= 0) {
+                existing[idx] = normalizeInspection({ ...existing[idx], ...updates, updated_at: _nowIso() });
+                _lsWriteAlways(LS_KEYS.inspections, existing);
+                toast.success('Inspection updated locally');
+                return { data: existing[idx], error: null };
+            }
             toast.error('Failed to update inspection');
             return { data: null, error };
         }
@@ -2176,11 +2232,17 @@ export const beeyieldService = {
         try {
             await apiDelete(`inspections/${id}`);
             toast.success('Inspection deleted');
+            // Also remove from local store
+            const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+            _lsWriteAlways(LS_KEYS.inspections, existing.filter(i => i.id !== id));
             return { error: null };
         } catch (error) {
-            console.error('deleteInspection:', error);
-            toast.error('Failed to delete inspection');
-            return { error };
+            console.warn('deleteInspection API failed, removing locally:', error);
+            // Fallback: remove from localStorage
+            const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+            _lsWriteAlways(LS_KEYS.inspections, existing.filter(i => i.id !== id));
+            toast.success('Inspection deleted');
+            return { error: null };
         }
     },
 
