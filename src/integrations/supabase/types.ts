@@ -14,29 +14,149 @@ export type Database = {
   }
   public: {
     Tables: {
+      alert_events: {
+        Row: {
+          acknowledged: boolean
+          created_at: string
+          dedupe_key: string | null
+          device_id: string
+          hive_label: string
+          id: string
+          message: string
+          metric: string
+          rule_id: string | null
+          snapshot_date: string | null
+          value: number | null
+        }
+        Insert: {
+          acknowledged?: boolean
+          created_at?: string
+          dedupe_key?: string | null
+          device_id: string
+          hive_label: string
+          id?: string
+          message: string
+          metric: string
+          rule_id?: string | null
+          snapshot_date?: string | null
+          value?: number | null
+        }
+        Update: {
+          acknowledged?: boolean
+          created_at?: string
+          dedupe_key?: string | null
+          device_id?: string
+          hive_label?: string
+          id?: string
+          message?: string
+          metric?: string
+          rule_id?: string | null
+          snapshot_date?: string | null
+          value?: number | null
+        }
+        Relationships: []
+      }
+      alert_rules: {
+        Row: {
+          comparator: string
+          created_at: string
+          device_id: string
+          enabled: boolean
+          hive_label: string
+          id: string
+          metric: string
+          threshold: number
+          window_hours: number
+        }
+        Insert: {
+          comparator?: string
+          created_at?: string
+          device_id: string
+          enabled?: boolean
+          hive_label?: string
+          id?: string
+          metric: string
+          threshold: number
+          window_hours?: number
+        }
+        Update: {
+          comparator?: string
+          created_at?: string
+          device_id?: string
+          enabled?: boolean
+          hive_label?: string
+          id?: string
+          metric?: string
+          threshold?: number
+          window_hours?: number
+        }
+        Relationships: []
+      }
+      bee_diseases: {
+        Row: {
+          affected_castes: string | null
+          created_at: string
+          device_id: string
+          id: string
+          is_default: boolean
+          name: string
+          notes: string | null
+          pathogen: string
+          prevention: string | null
+          severity: string
+          symptoms: string[]
+          treatments: string[]
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          affected_castes?: string | null
+          created_at?: string
+          device_id?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          notes?: string | null
+          pathogen: string
+          prevention?: string | null
+          severity?: string
+          symptoms?: string[]
+          treatments?: string[]
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          affected_castes?: string | null
+          created_at?: string
+          device_id?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          notes?: string | null
+          pathogen?: string
+          prevention?: string | null
+          severity?: string
+          symptoms?: string[]
+          treatments?: string[]
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bee_flight_logs: {
         Row: {
           ai_insights: string | null
           bees_per_minute: number
           created_at: string
           device_id: string
-          florage_indicator: string | null
           flight_distance_m: number | null
-          flight_bearing_deg: number | null
-          flight_path: Json | null
           florage_source: string | null
-          foraging_zone: string | null
-          hive_lat: number | null
           hive_label: string
-          hive_lng: number | null
           id: string
           notes: string | null
-          nutrition_score: number | null
           observed_at: string
           pollen_loads: number
           run_id: string | null
-          storage_level_pct: number | null
-          version_id: string | null
           weather: string | null
         }
         Insert: {
@@ -44,23 +164,14 @@ export type Database = {
           bees_per_minute?: number
           created_at?: string
           device_id: string
-          florage_indicator?: string | null
           flight_distance_m?: number | null
-          flight_bearing_deg?: number | null
-          flight_path?: Json | null
           florage_source?: string | null
-          foraging_zone?: string | null
-          hive_lat?: number | null
           hive_label?: string
-          hive_lng?: number | null
           id?: string
           notes?: string | null
-          nutrition_score?: number | null
           observed_at?: string
           pollen_loads?: number
           run_id?: string | null
-          storage_level_pct?: number | null
-          version_id?: string | null
           weather?: string | null
         }
         Update: {
@@ -68,24 +179,63 @@ export type Database = {
           bees_per_minute?: number
           created_at?: string
           device_id?: string
-          florage_indicator?: string | null
           flight_distance_m?: number | null
-          flight_bearing_deg?: number | null
-          flight_path?: Json | null
           florage_source?: string | null
-          foraging_zone?: string | null
-          hive_lat?: number | null
           hive_label?: string
-          hive_lng?: number | null
           id?: string
           notes?: string | null
-          nutrition_score?: number | null
           observed_at?: string
           pollen_loads?: number
           run_id?: string | null
-          storage_level_pct?: number | null
-          version_id?: string | null
           weather?: string | null
+        }
+        Relationships: []
+      }
+      bee_species: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          device_id: string
+          habitat: string | null
+          id: string
+          image_url: string | null
+          is_default: boolean
+          name: string
+          notes: string | null
+          scientific: string
+          traits: string[]
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          device_id?: string
+          habitat?: string | null
+          id?: string
+          image_url?: string | null
+          is_default?: boolean
+          name: string
+          notes?: string | null
+          scientific: string
+          traits?: string[]
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          device_id?: string
+          habitat?: string | null
+          id?: string
+          image_url?: string | null
+          is_default?: boolean
+          name?: string
+          notes?: string | null
+          scientific?: string
+          traits?: string[]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -149,6 +299,39 @@ export type Database = {
         }
         Relationships: []
       }
+      calculator_runs: {
+        Row: {
+          calculator_key: string
+          created_at: string
+          device_id: string
+          id: string
+          inputs: Json
+          label: string | null
+          notes: string | null
+          outputs: Json
+        }
+        Insert: {
+          calculator_key: string
+          created_at?: string
+          device_id: string
+          id?: string
+          inputs?: Json
+          label?: string | null
+          notes?: string | null
+          outputs?: Json
+        }
+        Update: {
+          calculator_key?: string
+          created_at?: string
+          device_id?: string
+          id?: string
+          inputs?: Json
+          label?: string | null
+          notes?: string | null
+          outputs?: Json
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -202,6 +385,90 @@ export type Database = {
           id?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      florage_plants: {
+        Row: {
+          bloom: string
+          created_at: string
+          device_id: string
+          id: string
+          is_default: boolean
+          latin: string
+          name: string
+          nectar: number
+          notes: string | null
+          pollen: number
+          radius: number
+          updated_at: string
+        }
+        Insert: {
+          bloom: string
+          created_at?: string
+          device_id: string
+          id?: string
+          is_default?: boolean
+          latin: string
+          name: string
+          nectar?: number
+          notes?: string | null
+          pollen?: number
+          radius?: number
+          updated_at?: string
+        }
+        Update: {
+          bloom?: string
+          created_at?: string
+          device_id?: string
+          id?: string
+          is_default?: boolean
+          latin?: string
+          name?: string
+          nectar?: number
+          notes?: string | null
+          pollen?: number
+          radius?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      forecast_snapshots: {
+        Row: {
+          band: string | null
+          created_at: string
+          device_id: string
+          forecast_for_date: string
+          hive_label: string
+          id: string
+          precip_mm: number | null
+          predicted_bees_per_min: number | null
+          temp_c: number | null
+          wind_kmh: number | null
+        }
+        Insert: {
+          band?: string | null
+          created_at?: string
+          device_id: string
+          forecast_for_date: string
+          hive_label?: string
+          id?: string
+          precip_mm?: number | null
+          predicted_bees_per_min?: number | null
+          temp_c?: number | null
+          wind_kmh?: number | null
+        }
+        Update: {
+          band?: string | null
+          created_at?: string
+          device_id?: string
+          forecast_for_date?: string
+          hive_label?: string
+          id?: string
+          precip_mm?: number | null
+          predicted_bees_per_min?: number | null
+          temp_c?: number | null
+          wind_kmh?: number | null
         }
         Relationships: []
       }
@@ -356,6 +623,39 @@ export type Database = {
           prompt_variant?: string
           region?: string
           site_layout?: Json | null
+        }
+        Relationships: []
+      }
+      varroa_simulations: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          label: string
+          mode: string
+          notes: string | null
+          params: Json
+          results: Json
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          label?: string
+          mode?: string
+          notes?: string | null
+          params?: Json
+          results?: Json
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          label?: string
+          mode?: string
+          notes?: string | null
+          params?: Json
+          results?: Json
         }
         Relationships: []
       }

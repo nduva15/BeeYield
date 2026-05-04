@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/beeyield/lovable_ai/ui/dropdown-menu";
 import { toast } from "sonner";
-import beeyieldLogo from "@/assets/Logo.png";
+const beeyieldLogo = "/logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useVoiceInput } from "@/hooks/use-voice-input";
@@ -35,6 +35,9 @@ import PollinationPlanning from "@/components/beeyield/lovable_ai/PollinationPla
 import PollinationCalcs from "@/components/beeyield/lovable_ai/PollinationCalcs";
 import AlertsPage from "@/components/beeyield/lovable_ai/AlertsPage";
 import MOACompare from "@/components/beeyield/lovable_ai/MOACompare";
+import BeeSpeciesPage from "@/components/beeyield/lovable_ai/BeeSpeciesPage";
+import BeeyieldCalculators from "@/components/beeyield/lovable_ai/BeeyieldCalculators";
+import VarroaSimulator from "@/components/beeyield/lovable_ai/VarroaSimulator";
 
 type Message = {
   id: string;
@@ -122,7 +125,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export default function LovableIndex() {
+export default function Index() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -151,6 +154,9 @@ export default function LovableIndex() {
   const [pollinationCalcsOpen, setPollinationCalcsOpen] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [moaCompareOpen, setMoaCompareOpen] = useState(false);
+  const [speciesEditOpen, setSpeciesEditOpen] = useState(false);
+  const [calculatorsOpen, setCalculatorsOpen] = useState(false);
+  const [varroaSimOpen, setVarroaSimOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -402,7 +408,16 @@ export default function LovableIndex() {
                 <Bug className="w-4 h-4 mr-2" /> Bee Species Gallery
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setDiseasesOpen(true)} className="cursor-pointer">
-                <HeartPulse className="w-4 h-4 mr-2" /> Bee Diseases & Health
+                <HeartPulse className="w-4 h-4 mr-2" /> Bee Diseases (Editable)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSpeciesEditOpen(true)} className="cursor-pointer">
+                <Bug className="w-4 h-4 mr-2" /> Bee Species (Editable)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setCalculatorsOpen(true)} className="cursor-pointer">
+                <Calculator className="w-4 h-4 mr-2" /> Beeyield Calculators
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setVarroaSimOpen(true)} className="cursor-pointer">
+                <HeartPulse className="w-4 h-4 mr-2" /> Varroa Simulator
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setPollinationOpen(true)} className="cursor-pointer">
                 <BarChart3 className="w-4 h-4 mr-2" /> Pollination Data & Charts
@@ -718,6 +733,9 @@ export default function LovableIndex() {
       <PollinationCalcs isOpen={pollinationCalcsOpen} onClose={() => setPollinationCalcsOpen(false)} />
       <AlertsPage isOpen={alertsOpen} onClose={() => setAlertsOpen(false)} />
       <MOACompare isOpen={moaCompareOpen} onClose={() => setMoaCompareOpen(false)} />
+      <BeeSpeciesPage isOpen={speciesEditOpen} onClose={() => setSpeciesEditOpen(false)} />
+      <BeeyieldCalculators isOpen={calculatorsOpen} onClose={() => setCalculatorsOpen(false)} />
+      <VarroaSimulator isOpen={varroaSimOpen} onClose={() => setVarroaSimOpen(false)} />
     </div>
   );
 }

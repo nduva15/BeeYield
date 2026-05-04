@@ -57,7 +57,6 @@ type RunVersion = {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
   onOpenPlanning?: () => void;
 }
 

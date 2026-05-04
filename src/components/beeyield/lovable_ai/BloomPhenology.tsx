@@ -29,7 +29,7 @@ type Obs = {
 type RunRow = { id: string; crop: string; created_at: string };
 type RunVersion = { id: string; version_label: string; created_at: string };
 
-export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [obs, setObs] = useState<Obs[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);

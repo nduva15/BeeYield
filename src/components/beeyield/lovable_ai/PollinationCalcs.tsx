@@ -23,7 +23,7 @@ const STOCKING: Record<string, { hivesPerHa: number; expectedYieldKgPerHa: numbe
   general:    { hivesPerHa: 3,   expectedYieldKgPerHa: 15,  bloomDays: 21, transportNote: "Generic baseline — refine with local florage" },
 };
 
-export default function PollinationCalcs({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function PollinationCalcs({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [crop, setCrop] = useState("almond");
   const [hectares, setHectares] = useState(10);
@@ -38,8 +38,8 @@ export default function PollinationCalcs({ isOpen, onClose }: { isOpen: boolean;
 
   useEffect(() => {
     if (!isOpen) return;
-    (supabase as any).from("florage_plants").select("*").eq("device_id", deviceId).then(({ data }: any) => {
-      setFloragePlants(((data || []) as unknown as FloragePlant[]));
+    supabase.from("florage_plants").select("*").eq("device_id", deviceId).then(({ data }) => {
+      setFloragePlants((data as FloragePlant[]) || []);
     });
   }, [isOpen, deviceId]);
 

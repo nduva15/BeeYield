@@ -47,15 +47,13 @@ interface Props {
   readOnly?: boolean;
   initialRunId?: string;
   initialVersionId?: string;
-  embedded?: boolean;
-  className?: string;
 }
 
 const DEFAULT_FILTERS: Filters = {
   showCoverage: true, showBloom: true, showFlight: true, showDiagnostics: true, selectedHive: null,
 };
 
-export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId, embedded = false, className = "" }: Props) {
+export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId }: Props) {
   const deviceId = useDeviceId();
   const [runs, setRuns] = useState<Run[]>([]);
   const [versions, setVersions] = useState<Version[]>([]);
@@ -275,7 +273,7 @@ Required sections:
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? `relative w-full h-full min-h-[600px] bg-background overflow-hidden flex flex-col rounded-xl border border-border ${className}` : `fixed inset-0 z-50 bg-background overflow-hidden flex flex-col ${className}`}>
+    <div className="fixed inset-0 z-50 bg-background overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 border-b border-border bg-card px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
@@ -341,10 +339,10 @@ Required sections:
           No saved harvest runs yet. Save a run from the Harvest Calculator to load the MOA view.
         </div>
       ) : (
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden min-h-0 relative h-full">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden">
           {/* Map */}
-          <div ref={mapWrapRef} className="md:col-span-3 relative border-r border-border min-h-[400px] md:h-full flex flex-col">
-            <MapContainer center={center} zoom={15} style={{ width: "100%", height: "100%", flex: 1, zIndex: 0 }}>
+          <div ref={mapWrapRef} className="md:col-span-3 relative border-r border-border">
+            <MapContainer center={center} zoom={15} style={{ width: "100%", height: "100%" }}>
               <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="Esri Satellite" />
               {polygon.length >= 3 && <Polygon positions={polygon} pathOptions={{ color: "#facc15", fillOpacity: 0.15 }} />}
               {hives.map((h, i) => (
@@ -367,7 +365,7 @@ Required sections:
           </div>
 
           {/* Right panels */}
-          <div ref={panelsRef} className="md:col-span-2 overflow-y-auto custom-scroll p-3 space-y-3 bg-muted/10 h-full">
+          <div ref={panelsRef} className="md:col-span-2 overflow-y-auto custom-scroll p-3 space-y-3 bg-muted/10">
             {filters.showCoverage && (
               <Panel icon={<Calculator className="w-4 h-4 text-honey" />} title="Pollination Coverage">
                 <Stat label="Hives" value={`${hives.length}`} />

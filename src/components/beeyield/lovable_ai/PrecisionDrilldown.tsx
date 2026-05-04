@@ -11,7 +11,6 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
-  embedded?: boolean;
 }
 
 type CropProfile = {

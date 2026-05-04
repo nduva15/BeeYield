@@ -16,7 +16,7 @@ import { evaluateAlerts } from "./AlertsPage";
 
 type Forecast = { date: string; hour: number; tempC: number; windKmh: number; precipMm: number; predictedBpm: number; band: string };
 
-export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [hiveLabel, setHiveLabel] = useState("Hive 1");
   const [lat, setLat] = useState("-2.4078");
@@ -62,7 +62,7 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
         if (!dayMap.has(key)) dayMap.set(key, []);
         dayMap.get(key)!.push(f);
       }
-      const today = new Date().toISOString().slice(0, 10);
+      // (snapshot dates already in dayMap keys)
       const snapshots = Array.from(dayMap.entries()).map(([dateKey, pts]) => ({
         device_id: deviceId,
         hive_label: hiveLabel,
@@ -73,12 +73,14 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
         precip_mm: Math.round((pts.reduce((s, p) => s + p.precipMm, 0) / pts.length) * 10) / 10,
         band: pts[0]?.band || "normal",
       }));
-      await (supabase as any).from("forecast_snapshots").insert(snapshots);
-      const todaySnap = snapshots.find((s) => s.forecast_for_date.endsWith(today.slice(5)));
-      if (todaySnap) {
-        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "predicted_bees_per_min", value: todaySnap.predicted_bees_per_min });
-        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "wind_kmh", value: todaySnap.wind_kmh });
-        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "temp_c", value: todaySnap.temp_c });
+      await supabase.from("forecast_snapshots").insert(snapshots);
+      // Auto-fire push for every forecast day, deduped per (rule, snapshot date, hive)
+      for (const snap of snapshots) {
+        const snapshotDate = snap.forecast_for_date.slice(0, 10);
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "predicted_bees_per_min", value: snap.predicted_bees_per_min, snapshotDate });
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "wind_kmh", value: snap.wind_kmh, snapshotDate });
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "temp_c", value: snap.temp_c, snapshotDate });
+        await evaluateAlerts(deviceId, { hive_label: hiveLabel, metric: "precip_mm", value: snap.precip_mm, snapshotDate });
       }
       loadHistory();
     } catch (e) { console.error(e); toast.error("Forecast failed"); }
@@ -88,7 +90,7 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
   const loadHistory = useCallback(async () => {
     const sevenAgo = new Date(); sevenAgo.setDate(sevenAgo.getDate() - 7);
     const [{ data: snaps }, { data: actuals }] = await Promise.all([
-      (supabase as any).from("forecast_snapshots").select("forecast_for_date,predicted_bees_per_min")
+      supabase.from("forecast_snapshots").select("forecast_for_date,predicted_bees_per_min")
         .eq("device_id", deviceId).eq("hive_label", hiveLabel)
         .gte("created_at", sevenAgo.toISOString()).order("forecast_for_date", { ascending: true }),
       supabase.from("bee_flight_logs").select("observed_at,bees_per_minute")
@@ -97,7 +99,7 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
     ]);
     // Aggregate by date
     const map = new Map<string, { predicted: number[]; actual: number[] }>();
-    for (const s of ((snaps || []) as { forecast_for_date: string; predicted_bees_per_min: number }[])) {
+    for (const s of (snaps as { forecast_for_date: string; predicted_bees_per_min: number }[]) || []) {
       const d = s.forecast_for_date.slice(0, 10);
       if (!map.has(d)) map.set(d, { predicted: [], actual: [] });
       map.get(d)!.predicted.push(s.predicted_bees_per_min);

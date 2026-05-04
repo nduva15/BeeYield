@@ -1,217 +1,229 @@
-import { useState, useMemo } from "react";
-import { X, Search, AlertTriangle, Shield, Bug, ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { X, Search, AlertTriangle, Plus, Pencil, Trash2, Save, Upload, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useDeviceId } from "@/hooks/use-device-id";
+import { toast } from "sonner";
+import { toCSV, fromCSV, downloadCSV } from "@/lib/csv";
 
-type Severity = "Critical" | "High" | "Moderate" | "Low";
-type PathogenType = "Parasitic" | "Bacterial" | "Viral" | "Fungal" | "Microsporidian" | "Environmental" | "Nutritional" | "Genetic" | "Predator";
+type Disease = {
+  id: string; device_id: string; name: string; pathogen: string; type: string; severity: string;
+  symptoms: string[]; treatments: string[]; prevention: string | null;
+  affected_castes: string | null; notes: string | null; is_default: boolean;
+};
 
-interface Disease {
-  name: string;
-  pathogen: string;
-  type: PathogenType;
-  severity: Severity;
-  symptoms: string[];
-  treatments: string[];
-  prevention: string;
-  affectedCastes: string;
-}
-
-const SEVERITY_COLORS: Record<Severity, string> = {
+const TYPES = ["Parasitic", "Bacterial", "Viral", "Fungal", "Microsporidian", "Environmental", "Nutritional", "Genetic", "Predator", "Other"];
+const SEVERITIES = ["Critical", "High", "Moderate", "Low"];
+const SEV_COLOR: Record<string, string> = {
   Critical: "bg-destructive/15 text-destructive border-destructive/30",
   High: "bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/30",
   Moderate: "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border-yellow-500/30",
   Low: "bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30",
 };
 
-const DISEASES: Disease[] = [
-  { name: "Varroa Mite Infestation", pathogen: "Varroa destructor", type: "Parasitic", severity: "Critical", symptoms: ["Deformed wings", "Shortened abdomen", "Weight loss", "Viral transmission", "Colony weakening"], treatments: ["Oxalic acid vaporization", "Formic acid strips", "Apivar (amitraz)", "Apistan (fluvalinate)", "Drone brood removal", "Sugar dusting"], prevention: "Regular mite counts, IPM rotation", affectedCastes: "All castes" },
-  { name: "American Foulbrood (AFB)", pathogen: "Paenibacillus larvae", type: "Bacterial", severity: "Critical", symptoms: ["Sunken/perforated cappings", "Ropy brown larvae", "Foul odor", "Matchstick test positive", "Scale formation"], treatments: ["Burn infected equipment (many regions)", "Oxytetracycline (preventive)", "Tylosin tartrate", "Irradiation of equipment"], prevention: "Inspect regularly, quarantine new colonies", affectedCastes: "Larvae" },
-  { name: "European Foulbrood (EFB)", pathogen: "Melissococcus plutonius", type: "Bacterial", severity: "High", symptoms: ["Twisted/discolored larvae", "Yellow-brown larvae", "Sour odor", "Irregular brood pattern"], treatments: ["Oxytetracycline", "Shook swarm method", "Requeening"], prevention: "Strong colonies, good nutrition", affectedCastes: "Larvae" },
-  { name: "Nosemosis (Type C)", pathogen: "Nosema ceranae", type: "Microsporidian", severity: "High", symptoms: ["Dysentery", "Reduced lifespan", "Poor spring buildup", "Queen supersedure", "Crawling bees"], treatments: ["Fumagillin", "Thymol-based", "Requeening", "Probiotics (research)"], prevention: "Clean water, reduce stress, good ventilation", affectedCastes: "Adult workers" },
-  { name: "Nosemosis (Type A)", pathogen: "Nosema apis", type: "Microsporidian", severity: "Moderate", symptoms: ["Dysentery on hive fronts", "Swollen abdomen", "K-wing", "Disjointed wings"], treatments: ["Fumagillin", "Thermal treatment"], prevention: "Proper ventilation, clean combs", affectedCastes: "Adult workers" },
-  { name: "Deformed Wing Virus (DWV)", pathogen: "DWV (Iflaviridae)", type: "Viral", severity: "Critical", symptoms: ["Crumpled/deformed wings", "Shortened abdomen", "Discoloration", "Reduced lifespan"], treatments: ["Control Varroa (vector)", "No direct antiviral"], prevention: "Varroa management is key", affectedCastes: "Pupae, adults" },
-  { name: "Acute Bee Paralysis Virus", pathogen: "ABPV", type: "Viral", severity: "High", symptoms: ["Trembling", "Inability to fly", "Dark/hairless body", "Rapid death"], treatments: ["Varroa control", "No direct treatment"], prevention: "Mite management", affectedCastes: "Adults" },
-  { name: "Chronic Bee Paralysis Virus", pathogen: "CBPV", type: "Viral", severity: "High", symptoms: ["Trembling/shaking bees", "Bloated abdomen", "Hairless/shiny 'black robbers'", "Crawling at entrance"], treatments: ["Requeen", "Reduce colony density", "Improve ventilation"], prevention: "Avoid overcrowding", affectedCastes: "Adults" },
-  { name: "Sacbrood Virus", pathogen: "SBV (Iflaviridae)", type: "Viral", severity: "Moderate", symptoms: ["Fluid-filled larvae", "Larvae fail to pupate", "Gondola-shaped larvae", "Color change to brown"], treatments: ["Requeen", "No direct treatment"], prevention: "Maintain strong colonies", affectedCastes: "Larvae" },
-  { name: "Black Queen Cell Virus", pathogen: "BQCV", type: "Viral", severity: "Moderate", symptoms: ["Dead queen larvae in cells", "Darkened queen cells", "Associated with Nosema"], treatments: ["Nosema control", "Requeen"], prevention: "Nosema prevention", affectedCastes: "Queen larvae" },
-  { name: "Israeli Acute Paralysis Virus", pathogen: "IAPV", type: "Viral", severity: "High", symptoms: ["Shivering wings", "Progressive paralysis", "Rapid colony loss", "Linked to CCD"], treatments: ["Varroa control", "No direct treatment"], prevention: "Mite management, reduce stress", affectedCastes: "Adults" },
-  { name: "Kashmir Bee Virus", pathogen: "KBV", type: "Viral", severity: "Moderate", symptoms: ["No visible symptoms often", "Sudden colony death", "Adults cease foraging"], treatments: ["Varroa management"], prevention: "Integrated pest management", affectedCastes: "Adults" },
-  { name: "Chalkbrood", pathogen: "Ascosphaera apis", type: "Fungal", severity: "Moderate", symptoms: ["White/grey mummified larvae", "Hard chalk-like mummies", "Mummies at hive entrance", "Irregular brood"], treatments: ["Improve ventilation", "Requeen (hygienic stock)", "Remove infected frames"], prevention: "Good ventilation, strong colonies", affectedCastes: "Larvae" },
-  { name: "Stonebrood", pathogen: "Aspergillus flavus/fumigatus", type: "Fungal", severity: "Moderate", symptoms: ["Hard mummified larvae", "Green/yellow fungal growth", "Stone-hard brood", "Potential human pathogen"], treatments: ["Remove infected combs", "Improve ventilation", "Requeen"], prevention: "Reduce humidity, ventilate", affectedCastes: "Larvae, adults" },
-  { name: "Small Hive Beetle", pathogen: "Aethina tumida", type: "Predator", severity: "High", symptoms: ["Slime trails on combs", "Fermented honey", "Larvae tunneling in combs", "Colony absconding"], treatments: ["Beetle traps (oil/vinegar)", "CheckMite+", "GardStar", "Soil treatment around hives"], prevention: "Strong colonies, reduce space, ground treatment", affectedCastes: "Colony-level" },
-  { name: "Wax Moth Infestation", pathogen: "Galleria mellonella / Achroia grisella", type: "Predator", severity: "Moderate", symptoms: ["Webbing in combs", "Tunneled comb", "Frass/debris", "Silken tunnels through brood"], treatments: ["Freeze combs", "BT (Bacillus thuringiensis)", "Paramoth", "Strong colony maintenance"], prevention: "Keep colonies strong, store combs properly", affectedCastes: "Colony-level" },
-  { name: "Tracheal Mite", pathogen: "Acarapis woodi", type: "Parasitic", severity: "Moderate", symptoms: ["K-wing", "Crawling bees", "Reduced winter survival", "Disjointed wings", "Dysentery"], treatments: ["Menthol crystals", "Formic acid", "Grease patties"], prevention: "Select resistant stock, menthol in autumn", affectedCastes: "Adults" },
-  { name: "Tropilaelaps Mite", pathogen: "Tropilaelaps clareae/mercedesae", type: "Parasitic", severity: "Critical", symptoms: ["Deformed brood", "Irregular brood pattern", "Parasitic mite syndrome", "Rapid colony decline"], treatments: ["Formic acid", "Brood-free period", "Fluvalinate"], prevention: "Quarantine, brood interruption", affectedCastes: "Brood" },
-  { name: "Colony Collapse Disorder", pathogen: "Multifactorial", type: "Environmental", severity: "Critical", symptoms: ["Sudden worker disappearance", "Queen present with brood", "Few/no dead bees in hive", "Delayed robbing"], treatments: ["Address multiple stressors", "Reduce pesticide exposure", "Improve nutrition", "Varroa control"], prevention: "Holistic IPM, reduce chemical exposure", affectedCastes: "Workers" },
-  { name: "Pesticide Poisoning", pathogen: "Neonicotinoids/Organophosphates", type: "Environmental", severity: "Critical", symptoms: ["Mass die-off at entrance", "Tongue extension reflex", "Disorientation", "Trembling", "Inability to fly"], treatments: ["Remove contaminated stores", "Feed clean syrup", "Shade hives", "Report to authorities"], prevention: "Communication with farmers, pesticide-free forage", affectedCastes: "Foragers primarily" },
-  { name: "Neonicotinoid Sublethality", pathogen: "Imidacloprid/Clothianidin/Thiamethoxam", type: "Environmental", severity: "High", symptoms: ["Impaired navigation", "Reduced learning", "Lower foraging efficiency", "Weakened immunity", "Reduced reproduction"], treatments: ["Remove contaminated pollen", "Clean feed sources"], prevention: "Advocacy, IPM farming, buffer zones", affectedCastes: "All castes" },
-  { name: "Nosema Bombi", pathogen: "Nosema bombi", type: "Microsporidian", severity: "High", symptoms: ["Reduced colony size", "Queen infertility", "Worker mortality", "Population decline"], treatments: ["No approved treatments for wild bumblebees"], prevention: "Reduce pathogen spillover from managed colonies", affectedCastes: "Bumblebees" },
-  { name: "Brood Diseases (Mixed)", pathogen: "Multiple pathogens", type: "Bacterial", severity: "Moderate", symptoms: ["Spotty brood pattern", "Discolored larvae", "Unusual odor", "Uncapped dead brood"], treatments: ["Identify specific pathogen", "Hygienic requeening", "Antibiotic if bacterial"], prevention: "Regular inspection, hygienic stock", affectedCastes: "Larvae" },
-  { name: "Bee Louse", pathogen: "Braula coeca", type: "Parasitic", severity: "Low", symptoms: ["Wingless fly on queen/workers", "Tunnels in cappings", "Minor honey damage", "Cosmetic comb damage"], treatments: ["Tobacco smoke (historical)", "Fluvalinate side-effect removal"], prevention: "Generally benign, rarely treated", affectedCastes: "Adults (queen)" },
-  { name: "Amoeba Disease", pathogen: "Malpighamoeba mellificae", type: "Parasitic", severity: "Low", symptoms: ["Similar to Nosema", "Malpighian tubule cysts", "Often co-occurs with Nosema", "Dysentery"], treatments: ["Fumagillin", "Good husbandry"], prevention: "Clean water, reduce stress", affectedCastes: "Adults" },
-  { name: "Septicemia", pathogen: "Pseudomonas/Serratia spp.", type: "Bacterial", severity: "Moderate", symptoms: ["Hemolymph turns milky", "Rapid death", "Legs/wings fall off easily", "Bad odor from dead bees"], treatments: ["No effective treatment", "Requeen", "Improve conditions"], prevention: "Reduce stress, maintain strong colonies", affectedCastes: "Adults" },
-  { name: "Spiroplasma Infection", pathogen: "Spiroplasma apis/melliferum", type: "Bacterial", severity: "Low", symptoms: ["May flower disease", "Inability to fly in spring", "Crawling at entrance", "Rapid death during nectar dearth"], treatments: ["No treatment needed", "Self-resolving with nectar flow"], prevention: "Ensure adequate forage", affectedCastes: "Adults" },
-  { name: "Filamentous Virus", pathogen: "AmFV", type: "Viral", severity: "Low", symptoms: ["Milky hemolymph", "Often asymptomatic", "Reduced longevity", "Interacts with Nosema"], treatments: ["No direct treatment", "Nosema management"], prevention: "Reduce Nosema co-infection", affectedCastes: "Adults" },
-  { name: "Cloudy Wing Virus", pathogen: "CWV", type: "Viral", severity: "Low", symptoms: ["Opaque/cloudy wings", "Loss of transparency", "Reduced flight ability"], treatments: ["No direct treatment"], prevention: "General colony health", affectedCastes: "Adults" },
-  { name: "Slow Bee Paralysis Virus", pathogen: "SBPV", type: "Viral", severity: "Moderate", symptoms: ["Anterior leg paralysis", "Death within days", "Varroa-associated"], treatments: ["Varroa control"], prevention: "Mite management", affectedCastes: "Adults" },
-  { name: "Lake Sinai Virus", pathogen: "LSV 1/2", type: "Viral", severity: "Low", symptoms: ["Often asymptomatic", "Fatigue", "Possible colony stress"], treatments: ["No direct treatment"], prevention: "General colony health", affectedCastes: "Adults" },
-  { name: "Apis Iridescent Virus", pathogen: "AIV (Iridoviridae)", type: "Viral", severity: "Moderate", symptoms: ["Iridescent sheen on thorax", "Clustering at entrance", "Reduced flight", "Colony dwindling"], treatments: ["No direct treatment", "Supportive care"], prevention: "Reduce stress, good nutrition", affectedCastes: "Adults" },
-  { name: "Bee Virus X/Y", pathogen: "BVX / BVY", type: "Viral", severity: "Low", symptoms: ["Shortened lifespan", "Generally subclinical", "Interact with Nosema"], treatments: ["Nosema management"], prevention: "Reduce co-infections", affectedCastes: "Adults" },
-  { name: "Varroosis-Associated Syndrome", pathogen: "Varroa + multiple viruses", type: "Parasitic", severity: "Critical", symptoms: ["Parasitic mite syndrome (PMS)", "Mixed brood disease symptoms", "Deformed wings + spotty brood", "Rapid autumn collapse"], treatments: ["Aggressive Varroa treatment", "Oxalic + formic acid combo", "Emergency feeding"], prevention: "Never let mites exceed 3% threshold", affectedCastes: "All castes" },
-  { name: "Dysentery", pathogen: "Non-infectious / Nosema secondary", type: "Nutritional", severity: "Low", symptoms: ["Brown streaks on hive front", "Fecal staining inside hive", "Swollen abdomen", "Winter/spring occurrence"], treatments: ["Improve ventilation", "Provide clean feed", "Replace old combs"], prevention: "Quality winter feed, ventilation", affectedCastes: "Adults" },
-  { name: "Starvation", pathogen: "N/A (Management failure)", type: "Nutritional", severity: "High", symptoms: ["Bees headfirst in cells", "Empty food stores", "Dead cluster", "Rapid colony death"], treatments: ["Emergency sugar syrup/fondant feeding", "Pollen substitute"], prevention: "Monitor stores, fall feeding", affectedCastes: "All castes" },
-  { name: "Chilled Brood", pathogen: "N/A (Temperature failure)", type: "Environmental", severity: "Moderate", symptoms: ["Dead brood in arc pattern", "Dark/discolored dead brood", "Often after inspection", "Edge-of-cluster mortality"], treatments: ["Reduce hive space", "Insulate", "Combine weak colonies"], prevention: "Minimize inspections in cold weather", affectedCastes: "Brood" },
-  { name: "Laying Workers", pathogen: "N/A (Queenless colony)", type: "Genetic", severity: "High", symptoms: ["Multiple eggs per cell", "Drone brood in worker cells", "Scattered brood pattern", "Aggressive/disorganized behavior"], treatments: ["Introduce mated queen", "Combine with queenright colony", "Shake out method"], prevention: "Maintain queen-right status, quick requeening", affectedCastes: "Colony-level" },
-  { name: "Queen Failure", pathogen: "N/A (Age/injury/genetics)", type: "Genetic", severity: "High", symptoms: ["Spotty brood pattern", "Excessive drone brood", "Supersedure cells", "Colony decline", "Increased aggression"], treatments: ["Requeen with young mated queen", "Allow supersedure"], prevention: "Requeen every 1-2 years", affectedCastes: "Colony-level" },
-  { name: "Robbing", pathogen: "N/A (Behavioral)", type: "Environmental", severity: "Moderate", symptoms: ["Fighting at entrance", "Bees wrestling on landing board", "Torn wax cappings", "Rapid honey loss", "Dead bees at entrance"], treatments: ["Reduce entrance", "Robbing screen", "Move weak hives", "Stop feeding syrup openly"], prevention: "Reduce entrances in dearth, don't spill syrup", affectedCastes: "Colony-level" },
-  { name: "Absconding", pathogen: "N/A (Stress response)", type: "Environmental", severity: "High", symptoms: ["Entire colony abandons hive", "Empty hive with stores", "Common in tropical bees", "Often triggered by disturbance"], treatments: ["Address root cause", "Reduce disturbance", "Improve conditions"], prevention: "Reduce stress, adequate shade, pest control", affectedCastes: "Colony-level" },
-  { name: "Propolis Allergy (Beekeeper)", pathogen: "Contact allergen", type: "Environmental", severity: "Low", symptoms: ["Contact dermatitis", "Skin rash on hands", "Itching/swelling", "Occupational hazard"], treatments: ["Antihistamines", "Topical corticosteroids", "Gloves"], prevention: "Wear nitrile gloves", affectedCastes: "Beekeeper" },
-  { name: "Africanized Bee Aggression", pathogen: "A. m. scutellata hybrid genetics", type: "Genetic", severity: "Moderate", symptoms: ["Excessive stinging response", "Rapid colony buildup", "Frequent swarming", "Defensive over large area"], treatments: ["Requeen with gentle stock", "European queen introduction"], prevention: "Maintain European genetics, requeen regularly", affectedCastes: "Colony-level" },
-  { name: "Toxic Honey (Rhododendron)", pathogen: "Grayanotoxin from Rhododendron/Azalea", type: "Environmental", severity: "Moderate", symptoms: ["'Mad honey' — dizziness in humans", "Cardiac issues if consumed", "Bees generally unaffected", "Regional issue (Turkey, Nepal)"], treatments: ["Remove contaminated honey", "Do not sell for consumption"], prevention: "Avoid placing hives near toxic flora", affectedCastes: "Humans (consuming honey)" },
-  { name: "Phorid Fly Parasitism", pathogen: "Apocephalus borealis", type: "Parasitic", severity: "Moderate", symptoms: ["Zombie bee behavior (ZomBees)", "Nocturnal flight", "Disorientation", "Larvae emerge from dead bees"], treatments: ["No established treatment", "Remove dead bees"], prevention: "Monitor for aberrant night flying", affectedCastes: "Adults" },
-  { name: "Conopid Fly Parasitism", pathogen: "Conops/Physocephala spp.", type: "Parasitic", severity: "Low", symptoms: ["Bees burying in soil before death", "Pupae found inside dead bees", "Reduced foraging efficiency"], treatments: ["No treatment available"], prevention: "Monitor, maintain strong colonies", affectedCastes: "Adults (bumblebees too)" },
-  { name: "Deformed Wing Virus Type B", pathogen: "DWV-B (VDV-1)", type: "Viral", severity: "Critical", symptoms: ["More virulent than DWV-A", "Deformed wings", "Higher larval mortality", "Rapid colony decline"], treatments: ["Aggressive Varroa control", "No direct antiviral"], prevention: "Early and consistent mite treatment", affectedCastes: "All stages" },
-  { name: "Melanosis", pathogen: "Fungal / Bacterial mixed", type: "Fungal", severity: "Moderate", symptoms: ["Black discoloration of queen ovaries", "Reduced egg laying", "Queen infertility", "Dark tissue"], treatments: ["Requeen"], prevention: "Avoid instrumental insemination contamination", affectedCastes: "Queens" },
-  { name: "Asian Hornet Predation", pathogen: "Vespa velutina", type: "Predator", severity: "High", symptoms: ["Hawking behavior at entrance", "Forager attrition", "Colony stress/reduced foraging", "Colony collapse if sustained"], treatments: ["Hornet traps", "Muzzle guards", "Report sightings", "Nest destruction"], prevention: "Early detection, trapping programs", affectedCastes: "Foragers" },
-  { name: "Giant Hornet Predation", pathogen: "Vespa mandarinia", type: "Predator", severity: "Critical", symptoms: ["Mass slaughter at entrance", "Colony destruction in hours", "Decapitated bees", "Robbing of brood/honey"], treatments: ["Entrance reducers", "Hornet guards", "Trapping", "'Hot bee ball' defense (Apis cerana)"], prevention: "Entrance guards, monitoring", affectedCastes: "Colony-level" },
-  { name: "Chronic Pesticide Exposure", pathogen: "Sublethal agrochemical mix", type: "Environmental", severity: "High", symptoms: ["Reduced immunity", "Impaired learning/memory", "Lower brood viability", "Synergistic pathogen susceptibility"], treatments: ["Move to clean foraging area", "Supplement feeding", "Advocate for IPM farming"], prevention: "Buffer zones, organic forage areas", affectedCastes: "All castes" },
-];
+const EMPTY: Omit<Disease, "id" | "is_default"> = {
+  device_id: "", name: "", pathogen: "", type: "Parasitic", severity: "Moderate",
+  symptoms: [], treatments: [], prevention: "", affected_castes: "", notes: "",
+};
 
-const PATHOGEN_TYPES: PathogenType[] = ["Parasitic", "Bacterial", "Viral", "Fungal", "Microsporidian", "Environmental", "Nutritional", "Genetic", "Predator"];
-
-interface BeeDiseasesPageProps {
-  isOpen: boolean;
-  onClose: () => void;
-  embedded?: boolean;
-}
-
-export default function BeeDiseasesPage({ isOpen, onClose }: BeeDiseasesPageProps) {
+export default function BeeDiseasesPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const deviceId = useDeviceId();
+  const [rows, setRows] = useState<Disease[]>([]);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState<string>("All");
-  const [filterSeverity, setFilterSeverity] = useState<string>("All");
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [type, setType] = useState("All");
+  const [sev, setSev] = useState("All");
+  const [editing, setEditing] = useState<Disease | null>(null);
+  const [draft, setDraft] = useState<typeof EMPTY>(EMPTY);
+  const [showForm, setShowForm] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("bee_diseases").select("*")
+      .or(`device_id.eq.global,device_id.eq.${deviceId}`).order("severity").order("name");
+    if (error) toast.error(error.message);
+    setRows((data as Disease[]) || []);
+    setLoading(false);
+  }, [deviceId]);
+
+  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return DISEASES.filter((d) => {
-      const matchType = filterType === "All" || d.type === filterType;
-      const matchSev = filterSeverity === "All" || d.severity === filterSeverity;
-      const matchSearch = !q || d.name.toLowerCase().includes(q) || d.pathogen.toLowerCase().includes(q) || d.symptoms.some((s) => s.toLowerCase().includes(q));
-      return matchType && matchSev && matchSearch;
+    return rows.filter((r) => {
+      const t = type === "All" || r.type === type;
+      const s = sev === "All" || r.severity === sev;
+      const m = !q || r.name.toLowerCase().includes(q) || r.pathogen.toLowerCase().includes(q) ||
+        r.symptoms.some((x) => x.toLowerCase().includes(q));
+      return t && s && m;
     });
-  }, [search, filterType, filterSeverity]);
+  }, [rows, search, type, sev]);
 
-  const severityCounts = useMemo(() => {
-    const counts: Record<string, number> = { Critical: 0, High: 0, Moderate: 0, Low: 0 };
-    DISEASES.forEach((d) => counts[d.severity]++);
-    return counts;
-  }, []);
+  const startNew = () => { setEditing(null); setDraft(EMPTY); setShowForm(true); };
+  const startEdit = (r: Disease) => {
+    setEditing(r);
+    setDraft({ device_id: r.device_id, name: r.name, pathogen: r.pathogen, type: r.type, severity: r.severity,
+      symptoms: r.symptoms, treatments: r.treatments, prevention: r.prevention || "",
+      affected_castes: r.affected_castes || "", notes: r.notes || "" });
+    setShowForm(true);
+  };
+
+  const save = async () => {
+    if (!draft.name || !draft.pathogen) { toast.error("Name + pathogen required"); return; }
+    const payload = { ...draft, device_id: deviceId,
+      symptoms: draft.symptoms.filter(Boolean), treatments: draft.treatments.filter(Boolean) };
+    if (editing) {
+      const { error } = await supabase.from("bee_diseases").update(payload).eq("id", editing.id);
+      if (error) return toast.error(error.message);
+      toast.success("Updated");
+    } else {
+      const { error } = await supabase.from("bee_diseases").insert(payload);
+      if (error) return toast.error(error.message);
+      toast.success("Added");
+    }
+    setShowForm(false); setEditing(null); load();
+  };
+
+  const remove = async (r: Disease) => {
+    if (r.is_default && r.device_id === "global") { toast.error("Default rows can't be deleted"); return; }
+    if (!confirm(`Delete "${r.name}"?`)) return;
+    const { error } = await supabase.from("bee_diseases").delete().eq("id", r.id);
+    if (error) return toast.error(error.message);
+    toast.success("Deleted"); load();
+  };
+
+  const exportCSV = () => {
+    const csv = toCSV(filtered.map((r) => ({
+      name: r.name, pathogen: r.pathogen, type: r.type, severity: r.severity,
+      symptoms: r.symptoms, treatments: r.treatments, prevention: r.prevention,
+      affected_castes: r.affected_castes, notes: r.notes,
+    })));
+    downloadCSV(`bee-diseases-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+    toast.success(`Exported ${filtered.length}`);
+  };
+
+  const importCSV = async (file: File) => {
+    const parsed = fromCSV(await file.text()).filter((p) => p.name && p.pathogen);
+    if (!parsed.length) { toast.error("No valid rows"); return; }
+    const payload = parsed.map((p) => ({
+      device_id: deviceId,
+      name: p.name, pathogen: p.pathogen, type: p.type || "Other", severity: p.severity || "Moderate",
+      symptoms: (p.symptoms || "").split("|").map((s) => s.trim()).filter(Boolean),
+      treatments: (p.treatments || "").split("|").map((s) => s.trim()).filter(Boolean),
+      prevention: p.prevention || null, affected_castes: p.affected_castes || null, notes: p.notes || null,
+    }));
+    const { error } = await supabase.from("bee_diseases").insert(payload);
+    if (error) return toast.error(error.message);
+    toast.success(`Imported ${payload.length} diseases`); load();
+  };
 
   if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-6xl max-h-[92vh] overflow-hidden mx-4 flex flex-col" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-border px-6 py-4 flex-shrink-0">
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-destructive" />
+            <AlertTriangle className="w-6 h-6 text-destructive" />
             <div>
-              <h2 className="font-display text-lg font-bold text-foreground">Bee Diseases & Health</h2>
-              <p className="text-xs text-muted-foreground">{DISEASES.length} diseases documented • Symptoms, treatments & severity</p>
+              <h1 className="font-display text-2xl font-bold text-foreground">Bee Diseases (Editable)</h1>
+              <p className="text-xs text-muted-foreground">{rows.length} diseases · CRUD + CSV · per-device + global defaults</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={exportCSV} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5"><Download className="w-3.5 h-3.5" />Export</button>
+            <label className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 cursor-pointer"><Upload className="w-3.5 h-3.5" />Import
+              <input type="file" accept=".csv" className="hidden" onChange={(e) => e.target.files?.[0] && importCSV(e.target.files[0])} />
+            </label>
+            <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />New</button>
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          </div>
         </div>
 
-        {/* Severity summary */}
-        <div className="px-6 py-3 border-b border-border flex gap-3 flex-wrap flex-shrink-0">
-          {(["Critical", "High", "Moderate", "Low"] as Severity[]).map((sev) => (
-            <div key={sev} className={`px-3 py-1.5 rounded-lg border text-xs font-medium ${SEVERITY_COLORS[sev]}`}>
-              {sev}: {severityCounts[sev]}
-            </div>
-          ))}
-        </div>
-
-        {/* Filters */}
-        <div className="px-6 py-3 border-b border-border space-y-2 flex-shrink-0">
+        <div className="space-y-2 mb-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search diseases, pathogens, or symptoms..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search diseases, pathogens, symptoms..." className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-border bg-background" />
           </div>
-          <div className="flex gap-4 flex-wrap">
-            <div className="flex gap-1.5 items-center flex-wrap">
-              <span className="text-xs text-muted-foreground">Type:</span>
-              {["All", ...PATHOGEN_TYPES].map((t) => (
-                <button key={t} onClick={() => setFilterType(t)} className={`text-xs px-2 py-0.5 rounded-full border transition-all ${filterType === t ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
-                  {t}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-1.5 items-center flex-wrap">
-              <span className="text-xs text-muted-foreground">Severity:</span>
-              {["All", "Critical", "High", "Moderate", "Low"].map((s) => (
-                <button key={s} onClick={() => setFilterSeverity(s)} className={`text-xs px-2 py-0.5 rounded-full border transition-all ${filterSeverity === s ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
-                  {s}
-                </button>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-1.5 items-center text-xs">
+            <span className="text-muted-foreground">Type:</span>
+            {["All", ...TYPES].map((t) => (
+              <button key={t} onClick={() => setType(t)} className={`px-2 py-0.5 rounded-full border ${type === t ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>{t}</button>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-1.5 items-center text-xs">
+            <span className="text-muted-foreground">Severity:</span>
+            {["All", ...SEVERITIES].map((s) => (
+              <button key={s} onClick={() => setSev(s)} className={`px-2 py-0.5 rounded-full border ${sev === s ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>{s}</button>
+            ))}
           </div>
         </div>
 
-        {/* Disease list */}
-        <div className="flex-1 overflow-y-auto custom-scroll p-4 space-y-2">
-          {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No diseases match your filters.</p>}
-          {filtered.map((d, i) => {
-            const isExpanded = expandedIndex === i;
-            return (
-              <div key={d.name} className="border border-border rounded-xl overflow-hidden bg-card hover:border-primary/30 transition-colors">
-                <button onClick={() => setExpandedIndex(isExpanded ? null : i)} className="w-full flex items-center justify-between px-4 py-3 text-left">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${SEVERITY_COLORS[d.severity]}`}>{d.severity}</span>
-                    <div className="min-w-0">
-                      <h4 className="text-sm font-semibold text-foreground truncate">{d.name}</h4>
-                      <p className="text-xs text-muted-foreground truncate">{d.pathogen} • {d.type}</p>
+        {showForm && (
+          <div className="mb-4 p-4 rounded-xl border border-primary/30 bg-primary/5 space-y-2">
+            <h3 className="font-semibold text-sm">{editing ? "Edit" : "New"} disease</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <Field label="Name *"><input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={inp} /></Field>
+              <Field label="Pathogen *"><input value={draft.pathogen} onChange={(e) => setDraft({ ...draft, pathogen: e.target.value })} className={inp} /></Field>
+              <Field label="Type"><select value={draft.type} onChange={(e) => setDraft({ ...draft, type: e.target.value })} className={inp}>{TYPES.map((t) => <option key={t}>{t}</option>)}</select></Field>
+              <Field label="Severity"><select value={draft.severity} onChange={(e) => setDraft({ ...draft, severity: e.target.value })} className={inp}>{SEVERITIES.map((s) => <option key={s}>{s}</option>)}</select></Field>
+              <Field label="Affected castes"><input value={draft.affected_castes || ""} onChange={(e) => setDraft({ ...draft, affected_castes: e.target.value })} className={inp} /></Field>
+              <Field label="Prevention"><input value={draft.prevention || ""} onChange={(e) => setDraft({ ...draft, prevention: e.target.value })} className={inp} /></Field>
+            </div>
+            <Field label="Symptoms (pipe `|` separated)"><textarea value={draft.symptoms.join("|")} onChange={(e) => setDraft({ ...draft, symptoms: e.target.value.split("|").map((s) => s.trim()) })} className={`${inp} min-h-[50px]`} /></Field>
+            <Field label="Treatments (pipe `|` separated)"><textarea value={draft.treatments.join("|")} onChange={(e) => setDraft({ ...draft, treatments: e.target.value.split("|").map((s) => s.trim()) })} className={`${inp} min-h-[50px]`} /></Field>
+            <Field label="Notes"><textarea value={draft.notes || ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} className={`${inp} min-h-[40px]`} /></Field>
+            <div className="flex gap-2 pt-1">
+              <button onClick={save} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save</button>
+              <button onClick={() => { setShowForm(false); setEditing(null); }} className="px-3 py-2 rounded-lg border border-border text-xs">Cancel</button>
+            </div>
+          </div>
+        )}
+
+        {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-honey" /></div> :
+        filtered.length === 0 ? <div className="text-center py-8 text-sm text-muted-foreground">No diseases match.</div> : (
+          <div className="space-y-2">
+            {filtered.map((r) => {
+              const isExp = expanded === r.id;
+              return (
+                <div key={r.id} className="border border-border rounded-xl overflow-hidden bg-card">
+                  <div className="px-4 py-3 flex items-center justify-between gap-2">
+                    <button onClick={() => setExpanded(isExp ? null : r.id)} className="flex-1 flex items-center gap-3 text-left">
+                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${SEV_COLOR[r.severity] || "border-border"}`}>{r.severity}</span>
+                      <div className="min-w-0">
+                        <h4 className="text-sm font-semibold text-foreground truncate">{r.name} {r.is_default && <span className="ml-1 text-[9px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">DEFAULT</span>}</h4>
+                        <p className="text-xs text-muted-foreground truncate">{r.pathogen} · {r.type}</p>
+                      </div>
+                      {isExp ? <ChevronUp className="w-4 h-4 text-muted-foreground ml-auto" /> : <ChevronDown className="w-4 h-4 text-muted-foreground ml-auto" />}
+                    </button>
+                    <div className="flex gap-1">
+                      <button onClick={() => startEdit(r)} className="p-1.5 rounded hover:bg-muted" title="Edit"><Pencil className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => remove(r)} className="p-1.5 rounded hover:bg-destructive/10 text-destructive" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </div>
-                  {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />}
-                </button>
-                {isExpanded && (
-                  <div className="px-4 pb-4 border-t border-border pt-3 space-y-3">
-                    <div>
-                      <h5 className="text-xs font-semibold text-foreground mb-1">Symptoms</h5>
-                      <div className="flex flex-wrap gap-1">
-                        {d.symptoms.map((s) => (
-                          <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20">{s}</span>
-                        ))}
-                      </div>
+                  {isExp && (
+                    <div className="px-4 pb-4 border-t border-border pt-3 space-y-2 text-xs">
+                      {r.symptoms.length > 0 && <div><b className="text-foreground">Symptoms:</b> <span className="text-muted-foreground">{r.symptoms.join(" · ")}</span></div>}
+                      {r.treatments.length > 0 && <div><b className="text-foreground">Treatments:</b> <span className="text-muted-foreground">{r.treatments.join(" · ")}</span></div>}
+                      {r.prevention && <div><b className="text-foreground">Prevention:</b> <span className="text-muted-foreground">{r.prevention}</span></div>}
+                      {r.affected_castes && <div><b className="text-foreground">Affects:</b> <span className="text-muted-foreground">{r.affected_castes}</span></div>}
+                      {r.notes && <div><b className="text-foreground">Notes:</b> <span className="text-muted-foreground">{r.notes}</span></div>}
                     </div>
-                    <div>
-                      <h5 className="text-xs font-semibold text-foreground mb-1">Treatments</h5>
-                      <div className="flex flex-wrap gap-1">
-                        {d.treatments.map((t) => (
-                          <span key={t} className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{t}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex gap-4 text-xs">
-                      <div><span className="font-semibold text-foreground">Prevention:</span> <span className="text-muted-foreground">{d.prevention}</span></div>
-                    </div>
-                    <div className="text-xs"><span className="font-semibold text-foreground">Affects:</span> <span className="text-muted-foreground">{d.affectedCastes}</span></div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="mt-4 p-3 rounded-lg border border-border bg-muted/30 text-xs text-muted-foreground">
+          <b>CSV format:</b> name, pathogen, type, severity, symptoms, treatments, prevention, affected_castes, notes — symptoms/treatments use pipe `|` separator.
         </div>
       </div>
     </div>
   );
+}
+
+const inp = "w-full bg-background border border-border rounded-lg px-3 py-2 text-sm outline-none";
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return <div><label className="text-xs text-muted-foreground mb-1 block">{label}</label>{children}</div>;
 }

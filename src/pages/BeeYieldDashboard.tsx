@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import ErrorBoundary from '@/components/beeyield/ErrorBoundary';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -105,6 +105,9 @@ import HivePlacementMap from '@/components/beeyield/lovable_ai/HivePlacementMap'
 import PrecisionDrilldown from '@/components/beeyield/lovable_ai/PrecisionDrilldown';
 import MOAView from '@/components/beeyield/lovable_ai/MOAView';
 import FloragePage from '@/components/beeyield/lovable_ai/FloragePage';
+import BeeSpeciesPage from '@/components/beeyield/lovable_ai/BeeSpeciesPage';
+import BeeyieldCalculators from '@/components/beeyield/lovable_ai/BeeyieldCalculators';
+import VarroaSimulator from '@/components/beeyield/lovable_ai/VarroaSimulator';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -244,6 +247,8 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'pollination-grid', label: 'Precision Pollination', icon: LayoutGrid },
                         { id: 'pollination-calcs', label: 'Pollination Calcs', icon: Calculator },
                         { id: 'pollination-planning-ai', label: 'AI Pollination Plan', icon: Sparkles },
+                        { id: 'beeyield-calculators', label: 'Calculator Hub', icon: Calculator },
+                        { id: 'varroa-simulator', label: 'Varroa Simulator', icon: TrendingUp },
                         { id: 'pollination-engine', label: 'Pollination planning', icon: Cpu },
                         { id: 'saturation-math', label: 'Coverage area', icon: Scale },
                         { id: 'hpa-optimizer', label: 'Performance planning', icon: Cpu },
@@ -294,6 +299,7 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'contract-verification', label: 'Verified contracts', icon: ShieldCheck },
                         { id: 'bee-diseases', label: 'Pathogen Database', icon: AlertTriangle },
                         { id: 'bee-gallery', label: 'Bee Species', icon: Bug },
+                        { id: 'bee-species-edit', label: 'Manage Species', icon: Settings },
                     ]
                 },
             ]
@@ -394,6 +400,9 @@ const BeeYieldDashboard: React.FC = () => {
             case 'flight-tracker': return <FlightTrackerEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'bee-diseases': return <BeeDiseasesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'bee-gallery': return <BeeGallery isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'bee-species-edit': return <BeeSpeciesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'beeyield-calculators': return <BeeyieldCalculators isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'varroa-simulator': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
             case 'master-map': return <MasterMapView />;
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
