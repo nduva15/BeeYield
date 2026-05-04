@@ -20,3 +20,19 @@ export const getMediaItems = async (type?: string): Promise<MediaItem[]> => {
 export const getFeaturedMedia = async (): Promise<MediaItem[]> => {
     return apiGet<MediaItem[]>('/media/featured');
 };
+
+export interface CaseStudy {
+    id: string;
+    title: string;
+    category: string;
+    stories: any[];
+}
+
+export const getCaseStudies = async (): Promise<CaseStudy[]> => {
+    try {
+        return await apiGet<CaseStudy[]>('/media/case-studies');
+    } catch (e) {
+        console.error("Failed to fetch case studies:", e);
+        return [];
+    }
+};

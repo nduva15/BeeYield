@@ -57,31 +57,8 @@ const Careers = () => {
       setJobs(data || []);
     } catch (error) {
       console.error('Error fetching jobs:', error);
-      // Fallback to static data if DB fails (for demo purposes if migration failed)
-      setJobs([
-        {
-          id: "1",
-          title: "Senior Agronomist",
-          department: "Operations",
-          location: "Nairobi, Kenya",
-          type: "Full-time",
-          description_html: "<p>Lead field operations and ensure hive health across our apiary network.</p><h3>Responsibilities</h3><ul><li>Monitor 50+ hives</li><li>Data collection</li></ul>",
-          salary_range: "KES 150,000 - 200,000",
-          is_active: true,
-          posted_at: new Date().toISOString()
-        },
-        {
-          id: "2",
-          title: "Software Engineer",
-          department: "Tech",
-          location: "Nairobi (Remote)",
-          type: "Full-time",
-          description_html: "<p>Build the future of agri-tech with React and Python.</p>",
-          salary_range: "KES 120,000 - 180,000",
-          is_active: true,
-          posted_at: new Date().toISOString()
-        }
-      ]);
+      toast.error('Could not load current openings. Please try again later.');
+      setJobs([]);
     } finally {
       setLoading(false);
     }

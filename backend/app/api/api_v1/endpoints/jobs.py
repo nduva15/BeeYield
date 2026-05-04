@@ -19,6 +19,7 @@ async def apply_for_job(
     full_name: str = Form(...),
     email: str = Form(...),
     phone: Optional[str] = Form(None),
+    linkedin_url: Optional[str] = Form(None),
     resume: UploadFile = File(...),
     token: Optional[str] = Depends(get_token)
 ):
@@ -63,6 +64,7 @@ async def apply_for_job(
             "full_name": full_name,
             "email": email,
             "phone": phone,
+            "linkedin_url": linkedin_url,
             "resume_url": file_path, # Store the internal path
             "status": "applied"
         }

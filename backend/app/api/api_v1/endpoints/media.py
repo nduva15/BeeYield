@@ -56,3 +56,44 @@ async def get_featured_media(token: Optional[str] = Depends(get_token)):
     items = await db_select("media_items", filters={"is_featured": True, "is_active": True}, limit=5, token=token)
     return items if items else []
 
+@router.get("/case-studies", response_model=List[dict])
+async def get_case_studies(token: Optional[str] = Depends(get_token)):
+    """
+    Get all case studies with their stories.
+    """
+    categories = await db_select("case_study_categories", token=token)
+    
+    if not categories:
+        return []
+        
+    stories = await db_select("case_study_stories", token=token)
+    
+    result = []
+    for cat in categories:
+        cat_stories = [s for s in stories if s.get("category_id") == cat.get("id")]
+        
+        # Parse the stats_json
+        for s in cat_stories:
+            if isinstance(s.get("stats_json"), str):
+                import json
+                try:
+                    s["stats"] = json.loads(s.get("stats_json"))
+                except:
+                    s["stats"] = []
+            elif isinstance(s.get("stats_json"), list):
+                s["stats"] = s.get("stats_json")
+            else:
+                s["stats"] = []
+                
+            # Rename for frontend compatibility
+            s["image"] = s.get("image_url")
+            
+        result.append({
+            "id": cat.get("id"),
+            "title": cat.get("title"),
+            "category": cat.get("category_name"),
+            "stories": cat_stories
+        })
+        
+    return result
+
