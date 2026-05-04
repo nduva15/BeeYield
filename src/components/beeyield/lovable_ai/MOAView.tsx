@@ -53,7 +53,7 @@ const DEFAULT_FILTERS: Filters = {
   showCoverage: true, showBloom: true, showFlight: true, showDiagnostics: true, selectedHive: null,
 };
 
-export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId }: Props) {
+export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId, embedded }: Props & { embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [runs, setRuns] = useState<Run[]>([]);
   const [versions, setVersions] = useState<Version[]>([]);
@@ -101,7 +101,7 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
     setLoading(false);
   }, [deviceId, readOnly, initialRunId]);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => { if (isOpen || embedded) load(); }, [isOpen, embedded, load]);
 
   // Load versions & restore filters when run changes
   useEffect(() => {
@@ -270,43 +270,49 @@ Required sections:
     } finally { setExporting(false); }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full flex flex-col min-h-[600px]" 
+    : "fixed inset-0 z-50 bg-background overflow-hidden flex flex-col";
 
   return (
-    <div className="fixed inset-0 z-50 bg-background overflow-hidden flex flex-col">
+    <div className={containerClasses}>
       {/* Header */}
-      <div className="flex-shrink-0 border-b border-border bg-card px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2">
-          <Layers className="w-5 h-5 text-honey" />
-          <div>
-            <h1 className="font-display text-base font-bold text-honey leading-tight">Multi-Objective Apiary View</h1>
-            <p className="text-[10px] text-muted-foreground">Map · bloom · flight · coverage · diagnostics — synced per version</p>
+      {!embedded && (
+        <div className="flex-shrink-0 border-b border-border bg-card px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Layers className="w-5 h-5 text-honey" />
+            <div>
+              <h1 className="font-display text-base font-bold text-honey leading-tight">Multi-Objective Apiary View</h1>
+              <p className="text-[10px] text-muted-foreground">Map · bloom · flight · coverage · diagnostics — synced per version</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {!readOnly && (
+              <select value={selectedRunId} onChange={(e) => setSelectedRunId(e.target.value)} className="bg-background border border-border rounded-md px-2 py-1 text-xs">
+                <option value="">— run —</option>
+                {runs.map((r) => <option key={r.id} value={r.id}>{r.crop} · {r.hives}h</option>)}
+              </select>
+            )}
+            <select value={selectedVersionId} onChange={(e) => setSelectedVersionId(e.target.value)} disabled={!versions.length} className="bg-background border border-border rounded-md px-2 py-1 text-xs">
+              {versions.length === 0 ? <option>— no versions —</option> : versions.map((v) => <option key={v.id} value={v.id}>{v.version_label}</option>)}
+            </select>
+            <button onClick={() => exportPDF(false)} disabled={exporting || !run} className="px-2 py-1 rounded-md border border-border text-xs flex items-center gap-1 hover:border-primary/50 disabled:opacity-50">
+              {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <FileDown className="w-3 h-3" />} Map PDF
+            </button>
+            <button onClick={() => exportPDF(true)} disabled={exporting || !run} className="px-2 py-1 rounded-md bg-honey/10 border border-honey/40 text-honey text-xs flex items-center gap-1 disabled:opacity-50">
+              <FileDown className="w-3 h-3" /> Map + Panels PDF
+            </button>
+            {!readOnly && (
+              <button onClick={persistFilters} disabled={!selectedVersionId} className="px-2 py-1 rounded-md border border-border text-xs flex items-center gap-1 hover:border-primary/50 disabled:opacity-50">
+                <Save className="w-3 h-3" /> Save filters
+              </button>
+            )}
+            <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {!readOnly && (
-            <select value={selectedRunId} onChange={(e) => setSelectedRunId(e.target.value)} className="bg-background border border-border rounded-md px-2 py-1 text-xs">
-              <option value="">— run —</option>
-              {runs.map((r) => <option key={r.id} value={r.id}>{r.crop} · {r.hives}h</option>)}
-            </select>
-          )}
-          <select value={selectedVersionId} onChange={(e) => setSelectedVersionId(e.target.value)} disabled={!versions.length} className="bg-background border border-border rounded-md px-2 py-1 text-xs">
-            {versions.length === 0 ? <option>— no versions —</option> : versions.map((v) => <option key={v.id} value={v.id}>{v.version_label}</option>)}
-          </select>
-          <button onClick={() => exportPDF(false)} disabled={exporting || !run} className="px-2 py-1 rounded-md border border-border text-xs flex items-center gap-1 hover:border-primary/50 disabled:opacity-50">
-            {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <FileDown className="w-3 h-3" />} Map PDF
-          </button>
-          <button onClick={() => exportPDF(true)} disabled={exporting || !run} className="px-2 py-1 rounded-md bg-honey/10 border border-honey/40 text-honey text-xs flex items-center gap-1 disabled:opacity-50">
-            <FileDown className="w-3 h-3" /> Map + Panels PDF
-          </button>
-          {!readOnly && (
-            <button onClick={persistFilters} disabled={!selectedVersionId} className="px-2 py-1 rounded-md border border-border text-xs flex items-center gap-1 hover:border-primary/50 disabled:opacity-50">
-              <Save className="w-3 h-3" /> Save filters
-            </button>
-          )}
-          <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
-        </div>
-      </div>
+      )}
 
       {/* Filter bar */}
       <div className="flex-shrink-0 border-b border-border bg-muted/30 px-4 py-2 flex items-center gap-3 flex-wrap text-xs">

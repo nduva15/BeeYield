@@ -44,7 +44,7 @@ const COMPASS_DIRS = [
   { label: "W", deg: 270 }, { label: "NW", deg: 315 },
 ];
 
-export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: Props) {
+export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, embedded }: Props & { embedded?: boolean }) {
   const [cropName, setCropName] = useState(CROP_PROFILES[0].name);
   const [acres, setAcres] = useState(20);
   const [hives, setHives] = useState(40);
@@ -114,37 +114,47 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: 
     };
   }, [acres, hives, crop, fieldShape, windKmh, windDirDeg, fieldOrientationDeg, slopePct, orientationDeg]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
+  
+  const contentClasses = embedded 
+    ? "w-full" 
+    : "max-w-5xl mx-auto p-6";
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Target className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Precision Pollination Drilldown</h1>
-              <p className="text-xs text-muted-foreground">Drop spacing • orientation • overlap • wind compass • slope modifiers</p>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Target className="w-7 h-7 text-honey" />
+              <div>
+                <h1 className="font-display text-2xl font-bold text-honey">Precision Pollination Drilldown</h1>
+                <p className="text-xs text-muted-foreground">Drop spacing • orientation • overlap • wind compass • slope modifiers</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {onOpenPlanning && (
+                <button
+                  onClick={onOpenPlanning}
+                  className="px-3 h-9 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 text-xs font-medium"
+                >
+                  Open Pollination Planning
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {onOpenPlanning && (
-              <button
-                onClick={onOpenPlanning}
-                className="px-3 h-9 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 text-xs font-medium"
-              >
-                Open Pollination Planning
-              </button>
-            )}
-            <button
-              onClick={onClose}
-              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+        )}
 
         {/* Inputs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 rounded-xl border border-border bg-muted/30">

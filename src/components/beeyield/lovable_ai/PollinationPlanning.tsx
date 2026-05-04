@@ -32,7 +32,7 @@ const CROP_DATA: Record<string, { radius: number; contractPerAc: number; demand:
   Canola:     { radius: 1500, contractPerAc: 0.5, demand: 0.6, setBoost: 0.25 },
 };
 
-export default function PollinationPlanning({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function PollinationPlanning({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const [crop, setCrop] = useState("Almonds");
   const [acres, setAcres] = useState(40);
   const [region, setRegion] = useState("California Central Valley");
@@ -112,20 +112,31 @@ Required sections:
     setSelectedFlorage((cur) => cur.includes(name) ? cur.filter((n) => n !== name) : [...cur, name]);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
+  
+  const contentClasses = embedded 
+    ? "w-full" 
+    : "max-w-5xl mx-auto p-6";
+
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Target className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Pollination Planning</h1>
-              <p className="text-xs text-muted-foreground">Florage-weighted precision model · contract baseline · AI deployment plan</p>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Target className="w-7 h-7 text-honey" />
+              <div>
+                <h1 className="font-display text-2xl font-bold text-honey">Pollination Planning</h1>
+                <p className="text-xs text-muted-foreground">Florage-weighted precision model · contract baseline · AI deployment plan</p>
+              </div>
             </div>
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 rounded-xl border border-border bg-muted/30">
           <Field label="Crop"><select value={crop} onChange={(e) => setCrop(e.target.value)} className={inputCls}>{Object.keys(CROP_DATA).map((c) => <option key={c}>{c}</option>)}</select></Field>

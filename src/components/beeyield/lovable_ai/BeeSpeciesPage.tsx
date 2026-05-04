@@ -18,7 +18,7 @@ const EMPTY: Omit<Species, "id" | "is_default"> = {
 
 const CATS = ["Honey Bee", "Bumblebee", "Solitary", "Stingless", "Other"];
 
-export default function BeeSpeciesPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BeeSpeciesPage({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [rows, setRows] = useState<Species[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ export default function BeeSpeciesPage({ isOpen, onClose }: { isOpen: boolean; o
     setLoading(false);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => { if (isOpen || embedded) load(); }, [isOpen, embedded, load]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -111,27 +111,38 @@ export default function BeeSpeciesPage({ isOpen, onClose }: { isOpen: boolean; o
     toast.success(`Imported ${payload.length} species`); load();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
+  
+  const contentClasses = embedded 
+    ? "w-full" 
+    : "max-w-6xl mx-auto p-6";
+
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Bug className="w-6 h-6 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Bee Species (Editable)</h1>
-              <p className="text-xs text-muted-foreground">{rows.length} entries · CRUD + CSV import/export · per-device + global defaults</p>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Bug className="w-6 h-6 text-honey" />
+              <div>
+                <h1 className="font-display text-2xl font-bold text-honey">Bee Species (Editable)</h1>
+                <p className="text-xs text-muted-foreground">{rows.length} entries · CRUD + CSV import/export · per-device + global defaults</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={exportCSV} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5"><Download className="w-3.5 h-3.5" />Export CSV</button>
+              <label className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 cursor-pointer"><Upload className="w-3.5 h-3.5" />Import CSV
+                <input type="file" accept=".csv" className="hidden" onChange={(e) => e.target.files?.[0] && importCSV(e.target.files[0])} />
+              </label>
+              <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />New species</button>
+              <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={exportCSV} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5"><Download className="w-3.5 h-3.5" />Export CSV</button>
-            <label className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 cursor-pointer"><Upload className="w-3.5 h-3.5" />Import CSV
-              <input type="file" accept=".csv" className="hidden" onChange={(e) => e.target.files?.[0] && importCSV(e.target.files[0])} />
-            </label>
-            <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />New species</button>
-            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
-          </div>
-        </div>
+        )}
 
         <div className="flex gap-2 mb-4 flex-wrap">
           <div className="relative flex-1 min-w-[200px]">

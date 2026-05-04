@@ -46,7 +46,7 @@ interface Props {
 
 type Mode = "single" | "compare";
 
-export default function PollinationLookup({ isOpen, onClose }: Props) {
+export default function PollinationLookup({ isOpen, onClose, embedded }: Props & { embedded?: boolean }) {
   const [mode, setMode] = useState<Mode>("single");
   const [cropName, setCropName] = useState(CROPS[0].name);
   const [acres, setAcres] = useState<number>(10);
@@ -218,41 +218,51 @@ export default function PollinationLookup({ isOpen, onClose }: Props) {
     toast.success("PDF exported");
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
+  
+  const contentClasses = embedded 
+    ? "w-full" 
+    : "max-w-5xl mx-auto p-6";
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Flower2 className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Pollination Stocking Density Lookup</h1>
-              <p className="text-xs text-muted-foreground">BeeYield PSI v2 model • 14 crops • Frames-per-acre math</p>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Flower2 className="w-7 h-7 text-honey" />
+              <div>
+                <h1 className="font-display text-2xl font-bold text-honey">Pollination Stocking Density Lookup</h1>
+                <p className="text-xs text-muted-foreground">BeeYield PSI v2 model • 14 crops • Frames-per-acre math</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setBrandOpen((v) => !v)}
+                className={`px-3 h-9 rounded-lg border text-xs flex items-center gap-1.5 transition-colors ${
+                  brand.farmName || brand.logoDataUrl
+                    ? "border-honey/40 bg-honey/5 text-honey"
+                    : "border-border hover:border-primary/50 text-muted-foreground hover:text-foreground"
+                }`}
+                title="Set farm name and logo for exported PDFs"
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                {brand.farmName ? brand.farmName.slice(0, 16) : "Farm branding"}
+              </button>
+              <button
+                onClick={onClose}
+                className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setBrandOpen((v) => !v)}
-              className={`px-3 h-9 rounded-lg border text-xs flex items-center gap-1.5 transition-colors ${
-                brand.farmName || brand.logoDataUrl
-                  ? "border-honey/40 bg-honey/5 text-honey"
-                  : "border-border hover:border-primary/50 text-muted-foreground hover:text-foreground"
-              }`}
-              title="Set farm name and logo for exported PDFs"
-            >
-              <Building2 className="w-3.5 h-3.5" />
-              {brand.farmName ? brand.farmName.slice(0, 16) : "Farm branding"}
-            </button>
-            <button
-              onClick={onClose}
-              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+        )}
 
         {brandOpen && (
           <div className="mb-4 p-4 rounded-xl border border-honey/30 bg-honey/5">

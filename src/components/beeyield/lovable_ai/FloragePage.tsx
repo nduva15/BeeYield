@@ -64,7 +64,7 @@ const EMPTY_DRAFT: Omit<FloragePlant, "id" | "is_default"> = {
   name: "", latin: "", bloom: "", nectar: 5, pollen: 5, radius: 800, notes: "",
 };
 
-export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function FloragePage({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [plants, setPlants] = useState<FloragePlant[]>([]);
   const [loading, setLoading] = useState(false);
@@ -100,7 +100,7 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
     setLoading(false);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => { if (isOpen || embedded) load(); }, [isOpen, embedded, load]);
 
   const startEdit = (p: FloragePlant) => {
     setEditing(p);
@@ -213,25 +213,36 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
     reader.readAsText(f);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
+  
+  const contentClasses = embedded 
+    ? "w-full" 
+    : "max-w-6xl mx-auto p-6";
+
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Sprout className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Florage Database</h1>
-              <p className="text-xs text-muted-foreground">{plants.length} plants — full CRUD, CSV import/export</p>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Sprout className="w-7 h-7 text-honey" />
+              <div>
+                <h1 className="font-display text-2xl font-bold text-honey">Florage Database</h1>
+                <p className="text-xs text-muted-foreground">{plants.length} plants — full CRUD, CSV import/export</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5 hover:opacity-90"><Plus className="w-3.5 h-3.5" />New plant</button>
+              <button onClick={() => setShowImport((s) => !s)} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Upload className="w-3.5 h-3.5" />Import CSV</button>
+              <button onClick={exportCsv} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Download className="w-3.5 h-3.5" />Export</button>
+              <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5 hover:opacity-90"><Plus className="w-3.5 h-3.5" />New plant</button>
-            <button onClick={() => setShowImport((s) => !s)} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Upload className="w-3.5 h-3.5" />Import CSV</button>
-            <button onClick={exportCsv} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Download className="w-3.5 h-3.5" />Export</button>
-            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
-          </div>
-        </div>
+        )}
 
         {showImport && (
           <div className="mb-6 p-4 rounded-xl border border-honey/30 bg-honey/5">

@@ -40,7 +40,7 @@ type Log = {
 type RunRow = { id: string; crop: string; created_at: string };
 type RunVersion = { id: string; version_label: string; created_at: string };
 
-export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BeeFlightTracker({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [logs, setLogs] = useState<Log[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);
@@ -97,7 +97,7 @@ export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean;
     if (runRes.data) setRuns(runRes.data as RunRow[]);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => { if (isOpen || embedded) load(); }, [isOpen, embedded, load]);
 
   useEffect(() => {
     if (!selectedRunId) {
@@ -250,23 +250,33 @@ export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean;
     toast.success("Flights CSV exported");
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
+  
+  const contentClasses = embedded 
+    ? "w-full" 
+    : "max-w-5xl mx-auto p-6";
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Plane className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Bee Flight & Activity Tracker</h1>
-              <p className="text-xs text-muted-foreground">Foraging zones, activity counter, flight paths, and storage or nutrition indicators</p>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Plane className="w-7 h-7 text-honey" />
+              <div>
+                <h1 className="font-display text-2xl font-bold text-honey">Bee Flight & Activity Tracker</h1>
+                <p className="text-xs text-muted-foreground">Foraging zones, activity counter, flight paths, and storage or nutrition indicators</p>
+              </div>
             </div>
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center">
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+        )}
 
         <div className="p-5 rounded-xl border border-honey/40 bg-honey/5 mb-4 flex items-center gap-4 flex-wrap">
           <div>

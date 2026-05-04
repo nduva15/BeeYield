@@ -68,24 +68,33 @@ interface PollinationChartsProps {
   onClose: () => void;
 }
 
-export default function PollinationCharts({ isOpen, onClose }: PollinationChartsProps) {
+export default function PollinationCharts({ isOpen, onClose, embedded }: PollinationChartsProps & { embedded?: boolean }) {
   const [activeTab, setActiveTab] = useState("crops");
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm";
+  
+  const contentClasses = embedded 
+    ? "bg-card border border-border rounded-2xl w-full flex flex-col" 
+    : "bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4 flex flex-col";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4 flex flex-col" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-border px-6 py-4 flex-shrink-0">
-          <div>
-            <h2 className="font-display text-lg font-bold text-foreground">🌸 Pollination Data & Analytics</h2>
-            <p className="text-xs text-muted-foreground">Interactive charts • Crop dependencies • Economic impact • Seasonal trends</p>
+    <div className={containerClasses} onClick={!embedded ? onClose : undefined}>
+      <div className={contentClasses} onClick={(e) => e.stopPropagation()}>
+        {!embedded && (
+          <div className="flex items-center justify-between border-b border-border px-6 py-4 flex-shrink-0">
+            <div>
+              <h2 className="font-display text-lg font-bold text-foreground">🌸 Pollination Data & Analytics</h2>
+              <p className="text-xs text-muted-foreground">Interactive charts • Crop dependencies • Economic impact • Seasonal trends</p>
+            </div>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+        )}
 
         {/* Tabs */}
         <div className="px-6 pt-3 flex gap-2 flex-shrink-0 border-b border-border pb-3">

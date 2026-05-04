@@ -16,7 +16,7 @@ import { evaluateAlerts } from "./AlertsPage";
 
 type Forecast = { date: string; hour: number; tempC: number; windKmh: number; precipMm: number; predictedBpm: number; band: string };
 
-export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function ActivityForecaster({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [hiveLabel, setHiveLabel] = useState("Hive 1");
   const [lat, setLat] = useState("-2.4078");
@@ -119,7 +119,7 @@ export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolea
     setHistory(rows);
   }, [deviceId, hiveLabel]);
 
-  useEffect(() => { if (isOpen) loadHistory(); }, [isOpen, loadHistory]);
+  useEffect(() => { if (isOpen || embedded) loadHistory(); }, [isOpen, embedded, loadHistory]);
 
   const runAI = async () => {
     if (forecast.length === 0) { toast.error("Fetch forecast first"); return; }
@@ -174,20 +174,31 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
     };
   });
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
+  
+  const contentClasses = embedded 
+    ? "w-full" 
+    : "max-w-5xl mx-auto p-6";
+
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <CloudSun className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Bee Activity Forecaster</h1>
-              <p className="text-xs text-muted-foreground">7-day activity prediction · Open-Meteo weather × florage × baseline</p>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <CloudSun className="w-7 h-7 text-honey" />
+              <div>
+                <h1 className="font-display text-2xl font-bold text-honey">Bee Activity Forecaster</h1>
+                <p className="text-xs text-muted-foreground">7-day activity prediction · Open-Meteo weather × florage × baseline</p>
+              </div>
             </div>
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
-        </div>
+        )}
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4 p-4 rounded-xl border border-border bg-muted/30">
           <Field label="Hive label"><input value={hiveLabel} onChange={(e) => setHiveLabel(e.target.value)} className={inputCls} /></Field>

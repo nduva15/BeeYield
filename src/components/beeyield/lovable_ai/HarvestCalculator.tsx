@@ -60,7 +60,7 @@ interface Props {
   onOpenPlanning?: () => void;
 }
 
-export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: Props) {
+export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, embedded }: Props & { embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [hives, setHives] = useState(10);
   const [acres, setAcres] = useState(0);
@@ -139,8 +139,8 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
   }, [deviceId]);
 
   useEffect(() => {
-    if (isOpen) loadRuns();
-  }, [isOpen, loadRuns]);
+    if (isOpen || embedded) loadRuns();
+  }, [isOpen, embedded, loadRuns]);
 
   const loadVersionsFor = useCallback(async (runId: string) => {
     const { data } = await supabase
@@ -411,36 +411,46 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
     } catch { /* canceled */ }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
+
+  const containerClasses = embedded 
+    ? "relative w-full h-full" 
+    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
+  
+  const contentClasses = embedded 
+    ? "w-full" 
+    : "max-w-5xl mx-auto p-6";
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Calculator className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Harvest Calculator</h1>
-              <p className="text-xs text-muted-foreground">BeeYield Harvest Math • Frame yield × HHI × 50/50 ethical rule</p>
+    <div className={containerClasses}>
+      <div className={contentClasses}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Calculator className="w-7 h-7 text-honey" />
+              <div>
+                <h1 className="font-display text-2xl font-bold text-honey">Harvest Calculator</h1>
+                <p className="text-xs text-muted-foreground">BeeYield Harvest Math • Frame yield × HHI × 50/50 ethical rule</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setHistoryOpen((v) => !v)}
+                className="px-3 h-9 rounded-lg border border-border hover:border-primary/50 text-xs flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
+                title="Saved runs"
+              >
+                <History className="w-3.5 h-3.5" /> History ({savedRuns.length})
+              </button>
+              <button
+                onClick={onClose}
+                className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setHistoryOpen((v) => !v)}
-              className="px-3 h-9 rounded-lg border border-border hover:border-primary/50 text-xs flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
-              title="Saved runs"
-            >
-              <History className="w-3.5 h-3.5" /> History ({savedRuns.length})
-            </button>
-            <button
-              onClick={onClose}
-              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+        )}
 
         {historyOpen && (
           <div className="mb-6 p-4 rounded-xl border border-border bg-card">
