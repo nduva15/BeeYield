@@ -15,10 +15,14 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 const ESG = () => {
   const [downloading, setDownloading] = useState(false);
   const [liveStats, setLiveStats] = useState<any>(null);
+  const [esgPillars, setEsgPillars] = useState<any[]>([]);
 
   useEffect(() => {
     beeyieldService.getImpactStats().then(data => {
       if (data) setLiveStats(data);
+    });
+    beeyieldService.getEsgPillars().then(data => {
+      if (data) setEsgPillars(data);
     });
   }, []);
 
@@ -132,68 +136,17 @@ const ESG = () => {
     }, 1000);
   };
 
-  const impactStats = [
-    { value: liveStats?.beekeepers || "20+", label: "Custodians", icon: Users, description: "Strategic partners trained" },
-    { value: liveStats?.acres_pollinated || "25", label: "Acres", icon: MapPin, description: "Bio-verified coverage" },
-    { value: "2,500+", label: "Trees", icon: TreePine, description: "Flora restoration" },
-    { value: liveStats?.hive_count || "184", label: "Monitored hives", icon: Bug, description: "Colonies monitored during the season" },
-    { value: liveStats?.total_honey_kg || "943kg", label: "Yield", icon: Package, description: "Traceable harvest" },
-    { value: "2.4M+", label: "Pollinators", icon: Heart, description: "Estimated bees supported" },
-  ];
+  const iconMap: Record<string, any> = {
+    Users, MapPin, TreePine, Bug, Package, Heart, Cpu, ShieldCheck, Scale, Code
+  };
 
-  const esgPillars = [
-    {
-      title: "Hive Health",
-      icon: Cpu,
-      color: "bg-white border-neutral-200/60",
-      initiatives: [
-        "Sound pattern checks to flag early disease risk",
-        "Real-time hive condition snapshots (Temp, Humidity, Mass)",
-        "Swarm-risk indicators to support timely inspections",
-        "Simple health signals that are easy to act on",
-        "Sharing aggregated learnings with local partners"
-      ],
-      impact: "Earlier detection of issues and faster response during the season"
-    },
-    {
-      title: "Traceability",
-      icon: ShieldCheck,
-      color: "bg-white border-neutral-200/60",
-      initiatives: [
-        "Verification checks for each batch",
-        "Verifiable records for each harvest event",
-        "Hive ID to jar-level tracking where available",
-        "QR access to batch details for customers",
-        "Audit support for retail and export partners"
-      ],
-      impact: "Clear, checkable records from hive to jar"
-    },
-    {
-      title: "The 50/50 Anchor",
-      icon: Scale,
-      color: "bg-white border-neutral-200/60",
-      initiatives: [
-        "Strict adherence to the 50% ethical harvest threshold",
-        "No artificial supplements: Bees sustain on native flora",
-        "Resource-buffer management for dry seasons in Kenya",
-        "Biological-centric harvest cycles prioritized over volume",
-        "High-potency nutrient retention in final honey product"
-      ],
-      impact: "Colonies maintain peak biological vigor through extreme weather cycles"
-    },
-    {
-      title: "Women-Led Engineering",
-      icon: Code,
-      color: "bg-white border-neutral-200/60",
-      initiatives: [
-        "Co-Founded by Agatha Nduva (IT Architecture) & Carole Nduva (Growth)",
-        "Diversity-first engineering and strategic leadership teams",
-        "Mentorship programs for women in digital agriculture and advanced intelligence",
-        "Strategic focus on inclusive economic growth in Kibwezi",
-        "Leadership in Africa's emerging high-tech ag-ecosystem"
-      ],
-      impact: "Diversity-driven innovation accelerating project dev-cycles by 30%"
-    }
+  const impactStats = [
+    { value: liveStats?.beekeepers || "0", label: "Custodians", icon: Users, description: "Strategic partners trained" },
+    { value: liveStats?.acres_pollinated || "0", label: "Acres", icon: MapPin, description: "Bio-verified coverage" },
+    { value: liveStats?.trees || "2,500+", label: "Trees", icon: TreePine, description: "Flora restoration" },
+    { value: liveStats?.total_hives || "0", label: "Monitored hives", icon: Bug, description: "Colonies monitored during the season" },
+    { value: `${liveStats?.total_honey_kg || "0"}kg`, label: "Yield", icon: Package, description: "Traceable harvest" },
+    { value: liveStats?.pollinators ? `${(liveStats.pollinators / 1000000).toFixed(1)}M+` : "0", label: "Pollinators", icon: Heart, description: "Estimated bees supported" },
   ];
 
   return (
@@ -273,7 +226,10 @@ const ESG = () => {
                     <CardContent className="p-10 flex flex-col h-full">
                       <div className="flex items-center gap-4 mb-8">
                         <div className="w-14 h-14 rounded-2xl bg-beeyield-green/10 flex items-center justify-center">
-                          <pillar.icon className="w-7 h-7 text-beeyield-green" />
+                          {(() => {
+                            const IconComponent = iconMap[pillar.icon] || Cpu;
+                            return <IconComponent className="w-7 h-7 text-beeyield-green" />;
+                          })()}
                         </div>
                         <h3 className="text-2xl font-bold text-neutral-900 tracking-tight">{pillar.title}</h3>
                       </div>

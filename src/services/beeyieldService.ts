@@ -1720,19 +1720,111 @@ export const beeyieldService = {
         return this.getSensorReadings(undefined, 1);
     },
 
-    async getImpactStats(): Promise<{ total_apiaries: number; total_hives: number; total_honey_kg: number }> {
+    async getImpactStats(): Promise<{ 
+        total_apiaries: number; 
+        total_hives: number; 
+        total_honey_kg: number;
+        beekeepers: number;
+        acres_pollinated: number;
+        pollinators: number;
+    }> {
         try {
-            if (!sb) return { total_apiaries: 0, total_hives: 0, total_honey_kg: 0 };
-            const [apiaries, hives, harvests] = await Promise.all([
+            if (!sb) return { total_apiaries: 0, total_hives: 0, total_honey_kg: 0, beekeepers: 0, acres_pollinated: 0, pollinators: 0 };
+            const [apiaries, hives, harvests, profiles] = await Promise.all([
                 sb.from('apiaries').select('id', { count: 'exact', head: true }),
                 sb.from('hives').select('id', { count: 'exact', head: true }),
                 sb.from('harvests').select('quantity_kg'),
+                sb.from('profiles').select('id', { count: 'exact', head: true })
             ]);
+            
             const totalHoney = (harvests.data || []).reduce((s, h) => s + (Number(h.quantity_kg) || 0), 0);
-            return { total_apiaries: apiaries.count || 0, total_hives: hives.count || 0, total_honey_kg: totalHoney };
+            const totalHives = hives.count || 0;
+            
+            // Estimates based on BeeYield data
+            const beekeepers = profiles.count || 0;
+            const acresPollinated = totalHives * 2; // Assuming 2 acres per hive
+            const pollinators = totalHives * 50000; // Assuming 50k bees per hive
+            
+            return { 
+                total_apiaries: apiaries.count || 0, 
+                total_hives: totalHives, 
+                total_honey_kg: totalHoney,
+                beekeepers,
+                acres_pollinated: acresPollinated,
+                pollinators
+            };
         } catch (e) {
             console.error('[BeeYieldService] getImpactStats failed:', e);
-            return { total_apiaries: 0, total_hives: 0, total_honey_kg: 0 };
+            return { total_apiaries: 0, total_hives: 0, total_honey_kg: 0, beekeepers: 0, acres_pollinated: 0, pollinators: 0 };
+        }
+    },
+
+    async getEsgPillars(): Promise<any[]> {
+        try {
+            if (!sb) throw new Error("Supabase not initialized");
+            const { data, error } = await sb.from('esg_pillars').select('*').order('created_at', { ascending: true });
+            
+            if (error || !data || data.length === 0) {
+                // Fallback to local data if DB fails or is empty
+                return [
+                    {
+                        title: "Hive Health",
+                        icon: "Cpu",
+                        color: "bg-white border-neutral-200/60",
+                        initiatives: [
+                            "Sound pattern checks to flag early disease risk",
+                            "Real-time hive condition snapshots (Temp, Humidity, Mass)",
+                            "Swarm-risk indicators to support timely inspections",
+                            "Simple health signals that are easy to act on",
+                            "Sharing aggregated learnings with local partners"
+                        ],
+                        impact: "Earlier detection of issues and faster response during the season"
+                    },
+                    {
+                        title: "Traceability",
+                        icon: "ShieldCheck",
+                        color: "bg-white border-neutral-200/60",
+                        initiatives: [
+                            "Verification checks for each batch",
+                            "Verifiable records for each harvest event",
+                            "Hive ID to jar-level tracking where available",
+                            "QR access to batch details for customers",
+                            "Audit support for retail and export partners"
+                        ],
+                        impact: "Clear, checkable records from hive to jar"
+                    },
+                    {
+                        title: "The 50/50 Anchor",
+                        icon: "Scale",
+                        color: "bg-white border-neutral-200/60",
+                        initiatives: [
+                            "Strict adherence to the 50% ethical harvest threshold",
+                            "No artificial supplements: Bees sustain on native flora",
+                            "Resource-buffer management for dry seasons in Kenya",
+                            "Biological-centric harvest cycles prioritized over volume",
+                            "High-potency nutrient retention in final honey product"
+                        ],
+                        impact: "Colonies maintain peak biological vigor through extreme weather cycles"
+                    },
+                    {
+                        title: "Women-Led Engineering",
+                        icon: "Code",
+                        color: "bg-white border-neutral-200/60",
+                        initiatives: [
+                            "Co-Founded by Agatha Nduva (IT Architecture) & Carole Nduva (Growth)",
+                            "Diversity-first engineering and strategic leadership teams",
+                            "Mentorship programs for women in digital agriculture and advanced intelligence",
+                            "Strategic focus on inclusive economic growth in Kibwezi",
+                            "Leadership in Africa's emerging high-tech ag-ecosystem"
+                        ],
+                        impact: "Diversity-driven innovation accelerating project dev-cycles by 30%"
+                    }
+                ];
+            }
+            return data;
+        } catch (e) {
+            console.error('[BeeYieldService] getEsgPillars failed:', e);
+            return []; // Actually it falls back inside the block, but just in case
         }
     },
 
