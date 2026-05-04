@@ -4,6 +4,7 @@ Media Endpoints - Press, News, Videos
 from fastapi import APIRouter, Depends, Request
 from typing import List, Optional
 from app.db.supabase_db import db_select
+from app.api.api_v1.endpoints.media_data import case_studies_data
 
 router = APIRouter()
 
@@ -64,7 +65,7 @@ async def get_case_studies(token: Optional[str] = Depends(get_token)):
     categories = await db_select("case_study_categories", token=token)
     
     if not categories:
-        return []
+        return case_studies_data
         
     stories = await db_select("case_study_stories", token=token)
     
