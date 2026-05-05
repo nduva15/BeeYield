@@ -125,7 +125,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export default function Index() {
+export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -361,7 +361,10 @@ export default function Index() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-full bg-background honeycomb-bg overflow-hidden">
+    <div className={cn(
+      "flex flex-col w-full bg-background honeycomb-bg overflow-hidden",
+      embedded ? "h-[calc(100vh-140px)] rounded-xl border border-border" : "h-screen"
+    )}>
       {/* Chat History Sidebar */}
       <ChatHistory
         conversations={conversations}
@@ -372,6 +375,7 @@ export default function Index() {
         onRename={handleRenameConversation}
         isOpen={historyOpen}
         onClose={() => setHistoryOpen(false)}
+        embedded={embedded}
       />
 
       {/* Header */}

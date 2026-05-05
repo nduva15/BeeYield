@@ -15,7 +15,7 @@ function humanizeLabel(input?: string) {
 /* ─── Reactive Shared Class Tokens ─── */
 export const glass = {
     /** The outermost page wrapper */
-    page: 'bg-background min-h-screen p-4 md:p-6 -m-4 md:-m-6 space-y-5 pb-20 animate-in fade-in duration-500 relative overflow-hidden',
+    page: 'bg-background min-h-screen p-4 md:p-6 space-y-5 pb-20 animate-in fade-in duration-500 relative overflow-hidden',
 
     /** Primary Card */
     card: 'rounded-xl border border-border bg-card shadow-sm hover:border-primary/60 transition-all duration-300 overflow-hidden relative group',
