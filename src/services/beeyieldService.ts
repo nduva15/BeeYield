@@ -834,6 +834,9 @@ export interface Harvest {
     hive?: Hive | null;
     farmer?: Farmer | null;
     apiary?: Apiary | null;
+    batch?: BatchView | null;
+    traceability_code?: string;
+    honey_batch_id?: string;
 }
 
 export interface HarvestCreateInput {
@@ -1412,6 +1415,241 @@ function mapBatchRecord(record: any): BatchView {
     };
 }
 
+async function getBeeYieldUserId(): Promise<string | null> {
+    if (!sb) return null;
+
+    const { data, error } = await sb.auth.getUser();
+    if (!error && data?.user?.id) {
+        return data.user.id;
+    }
+
+    const { data: sessionData } = await sb.auth.getSession();
+    return sessionData?.session?.user?.id ?? null;
+}
+
+async function getDirectHiveCountsByApiary(userId: string): Promise<Record<string, number>> {
+    if (!sb) return {};
+
+    const { data, error } = await sb
+        .from('hives')
+        .select('apiary_id')
+        .eq('user_id', userId);
+
+    if (error || !Array.isArray(data)) return {};
+
+    return data.reduce<Record<string, number>>((counts, hive: any) => {
+        if (hive.apiary_id) {
+            counts[hive.apiary_id] = (counts[hive.apiary_id] || 0) + 1;
+        }
+        return counts;
+    }, {});
+}
+
+async function getApiariesFromSupabase(): Promise<Apiary[]> {
+    const userId = await getBeeYieldUserId();
+    if (!sb || !userId) return [];
+
+    const [apiariesResult, hiveCounts] = await Promise.all([
+        sb
+            .from('apiaries')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: true }),
+        getDirectHiveCountsByApiary(userId),
+    ]);
+
+    if (apiariesResult.error || !Array.isArray(apiariesResult.data)) {
+        console.error('getApiaries direct Supabase:', apiariesResult.error);
+        return [];
+    }
+
+    return apiariesResult.data.map((record: any) => mapApiaryRecord(record, hiveCounts));
+}
+
+async function getHivesFromSupabase(apiaryId?: string): Promise<Hive[]> {
+    const userId = await getBeeYieldUserId();
+    if (!sb || !userId) return [];
+
+    let query = sb
+        .from('hives')
+        .select('*, apiary:apiaries(id, name, location_name, county, region)')
+        .eq('user_id', userId)
+        .order('hive_code', { ascending: true });
+
+    if (apiaryId) {
+        query = query.eq('apiary_id', apiaryId);
+    }
+
+    const { data, error } = await query;
+    if (error || !Array.isArray(data)) {
+        console.error('getHives direct Supabase:', error);
+        return [];
+    }
+
+    return data.map((record: any) => mapHiveRecord(record));
+}
+
+async function getHarvestsFromSupabase(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
+    const userId = await getBeeYieldUserId();
+    if (!sb || !userId) return [];
+
+    let query = sb
+        .from('harvests')
+        .select(`
+            *,
+            hive:hives(id, hive_code, nickname, apiary_id),
+            apiary:apiaries(id, name, location_name, county, region),
+            farmer:farmers(id, name, phone, location_name)
+        `)
+        .eq('user_id', userId)
+        .order('harvest_date', { ascending: false });
+
+    if (filters?.hive_id) query = query.eq('hive_id', filters.hive_id);
+    if (filters?.apiary_id) query = query.eq('apiary_id', filters.apiary_id);
+    if (filters?.farmer_id) query = query.eq('farmer_id', filters.farmer_id);
+    if (filters?.year) {
+        query = query
+            .gte('harvest_date', `${filters.year}-01-01`)
+            .lt('harvest_date', `${filters.year + 1}-01-01`);
+    }
+
+    const { data, error } = await query;
+    if (error || !Array.isArray(data)) {
+        console.error('getHarvests direct Supabase:', error);
+        return [];
+    }
+
+    return data.map((record: any) => mapHarvestRecord(record));
+}
+
+async function getBatchesFromSupabase(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<BatchView[]> {
+    if (!sb) return [];
+
+    const harvests = await getHarvestsFromSupabase(filters?.year ? { year: filters.year } : undefined);
+    const harvestBatchCodes = harvests.map((harvest) => harvest.batch_code).filter(Boolean) as string[];
+    if (!harvestBatchCodes.length) return [];
+
+    let query = sb
+        .from('honey_batches')
+        .select('*')
+        .in('batch_code', harvestBatchCodes)
+        .order('harvest_date', { ascending: false });
+
+    if (filters?.honey_type) query = query.eq('honey_type', filters.honey_type);
+    if (filters?.limit) query = query.limit(filters.limit);
+
+    const { data, error } = await query;
+    if (error || !Array.isArray(data)) {
+        console.error('getBatches direct Supabase:', error);
+        return deriveBatchViewsFromHarvests(harvests);
+    }
+
+    const harvestByBatchCode = new Map(harvests.map((harvest) => [harvest.batch_code, harvest]));
+    return data.map((record: any) => {
+        const batch = mapBatchRecord(record);
+        const harvest = harvestByBatchCode.get(batch.batch_code);
+        return {
+            ...batch,
+            harvest,
+            hive: harvest?.hive || batch.hive,
+            apiary: harvest?.apiary || batch.apiary,
+            farmer: harvest?.farmer || batch.farmer,
+            hive_code: harvest?.hive?.hive_code || batch.hive_code,
+        };
+    });
+}
+
+async function attachBatchesToHarvests(harvests: Harvest[]): Promise<Harvest[]> {
+    if (!sb || harvests.length === 0) return harvests;
+
+    const batchCodes = Array.from(new Set(harvests.map((harvest) => harvest.batch_code).filter(Boolean))) as string[];
+    if (batchCodes.length === 0) return harvests;
+
+    const { data, error } = await sb
+        .from('honey_batches')
+        .select('*')
+        .in('batch_code', batchCodes);
+
+    if (error || !Array.isArray(data)) {
+        console.error('attachBatchesToHarvests direct Supabase:', error);
+        return harvests;
+    }
+
+    const batchByCode = new Map(data.map((record: any) => {
+        const batch = mapBatchRecord(record);
+        return [batch.batch_code, batch];
+    }));
+
+    return harvests.map((harvest) => {
+        const batch = harvest.batch_code ? batchByCode.get(harvest.batch_code) : undefined;
+        if (!batch) return harvest;
+
+        return {
+            ...harvest,
+            batch: {
+                ...batch,
+                harvest,
+                hive: harvest.hive || batch.hive,
+                apiary: harvest.apiary || batch.apiary,
+                farmer: harvest.farmer || batch.farmer,
+            },
+            traceability_code: batch.batch_code,
+            honey_batch_id: batch.id,
+            blockchain_hash: harvest.blockchain_hash || batch.block_hash,
+            is_verified: harvest.is_verified ?? batch.blockchain_verified ?? batch.status === 'verified',
+        };
+    });
+}
+
+async function getHiveDetailFromSupabase(hiveId: string): Promise<HiveDetailData | null> {
+    const userId = await getBeeYieldUserId();
+    if (!sb || !userId) return null;
+
+    const { data: hiveRecord, error: hiveError } = await sb
+        .from('hives')
+        .select('*, apiary:apiaries(id, name, location_name, county, region)')
+        .eq('user_id', userId)
+        .eq('id', hiveId)
+        .maybeSingle();
+
+    if (hiveError || !hiveRecord) {
+        console.error('getHiveDetail direct Supabase hive:', hiveError);
+        return null;
+    }
+
+    const [harvestsResult, inspectionsResult] = await Promise.all([
+        getHarvestsFromSupabase({ hive_id: hiveId }),
+        sb
+            .from('inspections')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('hive_id', hiveId)
+            .order('inspection_date', { ascending: false }),
+    ]);
+
+    const inspections = Array.isArray(inspectionsResult.data)
+        ? inspectionsResult.data as Inspection[]
+        : [];
+
+    if (inspectionsResult.error) {
+        console.error('getHiveDetail direct Supabase inspections:', inspectionsResult.error);
+    }
+
+    const hive = mapHiveRecord(hiveRecord);
+    const harvests = await attachBatchesToHarvests(harvestsResult);
+
+    return {
+        hive,
+        apiary: (hiveRecord as any).apiary || null,
+        queen: null,
+        last_inspection: inspections[0] || null,
+        inspections,
+        harvests,
+        requests: [],
+        queen_rearing_batches: [],
+    };
+}
+
 function deriveBatchViewsFromHarvests(harvests: Harvest[]): BatchView[] {
     const seen = new Set<string>();
     const derived: BatchView[] = [];
@@ -1859,13 +2097,13 @@ export const beeyieldService = {
     async getApiaries(): Promise<Apiary[]> {
         try {
             const data = await apiGet<Apiary[]>('beeyield/apiaries');
-            if (Array.isArray(data)) {
+            if (Array.isArray(data) && data.length > 0) {
                 return data.map((record: any) => mapApiaryRecord(record));
             }
         } catch (error) {
             console.error('getApiaries:', error);
         }
-        return [];
+        return getApiariesFromSupabase();
     },
 
     async createApiary(input: any): Promise<{ data: Apiary | null; error: any }> {
@@ -1961,13 +2199,13 @@ export const beeyieldService = {
     async getHives(apiaryId?: string): Promise<Hive[]> {
         try {
             const data = await apiGet<Hive[]>('beeyield/hives', apiaryId ? { apiary_id: apiaryId } : undefined);
-            if (Array.isArray(data)) {
+            if (Array.isArray(data) && data.length > 0) {
                 return data.map((record: any) => mapHiveRecord(record));
             }
         } catch (error) {
             console.error('getHives:', error);
         }
-        return [];
+        return getHivesFromSupabase(apiaryId);
     },
 
     async createHive(input: HiveCreateInput): Promise<{ data: Hive | null; error: any }> {
@@ -2011,13 +2249,13 @@ export const beeyieldService = {
     async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
         try {
             const data = await apiGet<Harvest[]>('beeyield/harvests', filters as any);
-            if (Array.isArray(data)) {
+            if (Array.isArray(data) && data.length > 0) {
                 return data.map((record: any) => mapHarvestRecord(record));
             }
         } catch (error) {
             console.error('getHarvests:', error);
         }
-        return [];
+        return getHarvestsFromSupabase(filters);
     },
 
     async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<BatchView[]> {
@@ -2027,13 +2265,13 @@ export const beeyieldService = {
             if (filters?.year) params.year = filters.year;
             if (filters?.limit) params.limit = filters.limit;
             const data = await apiGet<BatchView[]>('beeyield/batches', params);
-            if (Array.isArray(data)) {
+            if (Array.isArray(data) && data.length > 0) {
                 return data.map((record: any) => mapBatchRecord(record));
             }
         } catch (error) {
             console.error('getBatches:', error);
         }
-        return [];
+        return getBatchesFromSupabase(filters);
     },
 
     // ========== REAL-TIME SUBSCRIPTIONS (PULSE) ==========
@@ -4397,11 +4635,18 @@ export const beeyieldService = {
     // ========== HIVE DETAIL (aggregate) ==========
     async getHiveDetail(hiveId: string): Promise<HiveDetailData | null> {
         try {
-            return await apiGet<HiveDetailData>(`beeyield/hives/${hiveId}/detail`);
+            const detail = await apiGet<HiveDetailData>(`beeyield/hives/${hiveId}/detail`);
+            if (detail?.harvests?.length) {
+                return {
+                    ...detail,
+                    harvests: await attachBatchesToHarvests(detail.harvests.map((record: any) => mapHarvestRecord(record))),
+                };
+            }
+            if (detail?.hive) return detail;
         } catch (error) {
             console.error('getHiveDetail:', error);
-            return null;
         }
+        return getHiveDetailFromSupabase(hiveId);
     },
 };
 

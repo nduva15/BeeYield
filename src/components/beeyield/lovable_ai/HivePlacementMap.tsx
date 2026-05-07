@@ -1,5 +1,5 @@
 import { Fragment, useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { X, MapPin, Trash2, Save, Loader2, Plus, Layers, FileDown, MessageSquare, Send, GitBranch, Flower2, Plane, Activity } from "lucide-react";
+import { MapPin, Trash2, Save, Loader2, Plus, Layers, FileDown, MessageSquare, Send, GitBranch, Flower2, Plane, Activity } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Polygon, Circle, Polyline, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import { toast } from "sonner";
@@ -202,8 +202,7 @@ export default function HivePlacementMap({
   readOnly = false,
   initialRunId,
   initialVersionId,
-  embedded,
-}: Props & { embedded?: boolean }) {
+}: Props) {
   const deviceId = useDeviceId();
   const [field, setField] = useState<LatLng[]>([]);
   const [hives, setHives] = useState<LatLng[]>([]);
@@ -304,12 +303,12 @@ export default function HivePlacementMap({
     setFocus(null);
   }, [applyLayout, cropKey]);
 
-  useEffect(() => { if (isOpen || embedded) loadRuns(); }, [isOpen, embedded, loadRuns]);
+  useEffect(() => { if (isOpen) loadRuns(); }, [isOpen, loadRuns]);
 
   useEffect(() => {
-    if ((!isOpen && !embedded) || !savedRunId) return;
+    if (!isOpen || !savedRunId) return;
     loadRunContext(savedRunId, selectedVersion);
-  }, [isOpen, embedded, savedRunId, selectedVersion, loadRunContext]);
+  }, [isOpen, savedRunId, selectedVersion, loadRunContext]);
 
   useEffect(() => {
     if (!savedRunId || readOnly || hydratingFiltersRef.current) return;
@@ -374,7 +373,7 @@ export default function HivePlacementMap({
         site_layout: payload,
         moa_filters: moaFilters,
       }).eq("id", savedRunId);
-      setSaving(true);
+      setSaving(false);
       if (error) {
         toast.error("Failed to save layout");
         return;
@@ -522,37 +521,24 @@ export default function HivePlacementMap({
     return [...field, ...hives, ...bloomPoints, ...flightPoints, ...commentPoints];
   }, [field, hives, filteredBlooms, filteredFlights, comments]);
 
-  if (!isOpen && !embedded) return null;
-
-  const containerClasses = embedded 
-    ? "relative w-full h-full" 
-    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
-  
-  const contentClasses = embedded 
-    ? "w-full" 
-    : "max-w-7xl mx-auto p-6";
+  if (!isOpen) return null;
 
   return (
-    <div className={containerClasses}>
-      <div className={contentClasses}>
-        {!embedded && (
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <MapPin className="w-7 h-7 text-honey" />
-              <div>
-                <h1 className="font-display text-2xl font-bold text-honey">
-                  Precision Hive Placement Map {readOnly && <span className="text-xs text-muted-foreground ml-2">(read-only)</span>}
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  Map, bloom phenology, bee-flight telemetry, and coverage panels stay synced per saved run version.
-                </p>
-              </div>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <MapPin className="w-7 h-7 text-honey" />
+            <div>
+              <h1 className="font-display text-2xl font-bold text-honey">
+                Precision Hive Placement Map {readOnly && <span className="text-xs text-muted-foreground ml-2">(read-only)</span>}
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                Map, bloom phenology, bee-flight telemetry, and coverage panels stay synced per saved run version.
+              </p>
             </div>
-            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground" aria-label="Close">
-              <X className="w-4 h-4" />
-            </button>
           </div>
-        )}
+        </div>
 
         <div className="flex items-center gap-2 mb-3 flex-wrap p-3 rounded-xl border border-border bg-muted/20">
           {!readOnly && (

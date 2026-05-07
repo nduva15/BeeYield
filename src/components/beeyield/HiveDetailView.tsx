@@ -440,11 +440,12 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             {/* ── Summary strip ── */}
                             {harvests.length > 0 && (() => {
                                 const totalKg = harvests.reduce((s: number, h: any) => s + (parseFloat(h.quantity_kg) || 0), 0);
+                                const linkedBatchCount = harvests.filter((h: any) => h.batch_code || h.traceability_code || h.batch?.batch_code).length;
                                 const latestDate = harvests.reduce((latest: string, h: any) => {
                                     return !latest || h.harvest_date > latest ? h.harvest_date : latest;
                                 }, '');
                                 return (
-                                    <div className="grid grid-cols-3 gap-3">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                         <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-border/ text-center">
                                             <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Total Yield</p>
                                             <p className="text-lg font-black text-foreground tabular-nums">{totalKg.toFixed(1)}<span className="text-xs font-bold text-muted-foreground/70 ml-0.5">kg</span></p>
@@ -452,6 +453,10 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                         <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-border/ text-center">
                                             <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Batches</p>
                                             <p className="text-lg font-black text-foreground tabular-nums">{harvests.length}</p>
+                                        </div>
+                                        <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-border/ text-center">
+                                            <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Linked Codes</p>
+                                            <p className="text-lg font-black text-foreground tabular-nums">{linkedBatchCount}</p>
                                         </div>
                                         <div className="p-3 rounded-xl bg-[#F4D03F]/5 border border-border/ text-center">
                                             <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider mb-0.5">Last Harvest</p>
@@ -526,6 +531,15 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                                                     </div>
                                                 ))}
                                             </div>
+
+                                            {(h.batch_code || h.traceability_code || h.batch?.batch_code) && (
+                                                <div className="px-4 py-2.5 border-t border-border/ bg-white/60 flex items-center justify-between gap-3">
+                                                    <span className="text-[8px] font-black text-muted-foreground/70 uppercase tracking-wider">Hive to batch traceability</span>
+                                                    <span className="text-[10px] font-black text-foreground font-mono truncate" title={h.traceability_code || h.batch?.batch_code || h.batch_code}>
+                                                        {h.traceability_code || h.batch?.batch_code || h.batch_code}
+                                                    </span>
+                                                </div>
+                                            )}
 
                                             {/* Notes row */}
                                             {(h.notes || h.forage_type || h.weather_conditions) && (
@@ -790,6 +804,19 @@ const HiveDetailView: React.FC<HiveDetailViewProps> = ({ hiveId, onBack, onTabCh
                             <div className="space-y-1 col-span-2">
                                 <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Weather Conditions</p>
                                 <p className="text-sm font-bold text-foreground">{selectedHarvest.weather_conditions || '—'}</p>
+                            </div>
+
+                            <div className="space-y-1 col-span-2 pt-3 border-t border-border/">
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Traceability Code</p>
+                                <p className="text-sm font-bold text-foreground font-mono break-all">{selectedHarvest.traceability_code || selectedHarvest.batch?.batch_code || selectedHarvest.batch_code || '-'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Linked Batch ID</p>
+                                <p className="text-sm font-bold text-foreground font-mono truncate" title={selectedHarvest.honey_batch_id || selectedHarvest.batch?.id || ''}>{selectedHarvest.honey_batch_id || selectedHarvest.batch?.id || '-'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-muted-foreground/70 uppercase tracking-wider">Block Hash</p>
+                                <p className="text-sm font-bold text-foreground font-mono truncate" title={selectedHarvest.blockchain_hash || selectedHarvest.batch?.block_hash || ''}>{selectedHarvest.blockchain_hash || selectedHarvest.batch?.block_hash || '-'}</p>
                             </div>
 
                             {selectedHarvest.notes && (

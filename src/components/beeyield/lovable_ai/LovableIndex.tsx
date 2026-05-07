@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/beeyield/lovable_ai/ui/dropdown-menu";
 import { toast } from "sonner";
-const beeyieldLogo = "/logo.png";
+import beeyieldLogo from "@/assets/Logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useVoiceInput } from "@/hooks/use-voice-input";
@@ -38,6 +38,11 @@ import MOACompare from "@/components/beeyield/lovable_ai/MOACompare";
 import BeeSpeciesPage from "@/components/beeyield/lovable_ai/BeeSpeciesPage";
 import BeeyieldCalculators from "@/components/beeyield/lovable_ai/BeeyieldCalculators";
 import VarroaSimulator from "@/components/beeyield/lovable_ai/VarroaSimulator";
+import DatasetImport from "@/components/beeyield/lovable_ai/DatasetImport";
+import FeedingSchedule from "@/components/beeyield/lovable_ai/FeedingSchedule";
+import KnowledgeSearch from "@/components/beeyield/lovable_ai/KnowledgeSearch";
+import ApiarySizing from "@/components/beeyield/lovable_ai/ApiarySizing";
+import YieldProjection from "@/components/beeyield/lovable_ai/YieldProjection";
 
 type Message = {
   id: string;
@@ -157,6 +162,11 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [speciesEditOpen, setSpeciesEditOpen] = useState(false);
   const [calculatorsOpen, setCalculatorsOpen] = useState(false);
   const [varroaSimOpen, setVarroaSimOpen] = useState(false);
+  const [datasetImportOpen, setDatasetImportOpen] = useState(false);
+  const [feedingScheduleOpen, setFeedingScheduleOpen] = useState(false);
+  const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
+  const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
+  const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -361,10 +371,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   };
 
   return (
-    <div className={cn(
-      "flex flex-col w-full bg-background honeycomb-bg overflow-hidden",
-      embedded ? "h-[calc(100vh-140px)] rounded-xl border border-border" : "h-screen"
-    )}>
+    <div className={`flex flex-col w-full bg-background honeycomb-bg overflow-hidden ${embedded ? "h-[calc(100vh-140px)] rounded-xl border border-border" : "h-screen"}`}>
       {/* Chat History Sidebar */}
       <ChatHistory
         conversations={conversations}
@@ -375,7 +382,6 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
         onRename={handleRenameConversation}
         isOpen={historyOpen}
         onClose={() => setHistoryOpen(false)}
-        embedded={embedded}
       />
 
       {/* Header */}
@@ -389,7 +395,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
             <History className="w-4 h-4" />
             <span className="text-xs font-medium">History</span>
           </button>
-          <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto" />
+          <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto object-contain" />
           <div className="hidden sm:block">
             <div className="font-display font-bold text-foreground text-base leading-tight">Beeyield AI</div>
             <div className="text-xs text-muted-foreground">The World's Most Comprehensive Bee Knowledge System</div>
@@ -476,6 +482,24 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-honey">Knowledge & Planning</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => setDatasetImportOpen(true)} className="cursor-pointer">
+                <Download className="w-4 h-4 mr-2" /> Dataset Import & Re-index
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setKnowledgeSearchOpen(true)} className="cursor-pointer">
+                <Info className="w-4 h-4 mr-2" /> Knowledge Base Search
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setFeedingScheduleOpen(true)} className="cursor-pointer">
+                <Calculator className="w-4 h-4 mr-2" /> Feeding Schedule Timeline
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setApiarySizingOpen(true)} className="cursor-pointer">
+                <Layers className="w-4 h-4 mr-2" /> Apiary & Equipment Sizing
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setYieldProjectionOpen(true)} className="cursor-pointer">
+                <BarChart3 className="w-4 h-4 mr-2" /> Honey Yield Projection
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
                 <Info className="w-4 h-4 mr-2" /> About Beeyield AI
               </DropdownMenuItem>
@@ -531,7 +555,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       <div className="flex-1 overflow-y-auto custom-scroll px-4 py-6 space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in max-w-3xl mx-auto w-full">
-            <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto mb-4 opacity-90" />
+            <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto max-w-[220px] object-contain mb-4 opacity-90" />
             <h1 className="font-display text-3xl font-bold text-honey mb-2">Welcome to Beeyield AI</h1>
             <p className="text-muted-foreground max-w-xl mb-8 text-sm leading-relaxed">
               The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
@@ -740,6 +764,11 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       <BeeSpeciesPage isOpen={speciesEditOpen} onClose={() => setSpeciesEditOpen(false)} />
       <BeeyieldCalculators isOpen={calculatorsOpen} onClose={() => setCalculatorsOpen(false)} />
       <VarroaSimulator isOpen={varroaSimOpen} onClose={() => setVarroaSimOpen(false)} />
+      <DatasetImport isOpen={datasetImportOpen} onClose={() => setDatasetImportOpen(false)} />
+      <FeedingSchedule isOpen={feedingScheduleOpen} onClose={() => setFeedingScheduleOpen(false)} />
+      <KnowledgeSearch isOpen={knowledgeSearchOpen} onClose={() => setKnowledgeSearchOpen(false)} />
+      <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
+      <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
     </div>
   );
 }

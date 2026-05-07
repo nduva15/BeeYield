@@ -50,7 +50,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const apiariesQuery = useApiaries();
     const hivesQuery = useHives();
     const harvestsQuery = useHarvests();
-    const batchesQuery = useBatches({ limit: 50 });
+    const batchesQuery = useBatches();
 
     const apiaries = apiariesQuery.data ?? EMPTY_APIARIES;
     const hives = hivesQuery.data ?? EMPTY_HIVES;

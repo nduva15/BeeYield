@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Calculator, Save, Beaker, Box, DollarSign, HelpCircle } from "lucide-react";
+import { Calculator, Save, Beaker, Box, DollarSign, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -14,7 +14,7 @@ const TABS = [
   { key: "quiz", label: "Quizzes & decisions", Icon: HelpCircle },
 ];
 
-export default function BeeyieldCalculators({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function BeeyieldCalculators({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [tab, setTab] = useState("feed");
 
@@ -26,31 +26,19 @@ export default function BeeyieldCalculators({ isOpen, onClose, embedded }: { isO
     if (error) toast.error(error.message); else toast.success("Saved to history");
   };
 
-  if (!isOpen && !embedded) return null;
-
-  const containerClasses = embedded 
-    ? "relative w-full h-full" 
-    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
-  
-  const contentClasses = embedded 
-    ? "w-full" 
-    : "max-w-5xl mx-auto p-6";
-
+  if (!isOpen) return null;
   return (
-    <div className={containerClasses}>
-      <div className={contentClasses}>
-        {!embedded && (
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Calculator className="w-6 h-6 text-honey" />
-              <div>
-                <h1 className="font-display text-2xl font-bold text-honey">Beeyield Calculators</h1>
-                <p className="text-xs text-muted-foreground">Quick numbers for feeding, equipment sizing, ROI & beekeeper decisions</p>
-              </div>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-5xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Calculator className="w-6 h-6 text-honey" />
+            <div>
+              <h1 className="font-display text-2xl font-bold text-honey">Beeyield Calculators</h1>
+              <p className="text-xs text-muted-foreground">Quick numbers for feeding, equipment sizing, ROI & beekeeper decisions</p>
             </div>
-            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
           </div>
-        )}
+        </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
           {TABS.map(({ key, label, Icon }) => (

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Loader2, Bot, User } from "lucide-react";
-import { Button } from "@/components/beeyield/lovable_ai/ui/button";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 type Message = {

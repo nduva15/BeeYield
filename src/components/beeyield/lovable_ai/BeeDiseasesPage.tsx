@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { X, Search, AlertTriangle, Plus, Pencil, Trash2, Save, Upload, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, AlertTriangle, Plus, Pencil, Trash2, Save, Upload, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
@@ -25,7 +25,7 @@ const EMPTY: Omit<Disease, "id" | "is_default"> = {
   symptoms: [], treatments: [], prevention: "", affected_castes: "", notes: "",
 };
 
-export default function BeeDiseasesPage({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function BeeDiseasesPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [rows, setRows] = useState<Disease[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,7 +46,7 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded }: { isOpen:
     setLoading(false);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen || embedded) load(); }, [isOpen, embedded, load]);
+  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -117,38 +117,26 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded }: { isOpen:
     toast.success(`Imported ${payload.length} diseases`); load();
   };
 
-  if (!isOpen && !embedded) return null;
-
-  const containerClasses = embedded 
-    ? "relative w-full h-full" 
-    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
-  
-  const contentClasses = embedded 
-    ? "w-full" 
-    : "max-w-6xl mx-auto p-6";
-
+  if (!isOpen) return null;
   return (
-    <div className={containerClasses}>
-      <div className={contentClasses}>
-        {!embedded && (
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="w-6 h-6 text-destructive" />
-              <div>
-                <h1 className="font-display text-2xl font-bold text-foreground">Bee Diseases (Editable)</h1>
-                <p className="text-xs text-muted-foreground">{rows.length} diseases · CRUD + CSV · per-device + global defaults</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={exportCSV} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5"><Download className="w-3.5 h-3.5" />Export</button>
-              <label className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 cursor-pointer"><Upload className="w-3.5 h-3.5" />Import
-                <input type="file" accept=".csv" className="hidden" onChange={(e) => e.target.files?.[0] && importCSV(e.target.files[0])} />
-              </label>
-              <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />New</button>
-              <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-6 h-6 text-destructive" />
+            <div>
+              <h1 className="font-display text-2xl font-bold text-foreground">Bee Diseases (Editable)</h1>
+              <p className="text-xs text-muted-foreground">{rows.length} diseases · CRUD + CSV · per-device + global defaults</p>
             </div>
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <button onClick={exportCSV} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5"><Download className="w-3.5 h-3.5" />Export</button>
+            <label className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 cursor-pointer"><Upload className="w-3.5 h-3.5" />Import
+              <input type="file" accept=".csv" className="hidden" onChange={(e) => e.target.files?.[0] && importCSV(e.target.files[0])} />
+            </label>
+            <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />New</button>
+          </div>
+        </div>
 
         <div className="space-y-2 mb-4">
           <div className="relative">

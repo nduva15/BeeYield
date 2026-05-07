@@ -75,7 +75,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, init
     // Aggregated harvest metrics per hive
     const harvestMetrics = React.useMemo(() => {
         if (!harvestsData) return {};
-        const metrics: Record<string, { totalKg: number, batches: number }> = {};
+        const metrics: Record<string, { totalKg: number, batches: number, latestTraceCode?: string, latestHarvestDate?: string }> = {};
         
         harvestsData.forEach(h => {
             if (!h.hive_id) return;
@@ -84,6 +84,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, init
             }
             metrics[h.hive_id].totalKg += (h.quantity_kg || 0);
             metrics[h.hive_id].batches += 1;
+            if (h.batch_code && (!metrics[h.hive_id].latestHarvestDate || h.harvest_date > metrics[h.hive_id].latestHarvestDate)) {
+                metrics[h.hive_id].latestHarvestDate = h.harvest_date;
+                metrics[h.hive_id].latestTraceCode = h.batch_code;
+            }
         });
         
         return metrics;
@@ -467,7 +471,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, init
                                             humidity: hive.latest_humidity || 0,
                                             status: hive.status === 'Active' ? 'ok' : hive.status?.toUpperCase() === 'Maintenance' ? 'warning' : 'critical',
                                             totalHarvestedKg: harvestMetrics[hive.id]?.totalKg || 0,
-                                            batchCount: harvestMetrics[hive.id]?.batches || 0
+                                            batchCount: harvestMetrics[hive.id]?.batches || 0,
+                                            traceabilityCode: harvestMetrics[hive.id]?.latestTraceCode
                                         }}
                                         onViewHistory={() => handleOpenQuickDetails(hive)}
                                         onMarkInspection={() => handleRequestInspection(hive, {} as any)}

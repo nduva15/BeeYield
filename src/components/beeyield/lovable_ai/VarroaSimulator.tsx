@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { X, Microscope, Play, Save } from "lucide-react";
+import { Microscope, Play, Save } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,7 +52,7 @@ const STRATEGIES = [
   { name: "Aggressive (3x)", treatments: [{ day: 20, knockdownPct: 70, label: "Formic" }, { day: 90, knockdownPct: 90, label: "Apivar" }, { day: 160, knockdownPct: 95, label: "OA vapor" }] },
 ];
 
-export default function VarroaSimulator({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function VarroaSimulator({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [mode, setMode] = useState<"det" | "sto" | "scenario">("det");
   const [days, setDays] = useState(180);
@@ -84,34 +84,23 @@ export default function VarroaSimulator({ isOpen, onClose, embedded }: { isOpen:
     if (error) toast.error(error.message); else toast.success("Saved");
   };
 
-  if (!isOpen && !embedded) return null;
-
-  const containerClasses = embedded 
-    ? "relative w-full h-full" 
-    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
-  
-  const contentClasses = embedded 
-    ? "w-full" 
-    : "max-w-6xl mx-auto p-6";
+  if (!isOpen) return null;
 
   return (
-    <div className={containerClasses}>
-      <div className={contentClasses}>
-        {!embedded && (
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Microscope className="w-6 h-6 text-honey" />
-              <div>
-                <h1 className="font-display text-2xl font-bold text-honey">Varroa Simulator</h1>
-                <p className="text-xs text-muted-foreground">Deterministic · Stochastic · Scenario comparison · Treatment events</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={save} className="px-3 py-2 rounded-lg border border-honey/40 text-honey text-xs flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save run</button>
-              <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Microscope className="w-6 h-6 text-honey" />
+            <div>
+              <h1 className="font-display text-2xl font-bold text-honey">Varroa Simulator</h1>
+              <p className="text-xs text-muted-foreground">Deterministic · Stochastic · Scenario comparison · Treatment events</p>
             </div>
           </div>
-        )}
+          <div className="flex gap-2">
+            <button onClick={save} className="px-3 py-2 rounded-lg border border-honey/40 text-honey text-xs flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save run</button>
+          </div>
+        </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
           {[

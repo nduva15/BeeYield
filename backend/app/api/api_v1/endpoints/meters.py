@@ -120,3 +120,24 @@ async def delete_billing_rate(rate_id: str):
 async def get_meter_events(severity: Optional[str] = None, limit: int = 50):
     """Get recent meter events and alarms."""
     return await MeterService.get_events(severity, limit)
+
+@router.post("/events", response_model=schemas.MeterEvent)
+async def create_meter_event(body: schemas.MeterEventCreate):
+    """Create a meter event/alarm."""
+    try:
+        return await MeterService.create_event(body.model_dump(mode="json", exclude_none=True))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.patch("/events/{event_id}/resolve", response_model=schemas.MeterEvent)
+async def resolve_meter_event(event_id: str):
+    """Mark a meter event/alarm as resolved."""
+    try:
+        updated = await MeterService.resolve_event(event_id)
+        if not updated:
+            raise HTTPException(status_code=404, detail="Meter event not found")
+        return updated
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

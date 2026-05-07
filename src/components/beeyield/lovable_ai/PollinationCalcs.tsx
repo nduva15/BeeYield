@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { X, Calculator, Truck, Sprout, Calendar, Sparkles, Loader2 } from "lucide-react";
+import { Calculator, Truck, Sprout, Calendar, Sparkles, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ const STOCKING: Record<string, { hivesPerHa: number; expectedYieldKgPerHa: numbe
   general:    { hivesPerHa: 3,   expectedYieldKgPerHa: 15,  bloomDays: 21, transportNote: "Generic baseline — refine with local florage" },
 };
 
-export default function PollinationCalcs({ isOpen, onClose, embedded }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function PollinationCalcs({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [crop, setCrop] = useState("almond");
   const [hectares, setHectares] = useState(10);
@@ -37,11 +37,11 @@ export default function PollinationCalcs({ isOpen, onClose, embedded }: { isOpen
   const [loadingAi, setLoadingAi] = useState(false);
 
   useEffect(() => {
-    if (!isOpen && !embedded) return;
+    if (!isOpen) return;
     supabase.from("florage_plants").select("*").eq("device_id", deviceId).then(({ data }) => {
       setFloragePlants((data as FloragePlant[]) || []);
     });
-  }, [isOpen, embedded, deviceId]);
+  }, [isOpen, deviceId]);
 
   const calc = useMemo(() => {
     const spec = STOCKING[crop] || STOCKING.general;
@@ -105,31 +105,19 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
     setLoadingAi(false);
   };
 
-  if (!isOpen && !embedded) return null;
-
-  const containerClasses = embedded 
-    ? "relative w-full h-full" 
-    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
-  
-  const contentClasses = embedded 
-    ? "w-full" 
-    : "max-w-6xl mx-auto p-6";
-
+  if (!isOpen) return null;
   return (
-    <div className={containerClasses}>
-      <div className={contentClasses}>
-        {!embedded && (
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Calculator className="w-7 h-7 text-honey" />
-              <div>
-                <h1 className="font-display text-2xl font-bold text-honey">Pollination Calcs</h1>
-                <p className="text-xs text-muted-foreground">Hives needed · transport · expected yield · timeline</p>
-              </div>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Calculator className="w-7 h-7 text-honey" />
+            <div>
+              <h1 className="font-display text-2xl font-bold text-honey">Pollination Calcs</h1>
+              <p className="text-xs text-muted-foreground">Hives needed · transport · expected yield · timeline</p>
             </div>
-            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
           </div>
-        )}
+        </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">
           <div className="p-4 rounded-xl border border-border bg-card space-y-3">

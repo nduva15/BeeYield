@@ -63,6 +63,18 @@ const DEFAULT_ALERTS: AlertSettings = {
     marketing: false
 };
 
+const DEFAULT_SETTINGS_CONTEXT: SettingsContextType = {
+    showGuides: true,
+    setShowGuides: () => undefined,
+    moduleFlags: DEFAULT_MODULES,
+    updateModuleFlags: () => undefined,
+    alerts: DEFAULT_ALERTS,
+    updateAlerts: () => undefined,
+    resetWorkspace: () => undefined,
+    isSyncing: false,
+    syncToBackend: async () => undefined,
+};
+
 // Provider component
 export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [showGuides, setShowGuides] = useState<boolean>(true);
@@ -162,7 +174,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
 export const useSettings = () => {
     const context = useContext(SettingsContext);
     if (!context) {
-        throw new Error('useSettings must be used within a SettingsProvider');
+        return DEFAULT_SETTINGS_CONTEXT;
     }
     return context;
 };

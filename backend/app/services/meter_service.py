@@ -149,6 +149,19 @@ class MeterService:
         return rows[0] if rows else None
 
     @staticmethod
+    def _normalize_event_row(row: Dict[str, Any]) -> Dict[str, Any]:
+        normalized = dict(row)
+        normalized["event_type"] = normalized.get("event_type") or "Meter event"
+        normalized["severity"] = normalized.get("severity") or "Info"
+        normalized["timestamp"] = normalized.get("timestamp") or datetime.utcnow().isoformat()
+        normalized["is_resolved"] = bool(normalized.get("is_resolved", False))
+        if not normalized.get("message") and normalized.get("reason"):
+            normalized["message"] = normalized.get("reason")
+        if not normalized.get("reason") and normalized.get("message"):
+            normalized["reason"] = normalized.get("message")
+        return normalized
+
+    @staticmethod
     async def get_readings(meter_id: str, limit: int = 100) -> List[Dict[str, Any]]:
         return await db_select(
             "meters_readings",
@@ -241,7 +254,64 @@ class MeterService:
         filters = {}
         if severity:
             filters["severity"] = severity
-        return await db_select("meters_events", filters=filters, limit=limit, order_by="timestamp", ascending=False)
+        rows = await db_select("meters_events", filters=filters, limit=limit, order_by="timestamp", ascending=False)
+        return [MeterService._normalize_event_row(row) for row in rows]
+
+    @staticmethod
+    async def create_event(payload: Dict[str, Any]) -> Dict[str, Any]:
+        meter_id = MeterService._clean_optional_string(payload.get("meter_id"))
+        if not meter_id:
+            raise Exception("Meter is required")
+
+        meter = await MeterService.get_meter(meter_id)
+        if not meter:
+            raise Exception("Meter not found")
+
+        event_type = MeterService._clean_optional_string(payload.get("event_type"))
+        if not event_type:
+            raise Exception("Event type is required")
+
+        severity = MeterService._clean_optional_string(payload.get("severity")) or "Info"
+        event_payload = {
+            "meter_id": meter_id,
+            "event_type": event_type,
+            "severity": severity,
+            "message": MeterService._clean_optional_string(payload.get("message")),
+            "reason": MeterService._clean_optional_string(payload.get("reason")),
+            "timestamp": payload.get("timestamp") or datetime.utcnow().isoformat(),
+            "is_resolved": bool(payload.get("is_resolved", False)),
+            "resolved_at": payload.get("resolved_at"),
+        }
+
+        res = await db_insert("meters_events", event_payload)
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to create meter event")
+        rows = res.get("data") or []
+        return MeterService._normalize_event_row(rows[0]) if isinstance(rows, list) and rows else event_payload
+
+    @staticmethod
+    async def resolve_event(event_id: str) -> Optional[Dict[str, Any]]:
+        rows = await db_select("meters_events", filters={"id": event_id}, limit=1)
+        if not rows:
+            return None
+
+        res = await db_update(
+            "meters_events",
+            {
+                "is_resolved": True,
+                "resolved_at": datetime.utcnow().isoformat(),
+            },
+            {"id": event_id},
+        )
+        if not res.get("success"):
+            raise Exception(res.get("error") or "Failed to resolve meter event")
+
+        updated = await db_select("meters_events", filters={"id": event_id}, limit=1)
+        if updated:
+            return MeterService._normalize_event_row(updated[0])
+
+        rows = res.get("data") or []
+        return MeterService._normalize_event_row(rows[0]) if rows else None
 
     @staticmethod
     async def update_meter_reading(meter_id: str, value: float, unit: str):

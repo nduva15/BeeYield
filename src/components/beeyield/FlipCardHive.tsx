@@ -16,6 +16,7 @@ interface FlipCardHiveProps {
         status: 'ok' | 'warning' | 'critical';
         totalHarvestedKg?: number;
         batchCount?: number;
+        traceabilityCode?: string;
     };
     onViewHistory: () => void;
     onMarkInspection: () => void;
@@ -95,7 +96,7 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                     <Activity className="w-3.5 h-3.5 text-[#F4D03F]" />
                 </div>
 
-                <div className="flex-1 p-5 grid grid-cols-2 gap-2 relative z-10">
+                <div className="flex-1 p-5 pb-2 grid grid-cols-2 gap-2 relative z-10">
                     {[
                         { label: 'Temp', value: `${hive.temp}°C`, icon: Thermometer, color: 'text-foreground' },
                         { label: 'Humidity', value: `${hive.humidity}%`, icon: Droplet, color: 'text-foreground' },
@@ -110,6 +111,15 @@ const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMark
                             </div>
                         </div>
                     ))}
+                </div>
+
+                <div className="px-5 pb-2 relative z-10">
+                    <div className="rounded-xl border border-border/ bg-white/70 px-3 py-2">
+                        <p className="text-[6px] font-black text-muted-foreground/70 uppercase tracking-wider">Latest Traceability Code</p>
+                        <p className="text-[10px] font-black text-foreground font-mono truncate" title={hive.traceabilityCode || 'No linked batch'}>
+                            {hive.traceabilityCode || 'No linked batch'}
+                        </p>
+                    </div>
                 </div>
 
                 <div className="p-5 flex gap-2 relative z-10">

@@ -25,7 +25,18 @@ import { LanguageProvider } from '@/contexts/LanguageContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import Layout from '@/components/Layout'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
+import ErrorBoundary from '@/components/beeyield/ErrorBoundary'
 import '@/index.css'
+
+const retryLazyImport = <T extends { default: React.ComponentType<any> }>(
+    loader: () => Promise<T>
+) =>
+    loader().catch(async (error) => {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        return loader().catch(() => {
+            throw error;
+        });
+    });
 
 // All pages are lazy-loaded to keep the initial bundle small
 const PollinationServices = lazy(() => import('@/pages/PollinationServices'))
@@ -54,7 +65,7 @@ const CropsWePollinate = lazy(() => import('@/pages/CropsWePollinate'))
 const PollinationRequest = lazy(() => import('@/pages/PollinationRequest'))
 const Diseases = lazy(() => import('@/pages/Diseases'))
 const Media = lazy(() => import('@/pages/Media'))
-const BeeYieldDashboard = lazy(() => import('@/pages/BeeYieldDashboard'))
+const BeeYieldDashboard = lazy(() => retryLazyImport(() => import('@/pages/BeeYieldDashboard')))
 const BeeCalculatorSuite = lazy(() => import('@/pages/BeeCalculatorSuite'))
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'))
 const ContentEditor = lazy(() => import('@/components/beeyield/ContentEditor'))
@@ -142,7 +153,7 @@ root.render(
                                                         <Route path="/media" element={<Media />} />
                                                         <Route path="/shared-run/:id" element={<SharedRun />} />
 
-                                                        <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
+                                                        <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><ErrorBoundary><BeeYieldDashboard /></ErrorBoundary></ProtectedRoute>} />
                                                         <Route path="/bee-calculator" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />
                                                         <Route path="/calculator-suite" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />
                                                         <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />

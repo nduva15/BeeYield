@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/beeyield/lovable_ai/ui/dialog";
+} from "@/components/ui/dialog";
 import { Database, Globe, Shield, Microscope, Heart, Zap } from "lucide-react";
 
 const stats = [
@@ -32,7 +32,7 @@ interface AboutModalProps {
 export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scroll">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scroll" hideClose>
         <DialogHeader>
           <DialogTitle className="text-2xl font-display text-honey flex items-center gap-2">
             🐝 About Beeyield AI

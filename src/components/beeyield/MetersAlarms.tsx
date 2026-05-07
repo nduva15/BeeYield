@@ -20,21 +20,34 @@ const MetersAlarms: React.FC = () => {
     React.useEffect(() => {
         const loadAlarms = async () => {
             setLoading(true);
-            try {
-                const [eventData, meterData, buildingData] = await Promise.all([
-                    meterService.getEvents(),
-                    meterService.getMeters(),
-                    meterService.getBuildings()
-                ]);
-                setEvents(eventData);
-                setMeters(meterData);
-                setBuildings(buildingData);
-            } catch (error) {
-                console.error('Failed to load alarms', error);
+            const [eventsResult, metersResult, buildingsResult] = await Promise.allSettled([
+                meterService.getEvents(),
+                meterService.getMeters(),
+                meterService.getBuildings()
+            ]);
+
+            if (eventsResult.status === 'fulfilled') {
+                setEvents(eventsResult.value);
+            } else {
+                console.error('Failed to load meter events', eventsResult.reason);
                 toast.error('Failed to load alarm events');
-            } finally {
-                setLoading(false);
             }
+
+            if (metersResult.status === 'fulfilled') {
+                setMeters(metersResult.value);
+            } else {
+                console.warn('Failed to load meters for alarm labels', metersResult.reason);
+                setMeters([]);
+            }
+
+            if (buildingsResult.status === 'fulfilled') {
+                setBuildings(buildingsResult.value);
+            } else {
+                console.warn('Failed to load buildings for alarm labels', buildingsResult.reason);
+                setBuildings([]);
+            }
+
+            setLoading(false);
         };
         loadAlarms();
     }, []);
@@ -63,28 +76,11 @@ const MetersAlarms: React.FC = () => {
         return `${meter.meter_number} - ${building?.name || 'Unknown Apiary'}`;
     };
 
-    const getSeverityStyles = (severity: string) => {
-        switch (severity.toUpperCase()) {
-            case 'Critical':
-            case 'Alert':
-                return 'text-red-600 border-red-200 bg-red-50';
-            case 'Warning':
-                return 'text-[#F4D03F] border-amber-200 bg-amber-50';
-            default:
-                return 'text-blue-600 border-blue-200 bg-blue-50';
-        }
-    };
-
-    const getBadgeStyles = (severity: string) => {
-        switch (severity.toUpperCase()) {
-            case 'Critical':
-            case 'Alert':
-                return 'bg-red-100 text-red-700';
-            case 'Warning':
-                return 'bg-amber-100 text-[#F4D03F]';
-            default:
-                return 'bg-blue-100 text-blue-700';
-        }
+    const getSeverityTone = (severity?: string) => {
+        const normalized = (severity || '').toLowerCase();
+        if (normalized === 'critical' || normalized === 'alert') return 'critical';
+        if (normalized === 'warning') return 'warning';
+        return 'info';
     };
 
     return (
@@ -136,8 +132,8 @@ const MetersAlarms: React.FC = () => {
                                     <div className="flex items-center gap-4">
                                         <div className="flex flex-col items-end gap-2">
                                             <span className={cn("px-2.5 py-1 rounded-md font-black text-[8px] shadow-sm",
-                                                event.severity.toUpperCase() === 'Critical' ? "bg-red-500 text-white" :
-                                                    event.severity.toUpperCase() === 'Warning' ? "bg-[#F4D03F] text-foreground" : "bg-blue-500 text-white"
+                                                getSeverityTone(event.severity) === 'critical' ? "bg-red-500 text-white" :
+                                                    getSeverityTone(event.severity) === 'warning' ? "bg-[#F4D03F] text-foreground" : "bg-blue-500 text-white"
                                             )}>
                                                 {event.severity}
                                             </span>

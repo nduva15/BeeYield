@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree, Target } from "lucide-react";
+import { Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree, Target } from "lucide-react";
 import { toast } from "sonner";
-import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -60,7 +60,7 @@ interface Props {
   onOpenPlanning?: () => void;
 }
 
-export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, embedded }: Props & { embedded?: boolean }) {
+export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: Props) {
   const deviceId = useDeviceId();
   const [hives, setHives] = useState(10);
   const [acres, setAcres] = useState(0);
@@ -139,8 +139,8 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, emb
   }, [deviceId]);
 
   useEffect(() => {
-    if (isOpen || embedded) loadRuns();
-  }, [isOpen, embedded, loadRuns]);
+    if (isOpen) loadRuns();
+  }, [isOpen, loadRuns]);
 
   const loadVersionsFor = useCallback(async (runId: string) => {
     const { data } = await supabase
@@ -411,46 +411,29 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, emb
     } catch { /* canceled */ }
   };
 
-  if (!isOpen && !embedded) return null;
-
-  const containerClasses = embedded 
-    ? "relative w-full h-full" 
-    : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll";
-  
-  const contentClasses = embedded 
-    ? "w-full" 
-    : "max-w-5xl mx-auto p-6";
+  if (!isOpen) return null;
 
   return (
-    <div className={containerClasses}>
-      <div className={contentClasses}>
-        {!embedded && (
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Calculator className="w-7 h-7 text-honey" />
-              <div>
-                <h1 className="font-display text-2xl font-bold text-honey">Harvest Calculator</h1>
-                <p className="text-xs text-muted-foreground">BeeYield Harvest Math • Frame yield × HHI × 50/50 ethical rule</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setHistoryOpen((v) => !v)}
-                className="px-3 h-9 rounded-lg border border-border hover:border-primary/50 text-xs flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
-                title="Saved runs"
-              >
-                <History className="w-3.5 h-3.5" /> History ({savedRuns.length})
-              </button>
-              <button
-                onClick={onClose}
-                className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
-                aria-label="Close"
-              >
-                <X className="w-4 h-4" />
-              </button>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+      <div className="max-w-5xl mx-auto p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Calculator className="w-7 h-7 text-honey" />
+            <div>
+              <h1 className="font-display text-2xl font-bold text-honey">Harvest Calculator</h1>
+              <p className="text-xs text-muted-foreground">BeeYield Harvest Math • Frame yield × HHI × 50/50 ethical rule</p>
             </div>
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setHistoryOpen((v) => !v)}
+              className="px-3 h-9 rounded-lg border border-border hover:border-primary/50 text-xs flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
+              title="Saved runs"
+            >
+              <History className="w-3.5 h-3.5" /> History ({savedRuns.length})
+            </button>
+          </div>
+        </div>
 
         {historyOpen && (
           <div className="mb-6 p-4 rounded-xl border border-border bg-card">

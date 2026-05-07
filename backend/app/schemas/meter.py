@@ -122,6 +122,11 @@ class MeterEventBase(BaseModel):
     message: Optional[str] = None
     reason: Optional[str] = None
 
+class MeterEventCreate(MeterEventBase):
+    timestamp: Optional[datetime] = None
+    is_resolved: Optional[bool] = False
+    resolved_at: Optional[datetime] = None
+
 class MeterEvent(MeterEventBase):
     id: str
     timestamp: datetime

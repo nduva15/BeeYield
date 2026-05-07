@@ -9,8 +9,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/beeyield/lovable_ai/ui/alert-dialog";
-import { Input } from "@/components/beeyield/lovable_ai/ui/input";
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
 
 export type Conversation = {
   id: string;
@@ -27,7 +27,6 @@ interface ChatHistoryProps {
   onRename: (id: string, newTitle: string) => void;
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
 }
 
 export default function ChatHistory({
@@ -39,7 +38,6 @@ export default function ChatHistory({
   onRename,
   isOpen,
   onClose,
-  embedded = false,
 }: ChatHistoryProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -99,10 +97,7 @@ export default function ChatHistory({
 
   return (
     <>
-      <div className={cn(
-        "z-50 flex",
-        embedded ? "absolute inset-0" : "fixed inset-0"
-      )}>
+      <div className="fixed inset-0 z-50 flex">
         <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
 
         <div className="relative w-72 max-w-[80vw] h-full bg-card border-r border-border flex flex-col shadow-lg animate-fade-in">

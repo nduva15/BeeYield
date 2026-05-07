@@ -92,6 +92,33 @@ export type Database = {
         }
         Relationships: []
       }
+      apiary_sizing_runs: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          inputs: Json
+          label: string
+          outputs: Json
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          inputs?: Json
+          label?: string
+          outputs?: Json
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          inputs?: Json
+          label?: string
+          outputs?: Json
+        }
+        Relationships: []
+      }
       bee_diseases: {
         Row: {
           affected_castes: string | null
@@ -388,6 +415,78 @@ export type Database = {
         }
         Relationships: []
       }
+      dataset_imports: {
+        Row: {
+          created_at: string
+          dataset_kind: string
+          device_id: string
+          filename: string
+          id: string
+          notes: string | null
+          reindex_status: string
+          row_count: number
+          sample_rows: Json | null
+          schema_valid: boolean
+          validation_errors: Json | null
+        }
+        Insert: {
+          created_at?: string
+          dataset_kind?: string
+          device_id: string
+          filename: string
+          id?: string
+          notes?: string | null
+          reindex_status?: string
+          row_count?: number
+          sample_rows?: Json | null
+          schema_valid?: boolean
+          validation_errors?: Json | null
+        }
+        Update: {
+          created_at?: string
+          dataset_kind?: string
+          device_id?: string
+          filename?: string
+          id?: string
+          notes?: string | null
+          reindex_status?: string
+          row_count?: number
+          sample_rows?: Json | null
+          schema_valid?: boolean
+          validation_errors?: Json | null
+        }
+        Relationships: []
+      }
+      feeding_schedules: {
+        Row: {
+          created_at: string
+          device_id: string
+          hive_label: string
+          id: string
+          plan: Json
+          plan_label: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          hive_label?: string
+          id?: string
+          plan?: Json
+          plan_label?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          hive_label?: string
+          id?: string
+          plan?: Json
+          plan_label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       florage_plants: {
         Row: {
           bloom: string
@@ -626,6 +725,48 @@ export type Database = {
         }
         Relationships: []
       }
+      knowledge_facts: {
+        Row: {
+          category: string
+          citation: string | null
+          confidence: number
+          created_at: string
+          device_id: string
+          fact: string
+          id: string
+          is_default: boolean
+          source_url: string | null
+          tags: string[]
+          topic: string
+        }
+        Insert: {
+          category?: string
+          citation?: string | null
+          confidence?: number
+          created_at?: string
+          device_id?: string
+          fact: string
+          id?: string
+          is_default?: boolean
+          source_url?: string | null
+          tags?: string[]
+          topic: string
+        }
+        Update: {
+          category?: string
+          citation?: string | null
+          confidence?: number
+          created_at?: string
+          device_id?: string
+          fact?: string
+          id?: string
+          is_default?: boolean
+          source_url?: string | null
+          tags?: string[]
+          topic?: string
+        }
+        Relationships: []
+      }
       varroa_simulations: {
         Row: {
           created_at: string
@@ -656,6 +797,36 @@ export type Database = {
           notes?: string | null
           params?: Json
           results?: Json
+        }
+        Relationships: []
+      }
+      yield_projections: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          inputs: Json
+          label: string
+          notes: string | null
+          outputs: Json
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          inputs?: Json
+          label?: string
+          notes?: string | null
+          outputs?: Json
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          inputs?: Json
+          label?: string
+          notes?: string | null
+          outputs?: Json
         }
         Relationships: []
       }

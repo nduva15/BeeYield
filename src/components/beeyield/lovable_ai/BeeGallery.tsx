@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, ChevronLeft, ChevronRight, Bug, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Bug, Search } from "lucide-react";
 
 // Image imports
 import westernHoneyBee from "@/assets/bees/western-honey-bee.jpg";
@@ -143,7 +143,7 @@ interface BeeGalleryProps {
   onClose: () => void;
 }
 
-export default function BeeGallery({ isOpen, onClose, embedded }: BeeGalleryProps & { embedded?: boolean }) {
+export default function BeeGallery({ isOpen, onClose }: BeeGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -162,35 +162,26 @@ export default function BeeGallery({ isOpen, onClose, embedded }: BeeGalleryProp
     });
   }, [search, activeCategory]);
 
-  if (!isOpen && !embedded) return null;
-
-  const containerClasses = embedded 
-    ? "relative w-full h-full" 
-    : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm";
-  
-  const contentClasses = embedded 
-    ? "bg-card border border-border rounded-2xl w-full flex flex-col" 
-    : "bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4 flex flex-col";
+  if (!isOpen) return null;
 
   const selected = selectedIndex !== null ? BEE_SPECIES[selectedIndex] : null;
 
   return (
-    <div className={containerClasses} onClick={!embedded ? onClose : undefined}>
-      <div className={contentClasses} onClick={(e) => e.stopPropagation()}>
-        {!embedded && (
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
-            <div className="flex items-center gap-3">
-              <Bug className="w-5 h-5 text-primary" />
-              <div>
-                <h2 className="font-display text-lg font-bold text-foreground">Bee Species Gallery</h2>
-                <p className="text-xs text-muted-foreground">{BEE_SPECIES.length} species documented • AI-generated photos</p>
-              </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <div className="flex items-center gap-3">
+            <Bug className="w-5 h-5 text-primary" />
+            <div>
+              <h2 className="font-display text-lg font-bold text-foreground">Bee Species Gallery</h2>
+              <p className="text-xs text-muted-foreground">{BEE_SPECIES.length} species documented • AI-generated photos</p>
             </div>
-            <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-              <X className="w-4 h-4" />
-            </button>
           </div>
-        )}
+        </div>
 
         {selected ? (
           /* Detail View */

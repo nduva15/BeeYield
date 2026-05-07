@@ -66,7 +66,7 @@ const Team = () => {
             role: "Technical Director",
             department: "Operations",
             description: "Master of operational logistics and partner engineering. Carole leads the team in scaling BeeYield's physical and digital infrastructure across international borders.",
-            image: LOGO,
+            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
             linkedin: "#",
             email: "info@beeyield.com",
             achievements: ["Ops Scalability", "Partner Systems", "Logistics Core"]
@@ -76,7 +76,7 @@ const Team = () => {
             role: "Technical Director",
             department: "Engineering",
             description: "Pioneer in distributed systems and data security. Agatha ensures that every byte of bee telemetry is secured, verified, and processed with high fidelity.",
-            image: LOGO,
+            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
             linkedin: "#",
             email: "info@beeyield.com",
             achievements: ["System Integrity", "Data Security", "Protocol Lead"]
