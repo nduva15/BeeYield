@@ -69,7 +69,6 @@ import InspectionsView from '@/components/beeyield/InspectionsView';
 import HarvestsView from '@/components/beeyield/HarvestsView';
 import FlightMapView from '@/components/beeyield/FlightMapView';
 
-import VarroaView from '@/components/beeyield/VarroaView';
 import MeasurementDataView from '@/components/beeyield/MeasurementDataView';
 import { BeeYieldOnlineView, USBView } from '@/components/beeyield/RemainingViews';
 import { BluetoothConnectivityView } from '@/components/beeyield/BluetoothConnectivityView';
@@ -423,7 +422,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'harvests': return <HarvestsView onTabChange={handleTabChange} />;
             case 'flight-map': return <FlightMapView />;
 
-            case 'varroa': return <VarroaView embedded={true} />;
+            case 'varroa': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} embedded={true} />;
             case 'acoustic-spectral': return <AcousticSpectralView onTabChange={handleTabChange} embedded={true} />;
             case 'sound-analysis':

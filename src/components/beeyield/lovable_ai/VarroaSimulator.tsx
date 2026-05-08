@@ -52,7 +52,7 @@ const STRATEGIES = [
   { name: "Aggressive (3x)", treatments: [{ day: 20, knockdownPct: 70, label: "Formic" }, { day: 90, knockdownPct: 90, label: "Apivar" }, { day: 160, knockdownPct: 95, label: "OA vapor" }] },
 ];
 
-export default function VarroaSimulator({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function VarroaSimulator({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [mode, setMode] = useState<"det" | "sto" | "scenario">("det");
   const [days, setDays] = useState(180);
@@ -87,7 +87,7 @@ export default function VarroaSimulator({ isOpen, onClose }: { isOpen: boolean; 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">

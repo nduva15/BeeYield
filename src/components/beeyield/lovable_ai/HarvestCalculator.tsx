@@ -58,9 +58,10 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
+  embedded?: boolean;
 }
 
-export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: Props) {
+export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, embedded = false }: Props) {
   const deviceId = useDeviceId();
   const [hives, setHives] = useState(10);
   const [acres, setAcres] = useState(0);
@@ -414,7 +415,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

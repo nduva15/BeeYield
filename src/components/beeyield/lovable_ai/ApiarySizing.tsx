@@ -18,7 +18,7 @@ const CROPS: Record<string, { hivesPerHa: number; bloomDays: number }> = {
   "Acacia (forest)": { hivesPerHa: 1.5, bloomDays: 35 },
 };
 
-export default function ApiarySizing({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function ApiarySizing({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [crop, setCrop] = useState("Almond");
   const [hectares, setHectares] = useState(40);
@@ -69,7 +69,7 @@ export default function ApiarySizing({ isOpen, onClose }: { isOpen: boolean; onC
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">

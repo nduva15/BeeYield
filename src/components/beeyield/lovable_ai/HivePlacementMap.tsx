@@ -58,6 +58,7 @@ interface Props {
   readOnly?: boolean;
   initialRunId?: string;
   initialVersionId?: string;
+  embedded?: boolean;
 }
 
 type LatLng = { lat: number; lng: number };
@@ -202,6 +203,7 @@ export default function HivePlacementMap({
   readOnly = false,
   initialRunId,
   initialVersionId,
+  embedded = false,
 }: Props) {
   const deviceId = useDeviceId();
   const [field, setField] = useState<LatLng[]>([]);
@@ -524,7 +526,7 @@ export default function HivePlacementMap({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-3">

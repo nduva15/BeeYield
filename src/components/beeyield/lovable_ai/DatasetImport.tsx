@@ -22,7 +22,7 @@ type KindKey = typeof KINDS[number]["key"];
 
 const COLORS = ["hsl(var(--honey))", "hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--destructive))"];
 
-export default function DatasetImport({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function DatasetImport({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [imports, setImports] = useState<Imp[]>([]);
   const [kind, setKind] = useState<KindKey>("bees");
@@ -88,7 +88,7 @@ export default function DatasetImport({ isOpen, onClose }: { isOpen: boolean; on
   const byStatus = ["pending", "ready", "indexing", "indexed", "blocked"].map((s) => ({ name: s, value: imports.filter((i) => i.reindex_status === s).length })).filter((x) => x.value > 0);
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

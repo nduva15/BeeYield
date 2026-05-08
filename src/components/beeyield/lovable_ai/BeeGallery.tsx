@@ -141,9 +141,10 @@ const ALL_CATEGORIES = ["All", ...Array.from(new Set(BEE_SPECIES.map((b) => b.ca
 interface BeeGalleryProps {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
-export default function BeeGallery({ isOpen, onClose }: BeeGalleryProps) {
+export default function BeeGallery({ isOpen, onClose, embedded = false }: BeeGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -167,9 +168,9 @@ export default function BeeGallery({ isOpen, onClose }: BeeGalleryProps) {
   const selected = selectedIndex !== null ? BEE_SPECIES[selectedIndex] : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+    <div className={embedded ? "relative z-0 bg-background flex items-center justify-center pt-6" : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"} onClick={embedded ? undefined : onClose}>
       <div
-        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4"
+        className={`bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl overflow-hidden mx-4 ${embedded ? "" : "max-h-[90vh]"}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

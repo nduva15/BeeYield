@@ -23,7 +23,7 @@ const STOCKING: Record<string, { hivesPerHa: number; expectedYieldKgPerHa: numbe
   general:    { hivesPerHa: 3,   expectedYieldKgPerHa: 15,  bloomDays: 21, transportNote: "Generic baseline — refine with local florage" },
 };
 
-export default function PollinationCalcs({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function PollinationCalcs({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [crop, setCrop] = useState("almond");
   const [hectares, setHectares] = useState(10);
@@ -107,7 +107,7 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

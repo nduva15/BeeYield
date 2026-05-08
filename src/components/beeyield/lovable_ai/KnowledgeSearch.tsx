@@ -12,7 +12,7 @@ type Fact = {
 
 const CATS = ["disease", "species", "florage", "honey", "behavior", "management", "crop", "general"];
 
-export default function KnowledgeSearch({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function KnowledgeSearch({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [facts, setFacts] = useState<Fact[]>([]);
   const [q, setQ] = useState("");
@@ -55,7 +55,7 @@ export default function KnowledgeSearch({ isOpen, onClose }: { isOpen: boolean; 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
+    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
