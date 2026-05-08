@@ -42,11 +42,12 @@ const CROPS: Crop[] = [
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
 type Mode = "single" | "compare";
 
-export default function PollinationLookup({ isOpen, onClose }: Props) {
+export default function PollinationLookup({ isOpen, onClose, embedded = false }: Props) {
   const [mode, setMode] = useState<Mode>("single");
   const [cropName, setCropName] = useState(CROPS[0].name);
   const [acres, setAcres] = useState<number>(10);
