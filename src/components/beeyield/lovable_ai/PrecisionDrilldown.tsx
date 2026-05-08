@@ -11,6 +11,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
+  embedded?: boolean;
 }
 
 type CropProfile = {
@@ -44,7 +45,7 @@ const COMPASS_DIRS = [
   { label: "W", deg: 270 }, { label: "NW", deg: 315 },
 ];
 
-export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: Props) {
+export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, embedded = false }: Props) {
   const [cropName, setCropName] = useState(CROP_PROFILES[0].name);
   const [acres, setAcres] = useState(20);
   const [hives, setHives] = useState(40);
