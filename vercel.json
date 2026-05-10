@@ -6,7 +6,7 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "redirects": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "https://www.beeyield.com/:path*",
       "permanent": true,
       "has": [
