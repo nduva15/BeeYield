@@ -70,23 +70,5 @@ export default defineConfig({
         sourcemap: false,
         minify: 'esbuild',
         cssMinify: true,
-        rollupOptions: {
-            output: {
-                manualChunks(id) {
-                    if (id.includes('node_modules')) {
-                        if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) return 'vendor-core';
-                        if (id.includes('@supabase') || id.includes('@tanstack/react-query') || id.includes('axios')) return 'vendor-backend';
-                        if (id.includes('framer-motion') || id.includes('clsx') || id.includes('tailwind-merge') || id.includes('sonner')) return 'vendor-ui';
-                        if (id.includes('lucide-react')) return 'vendor-icons';
-                        if (id.includes('recharts')) return 'vendor-charts';
-                        if (id.includes('lodash') || id.includes('date-fns') || id.includes('uuid') || id.includes('zod')) return 'vendor-utils';
-                        if (id.includes('jspdf') || id.includes('jspdf-autotable') || id.includes('@react-pdf/renderer')) return 'vendor-pdf';
-                        if (id.includes('html5-qrcode') || id.includes('qrcode')) return 'vendor-qrcode';
-                        if (id.includes('@tensorflow') || id.includes('mobilenet')) return 'vendor-tf';
-                        return 'vendor';
-                    }
-                },
-            },
-        },
-    },
+        chunkSizeWarningLimit: 1500,
 })
