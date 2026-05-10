@@ -71,5 +71,17 @@ export default defineConfig({
         minify: 'esbuild',
         cssMinify: true,
         chunkSizeWarningLimit: 1500,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+                    'ui-vendor': ['framer-motion', 'lucide-react', 'recharts', 'tailwind-merge', 'clsx', 'sonner'],
+                    'utils-vendor': ['lodash', 'date-fns', 'uuid', 'zod'],
+                    'tf-vendor': ['@tensorflow/tfjs', '@tensorflow-models/mobilenet'],
+                    'pdf-vendor': ['jspdf', 'jspdf-autotable', '@react-pdf/renderer'],
+                    'supabase-vendor': ['@supabase/supabase-js', '@tanstack/react-query', 'axios']
+                }
+            }
+        }
     },
 })
