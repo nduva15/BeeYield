@@ -1,5 +1,6 @@
 /**
  * Contact Service - Connects to Secure Backend API
+ * Falls back to direct Supabase insertion when the backend is unavailable.
  */
 import { supabase } from "@/lib/supabase";
 import { apiPost, apiGet, apiPatch } from "./api";
@@ -80,24 +81,33 @@ function shouldUseSupabaseFallback(error: unknown) {
         error instanceof TypeError ||
         typedError?.status === undefined ||
         typedError.status >= 500 ||
-        /failed to fetch|fetch failed|networkerror|load failed|err_connection_refused/i.test(message)
+        /failed to fetch|fetch failed|networkerror|network error|load failed|err_connection_refused|connection timeout/i.test(message)
     );
 }
 
 async function insertFallbackRow(table: string, payload: Record<string, unknown>) {
     if (!supabase) {
-        throw new Error("Supabase client is unavailable for fallback submissions.");
+        throw new Error("Database connection is unavailable. Please try again later.");
     }
 
     const { error } = await (supabase as any).from(table).insert(payload);
     if (error) {
+        // Log the specific error for debugging
+        console.error(`[ContactService] Supabase fallback INSERT into "${table}" failed:`, error.message, `(code: ${error.code})`);
+        
+        // Provide user-friendly message for RLS errors
+        if (error.code === '42501' || error.message?.includes('row-level security')) {
+            throw new Error(
+                "Database permissions need to be configured. Please contact support or check the Supabase RLS policies."
+            );
+        }
         throw error;
     }
 }
 
 async function upsertFallbackRow(table: string, payload: Record<string, unknown>, onConflict: string) {
     if (!supabase) {
-        throw new Error("Supabase client is unavailable for fallback submissions.");
+        throw new Error("Database connection is unavailable. Please try again later.");
     }
 
     const { error } = await (supabase as any)
@@ -105,6 +115,13 @@ async function upsertFallbackRow(table: string, payload: Record<string, unknown>
         .upsert(payload, { onConflict });
 
     if (error) {
+        console.error(`[ContactService] Supabase fallback UPSERT into "${table}" failed:`, error.message, `(code: ${error.code})`);
+        
+        if (error.code === '42501' || error.message?.includes('row-level security')) {
+            throw new Error(
+                "Database permissions need to be configured. Please contact support or check the Supabase RLS policies."
+            );
+        }
         throw error;
     }
 }
@@ -112,8 +129,9 @@ async function upsertFallbackRow(table: string, payload: Record<string, unknown>
 export const submitContactForm = async (data: ContactSubmission) => {
     try {
         return await apiPost<ContactServiceResponse>("/contact/submit", data);
-    } catch (error) {
-        if (shouldUseSupabaseFallback(error)) {
+    } catch (apiError) {
+        if (shouldUseSupabaseFallback(apiError)) {
+            console.info("[ContactService] Backend API unavailable, using Supabase fallback for contact form.");
             await insertFallbackRow("contact_submissions", {
                 ...data,
                 name: `${data.first_name} ${data.last_name}`.trim(),
@@ -127,16 +145,17 @@ export const submitContactForm = async (data: ContactSubmission) => {
             };
         }
 
-        console.error("Error submitting contact form:", error);
-        throw error;
+        console.error("Error submitting contact form:", apiError);
+        throw apiError;
     }
 };
 
 export const submitPollinationRequest = async (data: PollinationRequest) => {
     try {
         return await apiPost<ContactServiceResponse>("/contact/pollination", data);
-    } catch (error) {
-        if (shouldUseSupabaseFallback(error)) {
+    } catch (apiError) {
+        if (shouldUseSupabaseFallback(apiError)) {
+            console.info("[ContactService] Backend API unavailable, using Supabase fallback for pollination request.");
             await insertFallbackRow("pollination_requests", {
                 ...data,
                 status: "pending",
@@ -148,16 +167,17 @@ export const submitPollinationRequest = async (data: PollinationRequest) => {
             };
         }
 
-        console.error("Error submitting pollination request:", error);
-        throw error;
+        console.error("Error submitting pollination request:", apiError);
+        throw apiError;
     }
 };
 
 export const submitNewsletterSubscription = async (data: NewsletterSubscription) => {
     try {
         return await apiPost<ContactServiceResponse>("/contact/newsletter", data);
-    } catch (error) {
-        if (shouldUseSupabaseFallback(error)) {
+    } catch (apiError) {
+        if (shouldUseSupabaseFallback(apiError)) {
+            console.info("[ContactService] Backend API unavailable, using Supabase fallback for newsletter subscription.");
             await upsertFallbackRow(
                 "newsletter_subscribers",
                 {
@@ -174,8 +194,8 @@ export const submitNewsletterSubscription = async (data: NewsletterSubscription)
             };
         }
 
-        console.error("Error subscribing to newsletter:", error);
-        throw error;
+        console.error("Error subscribing to newsletter:", apiError);
+        throw apiError;
     }
 };
 
@@ -183,8 +203,9 @@ export const submitNewsletterSubscription = async (data: NewsletterSubscription)
 export const submitContactMessage = async (data: ContactMessage) => {
     try {
         return await apiPost<ContactServiceResponse>("/contact/message", data);
-    } catch (error) {
-        if (shouldUseSupabaseFallback(error)) {
+    } catch (apiError) {
+        if (shouldUseSupabaseFallback(apiError)) {
+            console.info("[ContactService] Backend API unavailable, using Supabase fallback for contact message.");
             await insertFallbackRow("contact_messages", {
                 ...data,
                 status: "new",
@@ -196,8 +217,8 @@ export const submitContactMessage = async (data: ContactMessage) => {
             };
         }
 
-        console.error("Error submitting contact message:", error);
-        throw error;
+        console.error("Error submitting contact message:", apiError);
+        throw apiError;
     }
 };
 
