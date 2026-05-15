@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Box, Save, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,12 +52,13 @@ export default function ApiarySizing({ isOpen, onClose, embedded = false }: { is
     });
   }, [out]);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("apiary_sizing_runs").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20);
     setRuns((data ?? []) as Run[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
     const inputs = { crop, hectares, supersPerHive, framesPerSuper, hivesPerTruck, transportKm, costPerKm, bloomStart };

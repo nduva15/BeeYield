@@ -31,7 +31,7 @@ export default function ActivityCounter({ isOpen, onClose, embedded = false }: {
 
   const save = async () => {
     if (count === 0) { toast.error("Run a count first"); return; }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { error } = await (supabase as any).from("bee_flight_logs").insert({
       device_id: deviceId, hive_label: hiveLabel, bees_per_minute: count,
       pollen_loads: 0, florage_source: florage || null, observed_at: new Date().toISOString(),

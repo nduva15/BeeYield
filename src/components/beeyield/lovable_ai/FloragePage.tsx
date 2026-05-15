@@ -100,6 +100,7 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
     setLoading(false);
   }, [deviceId]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   const startEdit = (p: FloragePlant) => {

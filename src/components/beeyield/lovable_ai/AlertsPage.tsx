@@ -44,6 +44,7 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
   const [pushPerm, setPushPerm] = useState<NotificationPermission>("default");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if ("Notification" in window) setPushPerm(Notification.permission);
   }, []);
 
@@ -56,6 +57,7 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
     setEvents((e as AlertEvent[]) || []);
   }, [deviceId]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   const requestPush = async () => {

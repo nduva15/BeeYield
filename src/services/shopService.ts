@@ -706,7 +706,7 @@ export const addAddress = async (address: any): Promise<Address> => {
     } catch (error) {
         console.error("Error adding address via API, falling back to Supabase:", error);
         const { data: { user } } = await supabaseShop.auth.getUser();
-        if (!user) throw new Error("User not authenticated");
+        if (!user) throw new Error("User not authenticated", { cause: error });
         
         try {
             const { data, error: sbError } = await supabaseShop
@@ -759,7 +759,7 @@ export const updateAddress = async (addressId: string, address: any): Promise<Ad
             return normalizeAddress(data);
         } catch (sbErr) {
             console.error("Address update failed, falling back to user_metadata.");
-            if (!user) throw new Error("User not authenticated");
+            if (!user) throw new Error("User not authenticated", { cause: sbErr });
             
             const currentAddresses = toArray<any>(user.user_metadata?.addresses || []);
             
@@ -773,7 +773,7 @@ export const updateAddress = async (addressId: string, address: any): Promise<Ad
             
             await supabaseShop.auth.updateUser({ data: { addresses: updatedAddresses } });
             const updated = updatedAddresses.find((a: any) => a.id === addressId);
-            if (!updated) throw new Error("Address not found");
+            if (!updated) throw new Error("Address not found", { cause: sbErr });
             return normalizeAddress(updated);
         }
     }
@@ -792,7 +792,7 @@ export const deleteAddress = async (addressId: string) => {
             return { status: "success" };
         } catch (sbErr) {
             console.error("Address deletion failed, falling back to user_metadata.");
-            if (!user) throw new Error("User not authenticated");
+            if (!user) throw new Error("User not authenticated", { cause: sbErr });
             
             const currentAddresses = toArray<any>(user.user_metadata?.addresses || []);
             const updatedAddresses = currentAddresses.filter((addr: any) => addr.id !== addressId);

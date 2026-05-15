@@ -81,6 +81,8 @@ function shouldUseSupabaseFallback(error: unknown) {
         error instanceof TypeError ||
         typedError?.status === undefined ||
         typedError.status >= 500 ||
+        typedError.status === 404 ||
+        typedError.status === 405 ||
         /failed to fetch|fetch failed|networkerror|network error|load failed|err_connection_refused|connection timeout/i.test(message)
     );
 }
@@ -158,7 +160,6 @@ export const submitPollinationRequest = async (data: PollinationRequest) => {
             console.info("[ContactService] Backend API unavailable, using Supabase fallback for pollination request.");
             await insertFallbackRow("pollination_requests", {
                 ...data,
-                status: "pending",
             });
 
             return {
@@ -183,7 +184,6 @@ export const submitNewsletterSubscription = async (data: NewsletterSubscription)
                 {
                     email: data.email,
                     first_name: data.first_name ?? null,
-                    source: data.source ?? "footer",
                 },
                 "email",
             );

@@ -384,11 +384,11 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
                 }
             }
 
-            throw new Error(`Connection Error: Unable to reach the BeeYield server to verify batch ${code}. Please try again later.`);
+            throw new Error(`Connection Error: Unable to reach the BeeYield server to verify batch ${code}. Please try again later.`, { cause: error });
         }
 
         console.error("Traceability verification failed:", error);
-        throw new Error(`Verification failed: ${error.message || 'Unknown error occurred while verifying batch.'}`);
+        throw new Error(`Verification failed: ${error.message || 'Unknown error occurred while verifying batch.'}`, { cause: error });
     }
 };
 

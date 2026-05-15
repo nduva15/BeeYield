@@ -71,7 +71,7 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
             console.error(error);
             toast({
                 title: "Submission Failed",
-                description: "There was an error sending your request. Please try again.",
+                description: error instanceof Error ? error.message : "There was an error sending your request. Please try again.",
                 variant: "destructive"
             });
         } finally {

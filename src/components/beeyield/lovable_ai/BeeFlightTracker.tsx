@@ -88,7 +88,7 @@ export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: 
   };
 
   const load = useCallback(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const [logRes, runRes] = await Promise.all([
       (supabase as any).from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50),
       supabase.from("harvest_runs").select("id,crop,created_at").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
@@ -97,6 +97,7 @@ export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: 
     if (runRes.data) setRuns(runRes.data as RunRow[]);
   }, [deviceId]);
 
+   
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   useEffect(() => {
@@ -124,7 +125,7 @@ export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: 
       ? [anchor, projectPoint(anchor, flightBearingDeg, distance)]
       : null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { error } = await (supabase as any).from("bee_flight_logs").insert({
       run_id: selectedRunId || null,
       version_id: selectedVersionId !== "current" ? selectedVersionId : null,

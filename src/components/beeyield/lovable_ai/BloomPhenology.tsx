@@ -52,7 +52,7 @@ export default function BloomPhenology({ isOpen, onClose, embedded = false }: { 
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const [obsRes, runRes] = await Promise.all([
       (supabase as any).from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
       supabase.from("harvest_runs").select("id,crop,created_at").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
@@ -60,6 +60,7 @@ export default function BloomPhenology({ isOpen, onClose, embedded = false }: { 
     if (obsRes.data) setObs(obsRes.data as Obs[]);
     if (runRes.data) setRuns(runRes.data as RunRow[]);
   }, [deviceId]);
+   
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   useEffect(() => {
@@ -108,7 +109,7 @@ export default function BloomPhenology({ isOpen, onClose, embedded = false }: { 
 
   const saveObs = async () => {
     setSaving(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { error } = await (supabase as any).from("bloom_observations").insert({
       device_id: deviceId, crop, region,
       run_id: selectedRunId || null,

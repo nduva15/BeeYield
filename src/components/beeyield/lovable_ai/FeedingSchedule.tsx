@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Calendar, Save, Plus, Trash2, Beaker } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,12 +35,13 @@ export default function FeedingSchedule({ isOpen, onClose, embedded = false }: {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [active, setActive] = useState<Plan>({ hive_label: "Hive 1", plan_label: "Season plan", plan: defaultPlan() });
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("feeding_schedules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
     setPlans(((data ?? []) as unknown) as Plan[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
     if (active.id) {

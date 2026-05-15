@@ -27,24 +27,26 @@ export default function MOACompare({ isOpen, onClose, embedded = false }: { isOp
   const [loading, setLoading] = useState(false);
 
   const loadRuns = useCallback(async () => {
+    setLoading(true);
     const { data } = await supabase.from("harvest_runs").select("id,crop,region,acres,hives,created_at")
       .eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50);
     setRuns((data as Run[]) || []);
+    setLoading(false);
   }, [deviceId]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (isOpen) loadRuns(); }, [isOpen, loadRuns]);
 
   const loadVersions = useCallback(async (runId: string) => {
-    setLoading(true);
     const { data } = await supabase.from("harvest_run_versions").select("*").eq("run_id", runId).order("created_at", { ascending: true });
     const vs = (data as Version[]) || [];
     setVersions(vs);
     if (vs.length >= 2) { setVA(vs[0].id); setVB(vs[vs.length - 1].id); }
     else if (vs.length === 1) { setVA(vs[0].id); setVB(vs[0].id); }
     else { setVA(""); setVB(""); }
-    setLoading(false);
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (selectedRun) loadVersions(selectedRun); }, [selectedRun, loadVersions]);
 
   const a = versions.find((v) => v.id === vA) || null;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { TrendingUp, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,12 +52,13 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: {
     { k: "Precip", v: calc.precipF * 100 },
   ];
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("yield_projections").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(30);
     setRuns((data ?? []) as Run[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
     const inputs = { hives, broodFrames, nectarScore, bloomDays, tempC, windKmh, precipMm, pricePerKg };

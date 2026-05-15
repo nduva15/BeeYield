@@ -63,7 +63,7 @@ export default function VarroaSimulator({ isOpen, onClose, embedded = false }: {
   const [runStamp, setRunStamp] = useState(0);
 
   const detResult = useMemo(() => simulateDeterministic(days, m0, growth / 100, carry, treatments), [days, m0, growth, carry, treatments]);
-  const stoResult = useMemo(() => simulateStochastic(days, m0, treatments), [days, m0, treatments, runStamp]);
+  const stoResult = useMemo(() => { void runStamp; return simulateStochastic(days, m0, treatments); }, [days, m0, treatments, runStamp]);
   const scenarioResults = useMemo(() => STRATEGIES.map((s) => ({ name: s.name, data: simulateDeterministic(days, m0, growth / 100, carry, s.treatments) })), [days, m0, growth, carry]);
 
   const peakLoad = (data: { load: number }[]) => Math.max(...data.map((d) => d.load));

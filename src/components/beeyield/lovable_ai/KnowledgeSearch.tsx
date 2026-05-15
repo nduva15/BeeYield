@@ -24,6 +24,7 @@ export default function KnowledgeSearch({ isOpen, onClose, embedded = false }: {
     const { data } = await supabase.from("knowledge_facts").select("*").order("confidence", { ascending: false });
     setFacts((data ?? []) as Fact[]);
   };
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (isOpen) load(); }, [isOpen]);
 
   const filtered = useMemo(() => {

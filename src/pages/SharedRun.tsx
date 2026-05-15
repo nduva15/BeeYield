@@ -19,7 +19,6 @@ type SharedRunRow = {
   local_estimate_kg: number | null;
   ai_forecast: string | null;
   notes: string | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   assumptions: any | null;
   created_at: string;
 };
@@ -30,7 +29,6 @@ type RunVersion = {
   version_label: string;
   ai_forecast: string | null;
   local_estimate_kg: number | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   assumptions: any | null;
   created_at: string;
 };

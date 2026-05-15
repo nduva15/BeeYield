@@ -1,4 +1,3 @@
-
 -- Final Database Consistency Fix
 -- This migration addresses:
 -- 1. Missing columns in profiles table (email, first_name, last_name)

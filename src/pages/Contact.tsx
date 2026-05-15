@@ -190,11 +190,11 @@ const Contact = () => {
       });
       setTermsAccepted(false);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast({
         title: "Submission Failed",
-        description: "There was an error sending your inquiry. Please try again.",
+        description: error.message || "There was an error sending your inquiry. Please try again.",
         variant: "destructive"
       });
     } finally {

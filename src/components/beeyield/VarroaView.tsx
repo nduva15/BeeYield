@@ -235,6 +235,7 @@ const VarroaView: React.FC<VarroaViewProps> = ({ embedded = false }) => {
 
     React.useEffect(() => {
         void fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const stats = React.useMemo(() => {

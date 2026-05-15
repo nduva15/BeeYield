@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Upload, Database, RefreshCw, CheckCircle2, AlertTriangle, Trash2, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,12 +29,12 @@ export default function DatasetImport({ isOpen, onClose, embedded = false }: { i
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("dataset_imports").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
     setImports((data ?? []) as Imp[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId, load]);
 
   const handleFile = async (file: File) => {
     setBusy(true);

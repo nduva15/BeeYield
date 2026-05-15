@@ -305,6 +305,7 @@ export default function HivePlacementMap({
     setFocus(null);
   }, [applyLayout, cropKey]);
 
+   
   useEffect(() => { if (isOpen) loadRuns(); }, [isOpen, loadRuns]);
 
   useEffect(() => {

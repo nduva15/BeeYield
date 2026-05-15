@@ -66,7 +66,7 @@ const PollinationRequest = () => {
       console.error(error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your request. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error submitting your request. Please try again.",
         variant: "destructive"
       });
     } finally {

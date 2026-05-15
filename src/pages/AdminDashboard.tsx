@@ -210,6 +210,7 @@ const AdminDashboard: React.FC = () => {
         } else if (!authLoading && user && isAdmin) {
             initDashboard();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, authLoading, navigate, isAdmin]);
 
     useEffect(() => {

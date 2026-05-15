@@ -119,6 +119,7 @@ export default function ActivityForecaster({ isOpen, onClose, embedded = false }
     setHistory(rows);
   }, [deviceId, hiveLabel]);
 
+   
   useEffect(() => { if (isOpen) loadHistory(); }, [isOpen, loadHistory]);
 
   const runAI = async () => {

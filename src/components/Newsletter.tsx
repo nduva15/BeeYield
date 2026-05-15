@@ -51,7 +51,7 @@ export const Newsletter = ({ className = "", source = "footer" }: NewsletterProp
             } else {
                 toast({
                     title: "Subscription Failed",
-                    description: "Something went wrong. Please try again.",
+                    description: error?.message || "Something went wrong. Please try again.",
                     variant: "destructive",
                 });
             }

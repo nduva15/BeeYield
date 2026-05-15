@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const apiPostMock = vi.fn();
-const apiGetMock = vi.fn();
-const apiPatchMock = vi.fn();
-const fromMock = vi.fn();
-const insertMock = vi.fn();
-const upsertMock = vi.fn();
+const { apiPostMock, apiGetMock, apiPatchMock, fromMock, insertMock, upsertMock } = vi.hoisted(() => ({
+  apiPostMock: vi.fn(),
+  apiGetMock: vi.fn(),
+  apiPatchMock: vi.fn(),
+  fromMock: vi.fn(),
+  insertMock: vi.fn(),
+  upsertMock: vi.fn(),
+}));
 
 vi.mock("./api", () => ({
   apiPost: apiPostMock,
