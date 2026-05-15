@@ -101,11 +101,11 @@ const Contact = () => {
 
       setQuickSent(true);
       setQuickForm({ fullName: "", email: "", subject: "", message: "" });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast({
         title: "Failed to Send",
-        description: "Something went wrong. Please try again.",
+        description: error.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {

@@ -1,9 +1,10 @@
-/**
- * Contact Service - Connects to Secure Backend API
- * Falls back to direct Supabase insertion when the backend is unavailable.
- */
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseBeeYield, supabaseCEBA, supabaseShop } from "@/lib/supabase";
 import { apiPost, apiGet, apiPatch } from "./api";
+
+/** Helper to get a working supabase client */
+const getSupabase = () => {
+    return supabase || supabaseBeeYield || supabaseCEBA || supabaseShop;
+};
 
 export interface ContactSubmission {
     first_name: string;
@@ -83,16 +84,20 @@ function shouldUseSupabaseFallback(error: unknown) {
         typedError.status >= 500 ||
         typedError.status === 404 ||
         typedError.status === 405 ||
+        typedError.status === 401 ||
         /failed to fetch|fetch failed|networkerror|network error|load failed|err_connection_refused|connection timeout/i.test(message)
     );
 }
 
 async function insertFallbackRow(table: string, payload: Record<string, unknown>) {
-    if (!supabase) {
-        throw new Error("Database connection is unavailable. Please try again later.");
+    const client = getSupabase();
+    if (!client) {
+        const url = import.meta.env.VITE_SUPABASE_URL ? "present" : "missing";
+        const key = import.meta.env.VITE_SUPABASE_ANON_KEY ? "present" : "missing";
+        throw new Error(`Database unavailable. Config: URL ${url}, Key ${key}. Please check your environment.`);
     }
 
-    const { error } = await (supabase as any).from(table).insert(payload);
+    const { error } = await (client as any).from(table).insert(payload);
     if (error) {
         // Log the specific error for debugging
         console.error(`[ContactService] Supabase fallback INSERT into "${table}" failed:`, error.message, `(code: ${error.code})`);
@@ -108,11 +113,14 @@ async function insertFallbackRow(table: string, payload: Record<string, unknown>
 }
 
 async function upsertFallbackRow(table: string, payload: Record<string, unknown>, onConflict: string) {
-    if (!supabase) {
-        throw new Error("Database connection is unavailable. Please try again later.");
+    const client = getSupabase();
+    if (!client) {
+        const url = import.meta.env.VITE_SUPABASE_URL ? "present" : "missing";
+        const key = import.meta.env.VITE_SUPABASE_ANON_KEY ? "present" : "missing";
+        throw new Error(`Database unavailable. Config: URL ${url}, Key ${key}. Please check your environment.`);
     }
 
-    const { error } = await (supabase as any)
+    const { error } = await (client as any)
         .from(table)
         .upsert(payload, { onConflict });
 
