@@ -84,6 +84,7 @@ release/
 *.sql
 !supabase/migrations/*.sql
 *.py
+!api/**/*.py
 !backend/main.py
 !backend/app/**/*.py
 !backend/tests/test_traceability_batch_service.py

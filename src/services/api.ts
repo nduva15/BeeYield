@@ -241,13 +241,19 @@ export async function apiRequest<T>(
         }
     } catch (error: any) {
         if (error.name === 'AbortError' || error.name === 'TimeoutError') {
-            console.error(`API Timeout for ${endpoint}: Server took too long to respond.`, error);
+            if (!isPublicApiEndpoint(endpoint)) {
+                console.error(`API Timeout for ${endpoint}: Server took too long to respond.`, error);
+            }
             throw new Error(`Connection timeout: The server took too long to respond. Please try again.`, { cause: error });
         } else if (error.message && error.message.includes('fetch')) {
-            console.error(`Network Error for ${endpoint}:`, error);
+            if (!isPublicApiEndpoint(endpoint)) {
+                console.error(`Network Error for ${endpoint}:`, error);
+            }
             throw new Error(`Network error: Unable to connect to the server. Please check your connection.`, { cause: error });
         } else {
-            console.error(`API Error for ${endpoint}:`, error);
+            if (!isPublicApiEndpoint(endpoint)) {
+                console.error(`API Error for ${endpoint}:`, error);
+            }
             throw error;
         }
     }
