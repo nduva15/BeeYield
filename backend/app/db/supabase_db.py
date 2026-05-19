@@ -132,6 +132,9 @@ async def _request_gateway(endpoint: str, payload: dict, token: Optional[str] = 
 
 async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
     """Insert a record via direct REST API."""
+    if not settings.SUPABASE_URL or not (settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY):
+        return {"success": False, "error": "Supabase URL or API key is not configured"}
+
     url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
     # IMPORTANT: never use service-role as apikey for user-scoped calls.
     # apikey should be anon; Authorization should be the user JWT when present.
@@ -401,6 +404,9 @@ async def db_upsert(
     token: Optional[str] = None,
 ) -> dict[str, Any]:
     """Upsert a record via direct REST API."""
+    if not settings.SUPABASE_URL or not (settings.SUPABASE_ANON_KEY or settings.SUPABASE_KEY):
+        return {"success": False, "error": "Supabase URL or API key is not configured"}
+
     url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
     
     # Add on_conflict to URL parameters
