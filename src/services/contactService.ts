@@ -74,6 +74,94 @@ type FallbackError = Error & {
     responseBody?: unknown;
 };
 
+const CONTACT_OUTBOX_KEY = "beeyield_contact_outbox";
+
+type QueuedContactSubmission = {
+    id: string;
+    table: string;
+    operation: "insert" | "upsert";
+    payload: Record<string, unknown>;
+    onConflict?: string;
+    queuedAt: string;
+};
+
+function canUseBrowserStorage() {
+    return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+}
+
+function getQueuedSubmissions(): QueuedContactSubmission[] {
+    if (!canUseBrowserStorage()) return [];
+
+    try {
+        const rawQueue = window.localStorage.getItem(CONTACT_OUTBOX_KEY);
+        if (!rawQueue) return [];
+        const parsed = JSON.parse(rawQueue);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn("[ContactService] Could not read queued submissions:", error);
+        return [];
+    }
+}
+
+function setQueuedSubmissions(queue: QueuedContactSubmission[]) {
+    if (!canUseBrowserStorage()) return;
+    window.localStorage.setItem(CONTACT_OUTBOX_KEY, JSON.stringify(queue));
+}
+
+function queueSubmission(
+    table: string,
+    operation: QueuedContactSubmission["operation"],
+    payload: Record<string, unknown>,
+    onConflict?: string,
+) {
+    if (!canUseBrowserStorage()) {
+        throw new Error("Submission could not be saved because browser storage is unavailable.");
+    }
+
+    const queue = getQueuedSubmissions();
+    queue.push({
+        id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+        table,
+        operation,
+        payload,
+        onConflict,
+        queuedAt: new Date().toISOString(),
+    });
+    setQueuedSubmissions(queue);
+}
+
+async function flushQueuedSubmissions() {
+    const client = getSupabase();
+    const queue = getQueuedSubmissions();
+    if (!client || queue.length === 0) return;
+
+    const pending: QueuedContactSubmission[] = [];
+
+    for (const item of queue) {
+        try {
+            const query = (client as any).from(item.table);
+            const { error } = item.operation === "upsert"
+                ? await query.upsert(item.payload, { onConflict: item.onConflict })
+                : await query.insert(item.payload);
+
+            if (error) {
+                pending.push(item);
+            }
+        } catch {
+            pending.push(item);
+        }
+    }
+
+    setQueuedSubmissions(pending);
+}
+
+if (typeof window !== "undefined") {
+    window.addEventListener("online", () => {
+        void flushQueuedSubmissions();
+    });
+    void flushQueuedSubmissions();
+}
+
 function shouldUseSupabaseFallback(error: unknown) {
     const typedError = error as FallbackError;
     const message = typedError?.message ?? String(error ?? "");
@@ -94,7 +182,9 @@ async function insertFallbackRow(table: string, payload: Record<string, unknown>
     if (!client) {
         const url = import.meta.env.VITE_SUPABASE_URL ? "present" : "missing";
         const key = import.meta.env.VITE_SUPABASE_ANON_KEY ? "present" : "missing";
-        throw new Error(`Database unavailable. Config: URL ${url}, Key ${key}. Please check your environment.`);
+        console.warn(`[ContactService] Supabase fallback unavailable. Config: URL ${url}, Key ${key}. Queueing "${table}" submission locally.`);
+        queueSubmission(table, "insert", payload);
+        return;
     }
 
     const { error } = await (client as any).from(table).insert(payload);
@@ -117,7 +207,9 @@ async function upsertFallbackRow(table: string, payload: Record<string, unknown>
     if (!client) {
         const url = import.meta.env.VITE_SUPABASE_URL ? "present" : "missing";
         const key = import.meta.env.VITE_SUPABASE_ANON_KEY ? "present" : "missing";
-        throw new Error(`Database unavailable. Config: URL ${url}, Key ${key}. Please check your environment.`);
+        console.warn(`[ContactService] Supabase fallback unavailable. Config: URL ${url}, Key ${key}. Queueing "${table}" submission locally.`);
+        queueSubmission(table, "upsert", payload, onConflict);
+        return;
     }
 
     const { error } = await (client as any)
@@ -168,6 +260,7 @@ export const submitPollinationRequest = async (data: PollinationRequest) => {
             console.info("[ContactService] Backend API unavailable, using Supabase fallback for pollination request.");
             await insertFallbackRow("pollination_requests", {
                 ...data,
+                status: "pending",
             });
 
             return {
@@ -192,6 +285,7 @@ export const submitNewsletterSubscription = async (data: NewsletterSubscription)
                 {
                     email: data.email,
                     first_name: data.first_name ?? null,
+                    source: data.source ?? "footer",
                 },
                 "email",
             );

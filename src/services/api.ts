@@ -1,6 +1,6 @@
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 
-const RAW_API_URL = import.meta.env.VITE_API_URL || "http://localhost:9091";
+const RAW_API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/api/v1" : "http://localhost:8000");
 const RAW_RUST_API_URL = import.meta.env.VITE_RUST_API_URL || "http://localhost:9091";
 const NORMALIZED_API_URL = RAW_API_URL.endsWith('/api/v1')
     ? RAW_API_URL.slice(0, -7)

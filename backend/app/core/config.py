@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from typing import List, Optional, Union
-from pydantic import field_validator, Field
+import os
+from pydantic import field_validator, Field, model_validator
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
@@ -25,6 +26,12 @@ class Settings(BaseSettings):
         elif isinstance(v, list):
             return v
         return v
+
+    @model_validator(mode="after")
+    def fill_supabase_public_env(self):
+        self.SUPABASE_URL = self.SUPABASE_URL or os.getenv("VITE_SUPABASE_URL", "")
+        self.SUPABASE_ANON_KEY = self.SUPABASE_ANON_KEY or os.getenv("VITE_SUPABASE_ANON_KEY")
+        return self
 
     # ============ SUPABASE (Primary Database) ============
     # Fixed: Accept both VITE_SUPABASE_URL and SUPABASE_URL
