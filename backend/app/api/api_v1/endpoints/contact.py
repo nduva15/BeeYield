@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, Request, Depends
 from app.schemas import contact as schemas
 from app.services import email
 from app.db.supabase_db import db_insert, db_select, db_update, db_upsert
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -40,6 +41,8 @@ async def _save_offline(submission_type: str, data: dict):
             project_root = os.path.dirname(project_root)
         
         offline_file = os.path.join(project_root, "offline_submissions.json")
+        if not os.access(project_root, os.W_OK):
+            offline_file = os.path.join("/tmp", "beeyield_offline_submissions.json")
         print(f"[INFO] Attempting offline save for {submission_type} to {offline_file}")
         
         entry = {
@@ -75,6 +78,11 @@ async def _save_offline(submission_type: str, data: dict):
         return False
 
 
+def _public_form_db_token(token: Optional[str] = None) -> Optional[str]:
+    """Prefer the server-side service role for public forms so RLS does not block website submissions."""
+    return settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY or token
+
+
 @router.post("/submit", response_model=dict)
 async def submit_contact_form(
     request_in: schemas.ContactSubmissionCreate, 
@@ -103,7 +111,7 @@ async def submit_contact_form(
     
     success = False
     try:
-        result = await db_insert("contact_submissions", db_data, token=token)
+        result = await db_insert("contact_submissions", db_data, token=_public_form_db_token(token))
         if result.get("success"):
             success = True
             print(f"[SUCCESS] DB Save Successful: {request_in.email}")
@@ -154,7 +162,7 @@ async def request_pollination(
     
     success = False
     try:
-        result = await db_insert("pollination_requests", db_data, token=token)
+        result = await db_insert("pollination_requests", db_data, token=_public_form_db_token(token))
         if result.get("success"):
             success = True
             print(f"[SUCCESS] Pollination request saved: {request_in.email}")
@@ -206,7 +214,7 @@ async def submit_contact_message(
 
     success = False
     try:
-        result = await db_insert("contact_messages", payload, token=token)
+        result = await db_insert("contact_messages", payload, token=_public_form_db_token(token))
         if result.get("success"):
             success = True
             print(f"[SUCCESS] Contact message saved: {request_in.email}")
@@ -304,7 +312,7 @@ async def subscribe_newsletter(
             db_data,
             on_conflict="email",
             merge_duplicates=False,
-            token=token,
+            token=_public_form_db_token(token),
         )
         if not result.get("success"):
             print(f"[WARNING] Newsletter DB Upsert failed: {result.get('error')}")

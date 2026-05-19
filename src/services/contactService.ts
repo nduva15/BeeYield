@@ -75,6 +75,14 @@ type FallbackError = Error & {
 };
 
 const CONTACT_OUTBOX_KEY = "beeyield_contact_outbox";
+const OFFLINE_SUCCESS_MESSAGE = "We've received your submission and will process it as soon as the service is available.";
+
+const TABLE_TO_ENDPOINT: Record<string, string> = {
+    contact_submissions: "/contact/submit",
+    pollination_requests: "/contact/pollination",
+    newsletter_subscribers: "/contact/newsletter",
+    contact_messages: "/contact/message",
+};
 
 type QueuedContactSubmission = {
     id: string;
@@ -85,12 +93,14 @@ type QueuedContactSubmission = {
     queuedAt: string;
 };
 
+let memoryQueue: QueuedContactSubmission[] = [];
+
 function canUseBrowserStorage() {
     return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
 
 function getQueuedSubmissions(): QueuedContactSubmission[] {
-    if (!canUseBrowserStorage()) return [];
+    if (!canUseBrowserStorage()) return memoryQueue;
 
     try {
         const rawQueue = window.localStorage.getItem(CONTACT_OUTBOX_KEY);
@@ -99,13 +109,19 @@ function getQueuedSubmissions(): QueuedContactSubmission[] {
         return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
         console.warn("[ContactService] Could not read queued submissions:", error);
-        return [];
+        return memoryQueue;
     }
 }
 
 function setQueuedSubmissions(queue: QueuedContactSubmission[]) {
+    memoryQueue = queue;
     if (!canUseBrowserStorage()) return;
-    window.localStorage.setItem(CONTACT_OUTBOX_KEY, JSON.stringify(queue));
+
+    try {
+        window.localStorage.setItem(CONTACT_OUTBOX_KEY, JSON.stringify(queue));
+    } catch (error) {
+        console.warn("[ContactService] Could not persist queued submissions:", error);
+    }
 }
 
 function queueSubmission(
@@ -114,10 +130,6 @@ function queueSubmission(
     payload: Record<string, unknown>,
     onConflict?: string,
 ) {
-    if (!canUseBrowserStorage()) {
-        throw new Error("Submission could not be saved because browser storage is unavailable.");
-    }
-
     const queue = getQueuedSubmissions();
     queue.push({
         id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
@@ -130,23 +142,36 @@ function queueSubmission(
     setQueuedSubmissions(queue);
 }
 
-async function flushQueuedSubmissions() {
+async function submitQueuedItem(item: QueuedContactSubmission) {
+    const endpoint = TABLE_TO_ENDPOINT[item.table];
+
+    if (endpoint) {
+        await apiPost<ContactServiceResponse>(endpoint, item.payload);
+        return;
+    }
+
     const client = getSupabase();
+    if (!client) {
+        throw new Error("Supabase is not configured for queued submission flush.");
+    }
+
+    const query = (client as any).from(item.table);
+    const { error } = item.operation === "upsert"
+        ? await query.upsert(item.payload, { onConflict: item.onConflict })
+        : await query.insert(item.payload);
+
+    if (error) throw error;
+}
+
+async function flushQueuedSubmissions() {
     const queue = getQueuedSubmissions();
-    if (!client || queue.length === 0) return;
+    if (queue.length === 0) return;
 
     const pending: QueuedContactSubmission[] = [];
 
     for (const item of queue) {
         try {
-            const query = (client as any).from(item.table);
-            const { error } = item.operation === "upsert"
-                ? await query.upsert(item.payload, { onConflict: item.onConflict })
-                : await query.insert(item.payload);
-
-            if (error) {
-                pending.push(item);
-            }
+            await submitQueuedItem(item);
         } catch {
             pending.push(item);
         }
@@ -177,28 +202,46 @@ function shouldUseSupabaseFallback(error: unknown) {
     );
 }
 
+function isSupabasePermissionError(error: any) {
+    return error?.code === "42501" || /row-level security|permission denied|violates row-level security/i.test(error?.message ?? "");
+}
+
+function queueFallbackRow(
+    table: string,
+    operation: QueuedContactSubmission["operation"],
+    payload: Record<string, unknown>,
+    onConflict?: string,
+) {
+    queueSubmission(table, operation, payload, onConflict);
+    console.warn(`[ContactService] Queued "${table}" submission locally. ${OFFLINE_SUCCESS_MESSAGE}`);
+}
+
 async function insertFallbackRow(table: string, payload: Record<string, unknown>) {
     const client = getSupabase();
     if (!client) {
         const url = import.meta.env.VITE_SUPABASE_URL ? "present" : "missing";
         const key = import.meta.env.VITE_SUPABASE_ANON_KEY ? "present" : "missing";
         console.warn(`[ContactService] Supabase fallback unavailable. Config: URL ${url}, Key ${key}. Queueing "${table}" submission locally.`);
-        queueSubmission(table, "insert", payload);
+        queueFallbackRow(table, "insert", payload);
         return;
     }
 
-    const { error } = await (client as any).from(table).insert(payload);
+    let error: any = null;
+    try {
+        ({ error } = await (client as any).from(table).insert(payload));
+    } catch (insertError) {
+        error = insertError;
+    }
+
     if (error) {
         // Log the specific error for debugging
         console.error(`[ContactService] Supabase fallback INSERT into "${table}" failed:`, error.message, `(code: ${error.code})`);
-        
-        // Provide user-friendly message for RLS errors
-        if (error.code === '42501' || error.message?.includes('row-level security')) {
-            throw new Error(
-                "Database permissions need to be configured. Please contact support or check the Supabase RLS policies."
-            );
+
+        if (isSupabasePermissionError(error)) {
+            console.warn(`[ContactService] Public insert policy is not available for "${table}".`);
         }
-        throw error;
+
+        queueFallbackRow(table, "insert", payload);
     }
 }
 
@@ -208,23 +251,27 @@ async function upsertFallbackRow(table: string, payload: Record<string, unknown>
         const url = import.meta.env.VITE_SUPABASE_URL ? "present" : "missing";
         const key = import.meta.env.VITE_SUPABASE_ANON_KEY ? "present" : "missing";
         console.warn(`[ContactService] Supabase fallback unavailable. Config: URL ${url}, Key ${key}. Queueing "${table}" submission locally.`);
-        queueSubmission(table, "upsert", payload, onConflict);
+        queueFallbackRow(table, "upsert", payload, onConflict);
         return;
     }
 
-    const { error } = await (client as any)
-        .from(table)
-        .upsert(payload, { onConflict });
+    let error: any = null;
+    try {
+        ({ error } = await (client as any)
+            .from(table)
+            .upsert(payload, { onConflict }));
+    } catch (upsertError) {
+        error = upsertError;
+    }
 
     if (error) {
         console.error(`[ContactService] Supabase fallback UPSERT into "${table}" failed:`, error.message, `(code: ${error.code})`);
-        
-        if (error.code === '42501' || error.message?.includes('row-level security')) {
-            throw new Error(
-                "Database permissions need to be configured. Please contact support or check the Supabase RLS policies."
-            );
+
+        if (isSupabasePermissionError(error)) {
+            console.warn(`[ContactService] Public upsert policy is not available for "${table}".`);
         }
-        throw error;
+
+        queueFallbackRow(table, "upsert", payload, onConflict);
     }
 }
 
