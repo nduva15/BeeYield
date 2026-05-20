@@ -14,9 +14,11 @@ export const RUST_API_V1_URL = `${NORMALIZED_RUST_API_URL}/api/v1`;
 export const API_BASE_URL = API_V1_URL;
 export const AI_API_URL = API_V1_URL;
 export const DATA_API_URL = API_V1_URL;
+export const AUTH_API_URL = `${NORMALIZED_API_URL}/auth`;
 
 const PUBLIC_API_PATH_PREFIXES = [
     "/contact/",
+    "/auth/",  // Auth endpoints don't require backend isolation - they handle it themselves
 ];
 
 /**
@@ -66,6 +68,7 @@ function getSessionCacheEntry(cacheKey: string): SessionCacheEntry {
 
 /**
  * Get authentication headers from Supabase session with caching and concurrency protection
+ * CRITICAL: Does NOT fall back to other backends - enforces backend isolation
  */
 export async function getAuthHeaders(): Promise<Record<string, string>> {
     const activeClient = getActiveClient();
@@ -77,7 +80,8 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     // Cache session for 60 seconds to reduce overhead on concurrent requests
     if (cacheEntry.session && (now - cacheEntry.lastSessionFetch < 60000)) {
         return {
-            'Authorization': `Bearer ${cacheEntry.session.access_token}`
+            'Authorization': `Bearer ${cacheEntry.session.access_token}`,
+            'X-Backend': cacheKey,
         };
     }
 
@@ -85,7 +89,10 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     if (cacheEntry.sessionPromise) {
         try {
             const session = await cacheEntry.sessionPromise;
-            if (session) return { 'Authorization': `Bearer ${session.access_token}` };
+            if (session) return {
+                'Authorization': `Bearer ${session.access_token}`,
+                'X-Backend': cacheKey,
+            };
         } catch (e) {
             // If promise fails, fall through to create a new one
         }
@@ -94,16 +101,8 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     // Create a new session fetch promise
     cacheEntry.sessionPromise = (async () => {
         try {
-            // 1. Try active client (e.g. BeeYield or CEBA)
-            let { data: { session } } = await activeClient.auth.getSession();
-
-            // 2. Fallback: If no session on active client, and active client is NOT shop, try shop (main) session
-            if (!session && activeClient !== supabaseShop && supabaseShop) {
-                const { data: shopAuth } = await supabaseShop.auth.getSession();
-                if (shopAuth.session) {
-                    session = shopAuth.session;
-                }
-            }
+            // ENFORCED ISOLATION: Only use the active client, never fall back to other backends
+            const { data: { session } } = await activeClient.auth.getSession();
 
             if (session?.access_token) {
                 cacheEntry.session = session;
@@ -121,13 +120,17 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
 
     const session = await cacheEntry.sessionPromise;
     if (session) {
-        return { 'Authorization': `Bearer ${session.access_token}` };
+        return {
+            'Authorization': `Bearer ${session.access_token}`,
+            'X-Backend': cacheKey,
+        };
     }
 
     // Fallback to previously cached session if available even if expired, to prevent blocking
     if (cacheEntry.session) {
         return {
-            'Authorization': `Bearer ${cacheEntry.session.access_token}`
+            'Authorization': `Bearer ${cacheEntry.session.access_token}`,
+            'X-Backend': cacheKey,
         };
     }
 

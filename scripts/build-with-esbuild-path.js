@@ -1,6 +1,8 @@
 // Sets ESBUILD_BINARY_PATH explicitly (helps Windows EPERM) then runs `pnpm build`.
-const { spawnSync } = require('child_process');
+import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 
+const require = createRequire(import.meta.url);
 const esbuildBin = require.resolve('esbuild/bin/esbuild');
 const env = { ...process.env, ESBUILD_BINARY_PATH: esbuildBin };
 

@@ -3,6 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 import { Session, User, AuthError, AuthMFAEnrollResponse, AuthMFAChallengeResponse, AuthMFAVerifyResponse, Factor, SupabaseClient } from '@supabase/supabase-js';
 import { buildAuthCallbackUrl, readAuthCallbackState } from '@/lib/authRedirect';
+import { ensureProfileForUser, hasProfileForUser } from '@/lib/profileSync';
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 interface MFAEnrollResult {
     id: string;
@@ -124,6 +126,67 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return supabaseShop!;
     };
 
+    const platformError = (message: string) => ({ message } as AuthError);
+
+    const userWasCreatedForBackend = (user: User, backend: AuthBackend) => {
+        const metadata = user.user_metadata ?? {};
+        if (metadata.auth_backend === backend) return true;
+        if (backend === 'shop' && metadata.shop_active === true) return true;
+        if (backend === 'beeyield' && metadata.beeyield_active === true) return true;
+        if (backend === 'ceba' && metadata.ceba_active === true) return true;
+        return false;
+    };
+
+    const canBootstrapMissingProfile = (user: User, backend: AuthBackend) => {
+        if (userWasCreatedForBackend(user, backend)) return true;
+
+        if (backend === 'ceba') {
+            const role = user.user_metadata?.role;
+            const email = user.email?.toLowerCase() ?? '';
+            return role === 'admin'
+                || role === 'super_admin'
+                || email === SUPER_ADMIN_EMAIL.toLowerCase();
+        }
+
+        return false;
+    };
+
+    const requirePlatformMembership = async (client: SupabaseClient, backend: AuthBackend, user: User) => {
+        const profile = await hasProfileForUser(client, backend, user.id);
+        if (profile.error) {
+            console.error(`Unable to verify ${backend} profile`, profile.error);
+            return platformError('We could not verify your account for this area. Please try again.');
+        }
+
+        if (profile.exists) {
+            return null;
+        }
+
+        if (!canBootstrapMissingProfile(user, backend)) {
+            await client.auth.signOut();
+            const area = backend === 'beeyield' ? 'BeeYield dashboard' : backend === 'ceba' ? 'admin dashboard' : 'shop';
+            return platformError(`This email is not registered for the ${area}. Please create the right account first.`);
+        }
+
+        const { error } = await ensureProfileForUser(client, backend, user, {
+            role: backend === 'ceba'
+                ? (user.user_metadata?.role === 'super_admin' ? 'super_admin' : 'admin')
+                : typeof user.user_metadata?.role === 'string'
+                    ? user.user_metadata.role
+                    : backend === 'beeyield'
+                        ? 'professional'
+                        : 'user',
+        });
+
+        if (error) {
+            console.error(`Unable to create ${backend} profile`, error);
+            await client.auth.signOut();
+            return platformError('Your account was authenticated, but the platform profile could not be created.');
+        }
+
+        return null;
+    };
+
     useEffect(() => {
         const clearCorruptSessions = () => {
             try {
@@ -225,7 +288,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const signIn = async (email: string, password: string, backend?: AuthBackend) => {
         const client = getClient(backend);
+        const targetBackend = backend || activeBackend;
         const { data, error } = await client.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            return { error };
+        }
 
         if (data?.session === null && !error) {
             const { data: factorsData } = await client.auth.mfa.listFactors();
@@ -236,7 +304,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 return { error: null, mfaRequired: true };
             }
         }
-        return { error };
+
+        if (data?.user) {
+            const membershipError = await requirePlatformMembership(client, targetBackend, data.user);
+            if (membershipError) {
+                return { error: membershipError };
+            }
+        }
+
+        return { error: null };
     };
 
     const signUp = async (
@@ -247,11 +323,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         options?: { emailRedirectTo?: string }
     ) => {
         const client = getClient(backend);
+        const targetBackend = backend || activeBackend;
         const { data, error } = await client.auth.signUp({
             email,
             password,
             options: {
-                data: metadata,
+                data: {
+                    ...metadata,
+                    auth_backend: targetBackend,
+                    [`${targetBackend}_active`]: true,
+                },
                 emailRedirectTo: options?.emailRedirectTo,
             },
         });
@@ -346,6 +427,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (challengeError) throw challengeError;
             const { error: verifyError } = await client.auth.mfa.verify({ factorId: mfaFactorId, challengeId: challengeData.id, code }) as AuthMFAVerifyResponse;
             if (verifyError) throw verifyError;
+            const { data: { user } } = await client.auth.getUser();
+            if (user) {
+                const membershipError = await requirePlatformMembership(client, backend || activeBackend, user);
+                if (membershipError) throw new Error(membershipError.message);
+            }
             setMfaRequired(false);
             setMfaFactorId(null);
             return { error: null };

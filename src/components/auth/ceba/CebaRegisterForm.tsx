@@ -42,7 +42,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
             role: 'admin',
             ceba_active: true
         }, 'ceba', {
-            emailRedirectTo: buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba' }),
+            emailRedirectTo: buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba', intent: 'signup' }),
         });
 
         if (error) {
@@ -79,7 +79,8 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
         setGoogleLoading(true);
         localStorage.setItem('authReturnTo', '/ceba');
         localStorage.setItem('authBackend', 'ceba');
-        const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba' });
+        localStorage.setItem('authIntent', 'signup');
+        const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba', intent: 'signup' });
         const { error } = await signInWithGoogle({ ceba_active: true }, 'ceba', { redirectTo });
         if (error) {
             toast.error('Google registration failed', { description: error.message });

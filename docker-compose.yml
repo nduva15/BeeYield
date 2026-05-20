@@ -4,9 +4,25 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
+        # Base Supabase config (required)
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+        # Shop backend override (optional)
+        VITE_SUPABASE_URL_SHOP: ${VITE_SUPABASE_URL_SHOP}
+        VITE_SUPABASE_ANON_KEY_SHOP: ${VITE_SUPABASE_ANON_KEY_SHOP}
+        # BeeYield backend override (optional)
+        VITE_SUPABASE_URL_BEEYIELD: ${VITE_SUPABASE_URL_BEEYIELD}
+        VITE_SUPABASE_ANON_KEY_BEEYIELD: ${VITE_SUPABASE_ANON_KEY_BEEYIELD}
+        # CEBA backend override (optional)
+        VITE_SUPABASE_URL_CEBA: ${VITE_SUPABASE_URL_CEBA}
+        VITE_SUPABASE_ANON_KEY_CEBA: ${VITE_SUPABASE_ANON_KEY_CEBA}
+        # API configuration
+        VITE_API_URL: ${VITE_API_URL:-http://backend:8000}
+        # Stripe configuration
+        VITE_STRIPE_PUBLISHABLE_KEY: ${VITE_STRIPE_PUBLISHABLE_KEY}
+        VITE_STRIPE_API_URL: ${VITE_STRIPE_API_URL}
+        # Admin configuration
+        VITE_SUPER_ADMIN_EMAIL: ${VITE_SUPER_ADMIN_EMAIL}
     container_name: beeyield-frontend
     ports:
       - "3000:80"
@@ -17,7 +33,7 @@ services:
       - beeyield-network
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80" ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -39,7 +55,7 @@ services:
       - beeyield-network
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/', timeout=5)" ]
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health', timeout=5)"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -61,7 +77,7 @@ services:
       - beeyield-network
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -78,7 +94,7 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5

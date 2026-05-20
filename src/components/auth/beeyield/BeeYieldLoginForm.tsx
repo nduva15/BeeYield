@@ -70,8 +70,8 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
         const returnTo = '/beeyield-dashboard';
-        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo });
-        persistAuthRedirectState({ backend: 'beeyield', returnTo });
+        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo, intent: 'login' });
+        persistAuthRedirectState({ backend: 'beeyield', returnTo, intent: 'login' });
 
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield', { redirectTo });
         if (error) {

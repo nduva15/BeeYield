@@ -30,6 +30,75 @@ def _as_dict(payload: Any) -> dict[str, Any]:
     return dict(payload)
 
 
+def _empty_to_none(value: Any) -> Any:
+    if isinstance(value, str) and value.strip() == "":
+        return None
+    return value
+
+
+def _normalize_optional_dates(payload: dict[str, Any], fields: tuple[str, ...]) -> dict[str, Any]:
+    normalized = dict(payload)
+    for field in fields:
+        if field in normalized:
+            normalized[field] = _empty_to_none(normalized[field])
+    return normalized
+
+
+def _build_farmer_payload(farmer: dict[str, Any]) -> Optional[dict[str, Any]]:
+    name = farmer.get("name") or farmer.get("farmer_name")
+    if not name:
+        return None
+
+    payload = {
+        **farmer,
+        "name": name,
+        "farmer_id": farmer.get("farmer_id") or farmer.get("id"),
+        "experience_years": farmer.get("experience_years") or 0,
+        "registration_date": farmer.get("registration_date") or farmer.get("created_at"),
+    }
+    return _normalize_optional_dates(payload, ("registration_date",))
+
+
+def _build_apiary_payload(apiary: dict[str, Any], view: dict[str, Any], farmer: Optional[dict[str, Any]]) -> Optional[dict[str, Any]]:
+    name = apiary.get("name") or view.get("apiary_name")
+    if not name:
+        return None
+
+    farmer_id = apiary.get("farmer_id") or (farmer or {}).get("farmer_id") or (farmer or {}).get("id") or view.get("beekeeper_id")
+    payload = {
+        **apiary,
+        "apiary_id": apiary.get("apiary_id") or apiary.get("id"),
+        "apiary_code": apiary.get("apiary_code") or apiary.get("code") or str(view.get("batch_code") or "APIARY")[:12],
+        "name": name,
+        "environment_type": apiary.get("environment_type") or apiary.get("ecosystem_type") or "Traceability Apiary",
+        "flora_types": apiary.get("flora_types") if isinstance(apiary.get("flora_types"), list) else [],
+        "farmer_id": farmer_id or "public-traceability",
+        "location_name": apiary.get("location_name") or view.get("location_region") or view.get("location_county"),
+        "region": apiary.get("region") or view.get("location_region"),
+        "county": apiary.get("county") or view.get("location_county"),
+    }
+    return _normalize_optional_dates(payload, ("established_date",))
+
+
+def _build_hive_payload(hive: dict[str, Any], view: dict[str, Any], apiary: Optional[dict[str, Any]], farmer: Optional[dict[str, Any]]) -> Optional[dict[str, Any]]:
+    hive_code = hive.get("hive_code") or hive.get("code")
+    if not hive_code:
+        return None
+
+    payload = {
+        **hive,
+        "hive_id": hive.get("hive_id") or hive.get("id"),
+        "hive_code": hive_code,
+        "hive_type": hive.get("hive_type") or hive.get("type") or "Traceability Hive",
+        "bee_type": hive.get("bee_type") or "Apis mellifera scutellata",
+        "apiary_id": hive.get("apiary_id") or (apiary or {}).get("apiary_id") or (apiary or {}).get("id") or view.get("apiary_id") or "public-apiary",
+        "farmer_id": hive.get("farmer_id") or (farmer or {}).get("farmer_id") or (farmer or {}).get("id") or view.get("beekeeper_id") or "public-traceability",
+        "has_sensors": bool(hive.get("has_sensors")),
+        "installation_date": hive.get("installation_date") or view.get("harvest_date"),
+    }
+    return _normalize_optional_dates(payload, ("installation_date", "last_inspection"))
+
+
 async def _calc_season_total_from_db(batch_code: str, harvest: dict[str, Any], token: Optional[str] = None) -> str:
     cache_key = f"season:{batch_code}:{harvest.get('harvest_date')}"
     cached = _STATS_CACHE.get(cache_key)
@@ -113,9 +182,9 @@ class TraceabilityService:
             for step in timeline_dicts
         ]
 
-        farmer_data = view.get("farmer") or {}
-        apiary_data = view.get("apiary") or {}
-        hive_data = view.get("hive") or {}
+        farmer_payload = _build_farmer_payload(view.get("farmer") or {})
+        apiary_payload = _build_apiary_payload(view.get("apiary") or {}, view, farmer_payload)
+        hive_payload = _build_hive_payload(view.get("hive") or {}, view, apiary_payload, farmer_payload)
 
         return schemas.TraceResponse(
             batch_code=view.get("batch_code") or "",
@@ -127,11 +196,11 @@ class TraceabilityService:
             verification_status=view.get("verification_status"),
             blockchain_status=view.get("blockchain_status"),
             completeness=view.get("completeness"),
-            farmer=schemas.Farmer(**farmer_data) if farmer_data else None,
-            apiary=schemas.Apiary(**apiary_data) if apiary_data else None,
-            hive=schemas.Hive(**hive_data) if hive_data else None,
+            farmer=schemas.Farmer(**farmer_payload) if farmer_payload else None,
+            apiary=schemas.Apiary(**apiary_payload) if apiary_payload else None,
+            hive=schemas.Hive(**hive_payload) if hive_payload else None,
             story_title="Traceability Overview",
-            story_content=(farmer_data.get("story") or "").strip(),
+            story_content=((farmer_payload or {}).get("story") or "").strip(),
             impact_stats=await _get_impact_stats(token),
             sensor_snapshot=view.get("sensor_snapshot"),
             weather=view.get("weather"),

@@ -208,9 +208,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
             'admin': '/ceba'
         };
         const returnTo = returnPathMap[variant] || '/';
-        const redirectTo = buildAuthCallbackUrl({ backend: activeBackend, returnTo, requireMetadata });
+        const redirectTo = buildAuthCallbackUrl({ backend: activeBackend, returnTo, requireMetadata, intent: 'login' });
 
-        persistAuthRedirectState({ backend: activeBackend, returnTo, requireMetadata });
+        persistAuthRedirectState({ backend: activeBackend, returnTo, requireMetadata, intent: 'login' });
 
         const { error } = await signInWithGoogle(undefined, activeBackend, { redirectTo });
         if (error) {

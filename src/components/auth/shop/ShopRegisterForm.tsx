@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Sparkles, UserPlus } from "lucide-react";
 import { ensureProfileForUser } from '@/lib/profileSync';
 import { buildAuthCallbackUrl } from '@/lib/authRedirect';
+import { completeSignupFlow, getBackendStorageKey } from '@/services/backendAuth';
 
 interface ShopRegisterFormProps {
     onSuccess?: () => void;
@@ -30,58 +31,44 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
         e.preventDefault();
         setLoading(true);
 
-        if (password !== confirmPassword) {
-            toast.error("Passwords do not match");
-            setLoading(false);
-            return;
-        }
-
-        const { data: signupData, error } = await signUp(email, password, {
-            first_name: firstName,
-            last_name: lastName,
-            role: 'user'
-        }, 'shop', {
-            emailRedirectTo: buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard' }),
-        });
-
-        if (error) {
-            toast.error("Registration failed", { description: error.message });
-        } else {
-            const { supabaseShop } = await import('@/lib/supabase');
-            if (supabaseShop) {
-                const { data: { user } } = await supabaseShop.auth.getUser();
-                if (user) {
-                    const { error: profileError } = await ensureProfileForUser(
-                        supabaseShop,
-                        'shop',
-                        user,
-                        { firstName, lastName, role: 'user' },
-                    );
-
-                    if (profileError) {
-                        console.error('Shop profile sync failed after registration', profileError);
-                    }
-                }
+        try {
+            if (password !== confirmPassword) {
+                toast.error("Passwords do not match");
+                setLoading(false);
+                return;
             }
 
-            if (signupData?.session) {
+            // Use new complete signup flow with backend sync
+            const result = await completeSignupFlow('shop', email, password, firstName, lastName, 'user');
+
+            if (result.success) {
                 toast.success("Account created successfully");
+                localStorage.setItem(getBackendStorageKey('shop', 'newUser'), 'true');
+                onSuccess?.();
             } else {
-                toast.success("Check your email to verify your account.");
+                toast.error("Registration failed", { description: result.error || 'An error occurred' });
             }
-            onSuccess?.();
+        } catch (error: any) {
+            toast.error("Registration failed", { description: error.message || 'An error occurred' });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleGoogleSignUp = async () => {
         setGoogleLoading(true);
-        localStorage.setItem('authReturnTo', '/shop-dashboard');
-        localStorage.setItem('authBackend', 'shop');
-        const redirectTo = buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard' });
-        const { error } = await signInWithGoogle(undefined, 'shop', { redirectTo });
-        if (error) {
+        try {
+            localStorage.setItem(getBackendStorageKey('shop', 'authReturnTo'), '/shop-dashboard');
+            localStorage.setItem(getBackendStorageKey('shop', 'authBackend'), 'shop');
+            localStorage.setItem(getBackendStorageKey('shop', 'authIntent'), 'signup');
+            const redirectTo = buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard', intent: 'signup' });
+            const { error } = await signInWithGoogle(undefined, 'shop', { redirectTo });
+            if (error) {
+                toast.error("Google registration failed", { description: error.message });
+            }
+        } catch (error: any) {
             toast.error("Google registration failed", { description: error.message });
+        } finally {
             setGoogleLoading(false);
         }
     };

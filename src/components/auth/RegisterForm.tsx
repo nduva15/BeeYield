@@ -69,7 +69,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             role: defaultRole,
             ...additionalMetadata
         }, activeBackend, {
-            emailRedirectTo: buildAuthCallbackUrl({ backend: activeBackend, returnTo }),
+            emailRedirectTo: buildAuthCallbackUrl({ backend: activeBackend, returnTo, intent: 'signup' }),
         });
 
         if (error) {
@@ -129,10 +129,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             'admin': '/ceba'
         };
         const returnTo = returnPathMap[variant] || '/';
-        const redirectTo = buildAuthCallbackUrl({ backend: activeBackend, returnTo });
+        const redirectTo = buildAuthCallbackUrl({ backend: activeBackend, returnTo, intent: 'signup' });
 
         localStorage.setItem('authReturnTo', returnTo);
         localStorage.setItem('authBackend', activeBackend);
+        localStorage.setItem('authIntent', 'signup');
 
         const { error } = await signInWithGoogle(undefined, activeBackend, { redirectTo });
         if (error) {

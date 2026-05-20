@@ -57,6 +57,15 @@ def _normalize_text(value: Any) -> str:
     return " ".join(str(value).strip().lower().split())
 
 
+def _to_float(value: Any) -> Optional[float]:
+    if value in (None, ""):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def _matches_owner(view: dict[str, Any], owner_name: Optional[str]) -> bool:
     if not owner_name:
         return True
@@ -93,7 +102,7 @@ async def _fetch_latest_sensor_snapshot(hive_id: Optional[str], token: Optional[
 
     readings = await db_select(
         "sensor_readings",
-        columns="temp_internal,humidity_internal,weight_kg,recorded_at,temperature,humidity,latitude,longitude",
+        columns="*",
         filters={"hive_id": hive_id},
         order_by="recorded_at",
         ascending=False,
@@ -104,16 +113,28 @@ async def _fetch_latest_sensor_snapshot(hive_id: Optional[str], token: Optional[
         return None
 
     latest = readings[0]
-    temp = latest.get("temp_internal")
-    humidity = latest.get("humidity_internal")
+    readings_payload = latest.get("readings") if isinstance(latest.get("readings"), dict) else {}
+    merged = {**readings_payload, **latest}
+    temp = (
+        merged.get("temp_internal")
+        or merged.get("temperature")
+        or merged.get("temperature_c")
+        or merged.get("internal_temp")
+    )
+    humidity = (
+        merged.get("humidity_internal")
+        or merged.get("humidity")
+        or merged.get("humidity_pct")
+        or merged.get("relative_humidity")
+    )
 
     return {
-        "avg_temp": temp if temp is not None else latest.get("temperature"),
-        "avg_humidity": humidity if humidity is not None else latest.get("humidity"),
-        "weight_kg": latest.get("weight_kg"),
-        "sync_time": latest.get("recorded_at"),
-        "latitude": latest.get("latitude"),
-        "longitude": latest.get("longitude"),
+        "avg_temp": _to_float(temp),
+        "avg_humidity": _to_float(humidity),
+        "weight_kg": _to_float(merged.get("weight_kg")),
+        "sync_time": latest.get("recorded_at") or latest.get("timestamp") or latest.get("created_at"),
+        "latitude": merged.get("latitude"),
+        "longitude": merged.get("longitude"),
         "source": "sensor_readings",
     }
 
@@ -198,6 +219,27 @@ def _build_blockchain_status(batch_code: Optional[str], batch_row: dict[str, Any
         "honeychain": honeychain_status,
         "polygon": polygon_status,
         "block_hash": batch_row.get("block_hash") or honeychain_status.get("block_hash") or harvest_row.get("blockchain_hash"),
+    }
+
+
+def _build_stored_blockchain_status(
+    batch_code: Optional[str],
+    batch_row: dict[str, Any],
+    harvest_row: dict[str, Any],
+) -> dict[str, Any]:
+    block_hash = batch_row.get("block_hash") or harvest_row.get("blockchain_hash")
+    status = _normalize_text(batch_row.get("status") or batch_row.get("verification_status"))
+    record_verified = status == "verified" or harvest_row.get("is_verified") is True or bool(block_hash)
+    overall = "verified" if record_verified else "unverified"
+    return {
+        "overall": overall,
+        "honeychain": {"verified": bool(block_hash), "block_hash": block_hash},
+        "polygon": {
+            "verified": bool(batch_row.get("tx_hash")),
+            "tx_hash": batch_row.get("tx_hash"),
+            "verification_url": batch_row.get("verification_url"),
+        },
+        "block_hash": block_hash,
     }
 
 
@@ -295,6 +337,7 @@ async def build_batch_view(
     harvest_row: Optional[dict[str, Any]],
     token: Optional[str] = None,
     include_live_snapshots: bool = False,
+    include_chain_checks: bool = True,
 ) -> dict[str, Any]:
     batch = batch_row or {}
     harvest = _normalize_harvest(harvest_row)
@@ -328,14 +371,24 @@ async def build_batch_view(
         if not _has_value(health_snapshot):
             health_snapshot = await _fetch_latest_health_snapshot(harvest.get("hive_id"), token)
 
-    blockchain_status = _build_blockchain_status(batch_code, batch, harvest)
+    blockchain_status = (
+        _build_blockchain_status(batch_code, batch, harvest)
+        if include_chain_checks
+        else _build_stored_blockchain_status(batch_code, batch, harvest)
+    )
     completeness = _build_completeness(batch, harvest, farmer, apiary, hive, sensor_snapshot, health_snapshot, blockchain_status)
 
     quantity_left = harvest.get("quantity_left_for_bees_kg")
     sustainability_ratio = None
     sustainability_status = "missing"
-    if _has_value(quantity_left) and _has_value(quantity_kg) and (quantity_left + quantity_kg) > 0:
-        sustainability_ratio = round(quantity_left / (quantity_left + quantity_kg), 4)
+    quantity_left_number = _to_float(quantity_left)
+    quantity_kg_number = _to_float(quantity_kg)
+    if (
+        quantity_left_number is not None
+        and quantity_kg_number is not None
+        and (quantity_left_number + quantity_kg_number) > 0
+    ):
+        sustainability_ratio = round(quantity_left_number / (quantity_left_number + quantity_kg_number), 4)
         sustainability_status = "pass" if sustainability_ratio >= 0.5 else "fail"
 
     blockchain_verified = blockchain_status.get("overall", "unverified") != "unverified"
@@ -428,6 +481,7 @@ async def get_batch_view_by_code(
     batch_code: str,
     token: Optional[str] = None,
     include_live_snapshots: bool = True,
+    include_chain_checks: bool = False,
 ) -> Optional[dict[str, Any]]:
     lookup_token = _lookup_token(token)
     batch_rows = await db_select("honey_batches", filters={"batch_code": batch_code}, limit=1, token=lookup_token)
@@ -445,7 +499,13 @@ async def get_batch_view_by_code(
     if not batch_row and not harvest_row:
         return None
 
-    return await build_batch_view(batch_row, harvest_row, token=lookup_token, include_live_snapshots=include_live_snapshots)
+    return await build_batch_view(
+        batch_row,
+        harvest_row,
+        token=lookup_token,
+        include_live_snapshots=include_live_snapshots,
+        include_chain_checks=include_chain_checks,
+    )
 
 
 async def _get_user_scope(user_id: str, token: Optional[str]) -> dict[str, Any]:
@@ -528,7 +588,13 @@ async def get_batch_views_for_user(
 
     views: list[dict[str, Any]] = []
     for code in ordered_codes:
-        view = await build_batch_view(batch_by_code.get(code), harvest_by_code.get(code), token=lookup_token, include_live_snapshots=False)
+        view = await build_batch_view(
+            batch_by_code.get(code),
+            harvest_by_code.get(code),
+            token=lookup_token,
+            include_live_snapshots=False,
+            include_chain_checks=False,
+        )
         if honey_type and view.get("honey_type") != honey_type:
             continue
         if year and str(view.get("harvest_date") or "")[:4] != str(year):
@@ -578,7 +644,13 @@ async def get_all_batch_views(
 
     views: list[dict[str, Any]] = []
     for code in ordered_codes:
-        view = await build_batch_view(batch_by_code.get(code), harvest_by_code.get(code), token=lookup_token, include_live_snapshots=False)
+        view = await build_batch_view(
+            batch_by_code.get(code),
+            harvest_by_code.get(code),
+            token=lookup_token,
+            include_live_snapshots=False,
+            include_chain_checks=False,
+        )
         if honey_type and view.get("honey_type") != honey_type:
             continue
         if year and str(view.get("harvest_date") or "")[:4] != str(year):
@@ -626,7 +698,13 @@ async def sync_public_batch_from_harvest(
 
     batch_rows = await db_select("honey_batches", filters={"batch_code": batch_code}, limit=1, token=lookup_token)
     existing_batch = batch_rows[0] if batch_rows else None
-    view = await build_batch_view(existing_batch, harvest, token=lookup_token, include_live_snapshots=False)
+    view = await build_batch_view(
+        existing_batch,
+        harvest,
+        token=lookup_token,
+        include_live_snapshots=False,
+        include_chain_checks=False,
+    )
 
     quality_grade = view.get("quality_grade")
     if not quality_grade:
@@ -716,6 +794,7 @@ async def get_public_batch_views(
             harvest_by_code.get(code),
             token=lookup_token,
             include_live_snapshots=False,
+            include_chain_checks=False,
         )
         if owner_name and not _matches_owner(view, owner_name):
             continue

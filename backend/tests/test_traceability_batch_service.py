@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 
-from app.services import traceability_batch_service
+from app.services import traceability_batch_service, traceability_service
 
 
 @pytest.mark.asyncio
@@ -112,3 +112,46 @@ async def test_sync_public_batch_from_harvest_upserts_full_batch_record():
     assert payload["beekeeper_name"] == "Timothy Nduva"
     assert payload["apiary_name"] == "BeeYield Apiary"
     assert payload["status"] == "verified"
+
+
+@pytest.mark.asyncio
+async def test_trace_response_tolerates_sparse_timothy_apiary_data():
+    view = {
+        "batch_code": "BEE-2026-01-0420",
+        "honey_type": "Acacia",
+        "harvest_date": "2026-01-10",
+        "verification_status": "verified",
+        "blockchain_verified": False,
+        "verification_url": "",
+        "harvest": {
+            "batch_code": "BEE-2026-01-0420",
+            "harvest_date": "2026-01-10",
+            "quantity_kg": 2,
+        },
+        "farmer": {"id": "farmer-1", "name": "Timothy Nduva"},
+        "apiary": {
+            "id": "apiary-1",
+            "name": "Kibwezi Apiary",
+            "environment_type": None,
+            "flora_types": None,
+        },
+        "hive": {
+            "id": "hive-1",
+            "hive_code": "H-001",
+            "apiary_id": "apiary-1",
+            "hive_type": None,
+            "bee_type": None,
+        },
+    }
+
+    with patch(
+        "app.services.traceability_service._get_impact_stats",
+        new=AsyncMock(return_value={"total_honey_kg": "2"}),
+    ):
+        response = await traceability_service.TraceabilityService._build_trace_response(view)
+
+    assert response.batch_code == "BEE-2026-01-0420"
+    assert response.apiary is not None
+    assert response.apiary.environment_type == "Traceability Apiary"
+    assert response.hive is not None
+    assert response.hive.hive_type == "Traceability Hive"

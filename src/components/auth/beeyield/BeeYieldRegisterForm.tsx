@@ -49,7 +49,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             role: 'professional',
             beeyield_active: true
         }, 'beeyield', {
-            emailRedirectTo: buildAuthCallbackUrl({ backend: 'beeyield', returnTo: getBeeYieldDashboardPath('apiary') }),
+            emailRedirectTo: buildAuthCallbackUrl({ backend: 'beeyield', returnTo: getBeeYieldDashboardPath('apiary'), intent: 'signup' }),
         });
 
         if (error) {
@@ -88,8 +88,8 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         setGoogleLoading(true);
         setBeeYieldPendingOnboarding({ step: 'apiary', email });
         const returnTo = getBeeYieldDashboardPath('apiary');
-        persistAuthRedirectState({ backend: 'beeyield', returnTo });
-        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo });
+        persistAuthRedirectState({ backend: 'beeyield', returnTo, intent: 'signup' });
+        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo, intent: 'signup' });
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield', { redirectTo });
         if (error) {
             toast.error("Google sign-up failed", { description: error.message });

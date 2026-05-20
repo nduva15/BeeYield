@@ -126,8 +126,8 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
-        const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba' });
-        persistAuthRedirectState({ backend: 'ceba', returnTo: '/ceba' });
+        const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba', intent: 'login' });
+        persistAuthRedirectState({ backend: 'ceba', returnTo: '/ceba', intent: 'login' });
 
         const { error } = await signInWithGoogle(undefined, 'ceba', { redirectTo });
         if (error) {

@@ -35,8 +35,15 @@ const ShopAuth: React.FC = () => {
         const params = new URLSearchParams(location.search);
         const mode = params.get('mode') as AuthMode | null;
         if (mode && (mode === 'login' || mode === 'register' || mode === 'forgot-password')) return mode;
+        if (location.pathname === '/signup') return 'register';
         return 'login';
-    }, [location.search]);
+    }, [location.pathname, location.search]);
+
+    const setAuthMode = (mode: AuthMode) => {
+        const params = new URLSearchParams(location.search);
+        params.set('mode', mode);
+        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    };
 
     useEffect(() => {
         if (user && !authLoading) {

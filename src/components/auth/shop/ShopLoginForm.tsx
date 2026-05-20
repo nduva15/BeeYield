@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, ArrowRight, LogIn } from "lucide-react";
 import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
+import { completeLoginFlow, completeLogoutFlow, getBackendStorageKey } from '@/services/backendAuth';
 
 interface ShopLoginFormProps {
     onSuccess?: () => void;
@@ -20,60 +21,76 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
     onSwitchToRegister
 }) => {
     const { signIn, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
-    const [email, setEmail] = useState(() => localStorage.getItem('savedEmail_shop') || '');
+    const [email, setEmail] = useState(() => localStorage.getItem(getBackendStorageKey('shop', 'savedEmail')) || '');
     const [password, setPassword] = useState('');
     const [mfaCode, setMfaCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showMFAInput, setShowMFAInput] = useState(false);
-    const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem('savedEmail_shop')));
+    const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem(getBackendStorageKey('shop', 'savedEmail'))));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
-        const { error, mfaRequired: needsMFA } = await signIn(email, password, 'shop');
+        try {
+            // Use new backend auth flow
+            const result = await completeLoginFlow('shop', email, password);
 
-        if (error) {
-            toast.error('Sign-in failed', { description: error.message });
-        } else if (needsMFA) {
-            setShowMFAInput(true);
-            toast.info('Two-step verification', { description: 'Enter the 6-digit code from your authenticator app.' });
-            if (rememberMe) localStorage.setItem('savedEmail_shop', email);
-            else localStorage.removeItem('savedEmail_shop');
-        } else {
-            toast.success('Signed in');
-            if (rememberMe) localStorage.setItem('savedEmail_shop', email);
-            else localStorage.removeItem('savedEmail_shop');
-            onSuccess?.();
+            if (!result.success) {
+                if (result.needsMFA) {
+                    setShowMFAInput(true);
+                    toast.info('Two-step verification', { description: 'Enter the 6-digit code from your authenticator app.' });
+                } else {
+                    toast.error('Sign-in failed', { description: result.error || 'Authentication failed' });
+                }
+            } else {
+                toast.success('Signed in');
+                if (rememberMe) localStorage.setItem(getBackendStorageKey('shop', 'savedEmail'), email);
+                else localStorage.removeItem(getBackendStorageKey('shop', 'savedEmail'));
+                onSuccess?.();
+            }
+        } catch (error: any) {
+            toast.error('Sign-in failed', { description: error.message || 'An error occurred' });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleMFAVerify = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
-        const { error } = await verifyMFAChallenge(mfaCode, 'shop');
+        try {
+            const { error } = await verifyMFAChallenge(mfaCode, 'shop');
 
-        if (error) {
-            toast.error('Invalid code', { description: error.message });
-        } else {
-            toast.success('Verified');
-            setShowMFAInput(false);
-            onSuccess?.();
+            if (error) {
+                toast.error('Invalid code', { description: error.message });
+            } else {
+                toast.success('Verified');
+                setShowMFAInput(false);
+                onSuccess?.();
+            }
+        } catch (error: any) {
+            toast.error('Verification failed', { description: error.message });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
-        const redirectTo = buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard' });
-        persistAuthRedirectState({ backend: 'shop', returnTo: '/shop-dashboard' });
+        try {
+            const redirectTo = buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard', intent: 'login' });
+            persistAuthRedirectState({ backend: 'shop', returnTo: '/shop-dashboard', intent: 'login' });
 
-        const { error } = await signInWithGoogle(undefined, 'shop', { redirectTo });
-        if (error) {
+            const { error } = await signInWithGoogle(undefined, 'shop', { redirectTo });
+            if (error) {
+                toast.error('Google sign-in failed', { description: error.message });
+            }
+        } catch (error: any) {
             toast.error('Google sign-in failed', { description: error.message });
+        } finally {
             setGoogleLoading(false);
         }
     };

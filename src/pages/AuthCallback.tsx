@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
-import { ensureProfileForUser } from '@/lib/profileSync';
+import { ensureProfileForUser, hasProfileForUser } from '@/lib/profileSync';
+import { clearAuthRedirectState, getLoginPathForBackend, readAuthCallbackState } from '@/lib/authRedirect';
 
 /**
  * Auth Callback Page
@@ -19,9 +19,8 @@ const AuthCallback = () => {
     useEffect(() => {
         const handleAuthCallback = async () => {
             try {
-                // Determine which backend initiated the auth
-                const storedBackend = localStorage.getItem('authBackend') as 'shop' | 'beeyield' | 'ceba' || 'shop';
-                localStorage.removeItem('authBackend'); // Remove after reading
+                const callbackState = readAuthCallbackState();
+                const storedBackend = callbackState.backend;
 
                 // Dynamically import clients to avoid circular deps if any
                 // Note: The initial import at the top of the file is still there,
@@ -36,17 +35,35 @@ const AuthCallback = () => {
                 const activeClient = clients[storedBackend] || supabaseShop;
 
                 if (!activeClient) {
-                    navigate('/login?error=client_init_failed');
+                    navigate(`${getLoginPathForBackend(storedBackend)}?error=client_init_failed`);
                     return;
                 }
 
-                // Supabase handles the token exchange automatically upon getSession()
-                // It parses the URL hash fragment to extract the access_token.
-                const { data: { session }, error } = await activeClient.auth.getSession();
+                const url = new URL(window.location.href);
+                const code = url.searchParams.get('code');
+                let sessionResult;
+
+                if (code) {
+                    sessionResult = await activeClient.auth.exchangeCodeForSession(code);
+                } else {
+                    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+                    const accessToken = hashParams.get('access_token');
+                    const refreshToken = hashParams.get('refresh_token');
+                    if (accessToken && refreshToken) {
+                        sessionResult = await activeClient.auth.setSession({
+                            access_token: accessToken,
+                            refresh_token: refreshToken,
+                        });
+                    } else {
+                        sessionResult = await activeClient.auth.getSession();
+                    }
+                }
+
+                const { data: { session }, error } = sessionResult;
 
                 if (error) {
                     console.error('Auth callback error:', error);
-                    navigate('/login?error=auth_failed');
+                    navigate(`${getLoginPathForBackend(storedBackend)}?error=auth_failed`);
                     return;
                 }
 
@@ -55,32 +72,51 @@ const AuthCallback = () => {
                     const { data: { user } } = await activeClient.auth.getUser();
 
                     if (user) {
-                        try {
+                        const profileStatus = await hasProfileForUser(activeClient, storedBackend, user.id);
+                        const isAdminUser = storedBackend === 'ceba'
+                            && (
+                                user.user_metadata?.role === 'admin'
+                                || user.user_metadata?.role === 'super_admin'
+                                || user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()
+                            );
+                        const shouldCreatePlatformProfile = callbackState.intent === 'signup' || isAdminUser;
+
+                        if (!profileStatus.exists && !shouldCreatePlatformProfile) {
+                            await activeClient.auth.signOut();
+                            clearAuthRedirectState();
+                            toast.error('Account not found for this area', {
+                                description: 'Please create the right account first.',
+                            });
+                            navigate(`${getLoginPathForBackend(storedBackend)}?error=wrong_account`, { replace: true });
+                            return;
+                        }
+
+                        if (!profileStatus.exists || shouldCreatePlatformProfile) {
                             const { error: profileError } = await ensureProfileForUser(
                                 activeClient,
                                 storedBackend,
                                 user,
                                 {
-                                    onlyIfMissing: true,
-                                    role: storedBackend === 'ceba' ? 'admin' : undefined,
+                                    onlyIfMissing: !shouldCreatePlatformProfile,
+                                    role: storedBackend === 'ceba'
+                                        ? 'admin'
+                                        : storedBackend === 'beeyield'
+                                            ? 'professional'
+                                            : 'user',
                                 },
                             );
 
                             if (profileError) {
                                 console.error('Error ensuring platform profile:', profileError);
                             }
-                        } catch (profileErr) {
-                            console.error('Error ensuring platform profile:', profileErr);
                         }
                     }
 
-                    const requireMetadataStr = localStorage.getItem('authRequireMetadata');
-                    if (requireMetadataStr && user) {
+                    if (callbackState.requireMetadata && user) {
                         try {
-                            const requireMetadata = JSON.parse(requireMetadataStr);
                             const missingMetadata: Record<string, any> = {};
 
-                            Object.entries(requireMetadata).forEach(([key, value]) => {
+                            Object.entries(callbackState.requireMetadata).forEach(([key, value]) => {
                                 // Skip update for Timothy's primary account
                                 if (user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return;
 
@@ -98,7 +134,6 @@ const AuthCallback = () => {
                             console.error('Error handling requireMetadata:', e);
                         }
                     }
-                    localStorage.removeItem('authRequireMetadata');
 
                     const fullName = (user?.user_metadata?.full_name || user?.user_metadata?.name) ||
                         (user?.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name || ''}`.trim() : null) ||
@@ -107,8 +142,8 @@ const AuthCallback = () => {
                     toast.success(`Welcome back, ${fullName}! 🎉`);
 
                     // Successfully authenticated, redirect to intended destination
-                    const returnTo = localStorage.getItem('authReturnTo') || '/';
-                    localStorage.removeItem('authReturnTo');
+                    const returnTo = callbackState.returnTo || '/';
+                    clearAuthRedirectState();
 
                     // Small delay to ensure session is fully propagated
                     setTimeout(() => {
@@ -118,11 +153,14 @@ const AuthCallback = () => {
                     // No session found in hash or storage
                     // It's possible the hash was cleared or invalid
                     console.warn('No session found after callback');
-                    navigate('/login', { replace: true });
+                    clearAuthRedirectState();
+                    navigate(getLoginPathForBackend(storedBackend), { replace: true });
                 }
             } catch (err) {
                 console.error('Auth callback exception:', err);
-                navigate('/login?error=auth_exception', { replace: true });
+                const callbackState = readAuthCallbackState();
+                clearAuthRedirectState();
+                navigate(`${getLoginPathForBackend(callbackState.backend)}?error=auth_exception`, { replace: true });
             }
         };
 

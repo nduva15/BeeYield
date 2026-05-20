@@ -3,11 +3,13 @@ const AUTH_BACKENDS = ['shop', 'beeyield', 'ceba'] as const;
 export type AuthBackend = (typeof AUTH_BACKENDS)[number];
 
 type AuthMetadata = Record<string, any>;
+export type AuthIntent = 'login' | 'signup';
 
 const STORAGE_KEYS = {
     backend: 'authBackend',
     returnTo: 'authReturnTo',
     requireMetadata: 'authRequireMetadata',
+    intent: 'authIntent',
 } as const;
 
 const DEFAULT_RETURN_PATHS: Record<AuthBackend, string> = {
@@ -50,6 +52,9 @@ const parseMetadata = (value: string | null): AuthMetadata | null => {
     return null;
 };
 
+const normalizeIntent = (value: string | null | undefined): AuthIntent =>
+    value === 'signup' ? 'signup' : 'login';
+
 export const getDefaultReturnTo = (backend: AuthBackend) => DEFAULT_RETURN_PATHS[backend];
 
 export const getLoginPathForBackend = (backend: AuthBackend) => LOGIN_PATHS[backend];
@@ -58,14 +63,17 @@ export const buildAuthCallbackUrl = ({
     backend,
     returnTo,
     requireMetadata,
+    intent,
 }: {
     backend: AuthBackend;
     returnTo?: string;
     requireMetadata?: AuthMetadata;
+    intent?: AuthIntent;
 }) => {
     const url = new URL('/auth/callback', window.location.origin);
     url.searchParams.set('backend', backend);
     url.searchParams.set('returnTo', normalizeReturnTo(returnTo, getDefaultReturnTo(backend)));
+    url.searchParams.set('intent', normalizeIntent(intent));
 
     if (requireMetadata && Object.keys(requireMetadata).length > 0) {
         url.searchParams.set('requireMetadata', JSON.stringify(requireMetadata));
@@ -78,14 +86,17 @@ export const persistAuthRedirectState = ({
     backend,
     returnTo,
     requireMetadata,
+    intent,
 }: {
     backend: AuthBackend;
     returnTo?: string;
     requireMetadata?: AuthMetadata;
+    intent?: AuthIntent;
 }) => {
     try {
         localStorage.setItem(STORAGE_KEYS.backend, backend);
         localStorage.setItem(STORAGE_KEYS.returnTo, normalizeReturnTo(returnTo, getDefaultReturnTo(backend)));
+        localStorage.setItem(STORAGE_KEYS.intent, normalizeIntent(intent));
 
         if (requireMetadata && Object.keys(requireMetadata).length > 0) {
             localStorage.setItem(STORAGE_KEYS.requireMetadata, JSON.stringify(requireMetadata));
@@ -102,6 +113,7 @@ export const clearAuthRedirectState = () => {
         localStorage.removeItem(STORAGE_KEYS.backend);
         localStorage.removeItem(STORAGE_KEYS.returnTo);
         localStorage.removeItem(STORAGE_KEYS.requireMetadata);
+        localStorage.removeItem(STORAGE_KEYS.intent);
     } catch (error) {
         console.warn('Unable to clear auth redirect state', error);
     }
@@ -142,9 +154,19 @@ export const readAuthCallbackState = () => {
         }
     })();
 
+    const intentFromUrl = url.searchParams.get('intent');
+    const intentFromStorage = (() => {
+        try {
+            return localStorage.getItem(STORAGE_KEYS.intent);
+        } catch {
+            return null;
+        }
+    })();
+
     return {
         backend,
         returnTo: normalizeReturnTo(returnToFromUrl ?? returnToFromStorage, getDefaultReturnTo(backend)),
         requireMetadata: requireMetadataFromUrl ?? requireMetadataFromStorage,
+        intent: normalizeIntent(intentFromUrl ?? intentFromStorage),
     };
 };

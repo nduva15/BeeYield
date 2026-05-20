@@ -15,6 +15,12 @@ interface ProfileTarget {
     payload: Record<string, unknown>;
 }
 
+const PROFILE_TABLES: Record<AuthBackend, ProfileTarget['table']> = {
+    shop: 'shop_profiles',
+    beeyield: 'beeyield_profiles',
+    ceba: 'profiles',
+};
+
 const splitDisplayName = (displayName?: string | null) => {
     const trimmed = displayName?.trim();
 
@@ -100,6 +106,26 @@ const getProfileTarget = (
             updated_at: new Date().toISOString(),
         },
     };
+};
+
+export const getProfileTableForBackend = (backend: AuthBackend) => PROFILE_TABLES[backend];
+
+export const hasProfileForUser = async (
+    client: SupabaseClient,
+    backend: AuthBackend,
+    userId: string,
+) => {
+    const { data, error } = await client
+        .from(getProfileTableForBackend(backend))
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+
+    if (error) {
+        return { exists: false, error };
+    }
+
+    return { exists: Boolean(data), error: null };
 };
 
 export const ensureProfileForUser = async (
