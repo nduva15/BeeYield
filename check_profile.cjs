@@ -3,18 +3,39 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-const envPath = path.join(__dirname, '.env');
-const envData = fs.readFileSync(envPath, 'utf8');
-const env = {};
-envData.split('\n').forEach(line => {
-    const parts = line.split('=');
-    if (parts.length >= 2) {
-        env[parts[0].trim()] = parts.slice(1).join('=').trim();
+function getEnvValue(keyName, defaultValue = '') {
+  if (process.env[keyName]) return process.env[keyName];
+  let dir = __dirname;
+  while (dir) {
+    const envPath = path.join(dir, '.env');
+    if (fs.existsSync(envPath)) {
+      try {
+        const envData = fs.readFileSync(envPath, 'utf8');
+        for (const line of envData.split('\n')) {
+          const parts = line.split('=');
+          if (parts.length >= 2 && parts[0].trim() === keyName) {
+            let val = parts.slice(1).join('=').trim();
+            if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+              val = val.slice(1, -1);
+            }
+            return val;
+          }
+        }
+      } catch (e) {}
     }
-});
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return defaultValue;
+}
 
-const url = env.VITE_SUPABASE_URL || 'https://ezfccfypwmuvbpujkqrg.supabase.co';
-const key = env.SUPABASE_SERVICE_ROLE_KEY;
+const url = getEnvValue('VITE_SUPABASE_URL_BEEYIELD') || getEnvValue('VITE_SUPABASE_URL') || 'https://ezfccfypwmuvbpujkqrg.supabase.co';
+const key = getEnvValue('SUPABASE_SERVICE_ROLE_KEY_BEEYIELD') || getEnvValue('SUPABASE_SERVICE_ROLE_KEY');
+if (!key) {
+  console.error('SUPABASE_SERVICE_ROLE_KEY_BEEYIELD environment variable is missing.');
+  process.exit(1);
+}
 const supabase = createClient(url, key);
 
 async function checkProfile() {
