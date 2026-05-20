@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, ArrowRight, LogIn } from "lucide-react";
 import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
-import { completeLoginFlow, completeLogoutFlow, getBackendStorageKey } from '@/services/backendAuth';
+import { completeLoginFlow, getBackendStorageKey } from '@/services/backendAuth';
 
 interface ShopLoginFormProps {
     onSuccess?: () => void;
@@ -20,7 +20,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
     onForgotPassword,
     onSwitchToRegister
 }) => {
-    const { signIn, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
+    const { signInWithGoogle, verifyMFAChallenge } = useAuth();
     const [email, setEmail] = useState(() => localStorage.getItem(getBackendStorageKey('shop', 'savedEmail')) || '');
     const [password, setPassword] = useState('');
     const [mfaCode, setMfaCode] = useState('');
@@ -31,27 +31,31 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!email || !password) {
+            toast.error('Please enter email and password');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            // Use new backend auth flow
             const result = await completeLoginFlow('shop', email, password);
 
             if (!result.success) {
                 if (result.needsMFA) {
                     setShowMFAInput(true);
-                    toast.info('Two-step verification', { description: 'Enter the 6-digit code from your authenticator app.' });
+                    toast.info('Two-step verification required');
                 } else {
-                    toast.error('Sign-in failed', { description: result.error || 'Authentication failed' });
+                    toast.error('Login failed', { description: result.error || 'Invalid credentials' });
                 }
             } else {
-                toast.success('Signed in');
+                toast.success('Logged in!');
                 if (rememberMe) localStorage.setItem(getBackendStorageKey('shop', 'savedEmail'), email);
                 else localStorage.removeItem(getBackendStorageKey('shop', 'savedEmail'));
                 onSuccess?.();
             }
         } catch (error: any) {
-            toast.error('Sign-in failed', { description: error.message || 'An error occurred' });
+            toast.error('Login failed', { description: error.message || 'An error occurred' });
         } finally {
             setLoading(false);
         }
@@ -59,6 +63,11 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
 
     const handleMFAVerify = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!mfaCode || mfaCode.length !== 6) {
+            toast.error('Enter valid 6-digit code');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -67,7 +76,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
             if (error) {
                 toast.error('Invalid code', { description: error.message });
             } else {
-                toast.success('Verified');
+                toast.success('Verified!');
                 setShowMFAInput(false);
                 onSuccess?.();
             }
@@ -86,16 +95,16 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
 
             const { error } = await signInWithGoogle(undefined, 'shop', { redirectTo });
             if (error) {
-                toast.error('Google sign-in failed', { description: error.message });
+                toast.error('Google login failed', { description: error.message });
             }
         } catch (error: any) {
-            toast.error('Google sign-in failed', { description: error.message });
+            toast.error('Google login failed', { description: error.message });
         } finally {
             setGoogleLoading(false);
         }
     };
 
-    if (showMFAInput || mfaRequired) {
+    if (showMFAInput || false) {
         return (
             <form onSubmit={handleMFAVerify} className="space-y-6">
                 <div className="text-center space-y-2">
@@ -104,7 +113,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
                     </div>
                     <h3 className="text-lg font-bold text-gray-900">Two-step verification</h3>
                     <p className="text-sm text-gray-500 font-medium">
-                        Enter the 6-digit code from your authenticator app
+                        Enter the 6-digit code from your authenticator app.
                     </p>
                 </div>
 
@@ -256,7 +265,7 @@ const ShopLoginForm: React.FC<ShopLoginFormProps> = ({
             <Button
                 type="submit"
                 className="w-full h-12 bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-bold rounded-xl shadow-lg shadow-[#F4D03F]/20 transition-all active:scale-95 flex items-center justify-center gap-2"
-                disabled={loading}
+                disabled={loading || !email || !password}
             >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />}
                 Log In to Dashboard

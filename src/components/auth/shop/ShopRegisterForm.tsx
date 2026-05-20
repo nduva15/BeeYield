@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Sparkles, UserPlus } from "lucide-react";
-import { ensureProfileForUser } from '@/lib/profileSync';
 import { buildAuthCallbackUrl } from '@/lib/authRedirect';
 import { completeSignupFlow, getBackendStorageKey } from '@/services/backendAuth';
 
@@ -18,7 +17,7 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
     onSuccess,
     onSwitchToLogin
 }) => {
-    const { signUp, signInWithGoogle } = useAuth();
+    const { signInWithGoogle } = useAuth();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -29,27 +28,36 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!email || !password || !firstName || !lastName) {
+            toast.error('Please fill all fields');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        if (password.length < 6) {
+            toast.error("Password must be at least 6 characters");
+            return;
+        }
+
         setLoading(true);
 
         try {
-            if (password !== confirmPassword) {
-                toast.error("Passwords do not match");
-                setLoading(false);
-                return;
-            }
-
-            // Use new complete signup flow with backend sync
             const result = await completeSignupFlow('shop', email, password, firstName, lastName, 'user');
 
             if (result.success) {
-                toast.success("Account created successfully");
+                toast.success("Account created! Logging you in...");
                 localStorage.setItem(getBackendStorageKey('shop', 'newUser'), 'true');
                 onSuccess?.();
             } else {
-                toast.error("Registration failed", { description: result.error || 'An error occurred' });
+                toast.error("Signup failed", { description: result.error || 'Please try again' });
             }
         } catch (error: any) {
-            toast.error("Registration failed", { description: error.message || 'An error occurred' });
+            toast.error("Signup failed", { description: error.message || 'An error occurred' });
         } finally {
             setLoading(false);
         }
@@ -64,10 +72,10 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
             const redirectTo = buildAuthCallbackUrl({ backend: 'shop', returnTo: '/shop-dashboard', intent: 'signup' });
             const { error } = await signInWithGoogle(undefined, 'shop', { redirectTo });
             if (error) {
-                toast.error("Google registration failed", { description: error.message });
+                toast.error("Google signup failed", { description: error.message });
             }
         } catch (error: any) {
-            toast.error("Google registration failed", { description: error.message });
+            toast.error("Google signup failed", { description: error.message });
         } finally {
             setGoogleLoading(false);
         }
@@ -206,7 +214,7 @@ const ShopRegisterForm: React.FC<ShopRegisterFormProps> = ({
             <Button
                 type="submit"
                 className="w-full h-12 bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-bold rounded-xl shadow-lg shadow-[#F4D03F]/20 transition-all active:scale-95 flex items-center justify-center gap-2"
-                disabled={loading}
+                disabled={loading || !email || !password || !firstName || !lastName}
             >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserPlus className="w-5 h-5 transition-transform group-hover:scale-110" />}
                 Create Client Account

@@ -5,12 +5,12 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock as LockIcon, Hexagon, Zap, Activity, LogIn, ShieldCheck } from "lucide-react";
-import { cn } from '@/lib/utils';
-import { glass } from '@/components/beeyield/GlassTheme';
+import { Loader2, Mail, Lock as LockIcon, ArrowRight, LogIn } from "lucide-react";
 import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
+import { completeLoginFlow, getBackendStorageKey } from '@/services/backendAuth';
+
 interface BeeYieldLoginFormProps {
-    onSuccess?: (email?: string) => void;
+    onSuccess?: () => void;
     onForgotPassword?: () => void;
     onSwitchToRegister?: () => void;
 }
@@ -20,97 +20,125 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
     onForgotPassword,
     onSwitchToRegister
 }) => {
-    const { signIn, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
-    const [email, setEmail] = useState(() => localStorage.getItem('savedEmail_beeyield') || '');
+    const { signInWithGoogle, verifyMFAChallenge } = useAuth();
+    const [email, setEmail] = useState(() => localStorage.getItem(getBackendStorageKey('beeyield', 'savedEmail')) || '');
     const [password, setPassword] = useState('');
     const [mfaCode, setMfaCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showMFAInput, setShowMFAInput] = useState(false);
-    const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem('savedEmail_beeyield')));
+    const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem(getBackendStorageKey('beeyield', 'savedEmail'))));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!email || !password) {
+            toast.error('Please enter email and password');
+            return;
+        }
+
         setLoading(true);
 
-        const { error, mfaRequired: needsMFA } = await signIn(email, password, 'beeyield');
+        try {
+            const result = await completeLoginFlow('beeyield', email, password);
 
-        if (error) {
-            toast.error('Sign-in failed', { description: error.message });
-        } else if (needsMFA) {
-            setShowMFAInput(true);
-            toast.info('Two-step verification', { description: 'Enter the 6-digit code from your authenticator app.' });
-            if (rememberMe) localStorage.setItem('savedEmail_beeyield', email);
-            else localStorage.removeItem('savedEmail_beeyield');
-        } else {
-            toast.success('Signed in');
-            if (rememberMe) localStorage.setItem('savedEmail_beeyield', email);
-            else localStorage.removeItem('savedEmail_beeyield');
-            onSuccess?.(email);
+            if (!result.success) {
+                if (result.needsMFA) {
+                    setShowMFAInput(true);
+                    toast.info('Two-step verification required');
+                } else {
+                    toast.error('Login failed', { description: result.error || 'Invalid credentials' });
+                }
+            } else {
+                toast.success('Logged in!');
+                if (rememberMe) localStorage.setItem(getBackendStorageKey('beeyield', 'savedEmail'), email);
+                else localStorage.removeItem(getBackendStorageKey('beeyield', 'savedEmail'));
+                onSuccess?.();
+            }
+        } catch (error: any) {
+            toast.error('Login failed', { description: error.message || 'An error occurred' });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleMFAVerify = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!mfaCode || mfaCode.length !== 6) {
+            toast.error('Enter valid 6-digit code');
+            return;
+        }
+
         setLoading(true);
 
-        const { error } = await verifyMFAChallenge(mfaCode, 'beeyield');
+        try {
+            const { error } = await verifyMFAChallenge(mfaCode, 'beeyield');
 
-        if (error) {
-            toast.error('Invalid code', { description: error.message });
-        } else {
-            toast.success('Verified');
-            setShowMFAInput(false);
-            onSuccess?.(email);
+            if (error) {
+                toast.error('Invalid code', { description: error.message });
+            } else {
+                toast.success('Verified!');
+                setShowMFAInput(false);
+                onSuccess?.();
+            }
+        } catch (error: any) {
+            toast.error('Verification failed', { description: error.message });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
-        const returnTo = '/beeyield-dashboard';
-        const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo, intent: 'login' });
-        persistAuthRedirectState({ backend: 'beeyield', returnTo, intent: 'login' });
+        try {
+            const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo: '/beeyield-dashboard', intent: 'login' });
+            persistAuthRedirectState({ backend: 'beeyield', returnTo: '/beeyield-dashboard', intent: 'login' });
 
-        const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield', { redirectTo });
-        if (error) {
-            toast.error('Google sign-in failed', { description: error.message });
+            const { error } = await signInWithGoogle(undefined, 'beeyield', { redirectTo });
+            if (error) {
+                toast.error('Google login failed', { description: error.message });
+            }
+        } catch (error: any) {
+            toast.error('Google login failed', { description: error.message });
+        } finally {
             setGoogleLoading(false);
         }
     };
 
-    if (showMFAInput || mfaRequired) {
+    if (showMFAInput || false) {
         return (
-            <form onSubmit={handleMFAVerify} className="space-y-5">
+            <form onSubmit={handleMFAVerify} className="space-y-6">
                 <div className="text-center space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center mx-auto mb-3 border border-[#F4D03F]/20">
-                        <LockIcon className="h-5 w-5 text-[#F4D03F]" />
+                    <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
+                        <LockIcon className="h-6 w-6 text-honey" />
                     </div>
-                    <h3 className="text-base font-bold text-[#1A1A1A] tracking-tight">Two-step verification</h3>
-                    <p className="text-[11px] font-medium text-gray-500 max-w-[200px] mx-auto">
+                    <h3 className="text-lg font-bold text-gray-900">Two-step verification</h3>
+                    <p className="text-sm text-gray-500 font-medium">
                         Enter the 6-digit code from your authenticator app.
                     </p>
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                     <Input
-                        id="by-mfa-code"
+                        id="beeyield-mfa-code"
                         name="mfa_code"
                         autoComplete="one-time-code"
                         type="text"
                         placeholder="000 000"
                         value={mfaCode}
                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        className="text-center text-xl font-bold h-12 bg-gray-50 border-gray-200 focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl"
+                        className="text-center text-3xl font-bold h-16 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl"
                         maxLength={6}
                         required
                         autoFocus
                     />
                 </div>
 
-                <Button type="submit" className={cn(glass.btnPrimary, "w-full h-10 font-bold text-xs uppercase shadow-sm")} disabled={loading || mfaCode.length !== 6}>
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify'}
+                <Button type="submit" className="w-full h-12 bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-bold rounded-xl shadow-md transition-all active:scale-95" disabled={loading || mfaCode.length !== 6}>
+                    {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        'Verify Identity'
+                    )}
                 </Button>
 
                 <button
@@ -119,109 +147,27 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         setShowMFAInput(false);
                         setMfaCode('');
                     }}
-                    className="w-full text-[10px] font-bold text-gray-400 hover:text-[#1A1A1A] transition-colors py-1"
+                    className="w-full text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors py-2"
                 >
-                    Back to sign in
+                    Back to login
                 </button>
             </form>
         );
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-3.5">
-                <div className="space-y-1.5">
-                    <Label htmlFor="by-email" className="text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-wider">Email</Label>
-                    <div className="relative group">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
-                        <Input
-                            id="by-email"
-                            name="email"
-                            type="email"
-                            placeholder="name@beeyield.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
-                            required
-                            autoComplete="username"
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-1.5">
-                    <div className="flex items-center justify-between ml-1">
-                        <Label htmlFor="by-password" className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Password</Label>
-                        {onForgotPassword && (
-                            <button
-                                type="button"
-                                onClick={onForgotPassword}
-                                className="text-[10px] font-bold text-[#F4D03F] hover:underline uppercase tracking-tight"
-                            >
-                                Forgot?
-                            </button>
-                        )}
-                    </div>
-                    <div className="relative group">
-                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-[#F4D03F]" />
-                        <Input
-                            id="by-password"
-                            name="password"
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="pl-10 h-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/10 rounded-xl font-medium text-xs transition-all"
-                            required
-                            autoComplete="current-password"
-                        />
-                    </div>
-                </div>
-
-                <div className="flex items-center space-x-2 ml-1">
-                    <Checkbox
-                        id="by-remember"
-                        checked={rememberMe}
-                        onCheckedChange={(checked) => setRememberMe(checked === true)}
-                        className="rounded-md border-gray-200 data-[state=checked]:bg-[#1B9157] data-[state=checked]:border-[#1B9157]"
-                    />
-                    <label
-                        htmlFor="by-remember"
-                        className="text-[10px] font-bold text-gray-400 cursor-pointer hover:text-gray-900 transition-colors uppercase tracking-tight"
-                    >
-                        Remember me
-                    </label>
-                </div>
-            </div>
-
-            <Button
-                type="submit"
-                className={cn(glass.btnPrimary, "w-full h-10 font-bold text-xs uppercase shadow-sm flex items-center justify-center gap-2")}
-                disabled={loading}
-            >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                Sign in
-            </Button>
-
-            <div className="relative py-1">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-gray-100" />
-                </div>
-                <div className="relative flex justify-center text-[9px] font-bold">
-                    <span className="bg-white px-3 text-gray-300">or</span>
-                </div>
-            </div>
-
+        <form onSubmit={handleSubmit} className="space-y-6">
             <Button
                 type="button"
                 variant="outline"
-                className={cn(glass.btnSecondary, "w-full h-10 bg-white border-gray-200 hover:border-[#F4D03F]/50 hover:bg-gray-50 text-gray-600 font-bold text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2.5")}
+                className="w-full h-12 bg-white border border-gray-200 hover:border-honey/50 hover:bg-gray-50 text-gray-600 font-bold rounded-xl transition-all flex items-center justify-center gap-3"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
             >
                 {googleLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-[#F4D03F]" />
+                    <Loader2 className="h-5 w-5 animate-spin text-honey" />
                 ) : (
-                    <svg className="h-4 w-4" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5" viewBox="0 0 24 24">
                         <path
                             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                             fill="#4285F4"
@@ -242,21 +188,103 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                 )}
                 Continue with Google
             </Button>
-            
-            {onSwitchToRegister && (
-               <div className="pt-2 text-center">
-                   <button 
-                        type="button" 
-                        onClick={onSwitchToRegister}
-                        className="text-[10px] font-bold text-gray-400 hover:text-[#F4D03F] transition-colors uppercase tracking-tight"
+
+            <div className="relative py-2">
+                <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-gray-100" />
+                </div>
+                <div className="relative flex justify-center text-xs font-bold">
+                    <span className="bg-white px-4 text-gray-300">or</span>
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="beeyield-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                            id="beeyield-email"
+                            name="email"
+                            type="email"
+                            placeholder="name@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                            required
+                            autoComplete="username"
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between ml-1">
+                        <Label htmlFor="beeyield-password" className="text-xs font-bold text-gray-500 uppercase tracking-wider">Password</Label>
+                        {onForgotPassword && (
+                            <button
+                                type="button"
+                                onClick={onForgotPassword}
+                                className="text-xs font-bold text-honey hover:underline"
+                            >
+                                Forgot?
+                            </button>
+                        )}
+                    </div>
+                    <div className="relative">
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                            id="beeyield-password"
+                            name="password"
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                            required
+                            autoComplete="current-password"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex items-center space-x-2 ml-1">
+                    <Checkbox
+                        id="beeyield-remember"
+                        checked={rememberMe}
+                        onCheckedChange={(checked) => setRememberMe(checked === true)}
+                        className="rounded-md border-gray-300 text-honey focus:ring-honey/20"
+                    />
+                    <label
+                        htmlFor="beeyield-remember"
+                        className="text-xs font-bold text-gray-500 cursor-pointer hover:text-gray-900 transition-colors"
                     >
-                        New here? <span className="text-[#F4D03F] ml-1">Create an account</span>
+                        Remember me on this device
+                    </label>
+                </div>
+            </div>
+
+            <Button
+                type="submit"
+                className="w-full h-12 bg-[#F4D03F] hover:bg-[#F4D03F]/90 text-[#1A1A1A] font-bold rounded-xl shadow-lg shadow-[#F4D03F]/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                disabled={loading || !email || !password}
+            >
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />}
+                Log In to Dashboard
+            </Button>
+
+            {onSwitchToRegister && (
+                <p className="text-center text-sm text-gray-500 font-medium">
+                    Don't have an account?{' '}
+                    <button
+                        type="button"
+                        onClick={onSwitchToRegister}
+                        className="text-honey font-bold hover:underline"
+                    >
+                        Create one
                     </button>
-               </div>
+                </p>
             )}
         </form>
     );
 };
 
 export default BeeYieldLoginForm;
-
