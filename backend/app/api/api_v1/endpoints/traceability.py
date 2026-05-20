@@ -19,14 +19,21 @@ async def get_trace_by_code(code: str, request: Request, background_tasks: Backg
     Public endpoint to trace honey by its batch code (e.g. from jar).
     Returns full journey: Farmer -> Apiary -> Hive -> Harvest -> Processing.
     """
-    # Result will be fetched from traceability service
-    
-    result = await traceability_service.get_trace_journey(code, token=token)
-    
-    if result:
-        return result
-        
+    try:
+        result = await traceability_service.get_trace_journey(code, token=token)
 
+        if result:
+            return result
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal error while tracing batch '{code}': {type(exc).__name__}: {exc}",
+        )
 
     raise HTTPException(status_code=404, detail=f"Traceability code '{code}' not found. Please verify the code on your jar.")
 
@@ -171,4 +178,3 @@ def get_all_polygon_anchors(limit: int = 50):
     """
     from app.services.polygon_service import polygon_service
     return polygon_service.get_all_anchors(limit=limit)
-

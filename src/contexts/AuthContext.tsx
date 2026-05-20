@@ -128,6 +128,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const platformError = (message: string) => ({ message } as AuthError);
 
+    const withAuthTimeout = async <T,>(operation: string, promise: Promise<T>, timeoutMs = 3500): Promise<T> => {
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        try {
+            return await Promise.race([
+                promise,
+                new Promise<T>((_, reject) => {
+                    timer = setTimeout(() => reject(new Error(`${operation} timed out`)), timeoutMs);
+                }),
+            ]);
+        } finally {
+            if (timer) clearTimeout(timer);
+        }
+    };
+
     const userWasCreatedForBackend = (user: User, backend: AuthBackend) => {
         const metadata = user.user_metadata ?? {};
         if (metadata.auth_backend === backend) return true;
@@ -152,7 +166,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const requirePlatformMembership = async (client: SupabaseClient, backend: AuthBackend, user: User) => {
-        const profile = await hasProfileForUser(client, backend, user.id);
+        const profile = await withAuthTimeout(
+            `${backend} profile verification`,
+            hasProfileForUser(client, backend, user.id),
+        ).catch((error) => {
+            console.warn(`Timed out verifying ${backend} profile; allowing Supabase-authenticated session`, error);
+            return { exists: false, error: null, timedOut: true };
+        });
+
+        if ('timedOut' in profile && profile.timedOut) {
+            return userWasCreatedForBackend(user, backend)
+                ? null
+                : platformError('We could not verify your account for this area. Please try again.');
+        }
+
         if (profile.error) {
             console.error(`Unable to verify ${backend} profile`, profile.error);
             return platformError('We could not verify your account for this area. Please try again.');
@@ -168,14 +195,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return platformError(`This email is not registered for the ${area}. Please create the right account first.`);
         }
 
-        const { error } = await ensureProfileForUser(client, backend, user, {
-            role: backend === 'ceba'
-                ? (user.user_metadata?.role === 'super_admin' ? 'super_admin' : 'admin')
-                : typeof user.user_metadata?.role === 'string'
-                    ? user.user_metadata.role
-                    : backend === 'beeyield'
-                        ? 'professional'
-                        : 'user',
+        const { error } = await withAuthTimeout(
+            `${backend} profile sync`,
+            ensureProfileForUser(client, backend, user, {
+                role: backend === 'ceba'
+                    ? (user.user_metadata?.role === 'super_admin' ? 'super_admin' : 'admin')
+                    : typeof user.user_metadata?.role === 'string'
+                        ? user.user_metadata.role
+                        : backend === 'beeyield'
+                            ? 'professional'
+                            : 'user',
+            }),
+        ).catch((error) => {
+            console.warn(`Timed out syncing ${backend} profile; continuing login`, error);
+            return { error: null };
         });
 
         if (error) {
@@ -361,7 +394,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setMfaFactorId(null);
 
         if (backend === 'all') {
-            await Promise.all([
+            await Promise.allSettled([
                 supabaseShop?.auth.signOut(),
                 supabaseBeeYield?.auth.signOut(),
                 supabaseCEBA?.auth.signOut()

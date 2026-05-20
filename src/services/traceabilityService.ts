@@ -620,6 +620,28 @@ const EXAMPLE_BATCHES: Record<string, TraceResponse> = {
     },
 };
 
+const isRecoverableVerificationError = (error: any): boolean => {
+    const message = String(error?.message || "");
+    const status = error?.status;
+
+    return (
+        status === 500 ||
+        status === 502 ||
+        status === 503 ||
+        status === 504 ||
+        message.includes("API Error 500") ||
+        message.includes("API Error 502") ||
+        message.includes("API Error 503") ||
+        message.includes("API Error 504") ||
+        message.includes("Internal Server Error") ||
+        message.includes("Network") ||
+        message.includes("network") ||
+        message.includes("timeout") ||
+        message.includes("connect") ||
+        message.includes("fetch")
+    );
+};
+
 /**
  * Build offline fallback data for any BEE-2026 batch code
  */
@@ -700,8 +722,8 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
         }
 
         // Server error (500) - try fallback
-        if (error?.status === 500) {
-            console.warn(`[Trace] Backend returned 500 for ${normalizedCode}, using fallback...`);
+        if (isRecoverableVerificationError(error)) {
+            console.warn(`[Trace] Recoverable backend error for ${normalizedCode}, using fallback...`);
             const fallback = buildOfflineTraceData(normalizedCode);
             if (fallback) {
                 console.log(`[Trace] ✓ Using fallback data for ${normalizedCode}`);

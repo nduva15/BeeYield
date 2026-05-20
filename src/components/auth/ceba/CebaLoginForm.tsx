@@ -9,6 +9,7 @@ import { Loader2, Mail, Lock as LockIcon, Shield, Terminal, Activity, Server, Gl
 import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { ensureProfileForUser } from '@/lib/profileSync';
 import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
+import { completeLoginFlow, getBackendStorageKey } from '@/services/backendAuth';
 
 interface CebaLoginFormProps {
     onSuccess?: () => void;
@@ -21,7 +22,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
     onForgotPassword,
     onSwitchToRegister
 }) => {
-    const { signIn, signOut, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
+    const { signOut, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [mfaCode, setMfaCode] = useState('');
@@ -31,7 +32,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
     const [rememberMe, setRememberMe] = useState(false);
 
     useEffect(() => {
-        const saved = localStorage.getItem('savedEmail_ceba');
+        const saved = localStorage.getItem(getBackendStorageKey('ceba', 'savedEmail'));
         if (saved) {
             setEmail(saved);
             setRememberMe(true);
@@ -42,26 +43,27 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
         e.preventDefault();
         setLoading(true);
 
-        const { error, mfaRequired: needsMFA } = await signIn(email, password, 'ceba');
+        const result = await completeLoginFlow('ceba', email, password);
 
-        if (error) {
-            toast.error('Login failed', { description: error.message });
+        if (!result.success && !result.needsMFA) {
+            toast.error('Login failed', { description: result.error || 'Invalid credentials' });
             setLoading(false);
             return;
         }
 
-        if (needsMFA) {
+        if (result.needsMFA) {
             setShowMFAInput(true);
             toast.info('Verification Required', { description: 'Please enter your security code.' });
-            if (rememberMe) localStorage.setItem('savedEmail_ceba', email);
-            else localStorage.removeItem('savedEmail_ceba');
+            if (rememberMe) localStorage.setItem(getBackendStorageKey('ceba', 'savedEmail'), email);
+            else localStorage.removeItem(getBackendStorageKey('ceba', 'savedEmail'));
             setLoading(false);
             return;
         }
 
-        if (rememberMe) localStorage.setItem('savedEmail_ceba', email);
-        else localStorage.removeItem('savedEmail_ceba');
+        if (rememberMe) localStorage.setItem(getBackendStorageKey('ceba', 'savedEmail'), email);
+        else localStorage.removeItem(getBackendStorageKey('ceba', 'savedEmail'));
         await handleFinalizeAccess();
+        setLoading(false);
     };
 
     const handleMFAVerify = async (e: React.FormEvent) => {
@@ -99,29 +101,22 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                     return;
                 }
 
-                const { error: profileError } = await supabaseCEBA
-                    .from('profiles')
-                    .select('id')
-                    .eq('id', loggedInUser.id)
-                    .single();
-
-                if (profileError) {
-                    const { error: ensureProfileError } = await ensureProfileForUser(
+                ensureProfileForUser(
                         supabaseCEBA,
                         'ceba',
                         loggedInUser,
                         { role: userRole === 'super_admin' ? 'super_admin' : 'admin' },
-                    );
-
-                    if (ensureProfileError) {
-                        console.error('Admin profile sync failed after login', ensureProfileError);
-                    }
-                }
+                    ).then(({ error }) => {
+                        if (error) console.error('Admin profile sync failed after login', error);
+                    }).catch((error) => {
+                        console.error('Admin profile sync failed after login', error);
+                    });
 
                 toast.success('Login successful');
                 onSuccess?.();
             }
         }
+        setLoading(false);
     };
 
     const handleGoogleSignIn = async () => {

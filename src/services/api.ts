@@ -19,6 +19,7 @@ export const AUTH_API_URL = `${NORMALIZED_API_URL}/auth`;
 const PUBLIC_API_PATH_PREFIXES = [
     "/contact/",
     "/auth/",  // Auth endpoints don't require backend isolation - they handle it themselves
+    "/traceability/",  // Public jar verification must work without a Supabase session
 ];
 
 /**

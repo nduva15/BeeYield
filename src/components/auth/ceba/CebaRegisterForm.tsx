@@ -5,8 +5,8 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, Shield, UserPlus } from "lucide-react";
-import { ensureProfileForUser } from '@/lib/profileSync';
 import { buildAuthCallbackUrl } from '@/lib/authRedirect';
+import { completeSignupFlow } from '@/services/backendAuth';
 
 interface CebaRegisterFormProps {
     onSuccess?: () => void;
@@ -17,7 +17,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
     onSuccess,
     onSwitchToLogin
 }) => {
-    const { signUp, signInWithGoogle } = useAuth();
+    const { signInWithGoogle } = useAuth();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -36,40 +36,14 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
             return;
         }
 
-        const { data: signupData, error } = await signUp(email, password, {
-            first_name: firstName,
-            last_name: lastName,
-            role: 'admin',
-            ceba_active: true
-        }, 'ceba', {
-            emailRedirectTo: buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba', intent: 'signup' }),
+        const result = await completeSignupFlow('ceba', email, password, firstName, lastName, 'admin', {
+            ceba_active: true,
         });
 
-        if (error) {
-            toast.error("Registration failed", { description: error.message });
+        if (!result.success) {
+            toast.error("Registration failed", { description: result.error || 'Please try again' });
         } else {
-            const { supabaseCEBA } = await import('@/lib/supabase');
-            if (supabaseCEBA) {
-                const { data: { user } } = await supabaseCEBA.auth.getUser();
-                if (user) {
-                    const { error: profileError } = await ensureProfileForUser(
-                        supabaseCEBA,
-                        'ceba',
-                        user,
-                        { firstName, lastName, role: 'admin' },
-                    );
-
-                    if (profileError) {
-                        console.error('Admin profile sync failed after registration', profileError);
-                    }
-                }
-            }
-
-            if (signupData?.session) {
-                toast.success("Admin account created successfully");
-            } else {
-                toast.success("Check your email to verify your admin account.");
-            }
+            toast.success("Admin account created successfully");
             onSuccess?.();
         }
         setLoading(false);
