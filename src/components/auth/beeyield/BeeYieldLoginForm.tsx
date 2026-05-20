@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock as LockIcon, ArrowRight, LogIn } from "lucide-react";
+import { Loader2, Mail, Lock as LockIcon, LogIn } from "lucide-react";
 import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
 import { completeLoginFlow, getBackendStorageKey } from '@/services/backendAuth';
 
@@ -104,7 +104,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
         }
     };
 
-    if (showMFAInput || false) {
+    if (showMFAInput) {
         return (
             <form onSubmit={handleMFAVerify} className="space-y-6">
                 <div className="text-center space-y-2">

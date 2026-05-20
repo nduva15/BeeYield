@@ -480,7 +480,7 @@ const BeeYieldDashboard: React.FC = () => {
                         <p className="text-sm text-muted-foreground font-medium leading-relaxed">You need an account to access the Beeeyield Dashboard.</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <button onClick={() => navigate('/login')} className="h-12 px-8 rounded-xl bg-beeyield-green text-foreground font-black text-sm tracking-tight hover:bg-beeyield-green/90 transition-colors flex items-center justify-center gap-2"><LockIcon className="w-4 h-4" />Sign in</button>
+                        <button onClick={() => navigate('/beeyield-login')} className="h-12 px-8 rounded-xl bg-beeyield-green text-foreground font-black text-sm tracking-tight hover:bg-beeyield-green/90 transition-colors flex items-center justify-center gap-2"><LockIcon className="w-4 h-4" />Sign in</button>
                         <button onClick={() => navigate('/')} className="h-12 px-8 rounded-xl bg-card border border-border/40 text-foreground font-bold text-sm hover:bg-muted/50 transition-colors">Back home</button>
                     </div>
                 </div>
