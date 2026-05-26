@@ -12,7 +12,7 @@ const Blogs = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const categories = ["All", "Conservation", "Education", "Sustainability", "Process", "Health", "Community"];
+  const categories = ["All", "Pollination", "Conservation", "Education", "Sustainability", "Process", "Health", "Community"];
 
   useEffect(() => {
     const fetchPosts = async () => {

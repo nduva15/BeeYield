@@ -22,54 +22,21 @@ export interface BlogPost {
 }
 
 export const getBlogPosts = async (category?: string, limit: number = 10, offset: number = 0): Promise<BlogPost[]> => {
-    try {
-        const response = await fetch(`${API_V1_URL}/blog/posts?limit=${limit}&offset=${offset}${category && category !== "All" ? `&category=${category}` : ''}`);
-        if (!response.ok) throw new Error("Failed to fetch blog posts");
-        const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) return data;
-        // Fallback to local data if API returns empty array
-        let filtered = localBlogs;
-        if (category && category !== "All") {
-            filtered = localBlogs.filter(post => post.category === category);
-        }
-        return filtered as BlogPost[];
-    } catch (error) {
-        console.warn("Error fetching blog posts, falling back to local data:", error);
-        // Fallback to local data
-        let filtered = localBlogs;
-        if (category && category !== "All") {
-            filtered = localBlogs.filter(post => post.category === category);
-        }
-        return filtered as BlogPost[];
+    // Directly use local data to ensure only the two new pollination blogs are shown, removing the old API/backend mock entries
+    let filtered = localBlogs;
+    if (category && category !== "All") {
+        filtered = localBlogs.filter(post => post.category === category);
     }
+    return filtered as BlogPost[];
 };
 
 export const getBlogPost = async (slug: string): Promise<BlogPost | null> => {
-    try {
-        const response = await fetch(`${API_V1_URL}/blog/posts/${slug}`);
-        if (!response.ok) {
-            // If API fails (e.g. 404), check local data
-            const localPost = localBlogs.find(p => p.slug === slug);
-            if (localPost) return localPost as BlogPost;
-            if (response.status === 404) return null;
-            throw new Error("Failed to fetch blog post");
-        }
-        return await response.json();
-    } catch (error) {
-        console.warn("Error fetching blog post, checking local data:", error);
-        const localPost = localBlogs.find(p => p.slug === slug);
-        return (localPost as BlogPost) || null;
-    }
+    // Directly return the matching local blog post
+    const localPost = localBlogs.find(p => p.slug === slug);
+    return (localPost as BlogPost) || null;
 };
 
 export const getBlogCategories = async (): Promise<{ name: string, slug: string }[]> => {
-    try {
-        const response = await fetch(`${API_V1_URL}/blog/categories`);
-        if (!response.ok) throw new Error("Failed to fetch categories");
-        return await response.json();
-    } catch (error) {
-        console.error("Error fetching categories:", error);
-        // Fallback categories
-        return ["Conservation", "Education", "Sustainability", "Process", "Health", "Community"].map(c => ({ name: c, slug: c.toLowerCase() }));
-    }
+    // Use fallback categories to match the local data
+    return ["Pollination", "Conservation", "Education", "Sustainability", "Process", "Health", "Community"].map(c => ({ name: c, slug: c.toLowerCase() }));
 };

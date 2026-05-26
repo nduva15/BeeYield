@@ -1,223 +1,206 @@
 export const blogs = [
     {
-        id: 1,
-        slug: "importance-of-bees-in-ecosystem",
-        title: "The Importance of Bees in Our Ecosystem",
-        excerpt: "Discover why bees are crucial for biodiversity and food production, and what we can do to protect them.",
+        id: 8,
+        slug: "future-of-farming-depends-on-pollination-infrastructure",
+        title: "The Future of Farming Depends on Pollination Infrastructure",
+        excerpt: "With colony losses rising across Africa and farms needing to produce 60% more food by 2050, precision pollination monitoring is no longer optional — it's critical infrastructure. Our CEO Timothy Nduva shares how data-driven hive management protects both bees and yields.",
         content: `
-# The Importance of Bees in Our Ecosystem
+# The Future of Farming Depends on Pollination Infrastructure
 
-Bees are often seen as mere producers of honey or potential stingers at a picnic, but their role in our world goes far beyond these simple associations. As pollinators, bees are a fundamental keystone species, supporting the reproduction of countless plants and ensuring the stability of food webs.
+Food security, climate resilience, and environmental sustainability are no longer separate conversations. They intersect most sharply in agriculture, where farmers are under pressure to produce more food with fewer resources while reducing their environmental footprint.
 
-## Biodiversity and Pollination
+A recent Newsweek report on agricultural challenges found that global farms must increase food production by around **60% by 2050**. At the same time, extreme weather, biodiversity loss, and regulatory pressure are reshaping how food is grown. While much attention has focused on advances in genetics, soil health, and AI-driven farm management, one critical input often remains overlooked: **pollination**.
 
-Pollination is the process by which plants reproduce, and bees are the world's most efficient pollinators. It is estimated that one-third of the food we eat relies on pollination, primarily by bees. This includes fruits like apples, berries, and melons, as well as vegetables like broccoli and onions.
+---
 
-Without bees, our diets would be significantly less diverse and nutritious. Moreover, bees pollinate wild plants, which in turn provide food and habitat for other animals, maintaining the delicate balance of ecosystems.
+## Pollination: The Invisible Infrastructure Behind Kenya's Food Systems
 
-## The Threat to Bees
+Roughly **75% of agricultural crops** depend to some degree on insect pollination. For high-value fruit, nut, and seed crops — many of which are the backbone of East African agriculture — pollination is as essential as water or fertiliser. A single healthy beehive can pollinate more than **ten million flowers per day**.
 
-Unfortunately, bee populations are declining globally due to habitat loss, pesticide use, climate change, and diseases. This decline poses a severe threat to global food security and biodiversity.
+Yet pollination systems are increasingly fragile. Across sub-Saharan Africa, habitat destruction, pesticide misuse, and climate shifts are putting enormous strain on pollinator populations. Here in Kenya, smallholder farmers who depend on natural pollination are already feeling the impact through declining fruit set and unpredictable yields.
 
-## What We Can Do
+> *"Kenya's smallholder farmers are on the front line of this crisis. They depend on pollination for their livelihoods, yet they have almost no visibility into whether their crops are being adequately pollinated."*
+> — **Timothy Nduva, CEO & Founder, BeeYield**
 
-Protecting bees is a shared responsibility. Here are a few ways you can help:
-*   **Plant Bee-Friendly Gardens:** Cultivate native flowers that provide nectar and pollen throughout the seasons.
-*   **Avoid Pesticides:** Opt for natural pest control methods to keep your garden safe for pollinators.
-*   **Support Local Beekeepers:** Buy raw, local honey to support those who manage and care for bee colonies.
+---
 
-By understanding and valuing the role of bees, we can take steps to ensure they continue to thrive and sustain our planet.
+## Why Bee Health Is So Hard to Manage at Scale
+
+Beekeeping is a form of livestock management, but unlike most livestock, honeybee colonies are highly sensitive superorganisms. In Kenya's diverse climate zones — from the arid lowlands of Makueni to the highlands of Central Province — each region exposes colonies to different forage conditions, temperatures, and disease pressures.
+
+> *"The hive is a complex and sensitive superorganism. From the first real sign of trouble to complete collapse can be a matter of days."*
+> — **Timothy Nduva**
+
+Traditionally, beekeepers have relied on periodic physical inspections to assess hive health. At scale, that approach simply doesn't provide enough visibility or enough time to act. By the time visible symptoms appear — a weakening brood pattern, unusual bee behaviour, or sudden population drop — interventions such as feeding, queen replacement, or disease treatment are often too late.
+
+This is the reality we witnessed firsthand at our family apiary in Kibwezi. Starting with just 4 hives on half an acre in 2020, my sisters Agatha and Carole and I quickly learned that traditional methods couldn't keep pace with the challenges our colonies faced.
+
+---
+
+## Turning Pollination into a Measurable, Manageable System
+
+BeeYield was founded to address this blind spot. We developed an IoT-based monitoring system that integrates directly into existing beehives, collecting continuous data from inside the colony. Rather than reacting to collapse, beekeepers can see when a hive is trending in the wrong direction and intervene while there is still time to save it.
+
+Our sensors capture key metrics from the colony, including:
+- **Temperature** and **humidity** patterns
+- **Light levels** and **hive orientation**
+- **Location tracking** for hive security
+- **Acoustic signatures** — the sound fingerprint of colony health
+
+Once strong, healthy colonies are deployed into fields and orchards, the impact compounds. Healthy hives mean more consistent pollination, better fruit set, and more predictable yields — without increasing land use or chemical inputs.
+
+> *"A dead hive pollinates nothing. When you're managing hundreds of hives across thousands of acres of Kenyan farmland, that difference becomes enormous."*
+> — **Timothy Nduva**
+
+---
+
+## Working With Nature, Not Replacing It
+
+In discussions about the future of agriculture, questions often arise about whether technology could one day replace bees entirely. While we embrace innovation, the economics and biology point in a clear direction.
+
+> *"As long as bees exist in meaningful numbers, the economics will always favour working with them rather than replacing them. Our agenda is to protect them, to work alongside them, and to use data and precision to make that relationship more resilient."*
+> — **Timothy Nduva**
+
+This philosophy is at the heart of BeeYield's approach. We've planted over **2,500 trees** around our Kibwezi apiary, creating diverse forage corridors that sustain our colonies year-round. Technology enhances what nature provides — it doesn't substitute for it.
+
+---
+
+## Sustainability and Profitability Are Beginning to Align
+
+One of the most important shifts in modern agriculture is the growing alignment between environmental responsibility and farm economics. Precision pollination data allows growers to make more informed decisions — not only about hive placement, but also about spraying schedules, irrigation, and nutrient use.
+
+In some cases, our data has revealed that bees were highly active at times growers believed fields were safe to spray. Adjusting operations to avoid those windows protects pollinators **and** improves yields at the same time. Similarly, understanding pollination success early allows growers to tailor inputs to expected fruit load, reducing waste and cost.
+
+For Kenyan farmers growing avocados, macadamia, mangoes, and passion fruit — crops where pollination directly determines yield quality — this kind of precision is transformational.
+
+---
+
+## Building the Future of Farming on Stronger Foundations
+
+As agriculture confronts climate change, biodiversity loss, and rising demand, the systems that support food production must become more resilient — not just more intensive. Pollination is foundational infrastructure, even if it has historically been treated as invisible.
+
+By bringing data, early detection, and coordination into pollination, BeeYield is helping growers, beekeepers, and supply chains strengthen one of the most fragile links in African agriculture.
+
+What started with a family in Kibwezi — three siblings, four hives, and half an acre — has grown into a platform serving **184+ hives** and **25+ acres** of client farmland, with a mission to scale precision pollination across Kenya and beyond.
+
+---
+
+## Ready to Optimise Your Pollination Strategy?
+
+Pollination is too critical to leave to chance. Discover how BeeYield's precision monitoring helps growers and beekeepers protect hives, improve yields, and build more resilient operations.
+
+**[Contact Our Team →](/contact)**
+
+**[Explore Our Pollination Solutions →](/pollination-solutions)**
     `,
-        category: "Conservation",
-        date: "March 15, 2024",
-        readTime: "5 min read",
-        featured_image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1600",
-        author_name: "Sarah Jenkins",
-        tags: ["Bees", "Environment", "Pollination"],
-        published_at: "2024-03-15T10:00:00Z",
-        read_time_minutes: 5
+        category: "Pollination",
+        date: "May 26, 2026",
+        readTime: "8 min read",
+        featured_image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1600",
+        author_name: "Timothy Nduva",
+        author_role: "CEO & Founder",
+        tags: ["Pollination", "AgTech", "Food Security", "IoT", "Kenya"],
+        published_at: "2026-05-26T10:00:00Z",
+        read_time_minutes: 8
     },
     {
-        id: 2,
-        slug: "how-to-identify-pure-raw-honey",
-        title: "How to Identify Pure, Raw Honey",
-        excerpt: "Learn the key characteristics that distinguish authentic raw honey from processed alternatives.",
+        id: 7,
+        slug: "why-10-frame-hives-mean-better-pollination",
+        title: "Why 10-Frame Hives Mean Better Pollination for Your Crops",
+        excerpt: "Larger bee colonies don't just have more bees — they're exponentially more efficient pollinators. For growers, this means better crop coverage, extended pollination windows, and higher yields. Learn why hive strength matters more than hive count.",
         content: `
-# How to Identify Pure, Raw Honey
+# Why 10-Frame Hives Mean Better Pollination for Your Crops
 
-Honey is nature's sweetener, but not all honey found on supermarket shelves is created equal. Many commercial honeys are processed, pasteurized, and filtered, stripping them of their natural benefits. Here is how you can tell the difference between pure, raw honey and the processed variety.
+When you're investing in pollination services for your operation, hive size matters more than you might think. Understanding the difference between 6-frame and 10-frame colonies can help you make informed decisions that directly impact your crop yields.
 
-## The Water Test
+At BeeYield, we've seen this play out across the farms we serve in Kenya's Makueni County and beyond. The data from our sensor-equipped hives tells a clear story: **stronger colonies deliver disproportionately better results**.
 
-One simple way to test your honey is the water test. Pour a spoonful of honey into a glass of water.
-*   **Pure Honey:** Will settle at the bottom of the glass in a lump. It takes time to dissolve and requires stirring.
-*   **Adulterated Honey:** Will often start dissolving immediately as it hits the water.
+---
 
-## The Texture
+## The Efficiency of Larger Colonies
 
-Raw honey often has a diverse texture. It may crystallize over time, becoming cloudy and granular. This is a natural process and a sign of quality. Processed honey, on the other hand, usually remains clear and liquid forever because the pollen and enzymes have been removed.
+A 10-frame bee colony is a far more effective superorganism and pollinator than its smaller counterpart. These colonies are significantly more efficient because the ratio of "house bees" (nurses) to "field bees" (foragers) shifts in ways that benefit your crops.
 
-## The Burn Test
+Because the "overhead" of keeping the hive warm is already met and the brood care and house activities have an adequate number of participants, a **10-frame hive can send out twice as many foragers** as a 6-frame hive, despite having only 66% more total bees.
 
-Dip a matchstick into the honey and try to light it.
-*   **Pure Honey:** Will allow the match to light because it has low moisture content.
-*   **Fake Honey:** Often contains extra moisture or syrup, which will prevent the match from igniting.
+Even more impressive: **bees from stronger colonies begin foraging 45 minutes earlier each day**.
 
-## Why Choose Raw?
+> *Just as two small fires emit less heat than one large fire, one large hive is able to thermoregulate the brood and send a far larger foraging force into your fields.*
 
-Raw honey contains bee pollen, propolis, and antioxidants that are lost during high-heat pasteurization. It captures the essence of the flowers from which it was made, offering a unique flavor profile and potential health benefits.
+---
 
-Always read the label and look for terms like "unpasteurized" or "raw," and getting to know your local beekeeper is the best assurance of quality.
+## What This Means for Your Crops
+
+That efficiency translates directly to pollination performance:
+
+### More Boots on the Ground
+With double the foragers per unit of bees, 10-frame hives deliver more flower visits per acre. This means better coverage across your field and more complete pollination — especially important for crops like **avocados, macadamia, mangoes, and passion fruit** where thorough pollination directly correlates with fruit size and quality.
+
+### Extended Working Hours
+That 45-minute head start each morning adds up. Over a 3-week bloom period, you're gaining approximately **22.5 additional foraging hours** per hive. For crops with narrow pollination windows or weather-dependent blooms, this early activity can make the difference between adequate and exceptional fruit set.
+
+### Better Weather Resilience
+Stronger colonies are more likely to fly in marginal conditions — cool mornings, light winds, or partly cloudy days when pollination is still possible but smaller colonies keep their foragers home. In Kenya's variable climate, where morning mist and afternoon rains can shorten the working day, this resilience is invaluable.
+
+---
+
+## Why Frame Count Matters More Than Box Count
+
+Not all hives are created equal. A box sitting in your orchard might contain anywhere from 4 to 10 frames of bees, and that difference is enormous when it comes to pollination outcomes.
+
+This is why BeeYield uses **frame-based assessment** rather than simply counting boxes. When you measure actual frames of bees rather than just wooden equipment in your field, you're measuring actual pollination power.
+
+### For Early-Season Crops
+If your crop blooms early in the season, that 45-minute daily advantage becomes even more valuable during short, cool days when every foraging hour counts. Strong colonies start working when it matters most.
+
+### For High-Value Crops
+When pollination directly impacts fruit size, quality, and set — as with avocados, macadamia, mangoes, and passion fruit — the efficiency of 10-frame colonies means more complete pollination coverage and better economic returns per acre.
+
+### Consistency You Can Count On
+Frame-based specifications give you predictable pollination performance. You know exactly what foraging force you're getting, not just how many boxes are present. At BeeYield, our IoT sensors give us — and our partner farmers — real-time visibility into exactly this.
+
+---
+
+## The BeeYield Difference
+
+At BeeYield, we don't just place hives and hope for the best. Our precision pollination approach ensures every colony deployed is:
+
+- **Sensor-monitored** for real-time health tracking
+- **Strength-verified** using acoustic analysis and temperature data
+- **Strategically placed** based on field size, crop type, and bloom timing
+- **Actively managed** with early intervention when any hive shows signs of weakening
+- **Led by seasoned experts** committed to digital precision and environmental stewardship
+
+From our family apiary in Kibwezi to client farms across Kenya, we've grown from 4 hives to **184+ strong colonies** — and every one of them is working harder because we understand the science behind hive strength.
+
+---
+
+## The Bottom Line
+
+Pollination isn't just about having bees present — it's about having enough active foragers working your bloom at the right times. The biology of stronger colonies means they deliver disproportionately more pollination bang for your shilling.
+
+When evaluating pollination services, look beyond hive count to hive strength. **A 10-frame colony isn't just 66% bigger — it's twice as effective** at getting the job done.
+
+---
+
+## Ready to Optimise Your Pollination Strategy?
+
+Planning ahead for next season and looking to improve pollination outcomes? BeeYield is here to help. Connect with our team to explore how precision pollination can maximise crop potential and reduce costs for your operation.
+
+**[Contact Our Team →](/contact)**
+
+**[Request Pollination Services →](/pollination-request)**
+
+**[Explore Our Technology →](/pollination-solutions)**
     `,
-        category: "Education",
-        date: "March 10, 2024",
-        readTime: "4 min read",
-        featured_image: "https://images.unsplash.com/photo-1587049352847-81a45d05e3d7?w=1600",
-        author_name: "David Miller",
-        tags: ["Honey", "Food Safety", "Raw Honey"],
-        published_at: "2024-03-10T09:00:00Z",
-        read_time_minutes: 4
-    },
-    {
-        id: 3,
-        slug: "sustainable-beekeeping-practices",
-        title: "Sustainable Beekeeping Practices",
-        excerpt: "Explore the methods we use to ensure healthy bee colonies and sustainable honey production.",
-        content: `
-# Sustainable Beekeeping Practices
-
-Sustainability is at the heart of modern beekeeping. It is not just about harvesting honey; it is about ensuring the long-term health of bee colonies and the environment they inhabit.
-
-## Respecting the Hive
-
-Sustainable beekeepers prioritize the health of the hive over maximum production. This means:
-*   **Leaving Enough Honey:** Bees need their own honey to survive the winter. Ethical beekeepers only harvest the surplus.
-*   **Minimal Intrusion:** Frequent inspections can stress the bees. We monitor hives carefully but intrude as little as possible.
-
-## Natural Disease Management
-
-Instead of relying heavily on chemicals and antibiotics, sustainable practices focus on integrated pest management (IPM). This involves using resistant bee stocks, mechanical controls for pests like Varroa mites, and organic treatments only when necessary.
-
-## Habitat Preservation
-
-Bees need forage. Supporting sustainable beekeeping also means advocating for and planting diverse nectar and pollen sources. Monocultures (vast fields of a single crop) are food deserts for bees for much of the year. Diverse landscapes provide the nutrition bees need to fight off disease and stress.
-
-By supporting sustainable beekeeping, you are supporting a system that values animal welfare and ecological balance.
-    `,
-        category: "Sustainability",
-        date: "March 5, 2024",
-        readTime: "6 min read",
-        featured_image: "https://images.unsplash.com/photo-1605333396783-a97914757c2a?w=1600",
-        author_name: "Emily Chen",
-        tags: ["Sustainability", "Beekeeping", "Environment"],
-        published_at: "2024-03-05T14:30:00Z",
-        read_time_minutes: 6
-    },
-    {
-        id: 4,
-        slug: "journey-hive-to-home",
-        title: "The Journey from Hive to Home",
-        excerpt: "Follow our transparent process from ethical harvesting to your kitchen table.",
-        content: `
-# The Journey from Hive to Home
-
-Have you ever wondered how honey gets from the flower to your toast? The journey is a fascinating blend of nature's work and careful human stewardship.
-
-## 1. Foraging and Nectar Collection
-
-It all starts with the bees. Worker bees fly up to 5 miles from the hive to collect nectar from flowers. They store this nectar in their "honey stomach," where enzymes begin breaking down complex sugars.
-
-## 2. In the Hive
-
-Back at the hive, the nectar is passed to house bees. They deposit it into honeycomb cells and fan their wings to evaporate excess water. This thickens the nectar into honey. Once it's ready, the bees cap the cell with wax.
-
-## 3. Ethical Harvesting
-
-We carefully remove the wax cappings and extract the honey using centrifugal force. Crucially, we do not heat the honey. It is cold-extracted to preserve its natural enzymes and flavor.
-
-## 4. Bottling
-
-The honey is strained to remove bits of wax but never filtered under high pressure. It is then bottled immediately. This ensures that what you receive is as close to the hive as possible—pure, raw, and full of goodness.
-
-From the sun-soaked fields to your pantry, every step is handled with respect for the bees and the product.
-    `,
-        category: "Process",
-        date: "February 28, 2024",
-        readTime: "5 min read",
-        featured_image: "https://images.unsplash.com/photo-1541838848-735f49673998?w=1600",
-        author_name: "James Wilson",
-        tags: ["Process", "Honey", "Traceability"],
-        published_at: "2024-02-28T11:15:00Z",
-        read_time_minutes: 5
-    },
-    {
-        id: 5,
-        slug: "health-benefits-raw-honey",
-        title: "Health Benefits of Raw Honey",
-        excerpt: "Understanding the nutritional and medicinal properties of unprocessed honey.",
-        content: `
-# Health Benefits of Raw Honey
-
-Raw honey has been used as a folk remedy throughout history and has a variety of health benefits and medical uses. It is even used in some hospitals as a treatment for wounds. Many of these health benefits are specific to raw, or unpasteurized, honey.
-
-## A Good Source of Antioxidants
-
-Raw honey contains an array of plant chemicals that act as antioxidants. Some types of honey have as many antioxidants as fruits and vegetables. Antioxidants help to protect your body from cell damage due to free radicals.
-
-## Antibacterial and Antifungal Properties
-
-Research has shown that raw honey can kill unwanted bacteria and fungus. It naturally contains hydrogen peroxide, an antiseptic. Its effectiveness as an antibacterial or antifungal varies depending on the honey, but it is clearly more than just a folk remedy.
-
-## Heal Wounds
-
-Manuka honey is used in medical settings to treat wounds because it's been found to be an effective germ killer and also aids in tissue regeneration.
-
-## Phyto-nutrients
-
-Phytonutrients are compounds found in plants that help protect the plant from harm. The phytonutrients in honey are responsible for its antioxidant properties, as well as its antibacterial and antifungal power. Heavy processing destroys these valuable nutrients.
-
-Incorporating a small amount of raw honey into your diet is a sweet way to support your overall health.
-    `,
-        category: "Health",
-        date: "February 20, 2024",
+        category: "Pollination",
+        date: "May 26, 2026",
         readTime: "7 min read",
-        image: "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=1600",
-        author_name: "Dr. Alisha Patel",
-        tags: ["Health", "Nutrition", "Wellness"],
-        published_at: "2024-02-20T08:45:00Z",
+        featured_image: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=1600",
+        author_name: "Timothy Nduva",
+        author_role: "CEO & Founder",
+        tags: ["Pollination", "Beekeeping", "Crop Yields", "Hive Management"],
+        published_at: "2026-05-26T10:00:00Z",
         read_time_minutes: 7
-    },
-    {
-        id: 6,
-        slug: "supporting-local-beekeepers",
-        title: "Supporting Local Beekeepers",
-        excerpt: "How choosing ethical honey makes a difference for small-scale beekeeping communities.",
-        content: `
-# Supporting Local Beekeepers
-
-When you buy a jar of honey, you are making a choice that impacts more than just your breakfast. Supporting local and ethical beekeepers is a direct vote for sustainable agriculture and community resilience.
-
-## Economic Impact
-
-Beekeeping is labor-intensive. By buying direct from local beekeepers, you ensure fair compensation for their hard work. This money stays in the local economy, supporting families and small businesses rather than large, industrial conglomerates.
-
-## Preserving Tradition
-
-Small-scale beekeeping is often an art passed down through generations. These beekeepers hold deep local knowledge about the flora and fauna of their specific region. Supporting them helps preserve this cultural heritage and wisdom.
-
-## Better Bees, Better Honey
-
-Local beekeepers care deeply about their hives. They are less likely to stress bees with migratory pollination (trucking bees across the country) and more likely to prioritize bee health. This results in stronger local bee populations and, arguably, superior honey that reflects the unique "terroir" of your area.
-
-Choosing ethical honey is a small act that ripples out to create a healthier environment and a stronger community.
-    `,
-        category: "Community",
-        date: "February 15, 2024",
-        readTime: "4 min read",
-        image: "https://images.unsplash.com/photo-1541838848-735f49673998?w=1600",
-        author_name: "Michael Brown",
-        tags: ["Community", "Local Business", "Ethical Consumerism"],
-        published_at: "2024-02-15T13:20:00Z",
-        read_time_minutes: 4
     }
 ];

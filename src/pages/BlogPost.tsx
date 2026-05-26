@@ -140,7 +140,7 @@ const BlogPost = () => {
                                 <div>
                                     <div className="font-bold text-lg">{post.author_name}</div>
                                     <p className="text-sm text-muted-foreground mt-1">
-                                        Member of the BeeYield team, passionate about sustainable agriculture and technology.
+                                        {(post as any).author_role || "Member of the BeeYield team, passionate about sustainable agriculture and technology."}
                                     </p>
                                 </div>
                             </div>
