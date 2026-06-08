@@ -9,13 +9,15 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY |
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-const rawSupabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-    storageKey: 'sb-auth-token-knowledge', // Unique key to avoid GoTrueClient multi-instance warning
-  }
-});
+const rawSupabase = (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY)
+  ? createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
+        storage: localStorage,
+        persistSession: true,
+        autoRefreshToken: true,
+        storageKey: 'sb-auth-token-knowledge', // Unique key to avoid GoTrueClient multi-instance warning
+      }
+    })
+  : null as any;
 
 export const supabase = wrapSupabaseClient(rawSupabase);

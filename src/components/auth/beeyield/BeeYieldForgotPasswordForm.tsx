@@ -4,10 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, ArrowLeft, CheckCircle, LogIn } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft } from "lucide-react";
 
 interface BeeYieldForgotPasswordFormProps {
-    onBackToLogin: () => void;
+    onBackToLogin?: () => void;
 }
 
 const BeeYieldForgotPasswordForm: React.FC<BeeYieldForgotPasswordFormProps> = ({
@@ -16,93 +16,110 @@ const BeeYieldForgotPasswordForm: React.FC<BeeYieldForgotPasswordFormProps> = ({
     const { resetPassword } = useAuth();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
-    const [emailSent, setEmailSent] = useState(false);
+    const [sent, setSent] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!email) {
+            toast.error('Please enter your email');
+            return;
+        }
+
         setLoading(true);
 
-        const { error } = await resetPassword(email, 'beeyield');
+        try {
+            const { error } = await resetPassword(email, 'beeyield');
 
-        if (error) {
-            toast.error('Error', { description: error.message });
-        } else {
-            setEmailSent(true);
-            toast.success('Reset email sent');
+            if (error) {
+                toast.error('Password reset failed', { description: error.message });
+            } else {
+                toast.success('Check your email!', { description: 'We sent a password reset link.' });
+                setSent(true);
+            }
+        } catch (error: any) {
+            toast.error('Password reset failed', { description: error.message });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
-    if (emailSent) {
+    if (sent) {
         return (
-            <div className="space-y-6 text-center">
-                <div className="w-16 h-16 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="h-10 w-10 text-beeyield-green" />
+            <div className="text-center space-y-6">
+                <div className="w-12 h-12 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto">
+                    <Mail className="h-6 w-6 text-beeyield-green" />
                 </div>
                 <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-gray-900">Check your email</h3>
-                    <p className="text-sm text-gray-500 font-medium leading-relaxed">
-                        We've sent a password reset link to <span className="text-beeyield-green font-bold">{email}</span>.
+                    <h3 className="text-lg font-bold text-gray-900">Check your email</h3>
+                    <p className="text-sm text-gray-500 font-medium">
+                        We sent a password reset link to <span className="font-bold">{email}</span>
                     </p>
                 </div>
-                <Button
-                    variant="outline"
-                    className="w-full h-12 bg-gray-50 border-gray-200 text-gray-600 hover:text-gray-900 font-bold rounded-xl transition-all"
+
+                <button
+                    type="button"
                     onClick={onBackToLogin}
+                    className="w-full flex items-center justify-center gap-2 h-12 text-beeyield-green font-bold hover:bg-gray-50 rounded-xl transition-colors"
                 >
-                    Return to login
-                </Button>
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to login
+                </button>
             </div>
         );
     }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="text-center space-y-2">
-                <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
-                    <Mail className="h-6 w-6 text-honey" />
+            <div className="text-center space-y-2 mb-8">
+                <div className="w-12 h-12 rounded-full bg-beeyield-green/10 flex items-center justify-center mx-auto mb-4">
+                    <Mail className="h-6 w-6 text-beeyield-green" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Reset your password</h3>
                 <p className="text-sm text-gray-500 font-medium">
-                    Enter your email to receive a password reset link
+                    Enter your email and we'll send you a link to reset your password.
                 </p>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="by-reset-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
+                <Label htmlFor="beeyield-forgot-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
                 <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
-                        id="by-reset-email"
+                        id="beeyield-forgot-email"
                         name="email"
                         type="email"
-                        autoComplete="email"
                         placeholder="name@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
+                        className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-xl font-medium"
                         required
-                        autoFocus
+                        autoComplete="email"
                     />
                 </div>
             </div>
 
             <Button
                 type="submit"
-                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
-                disabled={loading}
+                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg shadow-beeyield-green/20 transition-all active:scale-95"
+                disabled={loading || !email}
             >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
-                Send Reset Link
+                {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                    'Send Reset Link'
+                )}
             </Button>
 
-            <button
-                type="button"
-                onClick={onBackToLogin}
-                className="w-full text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors py-2 flex items-center justify-center gap-2"
-            >
-                <ArrowLeft className="h-4 w-4" /> Back to login
-            </button>
+            {onBackToLogin && (
+                <button
+                    type="button"
+                    onClick={onBackToLogin}
+                    className="w-full flex items-center justify-center gap-2 text-beeyield-green font-bold hover:bg-gray-50 py-2 rounded-xl transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to login
+                </button>
+            )}
         </form>
     );
 };

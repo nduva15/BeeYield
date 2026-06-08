@@ -111,6 +111,44 @@ const BlogPost = () => {
                             </ReactMarkdown>
                         </div>
 
+                        {/* High-Fidelity Modern CTA Section */}
+                        <div className="mt-16 bg-gradient-to-br from-beeyield-green to-[#145A32] text-white rounded-3xl p-8 md:p-10 relative overflow-hidden shadow-2xl border border-beeyield-green/20">
+                            {/* Ambient Glows */}
+                            <div className="absolute top-0 right-0 w-80 h-80 bg-beeyield-gold/15 rounded-full blur-[90px] -mr-32 -mt-32 pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-400/10 rounded-full blur-[90px] -ml-32 -mb-32 pointer-events-none" />
+                            
+                            <div className="relative z-10 space-y-6">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-xl text-beeyield-gold text-xs font-black uppercase tracking-widest border border-white/5 shadow-inner">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-beeyield-gold animate-ping" />
+                                    Empowering Sustainable Agriculture
+                                </div>
+                                <h3 className="text-3xl md:text-4xl font-black tracking-tighter leading-none text-white">
+                                    Ready to Optimize Your <span className="text-beeyield-gold">Pollination Strategy?</span>
+                                </h3>
+                                <p className="text-white/80 max-w-2xl text-base md:text-lg leading-relaxed font-medium">
+                                    Pollination is too critical to leave to chance. Discover how BeeYield's precision IoT monitoring helps growers protect hives, maximize crop potential, and build highly resilient operations across Kenya.
+                                </p>
+                                
+                                <div className="flex flex-wrap gap-4 pt-4">
+                                    <Link to="/contact">
+                                        <Button className="bg-beeyield-gold hover:bg-beeyield-gold/90 text-neutral-900 font-extrabold px-8 py-6 rounded-2xl shadow-xl shadow-beeyield-gold/20 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 text-base">
+                                            Contact Our Team
+                                        </Button>
+                                    </Link>
+                                    <Link to="/pollination-request">
+                                        <Button variant="outline" className="border-white/25 hover:bg-white/15 text-white font-black px-8 py-6 rounded-2xl hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 text-base bg-white/5 backdrop-blur-md">
+                                            Request Pollination
+                                        </Button>
+                                    </Link>
+                                    <Link to="/careers">
+                                        <Button variant="ghost" className="text-white/90 hover:text-white hover:bg-white/5 font-extrabold px-6 py-6 rounded-2xl transition-all duration-300 text-base">
+                                            Join Our Team →
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Tags */}
                         {post.tags && post.tags.length > 0 && (
                             <div className="mt-12 pt-8 border-t">

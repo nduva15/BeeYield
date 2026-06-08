@@ -4,9 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock as LockIcon, User, Shield, UserPlus } from "lucide-react";
+import { Loader2, Mail, Lock as LockIcon, User, UserPlus } from "lucide-react";
 import { buildAuthCallbackUrl } from '@/lib/authRedirect';
-import { completeSignupFlow } from '@/services/backendAuth';
+import { completeSignupFlow, getBackendStorageKey } from '@/services/backendAuth';
 
 interface CebaRegisterFormProps {
     onSuccess?: () => void;
@@ -28,36 +28,55 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
 
-        if (password !== confirmPassword) {
-            toast.error("Passwords do not match");
-            setLoading(false);
+        if (!email || !password || !firstName || !lastName) {
+            toast.error('Please fill all fields');
             return;
         }
 
-        const result = await completeSignupFlow('ceba', email, password, firstName, lastName, 'admin', {
-            ceba_active: true,
-        });
-
-        if (!result.success) {
-            toast.error("Registration failed", { description: result.error || 'Please try again' });
-        } else {
-            toast.success("Admin account created successfully");
-            onSuccess?.();
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
         }
-        setLoading(false);
+
+        if (password.length < 6) {
+            toast.error("Password must be at least 6 characters");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const result = await completeSignupFlow('ceba', email, password, firstName, lastName, 'admin');
+
+            if (result.success) {
+                toast.success("Access request submitted!", { description: "We'll review and get back to you soon." });
+                localStorage.setItem(getBackendStorageKey('ceba', 'newUser'), 'true');
+                onSuccess?.();
+            } else {
+                toast.error("Request failed", { description: result.error || 'Please try again' });
+            }
+        } catch (error: any) {
+            toast.error("Request failed", { description: error.message || 'An error occurred' });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleGoogleSignUp = async () => {
         setGoogleLoading(true);
-        localStorage.setItem('authReturnTo', '/ceba');
-        localStorage.setItem('authBackend', 'ceba');
-        localStorage.setItem('authIntent', 'signup');
-        const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba', intent: 'signup' });
-        const { error } = await signInWithGoogle({ ceba_active: true }, 'ceba', { redirectTo });
-        if (error) {
-            toast.error('Google registration failed', { description: error.message });
+        try {
+            localStorage.setItem(getBackendStorageKey('ceba', 'authReturnTo'), '/ceba');
+            localStorage.setItem(getBackendStorageKey('ceba', 'authBackend'), 'ceba');
+            localStorage.setItem(getBackendStorageKey('ceba', 'authIntent'), 'signup');
+            const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba', intent: 'signup' });
+            const { error } = await signInWithGoogle(undefined, 'ceba', { redirectTo });
+            if (error) {
+                toast.error("Google signup failed", { description: error.message });
+            }
+        } catch (error: any) {
+            toast.error("Google signup failed", { description: error.message });
+        } finally {
             setGoogleLoading(false);
         }
     };
@@ -81,7 +100,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                         <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                     </svg>
                 )}
-                Register with Google
+                Sign up with Google
             </Button>
 
             <div className="relative py-2">
@@ -95,11 +114,11 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="ceba-firstName" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">First Name</Label>
+                    <Label htmlFor="ceba-reg-firstName" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">First Name</Label>
                     <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
-                            id="ceba-firstName"
+                            id="ceba-reg-firstName"
                             name="given-name"
                             autoComplete="given-name"
                             placeholder="John"
@@ -111,9 +130,9 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="ceba-lastName" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Last Name</Label>
+                    <Label htmlFor="ceba-reg-lastName" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Last Name</Label>
                     <Input
-                        id="ceba-lastName"
+                        id="ceba-reg-lastName"
                         name="family-name"
                         autoComplete="family-name"
                         placeholder="Doe"
@@ -126,7 +145,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="ceba-reg-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Work Email</Label>
+                <Label htmlFor="ceba-reg-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
                 <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -134,7 +153,7 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
                         name="email"
                         type="email"
                         autoComplete="email"
-                        placeholder="admin@beeyield.com"
+                        placeholder="name@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
@@ -182,16 +201,16 @@ const CebaRegisterForm: React.FC<CebaRegisterFormProps> = ({
 
             <Button
                 type="submit"
-                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
-                disabled={loading}
+                className="w-full h-12 bg-honey hover:bg-honey/90 text-gray-900 font-bold rounded-xl shadow-lg shadow-honey/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                disabled={loading || !email || !password || !firstName || !lastName}
             >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserPlus className="w-5 h-5" />}
-                Create Admin Account
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserPlus className="w-5 h-5 transition-transform group-hover:scale-110" />}
+                Request Admin Access
             </Button>
 
             {onSwitchToLogin && (
                 <p className="text-center text-sm text-gray-500 font-medium pt-2">
-                    Already have access?{' '}
+                    Already have admin access?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}

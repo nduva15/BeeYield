@@ -1,0 +1,113 @@
+---
+# Frontend ConfigMap for Production
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: beeyield-prod
+  labels:
+    app: beeyield-frontend
+    environment: production
+data:
+  # Frontend API Configuration
+  VITE_API_URL: "https://api.beeyield.com"
+  
+  # Base Supabase (Shop/Auth)
+  VITE_SUPABASE_URL: "https://prod-project-ref.supabase.co"
+  
+  # BeeYield Backend (Hives, IoT, Farmers)
+  VITE_SUPABASE_URL_BEEYIELD: "https://ezfccfypwmuvbpujkqrg.supabase.co"
+  
+  # CEBA Backend (Content, Admin)
+  VITE_SUPABASE_URL_CEBA: "https://ceba-prod-ref.supabase.co"
+  
+  # Stripe Configuration
+  VITE_STRIPE_PUBLISHABLE_KEY: "pk_live_production_key"
+  VITE_STRIPE_API_URL: "https://api.stripe.com/v1"
+  
+  # Admin Email
+  VITE_SUPER_ADMIN_EMAIL: "admin@beeyield.com"
+
+---
+# Frontend ConfigMap for Staging
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: beeyield-staging
+  labels:
+    app: beeyield-frontend
+    environment: staging
+data:
+  # Frontend API Configuration
+  VITE_API_URL: "https://api-staging.beeyield.com"
+  
+  # Base Supabase (Shop/Auth)
+  VITE_SUPABASE_URL: "https://staging-project-ref.supabase.co"
+  
+  # BeeYield Backend (Hives, IoT, Farmers)
+  VITE_SUPABASE_URL_BEEYIELD: "https://beeyield-staging-ref.supabase.co"
+  
+  # CEBA Backend (Content, Admin)
+  VITE_SUPABASE_URL_CEBA: "https://ceba-staging-ref.supabase.co"
+  
+  # Stripe Configuration
+  VITE_STRIPE_PUBLISHABLE_KEY: "pk_test_staging_key"
+  VITE_STRIPE_API_URL: "https://api.stripe.com/v1"
+  
+  # Admin Email
+  VITE_SUPER_ADMIN_EMAIL: "admin-staging@beeyield.com"
+
+---
+# Backend ConfigMap for Production
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: beeyield-prod
+  labels:
+    app: beeyield-backend
+    environment: production
+data:
+  # Database Configuration
+  DATABASE_HOST: "beeyield-postgres"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "beeyield_prod"
+  
+  # Redis Configuration
+  REDIS_HOST: "beeyield-redis"
+  REDIS_PORT: "6379"
+  
+  # Logging
+  LOG_LEVEL: "INFO"
+  PYTHONUNBUFFERED: "1"
+  
+  # Environment
+  ENVIRONMENT: "production"
+
+---
+# Backend ConfigMap for Staging
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: beeyield-staging
+  labels:
+    app: beeyield-backend
+    environment: staging
+data:
+  # Database Configuration
+  DATABASE_HOST: "beeyield-postgres"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "beeyield_staging"
+  
+  # Redis Configuration
+  REDIS_HOST: "beeyield-redis"
+  REDIS_PORT: "6379"
+  
+  # Logging
+  LOG_LEVEL: "DEBUG"
+  PYTHONUNBUFFERED: "1"
+  
+  # Environment
+  ENVIRONMENT: "staging"

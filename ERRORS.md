@@ -40,3 +40,37 @@
 - **Fix Applied**: Added `Home` to the `lucide-react` import destructuring in `Team.tsx`.
 - **Prevention**: Always audit `lucide-react` imports after adding new icons to a component using multi-replace or manual edits.
 - **Status**: Fixed
+
+---
+
+## [2026-06-08 09:32] - Runtime Error: supabaseKey is required on Vercel deployment
+
+- **Type**: Runtime
+- **Severity**: High
+- **File**: `src/integrations/supabase/client.ts:12`
+- **Agent**: @orchestrator
+- **Root Cause**: The client-side Supabase helper initialized the Supabase client immediately at import-time. When deploying to Vercel without environment variables configured, `VITE_SUPABASE_ANON_KEY` is undefined, causing the app to throw an unhandled exception and crash at startup.
+- **Error Message**: 
+  ```
+  supabaseKey is required.
+  ```
+- **Fix Applied**: Wrapped client initialization in `src/integrations/supabase/client.ts` in a null check and updated `wrapSupabaseClient` in `src/integrations/supabase/legacy-table-guard.ts` to support optional/null clients safely.
+- **Prevention**: Never run top-level initialization of clients with env values without a fallback/null check to ensure safety when environment configuration is incomplete.
+- **Status**: Fixed
+
+---
+
+## [2026-06-08 09:37] - Integration Error: Failed to fetch dynamically imported module (Vite chunk load failure)
+
+- **Type**: Integration
+- **Severity**: High
+- **File**: `src/main.tsx:31`
+- **Agent**: @orchestrator
+- **Root Cause**: In production Vite deployments, pushing a new build deletes older hashed code-split chunks. Users who already have the app open will experience load failures when navigating to a lazy-loaded page whose chunk hash changed.
+- **Error Message**: 
+  ```
+  Failed to fetch dynamically imported module: https://bee-yield-.../assets/BeeYieldDashboard-96zgx6RD.js
+  ```
+- **Fix Applied**: Updated `retryLazyImport` in `src/main.tsx` to catch chunk fetching failures and execute a clean `window.location.reload()` to sync browser state with the new deployment. Wrapped all primary authenticated/dashboard views with this protection.
+- **Prevention**: Wrap lazy page loaders in a chunk error-catching utility that reloads the browser to download the updated client files.
+- **Status**: Fixed

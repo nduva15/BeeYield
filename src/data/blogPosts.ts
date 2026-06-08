@@ -202,5 +202,173 @@ Planning ahead for next season and looking to improve pollination outcomes? BeeY
         tags: ["Pollination", "Beekeeping", "Crop Yields", "Hive Management"],
         published_at: "2026-05-26T10:00:00Z",
         read_time_minutes: 7
+    },
+    {
+        id: 9,
+        slug: "journey-hive-to-home-traceable-honey",
+        title: "The Journey from Hive to Home: Traceable Honey Production in Kenya",
+        excerpt: "Discover the path our honey takes from our family apiary in Kibwezi, Makueni County, to your table. Learn how we combine IoT sensors, ethical harvesting, and blockchain-style transparency to guarantee 100% pure, raw, and sustainable honey.",
+        content: `
+# The Journey from Hive to Home: Traceable Honey Production in Kenya
+
+Have you ever wondered how honey gets from the wild blossoms of Kenya's drylands to your breakfast table? The journey is a fascinating blend of nature's ancient wisdom and modern digital precision.
+
+At BeeYield, we believe you have a right to know exactly where your food comes from, how it was produced, and who cared for the bees that made it. This is why we created a fully traceable journey — starting from our native Kibwezi apiary in Makueni County all the way to your home.
+
+---
+
+## 1. Foraging in the Wild Acacia and Neem Forests
+
+The journey begins in the pristine semi-arid woodlands of Makueni. Here, our bees forage on wild Acacia, Neem, and local wildflowers. These hardy plants produce highly aromatic nectar, giving our honey its distinct, rich amber color and complex herbal flavor.
+
+Unlike industrial honey operations that use artificial sugar feeds, BeeYield bees feed strictly on natural forage. To ensure they always have abundant food, we have planted over **2,500 trees** around our 5-acre apiary, restoring the local habitat and creating a sanctuary for biodiversity.
+
+---
+
+## 2. In the Hive: Precision IoT Monitoring
+
+Inside our hives, the magic of the colony is paired with cutting-edge technology. Our hives are equipped with in-hive IoT sensors developed right here by the BeeYield sibling team (built by Timothy, Agatha, and Carole).
+
+These sensors continuously collect:
+- **Temperature and humidity:** To ensure the brood chamber remains at the perfect thermoregulated level.
+- **Acoustic analysis:** Listening to the colony's hum to detect stress, queenlessness, or swarming trends.
+- **Orientation and security:** Ensuring the physical integrity of the hive in the field.
+
+By monitoring hive health in real-time, we ensure our colonies are strong and resilient before any harvesting takes place. Healthy bees produce high-quality, pure honey.
+
+---
+
+## 3. Ethical and Sustainable Harvesting
+
+At BeeYield, we prioritize bee welfare over maximum production. We only harvest the surplus honey — always leaving enough stores in the hive for the bees to thrive through the dry seasons.
+
+Our extraction process is gentle:
+- **Cold Extraction:** We never pasteurize or micro-filter our honey. High heat destroys the natural enzymes, pollen grains, and rich antioxidants that make raw honey a powerful superfood.
+- **Gravity Straining:** We use simple gravity straining to remove larger wax particles while retaining all the beneficial bee pollen and propolis.
+
+---
+
+## 4. Blockchain-Style Traceability
+
+Every jar of BeeYield honey is equipped with a unique **QR code** on the label. By scanning this code, you are taken directly to our public **Honey Traceability Dashboard**.
+
+Here, you can instantly see:
+- The exact **GPS coordinates** of the apiary where your honey was harvested.
+- The **date of harvest** and batch number.
+- **Laboratory test results** verifying the moisture content and purity.
+- The **humidity and acoustic logs** of the hives during the nectar-flow season, showing the health history of the colony that produced your jar.
+
+This level of transparency guarantees that what you receive is 100% pure, raw, and untampered — capturing the exact "terroir" of Kibwezi.
+
+---
+
+## Evolving the Future of Apiculture
+
+What started in 2020 as a family mission with just four hives has grown into a tech-driven platform managing **184+ hives** and serving farmers across Kenya. By proving that honey production can be both highly technological and deeply ecological, we are showing a new path forward for African agriculture.
+
+When you choose BeeYield, you aren't just buying honey. You are supporting local smallholder farmers, restoring threatened forests, and investing in a resilient pollination infrastructure that secures our future food systems.
+
+---
+
+## Ready to Experience the BeeYield Difference?
+
+Taste the pure, raw goodness of Kibwezi and explore our tech-driven approach to apiculture. Connect with our team to purchase our traceable honey batches or partner with us for precision pollination services.
+
+**[Contact Our Team →](/contact)**
+
+**[Meet the BeeYield Team →](/careers)**
+
+**[Explore Our Traceability Dashboard →](/traceability)**
+        `,
+        category: "Process",
+        date: "May 26, 2026",
+        readTime: "6 min read",
+        featured_image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1600",
+        author_name: "Timothy Nduva",
+        author_role: "CEO & Founder",
+        tags: ["Traceability", "Honey", "IoT", "Sustainable Farming", "Kenya"],
+        published_at: "2026-05-26T10:00:00Z",
+        read_time_minutes: 6
+    },
+    {
+        id: 10,
+        slug: "natural-enemies-in-pollinator-habitat",
+        title: "Natural Enemies in Pollinator Habitat: Biological Pest Control on Kenyan Farms",
+        excerpt: "Discover the role of beneficial predatory insects like ladybirds, hoverflies, and lacewings in East African farming, and how BeeYield's ecological pollinator habitats help growers reduce pesticide dependencies while maximizing crop health.",
+        content: `
+# Natural Enemies in Pollinator Habitat: Biological Pest Control on Kenyan Farms
+
+In East African agriculture, insects interact with our lives and livelihoods in deep, multi-dimensional ways. When an insect exhibits behavior that damages our food supply — like feeding on our tomato, avocado, or passion fruit crops — we call it a "pest". When an insect behaves in a way that benefits us, we call it a "beneficial insect".
+
+Pollinators like bees and butterflies are the most widely recognized beneficial insects because they secure the yields of our specialty crops. However, **"natural enemies"** represent another critical class of beneficial insects. They act as nature's biological pest control agents, preying on destructive pests and keeping agricultural ecosystems in balance.
+
+By cultivating rich, biodiverse pollinator habitats around our farmlands, we don't just protect our honeybees — we construct a robust biological shield that protects crop yields at a commercial scale.
+
+---
+
+## Understanding Our Natural Allies
+
+Just like pests and honeybees, natural enemies come in various shapes and sizes. Implementing agricultural management practices that simultaneously support both pollinators and natural predators is key to establishing resilient, high-yielding, and chemical-free farms.
+
+Here are the key profiles of natural allies active across East African soils and how they contribute to pest control:
+
+### 🐞 Ladybirds (Lady Beetles)
+Kenya is home to several species of native lady beetles. Both larvae and adult lady beetles are voracious predators of soft-bodied agricultural pests.
+
+After laying eggs, they hatch into active, alligator-like larvae. These larvae are dark, sometimes with bright yellow or orange spots, and they spend their days hunting down **aphids, mites, scale insects, and pest eggs**. After pupating, they emerge as adults, who continue the hunt. Some adults also feed on flower pollen, making them highly dependent on flowering plant species for survival during low-pest seasons.
+
+### 🦟 Hoverflies (Flower Flies)
+Hoverflies, or Syrphid flies, are remarkable because they act as **both pollinators and predators**.
+
+While adult hoverflies (who mimic small wasps or bees with their black and yellow-striped bodies) feed on nectar and pollen and perform active pollination, their larvae are deadly predators. These tiny, green-to-brown caterpillar-like larvae feed heavily on soft-bodied pests like **thrips, leafhoppers, caterpillars, and aphids**. A single hoverfly larva can consume up to 400 aphids during its development cycle.
+
+### 🕸️ Lacewings
+Lacewing larvae are often referred to as "aphid lions." They have large, curved mandibles that they use to capture prey, inject digesting fluids, and consume body fluids. They target a broad spectrum of pests, including **mealybugs, spider mites, thrips, and caterpillar eggs**.
+
+Adult lacewings have beautiful, intricately veined, translucent wings. They feed on aphid honeydew and flower nectar, reproducing rapidly to yield multiple generations per crop cycle.
+
+### 🐝 Parasitoid Wasps
+Unlike active hunters, parasitoid wasps operate through highly targeted parasitism. These tiny, non-stinging wasps lay their eggs directly inside or on the bodies of pest hosts.
+
+One classic example is the **Braconid wasp**, which parasitizes tomato hornworms and caterpillars. The wasp larvae develop inside the pest, feeding on its internal fluids and weakening it. When ready to pupate, they emerge and spin tiny white cocoons on the caterpillar's back. The host pest stops feeding immediately, protecting the farmer's crops from further damage, and dies shortly after the new adult wasps emerge.
+
+---
+
+## Restoring Balance: Planting Habitats to Build Resilience
+
+Why are we discussing natural biological pest control on a platform dedicated to apiculture and precision pollination?
+
+Because **pollination and pest control are two sides of the same ecological coin**.
+
+When we plant diverse, native foraging corridors — like the **2,500+ indigenous trees** we have established around our family apiary in Kibwezi, Kenya — we are not just feeding our honeybees during the off-bloom seasons. We are also building shelters, pesticide-free breeding grounds, and wintering habitats for these predatory natural enemies.
+
+### The Win-Win for Commercial Growers:
+1. **Pesticide Reduction:** Boosting populations of natural predators reduces the need for synthetic pesticide applications.
+2. **Safe Spray Windows:** Integrating our in-hive IoT sensor data allows us to identify exactly when bees and beneficial predators are active, keeping spraying schedules safe and non-disruptive.
+3. **Double Yield Benefits:** Farms with native border plantings experience both superior pollination coverage (fruit set) and robust biological pest control, maximizing both yield volume and crop quality.
+
+By working with nature rather than attempting to replace it, BeeYield is helping growers across Kenya build more profitable, resilient, and climate-positive agricultural systems.
+
+---
+
+## Optimize Your Farm's Ecosystem Today
+
+Ready to strengthen the foundation of your farm? Connect with our operations team to explore how precision pollination and integrated pest-management habitats can maximize crop returns.
+
+**[Contact Our Team →](/contact)**
+
+**[Meet the BeeYield Team →](/careers)**
+
+**[Explore Our Technology →](/pollination-solutions)**
+        `,
+        category: "Conservation",
+        date: "May 26, 2026",
+        readTime: "7 min read",
+        featured_image: "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=1600",
+        author_name: "Timothy Nduva",
+        author_role: "CEO & Founder",
+        tags: ["Conservation", "Integrated Pest Management", "Biodiversity", "Kenya"],
+        published_at: "2026-05-26T10:00:00Z",
+        read_time_minutes: 7
     }
 ];

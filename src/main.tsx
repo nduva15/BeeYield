@@ -32,9 +32,24 @@ const retryLazyImport = <T extends { default: React.ComponentType<any> }>(
     loader: () => Promise<T>
 ) =>
     loader().catch(async (error) => {
+        const isChunkError = 
+            error?.message?.includes('dynamically imported module') || 
+            error?.message?.includes('Failed to fetch') ||
+            error?.name === 'TypeError';
+            
+        if (isChunkError) {
+            console.warn('Vite chunk load failed (likely new deployment). Reloading page...', error);
+            window.location.reload();
+            return new Promise(() => {}) as Promise<T>;
+        }
+        
         await new Promise((resolve) => setTimeout(resolve, 300));
-        return loader().catch(() => {
-            throw error;
+        return loader().catch((retryErr) => {
+            if (retryErr?.message?.includes('dynamically imported module') || retryErr?.message?.includes('Failed to fetch')) {
+                window.location.reload();
+                return new Promise(() => {}) as Promise<T>;
+            }
+            throw retryErr;
         });
     });
 
@@ -67,14 +82,14 @@ const Diseases = lazy(() => import('@/pages/Diseases'))
 const Media = lazy(() => import('@/pages/Media'))
 const BeeYieldDashboard = lazy(() => retryLazyImport(() => import('@/pages/BeeYieldDashboard')))
 const BeeCalculatorSuite = lazy(() => import('@/pages/BeeCalculatorSuite'))
-const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'))
+const AdminDashboard = lazy(() => retryLazyImport(() => import('@/pages/AdminDashboard')))
 const ContentEditor = lazy(() => import('@/components/beeyield/ContentEditor'))
-const AdminLogin = lazy(() => import('@/pages/AdminAuth'))
-const ShopDashboard = lazy(() => import('@/pages/ShopDashboard'))
+const AdminLogin = lazy(() => retryLazyImport(() => import('@/pages/AdminAuth')))
+const ShopDashboard = lazy(() => retryLazyImport(() => import('@/pages/ShopDashboard')))
 const AccountSettings = lazy(() => import('@/pages/AccountSettings'))
 const UpdatePassword = lazy(() => import('@/pages/UpdatePassword'))
-const ShopAuth = lazy(() => import('@/pages/ShopAuth'))
-const ProfessionalAuth = lazy(() => import('@/pages/ProfessionalAuth'))
+const ShopAuth = lazy(() => retryLazyImport(() => import('@/pages/ShopAuth')))
+const ProfessionalAuth = lazy(() => retryLazyImport(() => import('@/pages/ProfessionalAuth')))
 const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 const Receipt = lazy(() => import('@/pages/Receipt'))

@@ -181,6 +181,7 @@ function createMissingBuilder(table: string, context: GuardContext = { op: "sele
 }
 
 export function wrapSupabaseClient<T extends { from: (table: string) => any }>(client: T): T {
+  if (!client) return null as any;
   return new Proxy(client, {
     get(target, prop, receiver) {
       if (prop !== "from") return Reflect.get(target, prop, receiver);

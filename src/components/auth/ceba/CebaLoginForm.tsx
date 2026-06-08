@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock as LockIcon, Shield, Terminal, Activity, Server, Globe, LogIn } from "lucide-react";
-import { SUPER_ADMIN_EMAIL } from '@/config/constants';
-import { ensureProfileForUser } from '@/lib/profileSync';
+import { Loader2, Mail, Lock as LockIcon, LogIn } from "lucide-react";
 import { buildAuthCallbackUrl, persistAuthRedirectState } from '@/lib/authRedirect';
 import { completeLoginFlow, getBackendStorageKey } from '@/services/backendAuth';
 
@@ -22,130 +20,104 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
     onForgotPassword,
     onSwitchToRegister
 }) => {
-    const { signOut, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
-    const [email, setEmail] = useState('');
+    const { signInWithGoogle, verifyMFAChallenge } = useAuth();
+    const [email, setEmail] = useState(() => localStorage.getItem(getBackendStorageKey('ceba', 'savedEmail')) || '');
     const [password, setPassword] = useState('');
     const [mfaCode, setMfaCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showMFAInput, setShowMFAInput] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
-
-    useEffect(() => {
-        const saved = localStorage.getItem(getBackendStorageKey('ceba', 'savedEmail'));
-        if (saved) {
-            setEmail(saved);
-            setRememberMe(true);
-        }
-    }, []);
+    const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem(getBackendStorageKey('ceba', 'savedEmail'))));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!email || !password) {
+            toast.error('Please enter email and password');
+            return;
+        }
+
         setLoading(true);
 
-        const result = await completeLoginFlow('ceba', email, password);
+        try {
+            const result = await completeLoginFlow('ceba', email, password);
 
-        if (!result.success && !result.needsMFA) {
-            toast.error('Login failed', { description: result.error || 'Invalid credentials' });
+            if (!result.success) {
+                if (result.needsMFA) {
+                    setShowMFAInput(true);
+                    toast.info('Two-step verification required');
+                } else {
+                    toast.error('Login failed', { description: result.error || 'Invalid credentials' });
+                }
+            } else {
+                toast.success('Logged in!');
+                if (rememberMe) localStorage.setItem(getBackendStorageKey('ceba', 'savedEmail'), email);
+                else localStorage.removeItem(getBackendStorageKey('ceba', 'savedEmail'));
+                onSuccess?.();
+            }
+        } catch (error: any) {
+            toast.error('Login failed', { description: error.message || 'An error occurred' });
+        } finally {
             setLoading(false);
-            return;
         }
-
-        if (result.needsMFA) {
-            setShowMFAInput(true);
-            toast.info('Verification Required', { description: 'Please enter your security code.' });
-            if (rememberMe) localStorage.setItem(getBackendStorageKey('ceba', 'savedEmail'), email);
-            else localStorage.removeItem(getBackendStorageKey('ceba', 'savedEmail'));
-            setLoading(false);
-            return;
-        }
-
-        if (rememberMe) localStorage.setItem(getBackendStorageKey('ceba', 'savedEmail'), email);
-        else localStorage.removeItem(getBackendStorageKey('ceba', 'savedEmail'));
-        await handleFinalizeAccess();
-        setLoading(false);
     };
 
     const handleMFAVerify = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!mfaCode || mfaCode.length !== 6) {
+            toast.error('Enter valid 6-digit code');
+            return;
+        }
+
         setLoading(true);
 
-        const { error } = await verifyMFAChallenge(mfaCode, 'ceba');
+        try {
+            const { error } = await verifyMFAChallenge(mfaCode, 'ceba');
 
-        if (error) {
-            toast.error('Invalid code', { description: error.message });
-        } else {
-            setShowMFAInput(false);
-            await handleFinalizeAccess();
-        }
-        setLoading(false);
-    };
-
-    const handleFinalizeAccess = async () => {
-        const { supabaseCEBA } = await import('@/lib/supabase');
-        if (supabaseCEBA) {
-            const { data } = await supabaseCEBA.auth.getUser();
-            const loggedInUser = data?.user;
-
-            if (loggedInUser) {
-                const userRole = loggedInUser.user_metadata?.role || 'user';
-                const isSuperAdminEmail = [SUPER_ADMIN_EMAIL, 'timothynduva349@gmail.com'].includes(loggedInUser.email?.toLowerCase() || '');
-                const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
-
-                if (!isAdmin) {
-                    await signOut('ceba');
-                    toast.error('Unauthorized', {
-                        description: 'This area is restricted to administrators only.'
-                    });
-                    setLoading(false);
-                    return;
-                }
-
-                ensureProfileForUser(
-                        supabaseCEBA,
-                        'ceba',
-                        loggedInUser,
-                        { role: userRole === 'super_admin' ? 'super_admin' : 'admin' },
-                    ).then(({ error }) => {
-                        if (error) console.error('Admin profile sync failed after login', error);
-                    }).catch((error) => {
-                        console.error('Admin profile sync failed after login', error);
-                    });
-
-                toast.success('Login successful');
+            if (error) {
+                toast.error('Invalid code', { description: error.message });
+            } else {
+                toast.success('Verified!');
+                setShowMFAInput(false);
                 onSuccess?.();
             }
+        } catch (error: any) {
+            toast.error('Verification failed', { description: error.message });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
-        const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba', intent: 'login' });
-        persistAuthRedirectState({ backend: 'ceba', returnTo: '/ceba', intent: 'login' });
+        try {
+            const redirectTo = buildAuthCallbackUrl({ backend: 'ceba', returnTo: '/ceba', intent: 'login' });
+            persistAuthRedirectState({ backend: 'ceba', returnTo: '/ceba', intent: 'login' });
 
-        const { error } = await signInWithGoogle(undefined, 'ceba', { redirectTo });
-        if (error) {
+            const { error } = await signInWithGoogle(undefined, 'ceba', { redirectTo });
+            if (error) {
+                toast.error('Google login failed', { description: error.message });
+            }
+        } catch (error: any) {
             toast.error('Google login failed', { description: error.message });
+        } finally {
             setGoogleLoading(false);
         }
     };
 
-    if (showMFAInput || mfaRequired) {
+    if (showMFAInput) {
         return (
             <form onSubmit={handleMFAVerify} className="space-y-6">
                 <div className="text-center space-y-2">
                     <div className="w-12 h-12 rounded-full bg-honey/10 flex items-center justify-center mx-auto mb-4">
-                        <Shield className="h-6 w-6 text-honey" />
+                        <LockIcon className="h-6 w-6 text-honey" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">Security Check</h3>
+                    <h3 className="text-lg font-bold text-gray-900">Two-step verification</h3>
                     <p className="text-sm text-gray-500 font-medium">
-                        Enter the verification code to continue
+                        Enter the 6-digit code from your authenticator app.
                     </p>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="ceba-mfa-code" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Verification Code</Label>
                     <Input
                         id="ceba-mfa-code"
                         name="mfa_code"
@@ -154,19 +126,19 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                         placeholder="000 000"
                         value={mfaCode}
                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        className="text-center text-2xl font-bold h-14 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl"
+                        className="text-center text-3xl font-bold h-16 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl"
                         maxLength={6}
                         required
                         autoFocus
                     />
                 </div>
 
-                <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95" 
-                    disabled={loading || mfaCode.length !== 6}
-                >
-                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Verify & Continue'}
+                <Button type="submit" className="w-full h-12 bg-honey hover:bg-honey/90 text-gray-900 font-bold rounded-xl shadow-md transition-all active:scale-95" disabled={loading || mfaCode.length !== 6}>
+                    {loading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        'Verify Identity'
+                    )}
                 </Button>
 
                 <button
@@ -175,9 +147,9 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                         setShowMFAInput(false);
                         setMfaCode('');
                     }}
-                    className="w-full text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors"
+                    className="w-full text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors py-2"
                 >
-                    Back to Login
+                    Back to login
                 </button>
             </form>
         );
@@ -202,7 +174,7 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                         <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                     </svg>
                 )}
-                Admin Login with Google
+                Continue with Google
             </Button>
 
             <div className="relative py-2">
@@ -223,19 +195,19 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                             id="ceba-email"
                             name="email"
                             type="email"
-                            autoComplete="username"
-                            placeholder="admin@beeyield.com"
+                            placeholder="name@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
                             required
+                            autoComplete="username"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="ceba-password" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Password</Label>
+                    <div className="flex items-center justify-between ml-1">
+                        <Label htmlFor="ceba-password" className="text-xs font-bold text-gray-500 uppercase tracking-wider">Password</Label>
                         {onForgotPassword && (
                             <button
                                 type="button"
@@ -252,49 +224,50 @@ const CebaLoginForm: React.FC<CebaLoginFormProps> = ({
                             id="ceba-password"
                             name="password"
                             type="password"
-                            autoComplete="current-password"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-honey focus:ring-honey/20 rounded-xl font-medium"
                             required
+                            autoComplete="current-password"
                         />
                     </div>
                 </div>
 
-                <div className="flex items-center space-x-2 pt-1">
+                <div className="flex items-center space-x-2 ml-1">
                     <Checkbox
                         id="ceba-remember"
                         checked={rememberMe}
                         onCheckedChange={(checked) => setRememberMe(checked === true)}
+                        className="rounded-md border-gray-300 text-honey focus:ring-honey/20"
                     />
                     <label
                         htmlFor="ceba-remember"
-                        className="text-xs font-bold text-gray-500 cursor-pointer hover:text-gray-900"
+                        className="text-xs font-bold text-gray-500 cursor-pointer hover:text-gray-900 transition-colors"
                     >
-                        Remember session
+                        Remember me on this device
                     </label>
                 </div>
             </div>
 
             <Button
                 type="submit"
-                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
-                disabled={loading}
+                className="w-full h-12 bg-honey hover:bg-honey/90 text-gray-900 font-bold rounded-xl shadow-lg shadow-honey/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                disabled={loading || !email || !password}
             >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
-                Log In
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />}
+                Access Admin Portal
             </Button>
 
             {onSwitchToRegister && (
-                <p className="text-center text-sm text-gray-500 font-medium pt-2">
+                <p className="text-center text-sm text-gray-500 font-medium">
                     Need admin access?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToRegister}
                         className="text-honey font-bold hover:underline"
                     >
-                        Request Account
+                        Request access
                     </button>
                 </p>
             )}

@@ -1,14 +1,25 @@
 # Dependencies
 node_modules
 **/node_modules
+__pycache__
 **/__pycache__
 *.pyc
 **/.pytest_cache
+.venv
+venv
+env
+
+# Massive Sub-projects
+beeknowledge-hub
+beeyield-sound-analysis
+.vercel
+.docs
 
 # Build outputs
 dist
 build
 .output
+output
 *.egg-info
 
 # Version control
@@ -23,6 +34,7 @@ build
 .claude
 .gemini
 .agent
+.codex-logs
 *.swp
 *.swo
 *~
@@ -76,3 +88,6 @@ scripts
 *.bak
 .DS_Store
 Thumbs.db
+repo-sync-check
+repo-sync-temp
+scratch
