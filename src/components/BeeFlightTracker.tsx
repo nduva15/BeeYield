@@ -161,7 +161,7 @@ export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean;
     setAi("");
     try {
       const prompt = `As Beeyield AI, analyze this bee flight + foraging snapshot and combine it with bloom phenology context to give expert recommendations.\n\nHive: ${hiveLabel}\nObserved at: ${observedAt}\nForager rate: ${bpm} bees/min entering\nPollen loads observed: ${pollen}/min\nFlorage source: ${florage}\nFlorage indicator: ${florageIndicator}\nMean flight distance: ${distance} m\nFlight bearing: ${flightBearingDeg} degrees\nForaging zone: ${getForagingZone(distance)}\nStorage level: ${storageLevelPct}%\nNutrition score: ${nutritionScore}/100\nWeather: ${weather}\nNotes: ${notes || "(none)"}\n\nProvide: colony-strength estimate, foraging-zone health, bloom-stage inference, expected nectar inflow (kg/day), and 5 expert recommendations.`;
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "flight-only" }),

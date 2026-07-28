@@ -22,7 +22,7 @@ const SUGGESTIONS = [
   "What are the health benefits of bee pollen and propolis?",
 ];
 
-const BEEGPT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`;
+const BEEGPT_URL = "/api/public/beegpt";
 
 async function streamBeeGPT(
   messages: { role: string; content: string }[],
@@ -34,7 +34,6 @@ async function streamBeeGPT(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
     body: JSON.stringify({ messages }),
   });

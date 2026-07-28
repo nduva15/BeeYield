@@ -82,7 +82,7 @@ Required sections:
 3. **Risk Mitigation** — 3 risks (weather, pesticides, pest pressure) with mitigations.
 4. **ROI Estimate** — projected yield uplift in tons or kg per acre, marketable value vs hive rental cost.`;
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "bloom_flight" }),

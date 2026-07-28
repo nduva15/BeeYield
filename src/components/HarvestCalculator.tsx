@@ -191,11 +191,10 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
     setAiText("");
     setAiOpen(true);
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ messages: [{ role: "user", content: buildPrompt() }], promptVariant }),
       });

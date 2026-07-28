@@ -81,11 +81,10 @@ async function streamBeeyield(
   onDone: () => void,
   onError: (err: string) => void
 ) {
-  const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+  const resp = await fetch("/api/public/beegpt", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
     body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType, promptVariant }),
   });

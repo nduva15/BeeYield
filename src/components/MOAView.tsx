@@ -187,7 +187,7 @@ Required sections:
 3. **Feeding & Florage Plan** — 3 numbered actions (sugar syrup ratio, pollen patty timing, supplementary forage species to plant).
 4. **48-Hour Decision** — single clear go/no-go recommendation.`;
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "bloom_flight" }),

@@ -84,7 +84,7 @@ Crop: ${crop}, Area: ${hectares} ha, Current hives: ${currentHives}, Recommended
 
 In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives short, (2) transport scheduling risks, (3) florage gaps to address with cover crops, (4) expected pollination success score (0–100) with reasoning.`;
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "baseline" }),

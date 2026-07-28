@@ -138,7 +138,7 @@ Inputs:
 
 Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); (3) hive-management actions per day band (feed, inspect, harvest, swarm-watch); (4) supplementary feeding recommendations.`;
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "flight" }),
