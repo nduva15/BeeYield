@@ -24,7 +24,7 @@ export default function Auth() {
   const nav = useNavigate();
   const [params] = useSearchParams();
   const next = safeNext(params.get("next"));
-  const returnTo = `${window.location.origin}${next}`;
+  const returnTo = typeof window !== "undefined" ? `${window.location.origin}${next}` : next;
 
   const [mode, setMode] = useState<"signin" | "signup" | "reset">("signin");
   const [email, setEmail] = useState("");
