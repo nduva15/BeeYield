@@ -9,38 +9,101 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SharedRunIdRouteImport } from './routes/shared-run.$id'
+import { Route as ApiPublicBeegptRouteImport } from './routes/api/public/beegpt'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SharedRunIdRoute = SharedRunIdRouteImport.update({
+  id: '/shared-run/$id',
+  path: '/shared-run/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicBeegptRoute = ApiPublicBeegptRouteImport.update({
+  id: '/api/public/beegpt',
+  path: '/api/public/beegpt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/shared-run/$id': typeof SharedRunIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/api/public/beegpt': typeof ApiPublicBeegptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/shared-run/$id': typeof SharedRunIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/api/public/beegpt': typeof ApiPublicBeegptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/shared-run/$id': typeof SharedRunIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/api/public/beegpt': typeof ApiPublicBeegptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/shared-run/$id'
+    | '/.lovable/oauth/consent'
+    | '/api/public/beegpt'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/shared-run/$id'
+    | '/.lovable/oauth/consent'
+    | '/api/public/beegpt'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/shared-run/$id'
+    | '/.lovable/oauth/consent'
+    | '/api/public/beegpt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  SharedRunIdRoute: typeof SharedRunIdRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiPublicBeegptRoute: typeof ApiPublicBeegptRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +111,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shared-run/$id': {
+      id: '/shared-run/$id'
+      path: '/shared-run/$id'
+      fullPath: '/shared-run/$id'
+      preLoaderRoute: typeof SharedRunIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/beegpt': {
+      id: '/api/public/beegpt'
+      path: '/api/public/beegpt'
+      fullPath: '/api/public/beegpt'
+      preLoaderRoute: typeof ApiPublicBeegptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  SharedRunIdRoute: SharedRunIdRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiPublicBeegptRoute: ApiPublicBeegptRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
