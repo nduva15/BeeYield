@@ -82,7 +82,7 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
       const prompt = `As Beeyield AI, write a Bloom Phenology Insight Report for **${crop}** in **${region}**.\n\nBaseline expert window (Northern Hemisphere): start ${baseline.start}, peak ${baseline.peak}, end ${baseline.end}.\nObserved this season: start ${bloomStart || "—"}, peak ${peakBloom || "—"}, end ${bloomEnd || "—"}, intensity ${intensity}%.\nBeekeeper notes: ${notes || "(none)"}\n\nProvide: shift vs baseline (days early/late), forager-day estimate, recommended hive deployment date, climate drivers, and 5-point action plan.`;
       const resp = await fetch("/api/public/beegpt", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "bloom-only" }),
       });
       if (!resp.ok || !resp.body) { toast.error("AI request failed"); setAiLoading(false); return; }

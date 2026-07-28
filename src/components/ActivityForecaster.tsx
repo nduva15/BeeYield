@@ -140,7 +140,7 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
     try {
       const resp = await fetch("/api/public/beegpt", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "flight" }),
       });
       if (!resp.ok || !resp.body) { toast.error("AI failed"); setAiLoading(false); return; }
