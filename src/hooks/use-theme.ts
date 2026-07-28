@@ -3,14 +3,18 @@ import { useState, useEffect } from "react";
 type Theme = "light" | "dark";
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("beeyield-theme") as Theme | null;
-      if (stored) return stored;
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  const [theme, setTheme] = useState<Theme>("dark");
+
+  // Read the persisted preference after hydration so SSR and the first client
+  // render agree.
+  useEffect(() => {
+    const stored = localStorage.getItem("beeyield-theme") as Theme | null;
+    if (stored) {
+      setTheme(stored);
+      return;
     }
-    return "light";
-  });
+    setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
