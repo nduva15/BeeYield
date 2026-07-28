@@ -1,0 +1,291 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://hfpirscejvndthojcuug.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "beeyield-mcp",
+      "version": "0.1.0",
+      "title": "BeeYield Apiary Tools"
+    },
+    "tools": [
+      {
+        "name": "search_bee_species",
+        "title": "Search bee species",
+        "description": "Search the BeeYield bee species reference (common/scientific name, region, notes).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Free-text search across common name, scientific name, region, notes."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "description": "Max rows to return."
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_bee_diseases",
+        "title": "Search bee diseases",
+        "description": "Search the BeeYield bee diseases directory (name, symptoms, cause, treatment).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Free-text search across disease name, symptoms, cause, cure."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_florage_plants",
+        "title": "Search florage plants",
+        "description": "Search the BeeYield florage database (bloom windows, nectar & pollen scores).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Free-text search across plant name, notes."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_knowledge_facts",
+        "title": "Search knowledge base",
+        "description": "Search the BeeYield knowledge base (facts, sources, confidence).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 15
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "pollination_stocking_density",
+        "title": "Pollination stocking density",
+        "description": "Recommend colonies, frames, and bloom window for a crop and acreage (PSI-based).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "crop": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Crop name (e.g. almond, apple, blueberry)."
+            },
+            "acres": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Field size in acres."
+            }
+          },
+          "required": [
+            "crop",
+            "acres"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "harvest_estimate",
+        "title": "Harvest estimate",
+        "description": "Quick honey harvest estimate: gross, ethical reserve, and apiary total (kg).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "hives": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            "frames_per_hive": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 8
+            },
+            "frame_fill_pct": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 80,
+              "description": "Average fill percent per frame."
+            },
+            "kg_per_full_frame": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 2.5
+            },
+            "hhi": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 75,
+              "description": "Hive Health Index (0-100)."
+            },
+            "reserve_pct": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 60,
+              "default": 20,
+              "description": "Percent left for colony (ethical reserve)."
+            }
+          },
+          "required": [
+            "hives"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "hive_activity_forecast",
+        "title": "Hive activity & bloom/flight forecast",
+        "description": "Predicted bees/min plus bloom and flight conditions for a hive over a requested forecast window (default 48 hours). Accepts a hive_id from the user's apiary, or explicit latitude/longitude.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "hive_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Hive UUID owned by the signed-in user; supplies coordinates."
+            },
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Used when hive_id is not given."
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "hours": {
+              "type": "integer",
+              "minimum": 6,
+              "maximum": 168,
+              "default": 48,
+              "description": "Forecast window length in hours."
+            },
+            "baseline_bees_per_min": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 100,
+              "description": "Colony baseline traffic at ideal conditions."
+            },
+            "florage_score": {
+              "type": "number",
+              "minimum": 0.3,
+              "maximum": 2,
+              "default": 1,
+              "description": "Local forage availability multiplier."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
