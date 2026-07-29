@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 interface SpeechRecognitionEvent {
   results: SpeechRecognitionResultList;
@@ -13,9 +13,11 @@ export function useVoiceInput(onResult: (text: string) => void) {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
-  const isSupported =
-    typeof window !== "undefined" &&
-    ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
+  // Detect after hydration so server and first client render match.
+  const [isSupported, setIsSupported] = useState(false);
+  useEffect(() => {
+    setIsSupported("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
+  }, []);
 
   const startListening = useCallback(() => {
     if (!isSupported) return;
