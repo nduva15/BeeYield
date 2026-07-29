@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Loader2, Bot, User } from "lucide-react";
+import { Send, Loader2, RefreshCw, AlertTriangle, Square } from "lucide-react";
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -23,52 +24,72 @@ const SUGGESTIONS = [
 ];
 
 const BEEGPT_URL = "/api/public/beegpt";
+const REQUEST_TIMEOUT_MS = 90_000;
 
 async function streamBeeGPT(
   messages: { role: string; content: string }[],
   onDelta: (text: string) => void,
   onDone: () => void,
-  onError: (err: string) => void
+  onError: (err: string) => void,
+  signal: AbortSignal
 ) {
-  const resp = await fetch(BEEGPT_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ messages }),
-  });
-
-  if (!resp.ok) {
-    const data = await resp.json().catch(() => ({}));
-    onError(data.error || `Error ${resp.status}`);
+  let resp: Response;
+  try {
+    resp = await fetch(BEEGPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages }),
+      signal,
+    });
+  } catch (e) {
+    if (signal.aborted) { onDone(); return; }
+    onError("Network error — check your connection and try again.");
     return;
   }
 
-  if (!resp.body) { onError("No response body"); return; }
+  if (!resp.ok) {
+    const data = await resp.json().catch(() => ({}) as { error?: string });
+    onError(
+      data.error ||
+        (resp.status === 429
+          ? "Too many requests. Please wait a moment."
+          : `BeeGPT is unavailable right now (error ${resp.status}).`)
+    );
+    return;
+  }
+
+  if (!resp.body) { onError("No response received from BeeGPT."); return; }
 
   const reader = resp.body.getReader();
   const decoder = new TextDecoder();
   let buf = "";
   let done = false;
 
-  while (!done) {
-    const { done: rdDone, value } = await reader.read();
-    if (rdDone) break;
-    buf += decoder.decode(value, { stream: true });
+  try {
+    while (!done) {
+      const { done: rdDone, value } = await reader.read();
+      if (rdDone) break;
+      buf += decoder.decode(value, { stream: true });
 
-    let nl: number;
-    while ((nl = buf.indexOf("\n")) !== -1) {
-      let line = buf.slice(0, nl);
-      buf = buf.slice(nl + 1);
-      if (line.endsWith("\r")) line = line.slice(0, -1);
-      if (!line.startsWith("data: ")) continue;
-      const json = line.slice(6).trim();
-      if (json === "[DONE]") { done = true; break; }
-      try {
-        const parsed = JSON.parse(json);
-        const c = parsed.choices?.[0]?.delta?.content as string | undefined;
-        if (c) onDelta(c);
-      } catch { /* partial */ }
+      let nl: number;
+      while ((nl = buf.indexOf("\n")) !== -1) {
+        let line = buf.slice(0, nl);
+        buf = buf.slice(nl + 1);
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        if (!line.startsWith("data: ")) continue;
+        const json = line.slice(6).trim();
+        if (json === "[DONE]") { done = true; break; }
+        try {
+          const parsed = JSON.parse(json);
+          const c = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (c) onDelta(c);
+        } catch { /* partial */ }
+      }
+    }
+  } catch (e) {
+    if (!signal.aborted) {
+      onError("The response was interrupted. Tap retry to continue.");
+      return;
     }
   }
   onDone();
@@ -78,7 +99,10 @@ export default function BeeChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lastPrompt, setLastPrompt] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const messageSeq = useRef(0);
   const nextMessageId = () => `m_${++messageSeq.current}`;
 
@@ -86,14 +110,21 @@ export default function BeeChat() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const send = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-    const userMsg: Message = { id: nextMessageId(), role: "user", content: text };
-    setMessages((p) => [...p, userMsg]);
-    setInput("");
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  const stop = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setIsLoading(false);
+  };
+
+  const run = async (history: { role: string; content: string }[]) => {
+    setError(null);
     setIsLoading(true);
 
-    const history = [...messages, userMsg].map((m) => ({ role: m.role, content: m.content }));
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     let assistantContent = "";
 
     try {
@@ -104,21 +135,53 @@ export default function BeeChat() {
           setMessages((p) => {
             const last = p[p.length - 1];
             if (last?.role === "assistant") {
-              return p.map((m, i) => i === p.length - 1 ? { ...m, content: assistantContent } : m);
+              return p.map((m, i) => (i === p.length - 1 ? { ...m, content: assistantContent } : m));
             }
             return [...p, { id: nextMessageId(), role: "assistant", content: assistantContent }];
           });
         },
         () => setIsLoading(false),
         (err) => {
+          setError(err);
           toast.error(err);
           setIsLoading(false);
-        }
+        },
+        controller.signal
       );
-    } catch (e) {
-      toast.error("Failed to connect to BeeGPT");
+    } catch {
+      const msg = "Failed to connect to BeeGPT.";
+      setError(msg);
+      toast.error(msg);
       setIsLoading(false);
+    } finally {
+      clearTimeout(timeout);
+      abortRef.current = null;
     }
+  };
+
+  const send = async (text: string) => {
+    if (!text.trim() || isLoading) return;
+    const userMsg: Message = { id: nextMessageId(), role: "user", content: text };
+    const history = [...messages, userMsg].map((m) => ({ role: m.role, content: m.content }));
+    setMessages((p) => [...p, userMsg]);
+    setInput("");
+    setLastPrompt(text);
+    await run(history);
+  };
+
+  const retry = async () => {
+    if (isLoading) return;
+    // Drop a partial/failed assistant reply before retrying.
+    const trimmed = messages[messages.length - 1]?.role === "assistant"
+      ? messages.slice(0, -1)
+      : messages;
+    setMessages(trimmed);
+    const history = trimmed.map((m) => ({ role: m.role, content: m.content }));
+    if (history.length === 0 && lastPrompt) {
+      await send(lastPrompt);
+      return;
+    }
+    await run(history);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -188,11 +251,26 @@ export default function BeeChat() {
             </div>
           </div>
         )}
+
+        {error && !isLoading && (
+          <div className="flex items-start gap-3 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3">
+            <AlertTriangle className="w-4 h-4 mt-0.5 text-destructive flex-shrink-0" />
+            <div className="flex-1 text-sm text-foreground">
+              <p>{error}</p>
+              <button
+                onClick={retry}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs hover:border-primary/50 hover:text-primary transition-all"
+              >
+                <RefreshCw className="w-3 h-3" /> Retry
+              </button>
+            </div>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
       {/* Input bar */}
-      <div className="border-t border-border p-4">
+      <div className="border-t border-border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
         {messages.length > 0 && (
           <div className="flex gap-2 flex-wrap mb-3">
             {SUGGESTIONS.slice(0, 3).map((s) => (
@@ -211,16 +289,21 @@ export default function BeeChat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask BeeGPT anything about bees, honey, diseases..."
-            className="flex-1 bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
-            disabled={isLoading}
+            className="flex-1 bg-muted border border-border rounded-xl px-4 py-3 text-base sm:text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
           />
-          <Button
-            type="submit"
-            disabled={!input.trim() || isLoading}
-            className="rounded-xl bg-gradient-amber text-primary-foreground hover:opacity-90 px-4"
-          >
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </Button>
+          {isLoading ? (
+            <Button type="button" onClick={stop} variant="secondary" className="rounded-xl px-4">
+              <Square className="w-4 h-4" />
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              disabled={!input.trim()}
+              className="rounded-xl bg-gradient-amber text-primary-foreground hover:opacity-90 px-4"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          )}
         </form>
       </div>
     </div>
