@@ -366,3 +366,24 @@
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* ---- Native app shell (Capacitor iOS/Android) ---- */
+html,
+body {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a {
+    touch-action: manipulation;
+  }
+}
