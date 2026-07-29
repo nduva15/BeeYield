@@ -16,6 +16,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
+import { initNativeApp } from "@/lib/native";
 
 function NotFoundComponent() {
   return (
@@ -120,6 +121,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    void initNativeApp();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

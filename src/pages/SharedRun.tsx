@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { downloadPDF, downloadCSV, type AssumptionsBlock, type ExportPayload } from "@/lib/harvest-export";
 import { toast } from "sonner";
-import HivePlacementMap from "@/components/HivePlacementMap";
+import { HivePlacementMap } from "@/components/LazyMaps";
 
 type SharedRunRow = {
   id: string;
