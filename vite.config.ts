@@ -75,9 +75,19 @@ export default defineConfig({
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
-                        const arr = id.toString().split('node_modules/');
-                        const name = arr[arr.length - 1].split('/')[0];
-                        return name;
+                        if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+                            return 'vendor-react';
+                        }
+                        if (id.includes('lucide-react') || id.includes('@radix-ui')) {
+                            return 'vendor-ui';
+                        }
+                        if (id.includes('recharts') || id.includes('d3') || id.includes('recharts-scale')) {
+                            return 'vendor-charts';
+                        }
+                        if (id.includes('@supabase') || id.includes('@tanstack')) {
+                            return 'vendor-query-supabase';
+                        }
+                        return 'vendor-utils';
                     }
                 }
             }

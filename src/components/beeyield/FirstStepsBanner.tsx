@@ -50,7 +50,7 @@ const FirstStepsBanner: React.FC<FirstStepsBannerProps> = ({ onTabChange }) => {
                         { label: 'Devices', tab: 'devices', icon: Zap },
                         { label: 'Data', tab: 'data', icon: Terminal },
                         { label: 'Support', tab: 'support', icon: Info },
-                        { label: 'BeeYield AI', tab: 'agro-intelligence', icon: Sparkles },
+                        { label: 'BeeYield AI', tab: 'assistant', icon: Sparkles },
                         { label: 'Settings', tab: 'settings', icon: Settings },
                     ].map((link) => (
                         <button

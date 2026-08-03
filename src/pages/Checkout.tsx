@@ -315,7 +315,7 @@ const Checkout = () => {
             quantity: 1,
             image: item.image,
             badge: null,
-            category: item.category as 'honey' | 'merch' | 'education' | 'hardware'
+            category: item.category as 'honey' | 'education' | 'hardware'
         });
         removeFromWishlist(item.id);
         // toast handles in addToCart
@@ -326,7 +326,7 @@ const Checkout = () => {
     const getCategoryEmoji = (category: string) => {
         switch (category) {
             case 'honey': return '🍯';
-            case 'merch': return '👕';
+
             case 'education': return '📚';
             case 'hardware': return '🔧';
             default: return '📦';

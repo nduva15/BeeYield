@@ -30,8 +30,7 @@ const CartDrawer: React.FC = () => {
         switch (category) {
             case 'honey':
                 return '🍯';
-            case 'merch':
-                return '👕';
+
             case 'education':
                 return '📚';
             default:

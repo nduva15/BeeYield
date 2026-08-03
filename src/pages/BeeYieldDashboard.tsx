@@ -366,7 +366,14 @@ const BeeYieldDashboard: React.FC = () => {
     const renderBaseContent = () => {
         switch (activeTab) {
             case 'home': return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
-            case 'assistant': return <LovableBeeYieldAI embedded={true} />;
+            case 'assistant':
+            case 'agro-intelligence': return (
+                <LovableBeeYieldAI
+                    embedded={true}
+                    initialMessage={aiInitialMessage || viewParams?.message}
+                    onInitialMessageConsumed={() => { setAiInitialMessage(null); setViewParams(null); }}
+                />
+            );
             case 'precision-pollination-folder':
             case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
             case 'pollination-grid':

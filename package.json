@@ -9,7 +9,7 @@
     "dev:backend:legacy": "backend\\venv\\Scripts\\python -m uvicorn main:app --reload --reload-exclude \".venv\" --reload-exclude \"backend/venv\" --port 8000 --app-dir backend",
     "dev:rust-db": "cd services/rust-db && cargo run",
     "dev:db-gateway:legacy": "backend\\venv\\Scripts\\python services\\db-gateway\\fallback_gateway.py",
-    "build": "vite build",
+    "build": "node --max-old-space-size=8192 ./node_modules/vite/bin/vite.js build",
     "start": "vite preview",
     "dev:vinxi": "vinxi dev",
     "build:vinxi": "vinxi build",

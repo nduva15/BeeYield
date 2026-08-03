@@ -1,4 +1,4 @@
-export type ProductCategory = 'honey' | 'hardware' | 'merch' | 'education';
+export type ProductCategory = 'honey' | 'hardware' | 'education';
 
 export interface ProductVariant {
   id: string;
@@ -24,7 +24,7 @@ export interface Product {
 
 /**
  * Canonical static catalog.
- * Exactly 8 items per category: honey, hardware (sensors), merch, education (learn).
+ * Exactly 8 items per category: honey, hardware (sensors), education (learn).
  */
 export const CATALOG: Product[] = [
   // --- HONEY (8 Items - Kibwezi BeeYield Apiary) ---
@@ -298,133 +298,7 @@ export const CATALOG: Product[] = [
     variants: [{ id: "vhw8-1", size: "Station Kit", price_kes: 72000, stock_quantity: 5, is_available: true }]
   },
 
-  // --- MERCH (8 items) ---
-  {
-    id: "m1",
-    name: "BeeYield Field Beanie",
-    description: "Cold-weather rib knit beanie with a woven BeeYield front patch and clean apiary-ready styling.",
-    category: "merch",
-    badge: "New Drop",
-    images: ["/images/products/beeyield_beanie.svg"],
-    rating: 4.8,
-    review_count: 38,
-    is_active: true,
-    variants: [
-      { id: "vm1-1", size: "Standard", price_kes: 1400, stock_quantity: 55, is_available: true },
-      { id: "vm1-2", size: "Premium Knit", price_kes: 1800, stock_quantity: 32, is_available: true }
-    ]
-  },
-  {
-    id: "m2",
-    name: "BeeYield Apiary Field Cap",
-    description: "Structured field cap with embroidered wordmark, breathable panels, and a low-glare bill for long hive days.",
-    category: "merch",
-    badge: "Core Uniform",
-    images: ["/images/products/beeyield_field_cap.svg"],
-    rating: 4.8,
-    review_count: 64,
-    is_active: true,
-    variants: [
-      { id: "vm2-1", size: "Classic Fit", price_kes: 1600, stock_quantity: 60, is_available: true },
-      { id: "vm2-2", size: "Mesh Back", price_kes: 1750, stock_quantity: 44, is_available: true }
-    ]
-  },
-  {
-    id: "m3",
-    name: "BeeYield Signature Tee",
-    description: "Soft premium cotton tee with centered BeeYield hex mark on the chest and a clean logo-forward finish.",
-    category: "merch",
-    badge: "Best Seller",
-    images: ["/images/products/beeyield_signature_tee.svg"],
-    rating: 4.9,
-    review_count: 112,
-    is_active: true,
-    variants: [
-      { id: "vm3-1", size: "S", price_kes: 2200, stock_quantity: 24, is_available: true },
-      { id: "vm3-2", size: "M", price_kes: 2200, stock_quantity: 38, is_available: true },
-      { id: "vm3-3", size: "L", price_kes: 2200, stock_quantity: 36, is_available: true },
-      { id: "vm3-4", size: "XL", price_kes: 2350, stock_quantity: 20, is_available: true }
-    ]
-  },
-  {
-    id: "m4",
-    name: "BeeYield Long Sleeve Field Tee",
-    description: "Performance-weight long sleeve tee with front chest branding and sleeve detailing for early-morning inspections.",
-    category: "merch",
-    badge: "Fieldwear",
-    images: ["/images/products/beeyield_longsleeve.svg"],
-    rating: 4.8,
-    review_count: 58,
-    is_active: true,
-    variants: [
-      { id: "vm4-1", size: "M", price_kes: 2800, stock_quantity: 26, is_available: true },
-      { id: "vm4-2", size: "L", price_kes: 2800, stock_quantity: 34, is_available: true },
-      { id: "vm4-3", size: "XL", price_kes: 2950, stock_quantity: 18, is_available: true }
-    ]
-  },
-  {
-    id: "m5",
-    name: "BeeYield Heavyweight Hoodie",
-    description: "Premium heavyweight fleece hoodie with oversized back identity panel and BeeYield chest application.",
-    category: "merch",
-    badge: "Premium Gear",
-    images: ["/images/products/beeyield_heavyweight_hoodie.svg"],
-    rating: 4.9,
-    review_count: 86,
-    is_active: true,
-    variants: [
-      { id: "vm5-1", size: "M", price_kes: 4200, stock_quantity: 18, is_available: true },
-      { id: "vm5-2", size: "L", price_kes: 4200, stock_quantity: 24, is_available: true },
-      { id: "vm5-3", size: "XL", price_kes: 4400, stock_quantity: 16, is_available: true }
-    ]
-  },
-  {
-    id: "m6",
-    name: "BeeYield Crewneck Sweatshirt",
-    description: "Relaxed crewneck with a bold BeeYield front seal, built for cool evenings and clean everyday wear.",
-    category: "merch",
-    badge: "Limited Run",
-    images: ["/images/products/beeyield_crewneck.svg"],
-    rating: 4.7,
-    review_count: 46,
-    is_active: true,
-    variants: [
-      { id: "vm6-1", size: "M", price_kes: 3600, stock_quantity: 22, is_available: true },
-      { id: "vm6-2", size: "L", price_kes: 3600, stock_quantity: 28, is_available: true },
-      { id: "vm6-3", size: "XL", price_kes: 3750, stock_quantity: 14, is_available: true }
-    ]
-  },
-  {
-    id: "m7",
-    name: "BeeYield Canvas Tote",
-    description: "Heavy-duty canvas tote with BeeYield honeycomb shield, sized for market runs, notebooks, or field gear.",
-    category: "merch",
-    badge: "Eco Carry",
-    images: ["/images/products/beeyield_canvas_tote.svg"],
-    rating: 4.8,
-    review_count: 52,
-    is_active: true,
-    variants: [
-      { id: "vm7-1", size: "Standard", price_kes: 1500, stock_quantity: 72, is_available: true },
-      { id: "vm7-2", size: "Wide Gusset", price_kes: 1750, stock_quantity: 36, is_available: true }
-    ]
-  },
-  {
-    id: "m8",
-    name: "BeeYield Pro Bee Suit",
-    description: "Professional bee suit with BeeYield chest and back branding, reinforced seams, and visibility-focused field details.",
-    category: "merch",
-    badge: "Pro Kit",
-    images: ["/images/products/beeyield_pro_bee_suit.svg"],
-    rating: 4.9,
-    review_count: 27,
-    is_active: true,
-    variants: [
-      { id: "vm8-1", size: "M", price_kes: 9800, stock_quantity: 8, is_available: true },
-      { id: "vm8-2", size: "L", price_kes: 9800, stock_quantity: 10, is_available: true },
-      { id: "vm8-3", size: "XL", price_kes: 10200, stock_quantity: 6, is_available: true }
-    ]
-  },
+
 
   // --- EDUCATION / LEARN (8 items) ---
   {

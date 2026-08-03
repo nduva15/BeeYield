@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Sprout, Flower2, GitCompare, Calculator, FileDown, FileSpreadsheet, Building2, Upload, Trash2 } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";

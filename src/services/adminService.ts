@@ -579,7 +579,7 @@ export const adminService = {
                     total_revenue_kes: totalRevenue,
                     total_honey_kg: totalHoneyKg,
                     total_acres: 0, // Placeholder
-                    category_counts: { honey: totalProducts || 0, learn: 0, sensors: 0, merch: 0 }
+                    category_counts: { honey: totalProducts || 0, learn: 0, sensors: 0 }
                 };
             } catch (innerError) {
                 console.error("Deep stats calculation failed:", innerError);

@@ -156,8 +156,7 @@ const AdminDashboard: React.FC = () => {
         categoryCounts: {
             honey: 0,
             learn: 0,
-            sensors: 0,
-            merch: 0
+            sensors: 0
         }
     });
 
@@ -273,7 +272,7 @@ const AdminDashboard: React.FC = () => {
                     totalFarmers: (stats as any).total_farmers || 0,
                     totalHarvests: (stats as any).total_harvests || 0,
                     categoryCounts: (stats as any).category_counts || {
-                        honey: 0, learn: 0, sensors: 0, merch: 0
+                        honey: 0, learn: 0, sensors: 0
                     }
                 });
             }

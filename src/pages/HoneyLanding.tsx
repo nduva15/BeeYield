@@ -1035,7 +1035,7 @@ const HoneyLanding = () => {
       size: selectedSize,
       price: variant.price_kes,
       quantity: 1,
-      category: product.category as 'honey' | 'merch' | 'education' | 'hardware',
+      category: product.category as 'honey' | 'education' | 'hardware',
       badge: product.badge,
       image: image,
     };

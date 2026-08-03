@@ -43,6 +43,7 @@ import FeedingSchedule from "@/components/beeyield/lovable_ai/FeedingSchedule";
 import KnowledgeSearch from "@/components/beeyield/lovable_ai/KnowledgeSearch";
 import ApiarySizing from "@/components/beeyield/lovable_ai/ApiarySizing";
 import YieldProjection from "@/components/beeyield/lovable_ai/YieldProjection";
+import MeasurementDataTools from "@/components/beeyield/lovable_ai/MeasurementDataTools";
 
 type Message = {
   id: string;
@@ -78,11 +79,12 @@ async function streamBeeyield(
   onDone: () => void,
   onError: (err: string) => void
 ) {
+  const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "";
   const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      Authorization: `Bearer ${key}`,
     },
     body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType, promptVariant }),
   });
@@ -130,7 +132,13 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export default function Index({ embedded = false }: { embedded?: boolean }) {
+interface IndexProps {
+  embedded?: boolean;
+  initialMessage?: string;
+  onInitialMessageConsumed?: () => void;
+}
+
+export default function Index({ embedded = false, initialMessage, onInitialMessageConsumed }: IndexProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -167,6 +175,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
   const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
+  const [measurementToolsOpen, setMeasurementToolsOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -255,7 +264,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
     toast.success(`Audio attached: ${file.name}`);
   };
 
-  const send = async (text: string) => {
+  const send = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return;
 
     let imgBase64: string | null = null;
@@ -337,7 +346,16 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       toast.error("Failed to connect to Beeyield AI");
       setIsLoading(false);
     }
-  };
+  }, [isLoading, attachedImage, attachedAudio, nextMessageId, imagePreviewUrl, messages, clearAttachments, conversationId, createConversation, promptVariant, loadConversations]);
+
+  const initialConsumedRef = useRef(false);
+  useEffect(() => {
+    if (initialMessage && initialMessage.trim() && !initialConsumedRef.current) {
+      initialConsumedRef.current = true;
+      send(initialMessage);
+      onInitialMessageConsumed?.();
+    }
+  }, [initialMessage, send, onInitialMessageConsumed]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -497,6 +515,9 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setYieldProjectionOpen(true)} className="cursor-pointer">
                 <BarChart3 className="w-4 h-4 mr-2" /> Honey Yield Projection
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setMeasurementToolsOpen(true)} className="cursor-pointer">
+                <Wifi className="w-4 h-4 mr-2" /> Measurement Data Tools
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
@@ -769,6 +790,7 @@ export default function Index({ embedded = false }: { embedded?: boolean }) {
       <KnowledgeSearch isOpen={knowledgeSearchOpen} onClose={() => setKnowledgeSearchOpen(false)} />
       <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
+      <MeasurementDataTools isOpen={measurementToolsOpen} onClose={() => setMeasurementToolsOpen(false)} />
     </div>
   );
 }
