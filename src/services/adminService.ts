@@ -178,7 +178,7 @@ export const adminService = {
             return await apiGet<any[]>('/admin/orders');
         } catch (error) {
             console.error("Failed to fetch orders via API, falling back to direct Supabase", error);
-            if (!supabase) throw new Error("Supabase not initialized", { cause: error });
+            if (!supabase) throw new Error("Supabase not initialized" + (error ? ": " + String(error) : ""));
             const { data, error: sbError } = await supabase
                 .from('orders')
                 .select('*')
@@ -216,7 +216,7 @@ export const adminService = {
             return await apiGet<any[]>('/admin/newsletter');
         } catch (error) {
             console.error("Failed to fetch newsletter via API, falling back to direct Supabase", error);
-            if (!supabase) throw new Error("Supabase not initialized", { cause: error });
+            if (!supabase) throw new Error("Supabase not initialized" + (error ? ": " + String(error) : ""));
             const { data, error: sbError } = await supabase
                 .from('newsletter_subscribers')
                 .select('*')
@@ -242,7 +242,7 @@ export const adminService = {
             return await apiGet<any[]>('/admin/products');
         } catch (error) {
             console.error("Failed to fetch products via API, falling back to direct Supabase", error);
-            if (!supabase) throw new Error("Supabase not initialized", { cause: error });
+            if (!supabase) throw new Error("Supabase not initialized" + (error ? ": " + String(error) : ""));
             const { data, error: sbError } = await supabase
                 .from('products')
                 .select('*, product_variants(*)');
@@ -259,7 +259,7 @@ export const adminService = {
             return await apiPost<any>('/admin/products', productData);
         } catch (error) {
             console.error("Failed to create product via API, falling back to direct Supabase", error);
-            if (!supabase) throw new Error("Supabase not initialized", { cause: error });
+            if (!supabase) throw new Error("Supabase not initialized" + (error ? ": " + String(error) : ""));
             const { variants, ...pData } = productData as any;
             const { data, error: sbError } = await supabase
                 .from('products')
@@ -332,7 +332,7 @@ export const adminService = {
         try {
             return await apiGet<any[]>('/admin/farmers');
         } catch (error) {
-            if (!supabase) throw new Error("Supabase not initialized", { cause: error });
+            if (!supabase) throw new Error("Supabase not initialized" + (error ? ": " + String(error) : ""));
             const { data, error: sbError } = await supabase.from('farmers').select('*');
             return data || [];
         }
@@ -610,7 +610,7 @@ export const adminService = {
             return await apiPut<any>(`/admin/users/${userId}`, userData);
         } catch (error) {
             console.error("Failed to update user via API", error);
-            if (!supabase) throw new Error("Supabase not initialized", { cause: error });
+            if (!supabase) throw new Error("Supabase not initialized" + (error ? ": " + String(error) : ""));
             const { data, error: sbError } = await supabase.from('profiles').update(userData).eq('id', userId).select().single();
             if (sbError) throw sbError;
             return data;

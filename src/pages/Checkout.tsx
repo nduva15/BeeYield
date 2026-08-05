@@ -910,7 +910,7 @@ const Checkout = () => {
                                                             }}
                                                             onError={(error) => {
                                                                 setStripeCardReady(false);
-                                                                toast.error(error);
+                                                                toast.error(typeof error === 'string' ? error : error.message);
                                                             }}
                                                             buttonText="Verify Card"
                                                         />
