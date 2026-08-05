@@ -27,7 +27,7 @@ import {
     Briefcase, Globe
 } from 'lucide-react';
 import { toast } from 'sonner';
-i  mport { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -48,7 +48,6 @@ import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { glass, PageHeader, GlassStatCard } from '@/components/beeyield/GlassTheme';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
