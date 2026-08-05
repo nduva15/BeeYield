@@ -66,31 +66,11 @@ export default defineConfig({
         },
     },
     build: {
+        target: 'es2022',
         outDir: 'dist',
         sourcemap: false,
         minify: 'esbuild',
         cssMinify: true,
         chunkSizeWarningLimit: 1500,
-        rollupOptions: {
-            output: {
-                manualChunks(id) {
-                    if (id.includes('node_modules')) {
-                        if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-                            return 'vendor-react';
-                        }
-                        if (id.includes('lucide-react') || id.includes('@radix-ui')) {
-                            return 'vendor-ui';
-                        }
-                        if (id.includes('recharts') || id.includes('d3') || id.includes('recharts-scale')) {
-                            return 'vendor-charts';
-                        }
-                        if (id.includes('@supabase') || id.includes('@tanstack')) {
-                            return 'vendor-query-supabase';
-                        }
-                        return 'vendor-utils';
-                    }
-                }
-            }
-        }
     },
 })
