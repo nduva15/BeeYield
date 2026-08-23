@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Wifi } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Wifi, Database, Settings, LogIn, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,6 +46,7 @@ import KnowledgeSearch from "@/components/beeyield/lovable_ai/KnowledgeSearch";
 import ApiarySizing from "@/components/beeyield/lovable_ai/ApiarySizing";
 import YieldProjection from "@/components/beeyield/lovable_ai/YieldProjection";
 import MeasurementDataTools from "@/components/beeyield/lovable_ai/MeasurementDataTools";
+import KnowledgeDashboard from "@/components/beeyield/lovable_ai/KnowledgeDashboard";
 
 type Message = {
   id: string;
@@ -139,6 +142,8 @@ interface IndexProps {
 }
 
 export default function Index({ embedded = false, initialMessage, onInitialMessageConsumed }: IndexProps) {
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -176,6 +181,8 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [measurementToolsOpen, setMeasurementToolsOpen] = useState(false);
+  const [knowledgeHubOpen, setKnowledgeHubOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"welcome" | "hub">("hub");
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -430,7 +437,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <span className="text-xs font-medium hidden sm:inline">Tools</span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 bg-popover border-border z-50">
+            <DropdownMenuContent align="end" className="w-64 max-h-[85vh] overflow-y-auto custom-scroll bg-popover border-border z-50">
               <DropdownMenuLabel className="text-honey">Knowledge & Reference</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setGalleryOpen(true)} className="cursor-pointer">
                 <Bug className="w-4 h-4 mr-2" /> Bee Species Gallery
@@ -501,6 +508,9 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
 
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-honey">Knowledge & Planning</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => setKnowledgeHubOpen(true)} className="cursor-pointer text-honey font-bold">
+                <Info className="w-4 h-4 mr-2" /> 🐝 Bee Knowledge Hub (3.2M Datasets)
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setDatasetImportOpen(true)} className="cursor-pointer">
                 <Download className="w-4 h-4 mr-2" /> Dataset Import & Re-index
               </DropdownMenuItem>
@@ -511,16 +521,28 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <Calculator className="w-4 h-4 mr-2" /> Feeding Schedule Timeline
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setApiarySizingOpen(true)} className="cursor-pointer">
-                <Layers className="w-4 h-4 mr-2" /> Apiary & Equipment Sizing
+                <Database className="w-4 h-4 mr-2" /> Apiary & Equipment Sizing
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setYieldProjectionOpen(true)} className="cursor-pointer">
                 <BarChart3 className="w-4 h-4 mr-2" /> Honey Yield Projection
               </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-honey">Measurement Data Tools</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setMeasurementToolsOpen(true)} className="cursor-pointer">
-                <Wifi className="w-4 h-4 mr-2" /> Measurement Data Tools
+                <Settings className="w-4 h-4 mr-2" /> My Devices, USB, Bluetooth & Online
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
+              {user ? (
+                <DropdownMenuItem onClick={() => void signOut()} className="cursor-pointer">
+                  <LogOut className="w-4 h-4 mr-2" /> Sign out
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={() => navigate("/beeyield-login")} className="cursor-pointer">
+                  <LogIn className="w-4 h-4 mr-2" /> Sign in / Sign up
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
                 <Info className="w-4 h-4 mr-2" /> About Beeyield AI
               </DropdownMenuItem>
@@ -575,23 +597,54 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto custom-scroll px-4 py-6 space-y-6">
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in max-w-3xl mx-auto w-full">
-            <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto max-w-[220px] object-contain mb-4 opacity-90" />
-            <h1 className="font-display text-3xl font-bold text-honey mb-2">Welcome to Beeyield AI</h1>
-            <p className="text-muted-foreground max-w-xl mb-8 text-sm leading-relaxed">
-              The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-2xl">
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => send(s)}
-                  className="text-left px-3 py-2.5 rounded-lg text-xs border border-border hover:border-primary/50 hover:bg-muted transition-all text-muted-foreground hover:text-foreground leading-relaxed"
-                >
-                  {s}
-                </button>
-              ))}
+          <div className="flex flex-col items-center justify-center min-h-full text-center animate-fade-in max-w-4xl mx-auto w-full py-4">
+            <div className="flex items-center gap-2 mb-4 bg-muted/60 p-1 rounded-xl border border-border">
+              <button
+                onClick={() => setViewMode("hub")}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  viewMode === "hub"
+                    ? "bg-honey text-black shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                🐝 Bee Knowledge Hub (3.2M Datasets)
+              </button>
+              <button
+                onClick={() => setViewMode("welcome")}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  viewMode === "welcome"
+                    ? "bg-honey text-black shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                💬 Quick Suggestions
+              </button>
             </div>
+
+            {viewMode === "hub" ? (
+              <div className="w-full text-left bg-card/60 backdrop-blur-md border border-border rounded-2xl overflow-hidden shadow-lg">
+                <KnowledgeDashboard onAsk={(q) => send(q)} />
+              </div>
+            ) : (
+              <div className="w-full flex flex-col items-center">
+                <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto max-w-[220px] object-contain mb-4 opacity-90" />
+                <h1 className="font-display text-3xl font-bold text-honey mb-2">Welcome to Beeyield AI</h1>
+                <p className="text-muted-foreground max-w-xl mb-8 text-sm leading-relaxed">
+                  The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-2xl">
+                  {SUGGESTIONS.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => send(s)}
+                      className="text-left px-3 py-2.5 rounded-lg text-xs border border-border hover:border-primary/50 hover:bg-muted transition-all text-muted-foreground hover:text-foreground leading-relaxed"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -791,6 +844,27 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
       <MeasurementDataTools isOpen={measurementToolsOpen} onClose={() => setMeasurementToolsOpen(false)} />
+
+      {knowledgeHubOpen && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl relative overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-sidebar">
+              <h2 className="font-display text-lg font-bold text-honey flex items-center gap-2">
+                <span>🐝</span> Bee Knowledge Hub (3.2M+ Datasets)
+              </h2>
+              <button
+                onClick={() => setKnowledgeHubOpen(false)}
+                className="w-8 h-8 rounded-lg border border-border hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <KnowledgeDashboard onAsk={(q) => { setKnowledgeHubOpen(false); send(q); }} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -169,6 +169,8 @@ root.render(
                                                         <Route path="/shared-run/:id" element={<SharedRun />} />
 
                                                         <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><ErrorBoundary><BeeYieldDashboard /></ErrorBoundary></ProtectedRoute>} />
+                                                        <Route path="/beeyield-ai" element={<ProtectedRoute requireBeeYield={true}><ErrorBoundary><BeeYieldDashboard /></ErrorBoundary></ProtectedRoute>} />
+                                                        <Route path="/assistant" element={<ProtectedRoute requireBeeYield={true}><ErrorBoundary><BeeYieldDashboard /></ErrorBoundary></ProtectedRoute>} />
                                                         <Route path="/bee-calculator" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />
                                                         <Route path="/calculator-suite" element={<ProtectedRoute requireBeeYield={true}><BeeCalculatorSuite /></ProtectedRoute>} />
                                                         <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />

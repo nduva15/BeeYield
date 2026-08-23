@@ -107,6 +107,13 @@ import FloragePage from '@/components/beeyield/lovable_ai/FloragePage';
 import BeeSpeciesPage from '@/components/beeyield/lovable_ai/BeeSpeciesPage';
 import BeeyieldCalculators from '@/components/beeyield/lovable_ai/BeeyieldCalculators';
 import VarroaSimulator from '@/components/beeyield/lovable_ai/VarroaSimulator';
+import DatasetImport from '@/components/beeyield/lovable_ai/DatasetImport';
+import KnowledgeSearch from '@/components/beeyield/lovable_ai/KnowledgeSearch';
+import FeedingSchedule from '@/components/beeyield/lovable_ai/FeedingSchedule';
+import ApiarySizing from '@/components/beeyield/lovable_ai/ApiarySizing';
+import YieldProjection from '@/components/beeyield/lovable_ai/YieldProjection';
+import MeasurementDataTools from '@/components/beeyield/lovable_ai/MeasurementDataTools';
+import KnowledgeDashboard from '@/components/beeyield/lovable_ai/KnowledgeDashboard';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -288,6 +295,18 @@ const BeeYieldDashboard: React.FC = () => {
                     ]
                 },
                 {
+                    title: 'Knowledge & Planning',
+                    items: [
+                        { id: 'knowledge-dashboard', label: 'Bee Knowledge Hub (3.2M)', icon: Brain },
+                        { id: 'dataset-import', label: 'Dataset Import & Re-index', icon: FileInput },
+                        { id: 'knowledge-search', label: 'Knowledge Base Search', icon: Search },
+                        { id: 'feeding-schedule', label: 'Feeding Schedule Timeline', icon: Calendar },
+                        { id: 'apiary-sizing', label: 'Apiary & Equipment Sizing', icon: Layers },
+                        { id: 'yield-projection', label: 'Honey Yield Projection', icon: BarChart3 },
+                        { id: 'measurement-tools', label: 'Measurement Data Tools', icon: Settings },
+                    ]
+                },
+                {
                     title: 'System View',
                     items: [
                         { id: 'sensor-vitals', label: 'Hive Health', icon: Heart },
@@ -409,6 +428,14 @@ const BeeYieldDashboard: React.FC = () => {
             case 'bee-species-edit': return <BeeSpeciesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'beeyield-calculators': return <BeeyieldCalculators isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'varroa-simulator': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'dataset-import': return <DatasetImport isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'knowledge-search': return <KnowledgeSearch isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'knowledge-dashboard':
+            case 'knowledge-hub': return <KnowledgeDashboard onAsk={(q) => handleTabChange('assistant', q)} />;
+            case 'feeding-schedule': return <FeedingSchedule isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'apiary-sizing': return <ApiarySizing isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'yield-projection': return <YieldProjection isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'measurement-tools': return <MeasurementDataTools isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
             case 'master-map': return <MasterMapView />;
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
