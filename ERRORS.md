@@ -74,3 +74,23 @@
 - **Fix Applied**: Updated `retryLazyImport` in `src/main.tsx` to catch chunk fetching failures and execute a clean `window.location.reload()` to sync browser state with the new deployment. Wrapped all primary authenticated/dashboard views with this protection.
 - **Prevention**: Wrap lazy page loaders in a chunk error-catching utility that reloads the browser to download the updated client files.
 - **Status**: Fixed
+
+---
+
+## [2026-08-23 20:00] - CI Build Failure: ERR_PNPM_MISSING_TARBALL_INTEGRITY & Mismatched Lockfile
+
+- **Type**: Process / Integration
+- **Severity**: High
+- **File**: `pnpm-lock.yaml:6646`, `package.json:116`
+- **Agent**: @system-specialist
+- **Root Cause**: The lockfile entry for `xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz` lacked the required `integrity` SHA-512 checksum in its resolution object, causing `pnpm install --frozen-lockfile` to fail verification. Additionally, `package.json` had a specifier mismatch (`^0.18.5` vs URL tarball specifier).
+- **Error Message**: 
+  ```
+  ERR_PNPM_MISSING_TARBALL_INTEGRITY Cannot install package "xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz": its lockfile entry has no "integrity" field, so pnpm cannot verify the downloaded tarball.
+  ```
+- **Fix Applied**: 
+  1. Calculated the SHA-512 checksum (`sha512-oLDq3jw7AcLqKWH2AhCpVTZl8mf6X2YReP+Neh0SJUzV/BdZYjth94tG5toiMB1PPrYtxOCfaoUCkvtuH+3AJA==`) for SheetJS 0.20.3 tarball and added `integrity` to `pnpm-lock.yaml`.
+  2. Updated `package.json` dependency specifier for `xlsx` to `"https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"` matching `pnpm-lock.yaml`.
+- **Prevention**: When overriding package versions with custom tarballs or CDN URLs, ensure both `package.json` specifier and `pnpm-lock.yaml` resolution integrity fields are present and identical.
+- **Status**: Fixed
+
