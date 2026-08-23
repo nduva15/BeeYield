@@ -34,7 +34,6 @@ export default function MOACompare({ isOpen, onClose, embedded = false }: { isOp
     setLoading(false);
   }, [deviceId]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (isOpen) loadRuns(); }, [isOpen, loadRuns]);
 
   const loadVersions = useCallback(async (runId: string) => {
@@ -46,7 +45,6 @@ export default function MOACompare({ isOpen, onClose, embedded = false }: { isOp
     else { setVA(""); setVB(""); }
   }, []);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (selectedRun) loadVersions(selectedRun); }, [selectedRun, loadVersions]);
 
   const a = versions.find((v) => v.id === vA) || null;

@@ -57,7 +57,6 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: {
     const { data } = await supabase.from("yield_projections").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(30);
     setRuns((data ?? []) as Run[]);
   }, [deviceId]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {

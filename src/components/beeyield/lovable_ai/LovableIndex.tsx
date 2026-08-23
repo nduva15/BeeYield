@@ -234,7 +234,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
     await supabase.from("chat_messages").insert({ conversation_id: convId, role, content });
   };
 
-  const createConversation = async (title: string): Promise<string> => {
+  const createConversation = useCallback(async (title: string): Promise<string> => {
     const { data } = await supabase
       .from("conversations")
       .insert({ device_id: deviceId, title })
@@ -243,7 +243,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
     if (!data) throw new Error("Failed to create conversation");
     loadConversations();
     return data.id;
-  };
+  }, [deviceId, loadConversations]);
 
   const clearAttachments = useCallback(() => {
     setAttachedImage(null);

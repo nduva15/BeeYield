@@ -40,7 +40,6 @@ export default function BeeSpeciesPage({ isOpen, onClose, embedded = false }: { 
     setLoading(false);
   }, [deviceId]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   const filtered = useMemo(() => {

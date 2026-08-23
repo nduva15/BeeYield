@@ -226,7 +226,7 @@ async function insertFallbackRow(table: string, payload: Record<string, unknown>
         return;
     }
 
-    let error: any = null;
+    let error: any;
     try {
         ({ error } = await (client as any).from(table).insert(payload));
     } catch (insertError) {
@@ -255,7 +255,7 @@ async function upsertFallbackRow(table: string, payload: Record<string, unknown>
         return;
     }
 
-    let error: any = null;
+    let error: any;
     try {
         ({ error } = await (client as any)
             .from(table)

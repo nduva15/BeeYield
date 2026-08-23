@@ -40,7 +40,6 @@ export default function FeedingSchedule({ isOpen, onClose, embedded = false }: {
     const { data } = await supabase.from("feeding_schedules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
     setPlans(((data ?? []) as unknown) as Plan[]);
   }, [deviceId]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
