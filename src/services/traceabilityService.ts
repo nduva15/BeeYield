@@ -718,7 +718,7 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
                 return fallback;
             }
             console.error(`[Trace] Batch ${normalizedCode} not found anywhere`);
-            throw new Error(`Batch ${normalizedCode} not found. Please check the code and try again.`, { cause: error });
+            throw Object.assign(new Error(`Batch ${normalizedCode} not found. Please check the code and try again.`), { cause: error });
         }
 
         // Server error (500) - try fallback
@@ -744,7 +744,7 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
                 console.log(`[Trace] ✓ Using fallback data for ${normalizedCode}`);
                 return fallback;
             }
-            throw new Error(`Connection Error: Unable to reach the BeeYield server. Please try again later.`, { cause: error });
+            throw Object.assign(new Error(`Connection Error: Unable to reach the BeeYield server. Please try again later.`), { cause: error });
         }
 
         // Unknown error - try fallback anyway
@@ -756,7 +756,7 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
         }
 
         console.error(`[Trace] Failed to retrieve ${normalizedCode}:`, error?.message);
-        throw new Error(`Verification failed: ${error.message || "Unknown error"}`, { cause: error });
+        throw Object.assign(new Error(`Verification failed: ${error.message || "Unknown error"}`), { cause: error });
     }
 };
 
