@@ -79,7 +79,7 @@ async def get_case_studies(token: Optional[str] = Depends(get_token)):
                 import json
                 try:
                     s["stats"] = json.loads(s.get("stats_json"))
-                except:
+                except Exception:
                     s["stats"] = []
             elif isinstance(s.get("stats_json"), list):
                 s["stats"] = s.get("stats_json")

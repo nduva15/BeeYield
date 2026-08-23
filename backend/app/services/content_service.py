@@ -223,11 +223,16 @@ class ContentService:
             with open(kb_path, 'r', encoding='utf-8') as f:
                 kb = json.load(f)
                 dna = kb.get("dna", {})
+                founders_list = dna.get('founders', [])
+                founders_str = ', '.join(
+                    "{} ({})".format(f.get('name'), f.get('role'))
+                    for f in founders_list
+                )
                 dna_text = (
                     f"BEE YIELD IDENTITY:\n"
                     f"- Mission: {dna.get('mission')}\n"
                     f"- HQ: {dna.get('hq', {}).get('location')} on a {dna.get('hq', {}).get('farm_size')}\n"
-                    f"- Founders: {', '.join([f'{f.get('name')} ({f.get('role')})' for f in dna.get('founders', [])])}\n"
+                    f"- Founders: {founders_str}\n"
                     f"- Tech: {dna.get('tech_stack', {}).get('sensors')} using {dna.get('tech_stack', {}).get('blockchain')}\n"
                 )
 

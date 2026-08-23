@@ -21,6 +21,8 @@ export default tseslint.config(
       ".venv",
       "backend/venv",
       "src/routeTree.gen.ts",
+      "repo-sync-temp",
+      "scratch",
     ],
   },
   {

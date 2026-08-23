@@ -108,6 +108,24 @@ data/
 !src/data/
 !**/requirements.txt
 brain/
+
+# Internal Logs and Debugging
+*.txt
+!requirements.txt
+!**/requirements.txt
+*.log
+*.json
+!package*.json
+!tsconfig*.json
+!src/**/*.json
+!components.json
+!tsr.config.json
+
+# Private Data and Context
+data/
+!src/data/
+!**/requirements.txt
+brain/
 .gemini/
 .agent/
 node_modules/
@@ -116,3 +134,7 @@ venv/
 
 # BEE-SOUND-ANALYSIS (cloned locally for model reference, deployed to Kaggle)
 beeyield-sound-analysis/
+
+# Temporary & Local Scratch Dirs
+repo-sync-temp/
+scratch/

@@ -791,7 +791,7 @@ async def get_user_hives(
                     if shared_apiary:
                         h["apiary"] = _process_apiary_output(shared_apiary)
                         apiary_map[aid] = shared_apiary # Cache
-                except:
+                except Exception:
                     h["apiary"] = None
         else:
             h["apiary"] = None

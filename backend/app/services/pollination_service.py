@@ -4,7 +4,7 @@ Service layer for Precision Pollination — Rust-Accelerated (Post-Oxidize)
 Math logic and analytics aggregation moved to `beeyield_core.PollinationEngine`.
 Python handles asynchronous DB orchestration and schema validation.
 """
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from datetime import datetime, date
 import uuid
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
