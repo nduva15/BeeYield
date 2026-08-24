@@ -4,7 +4,7 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@9 --activate
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
@@ -19,7 +19,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@9 --activate
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -96,9 +96,12 @@ RUN echo 'server { \
         try_files $uri $uri/ /index.html; \
     } \
     \
-    # API proxy (if needed) \
+    # API proxy with dynamic resolution (bypasses nginx -t build-time host lookup) \
     location /api/ { \
-        proxy_pass http://backend:8000/; \
+        resolver 127.0.0.11 valid=30s ipv6=off; \
+        set $backend_upstream http://backend:8000; \
+        rewrite ^/api/(.*) /$1 break; \
+        proxy_pass $backend_upstream; \
         proxy_set_header Host $host; \
         proxy_set_header X-Real-IP $remote_addr; \
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
