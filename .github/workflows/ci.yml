@@ -73,7 +73,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest pytest-cov ruff
+          pip install pytest pytest-cov pytest-asyncio ruff
 
       - name: Lint with Ruff
         working-directory: backend
@@ -81,6 +81,8 @@ jobs:
 
       - name: Run Tests
         working-directory: backend
+        env:
+          PYTHONPATH: .
         run: pytest --cov=app --cov-report=xml --cov-report=term
 
       - name: Upload Coverage
