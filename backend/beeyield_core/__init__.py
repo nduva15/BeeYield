@@ -329,7 +329,6 @@ class _PyMetadataEngine:
         source = raw_data.get("source", "")
         url = raw_data.get("url", "")
 
-        combined = f"{content} {source}"
         domain = self.detect_domain(content, source)
         source_repo = self.detect_source_repo(url, source)
         doi = self.extract_doi(content, url)
@@ -690,8 +689,8 @@ class _PyImageEngine:
             x = random.randint(10, max(11, width - box_w - 10))
             y = random.randint(10, max(11, height - box_h - 10))
 
-            center_x = width / 2.0;
-            center_y = height / 2.0;
+            center_x = width / 2.0
+            center_y = height / 2.0
             dist = ((x - center_x) ** 2 + (y - center_y) ** 2) ** 0.5
             max_dist = (center_x ** 2 + center_y ** 2) ** 0.5
             pos_factor = 1.0 - (dist / max_dist) * 0.3
