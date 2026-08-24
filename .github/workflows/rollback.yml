@@ -75,10 +75,12 @@ jobs:
 
       - name: Notify Slack
         uses: slackapi/slack-github-action@v3.0.1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload-templated: true
           payload: |
             text: "WARNING: emergency rollback to ${{ github.event.inputs.version }} completed for ${{ github.event.inputs.environment }} with status ${{ job.status }}"
-        if: always() && secrets.SLACK_WEBHOOK_URL != ''
+        if: always() && env.SLACK_WEBHOOK_URL != ''

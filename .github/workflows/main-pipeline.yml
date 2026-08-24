@@ -515,13 +515,15 @@ jobs:
 
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v3.0.1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload-templated: true
           payload: |
             text: "Production deployment result: ${{ job.status }} for ${{ github.repository }} on ${{ github.ref_name }} at ${{ github.sha }}"
-        if: always() && secrets.SLACK_WEBHOOK_URL != ''
+        if: always() && env.SLACK_WEBHOOK_URL != ''
 
   # ============================================================
   # STAGE 5: Post-Deployment
