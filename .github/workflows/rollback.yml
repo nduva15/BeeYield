@@ -81,4 +81,4 @@ jobs:
           payload-templated: true
           payload: |
             text: "WARNING: emergency rollback to ${{ github.event.inputs.version }} completed for ${{ github.event.inputs.environment }} with status ${{ job.status }}"
-        if: always()
+        if: always() && secrets.SLACK_WEBHOOK_URL != ''
