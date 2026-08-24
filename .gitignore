@@ -87,6 +87,8 @@ release/
 !api/**/*.py
 !backend/main.py
 !backend/conftest.py
+!backend/honey_rust.py
+!backend/beeyield_core/__init__.py
 !backend/app/**/*.py
 !backend/tests/test_traceability_batch_service.py
 !supabase/migrations/20260406183000_resilient_auth_profile_sync.sql
