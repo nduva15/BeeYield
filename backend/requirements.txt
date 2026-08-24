@@ -43,3 +43,10 @@ reportlab>=4.0.0
 openpyxl>=3.1.0
 stripe
 
+# Testing & Quality
+pytest>=8.0.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.23.0
+ruff
+
+

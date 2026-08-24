@@ -171,7 +171,8 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           REDIS_URL: redis://localhost:6379
-        run: pytest --cov=. --cov-report=xml --cov-report=term-missing
+          PYTHONPATH: .
+        run: python -m pytest --cov=. --cov-report=xml --cov-report=term-missing
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v4

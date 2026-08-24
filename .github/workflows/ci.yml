@@ -83,7 +83,7 @@ jobs:
         working-directory: backend
         env:
           PYTHONPATH: .
-        run: pytest --cov=app --cov-report=xml --cov-report=term
+        run: python -m pytest --cov=app --cov-report=xml --cov-report=term
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v4
