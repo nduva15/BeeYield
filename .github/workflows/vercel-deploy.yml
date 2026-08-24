@@ -15,84 +15,145 @@ jobs:
   deploy-production:
     name: Deploy to Vercel (Production)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.VERCEL_TOKEN != ''
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
     steps:
+      - name: Check Vercel Credentials
+        id: check_credentials
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "has_token=false" >> $GITHUB_OUTPUT
+            echo "::warning::VERCEL_TOKEN secret is not configured. Skipping Vercel deployment."
+          else
+            echo "has_token=true" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
       - uses: pnpm/action-setup@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
         with:
           version: 10
       - uses: actions/setup-node@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
         with:
           node-version: '20'
           cache: 'pnpm'
       - name: Install Dependencies
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: pnpm install --frozen-lockfile
       - name: Install Vercel CLI
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: npm install -g vercel@50.28.0
       - name: Pull Vercel Environment
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
 
   deploy-staging:
     name: Deploy to Vercel (Staging)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push' && secrets.VERCEL_TOKEN != ''
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
     environment: preview
     steps:
+      - name: Check Vercel Credentials
+        id: check_credentials
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "has_token=false" >> $GITHUB_OUTPUT
+            echo "::warning::VERCEL_TOKEN secret is not configured. Skipping Vercel deployment."
+          else
+            echo "has_token=true" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
       - uses: pnpm/action-setup@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
         with:
           version: 10
       - uses: actions/setup-node@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
         with:
           node-version: '20'
           cache: 'pnpm'
       - name: Install Dependencies
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: pnpm install --frozen-lockfile
       - name: Install Vercel CLI
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: npm install -g vercel@50.28.0
       - name: Pull Vercel Environment
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
   deploy-preview:
     name: Deploy Preview (PR)
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && secrets.VERCEL_TOKEN != ''
+    if: github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: write
     steps:
+      - name: Check Vercel Credentials
+        id: check_credentials
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "has_token=false" >> $GITHUB_OUTPUT
+            echo "::warning::VERCEL_TOKEN secret is not configured. Skipping Vercel deployment."
+          else
+            echo "has_token=true" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
       - uses: pnpm/action-setup@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
         with:
           version: 10
       - uses: actions/setup-node@v4
+        if: steps.check_credentials.outputs.has_token == 'true'
         with:
           node-version: '20'
           cache: 'pnpm'
       - name: Install Dependencies
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: pnpm install --frozen-lockfile
       - name: Install Vercel CLI
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: npm install -g vercel@50.28.0
       - name: Pull Vercel Environment
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build
+        if: steps.check_credentials.outputs.has_token == 'true'
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Preview
+        if: steps.check_credentials.outputs.has_token == 'true'
         id: deploy
         shell: bash
         run: |
           url="$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})"
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - uses: actions/github-script@v7
+        if: steps.check_credentials.outputs.has_token == 'true'
         with:
           script: |
             github.rest.issues.createComment({
