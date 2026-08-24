@@ -165,7 +165,7 @@ class _PyHiveHealthEngine:
             "hive_id": hive_id,
             "status": status,
             "health_score": f"{score}/100",
-            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "anomalies": self.detect_anomalies(),
             "disease_risks": self.predict_disease_risk(),
             "engineering_summary": f"Rust analysis complete for {hive_id}. Systems show {status.lower()} parameters with {len(self.anomalies)} active anomalies."
@@ -485,7 +485,7 @@ class _PyHarvestBatcher:
                 pass
 
         if not year_month:
-            now = datetime.datetime.utcnow()
+            now = datetime.datetime.now(datetime.timezone.utc)
             year_month = f"{now.year:04d}{now.month:02d}"
 
         hive_tag = hive_name.strip()[:3].upper()
@@ -788,8 +788,8 @@ class _PyPollinationEngine:
         total_fpa_required = target_fpa * acreage
         hives_needed = int(ceil(total_fpa_required / adjusted_fob))
         actual_fpa = (hives_needed * avg_frames * weather_factor) / acreage
-        coverage_health = min(100, int(round(actual_fpa / target_fpa * 100.0)))
-        foraging_efficiency = min(98, int(round(75.0 + (avg_frames - 6.0) * 3.2)))
+        coverage_health = min(100, round(actual_fpa / target_fpa * 100.0))
+        foraging_efficiency = min(98, round(75.0 + (avg_frames - 6.0) * 3.2))
 
         if avg_frames >= 11.0:
             strength_category, forage_range = "ELITE", "1.8 km"
@@ -806,7 +806,7 @@ class _PyPollinationEngine:
             "target_fpa": target_fpa,
             "hives_needed": hives_needed,
             "actual_fpa": round(actual_fpa * 10.0) / 10.0,
-            "total_fpa_required": int(round(total_fpa_required)),
+            "total_fpa_required": round(total_fpa_required),
             "coverage_health_percent": coverage_health,
             "foraging_efficiency_percent": foraging_efficiency,
             "strength_category": strength_category,
@@ -989,7 +989,7 @@ class _PyTraceabilityEngine:
             "total_honey_kg": total_kg,
             "hive_count": len(hive_ids),
             "beekeepers": len(farmer_ids),
-            "trees_planted": int(floor(total_kg / 10.0))
+            "trees_planted": floor(total_kg / 10.0)
         }
 
 
@@ -1328,7 +1328,7 @@ class _PyShopEngine:
 
         if total_honey_weight > 0 and available_hive_codes:
             avg_batch_size = 2000
-            num_hives_needed = int(ceil(total_honey_weight / avg_batch_size))
+            num_hives_needed = ceil(total_honey_weight / avg_batch_size)
             count = min(num_hives_needed, len(available_hive_codes))
             
             shuffled_hives = available_hive_codes.copy()
@@ -1382,7 +1382,7 @@ class _PyShopEngine:
                 raise KeyError("quantity missing")
             
             if variant_id in price_map:
-                calculated_total += float(price_map[variant_id]) * quantity
+                calculated_total += price_map[variant_id] * quantity
             else:
                 raise ValueError(f"Price not found for variant {variant_id}")
         return calculated_total
@@ -1623,7 +1623,7 @@ class _PyInvoicingEngine:
     def generate_invoice_html(self, order_id: str, amount: float, items: str, trace_hash: str) -> str:
         # Beautiful pure-Python deterministic 2D QR Barcode grid generator
         try:
-            import qrcode
+            import qrcode  # type: ignore
             qr = qrcode.QRCode(version=1, box_size=1, border=0)
             qr.add_data(f"https://beeyield.com/trace/{trace_hash}")
             qr.make(fit=True)
@@ -1831,7 +1831,7 @@ class _PyAdminDashboardEngine:
             "total_revenue_kes": total_revenue,
             "total_honey_kg": total_honey_kg,
             "total_acres": total_acres,
-            "last_updated": datetime.datetime.utcnow().isoformat() + "Z"
+            "last_updated": datetime.datetime.now(datetime.timezone.utc).isoformat()
         }
 
 
@@ -1841,7 +1841,7 @@ def _py_rust_update_order_status(order_id: str, status: str, payment_status: Opt
     if payment_status is not None:
         update_data["payment_status"] = payment_status
     filters = {"id": order_id}
-    kwargs = {"filters": filters}
+    kwargs: Dict[str, Any] = {"filters": filters}
     if token is not None:
         kwargs["token"] = token
     return db_update("orders", update_data, **kwargs)
@@ -1878,7 +1878,7 @@ __version__ = "1.0.0"
 _using_fallback = True
 
 # Construct virtual mock honey_rust module in sys.modules
-honey_rust_module = types.ModuleType("honey_rust")
+honey_rust_module: Any = types.ModuleType("honey_rust")
 honey_rust_module.HiveHealthEngine = _PyHiveHealthEngine
 honey_rust_module.MetadataEngine = _PyMetadataEngine
 honey_rust_module.RateLimiter = _PyRateLimiter
