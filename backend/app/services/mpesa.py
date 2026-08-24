@@ -17,7 +17,7 @@ class MpesaService:
 
     def get_access_token(self):
         url = f"{self.base_url}/oauth/v1/generate?grant_type=client_credentials"
-        response = requests.get(url, auth=HTTPBasicAuth(self.consumer_key, self.consumer_secret))
+        response = requests.get(url, auth=HTTPBasicAuth(self.consumer_key, self.consumer_secret), timeout=30)
         if response.status_code == 200:
             return response.json()['access_token']
         return None
@@ -46,7 +46,7 @@ class MpesaService:
         }
 
         url = f"{self.base_url}/mpesa/stkpush/v1/processrequest"
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, timeout=30)
         return response.json()
 
 mpesa_service = MpesaService()

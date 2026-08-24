@@ -66,7 +66,7 @@ class Settings(BaseSettings):
 
 
     # ============ AUTHENTICATION ============
-    SECRET_KEY: str = "beeyield-super-secret-key-change-in-production"
+    SECRET_KEY: str = Field(default="beeyield-super-secret-key-change-in-production")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 

@@ -104,11 +104,11 @@ jobs:
 
       - name: Build Application
         env:
-          VITE_SUPABASE_URL:  https://ezfccfypwmuvbpujkqrg.supabase.co
-          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
-          VITE_API_URL:  https://ezfccfypwmuvbpujkqrg.supabase.co
-          VITE_STRIPE_PUBLISHABLE_KEY: pk_live_51SozbEE0oxdsQvSR0qD3bfPSuj11tJXNFdSm8g2a7Z4jgsOdhN6s6yQRXmMP1U0KMIw5E0B2SRdF1uEeFJwxtBUD001D5DU4xh
-          VITE_STRIPE_API_URL: https://api.stripe.com/v1
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+          VITE_STRIPE_API_URL: ${{ vars.VITE_STRIPE_API_URL || 'https://api.stripe.com/v1' }}
         run: pnpm run build
 
       - name: Upload Build Artifacts

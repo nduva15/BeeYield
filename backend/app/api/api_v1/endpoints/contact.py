@@ -42,7 +42,8 @@ async def _save_offline(submission_type: str, data: dict):
         
         offline_file = os.path.join(project_root, "offline_submissions.json")
         if not os.access(project_root, os.W_OK):
-            offline_file = os.path.join("/tmp", "beeyield_offline_submissions.json")
+            import tempfile
+            offline_file = os.path.join(tempfile.gettempdir(), "beeyield_offline_submissions.json")
         print(f"[INFO] Attempting offline save for {submission_type} to {offline_file}")
         
         entry = {

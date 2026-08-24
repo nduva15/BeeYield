@@ -1289,7 +1289,7 @@ class _PySearchEngine:
             
             # Signature of first 200 chars to allow small variations
             snippet = content[:200]
-            sig = hashlib.md5(snippet.encode("utf-8")).hexdigest()
+            sig = hashlib.md5(snippet.encode("utf-8"), usedforsecurity=False).hexdigest()
 
             if sig not in seen:
                 seen.add(sig)
@@ -1528,7 +1528,7 @@ class _PyMpesaEngine:
         from requests.auth import HTTPBasicAuth
         try:
             url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-            response = requests.get(url, auth=HTTPBasicAuth(self.client_key, self.client_secret))
+            response = requests.get(url, auth=HTTPBasicAuth(self.client_key, self.client_secret), timeout=30)
             if response.status_code == 200:
                 data = response.json()
                 self._cached_token = data["access_token"]
@@ -1575,7 +1575,7 @@ class _PyMpesaEngine:
         try:
             url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
             headers = {"Authorization": f"Bearer {token}"}
-            response = requests.post(url, json=payload, headers=headers)
+            response = requests.post(url, json=payload, headers=headers, timeout=30)
             body = response.text
             if response.status_code == 200:
                 res_json = response.json()
@@ -1657,7 +1657,7 @@ class _PyInvoicingEngine:
                 grid[i][6] = (i % 2 == 0)
                 
             # MD5 derived cells
-            h = hashlib.md5(trace_hash.encode("utf-8")).hexdigest()
+            h = hashlib.md5(trace_hash.encode("utf-8"), usedforsecurity=False).hexdigest()
             h_bytes = bytes.fromhex(h)
             byte_idx = 0
             bit_idx = 0

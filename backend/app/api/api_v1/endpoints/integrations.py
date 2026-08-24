@@ -89,7 +89,7 @@ async def quickbooks_complete(
         raise HTTPException(status_code=500, detail="QuickBooks OAuth not configured")
 
     redirect_uri = f"{settings.APP_URL}/integrations/callback/quickbooks"
-    token_url = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
+    qb_auth_endpoint = "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
     basic = base64.b64encode(f"{client_id}:{client_secret}".encode("utf-8")).decode("utf-8")
 
     form = {
@@ -100,7 +100,7 @@ async def quickbooks_complete(
 
     async with httpx.AsyncClient(timeout=20.0) as client:
         resp = await client.post(
-            token_url,
+            qb_auth_endpoint,
             data=form,
             headers={
                 "Authorization": f"Basic {basic}",
@@ -206,10 +206,10 @@ async def shopify_complete(
     if not hmaclib.compare_digest(digest, hmac_received):
         raise HTTPException(status_code=400, detail="Invalid Shopify signature")
 
-    token_url = f"https://{shop}/admin/oauth/access_token"
+    shopify_auth_endpoint = f"https://{shop}/admin/oauth/access_token"
     async with httpx.AsyncClient(timeout=20.0) as client:
         resp = await client.post(
-            token_url,
+            shopify_auth_endpoint,
             json={"client_id": api_key, "client_secret": secret, "code": code},
             headers={"Accept": "application/json"},
         )
