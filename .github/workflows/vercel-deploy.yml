@@ -15,7 +15,7 @@ jobs:
   deploy-production:
     name: Deploy to Vercel (Production)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.VERCEL_TOKEN != ''
     environment: production
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
   deploy-staging:
     name: Deploy to Vercel (Staging)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push' && secrets.VERCEL_TOKEN != ''
     environment: preview
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +65,7 @@ jobs:
   deploy-preview:
     name: Deploy Preview (PR)
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && secrets.VERCEL_TOKEN != ''
     permissions:
       contents: read
       pull-requests: write
