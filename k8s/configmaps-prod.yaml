@@ -22,7 +22,7 @@ data:
   VITE_SUPABASE_URL_CEBA: "https://ceba-prod-ref.supabase.co"
   
   # Stripe Configuration
-  VITE_STRIPE_PUBLISHABLE_KEY: "pk_live_production_key"
+  VITE_STRIPE_PUBLISHABLE_KEY: "YOUR_STRIPE_PUBLISHABLE_KEY_HERE"
   VITE_STRIPE_API_URL: "https://api.stripe.com/v1"
   
   # Admin Email

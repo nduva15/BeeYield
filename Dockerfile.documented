@@ -236,7 +236,7 @@ CMD ["nginx", "-g", "daemon off;"]
 #     --build-arg VITE_SUPABASE_URL_BEEYIELD=https://beeyield.supabase.co \
 #     --build-arg VITE_SUPABASE_ANON_KEY_BEEYIELD=beeyield-key \
 #     --build-arg VITE_API_URL=https://api.beeyield.com \
-#     --build-arg VITE_STRIPE_PUBLISHABLE_KEY=pk_live_xxx \
+#     --build-arg VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-key-here \
 #     --build-arg VITE_SUPER_ADMIN_EMAIL=admin@beeyield.com \
 #     -t beeyield-frontend:v1.0.0 .
 #   
