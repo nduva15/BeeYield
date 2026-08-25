@@ -24,11 +24,12 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install runtime dependencies and apply security patches
+# Install runtime dependencies, apply security patches, and upgrade base python tooling
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         libpq5 && \
+    pip install --upgrade --no-cache-dir pip setuptools wheel && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder

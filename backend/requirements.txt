@@ -48,6 +48,7 @@ pytest>=8.0.0
 pytest-cov>=4.1.0
 pytest-asyncio>=0.23.0
 # Security Overrides & Fixes
+pip>=26.0
 setuptools>=75.8.0
 jaraco.context>=6.0.0
 cryptography>=42.0.0
