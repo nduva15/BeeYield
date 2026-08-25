@@ -155,6 +155,33 @@ export type Database = {
         }
         Relationships: []
       }
+      app_settings: {
+        Row: {
+          alert_prefs: Json
+          created_at: string
+          device_id: string
+          id: string
+          modules: Json
+          updated_at: string
+        }
+        Insert: {
+          alert_prefs?: Json
+          created_at?: string
+          device_id: string
+          id?: string
+          modules?: Json
+          updated_at?: string
+        }
+        Update: {
+          alert_prefs?: Json
+          created_at?: string
+          device_id?: string
+          id?: string
+          modules?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bee_diseases: {
         Row: {
           affected_castes: string | null
@@ -1009,6 +1036,171 @@ export type Database = {
           },
         ]
       }
+      inspections: {
+        Row: {
+          actions: string[]
+          ai_insights: string | null
+          batch: string
+          brood_frames: number
+          colony_health: string
+          created_at: string
+          device_id: string
+          hive_label: string
+          honey_frames: number
+          id: string
+          inspected_on: string
+          issues: string[]
+          location: string
+          notes: string | null
+          queen_cells: number
+          queen_seen: boolean
+          temperament: string
+          updated_at: string
+          varroa_count: number
+          weather: string | null
+        }
+        Insert: {
+          actions?: string[]
+          ai_insights?: string | null
+          batch?: string
+          brood_frames?: number
+          colony_health?: string
+          created_at?: string
+          device_id: string
+          hive_label?: string
+          honey_frames?: number
+          id?: string
+          inspected_on?: string
+          issues?: string[]
+          location?: string
+          notes?: string | null
+          queen_cells?: number
+          queen_seen?: boolean
+          temperament?: string
+          updated_at?: string
+          varroa_count?: number
+          weather?: string | null
+        }
+        Update: {
+          actions?: string[]
+          ai_insights?: string | null
+          batch?: string
+          brood_frames?: number
+          colony_health?: string
+          created_at?: string
+          device_id?: string
+          hive_label?: string
+          honey_frames?: number
+          id?: string
+          inspected_on?: string
+          issues?: string[]
+          location?: string
+          notes?: string | null
+          queen_cells?: number
+          queen_seen?: boolean
+          temperament?: string
+          updated_at?: string
+          varroa_count?: number
+          weather?: string | null
+        }
+        Relationships: []
+      }
+      integration_connections: {
+        Row: {
+          config: Json
+          created_at: string
+          device_id: string
+          id: string
+          last_error: string | null
+          last_sync_at: string | null
+          provider: string
+          status: string
+          sync_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          device_id: string
+          id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
+          provider: string
+          status?: string
+          sync_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          device_id?: string
+          id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
+          provider?: string
+          status?: string
+          sync_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      integration_secrets: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          provider: string
+          secrets: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          provider: string
+          secrets?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          provider?: string
+          secrets?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      integration_sync_logs: {
+        Row: {
+          created_at: string
+          detail: string | null
+          device_id: string
+          event: string
+          id: string
+          provider: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          device_id: string
+          event: string
+          id?: string
+          provider: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          device_id?: string
+          event?: string
+          id?: string
+          provider?: string
+          status?: string
+        }
+        Relationships: []
+      }
       knowledge_facts: {
         Row: {
           category: string
@@ -1078,6 +1270,66 @@ export type Database = {
           id?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      sound_analyses: {
+        Row: {
+          ai_insights: string | null
+          created_at: string
+          device_id: string
+          disease_predictions: Json
+          duration_sec: number
+          features: Json
+          health_confidence: number
+          health_state: string
+          hive_label: string
+          id: string
+          inference_mode: string
+          notes: string | null
+          piping_confidence: number
+          piping_detected: boolean
+          recorded_at: string
+          sample_rate: number
+          segments: number
+        }
+        Insert: {
+          ai_insights?: string | null
+          created_at?: string
+          device_id: string
+          disease_predictions?: Json
+          duration_sec?: number
+          features?: Json
+          health_confidence?: number
+          health_state?: string
+          hive_label?: string
+          id?: string
+          inference_mode?: string
+          notes?: string | null
+          piping_confidence?: number
+          piping_detected?: boolean
+          recorded_at?: string
+          sample_rate?: number
+          segments?: number
+        }
+        Update: {
+          ai_insights?: string | null
+          created_at?: string
+          device_id?: string
+          disease_predictions?: Json
+          duration_sec?: number
+          features?: Json
+          health_confidence?: number
+          health_state?: string
+          hive_label?: string
+          id?: string
+          inference_mode?: string
+          notes?: string | null
+          piping_confidence?: number
+          piping_detected?: boolean
+          recorded_at?: string
+          sample_rate?: number
+          segments?: number
         }
         Relationships: []
       }
