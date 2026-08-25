@@ -49,9 +49,10 @@ pytest-cov>=4.1.0
 pytest-asyncio>=0.23.0
 # Security Overrides & Fixes
 pip>=26.0
-setuptools>=75.8.0
+setuptools>=84.0.0
+msgpack>=1.1.0
 jaraco.context>=6.0.0
 cryptography>=42.0.0
-wheel>=0.45.1
+wheel>=0.48.0
 
 
