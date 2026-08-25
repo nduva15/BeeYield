@@ -388,15 +388,30 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Check Kubeconfig Credentials
+        id: check_credentials
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DEV }}
+        run: |
+          if [ -z "$KUBE_CONFIG" ]; then
+            echo "has_kubeconfig=false" >> $GITHUB_OUTPUT
+            echo "::warning::KUBE_CONFIG_DEV secret is not configured. Skipping Kubernetes deployment."
+          else
+            echo "has_kubeconfig=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup kubectl
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         uses: azure/setup-kubectl@v5.0.0
 
       - name: Configure Kubernetes Context
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           kubectl set image deployment/frontend-dev \
             frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
@@ -409,6 +424,7 @@ jobs:
           kubectl rollout status deployment/backend-dev -n beeyield-dev
 
       - name: Run Database Migrations
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           kubectl exec -n beeyield-dev deployment/backend-dev -- \
             python -m alembic upgrade head
@@ -424,16 +440,31 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Check Kubeconfig Credentials
+        id: check_credentials
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_STAGING }}
+        run: |
+          if [ -z "$KUBE_CONFIG" ]; then
+            echo "has_kubeconfig=false" >> $GITHUB_OUTPUT
+            echo "::warning::KUBE_CONFIG_STAGING secret is not configured. Skipping Kubernetes deployment."
+          else
+            echo "has_kubeconfig=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup kubectl
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         uses: azure/setup-kubectl@v5.0.0
 
       - name: Configure Kubernetes Context
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > $HOME/.kube/config
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
       - name: Deploy to Kubernetes
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           kubectl set image deployment/frontend-staging \
             frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
@@ -446,11 +477,13 @@ jobs:
           kubectl rollout status deployment/backend-staging -n beeyield-staging
 
       - name: Run Database Migrations
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           kubectl exec -n beeyield-staging deployment/backend-staging -- \
             python -m alembic upgrade head
 
       - name: Run Smoke Tests
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           curl -f https://staging.beeyield.com/ || exit 1
           curl -f https://staging.beeyield.com/api/health || exit 1
@@ -466,21 +499,37 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Check Kubeconfig Credentials
+        id: check_credentials
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_PROD }}
+        run: |
+          if [ -z "$KUBE_CONFIG" ]; then
+            echo "has_kubeconfig=false" >> $GITHUB_OUTPUT
+            echo "::warning::KUBE_CONFIG_PROD secret is not configured. Skipping Kubernetes deployment."
+          else
+            echo "has_kubeconfig=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup kubectl
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         uses: azure/setup-kubectl@v5.0.0
 
       - name: Configure Kubernetes Context
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > $HOME/.kube/config
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
       - name: Create Backup
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           kubectl exec -n beeyield-prod deployment/postgres -- \
             pg_dump -U postgres beeyield > backup-$(date +%Y%m%d-%H%M%S).sql
 
       - name: Deploy to Kubernetes (Blue-Green)
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           # Deploy new version (green)
           kubectl set image deployment/frontend-green \
@@ -495,17 +544,20 @@ jobs:
           kubectl rollout status deployment/backend-green -n beeyield-prod
 
       - name: Run Database Migrations
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           kubectl exec -n beeyield-prod deployment/backend-green -- \
             python -m alembic upgrade head
 
       - name: Smoke Tests
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           # Test green deployment
           curl -f https://green.beeyield.com/ || exit 1
           curl -f https://green.beeyield.com/api/health || exit 1
 
       - name: Switch Traffic (Blue to Green)
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           # Update service to point to green
           kubectl patch service frontend-service -n beeyield-prod \
@@ -514,6 +566,7 @@ jobs:
             -p '{"spec":{"selector":{"version":"green"}}}'
 
       - name: Monitor Deployment
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           sleep 60
           # Check error rates, latency, etc.

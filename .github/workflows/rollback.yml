@@ -32,10 +32,29 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Check Kubeconfig Credentials
+        id: check_credentials
+        env:
+          KUBE_CONFIG_PROD: ${{ secrets.KUBE_CONFIG_PROD }}
+          KUBE_CONFIG_STAGING: ${{ secrets.KUBE_CONFIG_STAGING }}
+          ENV_NAME: ${{ github.event.inputs.environment }}
+        run: |
+          if [ "$ENV_NAME" == "production" ] && [ -z "$KUBE_CONFIG_PROD" ]; then
+            echo "has_kubeconfig=false" >> $GITHUB_OUTPUT
+            echo "::warning::KUBE_CONFIG_PROD secret is not configured. Skipping rollback."
+          elif [ "$ENV_NAME" == "staging" ] && [ -z "$KUBE_CONFIG_STAGING" ]; then
+            echo "has_kubeconfig=false" >> $GITHUB_OUTPUT
+            echo "::warning::KUBE_CONFIG_STAGING secret is not configured. Skipping rollback."
+          else
+            echo "has_kubeconfig=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup kubectl
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         uses: azure/setup-kubectl@v5.0.0
 
       - name: Configure Kubernetes Context
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           mkdir -p $HOME/.kube
           if [ "${{ github.event.inputs.environment }}" == "production" ]; then
@@ -49,6 +68,7 @@ jobs:
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
       - name: Rollback Deployment
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           VERSION="${{ github.event.inputs.version }}"
 
@@ -63,6 +83,7 @@ jobs:
           kubectl rollout status deployment/backend -n $NAMESPACE
 
       - name: Verify Rollback
+        if: steps.check_credentials.outputs.has_kubeconfig == 'true'
         run: |
           if [ "${{ github.event.inputs.environment }}" == "production" ]; then
             URL="https://beeyield.com"
