@@ -16,7 +16,7 @@ COPY requirements.txt .
 
 # Install Python dependencies to /install
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --upgrade --prefix=/install --no-warn-script-location pip setuptools wheel && \
+    pip install --upgrade pip setuptools wheel && \
     pip install --prefix=/install --no-warn-script-location -r requirements.txt
 
 # Production stage
