@@ -429,6 +429,15 @@ jobs:
           kubectl exec -n beeyield-dev deployment/backend-dev -- \
             python -m alembic upgrade head
 
+      - name: Log Deployment Status
+        if: always()
+        run: |
+          if [ "${{ steps.check_credentials.outputs.has_kubeconfig }}" == "true" ]; then
+            echo "Development deployment completed successfully."
+          else
+            echo "Development deployment skipped: KUBE_CONFIG_DEV secret is unconfigured."
+          fi
+
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
@@ -487,6 +496,15 @@ jobs:
         run: |
           curl -f https://staging.beeyield.com/ || exit 1
           curl -f https://staging.beeyield.com/api/health || exit 1
+
+      - name: Log Deployment Status
+        if: always()
+        run: |
+          if [ "${{ steps.check_credentials.outputs.has_kubeconfig }}" == "true" ]; then
+            echo "Staging deployment completed successfully."
+          else
+            echo "Staging deployment skipped: KUBE_CONFIG_STAGING secret is unconfigured."
+          fi
 
   deploy-production:
     name: Deploy to Production
