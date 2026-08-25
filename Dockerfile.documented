@@ -4,6 +4,8 @@
 
 FROM node:20-alpine AS deps
 
+RUN apk upgrade --no-cache
+
 WORKDIR /app
 
 # Install pnpm package manager
@@ -20,6 +22,8 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 # BUILD STAGE - Compile TypeScript, React, and CSS
 # ============================================================================
 FROM node:20-alpine AS builder
+
+RUN apk upgrade --no-cache
 
 WORKDIR /app
 
@@ -88,7 +92,10 @@ RUN pnpm run build
 # ============================================================================
 # PRODUCTION STAGE - Nginx web server
 # ============================================================================
-FROM nginx:1.27-alpine
+FROM nginx:1.31-alpine
+
+# Patch all OS-level CVEs (openssl, libxml2, libpng, musl, zlib, nghttp2)
+RUN apk upgrade --no-cache
 
 # Set working directory
 WORKDIR /usr/share/nginx/html

@@ -33,7 +33,7 @@ web3
 
 # Utilities
 python-dotenv>=1.0.0
-pillow
+pillow>=11.1.0
 google-genai
 resend
 qrcode
@@ -47,6 +47,10 @@ stripe
 pytest>=8.0.0
 pytest-cov>=4.1.0
 pytest-asyncio>=0.23.0
-ruff
+# Security Overrides & Fixes
+setuptools>=75.8.0
+jaraco.context>=6.0.0
+ecdsa>=0.19.0
+wheel>=0.45.1
 
 

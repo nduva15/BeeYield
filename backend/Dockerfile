@@ -3,8 +3,9 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Install build dependencies
+# Install build dependencies and apply security patches
 RUN apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         build-essential \
         libpq-dev && \
@@ -15,6 +16,7 @@ COPY requirements.txt .
 
 # Install Python dependencies to /install
 RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade --prefix=/install --no-warn-script-location pip setuptools wheel && \
     pip install --prefix=/install --no-warn-script-location -r requirements.txt
 
 # Production stage
@@ -22,8 +24,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install runtime dependencies only
+# Install runtime dependencies and apply security patches
 RUN apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         libpq5 && \
     rm -rf /var/lib/apt/lists/*

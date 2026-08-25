@@ -1,6 +1,8 @@
 # Multi-stage build for BeeYield Frontend
 FROM node:20-alpine AS deps
 
+RUN apk upgrade --no-cache
+
 WORKDIR /app
 
 # Install pnpm
@@ -15,6 +17,8 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 
 # Builder stage
 FROM node:20-alpine AS builder
+
+RUN apk upgrade --no-cache
 
 WORKDIR /app
 
@@ -58,8 +62,11 @@ ENV VITE_SUPER_ADMIN_EMAIL=${VITE_SUPER_ADMIN_EMAIL}
 # Build the application
 RUN pnpm run build
 
-# Production stage with nginx
-FROM nginx:1.27-alpine
+# Production stage with nginx (latest stable for security patches)
+FROM nginx:1.31-alpine
+
+# Patch all OS-level CVEs (openssl, libxml2, libpng, musl, zlib, nghttp2)
+RUN apk upgrade --no-cache
 
 # Copy built application
 COPY --from=builder /app/dist /usr/share/nginx/html

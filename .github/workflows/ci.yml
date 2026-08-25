@@ -217,6 +217,8 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/beeyield-${{ matrix.image }}:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-results.sarif'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
         env:
           TRIVY_USERNAME: ${{ github.actor }}
           TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

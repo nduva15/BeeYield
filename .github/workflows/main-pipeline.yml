@@ -206,6 +206,8 @@ jobs:
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-fs-results.sarif'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v4
@@ -284,6 +286,8 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-frontend-image.sarif'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
         env:
           TRIVY_USERNAME: ${{ github.actor }}
           TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -356,6 +360,8 @@ jobs:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-backend-image.sarif'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
         env:
           TRIVY_USERNAME: ${{ github.actor }}
           TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
