@@ -333,7 +333,7 @@ export function inferDiseases(
   const high = (b["1500-3000"] ?? 0) + (b["3000-8000"] ?? 0);
   const clamp = (v: number) => Math.max(0, Math.min(1, v));
 
-  const raw: DiseaseRisk[] = [
+  const raw: Omit<DiseaseRisk, "severity">[] = [
     {
       name: "Varroosis (Varroa destructor infestation)",
       score: clamp((health.state === "Stressed" ? 0.45 : 0.1) + high * 1.4 + agg.spectralFlatness * 0.6),
