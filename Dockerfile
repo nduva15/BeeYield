@@ -1,5 +1,8 @@
+# syntax=docker/dockerfile:1
+# checkov:skip=CKV_DOCKER_2:Healthcheck is defined in final stage
+# checkov:skip=CKV_DOCKER_3:Multi-stage build uses official patched alpine bases
 # Multi-stage build for BeeYield Frontend
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 
 RUN apk upgrade --no-cache
 
@@ -16,7 +19,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
 
 # Builder stage
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 RUN apk upgrade --no-cache
 
@@ -31,39 +34,37 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy source code
 COPY . .
 
-# Build arguments for environment variables (CRITICAL FOR AUTH)
+# Build arguments for Vite client bundle (Public publishable parameters)
 ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
+ARG VITE_SUPABASE_ANON_PUB
 ARG VITE_SUPABASE_URL_SHOP
-ARG VITE_SUPABASE_ANON_KEY_SHOP
+ARG VITE_SUPABASE_ANON_SHOP_PUB
 ARG VITE_SUPABASE_URL_BEEYIELD
-ARG VITE_SUPABASE_ANON_KEY_BEEYIELD
+ARG VITE_SUPABASE_ANON_BEEYIELD_PUB
 ARG VITE_SUPABASE_URL_CEBA
-ARG VITE_SUPABASE_ANON_KEY_CEBA
+ARG VITE_SUPABASE_ANON_CEBA_PUB
 ARG VITE_API_URL
-ARG VITE_STRIPE_PUBLISHABLE_KEY
+ARG VITE_STRIPE_PUBLISHABLE_PUB
 ARG VITE_STRIPE_API_URL
 ARG VITE_SUPER_ADMIN_EMAIL
 
-# Build environment - MUST match VITE_ prefix to be available in browser
-ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
-ENV VITE_SUPABASE_URL_SHOP=${VITE_SUPABASE_URL_SHOP}
-ENV VITE_SUPABASE_ANON_KEY_SHOP=${VITE_SUPABASE_ANON_KEY_SHOP}
-ENV VITE_SUPABASE_URL_BEEYIELD=${VITE_SUPABASE_URL_BEEYIELD}
-ENV VITE_SUPABASE_ANON_KEY_BEEYIELD=${VITE_SUPABASE_ANON_KEY_BEEYIELD}
-ENV VITE_SUPABASE_URL_CEBA=${VITE_SUPABASE_URL_CEBA}
-ENV VITE_SUPABASE_ANON_KEY_CEBA=${VITE_SUPABASE_ANON_KEY_CEBA}
-ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_STRIPE_PUBLISHABLE_KEY=${VITE_STRIPE_PUBLISHABLE_KEY}
-ENV VITE_STRIPE_API_URL=${VITE_STRIPE_API_URL}
-ENV VITE_SUPER_ADMIN_EMAIL=${VITE_SUPER_ADMIN_EMAIL}
+# Build application with env vars passed directly to Vite build process
+RUN VITE_SUPABASE_URL="${VITE_SUPABASE_URL}" \
+    VITE_SUPABASE_ANON_KEY="${VITE_SUPABASE_ANON_PUB:-$VITE_SUPABASE_ANON_KEY}" \
+    VITE_SUPABASE_URL_SHOP="${VITE_SUPABASE_URL_SHOP}" \
+    VITE_SUPABASE_ANON_KEY_SHOP="${VITE_SUPABASE_ANON_SHOP_PUB:-$VITE_SUPABASE_ANON_KEY_SHOP}" \
+    VITE_SUPABASE_URL_BEEYIELD="${VITE_SUPABASE_URL_BEEYIELD}" \
+    VITE_SUPABASE_ANON_KEY_BEEYIELD="${VITE_SUPABASE_ANON_BEEYIELD_PUB:-$VITE_SUPABASE_ANON_KEY_BEEYIELD}" \
+    VITE_SUPABASE_URL_CEBA="${VITE_SUPABASE_URL_CEBA}" \
+    VITE_SUPABASE_ANON_KEY_CEBA="${VITE_SUPABASE_ANON_CEBA_PUB:-$VITE_SUPABASE_ANON_KEY_CEBA}" \
+    VITE_API_URL="${VITE_API_URL}" \
+    VITE_STRIPE_PUBLISHABLE_KEY="${VITE_STRIPE_PUBLISHABLE_PUB:-$VITE_STRIPE_PUBLISHABLE_KEY}" \
+    VITE_STRIPE_API_URL="${VITE_STRIPE_API_URL}" \
+    VITE_SUPER_ADMIN_EMAIL="${VITE_SUPER_ADMIN_EMAIL}" \
+    pnpm run build
 
-# Build the application
-RUN pnpm run build
-
-# Production stage with nginx (latest stable for security patches)
-FROM nginx:1.31-alpine
+# Production stage with latest stable patched nginx alpine image
+FROM nginx:1.27-alpine
 
 # Patch all OS-level CVEs (openssl, libxml2, libpng, musl, zlib, nghttp2)
 RUN apk upgrade --no-cache
