@@ -59,10 +59,6 @@ import BeeFlightHoursForecast from '@/components/beeyield/BeeFlightHoursForecast
 import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
 import SensorHealthView from '@/components/beeyield/SensorHealthView';
 import ContinuousMonitor from '@/components/beeyield/ContinuousMonitor';
-import YardOperations from '@/components/beeyield/YardOperations';
-import GatewayHub from '@/components/beeyield/GatewayHub';
-import HiveTelemetryView from '@/components/beeyield/HiveTelemetryView';
-import ContractVerificationModule from '@/components/beeyield/ContractVerificationModule';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
 import InspectionsView from '@/components/beeyield/InspectionsView';
@@ -311,10 +307,6 @@ const BeeYieldDashboard: React.FC = () => {
                     items: [
                         { id: 'sensor-vitals', label: 'Hive Health', icon: Heart },
                         { id: 'continuous-monitor', label: 'Live Stream', icon: Activity },
-                        { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
-                        { id: 'gateway-hub', label: 'Device gateway', icon: Server },
-                        { id: 'hive-telemetry', label: 'Advanced sensor data', icon: Signal },
-                        { id: 'contract-verification', label: 'Verified contracts', icon: ShieldCheck },
                         { id: 'bee-diseases', label: 'Pathogen Database', icon: AlertTriangle },
                         { id: 'bee-gallery', label: 'Bee Species', icon: Bug },
                         { id: 'bee-species-edit', label: 'Manage Species', icon: Settings },
@@ -446,10 +438,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
-            case 'yard-ops': return <YardOperations onTabChange={handleTabChange} />;
-            case 'gateway-hub': return <GatewayHub />;
-            case 'hive-telemetry': return <HiveTelemetryView />;
-            case 'contract-verification': return <ContractVerificationModule />;
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
             case 'inspections': return <InspectionsView onTabChange={handleTabChange} />;
