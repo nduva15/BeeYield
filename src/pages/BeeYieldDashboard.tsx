@@ -413,7 +413,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'feeding-schedule': return <FeedingSchedule isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'apiary-sizing': return <ApiarySizing isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'yield-projection': return <YieldProjection isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'measurement-tools': return <MeasurementDataTools isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
             case 'master-map': return <MasterMapView />;
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;

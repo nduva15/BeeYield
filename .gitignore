@@ -53,7 +53,7 @@ private/
 *.patch
 *.diff
 
-# Python
+# Python Virtual Environments & Packages
 __pycache__/
 *.py[cod]
 *$py.class
@@ -61,10 +61,17 @@ __pycache__/
 venv/
 ENV/
 env/
-# requirements.txt
-# (Allow requirements.txt within packages/services)
-!**/requirements.txt
-!requirements.txt
+Lib/
+lib/
+backend/Lib/
+backend/lib/
+site-packages/
+**/site-packages/**
+*.dist-info/
+**/*.dist-info/**
+*.egg-info/
+**/*.egg-info/**
+.pytest_cache/
 
 # Build / Output
 dist/
@@ -109,31 +116,9 @@ release/
 # Private Data and Context
 data/
 !src/data/
-!**/requirements.txt
-brain/
-
-# Internal Logs and Debugging
-*.txt
-!requirements.txt
-!**/requirements.txt
-*.log
-*.json
-!package*.json
-!tsconfig*.json
-!src/**/*.json
-!components.json
-!tsr.config.json
-
-# Private Data and Context
-data/
-!src/data/
-!**/requirements.txt
 brain/
 .gemini/
 .agent/
-node_modules/
-.venv/
-venv/
 
 # BEE-SOUND-ANALYSIS (cloned locally for model reference, deployed to Kaggle)
 beeyield-sound-analysis/

@@ -7,11 +7,18 @@ __pycache__
 env/
 venv/
 ENV/
-.venv
+.venv/
+Lib/
+lib/
+site-packages/
+**/site-packages/**
+*.dist-info/
+**/*.dist-info/**
+*.egg-info/
+**/*.egg-info/**
 pip-log.txt
 pip-delete-this-directory.txt
 .pytest_cache/
-*.egg-info/
 dist/
 build/
 
@@ -43,7 +50,7 @@ tests/
 test_*.py
 *_test.py
 
-# Data and migrations (if you want to exclude them from image)
+# Data and migrations
 migrations/
 data/
 

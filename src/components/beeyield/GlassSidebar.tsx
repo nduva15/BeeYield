@@ -23,7 +23,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     onLogout,
     navItems
 }) => {
-    const [expandedFolders, setExpandedFolders] = React.useState<string[]>(['beeyield', 'data', 'precision-pollination-folder', 'meters']);
+    const [expandedFolders, setExpandedFolders] = React.useState<string[]>(['beeyield', 'precision-pollination-folder', 'meters']);
     const { theme, setTheme } = useTheme();
     const { user } = useAuth();
     

@@ -8,6 +8,14 @@ __pycache__
 .venv
 venv
 env
+Lib
+lib
+site-packages
+**/site-packages
+*.dist-info
+**/*.dist-info
+*.egg-info
+**/*.egg-info
 
 # Massive Sub-projects
 beeknowledge-hub
@@ -20,7 +28,6 @@ dist
 build
 .output
 output
-*.egg-info
 
 # Version control
 .git
@@ -84,6 +91,7 @@ scripts
 # Misc
 *.txt
 !requirements.txt
+!**/requirements.txt
 *.json.backup
 *.bak
 .DS_Store
