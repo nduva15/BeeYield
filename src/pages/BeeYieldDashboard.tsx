@@ -65,10 +65,6 @@ import InspectionsView from '@/components/beeyield/InspectionsView';
 import HarvestsView from '@/components/beeyield/HarvestsView';
 import FlightMapView from '@/components/beeyield/FlightMapView';
 
-import MeasurementDataView from '@/components/beeyield/MeasurementDataView';
-import { BeeYieldOnlineView, USBView } from '@/components/beeyield/RemainingViews';
-import { BluetoothConnectivityView } from '@/components/beeyield/BluetoothConnectivityView';
-import MyDevicesView from '@/components/beeyield/MyDevicesView';
 import DeviceDetailView from '@/components/beeyield/DeviceDetailView';
 import MyNotesView from '@/components/beeyield/MyNotesView';
 import MyRequestsView from '@/components/beeyield/MyRequestsView';
@@ -332,17 +328,7 @@ const BeeYieldDashboard: React.FC = () => {
 
             ]
         },
-        {
-            id: 'data',
-            label: 'Measurement Data',
-            icon: Activity,
-            submenuItems: [
-                { id: 'online', label: 'Online', icon: Signal },
-                { id: 'bluetooth', label: 'Bluetooth', icon: Bluetooth },
-                { id: 'devices', label: 'My Devices', icon: Cpu },
-                { id: 'usb', label: 'USB', icon: Usb },
-            ]
-        },
+        { id: 'measurement-tools', label: 'Measurement Data Tools', icon: Activity },
         { id: 'notes', label: 'My Notes', icon: FileText },
         { id: 'requests', label: 'My Requests', icon: HelpCircle },
         { id: 'task', label: 'My Tasks', icon: ClipboardList },
@@ -453,12 +439,12 @@ const BeeYieldDashboard: React.FC = () => {
             case 'health-guide': return <HealthGuideView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'reports-exports': return <ReportsExportsView onTabChange={handleTabChange} />;
             case 'label-generator': return <LabelGeneratorView onTabChange={handleTabChange} />;
-            case 'data': return <MeasurementDataView onTabChange={handleTabChange} />;
-            case 'online': return <BeeYieldOnlineView onTabChange={handleTabChange} />;
-            case 'bluetooth': return <BluetoothConnectivityView onTabChange={handleTabChange} />;
-            case 'usb': return <USBView onTabChange={handleTabChange} />;
-            case 'devices': return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
-            case 'device': return <DeviceDetailView deviceId={viewParams?.action || ''} devices={devices} readings={readings} apiaries={apiaries} hives={hives} onBack={() => handleTabChange('devices')} onRefresh={refreshTelemetryData} />;
+            case 'data':
+            case 'devices':
+            case 'online':
+            case 'bluetooth':
+            case 'usb':
+            case 'measurement-tools': return <MeasurementDataTools isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'notes': return <MyNotesView onTabChange={handleTabChange} />;
             case 'requests': return <MyRequestsView onTabChange={handleTabChange} />;
             case 'task': return <MyTaskView onTabChange={handleTabChange} />;

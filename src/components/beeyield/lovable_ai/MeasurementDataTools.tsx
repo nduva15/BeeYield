@@ -601,61 +601,87 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   ];
 
   const containerClass = embedded
-    ? "relative z-0 bg-background overflow-visible p-6 rounded-xl border border-border"
+    ? "relative z-0 bg-transparent overflow-visible p-2 lg:p-6"
     : "fixed inset-0 z-50 bg-background overflow-y-auto p-6";
 
   return (
     <div className={containerClass}>
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-start justify-between mb-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="flex items-start justify-between">
           <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-honey bg-honey/15 rounded-full px-3 py-1 mb-2">
-              <Wifi className="w-3 h-3" /> Measurement Data Tools
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#F59E0B] mb-2">
+              <Wifi className="w-3.5 h-3.5 text-[#F59E0B]" /> Measurement Data Tools
             </span>
-            <h2 className="font-display text-3xl font-bold">Hive <span className="text-honey">Monitoring</span></h2>
-            <p className="text-sm text-muted-foreground">Remote telemetry and real-time environmental metrics for your colonies.</p>
+            <h2 className="font-display text-4xl font-extrabold tracking-tight text-foreground">Hive <span className="text-[#F59E0B]">Monitoring</span></h2>
+            <p className="text-sm font-medium text-muted-foreground/80 mt-1">Remote telemetry and real-time environmental metrics for your colonies.</p>
           </div>
           {!embedded && (
-            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted" title="Close">
+            <button onClick={onClose} className="w-9 h-9 rounded-xl border border-border flex items-center justify-center hover:bg-muted" title="Close">
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
         {!user ? (
-          <div className="rounded-xl border border-border p-10 text-center text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border/80 bg-[#FAF9F5]/60 p-12 text-center text-sm text-muted-foreground">
             Sign in to register apiaries, hives and measurement devices.
           </div>
         ) : (
           <>
-            <div className="flex flex-wrap gap-2 mb-5">
-              {TABS.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => setTab(t.id)}
-                  className={`px-4 py-2 rounded-lg border text-sm font-medium flex items-center gap-2 transition-all ${
-                    tab === t.id ? "bg-honey/20 border-honey text-foreground" : "border-border text-muted-foreground hover:bg-muted"
-                  }`}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setTab(t.id)}
+                    className={`h-11 px-5 rounded-xl border text-sm font-bold flex items-center gap-2 transition-all shadow-sm ${
+                      tab === t.id
+                        ? "bg-amber-50/70 border-amber-300/80 text-foreground ring-1 ring-amber-400/20"
+                        : "border-border/60 bg-white text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                    }`}
+                  >
+                    <t.icon className="w-4 h-4" /> {t.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex-1 min-w-[20px]" />
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setWizard("apiary")}
+                  className="gap-2 rounded-2xl h-11 px-6 font-bold uppercase tracking-wider text-xs border border-[#1B9157]/40 bg-white text-[#1B9157] hover:bg-[#1B9157]/10 transition-all shadow-sm"
                 >
-                  <t.icon className="w-4 h-4" /> {t.label}
-                </button>
-              ))}
-              <div className="flex-1" />
-              <Button variant="outline" onClick={() => setWizard("apiary")} className="gap-2"><Plus className="w-4 h-4" /> Add apiary</Button>
-              <Button onClick={() => setWizard("hive")} disabled={!apiaries.length} className="gap-2"><Plus className="w-4 h-4" /> Add hive</Button>
+                  <Plus className="w-4 h-4" /> Add apiary
+                </Button>
+                <Button
+                  onClick={() => setWizard("hive")}
+                  disabled={!apiaries.length}
+                  className="gap-2 rounded-2xl h-11 px-6 font-bold uppercase tracking-wider text-xs bg-[#5DA583] hover:bg-[#4E9372] text-white transition-all shadow-sm"
+                >
+                  <Plus className="w-4 h-4" /> Add hive
+                </Button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-xl border border-border bg-muted/30 p-4 mb-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 rounded-2xl border border-border/70 bg-[#FAF9F5] p-5 shadow-sm">
               <div>
-                <Label className="text-xs text-muted-foreground">Apiary</Label>
-                <select value={selApiary} onChange={(e) => setSelApiary(e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
+                <Label className="text-[11px] font-bold text-muted-foreground/80 mb-1.5 block">Apiary</Label>
+                <select
+                  value={selApiary}
+                  onChange={(e) => setSelApiary(e.target.value)}
+                  className="w-full h-11 rounded-xl border border-border/80 bg-white px-4 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
+                >
                   <option value="all">All apiaries</option>
                   {apiaries.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Asset handshake</Label>
-                <select value={selHive} onChange={(e) => setSelHive(e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
+                <Label className="text-[11px] font-bold text-muted-foreground/80 mb-1.5 block">Asset handshake</Label>
+                <select
+                  value={selHive}
+                  onChange={(e) => setSelHive(e.target.value)}
+                  className="w-full h-11 rounded-xl border border-border/80 bg-white px-4 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/30"
+                >
                   <option value="">Deselect</option>
                   {hives.filter((h) => selApiary === "all" || h.apiary_id === selApiary).map((h) => (
                     <option key={h.id} value={h.id}>{h.name}</option>
@@ -665,7 +691,7 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
             </div>
 
             {wizard ? (
-              <div className="rounded-xl border border-border p-6">
+              <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
                 {wizard === "apiary" ? (
                   <AddApiaryWizard onCancel={() => setWizard(null)} onDone={() => { setWizard(null); void load(); }} />
                 ) : (
@@ -678,10 +704,10 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
                   <div className="space-y-3">
                     {loading && <p className="text-sm text-muted-foreground flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Loading registry…</p>}
                     {!loading && visibleDevices.length === 0 && (
-                      <div className="rounded-xl border border-dashed border-border p-10 text-center">
-                        <Boxes className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
-                        <p className="font-semibold">No devices registered</p>
-                        <p className="text-sm text-muted-foreground">Add an apiary with devices, or scan a VitalSensor while adding a hive.</p>
+                      <div className="rounded-2xl border border-dashed border-border/80 bg-[#FAF9F5]/60 p-12 md:p-16 text-center">
+                        <Boxes className="w-10 h-10 mx-auto mb-3 text-muted-foreground/60" />
+                        <h3 className="font-bold text-base text-foreground mb-1">No devices registered</h3>
+                        <p className="text-sm font-medium text-muted-foreground/80 max-w-md mx-auto">Add an apiary with devices, or scan a VitalSensor while adding a hive.</p>
                       </div>
                     )}
                     {visibleDevices.map((d) => {
