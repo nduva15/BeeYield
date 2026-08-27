@@ -170,6 +170,15 @@ DO $$ BEGIN
     ALTER EXTENSION pg_net SET SCHEMA extensions;
 EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
+-- B. PostGIS System Tables RLS Backstop
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'spatial_ref_sys') THEN
+        ALTER TABLE public.spatial_ref_sys ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Allow public read access for spatial_ref_sys" ON public.spatial_ref_sys;
+        CREATE POLICY "Allow public read access for spatial_ref_sys" ON public.spatial_ref_sys FOR SELECT TO public USING (true);
+    END IF;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
+
 
 -- ==========================================
 -- 9. SECURITY: Fix Function Search Paths
