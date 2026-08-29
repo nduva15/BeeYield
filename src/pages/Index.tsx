@@ -46,6 +46,10 @@ import FeedingSchedule from "@/components/FeedingSchedule";
 import KnowledgeSearch from "@/components/KnowledgeSearch";
 import ApiarySizing from "@/components/ApiarySizing";
 import YieldProjection from "@/components/YieldProjection";
+import InspectionsPage from "@/components/InspectionsPage";
+import SoundAnalysis from "@/components/SoundAnalysis";
+import IntegrationsPage from "@/components/IntegrationsPage";
+import SettingsPage from "@/components/SettingsPage";
 
 type Message = {
   id: string;
