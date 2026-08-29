@@ -139,7 +139,7 @@ export default function SoundAnalysis({ isOpen, onClose }: { isOpen: boolean; on
     try {
       const res = await analyzeBlob(blob);
       setResult(res);
-      toast.success(`Acoustic scan complete — ${res.health_state ?? res.health.state}`);
+      toast.success(`Acoustic scan complete — ${res.health.state}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not decode this audio");
     } finally {

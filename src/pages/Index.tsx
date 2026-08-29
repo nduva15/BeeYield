@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Cpu, LogIn, LogOut } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Cpu, LogIn, LogOut, ClipboardList, AudioLines, Plug, Settings as SettingsIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +46,10 @@ import FeedingSchedule from "@/components/FeedingSchedule";
 import KnowledgeSearch from "@/components/KnowledgeSearch";
 import ApiarySizing from "@/components/ApiarySizing";
 import YieldProjection from "@/components/YieldProjection";
+import InspectionsPage from "@/components/InspectionsPage";
+import SoundAnalysis from "@/components/SoundAnalysis";
+import IntegrationsPage from "@/components/IntegrationsPage";
+import SettingsPage from "@/components/SettingsPage";
 
 type Message = {
   id: string;
@@ -172,6 +176,10 @@ export default function Index() {
   const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
+  const [inspectionsOpen, setInspectionsOpen] = useState(false);
+  const [soundAnalysisOpen, setSoundAnalysisOpen] = useState(false);
+  const [integrationsOpen, setIntegrationsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -451,6 +459,12 @@ export default function Index() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setSiteMapOpen(true)} className="cursor-pointer">
                 <MapPin className="w-4 h-4 mr-2" /> Hive Placement Map
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setInspectionsOpen(true)} className="cursor-pointer">
+                <ClipboardList className="w-4 h-4 mr-2" /> Inspections & Diagnostics
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSoundAnalysisOpen(true)} className="cursor-pointer">
+                <AudioLines className="w-4 h-4 mr-2" /> Acoustic Audit (Sound Analysis)
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
