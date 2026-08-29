@@ -460,6 +460,12 @@ export default function Index() {
               <DropdownMenuItem onClick={() => setSiteMapOpen(true)} className="cursor-pointer">
                 <MapPin className="w-4 h-4 mr-2" /> Hive Placement Map
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setInspectionsOpen(true)} className="cursor-pointer">
+                <ClipboardList className="w-4 h-4 mr-2" /> Inspections & Diagnostics
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSoundAnalysisOpen(true)} className="cursor-pointer">
+                <AudioLines className="w-4 h-4 mr-2" /> Acoustic Audit (Sound Analysis)
+              </DropdownMenuItem>
 
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-honey">Bloom & Flight Expert</DropdownMenuLabel>
