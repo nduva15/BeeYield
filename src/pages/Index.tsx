@@ -176,6 +176,10 @@ export default function Index() {
   const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
+  const [inspectionsOpen, setInspectionsOpen] = useState(false);
+  const [soundAnalysisOpen, setSoundAnalysisOpen] = useState(false);
+  const [integrationsOpen, setIntegrationsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
