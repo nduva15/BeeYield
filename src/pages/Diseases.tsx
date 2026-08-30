@@ -805,7 +805,19 @@ const Diseases = () => {
                             <div>
                                 <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-400 mb-4 tracking-tighter">95%</h3>
                                 <h4 className="text-lg font-bold text-white mb-2">Disease detection</h4>
-                                  {/* ═══════════════════════════════════════════════════════════════
+                                <p className="text-neutral-400 text-sm leading-relaxed">Early-stage anomaly warning across thermal, acoustic, and gas metrics before visual hive collapse.</p>
+                            </div>
+                            <div>
+                                <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-400 mb-4 tracking-tighter">10x</h3>
+                                <h4 className="text-lg font-bold text-white mb-2">Faster intervention</h4>
+                                <p className="text-neutral-400 text-sm leading-relaxed">Automated cloud alerts allow targeted organic treatments days before comb cross-contamination.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════════
                 LIVE FIELD INSPECTION GALLERY — Multiple 3-Photo Slideshows
             ═══════════════════════════════════════════════════════════════ */}
             <section className="py-24 bg-neutral-950 text-white border-b border-neutral-800 relative overflow-hidden">
