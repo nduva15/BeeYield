@@ -349,7 +349,7 @@ const ESG = () => {
               slides={[
                 {
                   image: ESG_IMAGES.combProbe2,
-                  title: "Comb Disease Detection",
+                  title: "Detect Bee Diseases & Brood Health",
                   subtitle: "Early brood pathology screening on comb frames",
                   badge: "Disease Detection",
                   description: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."

@@ -92,7 +92,7 @@ const APISENSE_BEE_SLIDES: SlideItem[] = [
 const COMB_COLONY_SLIDES: SlideItem[] = [
   {
     image: '/images/pollination/hive-comb-inspection-7.png',
-    title: 'Comb Disease Detection',
+    title: 'Detect Bee Diseases & Brood Health',
     subtitle: 'Visual brood pathology screening on drawn comb',
     badge: 'Disease Detection',
     description: 'Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities directly on drawn comb.',

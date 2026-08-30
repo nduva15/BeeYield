@@ -357,7 +357,7 @@ const Impact = () => {
                 },
                 {
                   image: IMPACT_IMAGES.combProbe2,
-                  title: "Comb Disease Detection",
+                  title: "Detect Bee Diseases & Brood Health",
                   subtitle: "Early pathogen screening on drawn brood comb",
                   badge: "Disease Detection",
                   description: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."

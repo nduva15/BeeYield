@@ -233,14 +233,14 @@ const OurStory = () => {
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={STORY_IMAGES.combProbe2}
-                  alt="Fresh wax comb built on sensor frame"
+                  alt="In-hive brood inspection and early disease detection"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="p-4 bg-white">
                 <span className="text-[10px] font-bold text-beeyield-green uppercase">Stage 4</span>
-                <h4 className="font-bold text-sm text-neutral-900 mt-1">Comb Disease Detection</h4>
-                <p className="text-xs text-neutral-500 mt-1">Early brood pathology screening on drawn comb frames.</p>
+                <h4 className="font-bold text-sm text-neutral-900 mt-1">Detect Bee Diseases & Pathogens</h4>
+                <p className="text-xs text-neutral-500 mt-1">Early detection of Varroa mites, Foulbrood, and brood stress directly on the comb.</p>
               </div>
             </div>
           </div>
@@ -372,7 +372,7 @@ const OurStory = () => {
                 },
                 {
                   image: STORY_IMAGES.combProbe2,
-                  title: "Comb Disease Detection",
+                  title: "Detect Bee Diseases & Brood Health",
                   subtitle: "Early pathogen screening on drawn brood comb",
                   badge: "Disease Detection",
                   description: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."

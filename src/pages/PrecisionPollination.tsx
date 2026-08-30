@@ -108,7 +108,7 @@ const COMB_DIAGNOSTICS_SLIDES: SlideItem[] = [
 const COLONY_VITALITY_SLIDES: SlideItem[] = [
   {
     image: '/images/pollination/hive-comb-inspection-7.png',
-    title: 'Comb Brood Disease Screening',
+    title: 'Detect Bee Diseases & Brood Health',
     subtitle: 'Early pathogen detection on drawn brood comb',
     badge: 'Disease Detection',
     description: 'AI-enhanced comb imaging detects early symptoms of American Foulbrood, chalkbrood, and sacbrood virus across brood cells.',

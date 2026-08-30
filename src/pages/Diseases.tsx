@@ -930,7 +930,7 @@ const Diseases = () => {
                                 },
                                 {
                                     image: "/images/diseases/hive-comb-inspection-7.png",
-                                    title: "Brood Disease Comb Screening",
+                                    title: "Detect Bee Diseases & Brood Health",
                                     subtitle: "Early pathology detection on drawn brood frames",
                                     badge: "Disease Detection",
                                     description: "Visual and sensor-based screening of brood comb for American Foulbrood, chalkbrood, and Varroa-induced deformities."
