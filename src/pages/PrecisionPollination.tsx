@@ -32,7 +32,7 @@ import {
 
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
-/* ── 3-Photo Curated Slideshow Datasets (In-Hive Pollination) ───────── */
+/* ── 4 Curated 3-Photo Slideshow Datasets (In-Hive Pollination) ───────── */
 const HARDWARE_SLIDES: SlideItem[] = [
   {
     image: '/images/pollination/gateway-solar-node.png',
@@ -42,6 +42,23 @@ const HARDWARE_SLIDES: SlideItem[] = [
     description: 'Relays telemetry data from all in-hive sensor nodes across the apiary yard directly to the cloud via cellular uplink.',
   },
   {
+    image: '/images/story/deployed-hive-antenna-1.png',
+    title: 'Weatherproof Hive Antenna Station',
+    subtitle: 'Galvanized tin lid mount on traditional Kenyan beehive stand',
+    badge: '22 Deployed Hives',
+    description: 'Autonomous transmission station standing in active Kenyan apiary yard, operating continuously in harsh semi-arid weather.',
+  },
+  {
+    image: '/images/story/deployed-hive-antenna-2.png',
+    title: 'Kenyan Top-Bar Hive Stand Deployment',
+    subtitle: 'Anti-termite pole mount with solar transmission unit',
+    badge: '45 Acres Served',
+    description: 'Field station deployed at avocado and mango orchard boundaries to monitor foraging flight density during peak flowering.',
+  },
+];
+
+const SCALES_SLIDES: SlideItem[] = [
+  {
     image: '/images/pollination/hive-scale-loadcell.png',
     title: 'Precision Under-Hive Load Cell Scale',
     subtitle: 'Industrial continuous weighing bar mounted under wooden hive floor',
@@ -49,11 +66,18 @@ const HARDWARE_SLIDES: SlideItem[] = [
     description: 'Measures sub-milligram daily weight gains during heavy nectar flow and alerts immediately upon swarming biomass departure.',
   },
   {
-    image: '/images/story/deployed-hive-antenna-1.png',
-    title: 'Weatherproof Hive Antenna Station',
-    subtitle: 'Galvanized tin lid mount on traditional Kenyan beehive stand',
-    badge: '22 Deployed Hives',
-    description: 'Autonomous transmission station standing in active Kenyan apiary yard, operating continuously in harsh semi-arid weather.',
+    image: '/images/pollination/hive-comb-inspection-8.png',
+    title: 'Top-Down Multi-Frame Brood Coverage',
+    subtitle: 'Parallel active frames with central telemetry probe insertion',
+    badge: 'Field Inspection',
+    description: 'Full-depth inspection showing high colony population density and active brood comb across multiple frames in commercial hive boxes.',
+  },
+  {
+    image: '/images/diseases/hive-inspection-1.png',
+    title: 'In-Hive Vertical Telemetry Probe',
+    subtitle: 'Microclimate sensor probe installed between brood frames',
+    badge: 'Thermal Profiling',
+    description: 'Continuous microclimate and VOC tracking delivering early warning of pathogen stress weeks before visual symptoms.',
   },
 ];
 
@@ -73,28 +97,21 @@ const COMB_DIAGNOSTICS_SLIDES: SlideItem[] = [
     description: 'Proves complete acceptance of the sensor probe inside the hive cavity, allowing uninterrupted brood rearing and thermoregulation.',
   },
   {
-    image: '/images/pollination/hive-comb-inspection-7.png',
-    title: 'Natural Comb Building on Sensor Frame',
-    subtitle: 'Fresh white honeycomb wax drawn seamlessly along the probe body',
-    badge: 'Wax Secretion',
-    description: 'Worker bees actively secrete and build natural beeswax directly onto the sensor frame structure, integrating it into the living hive.',
+    image: '/images/story/apisense-bees-closeup-1.png',
+    title: 'ApiSense Probe Inside Log Hive',
+    subtitle: 'In-hive sensor installed in traditional log cavity',
+    badge: 'Log Hive Validated',
+    description: 'Direct measurement of African bee colony thermoregulation inside traditional Kenyan log hives with full biocompatibility.',
   },
 ];
 
 const COLONY_VITALITY_SLIDES: SlideItem[] = [
   {
-    image: '/images/pollination/hive-comb-inspection-8.png',
-    title: 'Top-Down Multi-Frame Brood Coverage',
-    subtitle: 'Parallel active frames with central telemetry probe insertion',
-    badge: 'Field Inspection',
-    description: 'Full-depth inspection showing high colony population density and active brood comb across multiple frames in commercial hive boxes.',
-  },
-  {
-    image: '/images/story/deployed-hive-antenna-2.png',
-    title: 'Kenyan Top-Bar Hive Stand Deployment',
-    subtitle: 'Anti-termite pole mount with solar transmission unit',
-    badge: '45 Acres Served',
-    description: 'Field station deployed at avocado and mango orchard boundaries to monitor foraging flight density during peak flowering.',
+    image: '/images/pollination/hive-comb-inspection-7.png',
+    title: 'Natural Comb Building on Sensor Frame',
+    subtitle: 'Fresh white honeycomb wax drawn seamlessly along the probe body',
+    badge: 'Wax Secretion',
+    description: 'Worker bees actively secrete and build natural beeswax directly onto the sensor frame structure, integrating it into the living hive.',
   },
   {
     image: '/images/story/bee-colony-device-wide.jpg',
@@ -102,6 +119,13 @@ const COLONY_VITALITY_SLIDES: SlideItem[] = [
     subtitle: 'Wide-angle view of massive colony cluster around sensor probe',
     badge: '2.4M+ Bees Protected',
     description: 'Demonstrates vigorous colony health, high worker population density, and seamless coexistence with digital telemetry hardware.',
+  },
+  {
+    image: '/images/story/apisense-bees-cluster-2.png',
+    title: 'Dense Bee Cluster Telemetry',
+    subtitle: 'Worker bees covering vertical sensor probe without propolizing vents',
+    badge: 'Colony Vitality',
+    description: 'Complete acceptance of internal hardware enclosure without defensive stinging or propolis clogging over sensor apertures.',
   },
 ];
 
@@ -120,36 +144,38 @@ const InHiveTelemetrySlideshowSection = () => {
           </h2>
           <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
           <p className="text-neutral-400 text-base leading-relaxed">
-            3 curated 3-photo slideshows showcasing solar LTE gateways, in-hive brood sensors, and active colony inspections inside Kenyan apiaries.
+            4 curated 3-photo slideshows showcasing solar LTE gateways, continuous under-hive load-cell scales, in-hive brood sensors, and active colony wax integration.
           </p>
         </div>
 
-        {/* 3 Distinct 3-Photo Slideshows Grid */}
-        <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {/* Slideshow 1: Core Hardware */}
+        {/* 4 Distinct 3-Photo Slideshows Grid (2x2 on Desktop) */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           <ThreePhotoSlideshow
             slides={HARDWARE_SLIDES}
             badge="Hardware Network"
-            title="Field Transmission Hubs"
-            subtitle="Solar LTE gateways & precision load cells"
+            title="Solar Gateways & Stands"
+            subtitle="Autonomous transmission hubs"
             dark={true}
           />
-
-          {/* Slideshow 2: In-Hive Comb Diagnostics */}
+          <ThreePhotoSlideshow
+            slides={SCALES_SLIDES}
+            badge="Scale Telemetry"
+            title="Continuous Load Cells"
+            subtitle="Sub-milligram weighing bars"
+            dark={true}
+          />
           <ThreePhotoSlideshow
             slides={COMB_DIAGNOSTICS_SLIDES}
             badge="In-Hive Probes"
-            title="Biocompatible Diagnostics"
-            subtitle="ApiSense boards & natural wax building"
+            title="ApiSense Bio-Sensors"
+            subtitle="Live bee interaction on PCB"
             dark={true}
           />
-
-          {/* Slideshow 3: Colony Health */}
           <ThreePhotoSlideshow
             slides={COLONY_VITALITY_SLIDES}
-            badge="Colony Vitality"
-            title="Active Apiary Inspections"
-            subtitle="Top-down brood frames & dense clusters"
+            badge="Colony Health"
+            title="Wax Comb & Vitality"
+            subtitle="Natural wax drawn on frames"
             dark={true}
           />
         </div>

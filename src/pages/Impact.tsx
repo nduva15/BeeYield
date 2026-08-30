@@ -246,11 +246,11 @@ const Impact = () => {
               Real Field <span className="text-beeyield-green">Evidence.</span>
             </h2>
             <p className="text-neutral-400 text-lg font-medium">
-              3 curated 3-photo slideshows documenting 22 deployed IoT hardware stations, live colony populations, and precision continuous scales across Kenya.
+              4 curated 3-photo slideshows documenting 22 deployed IoT hardware stations, live colony populations, in-hive bio-sensors, and precision continuous scales across Kenya.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             
             {/* Slideshow 1: 22 IoT Hardware Deployments */}
             <ThreePhotoSlideshow
@@ -314,7 +314,38 @@ const Impact = () => {
               dark={true}
             />
 
-            {/* Slideshow 3: Scales, Comb & Carbon Offset */}
+            {/* Slideshow 3: Bio-Telemetry Diagnostics */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: IMPACT_IMAGES.apisenseCloseup1,
+                  title: "ApiSense Bio-Sensor Probe",
+                  subtitle: "In-hive probe installed inside log cavity",
+                  badge: "Log Hive Validated",
+                  description: "Real-time acoustic and temperature tracking inside occupied traditional log hives with full biocompatibility."
+                },
+                {
+                  image: IMPACT_IMAGES.apisenseCluster2,
+                  title: "Dense Bee Cluster Telemetry",
+                  subtitle: "Worker bees covering vertical sensor node",
+                  badge: "Bee Behavior",
+                  description: "Proves complete biological acceptance with bees moving freely across probe surface."
+                },
+                {
+                  image: IMPACT_IMAGES.combProbe1,
+                  title: "In-Hive Acoustic Sampling",
+                  subtitle: "Acoustic diagnostic sampling frame",
+                  badge: "Acoustic AI",
+                  description: "High-fidelity bio-acoustic spectrum tracking for swarm prediction and colony stress monitoring."
+                }
+              ]}
+              badge="Bio-Telemetry"
+              title="In-Hive Bio-Sensors"
+              subtitle="Acoustic & thermal sampling"
+              dark={true}
+            />
+
+            {/* Slideshow 4: Scales, Comb & Carbon Offset */}
             <ThreePhotoSlideshow
               slides={[
                 {

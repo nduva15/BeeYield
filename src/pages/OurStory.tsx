@@ -261,11 +261,11 @@ const OurStory = () => {
               Our Story <span className="text-beeyield-green">in Photos</span>
             </h2>
             <p className="text-neutral-400 text-base">
-              3 curated 3-photo slideshows tracking our journey from early in-hive hardware experiments in Kibwezi to 22 IoT-monitored hive stations across Kenya.
+              4 curated 3-photo slideshows tracking our journey from early in-hive hardware experiments in Kibwezi to 22 IoT-monitored hive stations across Kenya.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             
             {/* Slideshow 1: Origin & Early In-Hive Probes */}
             <ThreePhotoSlideshow
@@ -329,7 +329,38 @@ const OurStory = () => {
               dark={true}
             />
 
-            {/* Slideshow 3: Precision Pollination & Biocompatibility */}
+            {/* Slideshow 3: In-Hive Sensor Integration */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: STORY_IMAGES.apisenseCluster1,
+                  title: "Active Colony Around Probe",
+                  subtitle: "Hundreds of bees clustered on sensor",
+                  badge: "Colony Vitality",
+                  description: "Continuous microclimate and acoustics tracking with seamless bee acceptance inside hive."
+                },
+                {
+                  image: STORY_IMAGES.apisenseCluster2,
+                  title: "Dense Bee Cluster Telemetry",
+                  subtitle: "Worker bees covering vertical sensor node",
+                  badge: "Bee Behavior",
+                  description: "Proves complete biological acceptance with bees moving freely across probe surface."
+                },
+                {
+                  image: STORY_IMAGES.fieldInspection1,
+                  title: "In-Hive Multi-Frame Probe",
+                  subtitle: "Vertical sensor between brood frames",
+                  badge: "Brood Diagnostics",
+                  description: "Direct observation of brood thermoregulation stability across commercial hives."
+                }
+              ]}
+              badge="Bio-Telemetry"
+              title="Colony Bio-Telemetry"
+              subtitle="Live bee clusters & sensors"
+              dark={true}
+            />
+
+            {/* Slideshow 4: Precision Pollination & Biocompatibility */}
             <ThreePhotoSlideshow
               slides={[
                 {

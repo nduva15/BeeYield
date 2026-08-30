@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
 import beeyieldService from "@/services/beeyieldService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
 /* ── Authentic Field Photos (Zero AI Renders) ─────────────────── */
 const ESG_IMAGES = {
@@ -233,7 +234,7 @@ const ESG = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          PHOTO EVIDENCE SHOWCASE — Authentic ESG in Action
+          PHOTO EVIDENCE SHOWCASE — 4 Distinct 3-Photo Slideshows
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-white border-t border-neutral-100">
         <div className="container mx-auto px-4">
@@ -245,106 +246,134 @@ const ESG = () => {
               ESG in the <span className="text-beeyield-green">Field</span>
             </h2>
             <p className="text-muted-foreground text-lg">
-              Authentic photography from our apiaries showing solar telemetry nodes, in-hive sensors, precision scales, and biocompatible wax development.
+              4 curated 3-photo slideshows tracking solar telemetry nodes, continuous under-hive load cell scales, community bio-sensors, and biocompatible wax integration.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Photo 1: Environmental / Solar Gateway */}
-            <div className="group rounded-[2rem] overflow-hidden border border-neutral-200 bg-neutral-900 shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col">
-              <div className="aspect-[4/3] overflow-hidden relative">
-                <img
-                  src={ESG_IMAGES.solarGateway}
-                  alt="Solar IoT Gateway Node with dual high-gain antennas"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-emerald-500 text-neutral-950 font-bold text-[9px]">Environmental</Badge>
-                </div>
-              </div>
-              <div className="p-6 bg-white flex-1 flex flex-col justify-between">
-                <div>
-                  <h4 className="font-bold text-neutral-900 text-base mb-1">Zero-Watt Solar Hub</h4>
-                  <p className="text-xs text-neutral-500 leading-relaxed">Self-sustaining solar harvest panel powering continuous cellular telemetry with zero grid draw.</p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-beeyield-green font-bold">
-                  <span>3t CO₂ Offset</span>
-                  <Zap className="w-4 h-4" />
-                </div>
-              </div>
-            </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {/* Slideshow 1: Environmental / Solar Gateways */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: ESG_IMAGES.solarGateway,
+                  title: "Zero-Watt Solar Hub",
+                  subtitle: "High-gain dual antenna LTE gateway",
+                  badge: "Environmental",
+                  description: "Self-sustaining solar harvest panel powering continuous cellular telemetry with zero grid draw."
+                },
+                {
+                  image: ESG_IMAGES.deployedHive1,
+                  title: "Night Apiary Field Check",
+                  subtitle: "Solar antenna module on galvanized tin lid",
+                  badge: "3t CO₂ Offset",
+                  description: "Autonomous transmission node standing on metal pole in Kenyan apiary during nighttime field check."
+                },
+                {
+                  image: ESG_IMAGES.deployedHive2,
+                  title: "Kenyan Top-Bar Hive Station",
+                  subtitle: "Weatherproof antenna unit on stand",
+                  badge: "22 Deployed Hives",
+                  description: "Robust solar-powered node operating at commercial orchard boundaries to monitor pollinator foraging density."
+                }
+              ]}
+              badge="Environmental"
+              title="Solar Hubs & Stands"
+              subtitle="Zero-watt autonomous nodes"
+              dark={false}
+            />
 
-            {/* Photo 2: Social / ApiSense with Bees */}
-            <div className="group rounded-[2rem] overflow-hidden border border-neutral-200 bg-neutral-900 shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col">
-              <div className="aspect-[4/3] overflow-hidden relative">
-                <img
-                  src={ESG_IMAGES.apisenseCloseup1}
-                  alt="ApiSense sensor board inside active log hive with bees"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-amber-500 text-neutral-950 font-bold text-[9px]">Social Impact</Badge>
-                </div>
-              </div>
-              <div className="p-6 bg-white flex-1 flex flex-col justify-between">
-                <div>
-                  <h4 className="font-bold text-neutral-900 text-base mb-1">Community Apiculture</h4>
-                  <p className="text-xs text-neutral-500 leading-relaxed">Traditional log and top-bar hives modernized with non-invasive sensors to train local beekeepers.</p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-beeyield-green font-bold">
-                  <span>45 Acres Served</span>
-                  <Users className="w-4 h-4" />
-                </div>
-              </div>
-            </div>
+            {/* Slideshow 2: Social / Community Bio-Sensors */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: ESG_IMAGES.apisenseCloseup1,
+                  title: "ApiSense Probe in Log Hive",
+                  subtitle: "Multi-sensor probe in traditional log cavity",
+                  badge: "Social Impact",
+                  description: "Traditional log and top-bar hives modernized with non-invasive sensors to train local beekeepers."
+                },
+                {
+                  image: ESG_IMAGES.apisenseCloseup2,
+                  title: "Worker Bee on Sensor PCB",
+                  subtitle: "Live forager on non-toxic sensor board",
+                  badge: "Zero Rejection",
+                  description: "Direct observation of healthy worker bee landing on the ApiSense probe without distress signals."
+                },
+                {
+                  image: ESG_IMAGES.apisenseCluster1,
+                  title: "Active Colony Around Probe",
+                  subtitle: "Hundreds of bees clustered on sensor",
+                  badge: "45 Acres Served",
+                  description: "Dense bee cluster surrounding the in-hive ApiSense probe, showing zero repellent behavior."
+                }
+              ]}
+              badge="Social Impact"
+              title="Community Bio-Sensors"
+              subtitle="ApiSense sensor adoption"
+              dark={false}
+            />
 
-            {/* Photo 3: Governance / Deployed Hive with Antenna */}
-            <div className="group rounded-[2rem] overflow-hidden border border-neutral-200 bg-neutral-900 shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col">
-              <div className="aspect-[4/3] overflow-hidden relative">
-                <img
-                  src={ESG_IMAGES.deployedHive2}
-                  alt="Weatherproof antenna module deployed on traditional hive"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-blue-500 text-white font-bold text-[9px]">Governance</Badge>
-                </div>
-              </div>
-              <div className="p-6 bg-white flex-1 flex flex-col justify-between">
-                <div>
-                  <h4 className="font-bold text-neutral-900 text-base mb-1">Verified Telemetry Nodes</h4>
-                  <p className="text-xs text-neutral-500 leading-relaxed">22 deployed nodes transmitting tamper-evident microclimate and weight telemetry 24/7.</p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-beeyield-green font-bold">
-                  <span>22 Active Nodes</span>
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-              </div>
-            </div>
+            {/* Slideshow 3: Governance / Continuous Scales */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: ESG_IMAGES.hiveScale,
+                  title: "Under-Hive Continuous Scale",
+                  subtitle: "Sub-milligram load cell telemetry",
+                  badge: "Governance",
+                  description: "Industrial load cell bar mounted under hive base tracking diurnal weight changes down to sub-grams."
+                },
+                {
+                  image: ESG_IMAGES.combProbe3,
+                  title: "Multi-Frame Brood Coverage",
+                  subtitle: "Top-down commercial hive inspection",
+                  badge: "Data Integrity",
+                  description: "Parallel active frames showing full brood vitality and verified strength across precision-pollinated client orchards."
+                },
+                {
+                  image: ESG_IMAGES.combProbe1,
+                  title: "Vertical Brood Telemetry",
+                  subtitle: "In-hive microclimate probe frame",
+                  badge: "22 Active Nodes",
+                  description: "Continuous microclimate and VOC tracking delivering early warning of pathogen stress."
+                }
+              ]}
+              badge="Governance"
+              title="Verified Scale Telemetry"
+              subtitle="Tamper-evident 24/7 metrics"
+              dark={false}
+            />
 
-            {/* Photo 4: Ecological / Natural Comb Building */}
-            <div className="group rounded-[2rem] overflow-hidden border border-neutral-200 bg-neutral-900 shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col">
-              <div className="aspect-[4/3] overflow-hidden relative">
-                <img
-                  src={ESG_IMAGES.combProbe2}
-                  alt="Worker bees building fresh wax comb along sensor probe frame"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-lime-500 text-neutral-950 font-bold text-[9px]">Biocompatibility</Badge>
-                </div>
-              </div>
-              <div className="p-6 bg-white flex-1 flex flex-col justify-between">
-                <div>
-                  <h4 className="font-bold text-neutral-900 text-base mb-1">Natural Comb Acceptance</h4>
-                  <p className="text-xs text-neutral-500 leading-relaxed">Worker bees building natural comb directly onto sensor structures, confirming non-invasive integration.</p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-beeyield-green font-bold">
-                  <span>100% Chemical-Free</span>
-                  <Activity className="w-4 h-4" />
-                </div>
-              </div>
-            </div>
+            {/* Slideshow 4: Biocompatibility & Comb Wax */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: ESG_IMAGES.combProbe2,
+                  title: "Natural Comb Wax Integration",
+                  subtitle: "Bees drawing wax directly on sensor frame",
+                  badge: "Biocompatible",
+                  description: "Worker bees building natural comb directly onto sensor structures, confirming non-invasive integration."
+                },
+                {
+                  image: ESG_IMAGES.beeColonyWide,
+                  title: "Thriving African Bee Colony",
+                  subtitle: "Dense colony mass around sensor",
+                  badge: "2.4M+ Bees",
+                  description: "Full-depth cluster density confirms non-invasive sensor presence with zero colony disruption."
+                },
+                {
+                  image: ESG_IMAGES.apisenseCluster2,
+                  title: "Dense Bee Cluster Telemetry",
+                  subtitle: "Worker bees covering vertical sensor node",
+                  badge: "100% Chemical-Free",
+                  description: "Worker bees moving freely across probe surface with natural propolis and honey storage."
+                }
+              ]}
+              badge="Biocompatibility"
+              title="Comb & Colony Vitality"
+              subtitle="Natural beeswax secretion"
+              dark={false}
+            />
           </div>
         </div>
       </section>

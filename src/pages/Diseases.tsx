@@ -819,12 +819,12 @@ const Diseases = () => {
                         </h2>
                         <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
                         <p className="text-neutral-400 text-base leading-relaxed">
-                            3 specialized 3-photo slideshows demonstrating early pathogen screening, biocompatible comb integration, and autonomous field telemetry across Kenyan research apiaries.
+                            4 specialized 3-photo slideshows demonstrating early pathogen screening, autonomous field hardware, in-hive bio-sensors, and biocompatible comb integration.
                         </p>
                     </div>
 
-                    {/* 3 Themed 3-Photo Slideshows */}
-                    <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                    {/* 4 Themed 3-Photo Slideshows Grid */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
                         {/* Slideshow 1: In-Hive Disease Screening */}
                         <ThreePhotoSlideshow
                             slides={[
@@ -856,7 +856,38 @@ const Diseases = () => {
                             dark={true}
                         />
 
-                        {/* Slideshow 2: Colony Behavior & Comb */}
+                        {/* Slideshow 2: Field Telemetry & Gateway */}
+                        <ThreePhotoSlideshow
+                            slides={[
+                                {
+                                    image: "/images/diseases/gateway-solar-node.png",
+                                    title: "Autonomous Solar IoT Gateway",
+                                    subtitle: "High-gain dual antenna LTE gateway",
+                                    badge: "Solar Hub",
+                                    description: "Off-grid transmission hub powering up to 100 sensor nodes across a commercial apiary."
+                                },
+                                {
+                                    image: "/images/story/deployed-hive-antenna-1.png",
+                                    title: "IoT Hive Stand Deployment",
+                                    subtitle: "Solar antenna module on galvanized tin lid",
+                                    badge: "22 Deployed Hives",
+                                    description: "Autonomous transmission node standing on metal pole in Kenyan apiary during nighttime field check."
+                                },
+                                {
+                                    image: "/images/story/deployed-hive-antenna-2.png",
+                                    title: "Kenyan Top-Bar Hive Station",
+                                    subtitle: "Anti-termite pole mount with solar transmission unit",
+                                    badge: "45 Acres Served",
+                                    description: "Field station deployed at orchard boundaries to monitor pollinator foraging density in real time."
+                                }
+                            ]}
+                            badge="Field Hardware"
+                            title="Solar Gateways & Stands"
+                            subtitle="Autonomous field telemetry hubs"
+                            dark={true}
+                        />
+
+                        {/* Slideshow 3: Bio-Sensor Interaction */}
                         <ThreePhotoSlideshow
                             slides={[
                                 {
@@ -867,10 +898,41 @@ const Diseases = () => {
                                     description: "Direct observation of healthy worker bee landing on the ApiSense probe without distress signals."
                                 },
                                 {
+                                    image: "/images/story/apisense-bees-cluster-1.png",
+                                    title: "Active Colony Surrounding Probe",
+                                    subtitle: "Hundreds of African honeybees on sensor",
+                                    badge: "Bee Behavior",
+                                    description: "Proves complete biological acceptance of the sensor probe inside the hive cavity."
+                                },
+                                {
+                                    image: "/images/story/apisense-bees-closeup-1.png",
+                                    title: "ApiSense Bio-Sensor Probe",
+                                    subtitle: "Multi-sensor probe in traditional log cavity",
+                                    badge: "Log Hive Validated",
+                                    description: "Real-time acoustic and temperature tracking inside occupied traditional log hives."
+                                }
+                            ]}
+                            badge="Biocompatibility"
+                            title="ApiSense Bio-Sensors"
+                            subtitle="Live bee interaction on PCB"
+                            dark={true}
+                        />
+
+                        {/* Slideshow 4: Scales & Comb Wax */}
+                        <ThreePhotoSlideshow
+                            slides={[
+                                {
+                                    image: "/images/diseases/hive-scale-loadcell.png",
+                                    title: "Under-Hive Continuous Scale",
+                                    subtitle: "Sub-milligram load cell telemetry",
+                                    badge: "Weight Telemetry",
+                                    description: "Tracks daily honey accumulation, nectar flow dynamics, robbing events, and biomass departures."
+                                },
+                                {
                                     image: "/images/diseases/hive-comb-inspection-7.png",
                                     title: "Natural Honeycomb Wax Integration",
                                     subtitle: "Fresh white comb drawn seamlessly along frame",
-                                    badge: "Biocompatible",
+                                    badge: "Comb Growth",
                                     description: "Colony draws natural wax directly onto probe enclosure, proving 100% biocompatibility."
                                 },
                                 {
@@ -881,40 +943,9 @@ const Diseases = () => {
                                     description: "Full-depth cluster density confirms non-invasive sensor presence with zero colony disruption."
                                 }
                             ]}
-                            badge="Biocompatibility"
-                            title="Colony Health & Comb"
-                            subtitle="Bees drawing wax on sensor frames"
-                            dark={true}
-                        />
-
-                        {/* Slideshow 3: Field Telemetry & Scales */}
-                        <ThreePhotoSlideshow
-                            slides={[
-                                {
-                                    image: "/images/story/deployed-hive-antenna-1.png",
-                                    title: "IoT Hive Stand Deployment",
-                                    subtitle: "Solar antenna module on galvanized tin lid",
-                                    badge: "22 Deployed Hives",
-                                    description: "Autonomous transmission node standing on metal pole in Kenyan apiary during nighttime field check."
-                                },
-                                {
-                                    image: "/images/diseases/gateway-solar-node.png",
-                                    title: "Autonomous Solar IoT Gateway",
-                                    subtitle: "High-gain dual antenna LTE gateway",
-                                    badge: "Solar Hub",
-                                    description: "Off-grid transmission hub powering up to 100 sensor nodes across a commercial apiary."
-                                },
-                                {
-                                    image: "/images/diseases/hive-scale-loadcell.png",
-                                    title: "Under-Hive Continuous Scale",
-                                    subtitle: "Sub-milligram load cell telemetry",
-                                    badge: "Weight Telemetry",
-                                    description: "Tracks daily honey accumulation, nectar flow dynamics, robbing events, and biomass departures."
-                                }
-                            ]}
-                            badge="Field Hardware"
-                            title="Telemetry & Scale Hubs"
-                            subtitle="Solar gateways & under-hive scales"
+                            badge="Scale Telemetry"
+                            title="Scales & Comb Growth"
+                            subtitle="Continuous scales & wax integration"
                             dark={true}
                         />
                     </div>
