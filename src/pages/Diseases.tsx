@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Circle, Marker, Popup, Tooltip, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -40,7 +40,11 @@ import {
     Eye,
     BookOpen,
     Expand,
-    BadgeDollarSign
+    BadgeDollarSign,
+    ChevronLeft,
+    ChevronRight,
+    Play,
+    Pause
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,49 +62,79 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import LOGO from "@/assets/Logo.png";
 
 // Apisense partnership & real field inspection images (public/images/diseases/)
-const HIVE_INSPECTION_1 = "/images/diseases/hive-inspection-1.png";
-const HIVE_INSPECTION_2 = "/images/diseases/hive-inspection-2.png";
-const HIVE_INSPECTION_3 = "/images/diseases/hive-inspection-3.png";
-const HIVE_INSPECTION_4 = "/images/diseases/hive-inspection-4.png";
-const HIVE_INSPECTION_5 = "/images/diseases/hive-inspection-5.png";
 const APISENSE_APP = "/images/diseases/apisense-app.png";
 const SATELLITE_HEATMAP = "/images/diseases/satellite-heatmap.jpg";
 
 const FIELD_INSPECTION_PHOTOS = [
     {
-        src: HIVE_INSPECTION_1,
+        src: "/images/diseases/hive-inspection-1.png",
         title: "In-Hive Sensor Deployment",
         subtitle: "Apisense IoT device installed vertically between brood frames",
         tag: "Active Telemetry",
         detail: "Real-time gas & acoustic sampling probe monitoring hive environment without disturbing colony routine."
     },
     {
-        src: HIVE_INSPECTION_2,
+        src: "/images/diseases/hive-inspection-2.png",
         title: "Live Colony & Comb Cluster",
         subtitle: "Active worker bee density and natural comb formation",
         tag: "Comb Vitality",
         detail: "Bees actively cluster and inspect around the non-invasive sensor casing with zero repellent behavior."
     },
     {
-        src: HIVE_INSPECTION_3,
+        src: "/images/diseases/hive-inspection-3.png",
         title: "Brood Health & Pathogen Screening",
         subtitle: "Early detection of Foulbrood, Varroa, and thermal anomalies",
         tag: "Disease Prevention",
         detail: "Continuous VOC and thermal gradient tracking detects stress signatures weeks before visible symptoms."
     },
     {
-        src: HIVE_INSPECTION_4,
+        src: "/images/diseases/hive-inspection-4.png",
         title: "Natural Honeycomb Integration",
         subtitle: "Natural wax comb drawn seamlessly along frame proximity",
         tag: "Biocompatible Design",
         detail: "Food-grade, non-reactive sensor housing preserves colony hygiene and propolis integrity."
     },
     {
-        src: HIVE_INSPECTION_5,
+        src: "/images/diseases/hive-inspection-5.png",
         title: "2026 Global Field Research",
         subtitle: "BeeYield × Apisense precision pollination and disease research",
         tag: "Field Validated",
         detail: "Field-tested under real East African climatic conditions for resilient colony management."
+    },
+    {
+        src: "/images/diseases/gateway-solar-node.png",
+        title: "Autonomous Solar IoT Gateway",
+        subtitle: "High-gain dual antenna LTE gateway with integrated solar harvest panel",
+        tag: "Solar IoT Gateway",
+        detail: "Off-grid transmission hub powering up to 100 sensor nodes across a commercial apiary with zero grid dependency."
+    },
+    {
+        src: "/images/diseases/hive-scale-loadcell.png",
+        title: "Precision Under-Hive Scale",
+        subtitle: "Industrial load cell mounted below wooden hive floor for continuous weight tracking",
+        tag: "Weight Telemetry",
+        detail: "Tracks daily honey accumulation, nectar flow dynamics, robbing events, and colony biomass in real time."
+    },
+    {
+        src: "/images/diseases/hive-comb-inspection-6.png",
+        title: "Acoustic Diagnostic Sampling",
+        subtitle: "High-fidelity audio sampling for swarm, stress, and queenlessness detection",
+        tag: "Acoustic AI",
+        detail: "Analyzes colony buzzing frequencies to detect pre-swarm piping and defensive agitation days in advance."
+    },
+    {
+        src: "/images/diseases/hive-comb-inspection-7.png",
+        title: "Natural Comb & Wax Building",
+        subtitle: "Fresh white honeycomb drawn seamlessly along sensor frame",
+        tag: "Biocompatibility",
+        detail: "Colony draws healthy wax comb against the probe, proving 100% biocompatibility and zero chemical interference."
+    },
+    {
+        src: "/images/diseases/hive-comb-inspection-8.png",
+        title: "Top-Down Multi-Frame Coverage",
+        subtitle: "Broad-spectrum colony monitoring for commercial precision pollination",
+        tag: "Precision Pollination",
+        detail: "Verified frames-per-acre strength and continuous pollination performance throughout the crop flowering window."
     }
 ];
 
@@ -153,6 +187,15 @@ const Diseases = () => {
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [activePhotoIdx, setActivePhotoIdx] = useState(0);
+    const [isGalleryPlaying, setIsGalleryPlaying] = useState(true);
+
+    useEffect(() => {
+        if (!isGalleryPlaying) return;
+        const timer = setInterval(() => {
+            setActivePhotoIdx((prev) => (prev + 1) % FIELD_INSPECTION_PHOTOS.length);
+        }, 4000);
+        return () => clearInterval(timer);
+    }, [isGalleryPlaying]);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -745,11 +788,11 @@ const Diseases = () => {
                         </p>
                     </div>
 
-                    {/* Interactive Featured Viewer */}
+                    {/* Interactive Featured Viewer with Autoplay */}
                     <div className="max-w-6xl mx-auto mb-12">
                         <div className="grid lg:grid-cols-12 gap-8 items-center bg-neutral-900 text-white rounded-[2.5rem] p-6 md:p-10 shadow-2xl border border-neutral-800">
                             {/* Main Display Image */}
-                            <div className="lg:col-span-7 relative aspect-[9/16] md:aspect-[4/3] max-h-[520px] rounded-[2rem] overflow-hidden bg-neutral-950 flex items-center justify-center">
+                            <div className="lg:col-span-7 relative aspect-[9/16] md:aspect-[4/3] max-h-[520px] rounded-[2rem] overflow-hidden bg-neutral-950 flex items-center justify-center group">
                                 <img
                                     src={FIELD_INSPECTION_PHOTOS[activePhotoIdx].src}
                                     alt={FIELD_INSPECTION_PHOTOS[activePhotoIdx].title}
@@ -761,14 +804,45 @@ const Diseases = () => {
                                         {FIELD_INSPECTION_PHOTOS[activePhotoIdx].tag}
                                     </Badge>
                                 </div>
+
+                                {/* Prev/Next navigation arrows */}
+                                <button
+                                    onClick={() => {
+                                        setActivePhotoIdx((prev) => (prev - 1 + FIELD_INSPECTION_PHOTOS.length) % FIELD_INSPECTION_PHOTOS.length);
+                                        setIsGalleryPlaying(false);
+                                    }}
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all shadow-lg"
+                                    aria-label="Previous photo"
+                                >
+                                    <ChevronLeft className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setActivePhotoIdx((prev) => (prev + 1) % FIELD_INSPECTION_PHOTOS.length);
+                                        setIsGalleryPlaying(false);
+                                    }}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all shadow-lg"
+                                    aria-label="Next photo"
+                                >
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
                             </div>
 
                             {/* Details Panel */}
                             <div className="lg:col-span-5 space-y-6 flex flex-col justify-between h-full py-4">
                                 <div>
-                                    <span className="text-xs font-mono text-beeyield-green uppercase tracking-widest block mb-2">
-                                        Frame Inspection {activePhotoIdx + 1} of {FIELD_INSPECTION_PHOTOS.length}
-                                    </span>
+                                    <div className="flex items-center justify-between gap-2 mb-2">
+                                        <span className="text-xs font-mono text-beeyield-green uppercase tracking-widest">
+                                            Frame Inspection {activePhotoIdx + 1} of {FIELD_INSPECTION_PHOTOS.length}
+                                        </span>
+                                        <button
+                                            onClick={() => setIsGalleryPlaying(!isGalleryPlaying)}
+                                            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[10px] font-semibold text-neutral-300 hover:text-white hover:bg-white/20 transition-all"
+                                        >
+                                            {isGalleryPlaying ? <Pause className="w-3 h-3 text-beeyield-green" /> : <Play className="w-3 h-3 text-beeyield-green" />}
+                                            {isGalleryPlaying ? "Pause" : "Play"}
+                                        </button>
+                                    </div>
                                     <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-3">
                                         {FIELD_INSPECTION_PHOTOS[activePhotoIdx].title}
                                     </h3>
@@ -783,15 +857,18 @@ const Diseases = () => {
                                 {/* Thumbnail Selector */}
                                 <div className="pt-4 border-t border-neutral-800">
                                     <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-3">Select Hive Perspective:</p>
-                                    <div className="grid grid-cols-5 gap-3">
+                                    <div className="grid grid-cols-5 gap-2">
                                         {FIELD_INSPECTION_PHOTOS.map((photo, idx) => (
                                             <button
                                                 key={idx}
-                                                onClick={() => setActivePhotoIdx(idx)}
-                                                className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all ${
+                                                onClick={() => {
+                                                    setActivePhotoIdx(idx);
+                                                    setIsGalleryPlaying(false);
+                                                }}
+                                                className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
                                                     activePhotoIdx === idx
                                                         ? "border-beeyield-green shadow-[0_0_12px_rgba(16,185,129,0.5)] scale-105"
-                                                        : "border-neutral-700 opacity-60 hover:opacity-100 hover:border-neutral-500"
+                                                        : "border-neutral-700 opacity-50 hover:opacity-100 hover:border-neutral-500"
                                                 }`}
                                             >
                                                 <img src={photo.src} alt={photo.title} className="w-full h-full object-cover" />

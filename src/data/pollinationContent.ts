@@ -225,7 +225,78 @@ export const BEEHUB_IMAGES = {
   senseUnit: '/images/beehub/sense-unit.png',
   deployed: '/images/beehub/deployed-hive-bees.jpg',
   dashboard: '/images/beehub/beeyield-dashboard.png',
+  solarGateway: '/images/pollination/gateway-solar-node.png',
+  hiveScale: '/images/pollination/hive-scale-loadcell.png',
 } as const;
+
+/* ── In-Hive Real Field Telemetry Slideshow Dataset ─────────────── */
+
+export interface InHiveFieldSlide {
+  image: string;
+  title: string;
+  subtitle: string;
+  badge: string;
+  description: string;
+}
+
+export const IN_HIVE_FIELD_SLIDES: InHiveFieldSlide[] = [
+  {
+    image: '/images/pollination/gateway-solar-node.png',
+    title: 'Autonomous Solar IoT Gateway',
+    subtitle: 'High-gain dual antenna LTE gateway with integrated solar harvest panel',
+    badge: 'Solar IoT Gateway',
+    description: 'Weatherproof off-grid transmission hub communicating with up to 100 in-hive sensors across an entire commercial apiary with zero grid power required.',
+  },
+  {
+    image: '/images/pollination/hive-scale-loadcell.png',
+    title: 'Precision Under-Hive Scale Mount',
+    subtitle: 'Continuous industrial load cell scale installed below hive floor frame',
+    badge: 'Hive Weight Telemetry',
+    description: 'Tracks daily honey accumulation, nectar flow dynamics, robbing alerts, and colony biomass changes in real time with gram-level precision.',
+  },
+  {
+    image: '/images/diseases/hive-inspection-1.png',
+    title: 'In-Hive Sensor Deployment',
+    subtitle: 'Vertical telemetry probe positioned directly between active brood frames',
+    badge: 'Brood Core Telemetry',
+    description: 'Measures continuous internal temperature, relative humidity, volatile organic compounds, and acoustics right at the colony core.',
+  },
+  {
+    image: '/images/diseases/hive-inspection-2.png',
+    title: 'Live Colony & Worker Bee Cluster',
+    subtitle: 'Natural worker bee cluster and active inspection around sensor housing',
+    badge: 'Colony Health & Vitality',
+    description: 'Bees embrace the food-grade biocompatible casing, maintaining standard brood care, queen attendance, and foraging without behavioral disruption.',
+  },
+  {
+    image: '/images/pollination/hive-comb-inspection-7.png',
+    title: 'Natural Comb & Wax Building',
+    subtitle: 'Fresh white honeycomb drawn seamlessly along the sensor frame',
+    badge: 'Non-Invasive Biocompatibility',
+    description: 'Colony draws healthy wax comb right against the probe, proving 100% biocompatibility and zero chemical or acoustic interference.',
+  },
+  {
+    image: '/images/pollination/hive-comb-inspection-6.png',
+    title: 'Acoustic Diagnostic Sampling',
+    subtitle: 'High-fidelity audio sampling for swarm and stress detection',
+    badge: 'Acoustic AI Analysis',
+    description: 'Analyzes colony buzzing frequencies in real time to detect queenlessness, pre-swarm piping, and defensive agitation days in advance.',
+  },
+  {
+    image: '/images/diseases/hive-inspection-3.png',
+    title: 'Early Disease & Pathogen Defense',
+    subtitle: 'Gas & VOC monitoring for Foulbrood, Varroa, and Nosema',
+    badge: 'Pathogen Defense',
+    description: 'Continuous chemical signatures detect microbial decay and pathogen presence up to 2-3 weeks before visual symptoms manifest.',
+  },
+  {
+    image: '/images/pollination/hive-comb-inspection-8.png',
+    title: 'Top-Down Multi-Frame Coverage',
+    subtitle: 'Broad-spectrum colony monitoring for commercial precision pollination',
+    badge: 'Precision Pollination',
+    description: 'Guarantees growers verified frames-per-acre strength and continuous pollination performance throughout the crop flowering window.',
+  }
+];
 
 /* ── Honey Types & Color Grades (Used in Harvest Forms) ────────── */
 
