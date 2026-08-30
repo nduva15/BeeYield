@@ -357,10 +357,10 @@ const Impact = () => {
                 },
                 {
                   image: IMPACT_IMAGES.combProbe2,
-                  title: "Natural Honeycomb Wax Integration",
-                  subtitle: "Bees drawing wax directly on sensor frame",
-                  badge: "Biocompatible",
-                  description: "Worker bees building fresh white beeswax around sensor structures, embedding the probe in natural comb."
+                  title: "Comb Disease Detection",
+                  subtitle: "Early pathogen screening on drawn brood comb",
+                  badge: "Disease Detection",
+                  description: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."
                 },
                 {
                   image: IMPACT_IMAGES.combProbe3,

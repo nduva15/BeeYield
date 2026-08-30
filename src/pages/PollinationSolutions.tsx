@@ -92,10 +92,10 @@ const APISENSE_BEE_SLIDES: SlideItem[] = [
 const COMB_COLONY_SLIDES: SlideItem[] = [
   {
     image: '/images/pollination/hive-comb-inspection-7.png',
-    title: 'Natural Comb Wax Integration',
-    subtitle: 'Fresh white honeycomb wax drawn seamlessly on frame',
-    badge: 'Biocompatible',
-    description: 'Worker bees actively secrete and build natural beeswax directly onto the sensor frame structure, embedding the probe in natural comb.',
+    title: 'Comb Disease Detection',
+    subtitle: 'Visual brood pathology screening on drawn comb',
+    badge: 'Disease Detection',
+    description: 'Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities directly on drawn comb.',
   },
   {
     image: '/images/story/bee-colony-device-wide.jpg',

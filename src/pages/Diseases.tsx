@@ -930,10 +930,10 @@ const Diseases = () => {
                                 },
                                 {
                                     image: "/images/diseases/hive-comb-inspection-7.png",
-                                    title: "Natural Honeycomb Wax Integration",
-                                    subtitle: "Fresh white comb drawn seamlessly along frame",
-                                    badge: "Comb Growth",
-                                    description: "Colony draws natural wax directly onto probe enclosure, proving 100% biocompatibility."
+                                    title: "Brood Disease Comb Screening",
+                                    subtitle: "Early pathology detection on drawn brood frames",
+                                    badge: "Disease Detection",
+                                    description: "Visual and sensor-based screening of brood comb for American Foulbrood, chalkbrood, and Varroa-induced deformities."
                                 },
                                 {
                                     image: "/images/story/bee-colony-device-wide.jpg",

@@ -108,10 +108,10 @@ const COMB_DIAGNOSTICS_SLIDES: SlideItem[] = [
 const COLONY_VITALITY_SLIDES: SlideItem[] = [
   {
     image: '/images/pollination/hive-comb-inspection-7.png',
-    title: 'Natural Comb Building on Sensor Frame',
-    subtitle: 'Fresh white honeycomb wax drawn seamlessly along the probe body',
-    badge: 'Wax Secretion',
-    description: 'Worker bees actively secrete and build natural beeswax directly onto the sensor frame structure, integrating it into the living hive.',
+    title: 'Comb Brood Disease Screening',
+    subtitle: 'Early pathogen detection on drawn brood comb',
+    badge: 'Disease Detection',
+    description: 'AI-enhanced comb imaging detects early symptoms of American Foulbrood, chalkbrood, and sacbrood virus across brood cells.',
   },
   {
     image: '/images/story/bee-colony-device-wide.jpg',

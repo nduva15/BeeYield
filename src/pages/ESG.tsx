@@ -349,10 +349,10 @@ const ESG = () => {
               slides={[
                 {
                   image: ESG_IMAGES.combProbe2,
-                  title: "Natural Comb Wax Integration",
-                  subtitle: "Bees drawing wax directly on sensor frame",
-                  badge: "Biocompatible",
-                  description: "Worker bees building natural comb directly onto sensor structures, confirming non-invasive integration."
+                  title: "Comb Disease Detection",
+                  subtitle: "Early brood pathology screening on comb frames",
+                  badge: "Disease Detection",
+                  description: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."
                 },
                 {
                   image: ESG_IMAGES.beeColonyWide,

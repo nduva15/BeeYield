@@ -239,8 +239,8 @@ const OurStory = () => {
               </div>
               <div className="p-4 bg-white">
                 <span className="text-[10px] font-bold text-beeyield-green uppercase">Stage 4</span>
-                <h4 className="font-bold text-sm text-neutral-900 mt-1">Natural Comb Wax Integration</h4>
-                <p className="text-xs text-neutral-500 mt-1">Bees building fresh honeycomb seamlessly onto frame.</p>
+                <h4 className="font-bold text-sm text-neutral-900 mt-1">Comb Disease Detection</h4>
+                <p className="text-xs text-neutral-500 mt-1">Early brood pathology screening on drawn comb frames.</p>
               </div>
             </div>
           </div>
@@ -372,10 +372,10 @@ const OurStory = () => {
                 },
                 {
                   image: STORY_IMAGES.combProbe2,
-                  title: "Natural Honeycomb Wax Integration",
-                  subtitle: "Bees drawing wax directly on sensor frame",
-                  badge: "Biocompatible",
-                  description: "Worker bees building fresh white beeswax around sensor structures, embedding the probe in natural comb."
+                  title: "Comb Disease Detection",
+                  subtitle: "Early pathogen screening on drawn brood comb",
+                  badge: "Disease Detection",
+                  description: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."
                 },
                 {
                   image: STORY_IMAGES.combProbe3,
