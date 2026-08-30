@@ -62,6 +62,11 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import LOGO from "@/assets/Logo.png";
 
 // Apisense partnership & real field inspection images (public/images/diseases/)
+const HIVE_INSPECTION_1 = "/images/diseases/hive-inspection-1.png";
+const HIVE_INSPECTION_2 = "/images/diseases/hive-inspection-2.png";
+const HIVE_INSPECTION_3 = "/images/diseases/hive-inspection-3.png";
+const HIVE_INSPECTION_4 = "/images/diseases/hive-inspection-4.png";
+const HIVE_INSPECTION_5 = "/images/diseases/hive-inspection-5.png";
 const APISENSE_APP = "/images/diseases/apisense-app.png";
 const SATELLITE_HEATMAP = "/images/diseases/satellite-heatmap.jpg";
 
