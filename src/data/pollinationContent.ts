@@ -205,16 +205,19 @@ export const AI_CAPABILITIES: string[] = [
   'Complete Transparency — insight from the day bees are delivered until removal',
 ];
 
-/* ── BeeHUB Product Image Paths ────────────────────────────────── */
+/* ── BeeHUB Product Image Paths (Authentic Devices, Hives & Bees Only) ────────── */
 
 export const BEEHUB_IMAGES = {
-  apiaryHero: '/images/beehub/apiary-lavender.jpg',
-  queenDetail: '/images/beehub/queen-product-detail.png',
-  senseUnit: '/images/beehub/sense-unit.png',
-  deployed: '/images/beehub/deployed-hive-bees.jpg',
-  dashboard: '/images/beehub/beeyield-dashboard.png',
+  apiaryHero: '/images/pollination/hive-comb-inspection-8.png',
+  queenDetail: '/images/pollination/gateway-solar-node.png',
+  senseUnit: '/images/pollination/hive-scale-loadcell.png',
+  deployed: '/images/pollination/hive-comb-inspection-6.png',
+  dashboard: '/images/pollination/hive-comb-inspection-7.png',
   solarGateway: '/images/pollination/gateway-solar-node.png',
   hiveScale: '/images/pollination/hive-scale-loadcell.png',
+  broodProbe: '/images/diseases/hive-inspection-1.png',
+  activeCluster: '/images/diseases/hive-inspection-2.png',
+  combIntegration: '/images/pollination/hive-comb-inspection-7.png',
 } as const;
 
 /* ── In-Hive Real Field Telemetry Slideshow Dataset ─────────────── */

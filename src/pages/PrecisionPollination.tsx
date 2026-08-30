@@ -297,7 +297,7 @@ const PrecisionPollination = () => {
       ═══════════════════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
           <div className="absolute inset-0">
-              <img src={BEEHUB_IMAGES.apiaryHero} alt="BeeHUB sensors deployed in lavender apiary" className="w-full h-full object-cover" />
+              <img src={BEEHUB_IMAGES.apiaryHero} alt="In-hive telemetry probes and active bee frames in commercial hive boxes" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
           </div>
           <div className="container mx-auto px-4 relative z-10">
@@ -363,7 +363,7 @@ const PrecisionPollination = () => {
                       <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-900 group">
                           <img
                               src={BEEHUB_IMAGES.deployed}
-                              alt="BeeHUB Queen deployed on active hive with bees"
+                              alt="In-hive telemetry probe deployed inside active beehive with clustering bees"
                               className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform"
                               style={{ transitionDuration: '2000ms' }}
                           />
@@ -513,14 +513,15 @@ const PrecisionPollination = () => {
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
-                      className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group"
+                      className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group bg-white"
                   >
-                      <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
-                          <img src={BEEHUB_IMAGES.queenDetail} alt="BeeHUB Queen unit with sensors and cables" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <div className="aspect-[4/3] overflow-hidden bg-neutral-900">
+                          <img src="/images/pollination/gateway-solar-node.png" alt="Solar LTE IoT Gateway node deployed on hive with dual antennas" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       </div>
                       <div className="p-6 bg-white">
-                          <Badge className="bg-beeyield-green/10 text-beeyield-green border-none text-[9px] font-bold px-3 py-1 rounded-lg mb-3">BeeHUB Queen</Badge>
-                          <p className="text-sm text-neutral-500 font-medium">Main unit with LTE/SIM, offline buffer, multiple sensor connectors, and integrated hive scale mount.</p>
+                          <Badge className="bg-beeyield-green/10 text-beeyield-green border-none text-[9px] font-bold px-3 py-1 rounded-lg mb-3">Solar IoT Gateway Node</Badge>
+                          <h4 className="font-bold text-neutral-900 text-base mb-1">Autonomous Solar Field Transmission Hub</h4>
+                          <p className="text-sm text-neutral-500 font-medium leading-relaxed">Integrated solar harvest panel, dual high-gain cellular antennas, and continuous real-time data sync directly from apiary yards.</p>
                       </div>
                   </motion.div>
                   <motion.div
@@ -528,14 +529,15 @@ const PrecisionPollination = () => {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.1 }}
-                      className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group"
+                      className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group bg-white"
                   >
-                      <div className="aspect-[4/3] overflow-hidden bg-neutral-50 flex items-center justify-center p-8">
-                          <img src={BEEHUB_IMAGES.senseUnit} alt="BeeHUB Sense expansion module" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
+                      <div className="aspect-[4/3] overflow-hidden bg-neutral-900">
+                          <img src="/images/pollination/hive-scale-loadcell.png" alt="Precision load cell scale mounted under wooden hive" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       </div>
                       <div className="p-6 bg-white">
-                          <Badge className="bg-amber-500/10 text-amber-700 border-amber-200 text-[9px] font-bold px-3 py-1 rounded-lg mb-3">BeeHUB Sense</Badge>
-                          <p className="text-sm text-neutral-500 font-medium">BLE expansion module for Queen with extra T/RH sensors, industrial inputs, and flexible add-ons.</p>
+                          <Badge className="bg-amber-500/10 text-amber-700 border-amber-200 text-[9px] font-bold px-3 py-1 rounded-lg mb-3">Under-Hive Load Cell</Badge>
+                          <h4 className="font-bold text-neutral-900 text-base mb-1">Continuous Precision Hive Scale</h4>
+                          <p className="text-sm text-neutral-500 font-medium leading-relaxed">Industrial load cell bar mounted directly under hive floor measuring diurnal nectar flows, foraging gains, and swarming weight departures.</p>
                       </div>
                   </motion.div>
               </div>
@@ -703,21 +705,21 @@ const PrecisionPollination = () => {
                       className="relative"
                   >
                       <div className="relative mx-auto max-w-lg">
-                          <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.18)] border border-neutral-200 bg-white">
+                          <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.18)] border border-neutral-200 bg-neutral-900 aspect-[4/3]">
                               <img
-                                  src={BEEHUB_IMAGES.dashboard}
-                                  alt="BeeYield Apiary Dashboard"
-                                  className="w-full h-auto"
+                                  src="/images/pollination/hive-comb-inspection-7.png"
+                                  alt="Real worker bees building fresh honeycomb wax along in-hive telemetry sensor probe"
+                                  className="w-full h-full object-cover"
                               />
                           </div>
                       </div>
                       <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-3 flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-beeyield-green" />
-                          <span className="text-xs font-bold text-neutral-900">Live Dashboard</span>
+                          <span className="text-xs font-bold text-neutral-900">Biocompatible Design</span>
                       </div>
                       <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-3 flex items-center gap-2">
-                          <LayoutDashboard className="h-4 w-4 text-beeyield-green" />
-                          <span className="text-xs font-bold text-neutral-900">Weather Telemetry</span>
+                          <Activity className="h-4 w-4 text-beeyield-green" />
+                          <span className="text-xs font-bold text-neutral-900">Live Comb Wax Building</span>
                       </div>
                   </motion.div>
               </div>
