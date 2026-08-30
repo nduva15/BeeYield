@@ -57,12 +57,52 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 import LOGO from "@/assets/Logo.png";
 
-// Apisense partnership images (public/images/diseases/)
-const SENSOR_PORTRAIT = "/images/diseases/apisense-sensor-portrait.jpg";
-const SENSOR_LANDSCAPE = "/images/diseases/apisense-sensor-landscape.png";
+// Apisense partnership & real field inspection images (public/images/diseases/)
+const HIVE_INSPECTION_1 = "/images/diseases/hive-inspection-1.png";
+const HIVE_INSPECTION_2 = "/images/diseases/hive-inspection-2.png";
+const HIVE_INSPECTION_3 = "/images/diseases/hive-inspection-3.png";
+const HIVE_INSPECTION_4 = "/images/diseases/hive-inspection-4.png";
+const HIVE_INSPECTION_5 = "/images/diseases/hive-inspection-5.png";
 const APISENSE_APP = "/images/diseases/apisense-app.png";
 const SATELLITE_HEATMAP = "/images/diseases/satellite-heatmap.jpg";
-const HIVE_INSPECTION = "/images/diseases/hive-inspection.jpg";
+
+const FIELD_INSPECTION_PHOTOS = [
+    {
+        src: HIVE_INSPECTION_1,
+        title: "In-Hive Sensor Deployment",
+        subtitle: "Apisense IoT device installed vertically between brood frames",
+        tag: "Active Telemetry",
+        detail: "Real-time gas & acoustic sampling probe monitoring hive environment without disturbing colony routine."
+    },
+    {
+        src: HIVE_INSPECTION_2,
+        title: "Live Colony & Comb Cluster",
+        subtitle: "Active worker bee density and natural comb formation",
+        tag: "Comb Vitality",
+        detail: "Bees actively cluster and inspect around the non-invasive sensor casing with zero repellent behavior."
+    },
+    {
+        src: HIVE_INSPECTION_3,
+        title: "Brood Health & Pathogen Screening",
+        subtitle: "Early detection of Foulbrood, Varroa, and thermal anomalies",
+        tag: "Disease Prevention",
+        detail: "Continuous VOC and thermal gradient tracking detects stress signatures weeks before visible symptoms."
+    },
+    {
+        src: HIVE_INSPECTION_4,
+        title: "Natural Honeycomb Integration",
+        subtitle: "Natural wax comb drawn seamlessly along frame proximity",
+        tag: "Biocompatible Design",
+        detail: "Food-grade, non-reactive sensor housing preserves colony hygiene and propolis integrity."
+    },
+    {
+        src: HIVE_INSPECTION_5,
+        title: "2026 Global Field Research",
+        subtitle: "BeeYield × Apisense precision pollination and disease research",
+        tag: "Field Validated",
+        detail: "Field-tested under real East African climatic conditions for resilient colony management."
+    }
+];
 
 // Map Data
 const getHubIcon = () => {
@@ -112,6 +152,7 @@ const satellites = [
 const Diseases = () => {
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
+    const [activePhotoIdx, setActivePhotoIdx] = useState(0);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -384,7 +425,7 @@ const Diseases = () => {
             <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
                 {/* Hero background image */}
                 <div className="absolute inset-0">
-                    <img src={HIVE_INSPECTION} alt="" className="w-full h-full object-cover" />
+                    <img src={HIVE_INSPECTION_1} alt="Live in-hive inspection" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
                 </div>
                 <div className="container mx-auto px-4 relative z-10">
@@ -550,12 +591,12 @@ const Diseases = () => {
                         >
                             <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-900 group">
                                 <img
-                                    src={SENSOR_PORTRAIT}
-                                    alt="Apisense IoT Sensor installed on hive frame"
-                                    className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform"
+                                    src={HIVE_INSPECTION_2}
+                                    alt="Apisense IoT Sensor probe installed inside active beehive cluster"
+                                    className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform"
                                     style={{ transitionDuration: '2000ms' }}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/30 to-transparent" />
                                 <div className="absolute bottom-12 left-12 right-12 p-10 bg-white/5 backdrop-blur-2xl rounded-[2rem] border border-white/10 shadow-2xl">
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="h-0.5 w-12 bg-beeyield-green" />
@@ -680,6 +721,84 @@ const Diseases = () => {
                                 <p className="text-sm text-white/70 leading-relaxed">
                                     Through continuous localized monitoring, the system predicts the vector spread of diseases across the apiary with up to 85% accuracy, enabling proactive containment.
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                LIVE FIELD INSPECTION GALLERY — Real Hive Photography
+            ═══════════════════════════════════════════════════════════════ */}
+            <section className="py-28 bg-white border-b border-neutral-100 relative overflow-hidden">
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="text-center mb-16 max-w-3xl mx-auto">
+                        <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+                            Real Hive Deployments
+                        </Badge>
+                        <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-4">
+                            Live In-Hive <span className="text-beeyield-green">Sensor Inspections</span>
+                        </h2>
+                        <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
+                        <p className="text-muted-foreground text-base leading-relaxed">
+                            Authentic field photography from the 2026 Apisense & BeeYield research apiaries, demonstrating non-invasive sensor operation alongside active bee colonies.
+                        </p>
+                    </div>
+
+                    {/* Interactive Featured Viewer */}
+                    <div className="max-w-6xl mx-auto mb-12">
+                        <div className="grid lg:grid-cols-12 gap-8 items-center bg-neutral-900 text-white rounded-[2.5rem] p-6 md:p-10 shadow-2xl border border-neutral-800">
+                            {/* Main Display Image */}
+                            <div className="lg:col-span-7 relative aspect-[9/16] md:aspect-[4/3] max-h-[520px] rounded-[2rem] overflow-hidden bg-neutral-950 flex items-center justify-center">
+                                <img
+                                    src={FIELD_INSPECTION_PHOTOS[activePhotoIdx].src}
+                                    alt={FIELD_INSPECTION_PHOTOS[activePhotoIdx].title}
+                                    className="w-full h-full object-cover transition-all duration-700"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent pointer-events-none" />
+                                <div className="absolute top-4 left-4">
+                                    <Badge className="bg-beeyield-green text-neutral-950 font-bold px-3 py-1 text-[10px] uppercase tracking-wider">
+                                        {FIELD_INSPECTION_PHOTOS[activePhotoIdx].tag}
+                                    </Badge>
+                                </div>
+                            </div>
+
+                            {/* Details Panel */}
+                            <div className="lg:col-span-5 space-y-6 flex flex-col justify-between h-full py-4">
+                                <div>
+                                    <span className="text-xs font-mono text-beeyield-green uppercase tracking-widest block mb-2">
+                                        Frame Inspection {activePhotoIdx + 1} of {FIELD_INSPECTION_PHOTOS.length}
+                                    </span>
+                                    <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-3">
+                                        {FIELD_INSPECTION_PHOTOS[activePhotoIdx].title}
+                                    </h3>
+                                    <p className="text-neutral-300 text-sm font-medium mb-4 leading-relaxed">
+                                        {FIELD_INSPECTION_PHOTOS[activePhotoIdx].subtitle}
+                                    </p>
+                                    <p className="text-neutral-400 text-xs leading-relaxed border-l-2 border-beeyield-green/40 pl-4">
+                                        {FIELD_INSPECTION_PHOTOS[activePhotoIdx].detail}
+                                    </p>
+                                </div>
+
+                                {/* Thumbnail Selector */}
+                                <div className="pt-4 border-t border-neutral-800">
+                                    <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-3">Select Hive Perspective:</p>
+                                    <div className="grid grid-cols-5 gap-3">
+                                        {FIELD_INSPECTION_PHOTOS.map((photo, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setActivePhotoIdx(idx)}
+                                                className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all ${
+                                                    activePhotoIdx === idx
+                                                        ? "border-beeyield-green shadow-[0_0_12px_rgba(16,185,129,0.5)] scale-105"
+                                                        : "border-neutral-700 opacity-60 hover:opacity-100 hover:border-neutral-500"
+                                                }`}
+                                            >
+                                                <img src={photo.src} alt={photo.title} className="w-full h-full object-cover" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1057,7 +1176,7 @@ const Diseases = () => {
                                 The Apisense solution is built on modern monitoring devices that collect data from the hive in real time, combined with satellite data and weather forecasts.
                             </p>
                         </div>
-                        {/* Sensor close-up image */}
+                        {/* Sensor close-up image from field inspection */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -1065,9 +1184,9 @@ const Diseases = () => {
                             className="mb-12 rounded-[2rem] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.2)] border border-white/10"
                         >
                             <img
-                                src={SENSOR_LANDSCAPE}
-                                alt="Apisense IoT sensor device installed on beehive frame — close-up showing gas sensors and circuit board with bees"
-                                className="w-full h-48 md:h-72 object-cover"
+                                src={HIVE_INSPECTION_4}
+                                alt="Apisense IoT sensor probe installed between comb frames with worker bees"
+                                className="w-full h-56 md:h-80 object-cover"
                             />
                         </motion.div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
