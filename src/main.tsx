@@ -3,10 +3,15 @@ import ReactDOM from 'react-dom/client'
 import { Buffer } from 'buffer';
 import { initPrefetch } from './prefetch'
 
-// Polyfill Buffer for browser environment
+// Global Vite preload error recovery for deployments
 if (typeof window !== 'undefined') {
     globalThis.Buffer = Buffer;
     initPrefetch();
+
+    window.addEventListener('vite:preloadError', (event) => {
+        console.warn('Vite preload dynamic import error detected (likely new deployment). Reloading page...', event);
+        window.location.reload();
+    });
 }
 
 import ScrollToTop from './components/ScrollToTop'
@@ -35,6 +40,7 @@ const retryLazyImport = <T extends { default: React.ComponentType<any> }>(
         const isChunkError = 
             error?.message?.includes('dynamically imported module') || 
             error?.message?.includes('Failed to fetch') ||
+            error?.message?.includes('MIME type') ||
             error?.name === 'TypeError';
             
         if (isChunkError) {
@@ -45,7 +51,7 @@ const retryLazyImport = <T extends { default: React.ComponentType<any> }>(
         
         await new Promise((resolve) => setTimeout(resolve, 300));
         return loader().catch((retryErr) => {
-            if (retryErr?.message?.includes('dynamically imported module') || retryErr?.message?.includes('Failed to fetch')) {
+            if (retryErr?.message?.includes('dynamically imported module') || retryErr?.message?.includes('Failed to fetch') || retryErr?.message?.includes('MIME type')) {
                 window.location.reload();
                 return new Promise(() => {}) as Promise<T>;
             }
@@ -53,51 +59,50 @@ const retryLazyImport = <T extends { default: React.ComponentType<any> }>(
         });
     });
 
-// All pages are lazy-loaded to keep the initial bundle small
-const PollinationServices = lazy(() => import('@/pages/PollinationServices'))
-const Honey = lazy(() => import('@/pages/HoneyLanding'))
-const Shop = lazy(() => import('@/pages/Shop'))
-const Contact = lazy(() => import('@/pages/Contact'))
-const Traceability = lazy(() => import('@/pages/Traceability'))
+// All pages are lazy-loaded with automatic deployment chunk-retry
+const PollinationServices = lazy(() => retryLazyImport(() => import('@/pages/PollinationServices')))
+const Honey = lazy(() => retryLazyImport(() => import('@/pages/HoneyLanding')))
+const Shop = lazy(() => retryLazyImport(() => import('@/pages/Shop')))
+const Contact = lazy(() => retryLazyImport(() => import('@/pages/Contact')))
+const Traceability = lazy(() => retryLazyImport(() => import('@/pages/Traceability')))
 
 // Secondary/Private pages remain lazy-loaded
-const Checkout = lazy(() => import('@/pages/Checkout'))
-const Learn = lazy(() => import('@/pages/BeeLearn'))
-const Blogs = lazy(() => import('@/pages/Blogs'))
-const BlogPost = lazy(() => import('@/pages/BlogPost'))
-const Team = lazy(() => import('@/pages/Team'))
-const Careers = lazy(() => import('@/pages/Careers'))
-const Impact = lazy(() => import('@/pages/Impact'))
-const ESG = lazy(() => import('@/pages/ESG'))
-const Commitment = lazy(() => import('@/pages/Commitment'))
-const OurStory = lazy(() => import('@/pages/OurStory'))
+const Checkout = lazy(() => retryLazyImport(() => import('@/pages/Checkout')))
+const Learn = lazy(() => retryLazyImport(() => import('@/pages/BeeLearn')))
+const Blogs = lazy(() => retryLazyImport(() => import('@/pages/Blogs')))
+const BlogPost = lazy(() => retryLazyImport(() => import('@/pages/BlogPost')))
+const Team = lazy(() => retryLazyImport(() => import('@/pages/Team')))
+const Careers = lazy(() => retryLazyImport(() => import('@/pages/Careers')))
+const Impact = lazy(() => retryLazyImport(() => import('@/pages/Impact')))
+const ESG = lazy(() => retryLazyImport(() => import('@/pages/ESG')))
+const Commitment = lazy(() => retryLazyImport(() => import('@/pages/Commitment')))
+const OurStory = lazy(() => retryLazyImport(() => import('@/pages/OurStory')))
 
-
-const PrecisionPollination = lazy(() => import('@/pages/PrecisionPollination'))
-const PollinationSolutions = lazy(() => import('@/pages/PollinationSolutions'))
-const InLandPollination = lazy(() => import('@/pages/InLandPollinationPlatform'))
-const CropsWePollinate = lazy(() => import('@/pages/CropsWePollinate'))
-const PollinationRequest = lazy(() => import('@/pages/PollinationRequest'))
-const Diseases = lazy(() => import('@/pages/Diseases'))
-const Media = lazy(() => import('@/pages/Media'))
+const PrecisionPollination = lazy(() => retryLazyImport(() => import('@/pages/PrecisionPollination')))
+const PollinationSolutions = lazy(() => retryLazyImport(() => import('@/pages/PollinationSolutions')))
+const InLandPollination = lazy(() => retryLazyImport(() => import('@/pages/InLandPollinationPlatform')))
+const CropsWePollinate = lazy(() => retryLazyImport(() => import('@/pages/CropsWePollinate')))
+const PollinationRequest = lazy(() => retryLazyImport(() => import('@/pages/PollinationRequest')))
+const Diseases = lazy(() => retryLazyImport(() => import('@/pages/Diseases')))
+const Media = lazy(() => retryLazyImport(() => import('@/pages/Media')))
 const BeeYieldDashboard = lazy(() => retryLazyImport(() => import('@/pages/BeeYieldDashboard')))
-const BeeCalculatorSuite = lazy(() => import('@/pages/BeeCalculatorSuite'))
+const BeeCalculatorSuite = lazy(() => retryLazyImport(() => import('@/pages/BeeCalculatorSuite')))
 const AdminDashboard = lazy(() => retryLazyImport(() => import('@/pages/AdminDashboard')))
-const ContentEditor = lazy(() => import('@/components/beeyield/ContentEditor'))
+const ContentEditor = lazy(() => retryLazyImport(() => import('@/components/beeyield/ContentEditor')))
 const AdminLogin = lazy(() => retryLazyImport(() => import('@/pages/AdminAuth')))
 const ShopDashboard = lazy(() => retryLazyImport(() => import('@/pages/ShopDashboard')))
-const AccountSettings = lazy(() => import('@/pages/AccountSettings'))
-const UpdatePassword = lazy(() => import('@/pages/UpdatePassword'))
+const AccountSettings = lazy(() => retryLazyImport(() => import('@/pages/AccountSettings')))
+const UpdatePassword = lazy(() => retryLazyImport(() => import('@/pages/UpdatePassword')))
 const ShopAuth = lazy(() => retryLazyImport(() => import('@/pages/ShopAuth')))
 const ProfessionalAuth = lazy(() => retryLazyImport(() => import('@/pages/ProfessionalAuth')))
-const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
-const NotFound = lazy(() => import('@/pages/NotFound'))
-const Receipt = lazy(() => import('@/pages/Receipt'))
-const MeasurementData = lazy(() => import('@/pages/MeasurementData'))
-const Privacy = lazy(() => import('@/pages/Privacy'))
-const Terms = lazy(() => import('@/pages/Terms'))
-const IntegrationCallback = lazy(() => import('@/pages/IntegrationCallback'))
-const SharedRun = lazy(() => import('@/pages/SharedRun'))
+const AuthCallback = lazy(() => retryLazyImport(() => import('@/pages/AuthCallback')))
+const NotFound = lazy(() => retryLazyImport(() => import('@/pages/NotFound')))
+const Receipt = lazy(() => retryLazyImport(() => import('@/pages/Receipt')))
+const MeasurementData = lazy(() => retryLazyImport(() => import('@/pages/MeasurementData')))
+const Privacy = lazy(() => retryLazyImport(() => import('@/pages/Privacy')))
+const Terms = lazy(() => retryLazyImport(() => import('@/pages/Terms')))
+const IntegrationCallback = lazy(() => retryLazyImport(() => import('@/pages/IntegrationCallback')))
+const SharedRun = lazy(() => retryLazyImport(() => import('@/pages/SharedRun')))
 
 import { PageLoader } from './components/PageLoader'
 
