@@ -30,138 +30,128 @@ import {
   IN_HIVE_FIELD_SLIDES,
 } from "@/data/pollinationContent";
 
-/* ── Live In-Hive Telemetry Slideshow Component ───────────────────── */
+import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
+
+/* ── 3-Photo Curated Slideshow Datasets (In-Hive Pollination) ───────── */
+const HARDWARE_SLIDES: SlideItem[] = [
+  {
+    image: '/images/pollination/gateway-solar-node.png',
+    title: 'Autonomous Solar LTE Gateway',
+    subtitle: 'High-gain dual cellular antennas with solar harvest panel',
+    badge: 'Solar Gateway Node',
+    description: 'Relays telemetry data from all in-hive sensor nodes across the apiary yard directly to the cloud via cellular uplink.',
+  },
+  {
+    image: '/images/pollination/hive-scale-loadcell.png',
+    title: 'Precision Under-Hive Load Cell Scale',
+    subtitle: 'Industrial continuous weighing bar mounted under wooden hive floor',
+    badge: 'Under-Hive Scale',
+    description: 'Measures sub-milligram daily weight gains during heavy nectar flow and alerts immediately upon swarming biomass departure.',
+  },
+  {
+    image: '/images/story/deployed-hive-antenna-1.png',
+    title: 'Weatherproof Hive Antenna Station',
+    subtitle: 'Galvanized tin lid mount on traditional Kenyan beehive stand',
+    badge: '22 Deployed Hives',
+    description: 'Autonomous transmission station standing in active Kenyan apiary yard, operating continuously in harsh semi-arid weather.',
+  },
+];
+
+const COMB_DIAGNOSTICS_SLIDES: SlideItem[] = [
+  {
+    image: '/images/story/apisense-bees-closeup-2.png',
+    title: 'ApiSense Sensor Board & Worker Bee',
+    subtitle: 'Live forager bee landing on in-hive PCB with zero alarm pheromones',
+    badge: 'Biocompatible Sensor',
+    description: 'Multi-sensor probe tracking internal brood temperature, relative humidity, and acoustic frequency without hive disruption.',
+  },
+  {
+    image: '/images/story/apisense-bees-cluster-1.png',
+    title: 'Active Colony Surrounding Probe',
+    subtitle: 'Hundreds of African honeybees clustered naturally around hardware',
+    badge: 'Bee Behavior',
+    description: 'Proves complete acceptance of the sensor probe inside the hive cavity, allowing uninterrupted brood rearing and thermoregulation.',
+  },
+  {
+    image: '/images/pollination/hive-comb-inspection-7.png',
+    title: 'Natural Comb Building on Sensor Frame',
+    subtitle: 'Fresh white honeycomb wax drawn seamlessly along the probe body',
+    badge: 'Wax Secretion',
+    description: 'Worker bees actively secrete and build natural beeswax directly onto the sensor frame structure, integrating it into the living hive.',
+  },
+];
+
+const COLONY_VITALITY_SLIDES: SlideItem[] = [
+  {
+    image: '/images/pollination/hive-comb-inspection-8.png',
+    title: 'Top-Down Multi-Frame Brood Coverage',
+    subtitle: 'Parallel active frames with central telemetry probe insertion',
+    badge: 'Field Inspection',
+    description: 'Full-depth inspection showing high colony population density and active brood comb across multiple frames in commercial hive boxes.',
+  },
+  {
+    image: '/images/story/deployed-hive-antenna-2.png',
+    title: 'Kenyan Top-Bar Hive Stand Deployment',
+    subtitle: 'Anti-termite pole mount with solar transmission unit',
+    badge: '45 Acres Served',
+    description: 'Field station deployed at avocado and mango orchard boundaries to monitor foraging flight density during peak flowering.',
+  },
+  {
+    image: '/images/story/bee-colony-device-wide.jpg',
+    title: 'Thriving African Bee Colony Density',
+    subtitle: 'Wide-angle view of massive colony cluster around sensor probe',
+    badge: '2.4M+ Bees Protected',
+    description: 'Demonstrates vigorous colony health, high worker population density, and seamless coexistence with digital telemetry hardware.',
+  },
+];
+
+/* ── Multiple 3-Photo Telemetry Slideshows Section ──────────────────── */
 const InHiveTelemetrySlideshowSection = () => {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  useEffect(() => {
-    if (!isPlaying) return;
-    const timer = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % IN_HIVE_FIELD_SLIDES.length);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [isPlaying]);
-
-  const slide = IN_HIVE_FIELD_SLIDES[activeIdx];
-
-  const handlePrev = () => {
-    setActiveIdx((prev) => (prev - 1 + IN_HIVE_FIELD_SLIDES.length) % IN_HIVE_FIELD_SLIDES.length);
-  };
-
-  const handleNext = () => {
-    setActiveIdx((prev) => (prev + 1) % IN_HIVE_FIELD_SLIDES.length);
-  };
-
   return (
-    <section className="py-28 bg-neutral-900 text-white relative overflow-hidden border-y border-neutral-800">
+    <section className="py-24 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10 pointer-events-none" />
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+          <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-5 py-2 font-semibold text-[10px] uppercase tracking-wider rounded-full">
             Real In-Hive Hardware & Field Deployments
           </Badge>
           <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
-            Live In-Hive Telemetry <span className="text-beeyield-green">In Action</span>
+            Live Telemetry <span className="text-beeyield-green">In Action</span>
           </h2>
           <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
           <p className="text-neutral-400 text-base leading-relaxed">
-            Real field photography showcasing solar LTE transmission nodes, sub-milligram load cell telemetry scales, and in-hive comb probes operating inside active Kenyan apiaries.
+            3 curated 3-photo slideshows showcasing solar LTE gateways, in-hive brood sensors, and active colony inspections inside Kenyan apiaries.
           </p>
         </div>
 
-        {/* Slideshow Display */}
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-8 items-center bg-black/50 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-6 md:p-10 shadow-2xl">
-            {/* Image Stage */}
-            <div className="lg:col-span-7 relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-neutral-950 flex items-center justify-center group">
-              <motion.img
-                key={activeIdx}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent pointer-events-none" />
-              
-              {/* Top Badge */}
-              <div className="absolute top-4 left-4">
-                <Badge className="bg-beeyield-green text-neutral-950 font-bold px-3.5 py-1 text-[10px] uppercase tracking-wider">
-                  {slide.badge}
-                </Badge>
-              </div>
+        {/* 3 Distinct 3-Photo Slideshows Grid */}
+        <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {/* Slideshow 1: Core Hardware */}
+          <ThreePhotoSlideshow
+            slides={HARDWARE_SLIDES}
+            badge="Hardware Network"
+            title="Field Transmission Hubs"
+            subtitle="Solar LTE gateways & precision load cells"
+            dark={true}
+          />
 
-              {/* Navigation overlay buttons */}
-              <button
-                onClick={handlePrev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all shadow-lg"
-                aria-label="Previous slide"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all shadow-lg"
-                aria-label="Next slide"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
+          {/* Slideshow 2: In-Hive Comb Diagnostics */}
+          <ThreePhotoSlideshow
+            slides={COMB_DIAGNOSTICS_SLIDES}
+            badge="In-Hive Probes"
+            title="Biocompatible Diagnostics"
+            subtitle="ApiSense boards & natural wax building"
+            dark={true}
+          />
 
-            {/* Content & Control Panel */}
-            <div className="lg:col-span-5 space-y-6 flex flex-col justify-between h-full py-2">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-xs font-mono text-beeyield-green uppercase tracking-widest">
-                    Telemetry Feed {activeIdx + 1} / {IN_HIVE_FIELD_SLIDES.length}
-                  </span>
-                  <button
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[10px] font-semibold text-neutral-300 hover:text-white hover:bg-white/20 transition-all"
-                  >
-                    {isPlaying ? <Pause className="w-3 h-3 text-beeyield-green" /> : <Play className="w-3 h-3 text-beeyield-green" />}
-                    {isPlaying ? "Pause" : "Play"}
-                  </button>
-                </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-2">
-                  {slide.title}
-                </h3>
-                <p className="text-neutral-300 text-sm font-medium mb-4 leading-relaxed">
-                  {slide.subtitle}
-                </p>
-                <p className="text-neutral-400 text-xs leading-relaxed border-l-2 border-beeyield-green/40 pl-4">
-                  {slide.description}
-                </p>
-              </div>
-
-              {/* Thumbnail Strip */}
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-3">
-                  Live Feed Channels:
-                </p>
-                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                  {IN_HIVE_FIELD_SLIDES.map((item, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setActiveIdx(idx);
-                        setIsPlaying(false);
-                      }}
-                      className={`relative aspect-[3/4] rounded-lg overflow-hidden border transition-all ${
-                        activeIdx === idx
-                          ? "border-beeyield-green ring-2 ring-beeyield-green/50 scale-105"
-                          : "border-white/10 opacity-50 hover:opacity-100 hover:border-white/30"
-                      }`}
-                    >
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Slideshow 3: Colony Health */}
+          <ThreePhotoSlideshow
+            slides={COLONY_VITALITY_SLIDES}
+            badge="Colony Vitality"
+            title="Active Apiary Inspections"
+            subtitle="Top-down brood frames & dense clusters"
+            dark={true}
+          />
         </div>
       </div>
     </section>

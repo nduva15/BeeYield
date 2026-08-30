@@ -12,6 +12,7 @@ import Logo from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
+import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
 /* ── Authentic Field Photo Assets (Zero AI Renders) ──────────── */
 const STORY_IMAGES = {
@@ -248,7 +249,7 @@ const OurStory = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          4. OUR STORY IN PHOTOS — Full-Width Visual Gallery Grid
+          4. OUR STORY IN PHOTOS — Multiple 3-Photo Slideshows
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-neutral-950 text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -260,137 +261,104 @@ const OurStory = () => {
               Our Story <span className="text-beeyield-green">in Photos</span>
             </h2>
             <p className="text-neutral-400 text-base">
-              Every image is a genuine photograph from our Kenyan apiaries — the hives on stands with antenna modules, dense colonies, and in-hive sensors.
+              3 curated 3-photo slideshows tracking our journey from early in-hive hardware experiments in Kibwezi to 22 IoT-monitored hive stations across Kenya.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             
-            {/* Card 1: Hive on Stand with Antenna */}
-            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={STORY_IMAGES.deployedHive2}
-                  alt="Traditional Kenyan beehive on pole stand with antenna module on lid"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <Radio className="w-4 h-4 text-beeyield-green" />
-                  <span className="text-xs font-bold text-beeyield-green">Telemetry Node</span>
-                </div>
-                <h4 className="font-bold text-white text-base">Hive Stand with Solar Antenna</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Traditional wooden hive mounted on an anti-termite metal pole stand with our antenna telemetry unit bolted to the tin lid.
-                </p>
-              </div>
-            </div>
+            {/* Slideshow 1: Origin & Early In-Hive Probes */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: STORY_IMAGES.apisenseCloseup1,
+                  title: "ApiSense Bio-Sensor Probe",
+                  subtitle: "In-hive probe installed inside log hive cavity",
+                  badge: "Kibwezi Origin",
+                  description: "Initial hardware prototypes tested in traditional log hives to monitor internal brood microclimate non-invasively."
+                },
+                {
+                  image: STORY_IMAGES.apisenseCloseup2,
+                  title: "Forager Bee on ApiSense PCB",
+                  subtitle: "Live worker bee landed directly on sensor board",
+                  badge: "Zero Rejection",
+                  description: "Worker bees accept the electronic hardware immediately, navigating the sensor board without alarm responses."
+                },
+                {
+                  image: STORY_IMAGES.beeColonyWide,
+                  title: "Thriving African Bee Colony",
+                  subtitle: "Dense worker population around probe",
+                  badge: "Colony Vitality",
+                  description: "Full-depth colony cluster proving healthy brood rearing alongside digital telemetry equipment."
+                }
+              ]}
+              badge="Hardware Roots"
+              title="Origin & Bio-Sensors"
+              subtitle="Early prototypes & bee behavior"
+              dark={true}
+            />
 
-            {/* Card 2: Dense Bee Colony Wide */}
-            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={STORY_IMAGES.beeColonyWide}
-                  alt="Dense African bee colony clustered inside hive cavity"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <Users className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs font-bold text-amber-400">Active Colony</span>
-                </div>
-                <h4 className="font-bold text-white text-base">Thriving African Honeybees</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Natural colony structure inside an occupied log hive, demonstrating strong cluster health and foraging activity.
-                </p>
-              </div>
-            </div>
+            {/* Slideshow 2: Scaling to 22 Deployed IoT Hives */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: STORY_IMAGES.deployedHive1,
+                  title: "Night Field Hive Inspection",
+                  subtitle: "Solar antenna module on galvanized tin roof",
+                  badge: "22 Deployed Hives",
+                  description: "Field deployment on anti-termite stand transmitting live ambient and internal telemetry throughout the night."
+                },
+                {
+                  image: STORY_IMAGES.deployedHive2,
+                  title: "Top-Bar Hive Station on Stand",
+                  subtitle: "Weatherproof antenna unit mounted on lid",
+                  badge: "45 Acres Served",
+                  description: "Robust solar-powered node operating at commercial orchard boundaries to monitor pollinator foraging density."
+                },
+                {
+                  image: STORY_IMAGES.solarGateway,
+                  title: "Autonomous Solar LTE Hub",
+                  subtitle: "High-gain dual antenna yard gateway",
+                  badge: "Zero-Watt Grid",
+                  description: "Self-powered gateway aggregating data from all local hive sensors and relaying to cloud dashboards in real time."
+                }
+              ]}
+              badge="Network Scale"
+              title="22 IoT Deployed Stations"
+              subtitle="Solar antennas & hive stands"
+              dark={true}
+            />
 
-            {/* Card 3: ApiSense Closeup */}
-            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={STORY_IMAGES.apisenseCloseup1}
-                  alt="ApiSense sensor board inside log hive"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <Cpu className="w-4 h-4 text-beeyield-green" />
-                  <span className="text-xs font-bold text-beeyield-green">In-Hive Hardware</span>
-                </div>
-                <h4 className="font-bold text-white text-base">ApiSense Bio-Sensor Probe</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Compact multi-sensor probe measuring internal brood temperature, acoustic frequency, and relative humidity in real time.
-                </p>
-              </div>
-            </div>
-
-            {/* Card 4: Under-Hive Scale */}
-            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={STORY_IMAGES.hiveScale}
-                  alt="Precision load cell scale mounted under wooden hive"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <Scale className="w-4 h-4 text-beeyield-green" />
-                  <span className="text-xs font-bold text-beeyield-green">Weight Telemetry</span>
-                </div>
-                <h4 className="font-bold text-white text-base">Under-Hive Load Cell Bar</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Sub-milligram accuracy load cell bar mounted directly beneath the hive base to track diurnal nectar flow and hive biomass.
-                </p>
-              </div>
-            </div>
-
-            {/* Card 5: ApiSense Cluster */}
-            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={STORY_IMAGES.apisenseCluster2}
-                  alt="ApiSense sensor node surrounded by worker bees in log hive"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <Activity className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs font-bold text-amber-400">Bee Behavior</span>
-                </div>
-                <h4 className="font-bold text-white text-base">Seamless Hardware Adoption</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Bees covering the sensor enclosure without propolizing ventilation slots, proving optimal biocompatible engineering.
-                </p>
-              </div>
-            </div>
-
-            {/* Card 6: Multi-Frame Comb View */}
-            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={STORY_IMAGES.combProbe3}
-                  alt="Top-down multi-frame comb view with telemetry sensor"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheck className="w-4 h-4 text-beeyield-green" />
-                  <span className="text-xs font-bold text-beeyield-green">Field Inspection</span>
-                </div>
-                <h4 className="font-bold text-white text-base">Multi-Frame Brood Coverage</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Inspection view showing active comb building across multiple parallel frames with integrated central telemetry.
-                </p>
-              </div>
-            </div>
+            {/* Slideshow 3: Precision Pollination & Biocompatibility */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: STORY_IMAGES.hiveScale,
+                  title: "Under-Hive Load Cell Bar",
+                  subtitle: "Sub-milligram continuous scale telemetry",
+                  badge: "Weight Delta",
+                  description: "Industrial scale bar tracking daily nectar inflow and hive biomass continuously during crop bloom."
+                },
+                {
+                  image: STORY_IMAGES.combProbe2,
+                  title: "Natural Honeycomb Wax Integration",
+                  subtitle: "Bees drawing wax directly on sensor frame",
+                  badge: "Biocompatible",
+                  description: "Worker bees building fresh white beeswax around sensor structures, embedding the probe in natural comb."
+                },
+                {
+                  image: STORY_IMAGES.combProbe3,
+                  title: "Multi-Frame Brood Coverage",
+                  subtitle: "Top-down commercial hive inspection",
+                  badge: "3t Carbon Offset",
+                  description: "Parallel active frames showing full brood vitality and verified strength across precision-pollinated client orchards."
+                }
+              ]}
+              badge="Precision Impact"
+              title="Pollination & Comb Health"
+              subtitle="Continuous scales & wax integration"
+              dark={true}
+            />
 
           </div>
         </div>

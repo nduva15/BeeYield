@@ -58,6 +58,7 @@ import { motion } from "framer-motion";
 import { submitContactForm } from "@/services/contactService";
 import { useToast } from "@/hooks/use-toast";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
 import LOGO from "@/assets/Logo.png";
 
@@ -804,130 +805,118 @@ const Diseases = () => {
                             <div>
                                 <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-400 mb-4 tracking-tighter">95%</h3>
                                 <h4 className="text-lg font-bold text-white mb-2">Disease detection</h4>
-                                <p className="text-sm text-white/70 leading-relaxed">
-                                    Apisense achieves up to 95% accuracy in detecting early-stage signs of Foulbrood, Nosema, and Varroa destructor infestations before visible symptoms appear.
-                                </p>
-                            </div>
-                            <div>
-                                <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-beeyield-green to-emerald-700 mb-4 tracking-tighter">85%</h3>
-                                <h4 className="text-lg font-bold text-white mb-2">Disease spread prediction</h4>
-                                <p className="text-sm text-white/70 leading-relaxed">
-                                    Through continuous localized monitoring, the system predicts the vector spread of diseases across the apiary with up to 85% accuracy, enabling proactive containment.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ═══════════════════════════════════════════════════════════════
-                LIVE FIELD INSPECTION GALLERY — Real Hive Photography
+                                  {/* ═══════════════════════════════════════════════════════════════
+                LIVE FIELD INSPECTION GALLERY — Multiple 3-Photo Slideshows
             ═══════════════════════════════════════════════════════════════ */}
-            <section className="py-28 bg-white border-b border-neutral-100 relative overflow-hidden">
+            <section className="py-24 bg-neutral-950 text-white border-b border-neutral-800 relative overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-16 max-w-3xl mx-auto">
-                        <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+                        <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-5 py-2 font-semibold text-[10px] uppercase tracking-wider rounded-full">
                             Real Hive Deployments
                         </Badge>
-                        <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-4">
+                        <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
                             Live In-Hive <span className="text-beeyield-green">Sensor Inspections</span>
                         </h2>
                         <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
-                        <p className="text-muted-foreground text-base leading-relaxed">
-                            Authentic field photography from the 2026 Apisense & BeeYield research apiaries, demonstrating non-invasive sensor operation alongside active bee colonies.
+                        <p className="text-neutral-400 text-base leading-relaxed">
+                            3 specialized 3-photo slideshows demonstrating early pathogen screening, biocompatible comb integration, and autonomous field telemetry across Kenyan research apiaries.
                         </p>
                     </div>
 
-                    {/* Interactive Featured Viewer with Autoplay */}
-                    <div className="max-w-6xl mx-auto mb-12">
-                        <div className="grid lg:grid-cols-12 gap-8 items-center bg-neutral-900 text-white rounded-[2.5rem] p-6 md:p-10 shadow-2xl border border-neutral-800">
-                            {/* Main Display Image */}
-                            <div className="lg:col-span-7 relative aspect-[9/16] md:aspect-[4/3] max-h-[520px] rounded-[2rem] overflow-hidden bg-neutral-950 flex items-center justify-center group">
-                                <img
-                                    src={FIELD_INSPECTION_PHOTOS[activePhotoIdx].src}
-                                    alt={FIELD_INSPECTION_PHOTOS[activePhotoIdx].title}
-                                    className="w-full h-full object-cover transition-all duration-700"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent pointer-events-none" />
-                                <div className="absolute top-4 left-4">
-                                    <Badge className="bg-beeyield-green text-neutral-950 font-bold px-3 py-1 text-[10px] uppercase tracking-wider">
-                                        {FIELD_INSPECTION_PHOTOS[activePhotoIdx].tag}
-                                    </Badge>
-                                </div>
+                    {/* 3 Themed 3-Photo Slideshows */}
+                    <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                        {/* Slideshow 1: In-Hive Disease Screening */}
+                        <ThreePhotoSlideshow
+                            slides={[
+                                {
+                                    image: "/images/diseases/hive-inspection-1.png",
+                                    title: "In-Hive Sensor Deployment",
+                                    subtitle: "Vertical probe between brood frames",
+                                    badge: "Early Detection",
+                                    description: "Gas & thermal gradient sensor tracking early Foulbrood and Varroa distress before visible comb symptoms appear."
+                                },
+                                {
+                                    image: "/images/diseases/hive-inspection-3.png",
+                                    title: "Brood Pathogen Screening",
+                                    subtitle: "Microclimate thermal anomaly tracking",
+                                    badge: "Thermal Profiling",
+                                    description: "Monitors core brood nest thermoregulation stability within 0.1°C precision to detect fungal and viral stress."
+                                },
+                                {
+                                    image: "/images/diseases/hive-comb-inspection-6.png",
+                                    title: "Acoustic AI Diagnostic Sampling",
+                                    subtitle: "High-fidelity bio-acoustic frequency analysis",
+                                    badge: "Acoustic AI",
+                                    description: "Continuous hive frequency FFT audio spectrum analysis detecting queenlessness and defensive agitation."
+                                }
+                            ]}
+                            badge="Pathogen Defense"
+                            title="Disease & Thermal Probes"
+                            subtitle="In-hive VOC, acoustic & thermal sensors"
+                            dark={true}
+                        />
 
-                                {/* Prev/Next navigation arrows */}
-                                <button
-                                    onClick={() => {
-                                        setActivePhotoIdx((prev) => (prev - 1 + FIELD_INSPECTION_PHOTOS.length) % FIELD_INSPECTION_PHOTOS.length);
-                                        setIsGalleryPlaying(false);
-                                    }}
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all shadow-lg"
-                                    aria-label="Previous photo"
-                                >
-                                    <ChevronLeft className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setActivePhotoIdx((prev) => (prev + 1) % FIELD_INSPECTION_PHOTOS.length);
-                                        setIsGalleryPlaying(false);
-                                    }}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all shadow-lg"
-                                    aria-label="Next photo"
-                                >
-                                    <ChevronRight className="w-5 h-5" />
-                                </button>
-                            </div>
+                        {/* Slideshow 2: Colony Behavior & Comb */}
+                        <ThreePhotoSlideshow
+                            slides={[
+                                {
+                                    image: "/images/story/apisense-bees-closeup-2.png",
+                                    title: "Bee Interaction on ApiSense PCB",
+                                    subtitle: "Live forager on non-toxic sensor board",
+                                    badge: "Zero Rejection",
+                                    description: "Direct observation of healthy worker bee landing on the ApiSense probe without distress signals."
+                                },
+                                {
+                                    image: "/images/diseases/hive-comb-inspection-7.png",
+                                    title: "Natural Honeycomb Wax Integration",
+                                    subtitle: "Fresh white comb drawn seamlessly along frame",
+                                    badge: "Biocompatible",
+                                    description: "Colony draws natural wax directly onto probe enclosure, proving 100% biocompatibility."
+                                },
+                                {
+                                    image: "/images/story/bee-colony-device-wide.jpg",
+                                    title: "Thriving African Bee Cluster",
+                                    subtitle: "Dense colony mass around sensor",
+                                    badge: "Colony Vitality",
+                                    description: "Full-depth cluster density confirms non-invasive sensor presence with zero colony disruption."
+                                }
+                            ]}
+                            badge="Biocompatibility"
+                            title="Colony Health & Comb"
+                            subtitle="Bees drawing wax on sensor frames"
+                            dark={true}
+                        />
 
-                            {/* Details Panel */}
-                            <div className="lg:col-span-5 space-y-6 flex flex-col justify-between h-full py-4">
-                                <div>
-                                    <div className="flex items-center justify-between gap-2 mb-2">
-                                        <span className="text-xs font-mono text-beeyield-green uppercase tracking-widest">
-                                            Frame Inspection {activePhotoIdx + 1} of {FIELD_INSPECTION_PHOTOS.length}
-                                        </span>
-                                        <button
-                                            onClick={() => setIsGalleryPlaying(!isGalleryPlaying)}
-                                            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[10px] font-semibold text-neutral-300 hover:text-white hover:bg-white/20 transition-all"
-                                        >
-                                            {isGalleryPlaying ? <Pause className="w-3 h-3 text-beeyield-green" /> : <Play className="w-3 h-3 text-beeyield-green" />}
-                                            {isGalleryPlaying ? "Pause" : "Play"}
-                                        </button>
-                                    </div>
-                                    <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-3">
-                                        {FIELD_INSPECTION_PHOTOS[activePhotoIdx].title}
-                                    </h3>
-                                    <p className="text-neutral-300 text-sm font-medium mb-4 leading-relaxed">
-                                        {FIELD_INSPECTION_PHOTOS[activePhotoIdx].subtitle}
-                                    </p>
-                                    <p className="text-neutral-400 text-xs leading-relaxed border-l-2 border-beeyield-green/40 pl-4">
-                                        {FIELD_INSPECTION_PHOTOS[activePhotoIdx].detail}
-                                    </p>
-                                </div>
-
-                                {/* Thumbnail Selector */}
-                                <div className="pt-4 border-t border-neutral-800">
-                                    <p className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-3">Select Hive Perspective:</p>
-                                    <div className="grid grid-cols-5 gap-2">
-                                        {FIELD_INSPECTION_PHOTOS.map((photo, idx) => (
-                                            <button
-                                                key={idx}
-                                                onClick={() => {
-                                                    setActivePhotoIdx(idx);
-                                                    setIsGalleryPlaying(false);
-                                                }}
-                                                className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all ${
-                                                    activePhotoIdx === idx
-                                                        ? "border-beeyield-green shadow-[0_0_12px_rgba(16,185,129,0.5)] scale-105"
-                                                        : "border-neutral-700 opacity-50 hover:opacity-100 hover:border-neutral-500"
-                                                }`}
-                                            >
-                                                <img src={photo.src} alt={photo.title} className="w-full h-full object-cover" />
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {/* Slideshow 3: Field Telemetry & Scales */}
+                        <ThreePhotoSlideshow
+                            slides={[
+                                {
+                                    image: "/images/story/deployed-hive-antenna-1.png",
+                                    title: "IoT Hive Stand Deployment",
+                                    subtitle: "Solar antenna module on galvanized tin lid",
+                                    badge: "22 Deployed Hives",
+                                    description: "Autonomous transmission node standing on metal pole in Kenyan apiary during nighttime field check."
+                                },
+                                {
+                                    image: "/images/diseases/gateway-solar-node.png",
+                                    title: "Autonomous Solar IoT Gateway",
+                                    subtitle: "High-gain dual antenna LTE gateway",
+                                    badge: "Solar Hub",
+                                    description: "Off-grid transmission hub powering up to 100 sensor nodes across a commercial apiary."
+                                },
+                                {
+                                    image: "/images/diseases/hive-scale-loadcell.png",
+                                    title: "Under-Hive Continuous Scale",
+                                    subtitle: "Sub-milligram load cell telemetry",
+                                    badge: "Weight Telemetry",
+                                    description: "Tracks daily honey accumulation, nectar flow dynamics, robbing events, and biomass departures."
+                                }
+                            ]}
+                            badge="Field Hardware"
+                            title="Telemetry & Scale Hubs"
+                            subtitle="Solar gateways & under-hive scales"
+                            dark={true}
+                        />
                     </div>
                 </div>
             </section>

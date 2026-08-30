@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
 /* ── Authentic Field Photos (Zero AI Renders) ─────────────────── */
 const IMPACT_IMAGES = {
@@ -233,7 +234,7 @@ const Impact = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          3. REAL FIELD EVIDENCE PHOTO MOSAIC (Photos Everywhere)
+          3. REAL FIELD EVIDENCE — Multiple 3-Photo Slideshows
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-neutral-950 text-white">
         <div className="container mx-auto px-4">
@@ -245,119 +246,104 @@ const Impact = () => {
               Real Field <span className="text-beeyield-green">Evidence.</span>
             </h2>
             <p className="text-neutral-400 text-lg font-medium">
-              Authentic photography from our apiary network across Kenya — solar antennas on hive stands, active bee clusters on ApiSense probes, and load-cell continuous scales.
+              3 curated 3-photo slideshows documenting 22 deployed IoT hardware stations, live colony populations, and precision continuous scales across Kenya.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             
-            {/* Photo 1: Nighttime Hive Stand Check */}
-            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={IMPACT_IMAGES.deployedHive1}
-                  alt="Deployed IoT hive with antenna on roof during nighttime field inspection"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <Badge className="bg-beeyield-green text-neutral-950 font-bold text-[9px] mb-2">22 Active Nodes</Badge>
-                <h4 className="text-white font-bold text-base">Nighttime Apiary Field Telemetry</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Kenyan hive fitted with solar antenna on galvanized tin roof, operating autonomously on pole stands.
-                </p>
-              </div>
-            </div>
+            {/* Slideshow 1: 22 IoT Hardware Deployments */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: IMPACT_IMAGES.deployedHive1,
+                  title: "Nighttime Apiary Field Telemetry",
+                  subtitle: "Solar antenna module on galvanized tin roof",
+                  badge: "22 Deployed Hives",
+                  description: "Autonomous transmission node standing on metal pole in Kenyan apiary during nighttime field check."
+                },
+                {
+                  image: IMPACT_IMAGES.deployedHive2,
+                  title: "Kenyan Top-Bar Hive Stand",
+                  subtitle: "Weatherproof antenna unit mounted on lid",
+                  badge: "45 Acres Served",
+                  description: "Robust solar-powered node operating at commercial orchard boundaries to monitor pollinator foraging density."
+                },
+                {
+                  image: IMPACT_IMAGES.solarGateway,
+                  title: "Solar LTE Field Gateway",
+                  subtitle: "High-gain dual antenna LTE gateway",
+                  badge: "Zero-Watt Grid",
+                  description: "Self-powered gateway aggregating data from all local hive sensors and relaying to cloud dashboards in real time."
+                }
+              ]}
+              badge="Hardware Grid"
+              title="22 IoT Deployed Stations"
+              subtitle="Solar antennas & hive stands"
+              dark={true}
+            />
 
-            {/* Photo 2: Live Bee Landing on ApiSense */}
-            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={IMPACT_IMAGES.apisenseCloseup2}
-                  alt="Worker bee landing directly on ApiSense PCB"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <Badge className="bg-amber-400 text-neutral-950 font-bold text-[9px] mb-2">Biocompatible</Badge>
-                <h4 className="text-white font-bold text-base">In-Hive Hardware Acceptance</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Worker bees landing naturally on the ApiSense-branded board without rejection or alarm pheromones.
-                </p>
-              </div>
-            </div>
+            {/* Slideshow 2: Colony Health & Biocompatibility */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: IMPACT_IMAGES.apisenseCloseup2,
+                  title: "In-Hive Hardware Acceptance",
+                  subtitle: "Live forager on non-toxic sensor board",
+                  badge: "Zero Rejection",
+                  description: "Worker bees accept the electronic hardware immediately, navigating the sensor board without alarm responses."
+                },
+                {
+                  image: IMPACT_IMAGES.apisenseCluster1,
+                  title: "Active Colony Surrounding Probe",
+                  subtitle: "Hundreds of bees clustered on sensor",
+                  badge: "Colony Vitality",
+                  description: "Dense bee cluster surrounding the in-hive ApiSense probe, showing zero repellent behavior."
+                },
+                {
+                  image: IMPACT_IMAGES.beeColonyWide,
+                  title: "Thriving African Bee Colony",
+                  subtitle: "Full-depth cluster density",
+                  badge: "2.4M+ Bees Protected",
+                  description: "Demonstrates vigorous colony health, high worker population density, and healthy brood rearing."
+                }
+              ]}
+              badge="Colony Health"
+              title="Bio-Sensors & Bees"
+              subtitle="Colony vitality & zero rejection"
+              dark={true}
+            />
 
-            {/* Photo 3: Dense Bee Colony Wide */}
-            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={IMPACT_IMAGES.beeColonyWide}
-                  alt="Dense African honeybee colony thriving around in-hive sensor"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <Badge className="bg-lime-400 text-neutral-950 font-bold text-[9px] mb-2">2.4M+ Bees</Badge>
-                <h4 className="text-white font-bold text-base">Colony Population Vitality</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  High-density African honeybee cluster building comb around our vertical telemetry probe.
-                </p>
-              </div>
-            </div>
-
-            {/* Photo 4: Solar LTE Gateway */}
-            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={IMPACT_IMAGES.solarGateway}
-                  alt="Autonomous solar IoT LTE gateway with dual high-gain antennas"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <Badge className="bg-beeyield-green text-neutral-950 font-bold text-[9px] mb-2">Zero-Watt Grid</Badge>
-                <h4 className="text-white font-bold text-base">Solar LTE Field Hub</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  High-gain dual antenna LTE gateway with solar panel ensuring uninterrupted 24/7 cloud sync.
-                </p>
-              </div>
-            </div>
-
-            {/* Photo 5: Under-Hive Scale Load Cell */}
-            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={IMPACT_IMAGES.hiveScale}
-                  alt="Precision electronic hive scale load cell mounted under wooden hive"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <Badge className="bg-blue-400 text-neutral-950 font-bold text-[9px] mb-2">Weight Delta</Badge>
-                <h4 className="text-white font-bold text-base">Continuous Scale Telemetry</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Industrial load cell bar mounted under hive base tracking diurnal weight changes down to sub-grams.
-                </p>
-              </div>
-            </div>
-
-            {/* Photo 6: Fresh Comb Wax on Frame */}
-            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={IMPACT_IMAGES.combProbe2}
-                  alt="Fresh white honeycomb wax built seamlessly onto sensor frame"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <Badge className="bg-amber-300 text-neutral-950 font-bold text-[9px] mb-2">Wax Secretion</Badge>
-                <h4 className="text-white font-bold text-base">Natural Comb Integration</h4>
-                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                  Bees drawing fresh white beeswax directly across the biocompatible sensor frame.
-                </p>
-              </div>
-            </div>
+            {/* Slideshow 3: Scales, Comb & Carbon Offset */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: IMPACT_IMAGES.hiveScale,
+                  title: "Continuous Scale Telemetry",
+                  subtitle: "Sub-milligram load cell telemetry",
+                  badge: "Weight Delta",
+                  description: "Industrial load cell bar mounted under hive base tracking diurnal weight changes down to sub-grams."
+                },
+                {
+                  image: IMPACT_IMAGES.combProbe2,
+                  title: "Natural Honeycomb Wax Integration",
+                  subtitle: "Bees drawing wax directly on sensor frame",
+                  badge: "Biocompatible",
+                  description: "Worker bees building fresh white beeswax around sensor structures, embedding the probe in natural comb."
+                },
+                {
+                  image: IMPACT_IMAGES.combProbe3,
+                  title: "Multi-Frame Brood Coverage",
+                  subtitle: "Top-down commercial hive inspection",
+                  badge: "3t Carbon Offset",
+                  description: "Parallel active frames showing full brood vitality and verified strength across precision-pollinated client orchards."
+                }
+              ]}
+              badge="Carbon & Comb"
+              title="Scales & Comb Growth"
+              subtitle="Continuous weighing & wax drawing"
+              dark={true}
+            />
 
           </div>
         </div>
