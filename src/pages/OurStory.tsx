@@ -486,7 +486,7 @@ const OurStory = () => {
               <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
                 <img
                   src={STORY_IMAGES.combProbe2}
-                  alt="Natural comb building on sensor frame"
+                  alt="Comb disease detection on sensor frame"
                   className="w-full h-full object-cover"
                 />
               </div>

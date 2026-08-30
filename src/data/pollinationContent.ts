@@ -261,10 +261,10 @@ export const IN_HIVE_FIELD_SLIDES: InHiveFieldSlide[] = [
   },
   {
     image: '/images/pollination/hive-comb-inspection-7.png',
-    title: 'Natural Comb & Wax Building',
-    subtitle: 'Fresh white honeycomb drawn seamlessly along the sensor frame',
-    badge: 'Non-Invasive Biocompatibility',
-    description: 'Colony draws healthy wax comb right against the probe, proving 100% biocompatibility and zero chemical or acoustic interference.',
+    title: 'Comb Disease Detection',
+    subtitle: 'Early brood pathology screening on drawn comb frames',
+    badge: 'Disease Detection',
+    description: 'Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities directly on drawn comb.',
   },
   {
     image: '/images/pollination/hive-comb-inspection-6.png',

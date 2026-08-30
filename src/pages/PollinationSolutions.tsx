@@ -127,7 +127,7 @@ const InHiveHardwareSlideshow = () => {
           </h2>
           <div className="h-1 w-20 bg-beeyield-green mx-auto mb-5 rounded-full" />
           <p className="text-neutral-400 text-sm md:text-base leading-relaxed">
-            4 specialized 3-photo slideshows showing solar LTE gateways, continuous load-cell scales, in-hive ApiSense sensors, and natural comb wax integration.
+            4 specialized 3-photo slideshows showing solar LTE gateways, continuous load-cell scales, in-hive ApiSense sensors, and comb disease detection.
           </p>
         </div>
 

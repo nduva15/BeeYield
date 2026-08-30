@@ -82,7 +82,7 @@ const FIELD_INSPECTION_PHOTOS = [
     {
         src: "/images/diseases/hive-inspection-2.png",
         title: "Live Colony & Comb Cluster",
-        subtitle: "Active worker bee density and natural comb formation",
+        subtitle: "Active worker bee density and brood disease screening",
         tag: "Comb Vitality",
         detail: "Bees actively cluster and inspect around the non-invasive sensor casing with zero repellent behavior."
     },
@@ -130,10 +130,10 @@ const FIELD_INSPECTION_PHOTOS = [
     },
     {
         src: "/images/diseases/hive-comb-inspection-7.png",
-        title: "Natural Comb & Wax Building",
-        subtitle: "Fresh white honeycomb drawn seamlessly along sensor frame",
-        tag: "Biocompatibility",
-        detail: "Colony draws healthy wax comb against the probe, proving 100% biocompatibility and zero chemical interference."
+        title: "Comb Disease Detection",
+        subtitle: "Early brood pathology screening on drawn comb frames",
+        tag: "Disease Detection",
+        detail: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."
     },
     {
         src: "/images/diseases/hive-comb-inspection-8.png",
