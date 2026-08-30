@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import {
   Users, Cpu, Sprout, ArrowRight, Heart, TreePine, Home, Hexagon,
-  Radio, Scale, ChevronLeft, ChevronRight, Play, Pause
+  Radio, Scale, ShieldCheck, Activity, Zap, CheckCircle2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Logo from "@/assets/Logo.png";
@@ -13,7 +13,7 @@ import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
-/* ── Authentic Field Photo Paths ────────────────────────────── */
+/* ── Authentic Field Photo Assets (Zero AI Renders) ──────────── */
 const STORY_IMAGES = {
   deployedHive1: '/images/story/deployed-hive-antenna-1.png',
   deployedHive2: '/images/story/deployed-hive-antenna-2.png',
@@ -22,170 +22,32 @@ const STORY_IMAGES = {
   apisenseCloseup1: '/images/story/apisense-bees-closeup-1.png',
   apisenseCloseup2: '/images/story/apisense-bees-closeup-2.png',
   beeColonyWide: '/images/story/bee-colony-device-wide.jpg',
-  // Existing comb/probe/gateway images
   solarGateway: '/images/pollination/gateway-solar-node.png',
   hiveScale: '/images/pollination/hive-scale-loadcell.png',
   combProbe1: '/images/pollination/hive-comb-inspection-6.png',
   combProbe2: '/images/pollination/hive-comb-inspection-7.png',
   combProbe3: '/images/pollination/hive-comb-inspection-8.png',
-};
-
-/* ── Story Timeline Slideshow Data ──────────────────────────── */
-const STORY_SLIDES = [
-  {
-    image: STORY_IMAGES.deployedHive1,
-    title: 'Deployed IoT Hive — Night Field Check',
-    description: 'A traditional Kenyan top-bar hive equipped with our solar antenna device on galvanized tin roofing, standing on the apiary pole stand during a nighttime field inspection.',
-  },
-  {
-    image: STORY_IMAGES.deployedHive2,
-    title: 'Standalone IoT Monitoring Station',
-    description: 'Close-up showing the weatherproof antenna module bolted onto the hive lid, with the cellular uplink mast visible. One of 22 deployed IoT devices across our apiaries.',
-  },
-  {
-    image: STORY_IMAGES.apisenseCloseup1,
-    title: 'ApiSense Device — Live Bee Interaction',
-    description: 'The ApiSense branded sensor board deployed inside a log hive. Worker bees interact naturally with the device, confirming full biocompatibility of the enclosure.',
-  },
-  {
-    image: STORY_IMAGES.apisenseCluster1,
-    title: 'Active Colony Around In-Hive Sensor',
-    description: 'Hundreds of worker bees clustered around the in-hive ApiSense sensor, showing no rejection behavior — proof the hardware integrates seamlessly with colony life.',
-  },
-  {
-    image: STORY_IMAGES.beeColonyWide,
-    title: 'Dense Bee Colony with Sensor Probe',
-    description: 'Wide-angle capture showing the full density of a thriving African bee colony inside a traditional log hive, with the dark sensor board visible at the bottom of the comb mass.',
-  },
-  {
-    image: STORY_IMAGES.apisenseCloseup2,
-    title: 'ApiSense Branding — Bee Landing on PCB',
-    description: 'A forager bee landing directly on the ApiSense-branded PCB. The green logo is clearly visible — this is real hardware in a real hive, not a render.',
-  },
-  {
-    image: STORY_IMAGES.apisenseCluster2,
-    title: 'In-Hive Telemetry Cluster View',
-    description: 'The ApiSense sensor node surrounded by worker bees inside the log hive cavity. LED indicator and data bus lines are visible alongside propolis deposits.',
-  },
-  {
-    image: STORY_IMAGES.solarGateway,
-    title: 'Solar LTE Gateway Node',
-    description: 'The autonomous solar-powered LTE gateway with integrated harvest panel and dual high-gain antennas, deployed in a Kenyan apiary for continuous real-time data uplink.',
-  },
-  {
-    image: STORY_IMAGES.hiveScale,
-    title: 'Under-Hive Precision Load Cell',
-    description: 'Industrial-grade load cell bar mounted beneath a traditional wooden hive floor, continuously measuring diurnal nectar flows, foraging gains, and swarming weight departures.',
-  },
-  {
-    image: STORY_IMAGES.combProbe2,
-    title: 'Bees Building Wax on Sensor Frame',
-    description: 'Fresh white honeycomb wax being built directly onto the in-hive sensor frame by worker bees — demonstrating complete acceptance of the biocompatible hardware.',
-  },
-];
-
-/* ── Story Slideshow Component ──────────────────────────────── */
-const StorySlideshow = () => {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  useEffect(() => {
-    if (!isPlaying) return;
-    const timer = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % STORY_SLIDES.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [isPlaying]);
-
-  const slide = STORY_SLIDES[activeIdx];
-
-  return (
-    <div className="bg-neutral-900 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl">
-      <div className="relative aspect-[4/3] overflow-hidden group">
-        <motion.img
-          key={activeIdx}
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          src={slide.image}
-          alt={slide.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent pointer-events-none" />
-
-        {/* Nav Arrows */}
-        <button
-          onClick={() => setActiveIdx((prev) => (prev - 1 + STORY_SLIDES.length) % STORY_SLIDES.length)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <button
-          onClick={() => setActiveIdx((prev) => (prev + 1) % STORY_SLIDES.length)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all"
-          aria-label="Next slide"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
-
-        {/* Play/Pause */}
-        <button
-          onClick={() => setIsPlaying(!isPlaying)}
-          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur text-white flex items-center justify-center border border-white/20 hover:bg-white/20"
-          aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"}
-        >
-          {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-        </button>
-
-        {/* Counter */}
-        <div className="absolute top-4 left-4">
-          <Badge className="bg-beeyield-green text-neutral-950 font-bold px-3 py-1 text-[10px]">
-            {activeIdx + 1} / {STORY_SLIDES.length}
-          </Badge>
-        </div>
-      </div>
-
-      {/* Caption */}
-      <div className="p-6 md:p-8">
-        <h4 className="text-white font-bold text-lg mb-2">{slide.title}</h4>
-        <p className="text-neutral-400 text-sm leading-relaxed">{slide.description}</p>
-      </div>
-
-      {/* Thumbnail Strip */}
-      <div className="px-6 pb-6 flex gap-2 overflow-x-auto scrollbar-hide">
-        {STORY_SLIDES.map((s, i) => (
-          <button
-            key={i}
-            onClick={() => setActiveIdx(i)}
-            className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${
-              i === activeIdx ? 'border-beeyield-green scale-110' : 'border-transparent opacity-50 hover:opacity-80'
-            }`}
-          >
-            <img src={s.image} alt={s.title} className="w-full h-full object-cover" />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
+  fieldInspection1: '/images/diseases/hive-inspection-1.png',
+  fieldInspection2: '/images/diseases/hive-inspection-2.png',
 };
 
 const OurStory = () => {
   return (
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32">
-        {/* Background: Authentic deployed hive photo */}
+      
+      {/* ═══════════════════════════════════════════════════════════════
+          1. HERO SECTION — Real IoT Deployed Hive Background
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32 border-b border-neutral-100">
         <div className="absolute inset-0">
           <img
             src={STORY_IMAGES.deployedHive1}
-            alt="BeeYield IoT hive deployed in Kenyan apiary at night"
+            alt="BeeYield IoT hive deployed in Kenyan apiary with solar antenna on roof"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/92 via-white/85 to-white/95" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/94 via-white/86 to-white/96" />
         </div>
 
-        {/* Decorative Background Icons */}
         <div className="absolute top-20 right-10 text-primary/5 animate-pulse">
           <Hexagon size={120} strokeWidth={1} />
         </div>
@@ -196,15 +58,30 @@ const OurStory = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div className="text-center lg:text-left">
-              <Badge variant="secondary" className="mb-6 px-4 py-1 text-sm">
-                Our story
+              <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-sm bg-beeyield-green/10 text-beeyield-green font-bold rounded-full">
+                Our Authentic Story
               </Badge>
               <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-tight">
                 The Story of <span className="text-primary">BeeYield</span>
               </h1>
-              <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to improve pollination for a sustainable future.
+              <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-8">
+                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and 22 IoT devices transforming 45 acres of pollination.
               </p>
+              
+              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                <div className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
+                  <Radio className="w-4 h-4 text-beeyield-green" />
+                  <span className="text-xs font-bold text-neutral-900">22 IoT Devices Deployed</span>
+                </div>
+                <div className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-beeyield-green" />
+                  <span className="text-xs font-bold text-neutral-900">45 Acres Pollinated</span>
+                </div>
+                <div className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
+                  <TreePine className="w-4 h-4 text-beeyield-green" />
+                  <span className="text-xs font-bold text-neutral-900">3t Carbon Offset</span>
+                </div>
+              </div>
             </div>
 
             <div className="relative mx-auto lg:ml-auto max-w-md lg:max-w-full flex justify-center">
@@ -212,65 +89,56 @@ const OurStory = () => {
               <img
                 src={Logo}
                 alt="BeeYield Logo"
-                className="relative w-full max-w-[400px] h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                className="relative w-full max-w-[380px] h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute -bottom-6 -left-6 bg-background p-4 rounded-xl shadow-xl border border-border/50 flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-full text-primary">
-                  <Radio size={24} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">22 IoT Devices</p>
-                  <p className="text-xs text-muted-foreground">Deployed & Live</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Origin Story — with authentic ApiSense bee photo */}
-      <section className="py-16 sm:py-20 lg:py-24">
+      {/* ═══════════════════════════════════════════════════════════════
+          2. ORIGIN STORY — ApiSense PCB In-Hive with Live Worker Bees
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-24 lg:py-28 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-            <div className="order-2 lg:order-1 relative">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-primary/10 rounded-3xl transform -rotate-2 group-hover:rotate-0 transition-transform duration-500" />
+            
+            {/* Visual Photo Card: Real ApiSense Bee Landing */}
+            <div className="relative group">
+              <div className="absolute -inset-2 bg-gradient-to-r from-beeyield-green/20 to-amber-400/20 rounded-[3rem] blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
+              <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 bg-neutral-950 aspect-[4/3]">
                 <img
-                  src={STORY_IMAGES.apisenseCloseup1}
-                  alt="ApiSense branded sensor inside active beehive with Kenyan worker bees"
-                  className="relative rounded-3xl shadow-lg w-full object-cover h-[400px] lg:h-[500px]"
+                  src={STORY_IMAGES.apisenseCloseup2}
+                  alt="ApiSense sensor PCB with worker bee landed directly on device inside Kenyan hive"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                {/* Floating Quote Card */}
-                <Card className="absolute -bottom-8 -right-8 w-[90%] sm:w-[80%] shadow-xl border-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                  <CardContent className="p-6">
-                    <div className="flex gap-4">
-                      <div className="text-4xl text-primary font-serif">"</div>
-                      <blockquote className="text-lg font-medium text-foreground">
-                        Sometimes, the spark for something big comes from boredom, family, and a little bit of courage.
-                      </blockquote>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <Badge className="bg-beeyield-green text-neutral-950 font-bold px-3 py-1 text-[9px] mb-2">Ground Truth</Badge>
+                  <p className="text-white font-bold text-base leading-snug">
+                    Real ApiSense sensor board inside Kenyan log hive with active worker bee on PCB
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="order-1 lg:order-2 space-y-6">
+            <div className="space-y-6">
               <Badge variant="outline" className="mb-2">
                 <Home className="mr-2 h-3 w-3" />
-                Kibwezi, Kenya • 2020
+                Kibwezi, Kenya • 2020 Origin
               </Badge>
-              <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+              <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">
                 A Pandemic Spark, a Family Mission
               </h2>
-              <div className="space-y-4 text-muted-foreground">
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  In 2020, as the world slowed down during the COVID pandemic, <strong className="text-foreground">Timothy Nduva</strong> found himself restless in rural Kibwezi, Kenya. While attending Strathmore University, Timothy's curiosity and drive for innovation grew. The unique challenges of the pandemic became the spark that ignited BeeYield's vision for scalable, tech-driven beekeeping solutions.
+                  In 2020, during the COVID pandemic, <strong className="text-foreground">Timothy Nduva</strong> found himself restless in rural Kibwezi, Kenya. While studying at Strathmore University, Timothy's drive for technological innovation grew. He began experimenting with sensors inside traditional beehives on a half-acre family plot.
                 </p>
                 <p>
-                  But BeeYield was never a solo journey. Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their own unique skills—ranging from web development and product design to IoT research. Together, the siblings transformed a small family apiary into a platform for technological advancement and agricultural impact.
+                  BeeYield was built together with Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>. Combining software engineering, product architecture, and IoT research, the siblings transformed a small family apiary into a precision pollination engine.
                 </p>
                 <p>
-                  What began with just half an acre and four hives quickly became a family mission to empower farmers, advance pollination, and prove that innovation can flourish anywhere—even in the most unexpected places.
+                  What started with 4 hives on half an acre has grown into 184+ hives, 22 IoT devices deployed, and 45 acres precision-pollinated across Kenya.
                 </p>
               </div>
             </div>
@@ -278,63 +146,263 @@ const OurStory = () => {
         </div>
       </section>
 
-      {/* Growth Journey — Updated Stats */}
-      <section className="bg-muted/30 py-16 sm:py-20 lg:py-24">
+      {/* ═══════════════════════════════════════════════════════════════
+          3. GROWTH JOURNEY — 4 Verified Metrics + 4 Visual Photos
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="bg-neutral-50/70 py-20 sm:py-24 border-y border-neutral-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground sm:text-4xl mb-4">
-              From 4 Hives to 184 — Our Growth Journey
+          <div className="mx-auto max-w-3xl text-center mb-16">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
+              Measurable Progress
+            </Badge>
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight mb-4">
+              From 4 Hives to 184 — Our Growth in Numbers & Photos
             </h2>
             <p className="text-muted-foreground">
-              What began on half an acre has grown into a thriving 5-acre apiary, with 22 IoT devices deployed across our network.
+              Real field milestones achieved across our Kibwezi and Makueni apiaries.
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Metric Numbers */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-16">
             {[
-              { number: "184+", label: "Beehives", desc: "From 4 to 184 hives" },
-              { number: "22", label: "IoT Devices", desc: "Deployed & transmitting live" },
-              { number: "45", label: "Acres Pollinated", desc: "Client farmlands served" },
+              { number: "184+", label: "Beehives", desc: "Active colony inventory" },
+              { number: "22", label: "IoT Devices", desc: "Live telemetry nodes" },
+              { number: "45", label: "Acres Pollinated", desc: "Client orchards served" },
               { number: "3t", label: "Carbon Offset", desc: "CO₂ sequestered to date" },
             ].map((stat, i) => (
-              <Card key={i} className="text-center border-border/50">
+              <Card key={i} className="text-center border-border/50 bg-white rounded-3xl shadow-sm hover:shadow-md transition-all">
                 <CardContent className="p-6">
-                  <p className="text-4xl font-bold text-primary mb-1">{stat.number}</p>
-                  <p className="text-lg font-semibold text-foreground">{stat.label}</p>
-                  <p className="text-sm text-muted-foreground mt-1">{stat.desc}</p>
+                  <p className="text-4xl font-black text-primary mb-1 tracking-tight">{stat.number}</p>
+                  <p className="text-lg font-bold text-foreground">{stat.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{stat.desc}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
+
+          {/* 4-Photo Growth Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-900 shadow-md group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.deployedHive1}
+                  alt="Traditional Kenyan hive with solar antenna device"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-4 bg-white">
+                <span className="text-[10px] font-bold text-beeyield-green uppercase">Stage 1</span>
+                <h4 className="font-bold text-sm text-neutral-900 mt-1">IoT Top-Bar Hive Deployment</h4>
+                <p className="text-xs text-neutral-500 mt-1">Solar antenna module bolted to galvanized tin hive roof.</p>
+              </div>
+            </div>
+
+            <div className="rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-900 shadow-md group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.apisenseCluster1}
+                  alt="Hundreds of worker bees clustered around in-hive sensor"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-4 bg-white">
+                <span className="text-[10px] font-bold text-beeyield-green uppercase">Stage 2</span>
+                <h4 className="font-bold text-sm text-neutral-900 mt-1">In-Hive Sensor Acceptance</h4>
+                <p className="text-xs text-neutral-500 mt-1">Colony acceptance verified with worker bee cluster on probe.</p>
+              </div>
+            </div>
+
+            <div className="rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-900 shadow-md group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.solarGateway}
+                  alt="Solar IoT LTE Transmission Hub"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-4 bg-white">
+                <span className="text-[10px] font-bold text-beeyield-green uppercase">Stage 3</span>
+                <h4 className="font-bold text-sm text-neutral-900 mt-1">Solar LTE Gateway Hub</h4>
+                <p className="text-xs text-neutral-500 mt-1">Autonomous high-gain antenna node relaying yard data.</p>
+              </div>
+            </div>
+
+            <div className="rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-900 shadow-md group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.combProbe2}
+                  alt="Fresh wax comb built on sensor frame"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-4 bg-white">
+                <span className="text-[10px] font-bold text-beeyield-green uppercase">Stage 4</span>
+                <h4 className="font-bold text-sm text-neutral-900 mt-1">Natural Comb Wax Integration</h4>
+                <p className="text-xs text-neutral-500 mt-1">Bees building fresh honeycomb seamlessly onto frame.</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* Field Photography Slideshow — All Authentic Photos */}
-      <section className="py-16 sm:py-20 lg:py-24 bg-neutral-950">
+      {/* ═══════════════════════════════════════════════════════════════
+          4. OUR STORY IN PHOTOS — Full-Width Visual Gallery Grid
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-24 bg-neutral-950 text-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-12">
-            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
-              100% Authentic Field Photography
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
+              100% Authentic Field Archive
             </Badge>
-            <h2 className="text-3xl font-bold text-white sm:text-4xl mb-4">
-              Real Hives. Real Devices. <span className="text-beeyield-green">Real Bees.</span>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
+              Our Story <span className="text-beeyield-green">in Photos</span>
             </h2>
-            <p className="text-neutral-400">
-              Every image below is a genuine photograph from our Kenyan apiaries — no AI-generated imagery, no stock photos, no renders.
+            <p className="text-neutral-400 text-base">
+              Every image is a genuine photograph from our Kenyan apiaries — the hives on stands with antenna modules, dense colonies, and in-hive sensors.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <StorySlideshow />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            
+            {/* Card 1: Hive on Stand with Antenna */}
+            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.deployedHive2}
+                  alt="Traditional Kenyan beehive on pole stand with antenna module on lid"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Radio className="w-4 h-4 text-beeyield-green" />
+                  <span className="text-xs font-bold text-beeyield-green">Telemetry Node</span>
+                </div>
+                <h4 className="font-bold text-white text-base">Hive Stand with Solar Antenna</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Traditional wooden hive mounted on an anti-termite metal pole stand with our antenna telemetry unit bolted to the tin lid.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 2: Dense Bee Colony Wide */}
+            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.beeColonyWide}
+                  alt="Dense African bee colony clustered inside hive cavity"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs font-bold text-amber-400">Active Colony</span>
+                </div>
+                <h4 className="font-bold text-white text-base">Thriving African Honeybees</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Natural colony structure inside an occupied log hive, demonstrating strong cluster health and foraging activity.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3: ApiSense Closeup */}
+            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.apisenseCloseup1}
+                  alt="ApiSense sensor board inside log hive"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Cpu className="w-4 h-4 text-beeyield-green" />
+                  <span className="text-xs font-bold text-beeyield-green">In-Hive Hardware</span>
+                </div>
+                <h4 className="font-bold text-white text-base">ApiSense Bio-Sensor Probe</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Compact multi-sensor probe measuring internal brood temperature, acoustic frequency, and relative humidity in real time.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 4: Under-Hive Scale */}
+            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.hiveScale}
+                  alt="Precision load cell scale mounted under wooden hive"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Scale className="w-4 h-4 text-beeyield-green" />
+                  <span className="text-xs font-bold text-beeyield-green">Weight Telemetry</span>
+                </div>
+                <h4 className="font-bold text-white text-base">Under-Hive Load Cell Bar</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Sub-milligram accuracy load cell bar mounted directly beneath the hive base to track diurnal nectar flow and hive biomass.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 5: ApiSense Cluster */}
+            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.apisenseCluster2}
+                  alt="ApiSense sensor node surrounded by worker bees in log hive"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Activity className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs font-bold text-amber-400">Bee Behavior</span>
+                </div>
+                <h4 className="font-bold text-white text-base">Seamless Hardware Adoption</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Bees covering the sensor enclosure without propolizing ventilation slots, proving optimal biocompatible engineering.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 6: Multi-Frame Comb View */}
+            <div className="rounded-[2rem] overflow-hidden border border-white/10 bg-neutral-900 group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={STORY_IMAGES.combProbe3}
+                  alt="Top-down multi-frame comb view with telemetry sensor"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldCheck className="w-4 h-4 text-beeyield-green" />
+                  <span className="text-xs font-bold text-beeyield-green">Field Inspection</span>
+                </div>
+                <h4 className="font-bold text-white text-base">Multi-Frame Brood Coverage</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Inspection view showing active comb building across multiple parallel frames with integrated central telemetry.
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Values / Who We Are */}
-      <section className="py-16 sm:py-20 lg:py-24">
+      {/* ═══════════════════════════════════════════════════════════════
+          5. WHO WE ARE & OUR VALUES
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+          <div className="mx-auto max-w-3xl text-center mb-16">
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">
               Who We Are And What We Stand For
             </h2>
             <p className="mt-4 text-muted-foreground">
@@ -346,27 +414,27 @@ const OurStory = () => {
             {[
               {
                 icon: Users,
-                title: "Family-Driven",
-                desc: "Built by siblings Timothy, Agatha, and Carole — we combine passion with purpose, bringing diverse skills under one shared vision."
+                title: "Family-Driven Innovation",
+                desc: "Founded by siblings Timothy, Agatha, and Carole — combining agricultural passion with world-class IoT, data science, and web engineering."
               },
               {
                 icon: Sprout,
-                title: "Guardians of Nature",
-                desc: "With 2,500+ trees planted and 3 tons of carbon offset, we're not just beekeepers — we're ecosystem builders committed to environmental restoration."
+                title: "Guardians of Biodiversity",
+                desc: "With 2,500+ indigenous trees planted and 3 tons of carbon offset, we're ecosystem builders committed to long-term ecological restoration."
               },
               {
                 icon: Cpu,
                 title: "Precision Pollination",
-                desc: "With 22 IoT devices deployed across 45 acres, we're using real-time sensor data to maximize pollination impact for farmers across Kenya."
+                desc: "With 22 IoT devices deployed across 45 acres, we use real-time sensor data to optimize fruit set and yield for Kenyan smallholders."
               }
             ].map((item, i) => (
-              <Card key={i} className="group border-border/50 transition-all hover:border-primary/50 hover:shadow-lg">
-                <CardContent className="p-6 sm:p-8">
-                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              <Card key={i} className="group border-border/50 rounded-3xl transition-all hover:border-primary/50 hover:shadow-lg bg-neutral-50/50">
+                <CardContent className="p-8">
+                  <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                     <item.icon className="h-6 w-6" />
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold text-foreground">{item.title}</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="mb-3 text-xl font-bold text-foreground">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {item.desc}
                   </p>
                 </CardContent>
@@ -376,101 +444,83 @@ const OurStory = () => {
         </div>
       </section>
 
-      {/* Pollination Services Section — with real deployed hive image */}
-      <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-16 sm:py-20 lg:py-24">
+      {/* ═══════════════════════════════════════════════════════════════
+          6. PRECISION POLLINATION SERVICES — Side-by-Side Photo Story
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-20 sm:py-24 border-t border-neutral-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
             <div className="space-y-6">
-              <Badge variant="outline">
+              <Badge variant="outline" className="px-3 py-1">
                 <TreePine className="mr-2 h-3 w-3" />
-                Our Services
+                Precision Pollination Services
               </Badge>
-              <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
-                From Traditional to Precision Pollination
+              <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">
+                From Traditional Beekeeping to Precision Pollination
               </h2>
-              <div className="space-y-4 text-muted-foreground">
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
                   Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">45 acres</strong> of farmland with <strong className="text-foreground">22 IoT-monitored hives</strong>, proving the value of managed precision pollination services in Kenya.
                 </p>
                 <p>
-                  But we knew we could do more. Today, BeeYield is evolving toward precision pollination — using sensors, data, and hive management to deliver clear pollination results, with <strong className="text-foreground">3 tons</strong> of carbon offset through native tree restoration.
+                  Today, BeeYield uses continuous under-hive weight telemetry, acoustic monitoring, and climate tracking to deliver transparent pollination results with <strong className="text-foreground">3 tons</strong> of carbon offset.
                 </p>
                 <p>
-                  Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.
+                  Our goal is to help growers increase crop yields while protecting pollinator colonies and biodiversity across Africa.
                 </p>
               </div>
-              <Button asChild className="mt-4">
+              <Button asChild className="mt-4 rounded-2xl h-12 px-8 bg-neutral-900 text-white hover:bg-neutral-800 font-bold text-xs shadow-lg">
                 <Link to="/pollination-solutions">
                   Explore Our Solutions <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
 
-            <div className="relative">
-              <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
                 <img
                   src={STORY_IMAGES.deployedHive2}
-                  alt="BeeYield IoT hive with antenna device deployed on traditional Kenyan beehive"
-                  className="w-full aspect-[4/5] object-cover"
+                  alt="IoT hive with antenna on lid"
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -bottom-4 -left-4 bg-background p-4 rounded-2xl shadow-xl border border-border/50 flex items-center gap-3">
-                <div className="p-2 bg-beeyield-green/10 rounded-full text-beeyield-green">
-                  <Scale size={20} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">45 Acres</p>
-                  <p className="text-xs text-muted-foreground">Precision Pollinated</p>
-                </div>
+              <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
+                <img
+                  src={STORY_IMAGES.combProbe2}
+                  alt="Natural comb building on sensor frame"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="absolute -top-4 -right-4 bg-background p-4 rounded-2xl shadow-xl border border-border/50 flex items-center gap-3">
-                <div className="p-2 bg-amber-100 rounded-full text-amber-700">
-                  <Radio size={20} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">22 Devices</p>
-                  <p className="text-xs text-muted-foreground">Live IoT Network</p>
-                </div>
+              <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
+                <img
+                  src={STORY_IMAGES.solarGateway}
+                  alt="Solar LTE IoT gateway"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
+                <img
+                  src={STORY_IMAGES.apisenseCloseup1}
+                  alt="ApiSense sensor board in hive"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 sm:py-20 lg:py-24">
+      {/* ═══════════════════════════════════════════════════════════════
+          7. VIDEOS SECTION
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="bg-neutral-50 py-20 border-t border-neutral-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="bg-[#0A2612] text-[#1A1A1A] border-none shadow-2xl rounded-[3rem] overflow-hidden">
-            <CardContent className="p-8 sm:p-12 text-center relative">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl -mr-32 -mt-32" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F4D03F] rounded-full blur-3xl -ml-32 -mb-32" />
-
-              <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-[#1A1A1A]">
-                Join Us on Our <span className="text-[#1B9157]">Journey</span>
-              </h2>
-              <p className="text-[#1B9157]/80 max-w-2xl mx-auto mb-10 text-lg relative z-10">
-                From a family dream in rural Kenya to 22 IoT devices monitoring 45 acres — we're just getting started. Partner with us to improve agriculture.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-                <Button size="lg" className="bg-[#FFF9F0] text-[#1B9157] hover:bg-green-50 font-bold px-8 h-12 rounded-xl" asChild>
-                  <Link to="/contact">Get In Touch</Link>
-                </Button>
-                <Button variant="outline" size="lg" className="border-[#F4D03F]/40 text-[#1A1A1A] hover:bg-[#F4D03F]/10 font-bold px-8 h-12 rounded-xl" asChild>
-                  <Link to="/careers">Join Our Team</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-      {/* About Videos */}
-      <section className="bg-[#F0F7F0] py-16 sm:py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto mb-10 max-w-3xl text-center">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
             <Badge variant="outline" className="mb-4">
               Watch BeeYield
             </Badge>
-            <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">
               Our Story In Motion
             </h2>
             <p className="mt-4 text-muted-foreground">
@@ -478,7 +528,7 @@ const OurStory = () => {
             </p>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid gap-8 lg:grid-cols-2 max-w-5xl mx-auto">
             <YouTubeEmbed
               title="About BeeYield"
               wrapperClassName="aspect-video"
@@ -490,6 +540,36 @@ const OurStory = () => {
           </div>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          8. CTA SECTION
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="bg-[#0A2612] text-white border-none shadow-2xl rounded-[3rem] overflow-hidden">
+            <CardContent className="p-8 sm:p-14 text-center relative">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl -mr-32 -mt-32 opacity-30" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F4D03F] rounded-full blur-3xl -ml-32 -mb-32 opacity-30" />
+
+              <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-white">
+                Join Us on Our <span className="text-[#1B9157]">Journey</span>
+              </h2>
+              <p className="text-neutral-300 max-w-2xl mx-auto mb-10 text-lg relative z-10">
+                From a family dream in rural Kenya to 22 IoT devices monitoring 45 acres — we're just getting started. Partner with us to modernize agriculture.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+                <Button size="lg" className="bg-white text-neutral-950 hover:bg-neutral-100 font-bold px-8 h-12 rounded-xl" asChild>
+                  <Link to="/contact">Get In Touch</Link>
+                </Button>
+                <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 font-bold px-8 h-12 rounded-xl" asChild>
+                  <Link to="/careers">Join Our Team</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
     </BeeYieldPageShell>
   );
 };

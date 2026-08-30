@@ -1,6 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2, ShieldCheck, Zap, Globe, Heart, Radio, Scale, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
+import {
+  Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2,
+  ShieldCheck, Zap, Globe, Heart, Radio, Scale, Activity, CheckCircle2
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
@@ -11,7 +14,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
-/* ── Authentic Field Photo Paths (Zero AI Images) ─────────────── */
+/* ── Authentic Field Photos (Zero AI Renders) ─────────────────── */
 const IMPACT_IMAGES = {
   deployedHive1: '/images/story/deployed-hive-antenna-1.png',
   deployedHive2: '/images/story/deployed-hive-antenna-2.png',
@@ -25,65 +28,6 @@ const IMPACT_IMAGES = {
   combProbe1: '/images/pollination/hive-comb-inspection-6.png',
   combProbe2: '/images/pollination/hive-comb-inspection-7.png',
   combProbe3: '/images/pollination/hive-comb-inspection-8.png',
-};
-
-/* ── Impact Gallery Slides ────────────────────────────────────── */
-const IMPACT_GALLERY = [
-  { image: IMPACT_IMAGES.deployedHive1, caption: 'Deployed IoT hive — solar antenna device on galvanized roof, nighttime apiary check' },
-  { image: IMPACT_IMAGES.apisenseCloseup1, caption: 'ApiSense sensor board inside log hive with active worker bee interaction' },
-  { image: IMPACT_IMAGES.beeColonyWide, caption: 'Dense Kenyan bee colony thriving around in-hive sensor probe' },
-  { image: IMPACT_IMAGES.solarGateway, caption: 'Solar LTE gateway node — autonomous field transmission with dual antennas' },
-  { image: IMPACT_IMAGES.hiveScale, caption: 'Precision load cell scale mounted under traditional wooden hive' },
-  { image: IMPACT_IMAGES.apisenseCloseup2, caption: 'ApiSense-branded PCB with forager bee landing — real hardware, real hive' },
-  { image: IMPACT_IMAGES.combProbe2, caption: 'Worker bees building fresh wax comb directly on biocompatible sensor frame' },
-  { image: IMPACT_IMAGES.deployedHive2, caption: 'Close-up of weatherproof antenna module on traditional Kenyan top-bar hive' },
-  { image: IMPACT_IMAGES.apisenseCluster1, caption: 'Hundreds of bees clustered on ApiSense sensor — zero rejection behavior' },
-  { image: IMPACT_IMAGES.combProbe3, caption: 'Multi-frame active comb with telemetry probe — top-down field view' },
-];
-
-/* ── Impact Gallery Slideshow ─────────────────────────────────── */
-const ImpactGallery = () => {
-  const [idx, setIdx] = useState(0);
-  const [playing, setPlaying] = useState(true);
-
-  useEffect(() => {
-    if (!playing) return;
-    const t = setInterval(() => setIdx(p => (p + 1) % IMPACT_GALLERY.length), 4500);
-    return () => clearInterval(t);
-  }, [playing]);
-
-  const slide = IMPACT_GALLERY[idx];
-
-  return (
-    <div className="rounded-[2.5rem] overflow-hidden bg-neutral-900 border border-white/10 shadow-2xl">
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <motion.img
-          key={idx}
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          src={slide.image}
-          alt={slide.caption}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/70 via-transparent to-transparent pointer-events-none" />
-        <button onClick={() => setIdx(p => (p - 1 + IMPACT_GALLERY.length) % IMPACT_GALLERY.length)} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all" aria-label="Previous"><ChevronLeft className="h-5 w-5" /></button>
-        <button onClick={() => setIdx(p => (p + 1) % IMPACT_GALLERY.length)} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all" aria-label="Next"><ChevronRight className="h-5 w-5" /></button>
-        <button onClick={() => setPlaying(!playing)} className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur text-white flex items-center justify-center border border-white/20 hover:bg-white/20" aria-label={playing ? "Pause" : "Play"}>{playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}</button>
-        <div className="absolute top-4 left-4"><Badge className="bg-beeyield-green text-neutral-950 font-bold px-3 py-1 text-[10px]">{idx + 1} / {IMPACT_GALLERY.length}</Badge></div>
-        <div className="absolute bottom-6 left-6 right-6">
-          <p className="text-white text-sm font-medium drop-shadow-lg">{slide.caption}</p>
-        </div>
-      </div>
-      <div className="px-4 py-4 flex gap-2 overflow-x-auto scrollbar-hide">
-        {IMPACT_GALLERY.map((s, i) => (
-          <button key={i} onClick={() => setIdx(i)} className={`flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${i === idx ? 'border-beeyield-green scale-110' : 'border-transparent opacity-50 hover:opacity-80'}`}>
-            <img src={s.image} alt="" className="w-full h-full object-cover" />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
 };
 
 const Impact = () => {
@@ -119,7 +63,7 @@ const Impact = () => {
 
       doc.setFontSize(22);
       doc.setTextColor(15, 23, 42);
-      doc.text('Impact summary', 14, 55);
+      doc.text('Impact Summary', 14, 55);
 
       doc.setDrawColor(217, 119, 6);
       doc.setLineWidth(1);
@@ -128,7 +72,7 @@ const Impact = () => {
       let yPos = 75;
       doc.setFontSize(14);
       doc.setTextColor(15, 23, 42);
-      doc.text('Summary', 14, yPos);
+      doc.text('Executive Summary', 14, yPos);
       yPos += 10;
 
       doc.setFontSize(11);
@@ -149,15 +93,15 @@ const Impact = () => {
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
       doc.text(`• Monitored hives: ${liveStats?.hive_count || "184"}`, 20, yPos + 5);
-      doc.text('• IoT Devices Deployed: 22', 20, yPos + 15);
-      doc.text('• Acres Pollinated: 45', 20, yPos + 25);
+      doc.text('• IoT Devices Deployed: 22 Live Nodes', 20, yPos + 15);
+      doc.text('• Acres Pollinated: 45 Verified Acres', 20, yPos + 25);
       doc.text('• Indigenous Flora Restored: 2,500+ Trees', 20, yPos + 35);
-      doc.text('• Carbon Offset: 3 Tons CO₂', 20, yPos + 45);
+      doc.text('• Carbon Offset: 3.0 Tons CO₂', 20, yPos + 45);
       yPos += 65;
 
       doc.setFontSize(14);
       doc.setTextColor(15, 23, 42);
-      doc.text('Progress indicators', 14, yPos);
+      doc.text('Progress Indicators', 14, yPos);
       yPos += 12;
 
       doc.setFontSize(10);
@@ -173,7 +117,7 @@ const Impact = () => {
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      const promiseText = 'We strictly enforce a policy where 50% of the harvest resides in the hive. This is not just ethics; it is resource management for colony resilience during climate-driven dry cycles.';
+      const promiseText = 'We strictly enforce a policy where 50% of the harvest resides in the hive. This is resource management for colony resilience during climate-driven dry cycles.';
       const promiseLines = doc.splitTextToSize(promiseText, pageWidth - 28);
       doc.text(promiseLines, 14, yPos);
 
@@ -203,7 +147,10 @@ const Impact = () => {
 
   return (
     <BeeYieldPageShell className="min-h-screen bg-[#fdfbf6] p-0">
-      {/* Hero Section — with authentic deployed hive background */}
+      
+      {/* ═══════════════════════════════════════════════════════════════
+          1. HERO SECTION — Real Honeybee Colony on Sensor Background
+      ═══════════════════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0">
           <img
@@ -211,7 +158,7 @@ const Impact = () => {
             alt="Active bee colony clustered on ApiSense in-hive sensor"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6]/95 via-[#fdfbf6]/90 to-[#fdfbf6]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6]/94 via-[#fdfbf6]/90 to-[#fdfbf6]" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
@@ -229,7 +176,7 @@ const Impact = () => {
               <span className="text-beeyield-gold italic">Quantified.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
-              22 IoT devices deployed. 45 acres precision-pollinated. 3 tons of carbon offset. Every metric is backed by real sensor data from our Kenyan apiaries — zero AI imagery, zero estimates.
+              22 IoT devices deployed. 45 acres precision-pollinated. 3 tons of carbon offset. Every metric is backed by authentic sensor data from our Kenyan apiaries — zero AI imagery.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
@@ -254,19 +201,11 @@ const Impact = () => {
             </div>
           </motion.div>
         </div>
-
-        {/* Background Decor */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-[0.03] pointer-events-none">
-          <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <pattern id="impact-grid" width="10" height="10" patternUnits="userSpaceOnUse">
-              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" strokeWidth="0.5" />
-            </pattern>
-            <rect width="100%" height="100%" fill="url(#impact-grid)" />
-          </svg>
-        </div>
       </section>
 
-      {/* Live Metrics Grid — 6 cards */}
+      {/* ═══════════════════════════════════════════════════════════════
+          2. LIVE METRICS GRID (6 Verified Metrics)
+      ═══════════════════════════════════════════════════════════════ */}
       <section className="pb-24">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
@@ -293,42 +232,156 @@ const Impact = () => {
         </div>
       </section>
 
-      {/* Authentic Field Photography Gallery */}
-      <section className="py-24 bg-neutral-950">
+      {/* ═══════════════════════════════════════════════════════════════
+          3. REAL FIELD EVIDENCE PHOTO MOSAIC (Photos Everywhere)
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-24 bg-neutral-950 text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
               100% Authentic Photography
             </Badge>
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tighter">
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">
               Real Field <span className="text-beeyield-green">Evidence.</span>
             </h2>
             <p className="text-neutral-400 text-lg font-medium">
-              Every image is a genuine photograph from our Kenyan apiaries. No AI renders, no stock photos — just real hives, real devices, and real bees.
+              Authentic photography from our apiary network across Kenya — solar antennas on hive stands, active bee clusters on ApiSense probes, and load-cell continuous scales.
             </p>
           </div>
-          <div className="max-w-4xl mx-auto">
-            <ImpactGallery />
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            
+            {/* Photo 1: Nighttime Hive Stand Check */}
+            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={IMPACT_IMAGES.deployedHive1}
+                  alt="Deployed IoT hive with antenna on roof during nighttime field inspection"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <Badge className="bg-beeyield-green text-neutral-950 font-bold text-[9px] mb-2">22 Active Nodes</Badge>
+                <h4 className="text-white font-bold text-base">Nighttime Apiary Field Telemetry</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Kenyan hive fitted with solar antenna on galvanized tin roof, operating autonomously on pole stands.
+                </p>
+              </div>
+            </div>
+
+            {/* Photo 2: Live Bee Landing on ApiSense */}
+            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={IMPACT_IMAGES.apisenseCloseup2}
+                  alt="Worker bee landing directly on ApiSense PCB"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <Badge className="bg-amber-400 text-neutral-950 font-bold text-[9px] mb-2">Biocompatible</Badge>
+                <h4 className="text-white font-bold text-base">In-Hive Hardware Acceptance</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Worker bees landing naturally on the ApiSense-branded board without rejection or alarm pheromones.
+                </p>
+              </div>
+            </div>
+
+            {/* Photo 3: Dense Bee Colony Wide */}
+            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={IMPACT_IMAGES.beeColonyWide}
+                  alt="Dense African honeybee colony thriving around in-hive sensor"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <Badge className="bg-lime-400 text-neutral-950 font-bold text-[9px] mb-2">2.4M+ Bees</Badge>
+                <h4 className="text-white font-bold text-base">Colony Population Vitality</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  High-density African honeybee cluster building comb around our vertical telemetry probe.
+                </p>
+              </div>
+            </div>
+
+            {/* Photo 4: Solar LTE Gateway */}
+            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={IMPACT_IMAGES.solarGateway}
+                  alt="Autonomous solar IoT LTE gateway with dual high-gain antennas"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <Badge className="bg-beeyield-green text-neutral-950 font-bold text-[9px] mb-2">Zero-Watt Grid</Badge>
+                <h4 className="text-white font-bold text-base">Solar LTE Field Hub</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  High-gain dual antenna LTE gateway with solar panel ensuring uninterrupted 24/7 cloud sync.
+                </p>
+              </div>
+            </div>
+
+            {/* Photo 5: Under-Hive Scale Load Cell */}
+            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={IMPACT_IMAGES.hiveScale}
+                  alt="Precision electronic hive scale load cell mounted under wooden hive"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <Badge className="bg-blue-400 text-neutral-950 font-bold text-[9px] mb-2">Weight Delta</Badge>
+                <h4 className="text-white font-bold text-base">Continuous Scale Telemetry</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Industrial load cell bar mounted under hive base tracking diurnal weight changes down to sub-grams.
+                </p>
+              </div>
+            </div>
+
+            {/* Photo 6: Fresh Comb Wax on Frame */}
+            <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-neutral-900 shadow-xl group">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={IMPACT_IMAGES.combProbe2}
+                  alt="Fresh white honeycomb wax built seamlessly onto sensor frame"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6">
+                <Badge className="bg-amber-300 text-neutral-950 font-bold text-[9px] mb-2">Wax Secretion</Badge>
+                <h4 className="text-white font-bold text-base">Natural Comb Integration</h4>
+                <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                  Bees drawing fresh white beeswax directly across the biocompatible sensor frame.
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Narrative Section — with real deployed hive */}
+      {/* ═══════════════════════════════════════════════════════════════
+          4. NARRATIVE SECTION (Radical Ecological Transparency)
+      ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-[#FFF9F0]">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
+            
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group">
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group aspect-[4/5] bg-neutral-900">
                 <img
                   src={IMPACT_IMAGES.deployedHive2}
                   alt="BeeYield IoT hive with antenna device deployed on traditional Kenyan beehive"
-                  className="w-full aspect-[4/5] object-cover"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 to-transparent"></div>
                 <div className="absolute bottom-10 left-10 text-white">
                   <p className="text-sm font-semibold mb-2">Location: Makueni, Kenya</p>
                   <h4 className="text-2xl font-bold">22 Devices. 45 Acres. Real Impact.</h4>
@@ -343,9 +396,11 @@ const Impact = () => {
               className="space-y-10"
             >
               <div>
-                <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] mb-6 tracking-tighter">Radical Ecological <br />Transparency.</h2>
+                <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] mb-6 tracking-tighter">
+                  Radical Ecological <br />Transparency.
+                </h2>
                 <p className="text-lg text-slate-600 leading-relaxed font-medium">
-                  We don't just harvest honey; we steward a biome. With 22 IoT devices deployed across 45 acres of precision-pollinated farmland and 3 tons of carbon offset through 2,500+ native trees, our impact is verifiable from satellite to sensor.
+                  We don't just harvest honey; we steward a biome. With 22 IoT devices deployed across 45 acres of precision-pollinated farmland and 3 tons of carbon offset through 2,500+ native trees, our impact is verifiable from satellite to in-hive sensor.
                 </p>
               </div>
 
@@ -389,21 +444,23 @@ const Impact = () => {
         </div>
       </section>
 
-      {/* 2030 Roadmap */}
+      {/* ═══════════════════════════════════════════════════════════════
+          5. 2030 BIOSPHERE ROADMAP
+      ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-[#FFF9F0] text-[#1A1A1A] overflow-hidden relative">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mb-20">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter">The 2030 <br />Biosphere Roadmap.</h2>
             <p className="text-slate-400 text-lg font-medium leading-relaxed">
-              Our architecture is designed for scale. By 2030, we aim to be the digital backbone for ethical apiculture across Sub-Saharan Africa.
+              Our architecture is designed for scale. Building on 22 deployed devices, 45 acres pollinated, and 3 tons of carbon offset, we aim to be the digital backbone for ethical apiculture across Sub-Saharan Africa.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { title: "Scale up", desc: "Support 10,000 additional beehives with better monitoring and training.", icon: Bug },
-              { title: "Tree tracking", desc: "Track 100k native trees with on-the-ground updates and satellite data.", icon: TreePine },
-              { title: "Zero-Watt", desc: "100% carbon-neutral processing through solar micro-grids.", icon: Zap },
+              { title: "Scale up", desc: "Support 10,000 additional beehives with real-time IoT monitoring.", icon: Bug },
+              { title: "Tree tracking", desc: "Track 100k native trees with ground sensor nodes and satellite telemetry.", icon: TreePine },
+              { title: "Zero-Watt", desc: "100% carbon-neutral processing through solar IoT micro-grids.", icon: Zap },
               { title: "Global Hive", desc: "Expand to 200+ partner beekeepers in rural emerging markets.", icon: Globe },
             ].map((item, i) => (
               <motion.div
@@ -421,11 +478,12 @@ const Impact = () => {
           </div>
         </div>
 
-        {/* Decorative BG Blob */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-beeyield-green/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
       </section>
 
-      {/* Impact CTA */}
+      {/* ═══════════════════════════════════════════════════════════════
+          6. IMPACT CTA
+      ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-[#FFF9F0] border-b border-slate-100">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-2xl mx-auto">
@@ -437,16 +495,17 @@ const Impact = () => {
               Whether you're a consumer, partner, or researcher, you're part of this ecosystem. 22 devices deployed. 45 acres served. 3 tons of carbon offset. Let's make every drop count.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="px-8 py-4 bg-[#FFF9F0] text-[#1A1A1A] rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all flex items-center gap-2">
+              <Link to="/contact" className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black shadow-xl hover:bg-neutral-800 transition-all flex items-center gap-2">
                 Contact the Hive <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/global-hive-network" className="px-8 py-4 bg-[#FFF9F0] text-[#1A1A1A] border-2 border-slate-100 rounded-2xl font-black hover:bg-[#F9F7F2] transition-all">
+              <Link to="/global-hive-network" className="px-8 py-4 bg-white text-neutral-900 border-2 border-neutral-200 rounded-2xl font-black hover:bg-neutral-50 transition-all">
                 Join our Global Hive Network
               </Link>
             </div>
           </div>
         </div>
       </section>
+
     </BeeYieldPageShell>
   );
 };
