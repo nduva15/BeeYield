@@ -138,6 +138,50 @@ const FIELD_INSPECTION_PHOTOS = [
     }
 ];
 
+// Real Mobile App Telemetry Screens
+const REAL_APP_SCREENS = [
+    {
+        src: "/images/app-screenshots/hive-list-varroa.png",
+        tabLabel: "Live Hive List",
+        title: "VitalSensor Apiary Telemetry",
+        subtitle: "Real-time colony status: Varroa alert vs. Healthy",
+        badge: "Live Field Data",
+        detail: "Monitors battery health, Bluetooth signal, core temperature (30.5°C), and automated disease flags across every hive in the yard."
+    },
+    {
+        src: "/images/app-screenshots/varroa-detail.png",
+        tabLabel: "Varroa Diagnosis",
+        title: "AI Pathogen Risk & Protocols",
+        subtitle: "Natural mite drop >11/day, >5% wash alert",
+        badge: "Treatment Guidance",
+        detail: "Instant veterinary guidance prescribing powdered sugar roll tests, treatment thresholds, and colony defense steps."
+    },
+    {
+        src: "/images/app-screenshots/hive-conditions.png",
+        tabLabel: "Hive Microclimate",
+        title: "Brood Core Environmental Sensors",
+        subtitle: "Inside temperature 30.5°C, humidity 57%, pressure 907 hPa",
+        badge: "Microclimate",
+        detail: "High-precision internal sensors detect microclimate fluctuations before pest incursions or brood chilling occur."
+    },
+    {
+        src: "/images/app-screenshots/honey-gain-chart.png",
+        tabLabel: "Honey Gain Curve",
+        title: "24h Diurnal Honey Accumulation",
+        subtitle: "+0.5 kg net gain curve with diurnal flow tracking",
+        badge: "Nectar Flow",
+        detail: "Tracks active foraging hours and overnight nectar ripening moisture loss with hourly granularity."
+    },
+    {
+        src: "/images/app-screenshots/weight-chart.png",
+        tabLabel: "Colony Weight",
+        title: "Industrial Load Cell Weight Telemetry",
+        subtitle: "Continuous 40.5 kg total mass tracking",
+        badge: "Scale Telemetry",
+        detail: "Multi-scale telemetry (24h to 6 months) detecting sudden swarming departures, robbing events, and harvest readiness."
+    }
+];
+
 // Map Data
 const getHubIcon = () => {
     const color = '#10b981'; // BeeYield Green for HQ
@@ -187,6 +231,7 @@ const Diseases = () => {
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [activePhotoIdx, setActivePhotoIdx] = useState(0);
+    const [activeAppScreenIdx, setActiveAppScreenIdx] = useState(0);
     const [isGalleryPlaying, setIsGalleryPlaying] = useState(true);
 
     useEffect(() => {
@@ -1138,27 +1183,62 @@ const Diseases = () => {
                             initial={{ opacity: 0, x: 30 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="relative"
+                            className="space-y-6"
                         >
-                            {/* Apisense App — Real tablet screenshot */}
-                            <div className="relative mx-auto max-w-md">
-                                <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.25)] border-[6px] border-neutral-800 bg-neutral-900">
-                                    <img
-                                        src={APISENSE_APP}
-                                        alt="Apisense app dashboard showing apiary map, disease detection alerts for Foulbrood, Varroa and Nosema, and colony health status"
-                                        className="w-full h-auto"
-                                    />
-                                </div>
+                            {/* App Screen Tab Selector */}
+                            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                                {REAL_APP_SCREENS.map((screen, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setActiveAppScreenIdx(idx)}
+                                        className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+                                            activeAppScreenIdx === idx
+                                                ? "bg-beeyield-green text-neutral-950 shadow-md shadow-beeyield-green/20"
+                                                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                                        }`}
+                                    >
+                                        {screen.tabLabel}
+                                    </button>
+                                ))}
                             </div>
 
-                            {/* Floating badges */}
-                            <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-3 flex items-center gap-2">
-                                <CheckCircle className="h-4 w-4 text-beeyield-green" />
-                                <span className="text-xs font-bold text-neutral-900">Real-Time</span>
-                            </div>
-                            <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-3 flex items-center gap-2">
-                                <Wifi className="h-4 w-4 text-beeyield-green" />
-                                <span className="text-xs font-bold text-neutral-900">LTE Connected</span>
+                            {/* Mobile Frame Container */}
+                            <div className="relative mx-auto max-w-[360px]">
+                                <div className="rounded-[2.5rem] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.2)] border-[8px] border-neutral-900 bg-neutral-950">
+                                    <div className="relative aspect-[9/18] overflow-hidden bg-neutral-950 flex items-center justify-center">
+                                        <motion.img
+                                            key={activeAppScreenIdx}
+                                            initial={{ opacity: 0, scale: 0.96 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ duration: 0.3 }}
+                                            src={REAL_APP_SCREENS[activeAppScreenIdx].src}
+                                            alt={REAL_APP_SCREENS[activeAppScreenIdx].title}
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Active Screen Info Card Overlay */}
+                                <div className="mt-4 p-4 rounded-2xl bg-neutral-50 border border-neutral-200 shadow-sm">
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                        <Badge className="bg-beeyield-green/10 text-beeyield-green text-[9px] font-bold px-2 py-0.5">
+                                            {REAL_APP_SCREENS[activeAppScreenIdx].badge}
+                                        </Badge>
+                                        <span className="text-[10px] text-neutral-400 font-mono">Live Telemetry</span>
+                                    </div>
+                                    <h4 className="font-bold text-neutral-900 text-sm">
+                                        {REAL_APP_SCREENS[activeAppScreenIdx].title}
+                                    </h4>
+                                    <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+                                        {REAL_APP_SCREENS[activeAppScreenIdx].detail}
+                                    </p>
+                                </div>
+
+                                {/* Floating badges */}
+                                <div className="absolute -top-3 -right-3 bg-white rounded-2xl shadow-xl border border-neutral-100 px-3.5 py-2 flex items-center gap-2">
+                                    <CheckCircle className="h-4 w-4 text-beeyield-green" />
+                                    <span className="text-xs font-bold text-neutral-900">Live 2026 Data</span>
+                                </div>
                             </div>
                         </motion.div>
                     </div>

@@ -1,9 +1,11 @@
-﻿import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   ArrowRight, Activity, Sprout, BarChart3,
   Cpu, Wifi, Check, Shield, Globe,
-  BookOpen, Heart, AlertTriangle, MapPin, Mail
+  BookOpen, Heart, AlertTriangle, MapPin, Mail,
+  ChevronLeft, ChevronRight, Play, Pause
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +14,140 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
+import { IN_HIVE_FIELD_SLIDES } from "@/data/pollinationContent";
+
+const InHiveHardwareSlideshow = () => {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % IN_HIVE_FIELD_SLIDES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [isPlaying]);
+
+  const slide = IN_HIVE_FIELD_SLIDES[activeIdx];
+
+  return (
+    <section className="py-24 bg-neutral-900 text-white relative overflow-hidden border-y border-neutral-800">
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10 pointer-events-none" />
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] rounded-full">
+            In-Hive Telemetry & Field Hardware
+          </Badge>
+          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
+            Deployed Devices <span className="text-beeyield-green">&amp; Active Colonies</span>
+          </h2>
+          <div className="h-1 w-20 bg-beeyield-green mx-auto mb-5 rounded-full" />
+          <p className="text-neutral-400 text-sm md:text-base leading-relaxed">
+            Real photography from commercial Kenyan apiaries showing solar LTE gateway nodes, under-hive continuous load cells, and non-invasive telemetry probes integrated into live brood frames.
+          </p>
+        </div>
+
+        {/* Slideshow Frame */}
+        <div className="max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-12 gap-8 items-center bg-black/40 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-6 md:p-8 shadow-2xl">
+            {/* Image Box */}
+            <div className="lg:col-span-7 relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-neutral-950 flex items-center justify-center group">
+              <motion.img
+                key={activeIdx}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                src={slide.image}
+                alt={slide.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute top-4 left-4">
+                <Badge className="bg-beeyield-green text-neutral-950 font-bold px-3 py-1 text-[10px] uppercase tracking-wider">
+                  {slide.badge}
+                </Badge>
+              </div>
+
+              {/* Prev / Next */}
+              <button
+                onClick={() => {
+                  setActiveIdx((prev) => (prev - 1 + IN_HIVE_FIELD_SLIDES.length) % IN_HIVE_FIELD_SLIDES.length);
+                  setIsPlaying(false);
+                }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all"
+                aria-label="Previous hardware slide"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => {
+                  setActiveIdx((prev) => (prev + 1) % IN_HIVE_FIELD_SLIDES.length);
+                  setIsPlaying(false);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 hover:bg-beeyield-green hover:text-black transition-all"
+                aria-label="Next hardware slide"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Info Panel */}
+            <div className="lg:col-span-5 space-y-5 flex flex-col justify-between h-full py-2">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="text-xs font-mono text-beeyield-green uppercase tracking-widest">
+                    Hardware Stream {activeIdx + 1} / {IN_HIVE_FIELD_SLIDES.length}
+                  </span>
+                  <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[10px] font-semibold text-neutral-300 hover:text-white hover:bg-white/20 transition-all"
+                  >
+                    {isPlaying ? <Pause className="w-3 h-3 text-beeyield-green" /> : <Play className="w-3 h-3 text-beeyield-green" />}
+                    {isPlaying ? "Pause" : "Play"}
+                  </button>
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-2">
+                  {slide.title}
+                </h3>
+                <p className="text-neutral-300 text-xs font-medium mb-3 leading-relaxed">
+                  {slide.subtitle}
+                </p>
+                <p className="text-neutral-400 text-xs leading-relaxed border-l-2 border-beeyield-green/40 pl-3">
+                  {slide.description}
+                </p>
+              </div>
+
+              {/* Thumbnails */}
+              <div className="pt-3 border-t border-white/10">
+                <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-2">
+                  Telemetry Channels:
+                </p>
+                <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
+                  {IN_HIVE_FIELD_SLIDES.map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setActiveIdx(idx);
+                        setIsPlaying(false);
+                      }}
+                      className={`relative aspect-[3/4] rounded-lg overflow-hidden border transition-all ${
+                        activeIdx === idx
+                          ? "border-beeyield-green ring-2 ring-beeyield-green/50 scale-105"
+                          : "border-white/10 opacity-50 hover:opacity-100 hover:border-white/30"
+                      }`}
+                    >
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const PollinationSolutions = () => {
   const [supportType, setSupportType] = useState("monthly");
@@ -73,12 +209,12 @@ const PollinationSolutions = () => {
                 </Button>
               </div>
 
-              {/* Background Image Overlay */}
-              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500">
+              {/* Background Image Overlay with Real Bees and In-Hive Sensor */}
+              <div className="absolute inset-0 z-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
                 <img
-                  src="https://images.unsplash.com/photo-1520500201882-e3d8f804562e?auto=format&fit=crop&q=80&w=800"
+                  src="/images/pollination/hive-comb-inspection-6.png"
                   className="w-full h-full object-cover"
-                  alt="Hive bg"
+                  alt="Real in-hive telemetry sensor with live bees on comb"
                 />
               </div>
             </div>
@@ -116,12 +252,12 @@ const PollinationSolutions = () => {
                 </Button>
               </div>
 
-              {/* Background Image Overlay */}
-              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500">
+              {/* Background Image Overlay with Real Solar IoT Gateway */}
+              <div className="absolute inset-0 z-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
                 <img
-                  src="https://images.unsplash.com/photo-1621252179027-94459d27d3ee?auto=format&fit=crop&q=80&w=800"
+                  src="/images/pollination/gateway-solar-node.png"
                   className="w-full h-full object-cover"
-                  alt="Field bg"
+                  alt="Solar LTE IoT Gateway deployed on hive"
                 />
               </div>
             </div>
@@ -159,12 +295,12 @@ const PollinationSolutions = () => {
                 </Button>
               </div>
 
-              {/* Background Image Overlay */}
-              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500">
+              {/* Background Image Overlay with Real Pathogen Screening */}
+              <div className="absolute inset-0 z-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
                 <img
-                  src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&q=80&w=800"
+                  src="/images/diseases/hive-inspection-3.png"
                   className="w-full h-full object-cover"
-                  alt="Disease bg"
+                  alt="Brood health and pathogen telemetry sensor"
                 />
               </div>
             </div>
@@ -254,7 +390,11 @@ const PollinationSolutions = () => {
           </div>
         </div>
       </section>
-      {/* ΓöÇΓöÇ Global Hive Network Content (merged) ΓöÇΓöÇ */}
+
+      {/* ── Real In-Hive Telemetry & Field Hardware Slideshow ── */}
+      <InHiveHardwareSlideshow />
+
+      {/* ── Global Hive Network Content (merged) ── */}
 
       {/* Hero Section */}
       <section className="relative py-16 sm:py-20 md:py-24 lg:py-32 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
@@ -401,13 +541,13 @@ const PollinationSolutions = () => {
                   <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> Training 50+ local beekeepers</li>
                 </ul>
               </div>
-              <div className="rounded-2xl overflow-hidden shadow-xl">
-                <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=800" alt="Mango orchard in Makueni" className="w-full h-[300px] object-cover" />
+              <div className="rounded-2xl overflow-hidden shadow-xl bg-neutral-900">
+                <img src="/images/pollination/hive-comb-inspection-7.png" alt="In-hive telemetry sensor with bees building wax comb in Makueni mango orchard apiary" className="w-full h-[300px] object-cover" />
               </div>
             </div>
             <div className="grid lg:grid-cols-2 gap-8 items-center">
-              <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-xl">
-                <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=800" alt="Vegetable farming in Kitui" className="w-full h-[300px] object-cover" />
+              <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-xl bg-neutral-900">
+                <img src="/images/pollination/hive-scale-loadcell.png" alt="Electronic load cell scale mounted under hive floor in Kitui vegetable farm" className="w-full h-[300px] object-cover" />
               </div>
               <div className="order-1 lg:order-2">
                 <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200"><MapPin className="h-3 w-3 mr-1" /> KITUI COUNTY</Badge>
@@ -427,8 +567,8 @@ const PollinationSolutions = () => {
                   <Link to="/impact">Learn About Our Impact <ArrowRight className="h-4 w-4" /></Link>
                 </Button>
               </div>
-              <div className="rounded-2xl overflow-hidden shadow-xl">
-                <img src="https://images.unsplash.com/photo-1509587584298-0f3b3a3a1797?auto=format&fit=crop&q=80&w=800" alt="Sisal plantation" className="w-full h-[300px] object-cover" />
+              <div className="rounded-2xl overflow-hidden shadow-xl bg-neutral-900">
+                <img src="/images/pollination/gateway-solar-node.png" alt="Solar LTE IoT Gateway installed on hive in Sisal plantation apiary" className="w-full h-[300px] object-cover" />
               </div>
             </div>
           </div>

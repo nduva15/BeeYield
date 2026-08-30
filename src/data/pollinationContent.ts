@@ -24,46 +24,34 @@ export interface ShowcaseSlide {
 
 export const SHOWCASE_SLIDES: ShowcaseSlide[] = [
   {
-    image: '/images/beehub/screenshot-quick-analysis.png',
-    title: 'Quick Analysis',
+    image: '/images/app-screenshots/hive-list-varroa.png',
+    title: 'Live Apiary & Hive Overview',
     description:
-      'Fast statistical overview for decision-making. View activity status, brood strength, temperature, humidity, daily weight changes, and swarm/pest risk — all at a glance.',
+      'Real-time telemetry showing live VitalSensor Bluetooth signals, battery health, internal brood temperatures (30.5°C), and automated colony state classifications (Healthy vs. Varroa alert) across each hive unit.',
   },
   {
-    image: '/images/beehub/screenshot-acoustic-audit.png',
-    title: 'Acoustic Audit',
+    image: '/images/app-screenshots/varroa-detail.png',
+    title: 'AI Disease & Varroa Diagnostics',
     description:
-      'Record a short sample and check for unusual sound patterns. BeeYield AI processes spectral wave data at 94.8% confidence to detect pre-swarm signatures and colony anomalies.',
+      'Automated pathogen tracking with mite drop thresholds (>11/day, >5% wash), infestation duration records, and step-by-step veterinary protocols including powdered sugar roll tests to prevent colony collapse.',
   },
   {
-    image: '/images/beehub/screenshot-beeyield-ai.png',
-    title: 'BeeYield AI',
+    image: '/images/app-screenshots/hive-conditions.png',
+    title: 'In-Hive Microclimate Telemetry',
     description:
-      "The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research.",
+      'Continuous precision monitoring of core hive temperature (30.5°C), internal relative humidity (57%), and local atmospheric barometric pressure (907 hPa) for complete climate stability.',
   },
   {
-    image: '/images/beehub/screenshot-capabilities.png',
-    title: 'Platform Capabilities',
+    image: '/images/app-screenshots/honey-gain-chart.png',
+    title: '24h Diurnal Honey Gain Dynamics',
     description:
-      '20,000+ bee species covered, 300+ honey varieties, 50+ disease protocols, 750K+ research datasets, 91 million managed hives globally. Comprehensive database, image identification, and voice input.',
+      'Continuous hourly weight change analytics (+0.5 kg 24h gain) showing real-time forage curves, peak foraging hours, and night-time moisture evaporation from fresh nectar.',
   },
   {
-    image: '/images/beehub/screenshot-coverage-area.png',
-    title: 'Coverage Area',
+    image: '/images/app-screenshots/weight-chart.png',
+    title: 'Precision Colony Weight Telemetry',
     description:
-      'Spatial overlay of your apiary with kernel density mapping. Monitor coverage metrics, FPA targets, node efficiency, and hive spacing with live environmental telemetry and actionable insights.',
-  },
-  {
-    image: '/images/beehub/screenshot-flight-area.png',
-    title: 'Bee Flight Area',
-    description:
-      'Live forage, map, and route planning for your selected apiary. View forage potential, effective and maximum flight radius, land type analysis, flight heatmaps, and forage share estimates.',
-  },
-  {
-    image: '/images/beehub/screenshot-devices.png',
-    title: 'Device Management',
-    description:
-      'Manage your BeeHUB devices and view recent readings. Monitor total inventory, active devices, offline status, battery levels, and real-time apiary weather telemetry including humidity, pressure, wind, and UV index.',
+      'Continuous sub-milligram load cell telemetry tracking total hive mass (40.5 kg) with interactive 24h, 7-day, 1-month, 3-month, and 6-month historical harvest trends.',
   },
 ];
 
