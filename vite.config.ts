@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -13,7 +12,6 @@ const isTauri = !!process.env.TAURI_ENV_PLATFORM
 export default defineConfig({
     plugins: [
         react(),
-        tsconfigPaths(),
     ],
     // Tauri expects a fixed port in dev mode
     server: {
