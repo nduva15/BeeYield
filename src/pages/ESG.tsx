@@ -246,7 +246,7 @@ const ESG = () => {
               ESG in the <span className="text-beeyield-green">Field</span>
             </h2>
             <p className="text-muted-foreground text-lg">
-              4 curated 3-photo slideshows tracking solar telemetry nodes, continuous under-hive load cell scales, community bio-sensors, and biocompatible wax integration.
+              4 curated 3-photo slideshows tracking solar telemetry nodes, continuous under-hive load cell scales, community bio-sensors, and early bee disease detection.
             </p>
           </div>
 
@@ -369,9 +369,9 @@ const ESG = () => {
                   description: "Worker bees moving freely across probe surface with natural propolis and honey storage."
                 }
               ]}
-              badge="Biocompatibility"
-              title="Comb & Colony Vitality"
-              subtitle="Natural beeswax secretion"
+              badge="Disease Screening"
+              title="Colony Health & Diseases"
+              subtitle="Early brood disease screening"
               dark={false}
             />
           </div>

@@ -943,9 +943,9 @@ const Diseases = () => {
                                     description: "Full-depth cluster density confirms non-invasive sensor presence with zero colony disruption."
                                 }
                             ]}
-                            badge="Scale Telemetry"
-                            title="Scales & Comb Growth"
-                            subtitle="Continuous scales & wax integration"
+                            badge="Pathogen & Scales"
+                            title="Scales & Disease Screening"
+                            subtitle="Continuous scales & pathogen defense"
                             dark={true}
                         />
                     </div>

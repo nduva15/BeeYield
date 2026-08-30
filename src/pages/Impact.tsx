@@ -345,7 +345,7 @@ const Impact = () => {
               dark={true}
             />
 
-            {/* Slideshow 4: Scales, Comb & Carbon Offset */}
+            {/* Slideshow 4: Scales, Comb & Disease Detection */}
             <ThreePhotoSlideshow
               slides={[
                 {
@@ -370,9 +370,9 @@ const Impact = () => {
                   description: "Parallel active frames showing full brood vitality and verified strength across precision-pollinated client orchards."
                 }
               ]}
-              badge="Carbon & Comb"
-              title="Scales & Comb Growth"
-              subtitle="Continuous weighing & wax drawing"
+              badge="Disease Defense"
+              title="Scales & Disease Detection"
+              subtitle="Continuous weighing & pathogen defense"
               dark={true}
             />
 

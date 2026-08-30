@@ -144,7 +144,7 @@ const InHiveTelemetrySlideshowSection = () => {
           </h2>
           <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
           <p className="text-neutral-400 text-base leading-relaxed">
-            4 curated 3-photo slideshows showcasing solar LTE gateways, continuous under-hive load-cell scales, in-hive brood sensors, and active colony wax integration.
+            4 curated 3-photo slideshows showcasing solar LTE gateways, continuous under-hive load-cell scales, in-hive brood sensors, and comb disease detection.
           </p>
         </div>
 
@@ -173,9 +173,9 @@ const InHiveTelemetrySlideshowSection = () => {
           />
           <ThreePhotoSlideshow
             slides={COLONY_VITALITY_SLIDES}
-            badge="Colony Health"
-            title="Wax Comb & Vitality"
-            subtitle="Natural wax drawn on frames"
+            badge="Disease Screening"
+            title="Comb Disease Screening"
+            subtitle="Early brood pathology detection"
             dark={true}
           />
         </div>
@@ -735,7 +735,7 @@ const PrecisionPollination = () => {
                       </div>
                       <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-3 flex items-center gap-2">
                           <Activity className="h-4 w-4 text-beeyield-green" />
-                          <span className="text-xs font-bold text-neutral-900">Live Comb Wax Building</span>
+                          <span className="text-xs font-bold text-neutral-900">Brood Disease Screening</span>
                       </div>
                   </motion.div>
               </div>

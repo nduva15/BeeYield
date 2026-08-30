@@ -156,9 +156,9 @@ const InHiveHardwareSlideshow = () => {
           />
           <ThreePhotoSlideshow
             slides={COMB_COLONY_SLIDES}
-            badge="Colony Health"
-            title="Comb & Colony Vitality"
-            subtitle="Natural wax drawn on frames"
+            badge="Disease Screening"
+            title="Comb Disease Detection"
+            subtitle="Brood pathology & bee health"
             dark={true}
           />
         </div>
@@ -560,7 +560,7 @@ const PollinationSolutions = () => {
                 </ul>
               </div>
               <div className="rounded-2xl overflow-hidden shadow-xl bg-neutral-900">
-                <img src="/images/pollination/hive-comb-inspection-7.png" alt="In-hive telemetry sensor with bees building wax comb in Makueni mango orchard apiary" className="w-full h-[300px] object-cover" />
+                <img src="/images/pollination/hive-comb-inspection-7.png" alt="In-hive telemetry sensor with bees undergoing brood disease screening in Makueni mango orchard apiary" className="w-full h-[300px] object-cover" />
               </div>
             </div>
             <div className="grid lg:grid-cols-2 gap-8 items-center">

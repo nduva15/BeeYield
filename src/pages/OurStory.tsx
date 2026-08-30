@@ -360,7 +360,7 @@ const OurStory = () => {
               dark={true}
             />
 
-            {/* Slideshow 4: Precision Pollination & Biocompatibility */}
+            {/* Slideshow 4: Precision Pollination & Disease Screening */}
             <ThreePhotoSlideshow
               slides={[
                 {
@@ -385,9 +385,9 @@ const OurStory = () => {
                   description: "Parallel active frames showing full brood vitality and verified strength across precision-pollinated client orchards."
                 }
               ]}
-              badge="Precision Impact"
-              title="Pollination & Comb Health"
-              subtitle="Continuous scales & wax integration"
+              badge="Disease Defense"
+              title="Scales & Disease Detection"
+              subtitle="Continuous scales & pathogen defense"
               dark={true}
             />
 
