@@ -537,6 +537,12 @@ export default function Index() {
                   <LogIn className="w-4 h-4 mr-2" /> Sign in / Sign up
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem onClick={() => setIntegrationsOpen(true)} className="cursor-pointer">
+                <Plug className="w-4 h-4 mr-2" /> Integrations (Shopify, QuickBooks, eTIMS)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer">
+                <SettingsIcon className="w-4 h-4 mr-2" /> Settings — Control Center
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
                 <Info className="w-4 h-4 mr-2" /> About Beeyield AI
               </DropdownMenuItem>
