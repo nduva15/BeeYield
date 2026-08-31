@@ -813,6 +813,10 @@ export default function Index() {
       <KnowledgeSearch isOpen={knowledgeSearchOpen} onClose={() => setKnowledgeSearchOpen(false)} />
       <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
+      <InspectionsPage isOpen={inspectionsOpen} onClose={() => setInspectionsOpen(false)} />
+      <SoundAnalysis isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />
+      <IntegrationsPage isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />
+      <SettingsPage isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 }
