@@ -197,7 +197,8 @@ export default function SoundAnalysis({ isOpen, onClose }: { isOpen: boolean; on
 Hive: ${hiveLabel}
 Duration analysed: ${result.durationSec} s across ${result.segments.length} windows
 Species match: ${result.species.name} (${(result.species.confidence * 100).toFixed(0)}%)
-Health classification: ${result.health.state} (${(result.health.confidence * 100).toFixed(0)}%)
+Health classification: ${result.health.state} (${(result.health.confidence * 100).toFixed(0)}%) via 128-mel MFCC corpus model over ${result.health.windowsAnalyzed} bee-gated 2s windows (bee presence ${(result.health.beeConfidence * 100).toFixed(0)}%)
+Class probabilities: ${Object.entries(result.health.probabilities).map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`).join(", ")}
 Queen piping: ${result.piping.detected ? `detected in ${result.piping.events} window(s), confidence ${(result.piping.confidence * 100).toFixed(0)}%` : "not detected"}
 Spectral centroid: ${a.spectralCentroid.toFixed(0)} Hz · rolloff(85%): ${a.spectralRolloff.toFixed(0)} Hz
 Zero-crossing rate: ${a.zcr.toFixed(4)} · RMS: ${a.rms.toFixed(4)} · flatness: ${a.spectralFlatness.toFixed(3)}
@@ -234,6 +235,10 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
         aggregate: result.aggregate,
         species: result.species,
         probabilities: result.health.probabilities,
+        beeConfidence: result.health.beeConfidence,
+        windowsAnalyzed: result.health.windowsAnalyzed,
+        windowsRejected: result.health.windowsRejected,
+        mfcc: result.segments[0]?.mfcc ?? [],
         spectrum: result.spectrum,
       },
       disease_predictions: result.diseases,
@@ -324,6 +329,11 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                 <span className="text-[11px] uppercase tracking-wide opacity-80 flex items-center gap-1"><Activity className="w-3 h-3" /> Health state</span>
                 <p className="mt-1 font-display text-2xl font-bold">{result.health.state}</p>
                 <p className="text-[11px] opacity-80">{(result.health.confidence * 100).toFixed(1)}% confidence</p>
+                <p className="mt-1 text-[10px] opacity-70">
+                  128-mel MFCC corpus model · {result.health.windowsAnalyzed} window(s) scored
+                  {result.health.windowsRejected > 0 ? `, ${result.health.windowsRejected} rejected by bee gate` : ""} · bee
+                  presence {(result.health.beeConfidence * 100).toFixed(0)}%
+                </p>
               </div>
               <div className="rounded-xl border border-border bg-card p-4">
                 <span className="text-[11px] uppercase tracking-wide text-muted-foreground flex items-center gap-1"><Crown className="w-3 h-3" /> Queen piping</span>

@@ -1333,6 +1333,57 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          body: string
+          category: string
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          device_id: string
+          hive_label: string | null
+          id: string
+          last_contact_at: string | null
+          priority: string
+          resolution: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          category?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          device_id: string
+          hive_label?: string | null
+          id?: string
+          last_contact_at?: string | null
+          priority?: string
+          resolution?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          device_id?: string
+          hive_label?: string | null
+          id?: string
+          last_contact_at?: string | null
+          priority?: string
+          resolution?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       varroa_simulations: {
         Row: {
           created_at: string

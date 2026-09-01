@@ -246,3 +246,153 @@ export const disconnectIntegration = createServerFn({ method: "POST" })
     await log(data.deviceId, data.provider, "Disconnected", "ok", "Credentials removed from secure storage");
     return { ok: true as const };
   });
+
+/* --------------------------------------------- automatic record sync ---- */
+
+const recordSchema = z.object({
+  deviceId: z.string().min(4),
+  kind: z.enum(["inspection", "acoustic"]),
+  recordId: z.string().min(1),
+  hiveLabel: z.string().min(1),
+  title: z.string().min(1),
+  summary: z.string().min(1),
+  status: z.string().min(1),
+  occurredAt: z.string().min(4),
+  metrics: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({}),
+});
+
+type RecordPayload = z.infer<typeof recordSchema>;
+
+function recordText(rec: RecordPayload) {
+  const metrics = Object.entries(rec.metrics)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(" · ");
+  return [
+    `BeeYield ${rec.kind === "inspection" ? "hive inspection" : "acoustic audit"} — ${rec.hiveLabel}`,
+    rec.title,
+    `Status: ${rec.status}`,
+    `Recorded: ${rec.occurredAt}`,
+    metrics,
+    rec.summary,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+/** Shopify: shop-level metafield + tag/note on the most recent order. */
+async function pushToShopify(config: Config, secrets: Secrets, rec: RecordPayload) {
+  const p = await probeShopify(config, secrets);
+  const headers = {
+    "X-Shopify-Access-Token": p.token,
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  const base = `https://${p.shop}/admin/api/${p.version}`;
+  const results: string[] = [];
+
+  const metaRes = await fetch(`${base}/metafields.json`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      metafield: {
+        namespace: "beeyield",
+        key: `${rec.kind}_${rec.recordId.slice(0, 30)}`,
+        type: "multi_line_text_field",
+        value: recordText(rec),
+      },
+    }),
+  });
+  if (!metaRes.ok) throw new Error(`Shopify metafield ${metaRes.status}: ${(await metaRes.text()).slice(0, 200)}`);
+  results.push("shop metafield created");
+
+  if (config.tagOrders !== "off") {
+    const ordersRes = await fetch(`${base}/orders.json?status=any&limit=1&fields=id,tags,note`, { headers });
+    if (ordersRes.ok) {
+      const order = (await ordersRes.json()).orders?.[0] as { id: number; tags: string; note?: string } | undefined;
+      if (order) {
+        const tag = `hive-${rec.status.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+        const tags = Array.from(new Set([...(order.tags ? order.tags.split(/,\s*/) : []), tag])).join(", ");
+        const note = [order.note, recordText(rec)].filter(Boolean).join("\n---\n").slice(0, 5000);
+        const upd = await fetch(`${base}/orders/${order.id}.json`, {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({ order: { id: order.id, tags, note } }),
+        });
+        results.push(upd.ok ? `order #${order.id} tagged "${tag}"` : `order tagging failed (${upd.status})`);
+      } else {
+        results.push("no orders to tag yet");
+      }
+    }
+  }
+  return results.join(" · ");
+}
+
+/** QuickBooks: attach the report as a company note (Attachable). */
+async function pushToQuickBooks(config: Config, secrets: Secrets, rec: RecordPayload) {
+  const p = await probeQuickBooks(config, secrets);
+  const res = await fetch(`${p.base}/v3/company/${p.realmId}/attachable?minorversion=70`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${p.token}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      Note: recordText(rec).slice(0, 2000),
+      Tag: `BeeYield-${rec.kind}`,
+    }),
+  });
+  const body = await res.text();
+  if (!res.ok) throw new Error(`QuickBooks ${res.status}: ${body.slice(0, 200)}`);
+  let id = "";
+  try { id = JSON.parse(body).Attachable?.Id ?? ""; } catch { /* ignore */ }
+  return `note logged in ${p.account}${id ? ` (ref ${id})` : ""}`;
+}
+
+/**
+ * Auto-sync a saved inspection or acoustic audit to every connected provider.
+ * Never throws — each provider result is logged and returned so the UI can
+ * report partial success.
+ */
+export const syncRecordToIntegrations = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => recordSchema.parse(input))
+  .handler(async ({ data }) => {
+    const db = await admin();
+    const { data: conns } = await db
+      .from("integration_connections")
+      .select("provider, sync_enabled, status")
+      .eq("device_id", data.deviceId)
+      .in("provider", ["shopify", "quickbooks"]);
+
+    const targets = (conns ?? []).filter((c) => c.sync_enabled !== false && c.status !== "disconnected");
+    if (targets.length === 0) return { ok: true as const, results: [] as { provider: string; ok: boolean; detail: string }[] };
+
+    const results: { provider: string; ok: boolean; detail: string }[] = [];
+    for (const conn of targets) {
+      const provider = conn.provider as "shopify" | "quickbooks";
+      try {
+        const { config, secrets } = await loadCreds(data.deviceId, provider);
+        const detail =
+          provider === "shopify"
+            ? await pushToShopify(config, secrets, data)
+            : await pushToQuickBooks(config, secrets, data);
+        await db
+          .from("integration_connections")
+          .update({ last_sync_at: new Date().toISOString(), status: "connected", last_error: null })
+          .eq("device_id", data.deviceId)
+          .eq("provider", provider);
+        await log(data.deviceId, provider, `${data.kind} auto-sync`, "ok", detail);
+        results.push({ provider, ok: true, detail });
+      } catch (e) {
+        const message = e instanceof Error ? e.message : "Sync failed";
+        await db
+          .from("integration_connections")
+          .update({ status: "error", last_error: message })
+          .eq("device_id", data.deviceId)
+          .eq("provider", provider);
+        await log(data.deviceId, provider, `${data.kind} auto-sync`, "error", message);
+        results.push({ provider, ok: false, detail: message });
+      }
+    }
+    return { ok: true as const, results };
+  });

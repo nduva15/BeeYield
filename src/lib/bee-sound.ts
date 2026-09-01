@@ -9,10 +9,20 @@
  *   pipeline/segmenter.py  -> segmentAudio()      2.0 s windows, 0.5 s overlap, 22 050 Hz
  *   pipeline/cleaner.py    -> bandpass()          Butterworth-equivalent 100 Hz – 8 kHz
  *   models/species_id.py   -> identifySpecies()   wingbeat fundamental matching
- *   models/health_state.py -> classifyHealth()    spectral centroid / ZCR / rolloff rules
+ *   models/health_state.py -> classifyHealth()    128-mel MFCC + corpus Gaussian model
  *   models/event_detector.py -> detectPiping()    300–500 Hz queen-piping band matching
  *   modules/osbh_engine.py -> inferDiseases()     acoustic disease risk indicators
  */
+
+import {
+  classifyFeatures,
+  melSpectrum,
+  mfccFromMel,
+  voteClassifications,
+  HEALTH_CLASSES,
+  type Classification,
+  type HealthState as ModelHealthState,
+} from "./bee-sound-model";
 
 export const TARGET_SR = 22050;
 export const WINDOW_SEC = 2.0;
@@ -32,9 +42,12 @@ export type SegmentFeatures = {
   dominantFreq: number;
   bandEnergy: Record<string, number>;
   pipingScore: number;
+  mfcc: number[];
+  modelVector: number[];
+  classification: Classification;
 };
 
-export type HealthState = "Healthy" | "Queenless" | "Swarming" | "Stressed";
+export type HealthState = ModelHealthState;
 
 export type DiseaseRisk = {
   name: string;
@@ -58,12 +71,19 @@ export type AnalysisResult = {
     bandEnergy: Record<string, number>;
   };
   species: { name: string; confidence: number };
-  health: { state: HealthState; confidence: number; probabilities: Record<HealthState, number> };
+  health: {
+    state: HealthState;
+    confidence: number;
+    probabilities: Record<HealthState, number>;
+    beeConfidence: number;
+    windowsAnalyzed: number;
+    windowsRejected: number;
+  };
   piping: { detected: boolean; confidence: number; events: number };
   diseases: DiseaseRisk[];
   spectrum: { freq: number; magnitude: number }[];
   waveform: number[];
-  inferenceMode: "dsp";
+  inferenceMode: "corpus-gaussian-mfcc";
 };
 
 /* ------------------------------------------------------------------ FFT ---- */
@@ -253,6 +273,29 @@ export function extractFeatures(segment: Float32Array, sr: number, index: number
   const neighbours = (bandEnergy["200-300"] ?? 0) + (bandEnergy["500-800"] ?? 0);
   const pipingScore = Math.max(0, Math.min(1, (pipingBand - neighbours * 0.5) * 3));
 
+  // health_state.extract_features port: 128-band log-mel -> DCT-II -> 13 MFCC
+  const mel = melSpectrum(mag, sr, size);
+  const mfcc = Array.from(mfccFromMel(mel));
+  let deltaEnergy = 0;
+  for (let i = 1; i < mfcc.length; i++) deltaEnergy += Math.abs(mfcc[i] - mfcc[i - 1]);
+  deltaEnergy /= Math.max(1, mfcc.length - 1);
+
+  const modelVector = [
+    spectralCentroid / 1000,
+    zcr,
+    rolloff / 1000,
+    spectralFlatness,
+    (bandEnergy["100-200"] ?? 0) + (bandEnergy["200-300"] ?? 0),
+    bandEnergy["300-500"] ?? 0,
+    (bandEnergy["500-800"] ?? 0) + (bandEnergy["800-1500"] ?? 0),
+    (bandEnergy["1500-3000"] ?? 0) + (bandEnergy["3000-8000"] ?? 0),
+    mfcc[1] / 50,
+    mfcc[2] / 50,
+    mfcc[3] / 50,
+    deltaEnergy / 20,
+    Math.min(1, rms * 10),
+  ];
+
   return {
     index,
     startSec,
@@ -264,6 +307,9 @@ export function extractFeatures(segment: Float32Array, sr: number, index: number
     dominantFreq: peakBin * binHz,
     bandEnergy,
     pipingScore,
+    mfcc: mfcc.map((v) => Number(v.toFixed(3))),
+    modelVector: modelVector.map((v) => Number(v.toFixed(4))),
+    classification: classifyFeatures(modelVector),
   };
 }
 
@@ -292,21 +338,28 @@ export function identifySpecies(dominantFreq: number): { name: string; confidenc
 
 /* ---------------------------------------------- health_state.py port ---- */
 
-const HEALTH_CLASSES: HealthState[] = ["Healthy", "Queenless", "Swarming", "Stressed"];
-
-export function classifyHealth(centroid: number, zcr: number) {
-  let state: HealthState;
-  let confidence: number;
-  if (centroid > 2000 && zcr > 0.1) { state = "Healthy"; confidence = 0.942; }
-  else if (centroid < 1500) { state = "Queenless"; confidence = 0.87; }
-  else if (zcr > 0.15) { state = "Swarming"; confidence = 0.79; }
-  else { state = "Stressed"; confidence = 0.72; }
-
-  const probabilities = {} as Record<HealthState, number>;
-  const remaining = (1 - confidence) / (HEALTH_CLASSES.length - 1);
-  for (const c of HEALTH_CLASSES) probabilities[c] = c === state ? confidence : remaining;
-  return { state, confidence, probabilities };
+/**
+ * Clip-level health state. Every 2 s window is scored by the corpus-calibrated
+ * Gaussian MFCC model; windows the bee/not-bee gate rejects (wind, traffic,
+ * silence) are dropped before the vote, exactly like the upstream two-stage
+ * pipeline. Falls back to the full window set if the gate rejects everything.
+ */
+export function classifyHealth(segments: SegmentFeatures[]) {
+  const scored = segments.map((s) => s.classification);
+  const gated = scored.filter((c) => c.beeConfidence >= 0.5);
+  const used = gated.length > 0 ? gated : scored;
+  const voted = voteClassifications(used);
+  return {
+    state: voted.state,
+    confidence: Number(voted.confidence.toFixed(4)),
+    probabilities: voted.probabilities,
+    beeConfidence: Number(voted.beeConfidence.toFixed(4)),
+    windowsAnalyzed: used.length,
+    windowsRejected: scored.length - used.length,
+  };
 }
+
+export { HEALTH_CLASSES };
 
 /* --------------------------------------------- event_detector.py port ---- */
 
@@ -440,7 +493,7 @@ export function analyzeAudio(rawAudio: Float32Array, rawSr: number): AnalysisRes
     bandEnergy,
   };
 
-  const health = classifyHealth(aggregate.spectralCentroid, aggregate.zcr);
+  const health = classifyHealth(features);
   const piping = detectPiping(features);
   const species = identifySpecies(aggregate.dominantFreq);
   const diseases = inferDiseases(aggregate, health, piping);
@@ -487,7 +540,7 @@ export function analyzeAudio(rawAudio: Float32Array, rawSr: number): AnalysisRes
     diseases,
     spectrum,
     waveform,
-    inferenceMode: "dsp",
+    inferenceMode: "corpus-gaussian-mfcc",
   };
 }
 
