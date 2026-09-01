@@ -9,7 +9,7 @@
  *   pipeline/segmenter.py  -> segmentAudio()      2.0 s windows, 0.5 s overlap, 22 050 Hz
  *   pipeline/cleaner.py    -> bandpass()          Butterworth-equivalent 100 Hz – 8 kHz
  *   models/species_id.py   -> identifySpecies()   wingbeat fundamental matching
- *   models/health_state.py -> classifyHealth()    spectral centroid / ZCR / rolloff rules
+ *   models/health_state.py -> classifyHealth()    128-mel MFCC + corpus Gaussian model
  *   models/event_detector.py -> detectPiping()    300–500 Hz queen-piping band matching
  *   modules/osbh_engine.py -> inferDiseases()     acoustic disease risk indicators
  */
