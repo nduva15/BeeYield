@@ -9,6 +9,7 @@ import { analyzeBlob, type AnalysisResult } from "@/lib/bee-sound";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
+import { autoSyncRecord } from "@/lib/integration-sync";
 
 type SavedAnalysis = {
   id: string;
@@ -220,7 +221,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
   const save = async () => {
     if (!result) return;
     setSaving(true);
-    const { error } = await supabase.from("sound_analyses").insert({
+    const { data: saved, error } = await supabase.from("sound_analyses").insert({
       device_id: deviceId,
       hive_label: hiveLabel,
       duration_sec: result.durationSec,
@@ -244,10 +245,28 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
       disease_predictions: result.diseases,
       ai_insights: aiText || null,
       notes: notes || null,
-    });
+    }).select("id").single();
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Scan archived");
+    void autoSyncRecord({
+      deviceId,
+      kind: "acoustic",
+      recordId: saved?.id ?? crypto.randomUUID(),
+      hiveLabel: hiveLabel,
+      title: `Acoustic audit — ${result.health.state} (${(result.health.confidence * 100).toFixed(0)}% confidence)`,
+      summary: result.diseases.slice(0, 3).map((d) => `${d.name} ${(d.score * 100).toFixed(0)}%`).join("; "),
+      status: result.health.state,
+      occurredAt: new Date().toISOString().slice(0, 10),
+      metrics: {
+        durationSec: result.durationSec,
+        windowsAnalyzed: result.health.windowsAnalyzed,
+        beePresence: Number((result.health.beeConfidence * 100).toFixed(0)),
+        pipingDetected: result.piping.detected,
+        centroidHz: Math.round(result.aggregate.spectralCentroid),
+        species: result.species.name,
+      },
+    });
     void loadHistory();
   };
 
