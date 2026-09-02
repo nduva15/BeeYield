@@ -8,6 +8,7 @@ import { useDeviceId } from "@/hooks/use-device-id";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
+import { autoSyncRecord } from "@/lib/integration-sync";
 
 type Inspection = {
   id: string;
@@ -167,16 +168,34 @@ Return: (1) most likely diagnosis with confidence, (2) differential diagnoses to
   const save = async () => {
     if (!draft.hive_label.trim()) { toast.error("Hive label is required"); return; }
     setSaving(true);
-    const { error } = await supabase.from("inspections").insert({
+    const { data: saved, error } = await supabase.from("inspections").insert({
       device_id: deviceId,
       ...draft,
       weather: draft.weather || null,
       notes: draft.notes || null,
       ai_insights: aiText || null,
-    });
+    }).select("id").single();
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Inspection logged");
+    void autoSyncRecord({
+      deviceId,
+      kind: "inspection",
+      recordId: saved?.id ?? crypto.randomUUID(),
+      hiveLabel: draft.hive_label,
+      title: `${draft.colony_health} colony at ${draft.location || "unspecified site"}`,
+      summary: draft.notes || "No beekeeper notes recorded.",
+      status: draft.colony_health,
+      occurredAt: draft.inspected_on,
+      metrics: {
+        broodFrames: draft.brood_frames,
+        honeyFrames: draft.honey_frames,
+        varroaCount: draft.varroa_count,
+        queenSeen: draft.queen_seen,
+        queenCells: draft.queen_cells,
+        temperament: draft.temperament,
+      },
+    });
     setShowForm(false);
     setDraft(EMPTY);
     setAiText("");
