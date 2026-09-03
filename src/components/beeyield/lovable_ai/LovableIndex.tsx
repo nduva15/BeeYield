@@ -530,17 +530,20 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
 
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-honey">Measurement Data Tools</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setMeasurementToolsOpen(true)} className="cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => (user ? setMeasurementToolsOpen(true) : navigate("/auth?next=/"))}
+                className="cursor-pointer"
+              >
                 <Cpu className="w-4 h-4 mr-2" /> My Devices, USB, Bluetooth & Online
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
               {user ? (
                 <DropdownMenuItem onClick={() => void signOut()} className="cursor-pointer">
-                  <LogOut className="w-4 h-4 mr-2" /> Sign out
+                  <LogOut className="w-4 h-4 mr-2" /> Sign out{user?.user_metadata?.full_name ? ` (${user.user_metadata.full_name})` : ""}
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem onClick={() => navigate("/beeyield-login")} className="cursor-pointer">
+                <DropdownMenuItem onClick={() => navigate("/auth?next=/")} className="cursor-pointer">
                   <LogIn className="w-4 h-4 mr-2" /> Sign in / Sign up
                 </DropdownMenuItem>
               )}
