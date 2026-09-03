@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Cpu, LogIn, LogOut, ClipboardList, AudioLines, Plug, Settings as SettingsIcon } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Cpu, LogIn, LogOut, ClipboardList, AudioLines, Plug, LifeBuoy, Settings as SettingsIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,6 +50,8 @@ import InspectionsPage from "@/components/InspectionsPage";
 import SoundAnalysis from "@/components/SoundAnalysis";
 import IntegrationsPage from "@/components/IntegrationsPage";
 import SettingsPage from "@/components/SettingsPage";
+import HiveHealthDashboard from "@/components/HiveHealthDashboard";
+import SupportPage from "@/components/SupportPage";
 
 type Message = {
   id: string;
@@ -180,6 +182,8 @@ export default function Index() {
   const [soundAnalysisOpen, setSoundAnalysisOpen] = useState(false);
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [healthDashOpen, setHealthDashOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -824,6 +828,8 @@ export default function Index() {
       <SoundAnalysis isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />
       <IntegrationsPage isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />
       <SettingsPage isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <HiveHealthDashboard isOpen={healthDashOpen} onClose={() => setHealthDashOpen(false)} />
+      <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
     </div>
   );
 }
