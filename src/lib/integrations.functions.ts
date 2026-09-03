@@ -279,7 +279,12 @@ function recordText(rec: RecordPayload) {
     .join("\n");
 }
 
-/** Shopify: shop-level metafield + tag/note on the most recent order. */
+/**
+ * Shopify: writes a real order for the service record (line item + tags +
+ * note attributes), plus a shop-level metafield holding the full report.
+ * Falls back to tagging the most recent order when the app token lacks
+ * write_orders.
+ */
 async function pushToShopify(config: Config, secrets: Secrets, rec: RecordPayload) {
   const p = await probeShopify(config, secrets);
   const headers = {
@@ -289,7 +294,10 @@ async function pushToShopify(config: Config, secrets: Secrets, rec: RecordPayloa
   };
   const base = `https://${p.shop}/admin/api/${p.version}`;
   const results: string[] = [];
+  const statusTag = `hive-${rec.status.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+  const report = recordText(rec);
 
+  // 1. Full report on the shop as a metafield (audit trail, always attempted).
   const metaRes = await fetch(`${base}/metafields.json`, {
     method: "POST",
     headers,
@@ -298,56 +306,160 @@ async function pushToShopify(config: Config, secrets: Secrets, rec: RecordPayloa
         namespace: "beeyield",
         key: `${rec.kind}_${rec.recordId.slice(0, 30)}`,
         type: "multi_line_text_field",
-        value: recordText(rec),
+        value: report,
       },
     }),
   });
   if (!metaRes.ok) throw new Error(`Shopify metafield ${metaRes.status}: ${(await metaRes.text()).slice(0, 200)}`);
   results.push("shop metafield created");
 
-  if (config.tagOrders !== "off") {
-    const ordersRes = await fetch(`${base}/orders.json?status=any&limit=1&fields=id,tags,note`, { headers });
-    if (ordersRes.ok) {
-      const order = (await ordersRes.json()).orders?.[0] as { id: number; tags: string; note?: string } | undefined;
-      if (order) {
-        const tag = `hive-${rec.status.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-        const tags = Array.from(new Set([...(order.tags ? order.tags.split(/,\s*/) : []), tag])).join(", ");
-        const note = [order.note, recordText(rec)].filter(Boolean).join("\n---\n").slice(0, 5000);
-        const upd = await fetch(`${base}/orders/${order.id}.json`, {
-          method: "PUT",
-          headers,
-          body: JSON.stringify({ order: { id: order.id, tags, note } }),
-        });
-        results.push(upd.ok ? `order #${order.id} tagged "${tag}"` : `order tagging failed (${upd.status})`);
-      } else {
-        results.push("no orders to tag yet");
-      }
+  // 2. Real order carrying the record so it shows up in Shopify Orders.
+  const price = config.serviceOrderPrice && !Number.isNaN(Number(config.serviceOrderPrice))
+    ? Number(config.serviceOrderPrice).toFixed(2)
+    : "0.00";
+  const orderPayload = {
+    order: {
+      line_items: [
+        {
+          title: `${rec.kind === "inspection" ? "Hive inspection" : "Acoustic audit"} — ${rec.hiveLabel}`,
+          quantity: 1,
+          price,
+          requires_shipping: false,
+          taxable: false,
+        },
+      ],
+      financial_status: "paid",
+      send_receipt: false,
+      send_fulfillment_receipt: false,
+      inventory_behaviour: "bypass",
+      tags: [`beeyield`, `beeyield-${rec.kind}`, statusTag].join(", "),
+      note: report.slice(0, 5000),
+      note_attributes: [
+        { name: "beeyield_record_id", value: rec.recordId },
+        { name: "beeyield_kind", value: rec.kind },
+        { name: "hive", value: rec.hiveLabel },
+        { name: "status", value: rec.status },
+        { name: "occurred_at", value: rec.occurredAt },
+        ...Object.entries(rec.metrics).slice(0, 15).map(([k, v]) => ({ name: k, value: String(v) })),
+      ],
+      ...(config.orderEmail ? { email: config.orderEmail } : {}),
+    },
+  };
+
+  const orderRes = await fetch(`${base}/orders.json`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(orderPayload),
+  });
+
+  if (orderRes.ok) {
+    const created = (await orderRes.json()).order as { id: number; name: string };
+    results.push(`order ${created.name} created (id ${created.id})`);
+    return results.join(" · ");
+  }
+
+  const orderErr = (await orderRes.text()).slice(0, 200);
+  results.push(`order create failed (${orderRes.status}: ${orderErr}) — falling back to tagging`);
+
+  // 3. Fallback: tag/annotate the most recent existing order.
+  const ordersRes = await fetch(`${base}/orders.json?status=any&limit=1&fields=id,name,tags,note`, { headers });
+  if (ordersRes.ok) {
+    const order = (await ordersRes.json()).orders?.[0] as { id: number; name: string; tags: string; note?: string } | undefined;
+    if (order) {
+      const tags = Array.from(new Set([...(order.tags ? order.tags.split(/,\s*/) : []), "beeyield", statusTag])).join(", ");
+      const note = [order.note, report].filter(Boolean).join("\n---\n").slice(0, 5000);
+      const upd = await fetch(`${base}/orders/${order.id}.json`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ order: { id: order.id, tags, note } }),
+      });
+      results.push(upd.ok ? `order ${order.name} tagged "${statusTag}"` : `order tagging failed (${upd.status})`);
+    } else {
+      results.push("no existing orders to tag");
     }
   }
   return results.join(" · ");
 }
 
-/** QuickBooks: attach the report as a company note (Attachable). */
+/**
+ * QuickBooks: finds (or creates) the BeeYield tracking account in the chart of
+ * accounts, stamps the latest record onto its description, and files the full
+ * report as an Attachable note against the company.
+ */
 async function pushToQuickBooks(config: Config, secrets: Secrets, rec: RecordPayload) {
   const p = await probeQuickBooks(config, secrets);
-  const res = await fetch(`${p.base}/v3/company/${p.realmId}/attachable?minorversion=70`, {
+  const headers = {
+    Authorization: `Bearer ${p.token}`,
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  const api = (path: string) => `${p.base}/v3/company/${p.realmId}/${path}${path.includes("?") ? "&" : "?"}minorversion=70`;
+  const results: string[] = [];
+  const accountName = config.accountName || "BeeYield Hive Operations";
+  const report = recordText(rec);
+
+  // 1. Find the tracking account.
+  const query = `SELECT Id, Name, SyncToken, Description FROM Account WHERE Name = '${accountName.replace(/'/g, "''")}'`;
+  const findRes = await fetch(`${p.base}/v3/company/${p.realmId}/query?minorversion=70&query=${encodeURIComponent(query)}`, {
+    headers: { Authorization: `Bearer ${p.token}`, Accept: "application/json" },
+  });
+  if (!findRes.ok) throw new Error(`QuickBooks account lookup ${findRes.status}: ${(await findRes.text()).slice(0, 200)}`);
+  let account = (await findRes.json()).QueryResponse?.Account?.[0] as
+    | { Id: string; Name: string; SyncToken: string; Description?: string }
+    | undefined;
+
+  // 2. Create it when absent.
+  if (!account) {
+    const createRes = await fetch(api("account"), {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        Name: accountName,
+        AccountType: config.accountType || "Expense",
+        AccountSubType: config.accountSubType || "OtherMiscellaneousServiceCost",
+        Description: `Apiary operations tracked by BeeYield. Latest: ${rec.title}`,
+      }),
+    });
+    const createBody = await createRes.text();
+    if (!createRes.ok) throw new Error(`QuickBooks account create ${createRes.status}: ${createBody.slice(0, 200)}`);
+    account = JSON.parse(createBody).Account;
+    results.push(`account "${accountName}" created (id ${account?.Id})`);
+  }
+
+  // 3. Sparse-update the account description with the latest record.
+  if (account) {
+    const updRes = await fetch(api("account"), {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        Id: account.Id,
+        SyncToken: account.SyncToken,
+        sparse: true,
+        Description: `BeeYield · ${rec.hiveLabel} · ${rec.status} · ${rec.occurredAt} — ${rec.title}`.slice(0, 100),
+      }),
+    });
+    results.push(updRes.ok ? `account "${accountName}" updated` : `account update skipped (${updRes.status})`);
+  }
+
+  // 4. File the full report as a company note.
+  const noteRes = await fetch(api("attachable"), {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${p.token}`,
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({
-      Note: recordText(rec).slice(0, 2000),
+      Note: report.slice(0, 2000),
       Tag: `BeeYield-${rec.kind}`,
+      ...(account ? { AttachableRef: [{ EntityRef: { type: "Account", value: account.Id } }] } : {}),
     }),
   });
-  const body = await res.text();
-  if (!res.ok) throw new Error(`QuickBooks ${res.status}: ${body.slice(0, 200)}`);
+  const noteBody = await noteRes.text();
+  if (!noteRes.ok) throw new Error(`QuickBooks note ${noteRes.status}: ${noteBody.slice(0, 200)}`);
   let id = "";
-  try { id = JSON.parse(body).Attachable?.Id ?? ""; } catch { /* ignore */ }
-  return `note logged in ${p.account}${id ? ` (ref ${id})` : ""}`;
+  try { id = JSON.parse(noteBody).Attachable?.Id ?? ""; } catch { /* ignore */ }
+  results.push(`note filed in ${p.account}${id ? ` (ref ${id})` : ""}`);
+
+  return results.join(" · ");
 }
+
 
 /**
  * Auto-sync a saved inspection or acoustic audit to every connected provider.
