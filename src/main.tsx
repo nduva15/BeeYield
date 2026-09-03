@@ -104,6 +104,7 @@ const Terms = lazy(() => retryLazyImport(() => import('@/pages/Terms')))
 const IntegrationCallback = lazy(() => retryLazyImport(() => import('@/pages/IntegrationCallback')))
 const SharedRun = lazy(() => retryLazyImport(() => import('@/pages/SharedRun')))
 const OAuthConsent = lazy(() => retryLazyImport(() => import('@/pages/OAuthConsent')))
+const Auth = lazy(() => retryLazyImport(() => import('@/pages/Auth')))
 
 import { PageLoader } from './components/PageLoader'
 
@@ -197,6 +198,7 @@ root.render(
                                                         <Route path="/signup" element={<ShopAuth />} />
                                                         <Route path="/beeyield-login" element={<ProfessionalAuth />} />
                                                         <Route path="/integrations/callback/:platform" element={<IntegrationCallback />} />
+                                                        <Route path="/auth" element={<Auth />} />
                                                         <Route path="/auth/callback" element={<AuthCallback />} />
                                                         <Route path="/receipt/:orderId" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
                                                         <Route path="/privacy" element={<Privacy />} />
