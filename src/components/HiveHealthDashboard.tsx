@@ -292,11 +292,74 @@ export default function HiveHealthDashboard({
           <Kpi icon={AlertTriangle} label="Open alerts" value={String(alerts.length)} hint={`${alerts.filter((a) => a.level === "critical").length} critical`} />
         </div>
 
+        {/* Quick hive record entry */}
+        <div className="rounded-xl border border-border p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold flex items-center gap-2">
+              <ClipboardList className="w-4 h-4 text-honey" /> Log a hive record
+            </h3>
+            <button onClick={() => setShowEntry((v) => !v)}
+              className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-muted flex items-center gap-1.5">
+              <Plus className="w-3.5 h-3.5" /> {showEntry ? "Hide" : "New record"}
+            </button>
+          </div>
+          {showEntry ? (
+            <div className="grid md:grid-cols-4 gap-3">
+              <L label="Hive label">
+                <input value={entry.hive_label} onChange={(e) => setEntry({ ...entry, hive_label: e.target.value })} className="fld" />
+              </L>
+              <L label="Location">
+                <input value={entry.location} onChange={(e) => setEntry({ ...entry, location: e.target.value })} className="fld" />
+              </L>
+              <L label="Date">
+                <input type="date" value={entry.inspected_on} onChange={(e) => setEntry({ ...entry, inspected_on: e.target.value })} className="fld" />
+              </L>
+              <L label="Colony health">
+                <select value={entry.colony_health} onChange={(e) => setEntry({ ...entry, colony_health: e.target.value })} className="fld">
+                  {["Thriving", "Healthy", "Stable", "Weak", "Stressed", "Queenless", "Collapsing"].map((o) => <option key={o}>{o}</option>)}
+                </select>
+              </L>
+              <L label="Brood frames">
+                <input type="number" min={0} value={entry.brood_frames}
+                  onChange={(e) => setEntry({ ...entry, brood_frames: Number(e.target.value) })} className="fld" />
+              </L>
+              <L label="Honey frames">
+                <input type="number" min={0} value={entry.honey_frames}
+                  onChange={(e) => setEntry({ ...entry, honey_frames: Number(e.target.value) })} className="fld" />
+              </L>
+              <L label="Varroa / 300 bees">
+                <input type="number" min={0} value={entry.varroa_count}
+                  onChange={(e) => setEntry({ ...entry, varroa_count: Number(e.target.value) })} className="fld" />
+              </L>
+              <L label="Queen cells">
+                <input type="number" min={0} value={entry.queen_cells}
+                  onChange={(e) => setEntry({ ...entry, queen_cells: Number(e.target.value) })} className="fld" />
+              </L>
+              <label className="flex items-center gap-2 text-sm md:col-span-2">
+                <input type="checkbox" checked={entry.queen_seen}
+                  onChange={(e) => setEntry({ ...entry, queen_seen: e.target.checked })} />
+                Queen sighted
+              </label>
+              <div className="md:col-span-2 flex items-end">
+                <button onClick={saveEntry} disabled={savingEntry}
+                  className="px-4 py-2 rounded-lg bg-honey text-honey-foreground text-sm font-semibold flex items-center gap-2 disabled:opacity-60">
+                  {savingEntry ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Save record
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Records you save here feed the trends, alerts and integration sync immediately — nothing on this screen is sample data.
+            </p>
+          )}
+        </div>
+
         {/* Alerts */}
         <div className="rounded-xl border border-border p-4 mb-6">
           <h3 className="font-semibold flex items-center gap-2 mb-3">
             <AlertTriangle className="w-4 h-4 text-honey" /> Alerts
           </h3>
+
           {alerts.length === 0 ? (
             <p className="text-sm text-muted-foreground">No alerts — colonies, acoustics and weather all within range.</p>
           ) : (
