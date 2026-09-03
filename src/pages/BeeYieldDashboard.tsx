@@ -369,6 +369,7 @@ const BeeYieldDashboard: React.FC = () => {
                     embedded={true}
                     initialMessage={aiInitialMessage || viewParams?.message}
                     onInitialMessageConsumed={() => { setAiInitialMessage(null); setViewParams(null); }}
+                    onTabChange={handleTabChange}
                 />
             );
             case 'precision-pollination-folder':

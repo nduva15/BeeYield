@@ -572,7 +572,7 @@ Reports and Analytics:
 
 Shop and E-Commerce:
 - Integrated enterprise shop with glassmorphism UI and single-page progressive checkout.
-- Products include honey (by variety, batch, and origin), beeswax, propolis, pollen, and beekeeping merchandise.
+- Products include honey (by variety, batch, and origin), beeswax, propolis, and pollen.
 - Guest checkout enabled without requiring account registration.
 - Address intelligence powered by Google Places API for delivery accuracy.
 - Dynamic order sidebar with real-time VAT, shipping, and coupon calculations.
@@ -800,7 +800,7 @@ Team Page (beeyield.com/team):
 - Board Members: Nicholas Nduva — Board Member.
 
 Shop Page (beeyield.com/shop):
-- Product categories: Honey, Hardware, Merch, Education.
+- Product categories: Honey, Hardware, Education.
 - HONEY PRODUCTS (8 items, all Acacia honey from Kibwezi):
   1. BeeYield Premium Acacia (Bestseller) — Batch: KIB-ACAC-121/111/101, Rating: 4.9 (245 reviews)
   2. BeeYield Acacia (Premium) — Batch: KIB-WILD-122/112/102, Rating: 5.0 (182 reviews)
@@ -820,15 +820,6 @@ Shop Page (beeyield.com/shop):
   6. BeeHUB Solar Panel (Power) — 6,500 KES. 10W weatherproof panel, 24/7 uptime in remote locations.
   7. Acoustic Analysis Module (Technical) — 11,000 KES. Microphone sensor for hive sound signatures.
   8. Full BeeHUB Station Kit (Best Value) — 72,000 KES. Complete kit: 1 Queen, 2 Sense nodes, 1 Tracker, 1 Solar panel.
-- MERCH PRODUCTS (8 items):
-  1. BeeYield Premium Hoodie (Premium Gear) — M/L at 3,800 KES each.
-  2. BeeYield Trucker Cap — 1,200 KES.
-  3. Sustainability Tote Bag (Eco-Choice) — Large at 1,200 KES.
-  4. Signature Beekeeper Tee — M/L at 2,200 KES each.
-  5. BeeYield Ceramic Mug (Lifestyle) — 12oz at 950 KES.
-  6. Beekeeping Enamel Pin (Collectible) — Set at 1,500 KES.
-  7. Bamboo Bee Hotel (Garden) — 3,200 KES.
-  8. Wildflower Seed Mix (Impact) — 50g pack at 450 KES.
 - EDUCATION PRODUCTS (8 items):
   1. Beekeeping Starter Guide (Digital) — PDF Download at 1,500 KES. Entry-level handbook.
   2. Precision Pollination Handbook (Professional) — PDF Download at 3,500 KES. Data-driven techniques.

@@ -18,6 +18,19 @@ declare module '*.svg' {
     const value: string;
     export default value;
 }
+
+declare module '@lovable.dev/mcp-js' {
+    export interface ToolContext {
+        getToken(): string;
+    }
+    export function defineTool(tool: any): any;
+    export function defineMcp(config: any): any;
+    export const auth: {
+        oauth: {
+            issuer(config: { issuer: string; acceptedAudiences: string }): any;
+        };
+    };
+}
 interface USBDevice {
     usbVersionMajor: number;
     usbVersionMinor: number;

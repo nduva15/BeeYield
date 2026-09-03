@@ -103,6 +103,7 @@ const Privacy = lazy(() => retryLazyImport(() => import('@/pages/Privacy')))
 const Terms = lazy(() => retryLazyImport(() => import('@/pages/Terms')))
 const IntegrationCallback = lazy(() => retryLazyImport(() => import('@/pages/IntegrationCallback')))
 const SharedRun = lazy(() => retryLazyImport(() => import('@/pages/SharedRun')))
+const OAuthConsent = lazy(() => retryLazyImport(() => import('@/pages/OAuthConsent')))
 
 import { PageLoader } from './components/PageLoader'
 
@@ -172,6 +173,8 @@ root.render(
                                                         <Route path="/diseases" element={<Diseases />} />
                                                         <Route path="/media" element={<Media />} />
                                                         <Route path="/shared-run/:id" element={<SharedRun />} />
+                                                        <Route path="/oauth/consent" element={<OAuthConsent />} />
+                                                        <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
                                                         <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><ErrorBoundary><BeeYieldDashboard /></ErrorBoundary></ProtectedRoute>} />
                                                         <Route path="/beeyield-ai" element={<ProtectedRoute requireBeeYield={true}><ErrorBoundary><BeeYieldDashboard /></ErrorBoundary></ProtectedRoute>} />

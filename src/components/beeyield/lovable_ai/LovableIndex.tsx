@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Wifi, Database, Settings, LogIn, LogOut } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Wifi, Database, Settings, LogIn, LogOut, Cpu, Plug, LifeBuoy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -139,9 +139,10 @@ interface IndexProps {
   embedded?: boolean;
   initialMessage?: string;
   onInitialMessageConsumed?: () => void;
+  onTabChange?: (tab: string) => void;
 }
 
-export default function Index({ embedded = false, initialMessage, onInitialMessageConsumed }: IndexProps) {
+export default function Index({ embedded = false, initialMessage, onInitialMessageConsumed, onTabChange }: IndexProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -530,7 +531,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-honey">Measurement Data Tools</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setMeasurementToolsOpen(true)} className="cursor-pointer">
-                <Settings className="w-4 h-4 mr-2" /> My Devices, USB, Bluetooth & Online
+                <Cpu className="w-4 h-4 mr-2" /> My Devices, USB, Bluetooth & Online
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
@@ -543,6 +544,30 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                   <LogIn className="w-4 h-4 mr-2" /> Sign in / Sign up
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem
+                onClick={() => { if (onTabChange) onTabChange("home"); else navigate("/beeyield-dashboard?tab=home"); }}
+                className="cursor-pointer"
+              >
+                <HeartPulse className="w-4 h-4 mr-2" /> Hive Health Dashboard
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => { if (onTabChange) onTabChange("integrations"); else navigate("/beeyield-dashboard?tab=integrations"); }}
+                className="cursor-pointer"
+              >
+                <Plug className="w-4 h-4 mr-2" /> Integrations (Shopify, QuickBooks, eTIMS)
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => { if (onTabChange) onTabChange("support"); else navigate("/beeyield-dashboard?tab=support"); }}
+                className="cursor-pointer"
+              >
+                <LifeBuoy className="w-4 h-4 mr-2" /> Support & Tickets
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => { if (onTabChange) onTabChange("settings"); else navigate("/beeyield-dashboard?tab=settings"); }}
+                className="cursor-pointer"
+              >
+                <Settings className="w-4 h-4 mr-2" /> Settings — Control Center
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
                 <Info className="w-4 h-4 mr-2" /> About Beeyield AI
               </DropdownMenuItem>
