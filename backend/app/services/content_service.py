@@ -100,7 +100,7 @@ class ContentService:
         BM25-style scoring + query expansion + hybrid matching.
         """
         # Practical bounds: keep retrieval stable and avoid huge downstream contexts.
-        limit = max(10, min(int(limit or 25), 100))
+        limit = max(10, min(limit or 25, 100))
 
         lakehouse = await ContentService.get_lakehouse_data()
         nodes = lakehouse.get("lakehouse_nodes", [])

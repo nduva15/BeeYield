@@ -264,7 +264,7 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
               <input type="number" value={draft.radius} onChange={(e) => setDraft({ ...draft, radius: Number(e.target.value) })} placeholder="Radius (m)" className="px-3 py-2 rounded-lg bg-background border border-border text-xs" />
               <label className="text-xs flex items-center gap-2">Nectar <input type="number" min={0} max={10} value={draft.nectar} onChange={(e) => setDraft({ ...draft, nectar: Number(e.target.value) })} className="w-16 px-2 py-1 rounded bg-background border border-border" /></label>
               <label className="text-xs flex items-center gap-2">Pollen <input type="number" min={0} max={10} value={draft.pollen} onChange={(e) => setDraft({ ...draft, pollen: Number(e.target.value) })} className="w-16 px-2 py-1 rounded bg-background border border-border" /></label>
-              <input value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Notes" className="md:col-span-2 px-3 py-2 rounded-lg bg-background border border-border text-xs" />
+              <input value={draft.notes ?? ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Notes" className="md:col-span-2 px-3 py-2 rounded-lg bg-background border border-border text-xs" />
             </div>
             <div className="flex gap-2 mt-3">
               <button onClick={save} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save</button>
