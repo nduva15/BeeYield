@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, HeartPulse, RefreshCw, AlertTriangle, Loader2, CloudSun, Activity, AudioLines,
-  ClipboardList, Bug, Thermometer, Droplets, Wind, ShieldCheck,
+  ClipboardList, Bug, Thermometer, Droplets, Wind, ShieldCheck, Plus,
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -71,6 +71,19 @@ export default function HiveHealthDashboard({
   const [weather, setWeather] = useState<Weather | null>(null);
   const [hive, setHive] = useState("all");
   const [coords, setCoords] = useState<{ lat: number; lng: number }>({ lat: DEFAULT_LAT, lng: DEFAULT_LNG });
+  const [showEntry, setShowEntry] = useState(false);
+  const [savingEntry, setSavingEntry] = useState(false);
+  const [entry, setEntry] = useState({
+    hive_label: "BY-H001",
+    location: "Home apiary",
+    inspected_on: new Date().toISOString().slice(0, 10),
+    colony_health: "Healthy",
+    brood_frames: 5,
+    honey_frames: 3,
+    varroa_count: 0,
+    queen_cells: 0,
+    queen_seen: true,
+  });
 
   const load = useCallback(async () => {
     if (!deviceId) return;
@@ -105,6 +118,32 @@ export default function HiveHealthDashboard({
     void load();
     void loadWeather(coords.lat, coords.lng);
   }, [isOpen, load, loadWeather, coords.lat, coords.lng]);
+
+  const saveEntry = async () => {
+    if (!entry.hive_label.trim()) { toast.error("Hive label is required"); return; }
+    setSavingEntry(true);
+    const { error } = await supabase.from("inspections").insert({
+      device_id: deviceId,
+      location: entry.location || "Unspecified",
+      hive_label: entry.hive_label,
+      batch: "dashboard",
+      inspected_on: entry.inspected_on,
+      colony_health: entry.colony_health,
+      queen_seen: entry.queen_seen,
+      queen_cells: entry.queen_cells,
+      brood_frames: entry.brood_frames,
+      honey_frames: entry.honey_frames,
+      varroa_count: entry.varroa_count,
+      temperament: "calm",
+      issues: [],
+      actions: [],
+    });
+    setSavingEntry(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Hive record saved");
+    setShowEntry(false);
+    void load();
+  };
 
   const useMyLocation = () => {
     if (!navigator.geolocation) { toast.error("Geolocation unavailable"); return; }
@@ -292,11 +331,74 @@ export default function HiveHealthDashboard({
           <Kpi icon={AlertTriangle} label="Open alerts" value={String(alerts.length)} hint={`${alerts.filter((a) => a.level === "critical").length} critical`} />
         </div>
 
+        {/* Quick hive record entry */}
+        <div className="rounded-xl border border-border p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold flex items-center gap-2">
+              <ClipboardList className="w-4 h-4 text-honey" /> Log a hive record
+            </h3>
+            <button onClick={() => setShowEntry((v) => !v)}
+              className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-muted flex items-center gap-1.5">
+              <Plus className="w-3.5 h-3.5" /> {showEntry ? "Hide" : "New record"}
+            </button>
+          </div>
+          {showEntry ? (
+            <div className="grid md:grid-cols-4 gap-3">
+              <EntryField label="Hive label">
+                <input value={entry.hive_label} onChange={(e) => setEntry({ ...entry, hive_label: e.target.value })} className="fld" />
+              </EntryField>
+              <EntryField label="Location">
+                <input value={entry.location} onChange={(e) => setEntry({ ...entry, location: e.target.value })} className="fld" />
+              </EntryField>
+              <EntryField label="Date">
+                <input type="date" value={entry.inspected_on} onChange={(e) => setEntry({ ...entry, inspected_on: e.target.value })} className="fld" />
+              </EntryField>
+              <EntryField label="Colony health">
+                <select value={entry.colony_health} onChange={(e) => setEntry({ ...entry, colony_health: e.target.value })} className="fld">
+                  {["Thriving", "Healthy", "Stable", "Weak", "Stressed", "Queenless", "Collapsing"].map((o) => <option key={o}>{o}</option>)}
+                </select>
+              </EntryField>
+              <EntryField label="Brood frames">
+                <input type="number" min={0} value={entry.brood_frames}
+                  onChange={(e) => setEntry({ ...entry, brood_frames: Number(e.target.value) })} className="fld" />
+              </EntryField>
+              <EntryField label="Honey frames">
+                <input type="number" min={0} value={entry.honey_frames}
+                  onChange={(e) => setEntry({ ...entry, honey_frames: Number(e.target.value) })} className="fld" />
+              </EntryField>
+              <EntryField label="Varroa / 300 bees">
+                <input type="number" min={0} value={entry.varroa_count}
+                  onChange={(e) => setEntry({ ...entry, varroa_count: Number(e.target.value) })} className="fld" />
+              </EntryField>
+              <EntryField label="Queen cells">
+                <input type="number" min={0} value={entry.queen_cells}
+                  onChange={(e) => setEntry({ ...entry, queen_cells: Number(e.target.value) })} className="fld" />
+              </EntryField>
+              <label className="flex items-center gap-2 text-sm md:col-span-2">
+                <input type="checkbox" checked={entry.queen_seen}
+                  onChange={(e) => setEntry({ ...entry, queen_seen: e.target.checked })} />
+                Queen sighted
+              </label>
+              <div className="md:col-span-2 flex items-end">
+                <button onClick={saveEntry} disabled={savingEntry}
+                  className="px-4 py-2 rounded-lg bg-honey text-honey-foreground text-sm font-semibold flex items-center gap-2 disabled:opacity-60">
+                  {savingEntry ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Save record
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Records you save here feed the trends, alerts and integration sync immediately — nothing on this screen is sample data.
+            </p>
+          )}
+        </div>
+
         {/* Alerts */}
         <div className="rounded-xl border border-border p-4 mb-6">
           <h3 className="font-semibold flex items-center gap-2 mb-3">
             <AlertTriangle className="w-4 h-4 text-honey" /> Alerts
           </h3>
+
           {alerts.length === 0 ? (
             <p className="text-sm text-muted-foreground">No alerts — colonies, acoustics and weather all within range.</p>
           ) : (
@@ -407,6 +509,17 @@ export default function HiveHealthDashboard({
         </div>
       </div>
     </div>
+  );
+}
+
+function EntryField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block text-sm">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <div className="mt-1 [&_.fld]:w-full [&_.fld]:px-3 [&_.fld]:py-2 [&_.fld]:rounded-lg [&_.fld]:border [&_.fld]:border-border [&_.fld]:bg-background [&_.fld]:text-sm">
+        {children}
+      </div>
+    </label>
   );
 }
 

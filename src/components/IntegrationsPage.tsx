@@ -53,6 +53,9 @@ const PROVIDERS: {
       { key: "storeUrl", label: "Shopify store URL", placeholder: "your-apiary.myshopify.com" },
       { key: "apiVersion", label: "Admin API version", placeholder: "2024-10" },
       { key: "locationName", label: "Default inventory location", placeholder: "Kiambu warehouse" },
+      { key: "serviceOrderPrice", label: "Service order value (per synced record)", placeholder: "0.00",
+        help: "Every inspection or acoustic audit is written to Shopify as an order line at this price." },
+      { key: "orderEmail", label: "Order contact email (optional)", placeholder: "apiary@yourfarm.co.ke" },
     ],
     secretFields: [
       { key: "accessToken", label: "Admin API access token", placeholder: "shpat_••••••••", secret: true,
@@ -78,6 +81,9 @@ const PROVIDERS: {
       { key: "environment", label: "Environment (production | sandbox)", placeholder: "production" },
       { key: "incomeAccount", label: "Honey sales income account", placeholder: "Honey Sales" },
       { key: "expenseAccount", label: "Apiary expense account", placeholder: "Hive Supplies" },
+      { key: "accountName", label: "Sync account name (chart of accounts)", placeholder: "BeeYield Hive Operations",
+        help: "Created automatically if missing; every synced record stamps this account and files a note against it." },
+      { key: "accountType", label: "Account type", placeholder: "Expense" },
     ],
     secretFields: [
       { key: "accessToken", label: "OAuth 2.0 access token", placeholder: "eyJ••••••••", secret: true,
