@@ -1177,8 +1177,11 @@ export type Database = {
           detail: string | null
           device_id: string
           event: string
+          hive_label: string | null
           id: string
           provider: string
+          record_id: string | null
+          record_kind: string | null
           status: string
         }
         Insert: {
@@ -1186,8 +1189,11 @@ export type Database = {
           detail?: string | null
           device_id: string
           event: string
+          hive_label?: string | null
           id?: string
           provider: string
+          record_id?: string | null
+          record_kind?: string | null
           status?: string
         }
         Update: {
@@ -1195,8 +1201,11 @@ export type Database = {
           detail?: string | null
           device_id?: string
           event?: string
+          hive_label?: string | null
           id?: string
           provider?: string
+          record_id?: string | null
+          record_kind?: string | null
           status?: string
         }
         Relationships: []
