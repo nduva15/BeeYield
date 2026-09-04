@@ -23,9 +23,25 @@ async function admin() {
   return supabaseAdmin;
 }
 
-async function log(deviceId: string, provider: string, event: string, status: string, detail?: string) {
+async function log(
+  deviceId: string,
+  provider: string,
+  event: string,
+  status: string,
+  detail?: string,
+  ref?: { recordId?: string; recordKind?: string; hiveLabel?: string },
+) {
   const db = await admin();
-  await db.from("integration_sync_logs").insert({ device_id: deviceId, provider, event, status, detail: detail ?? null });
+  await db.from("integration_sync_logs").insert({
+    device_id: deviceId,
+    provider,
+    event,
+    status,
+    detail: detail ?? null,
+    record_id: ref?.recordId ?? null,
+    record_kind: ref?.recordKind ?? null,
+    hive_label: ref?.hiveLabel ?? null,
+  });
 }
 
 async function loadCreds(deviceId: string, provider: string): Promise<{ config: Config; secrets: Secrets }> {
