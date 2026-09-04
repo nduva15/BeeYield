@@ -85,6 +85,18 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         estimatedMarketValueUsdBn: 2.2,
         image: "/images/pollination/orange-tree-citrus-fruits.jpg"
     },
+    "Citrus": {
+        cropName: "Citrus",
+        beeDependence: "High (Fruit Set & Quality)",
+        dependencyPercent: 75,
+        optimalHivesPerAcre: "2.0 - 3.5 Hives",
+        targetFPA: 22,
+        beeyieldAdvantage: "Continuous telemetry tracking during the rapid citrus bloom surge ensures maximum flower visits before petal fall, drastically reducing fruit drop and increasing juice density.",
+        regionalTrends2026: "Integrated dryland citrus and mango agroforestry creates extended forage corridors for commercial pollinating colonies.",
+        economicImpact: "Enhances fruit diameter, rind consistency, and sugar content (Brix) for premium local and export markets.",
+        estimatedMarketValueUsdBn: 2.8,
+        image: "/images/pollination/orange-tree-heavy-fruiting.jpg"
+    },
     "Tomatoes": {
         cropName: "Tomatoes",
         beeDependence: "High (Buzz Pollination)",
@@ -130,6 +142,7 @@ export const DASHBOARD_POLLINATION_CROPS = [
     "Avocados",
     "Beans",
     "Oranges",
+    "Citrus",
     "Tomatoes",
     "Onions",
     "Sisal",
