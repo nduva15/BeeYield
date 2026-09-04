@@ -235,44 +235,44 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
-      {/* Latest Pollination Field Highlight: Mango & Orange Orchard */}
+      {/* Latest Pollination Field Highlight: BeeYield and Apisense at Work */}
       <section id="latest-field-highlight" className="py-20 bg-background border-y border-border/50">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12">
             <Badge className="bg-[#1B9157]/15 text-[#1B9157] border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-4">
               <Camera className="w-3.5 h-3.5 mr-1.5 inline" />
-              Real Field Deployment • Makueni County
+              Kenya Pollination & Mango Bloom Season • Field Operation
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight">
-              Latest Pollination Spotlight: <br />
-              <span className="text-[#1B9157]">Mangoes & Oranges</span> Mixed Farm
+              BeeYield and Apisense at Work: <br />
+              <span className="text-[#1B9157]">Mangoes & Oranges</span> Orchard
             </h2>
             <p className="mt-4 text-neutral-600 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-              Authentic field photography from our active precision pollination deployment. In this semi-arid orchard, our mobile colonies concurrently service <strong>flowering mango panicles</strong> and <strong>developing citrus orange groves</strong>, sheltered by ancient native Baobabs.
+              It is currently peak <strong>Pollination and Mango Bloom Season in Kenya</strong>! BeeYield and Apisense are deployed in the field across Makueni County. Our colonies are actively working the dense <strong>flowering mango panicles</strong> and <strong>developing citrus orange groves</strong>, with real-time <strong>Apisense™ in-hive telemetry</strong> monitoring acoustic vitality, brood temperature, and foraging velocity under ancient Baobabs.
             </p>
           </div>
 
-          {/* 5-Photo Showcase Grid */}
+          {/* 6-Photo Showcase Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
             {/* Photo 1: Mango Bloom */}
             <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <img
-                  src="/images/pollination/mango-bloom-pollination.jpg"
-                  alt="Mango Floral Panicles"
+                  src="/images/pollination/mango-panicles-close-bloom.png"
+                  alt="Mango Floral Panicles in Peak Bloom"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-3 left-3">
                   <Badge className="bg-amber-600/90 text-white border-none text-xs font-bold">
-                    🥭 Mangoes • Bloom Stage
+                    🥭 Mangoes • Bloom Season
                   </Badge>
                 </div>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
                 <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Dense Flower Panicles</h3>
+                  <h3 className="text-lg font-bold text-neutral-900">Dense Mango Flower Panicles</h3>
                   <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Close-up of mango floral panicles at peak anthesis. High-frequency bee visits maximize pollination of thousands of florets to prevent early fruit abortion.
+                    Peak anthesis in Kenya's mango season. Thousands of delicate florets require high-density bee visits to secure fertilization and eliminate early fruit drop.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-[#1B9157]">
@@ -285,8 +285,8 @@ const CropsWePollinate = () => {
             <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <img
-                  src="/images/pollination/orange-citrus-orchard.jpg"
-                  alt="Citrus Orange Setting"
+                  src="/images/pollination/orange-tree-citrus-fruits.jpg"
+                  alt="Citrus Orange Setting and Maturing"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-3 left-3">
@@ -297,9 +297,9 @@ const CropsWePollinate = () => {
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
                 <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Developing Citrus Grove</h3>
+                  <h3 className="text-lg font-bold text-neutral-900">Citrus Fruit Setting & Development</h3>
                   <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Vigorous orange trees with early spherical fruit development and blossoms, sheltered by the iconic dryland Baobab in the center background.
+                    Orange trees loaded with young spherical fruits and late blossoms. Bee pollination directly boosts fruit circumference, juice volume, and sugar Brix levels.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-orange-600">
@@ -308,44 +308,71 @@ const CropsWePollinate = () => {
               </div>
             </div>
 
-            {/* Photo 3: Mixed Panorama */}
+            {/* Photo 3: Apisense In-Hive Probe */}
             <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <img
-                  src="/images/pollination/mango-orange-farm-wide.jpg"
-                  alt="Mixed Farm Panorama"
+                  src="/images/pollination/apisense-internal-sensor-probe.png"
+                  alt="Apisense In-Hive Telemetry Probe with Live Bees"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-3 left-3">
-                  <Badge className="bg-emerald-600/90 text-white border-none text-xs font-bold">
-                    🌿 Mixed Orchard Panorama
+                  <Badge className="bg-yellow-600/90 text-white border-none text-xs font-bold">
+                    🐝 BeeYield & Apisense at Work
                   </Badge>
                 </div>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
                 <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Dual-Crop Agroforestry</h3>
+                  <h3 className="text-lg font-bold text-neutral-900">Apisense™ In-Hive Telemetry</h3>
                   <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Broad perspective showing rows of orange bushes in the foreground and blossoming mango trees in the midground across rich red semi-arid soil.
+                    Apisense sensor probe mounted inside the brood comb with live honeybees actively working. Tracks acoustics, brood temperature, and queen vigor in real time.
                   </p>
                 </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-emerald-600">
-                  <CheckCircle2 className="w-4 h-4" /> Multi-Crop Revenue Maximization
+                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-yellow-700">
+                  <CheckCircle2 className="w-4 h-4" /> Real-Time Colony Health Telemetry
                 </div>
               </div>
             </div>
 
-            {/* Photo 4: Mango Canopy Bloom */}
+            {/* Photo 4: BeeYield Field Gateway */}
             <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <img
-                  src="/images/pollination/mango-orchard-flowering.jpg"
-                  alt="Mango Canopy Saturation"
+                  src="/images/pollination/beeyield-apisense-gateway-field.png"
+                  alt="BeeYield Field Gateway with Dual Antennas"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-blue-600/90 text-white border-none text-xs font-bold">
+                    📡 BeeYield Field Gateway
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">Autonomous Solar Field Gateway</h3>
+                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
+                    Solar-powered wireless hub mounted on the hive stand in the orchard. Streams in-hive Apisense telemetry directly to the BeeYield analytics dashboard.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-blue-600">
+                  <CheckCircle2 className="w-4 h-4" /> 24/7 Field Telemetry Stream
+                </div>
+              </div>
+            </div>
+
+            {/* Photo 5: Mango Tree Full Blossom */}
+            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                <img
+                  src="/images/pollination/mango-tree-full-blossom.png"
+                  alt="Full Blooming Mango Tree in Orchard"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-3 left-3">
                   <Badge className="bg-lime-700/90 text-white border-none text-xs font-bold">
-                    🥭 Mangoes • Canopy Coverage
+                    🥭 Full Mango Bloom
                   </Badge>
                 </div>
               </div>
@@ -353,18 +380,18 @@ const CropsWePollinate = () => {
                 <div>
                   <h3 className="text-lg font-bold text-neutral-900">Synchronized Bloom Canopy</h3>
                   <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Flowering mango canopy covered in bloom. Mobile hives deployed in high densities ensure bees penetrate the upper tree canopy for complete fruit set.
+                    Vibrant flowering canopy in the dryland orchard. Mobile BeeYield colonies positioned to ensure top branches receive complete pollination pressure.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-lime-700">
-                  <CheckCircle2 className="w-4 h-4" /> 100% Upper Branch Coverage
+                  <CheckCircle2 className="w-4 h-4" /> 100% Upper Branch Receptivity
                 </div>
               </div>
             </div>
 
-            {/* Photo 5: Intercropped Rows */}
-            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col md:col-span-2 lg:col-span-2">
-              <div className="relative aspect-[21/9] overflow-hidden bg-muted">
+            {/* Photo 6: Mixed Intercrop Agroforestry */}
+            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <img
                   src="/images/pollination/citrus-mango-intercrop.jpg"
                   alt="Citrus and Mango Intercropped Rows"
@@ -380,21 +407,11 @@ const CropsWePollinate = () => {
                 <div>
                   <h3 className="text-lg font-bold text-neutral-900">Intercropped Agroforestry Rows</h3>
                   <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Demonstrating synergistic pollination: bees forage across complementary floral nectar and pollen schedules, maintaining peak colony vigor and guaranteeing high fruit quality across both crops.
+                    Synergistic pollination: bees forage across complementary floral nectar and pollen curves of mangoes and citrus, maintaining peak hive vigor throughout the season.
                   </p>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/40">
-                  <span className="text-xs font-semibold text-teal-700 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" /> Documented +25% Yield Uplift
-                  </span>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="rounded-full text-xs font-bold" asChild>
-                      <Link to="/media#latest-pollination">View in Media Gallery</Link>
-                    </Button>
-                    <Button size="sm" className="rounded-full bg-[#1B9157] hover:bg-[#157746] text-white text-xs font-bold" asChild>
-                      <Link to="/pollination-request">Book For Your Farm</Link>
-                    </Button>
-                  </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-teal-700">
+                  <CheckCircle2 className="w-4 h-4" /> Multi-Crop Revenue Boost
                 </div>
               </div>
             </div>
