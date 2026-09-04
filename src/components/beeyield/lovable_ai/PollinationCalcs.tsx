@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Calculator, Truck, Sprout, Calendar, Sparkles, Loader2 } from "lucide-react";
+import { X, Calculator, Truck, Sprout, Calendar, Sparkles, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ const STOCKING: Record<string, { hivesPerHa: number; expectedYieldKgPerHa: numbe
   general:    { hivesPerHa: 3,   expectedYieldKgPerHa: 15,  bloomDays: 21, transportNote: "Generic baseline — refine with local florage" },
 };
 
-export default function PollinationCalcs({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function PollinationCalcs({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [crop, setCrop] = useState("almond");
   const [hectares, setHectares] = useState(10);
@@ -98,7 +98,7 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
         for (const ln of lines) {
           if (!ln.startsWith("data: ")) continue;
           const data = ln.slice(6); if (data === "[DONE]") continue;
-          try { const j = JSON.parse(data); const t = j.choices?.[0]?.delta?.content; if (t) setAiNarrative((p) => p + t); } catch { /* partial SSE JSON chunk */ }
+          try { const j = JSON.parse(data); const t = j.choices?.[0]?.delta?.content; if (t) setAiNarrative((p) => p + t); } catch {}
         }
       }
     } catch (e) { toast.error("AI error"); }
@@ -107,7 +107,7 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
 
   if (!isOpen) return null;
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -117,6 +117,7 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
               <p className="text-xs text-muted-foreground">Hives needed · transport · expected yield · timeline</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">

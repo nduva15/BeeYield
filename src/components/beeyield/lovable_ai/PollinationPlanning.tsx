@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Calculator, Sparkles, Loader2, Target } from "lucide-react";
+import { X, Calculator, Sparkles, Loader2, Target } from "lucide-react";
 import { toast } from "sonner";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { FLORAGE } from "./FloragePage";
@@ -32,7 +32,7 @@ const CROP_DATA: Record<string, { radius: number; contractPerAc: number; demand:
   Canola:     { radius: 1500, contractPerAc: 0.5, demand: 0.6, setBoost: 0.25 },
 };
 
-export default function PollinationPlanning({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function PollinationPlanning({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [crop, setCrop] = useState("Almonds");
   const [acres, setAcres] = useState(40);
   const [region, setRegion] = useState("California Central Valley");
@@ -114,7 +114,7 @@ Required sections:
 
   if (!isOpen) return null;
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -124,6 +124,7 @@ Required sections:
               <p className="text-xs text-muted-foreground">Florage-weighted precision model · contract baseline · AI deployment plan</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 rounded-xl border border-border bg-muted/30">

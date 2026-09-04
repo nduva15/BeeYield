@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { TrendingUp, Save, Trash2 } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { X, TrendingUp, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -7,7 +7,7 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, R
 
 type Run = { id: string; label: string; inputs: Record<string, number>; outputs: Record<string, number>; created_at: string };
 
-export default function YieldProjection({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function YieldProjection({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [hives, setHives] = useState(20);
   const [broodFrames, setBroodFrames] = useState(8); // 0-12, drives bee population
@@ -52,12 +52,12 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: {
     { k: "Precip", v: calc.precipF * 100 },
   ];
 
-  const load = useCallback(async () => {
+  const load = async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("yield_projections").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(30);
     setRuns((data ?? []) as Run[]);
-  }, [deviceId]);
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId, load]);
+  };
+  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
 
   const save = async () => {
     const inputs = { hives, broodFrames, nectarScore, bloomDays, tempC, windKmh, precipMm, pricePerKg };
@@ -72,7 +72,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: {
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -82,6 +82,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: {
               <p className="text-xs text-muted-foreground">Brood × nectar × weather → kg & revenue</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 mb-4">

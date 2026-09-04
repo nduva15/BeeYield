@@ -1,5 +1,5 @@
 import { Fragment, useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { MapPin, Trash2, Save, Loader2, Plus, Layers, FileDown, MessageSquare, Send, GitBranch, Flower2, Plane, Activity } from "lucide-react";
+import { X, MapPin, Trash2, Save, Loader2, Plus, Layers, FileDown, MessageSquare, Send, GitBranch, Flower2, Plane, Activity } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Polygon, Circle, Polyline, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import { toast } from "sonner";
@@ -58,7 +58,6 @@ interface Props {
   readOnly?: boolean;
   initialRunId?: string;
   initialVersionId?: string;
-  embedded?: boolean;
 }
 
 type LatLng = { lat: number; lng: number };
@@ -203,7 +202,6 @@ export default function HivePlacementMap({
   readOnly = false,
   initialRunId,
   initialVersionId,
-  embedded = false,
 }: Props) {
   const deviceId = useDeviceId();
   const [field, setField] = useState<LatLng[]>([]);
@@ -305,7 +303,6 @@ export default function HivePlacementMap({
     setFocus(null);
   }, [applyLayout, cropKey]);
 
-   
   useEffect(() => { if (isOpen) loadRuns(); }, [isOpen, loadRuns]);
 
   useEffect(() => {
@@ -527,7 +524,7 @@ export default function HivePlacementMap({
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-3">
@@ -541,6 +538,9 @@ export default function HivePlacementMap({
               </p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground" aria-label="Close">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="flex items-center gap-2 mb-3 flex-wrap p-3 rounded-xl border border-border bg-muted/20">

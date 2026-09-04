@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Layers, ArrowLeftRight, Loader2 } from "lucide-react";
+import { X, Layers, ArrowLeftRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ type Version = {
   prompt_variant: string;
 };
 
-export default function MOACompare({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function MOACompare({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedRun, setSelectedRun] = useState<string>("");
@@ -27,22 +27,22 @@ export default function MOACompare({ isOpen, onClose, embedded = false }: { isOp
   const [loading, setLoading] = useState(false);
 
   const loadRuns = useCallback(async () => {
-    setLoading(true);
     const { data } = await supabase.from("harvest_runs").select("id,crop,region,acres,hives,created_at")
       .eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50);
     setRuns((data as Run[]) || []);
-    setLoading(false);
   }, [deviceId]);
 
   useEffect(() => { if (isOpen) loadRuns(); }, [isOpen, loadRuns]);
 
   const loadVersions = useCallback(async (runId: string) => {
+    setLoading(true);
     const { data } = await supabase.from("harvest_run_versions").select("*").eq("run_id", runId).order("created_at", { ascending: true });
     const vs = (data as Version[]) || [];
     setVersions(vs);
     if (vs.length >= 2) { setVA(vs[0].id); setVB(vs[vs.length - 1].id); }
     else if (vs.length === 1) { setVA(vs[0].id); setVB(vs[0].id); }
     else { setVA(""); setVB(""); }
+    setLoading(false);
   }, []);
 
   useEffect(() => { if (selectedRun) loadVersions(selectedRun); }, [selectedRun, loadVersions]);
@@ -75,7 +75,7 @@ export default function MOACompare({ isOpen, onClose, embedded = false }: { isOp
 
   if (!isOpen) return null;
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -85,6 +85,7 @@ export default function MOACompare({ isOpen, onClose, embedded = false }: { isOp
               <p className="text-xs text-muted-foreground">Overlay two saved version snapshots side-by-side and diff forecast, layout, and filters</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 p-4 rounded-xl border border-border bg-muted/30">

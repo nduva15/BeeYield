@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree, Target } from "lucide-react";
+import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy, TrendingUp, FileSpreadsheet, Link2, StickyNote, GitBranch, ListTree, Target } from "lucide-react";
 import { toast } from "sonner";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,7 +37,7 @@ type SavedRun = {
   ai_forecast: string | null;
   notes: string | null;
   prompt_variant: string;
-   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   assumptions: any | null;
   created_at: string;
 };
@@ -49,7 +49,7 @@ type RunVersion = {
   ai_forecast: string | null;
   local_estimate_kg: number | null;
   prompt_variant: string;
-   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   assumptions: any | null;
   created_at: string;
 };
@@ -58,10 +58,9 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
-  embedded?: boolean;
 }
 
-export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, embedded = false }: Props) {
+export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: Props) {
   const deviceId = useDeviceId();
   const [hives, setHives] = useState(10);
   const [acres, setAcres] = useState(0);
@@ -247,7 +246,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, emb
       ai_forecast: aiText || null,
       notes: notes.trim() || null,
       prompt_variant: promptVariant,
-       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       assumptions: assumptions as any,
     });
     setSaving(false);
@@ -270,7 +269,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, emb
       ai_forecast: aiText,
       local_estimate_kg: Number(apiaryHarvest.toFixed(2)),
       prompt_variant: promptVariant,
-       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       assumptions: assumptions as any,
     });
     if (error) { toast.error("Failed to save version"); return; }
@@ -415,7 +414,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, emb
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -432,6 +431,13 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning, emb
               title="Saved runs"
             >
               <History className="w-3.5 h-3.5" /> History ({savedRuns.length})
+            </button>
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>

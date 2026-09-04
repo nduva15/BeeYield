@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import { Layers, MapPin, Flower2, Plane, Calculator, Loader2, FileDown, Sparkles, Save } from "lucide-react";
+import { X, Layers, MapPin, Flower2, Plane, Calculator, Loader2, FileDown, Sparkles, Save } from "lucide-react";
 import { MapContainer, TileLayer, Polygon, Marker, Circle, Popup } from "react-leaflet";
 import L from "leaflet";
 import html2canvas from "html2canvas";
@@ -47,14 +47,13 @@ interface Props {
   readOnly?: boolean;
   initialRunId?: string;
   initialVersionId?: string;
-  embedded?: boolean;
 }
 
 const DEFAULT_FILTERS: Filters = {
   showCoverage: true, showBloom: true, showFlight: true, showDiagnostics: true, selectedHive: null,
 };
 
-export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId, embedded = false }: Props) {
+export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId }: Props) {
   const deviceId = useDeviceId();
   const [runs, setRuns] = useState<Run[]>([]);
   const [versions, setVersions] = useState<Version[]>([]);
@@ -74,16 +73,23 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
   const load = useCallback(async () => {
     setLoading(true);
     const queries: Promise<unknown>[] = [
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (supabase as any).from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (supabase as any).from("bloom_observations").select("*").order("created_at", { ascending: false }).limit(50),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (supabase as any).from("bee_flight_logs").select("*").order("observed_at", { ascending: false }).limit(50),
     ];
     if (readOnly && initialRunId) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queries[0] = (supabase as any).from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("id", initialRunId);
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queries[1] = (supabase as any).from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queries[2] = (supabase as any).from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50);
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [r, b, f] = await Promise.all(queries) as any[];
     if (r.data) {
       setRuns(r.data);
@@ -95,13 +101,13 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
     setLoading(false);
   }, [deviceId, readOnly, initialRunId]);
 
-   
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   // Load versions & restore filters when run changes
   useEffect(() => {
     if (!selectedRunId) { setVersions([]); return; }
     (async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data } = await (supabase as any).from("harvest_run_versions").select("id,version_label,site_layout,moa_filters").eq("run_id", selectedRunId).order("created_at", { ascending: true });
       if (data) {
         setVersions(data);
@@ -158,6 +164,7 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
 
   const persistFilters = async () => {
     if (!selectedVersionId) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from("harvest_run_versions").update({ moa_filters: filters }).eq("id", selectedVersionId);
     if (error) toast.error("Save failed"); else toast.success("MOA view saved to version");
   };
@@ -266,7 +273,7 @@ Required sections:
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 mt-4 h-[calc(100vh-9.5rem)] min-h-[640px] rounded-2xl border border-border bg-background overflow-hidden flex flex-col" : "fixed inset-0 z-50 bg-background overflow-hidden flex flex-col"}>
+    <div className="fixed inset-0 z-50 bg-background overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 border-b border-border bg-card px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
@@ -297,6 +304,7 @@ Required sections:
               <Save className="w-3 h-3" /> Save filters
             </button>
           )}
+          <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
       </div>
 
@@ -331,9 +339,9 @@ Required sections:
           No saved harvest runs yet. Save a run from the Harvest Calculator to load the MOA view.
         </div>
       ) : (
-        <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-5 overflow-hidden">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden">
           {/* Map */}
-          <div ref={mapWrapRef} className="md:col-span-3 relative min-h-[420px] md:min-h-0 border-r border-border">
+          <div ref={mapWrapRef} className="md:col-span-3 relative border-r border-border">
             <MapContainer center={center} zoom={15} style={{ width: "100%", height: "100%" }}>
               <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="Esri Satellite" />
               {polygon.length >= 3 && <Polygon positions={polygon} pathOptions={{ color: "#facc15", fillOpacity: 0.15 }} />}
@@ -357,7 +365,7 @@ Required sections:
           </div>
 
           {/* Right panels */}
-          <div ref={panelsRef} className="md:col-span-2 min-h-0 overflow-y-auto custom-scroll p-3 space-y-3 bg-muted/10">
+          <div ref={panelsRef} className="md:col-span-2 overflow-y-auto custom-scroll p-3 space-y-3 bg-muted/10">
             {filters.showCoverage && (
               <Panel icon={<Calculator className="w-4 h-4 text-honey" />} title="Pollination Coverage">
                 <Stat label="Hives" value={`${hives.length}`} />

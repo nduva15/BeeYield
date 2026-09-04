@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Users, Cpu, Sprout, ArrowRight, Check,
-  Globe, Flower2, Wheat, MapPin, Mail
+  Globe, Flower2, Wheat, MapPin, Mail,
+  Sparkles, Camera, CheckCircle2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
@@ -45,34 +46,77 @@ const CropsWePollinate = () => {
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
             <div className="space-y-8">
               <Badge className="bg-green-100 text-[#1B9157] border-green-200 rounded-full px-4 py-1.5 text-sm font-bold">
-                Precision Agriculture
+                Precision Agriculture • Active Field Deployments
               </Badge>
               <h1 className="text-4xl font-black tracking-tighter md:text-5xl lg:text-6xl leading-tight text-neutral-900">
                 Get Data-Driven <br />
                 <span className="text-[#1B9157]">Crop Pollination</span>
               </h1>
               <p className="max-w-xl text-lg text-neutral-600 font-medium leading-relaxed">
-                Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring maximized crop yields and sustainable practices.
+                Our end-to-end precision pollination solution gives farmers unprecedented control and visibility into floral anthesis, optimizing fruit set and maximizing harvest yields.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" className="rounded-full bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-bold h-14 px-8 shadow-xl shadow-green-900/10" asChild>
                   <Link to="/contact">Get a Free Consultation</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="rounded-full border-2 border-neutral-200 text-neutral-900 hover:bg-[#F9F7F2] font-bold h-14 px-8" asChild>
-                  <Link to="#crops">Explore Crops</Link>
+                  <Link to="#latest-field-highlight">Latest Field Photos</Link>
                 </Button>
               </div>
             </div>
 
             <div className="relative hidden lg:block">
-              {/* Decorative grid of crop images */}
+              {/* Decorative grid of authentic latest field photos */}
               <div className="absolute -right-4 -top-4 h-32 w-32 rounded-2xl bg-[#1B9157] blur-3xl animate-pulse" />
               <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-[#F4D03F] blur-3xl animate-pulse delay-1000" />
               <div className="grid grid-cols-2 gap-4">
-                <img src={pollinationCrops[0].image} alt={pollinationCrops[0].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-[#F4D03F]/100" />
-                <img src={pollinationCrops[2].image} alt={pollinationCrops[2].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-[#F4D03F]/100 mt-8" />
-                <img src={pollinationCrops[4].image} alt={pollinationCrops[4].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-[#F4D03F]/100 -mt-4" />
-                <img src={pollinationCrops[1].image} alt={pollinationCrops[1].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-[#F4D03F]/100 mt-4" />
+                <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100">
+                  <img
+                    src="/images/pollination/mango-bloom-pollination.jpg"
+                    alt="Mango Panicles in Bloom"
+                    className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
+                    🥭 Mango Bloom Panicles
+                  </span>
+                </div>
+
+                <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 mt-8">
+                  <img
+                    src="/images/pollination/orange-citrus-orchard.jpg"
+                    alt="Citrus Setting with Baobab"
+                    className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
+                    🍊 Orange Fruit Setting
+                  </span>
+                </div>
+
+                <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 -mt-4">
+                  <img
+                    src="/images/pollination/citrus-mango-intercrop.jpg"
+                    alt="Mixed Agroforestry Rows"
+                    className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
+                    🌿 Mixed Orchard Rows
+                  </span>
+                </div>
+
+                <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 mt-4">
+                  <img
+                    src="/images/pollination/mango-orange-farm-wide.jpg"
+                    alt="Dryland Baobab Orchard Layout"
+                    className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
+                    🌳 Baobab Agroforestry
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -191,6 +235,173 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
+      {/* Latest Pollination Field Highlight: Mango & Orange Orchard */}
+      <section id="latest-field-highlight" className="py-20 bg-background border-y border-border/50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <Badge className="bg-[#1B9157]/15 text-[#1B9157] border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-4">
+              <Camera className="w-3.5 h-3.5 mr-1.5 inline" />
+              Real Field Deployment • Makueni County
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight">
+              Latest Pollination Spotlight: <br />
+              <span className="text-[#1B9157]">Mangoes & Oranges</span> Mixed Farm
+            </h2>
+            <p className="mt-4 text-neutral-600 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
+              Authentic field photography from our active precision pollination deployment. In this semi-arid orchard, our mobile colonies concurrently service <strong>flowering mango panicles</strong> and <strong>developing citrus orange groves</strong>, sheltered by ancient native Baobabs.
+            </p>
+          </div>
+
+          {/* 5-Photo Showcase Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
+            {/* Photo 1: Mango Bloom */}
+            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                <img
+                  src="/images/pollination/mango-bloom-pollination.jpg"
+                  alt="Mango Floral Panicles"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-amber-600/90 text-white border-none text-xs font-bold">
+                    🥭 Mangoes • Bloom Stage
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">Dense Flower Panicles</h3>
+                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
+                    Close-up of mango floral panicles at peak anthesis. High-frequency bee visits maximize pollination of thousands of florets to prevent early fruit abortion.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-[#1B9157]">
+                  <CheckCircle2 className="w-4 h-4" /> 90% Pollination Dependency
+                </div>
+              </div>
+            </div>
+
+            {/* Photo 2: Orange Citrus */}
+            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                <img
+                  src="/images/pollination/orange-citrus-orchard.jpg"
+                  alt="Citrus Orange Setting"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-orange-600/90 text-white border-none text-xs font-bold">
+                    🍊 Oranges • Fruit Setting
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">Developing Citrus Grove</h3>
+                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
+                    Vigorous orange trees with early spherical fruit development and blossoms, sheltered by the iconic dryland Baobab in the center background.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-orange-600">
+                  <CheckCircle2 className="w-4 h-4" /> Higher Juice Content & Brix
+                </div>
+              </div>
+            </div>
+
+            {/* Photo 3: Mixed Panorama */}
+            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                <img
+                  src="/images/pollination/mango-orange-farm-wide.jpg"
+                  alt="Mixed Farm Panorama"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-emerald-600/90 text-white border-none text-xs font-bold">
+                    🌿 Mixed Orchard Panorama
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">Dual-Crop Agroforestry</h3>
+                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
+                    Broad perspective showing rows of orange bushes in the foreground and blossoming mango trees in the midground across rich red semi-arid soil.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-emerald-600">
+                  <CheckCircle2 className="w-4 h-4" /> Multi-Crop Revenue Maximization
+                </div>
+              </div>
+            </div>
+
+            {/* Photo 4: Mango Canopy Bloom */}
+            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                <img
+                  src="/images/pollination/mango-orchard-flowering.jpg"
+                  alt="Mango Canopy Saturation"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-lime-700/90 text-white border-none text-xs font-bold">
+                    🥭 Mangoes • Canopy Coverage
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">Synchronized Bloom Canopy</h3>
+                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
+                    Flowering mango canopy covered in bloom. Mobile hives deployed in high densities ensure bees penetrate the upper tree canopy for complete fruit set.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-lime-700">
+                  <CheckCircle2 className="w-4 h-4" /> 100% Upper Branch Coverage
+                </div>
+              </div>
+            </div>
+
+            {/* Photo 5: Intercropped Rows */}
+            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col md:col-span-2 lg:col-span-2">
+              <div className="relative aspect-[21/9] overflow-hidden bg-muted">
+                <img
+                  src="/images/pollination/citrus-mango-intercrop.jpg"
+                  alt="Citrus and Mango Intercropped Rows"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute top-3 left-3">
+                  <Badge className="bg-teal-700/90 text-white border-none text-xs font-bold">
+                    🌳 Intercrop Synergy • Oranges & Mangoes
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
+                <div>
+                  <h3 className="text-lg font-bold text-neutral-900">Intercropped Agroforestry Rows</h3>
+                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
+                    Demonstrating synergistic pollination: bees forage across complementary floral nectar and pollen schedules, maintaining peak colony vigor and guaranteeing high fruit quality across both crops.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/40">
+                  <span className="text-xs font-semibold text-teal-700 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" /> Documented +25% Yield Uplift
+                  </span>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" className="rounded-full text-xs font-bold" asChild>
+                      <Link to="/media#latest-pollination">View in Media Gallery</Link>
+                    </Button>
+                    <Button size="sm" className="rounded-full bg-[#1B9157] hover:bg-[#157746] text-white text-xs font-bold" asChild>
+                      <Link to="/pollination-request">Book For Your Farm</Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Crops Grid */}
       <section id="crops" className="py-20 bg-secondary/10">
         <div className="container mx-auto px-4">
@@ -225,8 +436,11 @@ const CropsWePollinate = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A2612]/90 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 space-y-1">
                     <h3 className="text-[2.5rem] font-black text-[#1A1A1A] leading-none tracking-tighter">{crop.cropName}</h3>
-                    <Link to="/media" className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A1A] text-xs font-black mt-2 transition-colors">
-                      View Media <ArrowRight className="w-3 h-3" />
+                    <Link
+                      to={`/media#${crop.cropName === "Mangoes" ? "mangoes" : crop.cropName === "Oranges" ? "oranges" : "latest-pollination"}`}
+                      className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A1A] text-xs font-black mt-2 transition-colors"
+                    >
+                      View Media Case Study <ArrowRight className="w-3 h-3" />
                     </Link>
                   </div>
                 </div>

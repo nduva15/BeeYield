@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, Bug, Search } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Bug, Search } from "lucide-react";
 
 // Image imports
 import westernHoneyBee from "@/assets/bees/western-honey-bee.jpg";
@@ -141,10 +141,9 @@ const ALL_CATEGORIES = ["All", ...Array.from(new Set(BEE_SPECIES.map((b) => b.ca
 interface BeeGalleryProps {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
 }
 
-export default function BeeGallery({ isOpen, onClose, embedded = false }: BeeGalleryProps) {
+export default function BeeGallery({ isOpen, onClose }: BeeGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -168,9 +167,9 @@ export default function BeeGallery({ isOpen, onClose, embedded = false }: BeeGal
   const selected = selectedIndex !== null ? BEE_SPECIES[selectedIndex] : null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background flex items-center justify-center pt-6" : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"} onClick={embedded ? undefined : onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className={`bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl overflow-hidden mx-4 ${embedded ? "" : "max-h-[90vh]"}`}
+        className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -182,6 +181,9 @@ export default function BeeGallery({ isOpen, onClose, embedded = false }: BeeGal
               <p className="text-xs text-muted-foreground">{BEE_SPECIES.length} species documented • AI-generated photos</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         {selected ? (

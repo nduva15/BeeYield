@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Microscope, Play, Save } from "lucide-react";
+import { X, Microscope, Play, Save } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,7 +52,7 @@ const STRATEGIES = [
   { name: "Aggressive (3x)", treatments: [{ day: 20, knockdownPct: 70, label: "Formic" }, { day: 90, knockdownPct: 90, label: "Apivar" }, { day: 160, knockdownPct: 95, label: "OA vapor" }] },
 ];
 
-export default function VarroaSimulator({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function VarroaSimulator({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [mode, setMode] = useState<"det" | "sto" | "scenario">("det");
   const [days, setDays] = useState(180);
@@ -63,7 +63,7 @@ export default function VarroaSimulator({ isOpen, onClose, embedded = false }: {
   const [runStamp, setRunStamp] = useState(0);
 
   const detResult = useMemo(() => simulateDeterministic(days, m0, growth / 100, carry, treatments), [days, m0, growth, carry, treatments]);
-  const stoResult = useMemo(() => { void runStamp; return simulateStochastic(days, m0, treatments); }, [days, m0, treatments, runStamp]);
+  const stoResult = useMemo(() => simulateStochastic(days, m0, treatments), [days, m0, treatments, runStamp]);
   const scenarioResults = useMemo(() => STRATEGIES.map((s) => ({ name: s.name, data: simulateDeterministic(days, m0, growth / 100, carry, s.treatments) })), [days, m0, growth, carry]);
 
   const peakLoad = (data: { load: number }[]) => Math.max(...data.map((d) => d.load));
@@ -87,7 +87,7 @@ export default function VarroaSimulator({ isOpen, onClose, embedded = false }: {
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -99,6 +99,7 @@ export default function VarroaSimulator({ isOpen, onClose, embedded = false }: {
           </div>
           <div className="flex gap-2">
             <button onClick={save} className="px-3 py-2 rounded-lg border border-honey/40 text-honey text-xs flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save run</button>
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
           </div>
         </div>
 

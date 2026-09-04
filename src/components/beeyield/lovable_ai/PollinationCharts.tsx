@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend, AreaChart, Area } from "recharts";
 
 const CROP_DATA = [
@@ -65,23 +66,25 @@ const tabs = [
 interface PollinationChartsProps {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
 }
 
-export default function PollinationCharts({ isOpen, onClose, embedded = false }: PollinationChartsProps) {
+export default function PollinationCharts({ isOpen, onClose }: PollinationChartsProps) {
   const [activeTab, setActiveTab] = useState("crops");
 
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background flex items-center justify-center pt-6" : "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"} onClick={embedded ? undefined : onClose}>
-      <div className={`bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl overflow-hidden mx-4 flex flex-col ${embedded ? "" : "max-h-[90vh]"}`} onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-card border border-border rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden mx-4 flex flex-col" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4 flex-shrink-0">
           <div>
             <h2 className="font-display text-lg font-bold text-foreground">🌸 Pollination Data & Analytics</h2>
             <p className="text-xs text-muted-foreground">Interactive charts • Crop dependencies • Economic impact • Seasonal trends</p>
           </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Tabs */}

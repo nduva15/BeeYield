@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { Plane, Plus, Loader2, Sparkles, FileSpreadsheet } from "lucide-react";
+import { X, Plane, Plus, Loader2, Sparkles, FileSpreadsheet } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -40,7 +40,7 @@ type Log = {
 type RunRow = { id: string; crop: string; created_at: string };
 type RunVersion = { id: string; version_label: string; created_at: string };
 
-export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [logs, setLogs] = useState<Log[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);
@@ -88,7 +88,7 @@ export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: 
   };
 
   const load = useCallback(async () => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [logRes, runRes] = await Promise.all([
       (supabase as any).from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50),
       supabase.from("harvest_runs").select("id,crop,created_at").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
@@ -97,7 +97,6 @@ export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: 
     if (runRes.data) setRuns(runRes.data as RunRow[]);
   }, [deviceId]);
 
-   
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   useEffect(() => {
@@ -125,7 +124,7 @@ export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: 
       ? [anchor, projectPoint(anchor, flightBearingDeg, distance)]
       : null;
 
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from("bee_flight_logs").insert({
       run_id: selectedRunId || null,
       version_id: selectedVersionId !== "current" ? selectedVersionId : null,
@@ -254,7 +253,7 @@ export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: 
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -264,6 +263,9 @@ export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: 
               <p className="text-xs text-muted-foreground">Foraging zones, activity counter, flight paths, and storage or nutrition indicators</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="p-5 rounded-xl border border-honey/40 bg-honey/5 mb-4 flex items-center gap-4 flex-wrap">

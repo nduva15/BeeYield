@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { Plane, Play, Pause, RotateCcw, Plus } from "lucide-react";
+import { X, Plane, Play, Pause, RotateCcw, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 
 // Lightweight one-tap activity counter — quicker workflow than the full BeeFlightTracker.
 // Tap "+1" each time a bee exits the entrance during the 60-second window.
-export default function ActivityCounter({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function ActivityCounter({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [count, setCount] = useState(0);
   const [running, setRunning] = useState(false);
@@ -31,7 +31,7 @@ export default function ActivityCounter({ isOpen, onClose, embedded = false }: {
 
   const save = async () => {
     if (count === 0) { toast.error("Run a count first"); return; }
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from("bee_flight_logs").insert({
       device_id: deviceId, hive_label: hiveLabel, bees_per_minute: count,
       pollen_loads: 0, florage_source: florage || null, observed_at: new Date().toISOString(),
@@ -51,10 +51,11 @@ export default function ActivityCounter({ isOpen, onClose, embedded = false }: {
 
   if (!isOpen) return null;
   return (
-    <div className={embedded ? "relative z-0 bg-background flex items-center justify-center p-4 pt-6 min-h-[calc(100vh-10rem)]" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2"><Plane className="w-5 h-5 text-honey" /><h2 className="font-display text-lg font-bold text-honey">Quick Activity Counter</h2></div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-4">

@@ -11,6 +11,10 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
+  Sparkles,
+  Camera,
+  CheckCircle2,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,6 +30,115 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const Media = () => {
   const location = useLocation();
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+
+  const latestPollinationMedia = [
+    {
+      id: "mango-bloom",
+      title: "Dense Mango Floral Panicles in Peak Anthesis",
+      crop: "Mangoes",
+      cropScientific: "Mangifera indica",
+      category: "Floral Anthesis & Pollen Deposition",
+      badge: "High Bee Dependency (90%)",
+      badgeColor: "bg-amber-500/15 text-amber-700 border-amber-300 dark:text-amber-300",
+      description:
+        "High-density floral panicles at critical anthesis. Each mango panicle bears thousands of tiny flowers requiring rapid pollinator visits during morning nectar secretion. Precision hive placement prevents early fruit drop and secures massive fruit retention.",
+      image: "/images/pollination/mango-bloom-pollination.jpg",
+      thumbLabel: "Mango Bloom Close-Up",
+      cropType: "Mango",
+      fieldObservations: [
+        "Dense flower spikes exhibiting 100% receptivity",
+        "Targeting 2.0 - 4.0 hives per acre for complete floral saturation",
+        "Drastic reduction in post-bloom 'June drop' / fruit drop",
+      ],
+      agronomicImpact:
+        "Mango flowers have a narrow window of viable receptivity. Continuous bee visits ensure full stigmatic coverage, directly translating to export-grade fruit sizing and high yield density.",
+    },
+    {
+      id: "citrus-fruit",
+      title: "Citrus Grove with Developing Oranges & Baobab Shelter",
+      crop: "Oranges",
+      cropScientific: "Citrus sinensis",
+      category: "Fruit Setting & Brix Concentration",
+      badge: "Medium-High Dependency (70%)",
+      badgeColor: "bg-orange-500/15 text-orange-700 border-orange-300 dark:text-orange-300",
+      description:
+        "Vigorous citrus trees showing early spherical fruit formation and ongoing flowering. Pollination delivers superior fruit sizing, uniform spherical shape, higher juice weight, and maximum sweetness (Brix levels) for premium market grades.",
+      image: "/images/pollination/orange-citrus-orchard.jpg",
+      thumbLabel: "Developing Oranges",
+      cropType: "Orange",
+      fieldObservations: [
+        "Uniform fruit sizing across lower and mid canopy branches",
+        "Enhanced juice retention and premium fruit rind development",
+        "Sheltered by ancient Baobabs moderating dryland microclimates",
+      ],
+      agronomicImpact:
+        "Bee activity stimulates uniform ovule fertilization, preventing misshapen or undersized citrus while accelerating natural sugar concentration.",
+    },
+    {
+      id: "farm-panorama",
+      title: "Dual-Crop Mixed Orchard Panorama (Mangoes & Oranges)",
+      crop: "Mangoes & Oranges Intercrop",
+      cropScientific: "Mixed Agroforestry System",
+      category: "Dryland Orchard Layout & Habitat Synergy",
+      badge: "Commercial Multi-Crop Operation",
+      badgeColor: "bg-emerald-500/15 text-emerald-700 border-emerald-300 dark:text-emerald-300",
+      description:
+        "Comprehensive field perspective of the Makueni orchard showing structured orange tree rows in the foreground and tall, blossoming mango trees in the midground against the iconic native Baobab tree.",
+      image: "/images/pollination/mango-orange-farm-wide.jpg",
+      thumbLabel: "Full Mixed Orchard",
+      cropType: "Mixed Orchard",
+      fieldObservations: [
+        "Dual-crop synergistic foraging across two flower bloom curves",
+        "Semi-arid soil conservation integrated with mobile precision apiaries",
+        "Maximized farm revenue per acre through simultaneous crop boost",
+      ],
+      agronomicImpact:
+        "Co-locating hives between citrus and mango orchards leverages staggered floral peaks, maintaining sustained foraging momentum and robust colony health.",
+    },
+    {
+      id: "mango-canopy",
+      title: "Synchronized Mango Orchard Canopy Flowering",
+      crop: "Mangoes",
+      cropScientific: "Export Variety Orchard",
+      category: "Canopy Saturation & Drone Trajectory",
+      badge: "Export Quality Target",
+      badgeColor: "bg-green-500/15 text-green-700 border-green-300 dark:text-green-300",
+      description:
+        "Wide flowering burst across the entire mango canopy. Strategic hive spacing ensures forager bees access both outer branches and interior tree crowns during the compressed flowering window.",
+      image: "/images/pollination/mango-orchard-flowering.jpg",
+      thumbLabel: "Mango Canopy Bloom",
+      cropType: "Mango",
+      fieldObservations: [
+        "Full canopy reach guaranteed even in tall mature trees",
+        "Uniform blossom set prevents multi-staged uneven harvesting",
+        "Direct export-grade qualification with minimal rejection rate",
+      ],
+      agronomicImpact:
+        "Ensures bees penetrate the high upper canopies where wind pollination fails, turning vulnerable upper blossoms into marketable fruit clusters.",
+    },
+    {
+      id: "intercrop-rows",
+      title: "Citrus & Mango Agroforestry Rows Under Active Pollination",
+      crop: "Oranges & Mangoes Intercrop",
+      cropScientific: "Synchronized Field Operations",
+      category: "Agroforestry Synergy",
+      badge: "Precision Managed Apiaries",
+      badgeColor: "bg-teal-500/15 text-teal-700 border-teal-300 dark:text-teal-300",
+      description:
+        "Close-order rows demonstrating how high-density mobile hives provide coordinated pollination across distinct crop flowering rhythms, maintaining vigorous colony health and optimal foraging pressure.",
+      image: "/images/pollination/citrus-mango-intercrop.jpg",
+      thumbLabel: "Citrus & Mango Rows",
+      cropType: "Mixed Rows",
+      fieldObservations: [
+        "Balanced pollen and nectar nutrition for pollinating colonies",
+        "Zero competition between crops; synchronized blooming peaks",
+        "Documented +20% to +30% yield uplift in partner grower tests",
+      ],
+      agronomicImpact:
+        "Precision colony distribution prevents over-visitation while ensuring zero floral spikes remain unfertilized throughout the multi-week flowering window.",
+    },
+  ];
 
   useEffect(() => {
     if (location.hash) {
@@ -240,7 +353,7 @@ const Media = () => {
             { label: "Acres Pollinated", value: "25" },
             { label: "Export Grade", value: "Premium" },
           ],
-          image: "/images/mango_case.png",
+          image: "/images/pollination/mango-bloom-pollination.jpg",
         },
         {
           farmer: "Esther Muli",
@@ -256,8 +369,7 @@ const Media = () => {
             { label: "Acres Pollinated", value: "10" },
             { label: "Size", value: "Large" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/mango-orchard-flowering.jpg",
         },
         {
           farmer: "Rashid Ali",
@@ -273,8 +385,7 @@ const Media = () => {
             { label: "Acres Pollinated", value: "40" },
             { label: "Volume", value: "+40 Tons" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/mango-orange-farm-wide.jpg",
         },
         {
           farmer: "Joseph Kyalo",
@@ -289,8 +400,7 @@ const Media = () => {
             { label: "Acres Pollinated", value: "18" },
             { label: "Fruit Count", value: "Good" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1596484393963-47a32c256247?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/mango_case.png",
         },
         {
           farmer: "Mary Nduku",
@@ -305,8 +415,7 @@ const Media = () => {
             { label: "Acres Pollinated", value: "5" },
             { label: "Quality", value: "Top" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1536511132770-4daf7575620d?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/citrus-mango-intercrop.jpg",
         },
       ],
     },
@@ -505,8 +614,7 @@ const Media = () => {
             { label: "Acres Pollinated", value: "15" },
             { label: "Fruit Size", value: "Large" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/orange-citrus-orchard.jpg",
         },
         {
           farmer: "Mariam Abdi",
@@ -521,8 +629,7 @@ const Media = () => {
             { label: "Acres Pollinated", value: "20" },
             { label: "Bloom Coverage", value: "100%" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/citrus-mango-intercrop.jpg",
         },
         {
           farmer: "Ali Swaleh",
@@ -553,8 +660,7 @@ const Media = () => {
             { label: "Acres Pollinated", value: "50" },
             { label: "Fruit Quality", value: "Premium" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1621696417779-795244793444?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/mango-orange-farm-wide.jpg",
         },
         {
           farmer: "Grace Mwende",
@@ -859,6 +965,19 @@ const Media = () => {
             different crops. Verified results from our partner farmers.
           </p>
           <div className="flex flex-wrap justify-center gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              className="rounded-full bg-[#1B9157] text-white hover:bg-[#157746] transition-colors font-bold shadow-md shadow-green-900/10"
+              onClick={() =>
+                document
+                  .getElementById("latest-pollination")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+              Latest Dispatch: Mangoes & Oranges
+            </Button>
             {caseStudies.map((study) => (
               <Button
                 key={study.id}
@@ -874,6 +993,163 @@ const Media = () => {
                 {study.title}
               </Button>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Pollination Deployment Section: Mango & Orange Farm */}
+      <section
+        id="latest-pollination"
+        className="py-20 bg-gradient-to-b from-background via-green-50/40 to-background border-b border-border/40"
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <Badge className="bg-[#1B9157]/15 text-[#1B9157] hover:bg-[#1B9157]/20 border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-4">
+              <Camera className="w-3.5 h-3.5 mr-1.5 inline" />
+              Field Dispatch • Active Pollination Contract
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
+              Dual-Crop Precision Pollination: <br className="hidden sm:inline" />
+              <span className="text-[#1B9157]">Mangoes & Oranges</span> Orchard
+            </h2>
+            <p className="mt-4 text-muted-foreground text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
+              Photographic proof from our active field operation in Makueni County.
+              This farm features an integrated orchard where <strong>mango trees are in active floral panicle bloom</strong> and{" "}
+              <strong>citrus orange trees are in fruit development</strong>, sheltered by ancient Baobabs in Kenya's semi-arid dryland.
+            </p>
+          </div>
+
+          {/* Interactive Photo Spotlight */}
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start bg-card/90 border border-border/80 rounded-3xl p-6 md:p-8 shadow-2xl backdrop-blur-sm">
+              {/* Main Photo View (7 cols) */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-xl border-2 border-border/50 group bg-muted">
+                  <img
+                    src={latestPollinationMedia[selectedPhotoIndex].image}
+                    alt={latestPollinationMedia[selectedPhotoIndex].title}
+                    className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+
+                  {/* Badges on top */}
+                  <div className="absolute top-4 left-4 right-4 flex justify-between items-center gap-2">
+                    <Badge
+                      className={`${latestPollinationMedia[selectedPhotoIndex].badgeColor} border px-3 py-1.5 text-xs font-bold backdrop-blur-md`}
+                    >
+                      {latestPollinationMedia[selectedPhotoIndex].crop} • {latestPollinationMedia[selectedPhotoIndex].category}
+                    </Badge>
+                    <Badge className="bg-background/90 text-foreground border-none backdrop-blur px-3 py-1.5 text-xs font-semibold">
+                      Photo {selectedPhotoIndex + 1} of 5
+                    </Badge>
+                  </div>
+
+                  {/* Caption on bottom of image */}
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <p className="text-xl md:text-2xl font-black mb-1 leading-tight drop-shadow-md">
+                      {latestPollinationMedia[selectedPhotoIndex].title}
+                    </p>
+                    <p className="text-xs text-white/80 flex items-center gap-1.5 font-medium">
+                      <MapPin className="w-3.5 h-3.5 text-[#F4D03F]" />
+                      Makueni County, Kenya &bull; Mixed Mango & Citrus Agroforestry Zone
+                    </p>
+                  </div>
+                </div>
+
+                {/* Micro thumbnail selector directly below main photo */}
+                <div className="grid grid-cols-5 gap-2 pt-2">
+                  {latestPollinationMedia.map((photo, pIdx) => (
+                    <button
+                      key={photo.id}
+                      onClick={() => setSelectedPhotoIndex(pIdx)}
+                      className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all group/thumb ${
+                        selectedPhotoIndex === pIdx
+                          ? "border-[#1B9157] ring-2 ring-[#1B9157]/30 scale-102 shadow-md"
+                          : "border-border/60 opacity-70 hover:opacity-100 hover:border-primary/50"
+                      }`}
+                    >
+                      <img
+                        src={photo.image}
+                        alt={photo.thumbLabel}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30 group-hover/thumb:bg-black/10 transition-colors" />
+                      <span className="absolute bottom-1 left-1 right-1 text-[9px] font-bold text-white leading-tight truncate px-1 drop-shadow">
+                        {photo.cropType}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Agronomic & Field Details (5 cols) */}
+              <div className="lg:col-span-5 space-y-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="outline" className="text-xs font-bold text-primary">
+                      {latestPollinationMedia[selectedPhotoIndex].cropScientific}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {latestPollinationMedia[selectedPhotoIndex].badge}
+                    </Badge>
+                  </div>
+                  <h3 className="text-2xl font-bold text-foreground">
+                    {latestPollinationMedia[selectedPhotoIndex].title}
+                  </h3>
+                  <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
+                    {latestPollinationMedia[selectedPhotoIndex].description}
+                  </p>
+                </div>
+
+                {/* Agronomic Insight Box */}
+                <div className="p-4 rounded-2xl bg-secondary/40 border border-border/60 space-y-2">
+                  <p className="text-xs font-bold text-primary flex items-center gap-1.5 uppercase tracking-wide">
+                    <Layers className="w-3.5 h-3.5" />
+                    Agronomic Impact
+                  </p>
+                  <p className="text-xs md:text-sm text-foreground/90 leading-relaxed font-medium">
+                    {latestPollinationMedia[selectedPhotoIndex].agronomicImpact}
+                  </p>
+                </div>
+
+                {/* Field Observations Checklist */}
+                <div className="space-y-2.5">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    Verified Field Metrics
+                  </p>
+                  <ul className="space-y-2">
+                    {latestPollinationMedia[selectedPhotoIndex].fieldObservations.map((obs, oIdx) => (
+                      <li key={oIdx} className="text-xs md:text-sm text-foreground flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#1B9157] shrink-0 mt-0.5" />
+                        <span>{obs}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* CTAs */}
+                <div className="pt-2 flex flex-col sm:flex-row gap-3">
+                  <Button
+                    asChild
+                    className="rounded-full bg-[#1B9157] hover:bg-[#157746] text-white font-bold h-11 px-6 shadow-md shadow-green-900/10"
+                  >
+                    <Link to="/pollination-request">
+                      Book Orchard Pollination <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-border hover:bg-secondary font-semibold h-11 px-5"
+                    onClick={() => {
+                      const targetId = latestPollinationMedia[selectedPhotoIndex].cropType === "Orange" ? "oranges" : "mangoes";
+                      document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    View {latestPollinationMedia[selectedPhotoIndex].cropType} Case Study
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

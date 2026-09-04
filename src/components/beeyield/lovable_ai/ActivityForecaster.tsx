@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { CloudSun, Loader2, Sparkles, Plane, History as HistoryIcon } from "lucide-react";
+import { X, CloudSun, Loader2, Sparkles, Plane, History as HistoryIcon } from "lucide-react";
 import { toast } from "sonner";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, ComposedChart } from "recharts";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -16,7 +16,7 @@ import { evaluateAlerts } from "./AlertsPage";
 
 type Forecast = { date: string; hour: number; tempC: number; windKmh: number; precipMm: number; predictedBpm: number; band: string };
 
-export default function ActivityForecaster({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [hiveLabel, setHiveLabel] = useState("Hive 1");
   const [lat, setLat] = useState("-2.4078");
@@ -119,7 +119,6 @@ export default function ActivityForecaster({ isOpen, onClose, embedded = false }
     setHistory(rows);
   }, [deviceId, hiveLabel]);
 
-   
   useEffect(() => { if (isOpen) loadHistory(); }, [isOpen, loadHistory]);
 
   const runAI = async () => {
@@ -177,7 +176,7 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
 
   if (!isOpen) return null;
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -187,6 +186,7 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
               <p className="text-xs text-muted-foreground">7-day activity prediction · Open-Meteo weather × florage × baseline</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4 p-4 rounded-xl border border-border bg-muted/30">

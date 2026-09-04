@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Flower2, Plus, Loader2, FileSpreadsheet, Sparkles } from "lucide-react";
+import { X, Flower2, Plus, Loader2, FileSpreadsheet, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -29,7 +29,7 @@ type Obs = {
 type RunRow = { id: string; crop: string; created_at: string };
 type RunVersion = { id: string; version_label: string; created_at: string };
 
-export default function BloomPhenology({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [obs, setObs] = useState<Obs[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);
@@ -52,7 +52,7 @@ export default function BloomPhenology({ isOpen, onClose, embedded = false }: { 
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [obsRes, runRes] = await Promise.all([
       (supabase as any).from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
       supabase.from("harvest_runs").select("id,crop,created_at").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
@@ -60,7 +60,6 @@ export default function BloomPhenology({ isOpen, onClose, embedded = false }: { 
     if (obsRes.data) setObs(obsRes.data as Obs[]);
     if (runRes.data) setRuns(runRes.data as RunRow[]);
   }, [deviceId]);
-   
   useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
 
   useEffect(() => {
@@ -109,7 +108,7 @@ export default function BloomPhenology({ isOpen, onClose, embedded = false }: { 
 
   const saveObs = async () => {
     setSaving(true);
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from("bloom_observations").insert({
       device_id: deviceId, crop, region,
       run_id: selectedRunId || null,
@@ -137,13 +136,14 @@ export default function BloomPhenology({ isOpen, onClose, embedded = false }: { 
 
   if (!isOpen) return null;
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3"><Flower2 className="w-7 h-7 text-honey" />
             <div><h1 className="font-display text-2xl font-bold text-honey">Bloom Phenology</h1>
               <p className="text-xs text-muted-foreground">Expert tables × your observations × AI bloom-shift insights</p></div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 rounded-xl border border-border bg-muted/30">

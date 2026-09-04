@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Sprout, Flower2, GitCompare, Calculator, FileDown, FileSpreadsheet, Building2, Upload, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { X, Sprout, Flower2, GitCompare, Calculator, FileDown, FileSpreadsheet, Building2, Upload, Trash2 } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 
@@ -42,12 +42,11 @@ const CROPS: Crop[] = [
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  embedded?: boolean;
 }
 
 type Mode = "single" | "compare";
 
-export default function PollinationLookup({ isOpen, onClose, embedded = false }: Props) {
+export default function PollinationLookup({ isOpen, onClose }: Props) {
   const [mode, setMode] = useState<Mode>("single");
   const [cropName, setCropName] = useState(CROPS[0].name);
   const [acres, setAcres] = useState<number>(10);
@@ -76,7 +75,7 @@ export default function PollinationLookup({ isOpen, onClose, embedded = false }:
 
   const crop = useMemo(() => CROPS.find((c) => c.name === cropName)!, [cropName]);
 
-  const calc = useCallback((c: Crop) => {
+  const calc = (c: Crop) => {
     const range = unit === "acre" ? c.perAcre : c.perHa;
     const colMin = Math.ceil(range[0] * acres);
     const colMax = Math.ceil(range[1] * acres);
@@ -88,9 +87,9 @@ export default function PollinationLookup({ isOpen, onClose, embedded = false }:
     const tripsPerDay = colMax * 55_000;
     const daysToSaturate = Math.ceil(totalVisits / tripsPerDay);
     return { colMin, colMax, framesMin, framesMax, totalVisits, tripsPerDay, daysToSaturate };
-  }, [unit, acres]);
+  };
 
-  const result = useMemo(() => calc(crop), [calc, crop]);
+  const result = useMemo(() => calc(crop), [crop, acres, unit]);
 
   const toggleCompareCrop = (name: string) => {
     setCompareCrops((prev) => {
@@ -222,7 +221,7 @@ export default function PollinationLookup({ isOpen, onClose, embedded = false }:
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -244,6 +243,13 @@ export default function PollinationLookup({ isOpen, onClose, embedded = false }:
             >
               <Building2 className="w-3.5 h-3.5" />
               {brand.farmName ? brand.farmName.slice(0, 16) : "Farm branding"}
+            </button>
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>

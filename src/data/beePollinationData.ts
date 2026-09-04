@@ -46,7 +46,7 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         regionalTrends2026: "Export-quality mangoes require uniform pollination to prevent early fruit drop, a key metric tracked by BeeYield.",
         economicImpact: "Proper pollination increases fruit retention and size, directly boosting export revenues.",
         estimatedMarketValueUsdBn: 4.6,
-        image: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=600"
+        image: "/images/pollination/mango-bloom-pollination.jpg"
     },
 
     "Avocados": {
@@ -83,7 +83,7 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         regionalTrends2026: "Citrus greening resilience is bolstered by strong ecosystem services, including pollination.",
         economicImpact: "Improves fruit weight and juice content per hectare.",
         estimatedMarketValueUsdBn: 2.2,
-        image: "https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=600"
+        image: "/images/pollination/orange-citrus-orchard.jpg"
     },
     "Tomatoes": {
         cropName: "Tomatoes",

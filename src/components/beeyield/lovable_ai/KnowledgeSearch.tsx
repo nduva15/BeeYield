@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, BookOpen, ExternalLink, Plus, Trash2, Save } from "lucide-react";
+import { X, Search, BookOpen, ExternalLink, Plus, Trash2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -12,7 +12,7 @@ type Fact = {
 
 const CATS = ["disease", "species", "florage", "honey", "behavior", "management", "crop", "general"];
 
-export default function KnowledgeSearch({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function KnowledgeSearch({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [facts, setFacts] = useState<Fact[]>([]);
   const [q, setQ] = useState("");
@@ -55,7 +55,7 @@ export default function KnowledgeSearch({ isOpen, onClose, embedded = false }: {
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -65,6 +65,7 @@ export default function KnowledgeSearch({ isOpen, onClose, embedded = false }: {
               <p className="text-xs text-muted-foreground">Search facts, diseases, cures with citations & confidence</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 mb-4">

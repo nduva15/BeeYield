@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Target, Wind, Mountain, Compass } from "lucide-react";
+import { X, Target, Wind, Mountain, Compass } from "lucide-react";
 
 /**
  * Precision Pollination Drilldown
@@ -11,7 +11,6 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
-  embedded?: boolean;
 }
 
 type CropProfile = {
@@ -45,7 +44,7 @@ const COMPASS_DIRS = [
   { label: "W", deg: 270 }, { label: "NW", deg: 315 },
 ];
 
-export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, embedded = false }: Props) {
+export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: Props) {
   const [cropName, setCropName] = useState(CROP_PROFILES[0].name);
   const [acres, setAcres] = useState(20);
   const [hives, setHives] = useState(40);
@@ -118,7 +117,7 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, em
   if (!isOpen) return null;
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-5xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -137,6 +136,13 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning, em
                 Open Pollination Planning
               </button>
             )}
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
