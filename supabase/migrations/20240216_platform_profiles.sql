@@ -82,6 +82,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS set_shop_updated_at ON public.shop_profiles;
+DROP TRIGGER IF EXISTS set_beeyield_updated_at ON public.beeyield_profiles;
+DROP TRIGGER IF EXISTS set_ceba_updated_at ON public.ceba_profiles;
+
 CREATE TRIGGER set_shop_updated_at BEFORE UPDATE ON public.shop_profiles FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 CREATE TRIGGER set_beeyield_updated_at BEFORE UPDATE ON public.beeyield_profiles FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 CREATE TRIGGER set_ceba_updated_at BEFORE UPDATE ON public.ceba_profiles FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
