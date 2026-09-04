@@ -155,30 +155,197 @@ export const saveIntegration = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+/* --------------------------------------------- credential validation ---- */
+
+export type Check = { label: string; ok: boolean; detail: string; critical: boolean };
+
+const ok = (label: string, detail: string, critical = true): Check => ({ label, ok: true, detail, critical });
+const bad = (label: string, detail: string, critical = true): Check => ({ label, ok: false, detail, critical });
+
+async function validateShopify(config: Config, secrets: Secrets) {
+  const checks: Check[] = [];
+  const shop = normalizeShopDomain(config.storeUrl ?? "");
+  const token = secrets.accessToken ?? "";
+  const version = config.apiVersion || "2024-10";
+
+  checks.push(
+    /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i.test(shop) || /^[a-z0-9.-]+\.[a-z]{2,}$/i.test(shop)
+      ? ok("Store domain", shop)
+      : bad("Store domain", "Enter your store domain, e.g. your-apiary.myshopify.com (no https://, no trailing path)"),
+  );
+  checks.push(
+    token
+      ? token.startsWith("shpat_")
+        ? ok("Admin API token format", "Custom-app token (shpat_…) recognised")
+        : ok("Admin API token format", "Token accepted, but custom-app tokens normally start with shpat_", false)
+      : bad("Admin API token format", "Admin API access token is required"),
+  );
+  checks.push(
+    /^\d{4}-\d{2}$/.test(version) ? ok("API version", version) : bad("API version", "Use a dated version such as 2024-10", false),
+  );
+  if (checks.some((c) => !c.ok && c.critical)) return { checks, account: "", detail: "Credential fields incomplete" };
+
+  const headers = { "X-Shopify-Access-Token": token, Accept: "application/json" };
+  const shopRes = await fetch(`https://${shop}/admin/api/${version}/shop.json`, { headers });
+  const shopBody = await shopRes.text();
+  if (!shopRes.ok) {
+    checks.push(
+      bad(
+        "Admin API authentication",
+        shopRes.status === 401 || shopRes.status === 403
+          ? "Shopify rejected the token (401/403). Re-install the custom app and copy a fresh Admin API access token."
+          : `Shopify responded ${shopRes.status}: ${shopBody.slice(0, 200)}`,
+      ),
+    );
+    return { checks, account: "", detail: "Authentication failed" };
+  }
+  const info = JSON.parse(shopBody).shop as { name: string; myshopify_domain: string; currency: string };
+  checks.push(ok("Admin API authentication", `${info.name} · ${info.myshopify_domain} · ${info.currency}`));
+
+  const scopeRes = await fetch(`https://${shop}/admin/oauth/access_scopes.json`, { headers });
+  if (scopeRes.ok) {
+    const scopes = ((await scopeRes.json()).access_scopes ?? []).map((s: { handle: string }) => s.handle) as string[];
+    const need = ["read_orders", "write_orders", "read_products"];
+    const missing = need.filter((s) => !scopes.includes(s));
+    checks.push(
+      missing.length === 0
+        ? ok("Order write scopes", need.join(", "))
+        : bad(
+            "Order write scopes",
+            `Missing ${missing.join(", ")} — records will fall back to tagging an existing order instead of creating one.`,
+            false,
+          ),
+    );
+  } else {
+    checks.push(bad("Order write scopes", "Could not read granted scopes for this token", false));
+  }
+
+  const ordersRes = await fetch(`https://${shop}/admin/api/${version}/orders/count.json?status=any`, { headers });
+  checks.push(
+    ordersRes.ok
+      ? ok("Orders endpoint", `${(await ordersRes.json()).count} order(s) visible`)
+      : bad("Orders endpoint", `Responded ${ordersRes.status} — grant read_orders to this app`),
+  );
+
+  return { checks, account: info.name, detail: `${info.myshopify_domain} · ${info.currency}` };
+}
+
+async function validateQuickBooks(config: Config, secrets: Secrets) {
+  const checks: Check[] = [];
+  const realmId = config.realmId ?? "";
+  const token = secrets.accessToken ?? "";
+  const env = (config.environment || "production").toLowerCase();
+  const base = env === "sandbox" ? "https://sandbox-quickbooks.api.intuit.com" : "https://quickbooks.api.intuit.com";
+
+  checks.push(/^\d{6,}$/.test(realmId) ? ok("Realm / Company ID", realmId) : bad("Realm / Company ID", "The Realm ID is the numeric company id from the Intuit dashboard"));
+  checks.push(env === "sandbox" || env === "production" ? ok("Environment", env) : bad("Environment", "Use production or sandbox"));
+  checks.push(
+    token
+      ? token.split(".").length === 3
+        ? ok("Access token format", "OAuth 2.0 bearer token recognised")
+        : ok("Access token format", "Token accepted, but it does not look like an Intuit OAuth 2.0 token", false)
+      : bad("Access token format", "OAuth 2.0 access token is required"),
+  );
+  checks.push(secrets.refreshToken ? ok("Refresh token stored", "Available for token renewal", false) : bad("Refresh token stored", "Add a refresh token so syncs survive the 1-hour access-token expiry", false));
+  if (checks.some((c) => !c.ok && c.critical)) return { checks, account: "", detail: "Credential fields incomplete" };
+
+  const headers = { Authorization: `Bearer ${token}`, Accept: "application/json" };
+  const infoRes = await fetch(`${base}/v3/company/${realmId}/companyinfo/${realmId}?minorversion=70`, { headers });
+  const infoBody = await infoRes.text();
+  if (!infoRes.ok) {
+    checks.push(
+      bad(
+        "Company authentication",
+        infoRes.status === 401
+          ? "QuickBooks rejected the access token (401). Access tokens expire after 1 hour — refresh it and save again."
+          : `QuickBooks responded ${infoRes.status}: ${infoBody.slice(0, 200)}`,
+      ),
+    );
+    return { checks, account: "", detail: "Authentication failed" };
+  }
+  const company = JSON.parse(infoBody).CompanyInfo as { CompanyName: string; Country?: string };
+  checks.push(ok("Company authentication", `${company.CompanyName}${company.Country ? ` · ${company.Country}` : ""}`));
+
+  const accountName = config.accountName || "BeeYield Hive Operations";
+  const q = `SELECT Id, Name FROM Account WHERE Name = '${accountName.replace(/'/g, "''")}'`;
+  const accRes = await fetch(`${base}/v3/company/${realmId}/query?minorversion=70&query=${encodeURIComponent(q)}`, { headers });
+  if (accRes.ok) {
+    const found = (await accRes.json()).QueryResponse?.Account?.[0] as { Id: string } | undefined;
+    checks.push(
+      ok("Sync account", found ? `"${accountName}" found (id ${found.Id})` : `"${accountName}" will be created on the first sync`),
+    );
+  } else {
+    checks.push(bad("Sync account", `Chart of accounts not readable (${accRes.status}) — the accounting scope is required`));
+  }
+
+  return { checks, account: company.CompanyName, detail: company.Country ?? "—" };
+}
+
+async function validateEtims(config: Config, secrets: Secrets) {
+  const checks: Check[] = [];
+  const tin = config.tin ?? "";
+  checks.push(/^[A-Z]\d{9}[A-Z]$/i.test(tin) ? ok("KRA PIN (TIN)", tin.toUpperCase()) : bad("KRA PIN (TIN)", "A KRA PIN looks like P051234567X"));
+  checks.push(/^\d{2}$/.test(config.branchId || "00") ? ok("Branch ID", config.branchId || "00") : bad("Branch ID", "Branch ID is two digits, e.g. 00", false));
+  checks.push(secrets.deviceSerial ? ok("Device serial", "Stored") : bad("Device serial", "The serial registered on the eTIMS portal is required"));
+  if (checks.some((c) => !c.ok && c.critical)) return { checks, account: "", detail: "Credential fields incomplete" };
+
+  const probe = await probeEtims(config, secrets);
+  checks.push(ok("Device initialisation", probe.detail));
+  return { checks, account: probe.account, detail: probe.detail };
+}
+
+/**
+ * Test Connection: validates every credential field, then authenticates and
+ * probes read/write capability. A connection only reaches "connected" — the
+ * state that unlocks syncing — when all critical checks pass.
+ */
 export const testIntegration = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => actionSchema.parse(input))
   .handler(async ({ data }) => {
     const db = await admin();
     const { config, secrets } = await loadCreds(data.deviceId, data.provider);
     try {
-      const probe =
-        data.provider === "shopify" ? await probeShopify(config, secrets)
-        : data.provider === "quickbooks" ? await probeQuickBooks(config, secrets)
-        : await probeEtims(config, secrets);
+      const res =
+        data.provider === "shopify" ? await validateShopify(config, secrets)
+        : data.provider === "quickbooks" ? await validateQuickBooks(config, secrets)
+        : await validateEtims(config, secrets);
+
+      const failed = res.checks.filter((c) => !c.ok && c.critical);
+      const passed = failed.length === 0;
+      const message = passed ? null : failed.map((c) => `${c.label}: ${c.detail}`).join(" | ");
+
       await db.from("integration_connections").upsert(
-        { device_id: data.deviceId, provider: data.provider, config, status: "connected", last_error: null },
+        {
+          device_id: data.deviceId,
+          provider: data.provider,
+          config,
+          status: passed ? "connected" : "error",
+          last_error: message,
+        },
         { onConflict: "device_id,provider" },
       );
-      await log(data.deviceId, data.provider, "Connection verified", "ok", `${probe.account} — ${probe.detail}`);
-      return { ok: true as const, account: probe.account, detail: probe.detail };
+      await log(
+        data.deviceId,
+        data.provider,
+        "Connection test",
+        passed ? "ok" : "error",
+        passed ? `${res.account} — ${res.detail}` : message ?? "Validation failed",
+      );
+      return {
+        ok: passed,
+        account: res.account,
+        detail: res.detail,
+        checks: res.checks,
+        error: message ?? undefined,
+      };
     } catch (e) {
       const message = e instanceof Error ? e.message : "Connection failed";
       await db.from("integration_connections").upsert(
         { device_id: data.deviceId, provider: data.provider, config, status: "error", last_error: message },
         { onConflict: "device_id,provider" },
       );
-      await log(data.deviceId, data.provider, "Connection verified", "error", message);
-      return { ok: false as const, error: message };
+      await log(data.deviceId, data.provider, "Connection test", "error", message);
+      return { ok: false, account: "", detail: "", checks: [] as Check[], error: message };
     }
   });
 
