@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   X, Cpu, Usb, Bluetooth, Wifi, Plus, Trash2, ScanLine, ArrowLeft, ArrowRight, Check,
   Loader2, Thermometer, Droplets, Scale, BatteryCharging, MapPin, Boxes, Terminal,
@@ -23,21 +23,23 @@ type Device = {
 type Measurement = {
   id: string; device_id: string | null; hive_id: string | null; recorded_at: string; source: string;
   temperature_c: number | null; humidity_pct: number | null; weight_kg: number | null; battery_pct: number | null;
+  rssi_dbm: number | null; raw_payload: Record<string, unknown>;
 };
 
-const QUEEN_YEAR_COLORS: Record<number, string> = { 0: "#f5f5f5", 1: "#f6c945", 2: "#e05a4a", 3: "#4aa564", 4: "#4a7fe0" };
+const QUEEN_YEAR_COLORS: Record<number, string> = { 0: "#3b82f6", 1: "#ffffff", 2: "#eab308", 3: "#ef4444", 4: "#22c55e" };
 const queenYears = Array.from({ length: 8 }, (_, i) => new Date().getFullYear() - i);
 const yearColor = (y: number) => QUEEN_YEAR_COLORS[y % 5] ?? "#d8d3c8";
 
 /* ------------------------------------------------------------------ QR scanner */
 
 function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; onCancel: () => void }) {
-  const elId = useRef(`qr-${Math.random().toString(36).slice(2)}`);
+  const reactId = useId();
+  const elId = `qr-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    const scanner = new Html5Qrcode(elId.current);
+    const scanner = new Html5Qrcode(elId);
     scannerRef.current = scanner;
     scanner
       .start(
@@ -53,11 +55,11 @@ function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; o
     return () => {
       if (scanner.isScanning) void scanner.stop().catch(() => undefined);
     };
-  }, [onResult]);
+  }, [elId, onResult]);
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl overflow-hidden border-2 border-honey/60 bg-black/80" id={elId.current} />
+      <div className="rounded-xl overflow-hidden border-2 border-honey/60 bg-black/80" id={elId} />
       {err && (
         <p className="text-xs text-destructive">
           {err} — enter the serial manually below instead.
