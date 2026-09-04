@@ -98,10 +98,10 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
         for (const ln of lines) {
           if (!ln.startsWith("data: ")) continue;
           const data = ln.slice(6); if (data === "[DONE]") continue;
-          try { const j = JSON.parse(data); const t = j.choices?.[0]?.delta?.content; if (t) setAiNarrative((p) => p + t); } catch {}
+          try { const j = JSON.parse(data); const t = j.choices?.[0]?.delta?.content; if (t) setAiNarrative((p) => p + t); } catch { /* ignore parse errors */ }
         }
       }
-    } catch (e) { toast.error("AI error"); }
+    } catch { toast.error("AI error"); }
     setLoadingAi(false);
   };
 

@@ -92,6 +92,42 @@ export type Database = {
         }
         Relationships: []
       }
+      apiaries: {
+        Row: {
+          add_mode: string
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          add_mode?: string
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          add_mode?: string
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       apiary_sizing_runs: {
         Row: {
           created_at: string
@@ -457,6 +493,138 @@ export type Database = {
         }
         Relationships: []
       }
+      device_measurements: {
+        Row: {
+          battery_pct: number | null
+          created_at: string
+          device_id: string | null
+          hive_id: string | null
+          humidity_pct: number | null
+          id: string
+          raw: Json | null
+          recorded_at: string
+          source: string
+          temperature_c: number | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          battery_pct?: number | null
+          created_at?: string
+          device_id?: string | null
+          hive_id?: string | null
+          humidity_pct?: number | null
+          id?: string
+          raw?: Json | null
+          recorded_at?: string
+          source?: string
+          temperature_c?: number | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          battery_pct?: number | null
+          created_at?: string
+          device_id?: string | null
+          hive_id?: string | null
+          humidity_pct?: number | null
+          id?: string
+          raw?: Json | null
+          recorded_at?: string
+          source?: string
+          temperature_c?: number | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_measurements_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "device_measurements_hive_id_fkey"
+            columns: ["hive_id"]
+            isOneToOne: false
+            referencedRelation: "hives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devices: {
+        Row: {
+          apiary_id: string | null
+          battery_pct: number | null
+          confirmation_code: string | null
+          created_at: string
+          device_kind: string
+          firmware: string | null
+          hive_id: string | null
+          id: string
+          label: string | null
+          last_seen_at: string | null
+          link_type: string
+          serial: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apiary_id?: string | null
+          battery_pct?: number | null
+          confirmation_code?: string | null
+          created_at?: string
+          device_kind?: string
+          firmware?: string | null
+          hive_id?: string | null
+          id?: string
+          label?: string | null
+          last_seen_at?: string | null
+          link_type?: string
+          serial: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apiary_id?: string | null
+          battery_pct?: number | null
+          confirmation_code?: string | null
+          created_at?: string
+          device_kind?: string
+          firmware?: string | null
+          hive_id?: string | null
+          id?: string
+          label?: string | null
+          last_seen_at?: string | null
+          link_type?: string
+          serial?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devices_apiary_id_fkey"
+            columns: ["apiary_id"]
+            isOneToOne: false
+            referencedRelation: "apiaries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "devices_hive_id_fkey"
+            columns: ["hive_id"]
+            isOneToOne: false
+            referencedRelation: "hives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feeding_schedules: {
         Row: {
           created_at: string
@@ -725,6 +893,65 @@ export type Database = {
         }
         Relationships: []
       }
+      hives: {
+        Row: {
+          apiary_id: string
+          created_at: string
+          hygienic_bottom_board: boolean
+          id: string
+          latitude: number | null
+          longitude: number | null
+          max_brood_frames: number
+          name: string
+          notes: string | null
+          queen_breeding_year: number | null
+          queen_insemination: string | null
+          queen_origin: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apiary_id: string
+          created_at?: string
+          hygienic_bottom_board?: boolean
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          max_brood_frames?: number
+          name: string
+          notes?: string | null
+          queen_breeding_year?: number | null
+          queen_insemination?: string | null
+          queen_origin?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apiary_id?: string
+          created_at?: string
+          hygienic_bottom_board?: boolean
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          max_brood_frames?: number
+          name?: string
+          notes?: string | null
+          queen_breeding_year?: number | null
+          queen_insemination?: string | null
+          queen_origin?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hives_apiary_id_fkey"
+            columns: ["apiary_id"]
+            isOneToOne: false
+            referencedRelation: "apiaries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       knowledge_facts: {
         Row: {
           category: string
@@ -764,6 +991,36 @@ export type Database = {
           source_url?: string | null
           tags?: string[]
           topic?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          country: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

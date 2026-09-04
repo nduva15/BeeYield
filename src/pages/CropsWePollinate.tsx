@@ -72,7 +72,7 @@ const CropsWePollinate = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100">
                   <img
-                    src="/images/pollination/mango-bloom-pollination.jpg"
+                    src="/images/pollination/mango-panicles-close-bloom.png"
                     alt="Mango Panicles in Bloom"
                     className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -84,7 +84,7 @@ const CropsWePollinate = () => {
 
                 <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 mt-8">
                   <img
-                    src="/images/pollination/orange-citrus-orchard.jpg"
+                    src="/images/pollination/orange-tree-citrus-fruits.jpg"
                     alt="Citrus Setting with Baobab"
                     className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -96,13 +96,13 @@ const CropsWePollinate = () => {
 
                 <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 -mt-4">
                   <img
-                    src="/images/pollination/citrus-mango-intercrop.jpg"
-                    alt="Mixed Agroforestry Rows"
+                    src="/images/pollination/apisense-internal-sensor-probe.png"
+                    alt="BeeYield and Apisense at Work - Bees on Comb"
                     className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
-                    🌿 Mixed Orchard Rows
+                    🐝 BeeYield & Apisense at Work
                   </span>
                 </div>
 
