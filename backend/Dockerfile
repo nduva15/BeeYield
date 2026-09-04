@@ -16,8 +16,8 @@ COPY requirements.txt .
 
 # Install Python dependencies to /install
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --upgrade pip setuptools wheel && \
-    pip install --prefix=/install --no-warn-script-location -r requirements.txt
+    pip install --upgrade "pip>=26.0" "setuptools>=84.0.0" "wheel>=0.48.0" && \
+    pip install --prefix=/install --no-warn-script-location --upgrade "setuptools>=84.0.0" "wheel>=0.48.0" "msgpack>=1.1.0" -r requirements.txt
 
 # Production stage
 FROM python:3.11-slim
@@ -29,11 +29,13 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         libpq5 && \
-    pip install --upgrade --no-cache-dir pip setuptools wheel && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
+
+# Ensure latest security-patched python packaging and serialization libraries in final image
+RUN pip install --upgrade --no-cache-dir "pip>=26.0" "setuptools>=84.0.0" "wheel>=0.48.0" "msgpack>=1.1.0"
 
 # Copy application code
 COPY . .

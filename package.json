@@ -184,7 +184,10 @@
       "@babel/core": ">=7.29.6",
       "seroval": ">=1.5.3",
       "react-router": ">=7.18.0",
-      "react-router-dom": ">=7.18.0"
+      "react-router-dom": ">=7.18.0",
+      "fflate": ">=0.8.3",
+      "@humanfs/node": ">=0.16.8",
+      "postcss-selector-parser": ">=6.1.4"
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
