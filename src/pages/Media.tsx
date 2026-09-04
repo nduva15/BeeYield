@@ -34,6 +34,69 @@ const Media = () => {
 
   const latestPollinationMedia = [
     {
+      id: "apisense-probe",
+      title: "Apisense™ In-Hive Telemetry Probe on Brood Comb",
+      crop: "BeeYield & Apisense Telemetry",
+      cropScientific: "In-Hive Acoustic & Environmental Sensor",
+      category: "Apisense at Work • In-Hive Hardware",
+      badge: "Apisense at Work",
+      badgeColor: "bg-yellow-500/15 text-yellow-700 border-yellow-300 dark:text-yellow-300",
+      description:
+        "Real-time in-hive probe by Apisense deployed directly inside the brood comb. The non-invasive sensor monitors acoustic frequencies, brood temperatures (34.5°C - 35.5°C), and relative humidity while honeybees actively build and tend the comb.",
+      image: "/images/pollination/apisense-internal-sensor-probe.png",
+      thumbLabel: "Apisense Probe",
+      cropType: "Apisense In-Hive",
+      fieldObservations: [
+        "Real-time acoustic analysis detecting queen presence and foraging vigor",
+        "Immediate detection of microclimate deviations without opening the hive",
+        "Live data streamed via BeeYield field telemetry gateway",
+      ],
+      agronomicImpact:
+        "Enables growers and apiary managers to verify colony pollination intensity hour-by-hour without disrupting the delicate brood nest.",
+    },
+    {
+      id: "beeyield-gateway",
+      title: "BeeYield Field Telemetry Gateway with Dual Antennas",
+      crop: "BeeYield Field Gateway",
+      cropScientific: "Solar-Powered Wireless Telemetry Hub",
+      category: "BeeYield and Apisense at Work",
+      badge: "Field Gateway Node",
+      badgeColor: "bg-blue-500/15 text-blue-700 border-blue-300 dark:text-blue-300",
+      description:
+        "Solar-powered wireless telemetry gateway node mounted directly on the hive stand in the orchard. Captures signals from Apisense in-hive probes and relays continuous metrics over cellular/mesh to the BeeYield cloud platform.",
+      image: "/images/pollination/beeyield-apisense-gateway-field.png",
+      thumbLabel: "Solar Gateway",
+      cropType: "Field Gateway",
+      fieldObservations: [
+        "Continuous solar-backed autonomous operation in harsh semi-arid conditions",
+        "Dual high-gain omnidirectional antennas ensuring orchard-wide coverage",
+        "Secured on elevated predator-proof metal hive stands",
+      ],
+      agronomicImpact:
+        "Guarantees zero data blackout across remote dryland orchards, enabling precision deployment timing for both mango and citrus bloom cycles.",
+    },
+    {
+      id: "apisense-inspection",
+      title: "Apisense™ Sensor with Active Honeybee Comb",
+      crop: "BeeYield Colony Health",
+      cropScientific: "Apis mellifera Comb Saturation",
+      category: "Apisense at Work • Colony Diagnostics",
+      badge: "Apisense Diagnostics",
+      badgeColor: "bg-amber-600/15 text-amber-800 border-amber-300 dark:text-amber-200",
+      description:
+        "Close-up of healthy honeybee workers tending comb right around the Apisense device. Demonstrates total bee acceptance and seamless integration of telemetry hardware in commercial pollination.",
+      image: "/images/pollination/apisense-sensor-comb-inspection.png",
+      thumbLabel: "Comb Sensor Close-Up",
+      cropType: "Apisense Comb",
+      fieldObservations: [
+        "100% comb acceptance by worker bees with zero absconding behavior",
+        "Harmonic brood temperature regulation maintained perfectly",
+        "Provides verifiable proof of colony strength for contract pollination",
+      ],
+      agronomicImpact:
+        "Validates colony density for farmers paying for certified pollination services, ensuring every hive delivered has maximum forager force.",
+    },
+    {
       id: "mango-bloom",
       title: "Dense Mango Floral Panicles in Peak Anthesis",
       crop: "Mangoes",
@@ -44,7 +107,7 @@ const Media = () => {
       description:
         "High-density floral panicles at critical anthesis. Each mango panicle bears thousands of tiny flowers requiring rapid pollinator visits during morning nectar secretion. Precision hive placement prevents early fruit drop and secures massive fruit retention.",
       image: "/images/pollination/mango-bloom-pollination.jpg",
-      thumbLabel: "Mango Bloom Close-Up",
+      thumbLabel: "Mango Bloom",
       cropType: "Mango",
       fieldObservations: [
         "Dense flower spikes exhibiting 100% receptivity",
@@ -86,7 +149,7 @@ const Media = () => {
       description:
         "Comprehensive field perspective of the Makueni orchard showing structured orange tree rows in the foreground and tall, blossoming mango trees in the midground against the iconic native Baobab tree.",
       image: "/images/pollination/mango-orange-farm-wide.jpg",
-      thumbLabel: "Full Mixed Orchard",
+      thumbLabel: "Mixed Orchard",
       cropType: "Mixed Orchard",
       fieldObservations: [
         "Dual-crop synergistic foraging across two flower bloom curves",
@@ -101,13 +164,13 @@ const Media = () => {
       title: "Synchronized Mango Orchard Canopy Flowering",
       crop: "Mangoes",
       cropScientific: "Export Variety Orchard",
-      category: "Canopy Saturation & Drone Trajectory",
+      category: "Canopy Saturation & Forager Trajectory",
       badge: "Export Quality Target",
       badgeColor: "bg-green-500/15 text-green-700 border-green-300 dark:text-green-300",
       description:
         "Wide flowering burst across the entire mango canopy. Strategic hive spacing ensures forager bees access both outer branches and interior tree crowns during the compressed flowering window.",
       image: "/images/pollination/mango-orchard-flowering.jpg",
-      thumbLabel: "Mango Canopy Bloom",
+      thumbLabel: "Mango Canopy",
       cropType: "Mango",
       fieldObservations: [
         "Full canopy reach guaranteed even in tall mature trees",
@@ -123,12 +186,12 @@ const Media = () => {
       crop: "Oranges & Mangoes Intercrop",
       cropScientific: "Synchronized Field Operations",
       category: "Agroforestry Synergy",
-      badge: "Precision Managed Apiaries",
+      badge: "BeeYield and Apisense at Work",
       badgeColor: "bg-teal-500/15 text-teal-700 border-teal-300 dark:text-teal-300",
       description:
         "Close-order rows demonstrating how high-density mobile hives provide coordinated pollination across distinct crop flowering rhythms, maintaining vigorous colony health and optimal foraging pressure.",
       image: "/images/pollination/citrus-mango-intercrop.jpg",
-      thumbLabel: "Citrus & Mango Rows",
+      thumbLabel: "Intercrop Rows",
       cropType: "Mixed Rows",
       fieldObservations: [
         "Balanced pollen and nectar nutrition for pollinating colonies",
