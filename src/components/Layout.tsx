@@ -22,6 +22,10 @@ const Layout = ({ children }: LayoutProps) => {
     '/my-account',
     '/login',
     '/signup',
+    '/auth',
+    '/beeknowledge-hub',
+    '/knowledge-hub',
+    '/oauth/consent',
     '/beeyield-dashboard',
     '/beeyield-login',
     '/measurements',
@@ -35,6 +39,8 @@ const Layout = ({ children }: LayoutProps) => {
     '/receipt/',
     '/auth/callback',
     '/integrations/callback',
+    '/shared-run/',
+    '/.lovable',
   ];
 
   const isStandalone =

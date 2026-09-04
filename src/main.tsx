@@ -105,6 +105,7 @@ const IntegrationCallback = lazy(() => retryLazyImport(() => import('@/pages/Int
 const SharedRun = lazy(() => retryLazyImport(() => import('@/pages/SharedRun')))
 const OAuthConsent = lazy(() => retryLazyImport(() => import('@/pages/OAuthConsent')))
 const Auth = lazy(() => retryLazyImport(() => import('@/pages/Auth')))
+const BeeKnowledgeHub = lazy(() => retryLazyImport(() => import('@/pages/BeeKnowledgeHub')))
 
 import { PageLoader } from './components/PageLoader'
 
@@ -176,6 +177,9 @@ root.render(
                                                         <Route path="/shared-run/:id" element={<SharedRun />} />
                                                         <Route path="/oauth/consent" element={<OAuthConsent />} />
                                                         <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+                                                        <Route path="/auth" element={<Auth />} />
+                                                        <Route path="/beeknowledge-hub" element={<BeeKnowledgeHub />} />
+                                                        <Route path="/knowledge-hub" element={<BeeKnowledgeHub />} />
 
                                                         <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><ErrorBoundary><BeeYieldDashboard /></ErrorBoundary></ProtectedRoute>} />
                                                         <Route path="/beeyield-ai" element={<ProtectedRoute requireBeeYield={true}><ErrorBoundary><BeeYieldDashboard /></ErrorBoundary></ProtectedRoute>} />
