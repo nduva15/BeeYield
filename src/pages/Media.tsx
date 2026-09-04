@@ -34,6 +34,174 @@ const Media = () => {
 
   const latestPollinationMedia = [
     {
+      id: "mango-panicles",
+      title: "Dense Mango Floral Panicles in Peak Bloom",
+      crop: "Mangoes",
+      cropScientific: "Mangifera indica (Apple Mango & Ngowe)",
+      category: "Floral Anthesis & Pollen Deposition",
+      badge: "High Bee Dependency (90%)",
+      badgeColor: "bg-amber-500/15 text-amber-700 border-amber-300 dark:text-amber-300",
+      description:
+        "Ultra close-up of dense floral panicles at critical anthesis in Makueni County. Each flower panicle bears thousands of tiny flowers requiring rapid pollinator visits during morning nectar secretion. Precision hive placement prevents early fruit drop and secures massive fruit retention.",
+      image: "/images/pollination/mango-panicles-close-bloom.png",
+      thumbLabel: "Mango Panicles",
+      cropType: "Mangoes",
+      fieldObservations: [
+        "Over 2,000 delicate florets per floral panicle actively visited by honeybees",
+        "Targeting 2.0 - 4.0 hives per acre for complete floral saturation",
+        "Drastic reduction in post-bloom 'June drop' and early fruit abortion",
+      ],
+      agronomicImpact:
+        "Mango flowers have a narrow window of viable receptivity. Continuous bee visits ensure full stigmatic coverage, directly translating to export-grade fruit sizing and high yield density.",
+    },
+    {
+      id: "mango-pink-panicles",
+      title: "Canopy Floral Panicles Burst with Pink Tones",
+      crop: "Mangoes",
+      cropScientific: "Mangifera indica (Canopy Anthesis)",
+      category: "Upper Canopy Saturation",
+      badge: "Canopy Anthesis Peak",
+      badgeColor: "bg-rose-500/15 text-rose-700 border-rose-300 dark:text-rose-300",
+      description:
+        "Flowering mango panicles exhibiting vibrant pink hues across the upper canopy. Hive density of 2.5 to 3.5 hives per acre drives foragers into the high branches where natural wind pollination fails.",
+      image: "/images/pollination/mango-orchard-pink-panicles.png",
+      thumbLabel: "Pink Panicles",
+      cropType: "Mangoes",
+      fieldObservations: [
+        "Intense pink floral pigmentation indicating optimal nectar sugar secretion",
+        "Full upper crown coverage achieved via elevated predator-proof hive placement",
+        "Synchronized floral anthesis across north and south-facing canopy quadrants",
+      ],
+      agronomicImpact:
+        "Ensures upper branch blooms contribute equally to harvest tonnage rather than drying out unfertilized, raising total orchard packout by up to 35%.",
+    },
+    {
+      id: "mango-full-tree",
+      title: "Full Blooming Mature Mango Tree in Orchard",
+      crop: "Mangoes",
+      cropScientific: "Mangifera indica (Commercial Orchard)",
+      category: "Synchronized Orchard Anthesis",
+      badge: "Export Grade Target",
+      badgeColor: "bg-lime-600/15 text-lime-800 border-lime-300 dark:text-lime-200",
+      description:
+        "A grand mature mango tree in peak floral eruption against the dryland red soil of Makueni. Every branch terminal holds a flowering spike, demanding a disciplined workforce of tens of thousands of foragers.",
+      image: "/images/pollination/mango-tree-full-blossom.png",
+      thumbLabel: "Full Mango Bloom",
+      cropType: "Mangoes",
+      fieldObservations: [
+        "Complete floral coverage across both interior and perimeter branch scaffold",
+        "Harmonic acoustic roar of foraging bees audible across the 25-acre block",
+        "Significantly accelerated fruit sizing observed in post-bloom tagging tests",
+      ],
+      agronomicImpact:
+        "Transforms large semi-arid trees into high-efficiency fruit factories with zero biennial bearing slump.",
+    },
+    {
+      id: "orange-heavy-fruiting",
+      title: "Citrus Tree in Heavy Fruiting Stage",
+      crop: "Oranges & Citrus",
+      cropScientific: "Citrus sinensis (Valencia & Pixie)",
+      category: "Fruit Retention & Sizing",
+      badge: "High Yield Density",
+      badgeColor: "bg-orange-500/15 text-orange-700 border-orange-300 dark:text-orange-300",
+      description:
+        "Vigorous orange branches loaded with dense clusters of plump, developing citrus fruits following successful pollination. Multiple bee visits ensure complete ovule fertilization, uniform roundness, and maximum fruit retention.",
+      image: "/images/pollination/orange-tree-heavy-fruiting.jpg",
+      thumbLabel: "Heavy Fruiting",
+      cropType: "Oranges & Citrus",
+      fieldObservations: [
+        "Dense fruit cluster retention with near-zero physiological fruit drop",
+        "Uniform spherical fruit sizing across upper, middle, and skirt branches",
+        "Smooth rind development and accelerated fruit circumference expansion",
+      ],
+      agronomicImpact:
+        "Proper bee visitation eliminates misshapen or lopsided citrus, providing growers with 90%+ first-grade market packout.",
+    },
+    {
+      id: "orange-citrus-fruits",
+      title: "Developing Citrus Fruits with Ancient Baobab Shelter",
+      crop: "Oranges",
+      cropScientific: "Citrus sinensis (Semi-Arid Dryland)",
+      category: "Agroforestry Fruit Setting",
+      badge: "70% Bee Dependency",
+      badgeColor: "bg-amber-600/15 text-amber-800 border-amber-300 dark:text-amber-200",
+      description:
+        "Developing citrus fruits hanging from healthy branches with the iconic silhouette of a native Baobab in the background. BeeYield manages hive placement to maximize forager efficiency in dryland heat.",
+      image: "/images/pollination/orange-tree-citrus-fruits.jpg",
+      thumbLabel: "Citrus & Baobab",
+      cropType: "Oranges",
+      fieldObservations: [
+        "Healthy deep-green foliage and firm spherical citrus fruitlets",
+        "Dryland microclimate moderated by surrounding indigenous trees",
+        "Brix sugar accumulation elevated by complete stigmatic fertilization",
+      ],
+      agronomicImpact:
+        "Enhances natural juice weight and sugar-to-acid balance (Brix) demanded by premium juice processors and fruit vendors.",
+    },
+    {
+      id: "citrus-orchard-rows",
+      title: "Structured Citrus Grove Under Managed Pollination",
+      crop: "Citrus",
+      cropScientific: "Citrus spp. (Commercial Groves)",
+      category: "Orchard Scale Management",
+      badge: "Precision Deployment",
+      badgeColor: "bg-emerald-500/15 text-emerald-700 border-emerald-300 dark:text-emerald-300",
+      description:
+        "Organized citrus tree rows in Makueni showing clean under-canopy clearance and healthy tree architecture. Hives deployed at perimeter and interior nodes provide complete floral saturation.",
+      image: "/images/pollination/orange-citrus-orchard.jpg",
+      thumbLabel: "Citrus Grove",
+      cropType: "Citrus",
+      fieldObservations: [
+        "Optimal flight corridors maintained down every tree row",
+        "Even distribution of bee visits across sunny and shaded sides of rows",
+        "High bee activity sustained through staggered morning flower openings",
+      ],
+      agronomicImpact:
+        "Ensures every tree row achieves identical fruit set density, streamlining harvest scheduling and grading.",
+    },
+    {
+      id: "citrus-mango-intercrop",
+      title: "Citrus & Mango Agroforestry Rows Under Active Pollination",
+      crop: "Citrus & Mangoes Intercrop",
+      cropScientific: "Mixed Citrus sinensis & Mangifera indica",
+      category: "Agroforestry Synergy",
+      badge: "Multi-Crop Synergy",
+      badgeColor: "bg-teal-500/15 text-teal-700 border-teal-300 dark:text-teal-300",
+      description:
+        "Close-order rows demonstrating how high-density mobile hives provide coordinated pollination across distinct crop flowering rhythms, maintaining vigorous colony health and optimal foraging pressure.",
+      image: "/images/pollination/citrus-mango-intercrop.jpg",
+      thumbLabel: "Intercrop Rows",
+      cropType: "Oranges & Mangoes",
+      fieldObservations: [
+        "Balanced pollen and nectar nutrition for pollinating colonies",
+        "Zero competition between crops; synchronized blooming peaks",
+        "Documented +20% to +30% yield uplift in partner grower tests",
+      ],
+      agronomicImpact:
+        "Precision colony distribution prevents over-visitation while ensuring zero floral spikes remain unfertilized throughout the multi-week flowering window.",
+    },
+    {
+      id: "farm-panorama",
+      title: "Dual-Crop Mixed Orchard Panorama (Mangoes & Oranges)",
+      crop: "Mangoes, Oranges & Citrus",
+      cropScientific: "Mixed Agroforestry System",
+      category: "Dryland Orchard Layout & Habitat Synergy",
+      badge: "Commercial Operation",
+      badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
+      description:
+        "Comprehensive field perspective of the Makueni orchard showing structured orange tree rows in the foreground and tall, blossoming mango trees in the midground against the iconic native Baobab tree.",
+      image: "/images/pollination/mango-orange-farm-wide.jpg",
+      thumbLabel: "Mixed Orchard",
+      cropType: "Mixed Orchard",
+      fieldObservations: [
+        "Dual-crop synergistic foraging across two flower bloom curves",
+        "Semi-arid soil conservation integrated with mobile precision apiaries",
+        "Maximized farm revenue per acre through simultaneous crop boost",
+      ],
+      agronomicImpact:
+        "Co-locating hives between citrus and mango orchards leverages staggered floral peaks, maintaining sustained foraging momentum and robust colony health.",
+    },
+    {
       id: "apisense-probe",
       title: "Apisense™ In-Hive Telemetry Probe on Brood Comb",
       crop: "BeeYield & Apisense Telemetry",
@@ -45,7 +213,7 @@ const Media = () => {
         "Real-time in-hive probe by Apisense deployed directly inside the brood comb. The non-invasive sensor monitors acoustic frequencies, brood temperatures (34.5°C - 35.5°C), and relative humidity while honeybees actively build and tend the comb.",
       image: "/images/pollination/apisense-internal-sensor-probe.png",
       thumbLabel: "Apisense Probe",
-      cropType: "Apisense In-Hive",
+      cropType: "Field Telemetry",
       fieldObservations: [
         "Real-time acoustic analysis detecting queen presence and foraging vigor",
         "Immediate detection of microclimate deviations without opening the hive",
@@ -66,7 +234,7 @@ const Media = () => {
         "Solar-powered wireless telemetry gateway node mounted directly on the hive stand in the orchard. Captures signals from Apisense in-hive probes and relays continuous metrics over cellular/mesh to the BeeYield cloud platform.",
       image: "/images/pollination/beeyield-apisense-gateway-field.png",
       thumbLabel: "Solar Gateway",
-      cropType: "Field Gateway",
+      cropType: "Field Telemetry",
       fieldObservations: [
         "Continuous solar-backed autonomous operation in harsh semi-arid conditions",
         "Dual high-gain omnidirectional antennas ensuring orchard-wide coverage",
@@ -74,132 +242,6 @@ const Media = () => {
       ],
       agronomicImpact:
         "Guarantees zero data blackout across remote dryland orchards, enabling precision deployment timing for both mango and citrus bloom cycles.",
-    },
-    {
-      id: "apisense-inspection",
-      title: "Apisense™ Sensor with Active Honeybee Comb",
-      crop: "BeeYield Colony Health",
-      cropScientific: "Apis mellifera Comb Saturation",
-      category: "Apisense at Work • Colony Diagnostics",
-      badge: "Apisense Diagnostics",
-      badgeColor: "bg-amber-600/15 text-amber-800 border-amber-300 dark:text-amber-200",
-      description:
-        "Close-up of healthy honeybee workers tending comb right around the Apisense device. Demonstrates total bee acceptance and seamless integration of telemetry hardware in commercial pollination.",
-      image: "/images/pollination/apisense-sensor-comb-inspection.png",
-      thumbLabel: "Comb Sensor Close-Up",
-      cropType: "Apisense Comb",
-      fieldObservations: [
-        "100% comb acceptance by worker bees with zero absconding behavior",
-        "Harmonic brood temperature regulation maintained perfectly",
-        "Provides verifiable proof of colony strength for contract pollination",
-      ],
-      agronomicImpact:
-        "Validates colony density for farmers paying for certified pollination services, ensuring every hive delivered has maximum forager force.",
-    },
-    {
-      id: "mango-bloom",
-      title: "Dense Mango Floral Panicles in Peak Anthesis",
-      crop: "Mangoes",
-      cropScientific: "Mangifera indica",
-      category: "Floral Anthesis & Pollen Deposition",
-      badge: "High Bee Dependency (90%)",
-      badgeColor: "bg-amber-500/15 text-amber-700 border-amber-300 dark:text-amber-300",
-      description:
-        "High-density floral panicles at critical anthesis. Each mango panicle bears thousands of tiny flowers requiring rapid pollinator visits during morning nectar secretion. Precision hive placement prevents early fruit drop and secures massive fruit retention.",
-      image: "/images/pollination/mango-bloom-pollination.jpg",
-      thumbLabel: "Mango Bloom",
-      cropType: "Mango",
-      fieldObservations: [
-        "Dense flower spikes exhibiting 100% receptivity",
-        "Targeting 2.0 - 4.0 hives per acre for complete floral saturation",
-        "Drastic reduction in post-bloom 'June drop' / fruit drop",
-      ],
-      agronomicImpact:
-        "Mango flowers have a narrow window of viable receptivity. Continuous bee visits ensure full stigmatic coverage, directly translating to export-grade fruit sizing and high yield density.",
-    },
-    {
-      id: "citrus-fruit",
-      title: "Citrus Grove with Developing Oranges & Baobab Shelter",
-      crop: "Oranges",
-      cropScientific: "Citrus sinensis",
-      category: "Fruit Setting & Brix Concentration",
-      badge: "Medium-High Dependency (70%)",
-      badgeColor: "bg-orange-500/15 text-orange-700 border-orange-300 dark:text-orange-300",
-      description:
-        "Vigorous citrus trees showing early spherical fruit formation and ongoing flowering. Pollination delivers superior fruit sizing, uniform spherical shape, higher juice weight, and maximum sweetness (Brix levels) for premium market grades.",
-      image: "/images/pollination/orange-citrus-orchard.jpg",
-      thumbLabel: "Developing Oranges",
-      cropType: "Orange",
-      fieldObservations: [
-        "Uniform fruit sizing across lower and mid canopy branches",
-        "Enhanced juice retention and premium fruit rind development",
-        "Sheltered by ancient Baobabs moderating dryland microclimates",
-      ],
-      agronomicImpact:
-        "Bee activity stimulates uniform ovule fertilization, preventing misshapen or undersized citrus while accelerating natural sugar concentration.",
-    },
-    {
-      id: "farm-panorama",
-      title: "Dual-Crop Mixed Orchard Panorama (Mangoes & Oranges)",
-      crop: "Mangoes & Oranges Intercrop",
-      cropScientific: "Mixed Agroforestry System",
-      category: "Dryland Orchard Layout & Habitat Synergy",
-      badge: "Commercial Multi-Crop Operation",
-      badgeColor: "bg-emerald-500/15 text-emerald-700 border-emerald-300 dark:text-emerald-300",
-      description:
-        "Comprehensive field perspective of the Makueni orchard showing structured orange tree rows in the foreground and tall, blossoming mango trees in the midground against the iconic native Baobab tree.",
-      image: "/images/pollination/mango-orange-farm-wide.jpg",
-      thumbLabel: "Mixed Orchard",
-      cropType: "Mixed Orchard",
-      fieldObservations: [
-        "Dual-crop synergistic foraging across two flower bloom curves",
-        "Semi-arid soil conservation integrated with mobile precision apiaries",
-        "Maximized farm revenue per acre through simultaneous crop boost",
-      ],
-      agronomicImpact:
-        "Co-locating hives between citrus and mango orchards leverages staggered floral peaks, maintaining sustained foraging momentum and robust colony health.",
-    },
-    {
-      id: "mango-canopy",
-      title: "Synchronized Mango Orchard Canopy Flowering",
-      crop: "Mangoes",
-      cropScientific: "Export Variety Orchard",
-      category: "Canopy Saturation & Forager Trajectory",
-      badge: "Export Quality Target",
-      badgeColor: "bg-green-500/15 text-green-700 border-green-300 dark:text-green-300",
-      description:
-        "Wide flowering burst across the entire mango canopy. Strategic hive spacing ensures forager bees access both outer branches and interior tree crowns during the compressed flowering window.",
-      image: "/images/pollination/mango-orchard-flowering.jpg",
-      thumbLabel: "Mango Canopy",
-      cropType: "Mango",
-      fieldObservations: [
-        "Full canopy reach guaranteed even in tall mature trees",
-        "Uniform blossom set prevents multi-staged uneven harvesting",
-        "Direct export-grade qualification with minimal rejection rate",
-      ],
-      agronomicImpact:
-        "Ensures bees penetrate the high upper canopies where wind pollination fails, turning vulnerable upper blossoms into marketable fruit clusters.",
-    },
-    {
-      id: "intercrop-rows",
-      title: "Citrus & Mango Agroforestry Rows Under Active Pollination",
-      crop: "Oranges & Mangoes Intercrop",
-      cropScientific: "Synchronized Field Operations",
-      category: "Agroforestry Synergy",
-      badge: "BeeYield and Apisense at Work",
-      badgeColor: "bg-teal-500/15 text-teal-700 border-teal-300 dark:text-teal-300",
-      description:
-        "Close-order rows demonstrating how high-density mobile hives provide coordinated pollination across distinct crop flowering rhythms, maintaining vigorous colony health and optimal foraging pressure.",
-      image: "/images/pollination/citrus-mango-intercrop.jpg",
-      thumbLabel: "Intercrop Rows",
-      cropType: "Mixed Rows",
-      fieldObservations: [
-        "Balanced pollen and nectar nutrition for pollinating colonies",
-        "Zero competition between crops; synchronized blooming peaks",
-        "Documented +20% to +30% yield uplift in partner grower tests",
-      ],
-      agronomicImpact:
-        "Precision colony distribution prevents over-visitation while ensuring zero floral spikes remain unfertilized throughout the multi-week flowering window.",
     },
   ];
 
@@ -416,7 +458,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "25" },
             { label: "Export Grade", value: "Premium" },
           ],
-          image: "/images/pollination/mango-bloom-pollination.jpg",
+          image: "/images/pollination/mango-panicles-close-bloom.png",
+          fieldPhotoCaption: "Dense Mango Floral Panicles in Peak Bloom • Makueni County",
         },
         {
           farmer: "Esther Muli",
@@ -432,15 +475,16 @@ const Media = () => {
             { label: "Acres Pollinated", value: "10" },
             { label: "Size", value: "Large" },
           ],
-          image: "/images/pollination/mango-orchard-flowering.jpg",
+          image: "/images/pollination/mango-orchard-pink-panicles.png",
+          fieldPhotoCaption: "Canopy Panicles Bloom Burst • Kibwezi",
         },
         {
           farmer: "Rashid Ali",
           location: "Makindu, Makueni",
-          role: "Coastal Grower",
+          role: "Coastal & Dryland Grower",
           acres: 40,
           description:
-            "Our coastal mango varieties flower profusely. We needed a workforce to match. BeeYield deployed 20 hives for my 40 acres, ensuring coverage spread to the canopy top.",
+            "Our mango varieties flower profusely. We needed a workforce to match. BeeYield deployed 20 hives for my 40 acres, ensuring coverage spread to the canopy top.",
           quote:
             "We saw bees working even the top branches where we usually lose fruit.",
           stats: [
@@ -448,7 +492,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "40" },
             { label: "Volume", value: "+40 Tons" },
           ],
-          image: "/images/pollination/mango-orange-farm-wide.jpg",
+          image: "/images/pollination/mango-tree-full-blossom.png",
+          fieldPhotoCaption: "Full Blooming Mango Tree • Makindu",
         },
         {
           farmer: "Joseph Kyalo",
@@ -463,7 +508,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "18" },
             { label: "Fruit Count", value: "Good" },
           ],
-          image: "/images/mango_case.png",
+          image: "/images/pollination/mango-bloom-pollination.jpg",
+          fieldPhotoCaption: "Active Bee Pollination on Floral Spikes",
         },
         {
           farmer: "Mary Nduku",
@@ -478,7 +524,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "5" },
             { label: "Quality", value: "Top" },
           ],
-          image: "/images/pollination/citrus-mango-intercrop.jpg",
+          image: "/images/pollination/mango-orchard-flowering.jpg",
+          fieldPhotoCaption: "Synchronized Mango Orchard Canopy",
         },
       ],
     },
@@ -660,8 +707,8 @@ const Media = () => {
     },
     {
       id: "oranges",
-      title: "Citrus Quality",
-      category: "Fruit Orchard",
+      title: "Orange Orchards",
+      category: "Citrus Fruit",
       stories: [
         {
           farmer: "Hassan Juma",
@@ -677,7 +724,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "15" },
             { label: "Fruit Size", value: "Large" },
           ],
-          image: "/images/pollination/orange-citrus-orchard.jpg",
+          image: "/images/pollination/orange-tree-citrus-fruits.jpg",
+          fieldPhotoCaption: "Developing Citrus Fruits with Baobab • Kibwezi",
         },
         {
           farmer: "Mariam Abdi",
@@ -692,7 +740,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "20" },
             { label: "Bloom Coverage", value: "100%" },
           ],
-          image: "/images/pollination/citrus-mango-intercrop.jpg",
+          image: "/images/pollination/orange-tree-heavy-fruiting.jpg",
+          fieldPhotoCaption: "Orange Tree in Heavy Fruiting Stage • Mbuinzau",
         },
         {
           farmer: "Ali Swaleh",
@@ -700,15 +749,15 @@ const Media = () => {
           role: "Citrus Grower",
           acres: 10,
           description:
-            "Salt air and heat can be tough on blossoms. The bees worked fast in the cool mornings. My lime trees are loaded with fruit this year.",
-          quote: "Excellent set even with our rough coastal climate.",
+            "Salt air and heat can be tough on blossoms. The bees worked fast in the cool mornings. My orange trees are loaded with fruit this year.",
+          quote: "Excellent set even with our rough dryland climate.",
           stats: [
             { label: "Climate Adaptation", value: "High" },
             { label: "Acres Pollinated", value: "10" },
             { label: "Yield", value: "+25%" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1559181567-c3190ca9959b?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/orange-citrus-orchard.jpg",
+          fieldPhotoCaption: "Citrus Grove Orchard Rows • Makindu",
         },
         {
           farmer: "Farm Manager",
@@ -716,30 +765,123 @@ const Media = () => {
           role: "Pixie Oranges",
           acres: 50,
           description:
-            "Pixie oranges need to be seedless and sweet. Controlled pollination helps maintain quality. The bees did a great job navigating our dense orchard.",
+            "Pixie oranges need to be seedless and sweet. Controlled pollination helps maintain quality. The bees did a great job navigating our dense orchard rows.",
           quote: "Dense canopy? No problem for BeeYield's hives.",
           stats: [
             { label: "Coverage", value: "100%" },
             { label: "Acres Pollinated", value: "50" },
             { label: "Fruit Quality", value: "Premium" },
           ],
-          image: "/images/pollination/mango-orange-farm-wide.jpg",
+          image: "/images/pollination/citrus-mango-intercrop.jpg",
+          fieldPhotoCaption: "Pixie Orange Rows with Agroforestry Shelter",
         },
         {
           farmer: "Grace Mwende",
           location: "Mbuinzau, Makueni",
-          role: "Lemon Farmer",
-          acres: 5,
+          role: "Commercial Citrus Grower",
+          acres: 12,
           description:
             "I wanted to extend my harvest season. The bees helped synchronize the bloom, so I had a massive, manageable harvest instead of sporadic picking.",
           quote: "Synchronized harvest simplified my labor planning.",
           stats: [
             { label: "Sync", value: "Perfect" },
-            { label: "Acres Pollinated", value: "5" },
+            { label: "Acres Pollinated", value: "12" },
             { label: "Yield", value: "+18%" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1595123049102-140a6e54145b?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/mango-orange-farm-wide.jpg",
+          fieldPhotoCaption: "Dual-Crop Mixed Orange & Mango Farm Panorama",
+        },
+      ],
+    },
+    {
+      id: "citrus",
+      title: "Citrus & Lime Groves",
+      category: "Citrus Orchard",
+      stories: [
+        {
+          farmer: "Francis Mutiso",
+          location: "Makueni Citrus Hub",
+          role: "Citrus Cooperative Lead",
+          acres: 60,
+          description:
+            "Our cooperative manages extensive Valencia and Pixie citrus groves. Intensive honeybee visitation during the 3-week anthesis surge eliminated fruit drop and delivered exceptional fruit weight across all blocks.",
+          quote:
+            "The fruit density and branch loading are the highest we have ever recorded.",
+          stats: [
+            { label: "Fruit Weight", value: "+32%" },
+            { label: "Acres Pollinated", value: "60" },
+            { label: "Bloom Visited", value: "100%" },
+          ],
+          image: "/images/pollination/orange-tree-heavy-fruiting.jpg",
+          fieldPhotoCaption: "Citrus Branches Loaded with Developing Fruit • Makueni",
+        },
+        {
+          farmer: "Beatrice Ndinda",
+          location: "Kibwezi, Makueni",
+          role: "Export Citrus Specialist",
+          acres: 25,
+          description:
+            "Export buyers inspect skin smoothness, spherical uniformity, and Brix sweetness. BeeYield's precision placement ensured consistent stigmatic coverage throughout the canopy.",
+          quote:
+            "Export rejection plummeted to nearly zero. Every crate met first-grade European export standards.",
+          stats: [
+            { label: "Brix Level", value: "12.8°" },
+            { label: "Acres Pollinated", value: "25" },
+            { label: "Export Grade", value: "Grade 1" },
+          ],
+          image: "/images/pollination/orange-tree-citrus-fruits.jpg",
+          fieldPhotoCaption: "Spherical Citrus Development Under Baobab Shelter • Kibwezi",
+        },
+        {
+          farmer: "Samuel Kituku",
+          location: "Mbuinzau, Makueni",
+          role: "Agroforestry Citrus Grower",
+          acres: 35,
+          description:
+            "We intercrop citrus with mango trees to balance soil moisture and wind. The bees forage back and forth between citrus and mango blooms, keeping colony vigor peak throughout both cycles.",
+          quote:
+            "The intercrop pollination synergy gave us two bumper crops in one season.",
+          stats: [
+            { label: "Dual Yield", value: "+28%" },
+            { label: "Acres Pollinated", value: "35" },
+            { label: "Bee Vigor", value: "Optimal" },
+          ],
+          image: "/images/pollination/citrus-mango-intercrop.jpg",
+          fieldPhotoCaption: "Citrus & Mango Intercropped Agroforestry Rows • Mbuinzau",
+        },
+        {
+          farmer: "Charles Musyoka",
+          location: "Makindu, Makueni",
+          role: "Irrigated Citrus Planter",
+          acres: 30,
+          description:
+            "Semi-arid heat can desiccate citrus blossoms within hours. By having Apisense telemetry monitor morning hive flight triggers, bees saturated the flowers at the exact peak of nectar secretion.",
+          quote:
+            "Precision timing gave us complete fertilization before the midday heat set in.",
+          stats: [
+            { label: "Fruit Retention", value: "96%" },
+            { label: "Acres Pollinated", value: "30" },
+            { label: "Water Eff.", value: "+15%" },
+          ],
+          image: "/images/pollination/orange-citrus-orchard.jpg",
+          fieldPhotoCaption: "Commercial Citrus Grove Layout • Makindu",
+        },
+        {
+          farmer: "Joyce Kalondu",
+          location: "Sultan Hamud, Makueni",
+          role: "Citrus & Dryland Farmer",
+          acres: 15,
+          description:
+            "Our citrus trees grow under the majestic canopy of ancient Baobabs. The bees love this microclimate, resulting in rich juice sacs and deep orange rind pigmentation.",
+          quote:
+            "Our juice processors paid us a 20% premium because of the high sugar and juice volume.",
+          stats: [
+            { label: "Juice Yield", value: "+30%" },
+            { label: "Acres Pollinated", value: "15" },
+            { label: "Premium Paid", value: "+20%" },
+          ],
+          image: "/images/pollination/mango-orange-farm-wide.jpg",
+          fieldPhotoCaption: "Baobab Agroforestry Citrus Plantation • Sultan Hamud",
         },
       ],
     },
@@ -1039,9 +1181,39 @@ const Media = () => {
               }
             >
               <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-              Latest Dispatch: Mangoes & Oranges
+              Field Dispatch: Mangoes, Oranges & Citrus
             </Button>
-            {caseStudies.map((study) => (
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-200 border-amber-300 hover:bg-amber-500/25 font-bold"
+              onClick={() =>
+                document.getElementById("mangoes")?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              🥭 Mango Exports
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full bg-orange-500/15 text-orange-900 dark:text-orange-200 border-orange-300 hover:bg-orange-500/25 font-bold"
+              onClick={() =>
+                document.getElementById("oranges")?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              🍊 Orange Orchards
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full bg-lime-500/15 text-lime-900 dark:text-lime-200 border-lime-300 hover:bg-lime-500/25 font-bold"
+              onClick={() =>
+                document.getElementById("citrus")?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              🍋 Citrus & Lime Groves
+            </Button>
+            {caseStudies.filter(s => !["mangoes", "oranges", "citrus"].includes(s.id)).map((study) => (
               <Button
                 key={study.id}
                 variant="outline"
@@ -1073,11 +1245,11 @@ const Media = () => {
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
               Dual-Crop Precision Pollination: <br className="hidden sm:inline" />
-              <span className="text-[#1B9157]">Mangoes & Oranges</span> Orchard
+              <span className="text-[#1B9157]">Mangoes, Oranges & Citrus</span> Orchard
             </h2>
             <p className="mt-4 text-muted-foreground text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-              Photographic proof from our active field operation in Makueni County.
-              This farm features an integrated orchard where <strong>mango trees are in active floral panicle bloom</strong> and{" "}
+              Photographic proof from our active field operations in Makueni County.
+              This farm features an integrated orchard where <strong>mango trees are in dense floral panicle bloom</strong> and{" "}
               <strong>citrus orange trees are in fruit development</strong>, sheltered by ancient Baobabs in Kenya's semi-arid dryland.
             </p>
           </div>
@@ -1093,7 +1265,7 @@ const Media = () => {
                     alt={latestPollinationMedia[selectedPhotoIndex].title}
                     className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
 
                   {/* Badges on top */}
                   <div className="absolute top-4 left-4 right-4 flex justify-between items-center gap-2">
@@ -1103,7 +1275,7 @@ const Media = () => {
                       {latestPollinationMedia[selectedPhotoIndex].crop} • {latestPollinationMedia[selectedPhotoIndex].category}
                     </Badge>
                     <Badge className="bg-background/90 text-foreground border-none backdrop-blur px-3 py-1.5 text-xs font-semibold">
-                      Photo {selectedPhotoIndex + 1} of 5
+                      Photo {selectedPhotoIndex + 1} of {latestPollinationMedia.length}
                     </Badge>
                   </div>
 
@@ -1120,14 +1292,14 @@ const Media = () => {
                 </div>
 
                 {/* Micro thumbnail selector directly below main photo */}
-                <div className="grid grid-cols-5 gap-2 pt-2">
+                <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-5 gap-2 pt-2">
                   {latestPollinationMedia.map((photo, pIdx) => (
                     <button
                       key={photo.id}
                       onClick={() => setSelectedPhotoIndex(pIdx)}
                       className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all group/thumb ${
                         selectedPhotoIndex === pIdx
-                          ? "border-[#1B9157] ring-2 ring-[#1B9157]/30 scale-102 shadow-md"
+                          ? "border-[#1B9157] ring-2 ring-[#1B9157]/40 scale-102 shadow-md"
                           : "border-border/60 opacity-70 hover:opacity-100 hover:border-primary/50"
                       }`}
                     >
@@ -1136,9 +1308,9 @@ const Media = () => {
                         alt={photo.thumbLabel}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-black/30 group-hover/thumb:bg-black/10 transition-colors" />
+                      <div className="absolute inset-0 bg-black/35 group-hover/thumb:bg-black/10 transition-colors" />
                       <span className="absolute bottom-1 left-1 right-1 text-[9px] font-bold text-white leading-tight truncate px-1 drop-shadow">
-                        {photo.cropType}
+                        {photo.thumbLabel}
                       </span>
                     </button>
                   ))}
@@ -1251,26 +1423,33 @@ const Media = () => {
                       >
                         {/* Image Column */}
                         <div className="w-full lg:w-1/2">
-                          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl group border-4 border-background">
+                          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl group border-4 border-background bg-muted">
                             <img
                               src={story.image}
                               alt={`${story.farmer} - ${study.title}`}
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent pointer-events-none" />
-                            <div className="absolute top-6 right-6 z-10">
-                              <Badge className="bg-background/95 text-foreground backdrop-blur border-none shadow-xl px-4 py-2 text-sm font-bold">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
+                            <div className="absolute top-4 right-4 z-10">
+                              <Badge className="bg-background/95 text-foreground backdrop-blur border-none shadow-xl px-3.5 py-1.5 text-xs font-bold">
                                 {story.acres} Acres Pollinated
                               </Badge>
                             </div>
-                            <div className="absolute bottom-8 left-8 text-[#1A1A1A] z-10">
-                              <p className="font-bold text-2xl mb-2">
+                            <div className="absolute bottom-6 left-6 right-6 text-white z-10">
+                              <p className="font-black text-2xl mb-2 text-white drop-shadow-md">
                                 {story.farmer}
                               </p>
-                              <p className="text-[#1A1A1A] text-sm flex items-center font-medium bg-[#F4D03F]/10 backdrop-blur-sm w-fit px-3 py-1 rounded-full">
-                                <MapPin className="w-4 h-4 mr-1.5" />
-                                {story.location}
-                              </p>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="text-white text-xs flex items-center font-semibold bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/15">
+                                  <MapPin className="w-3.5 h-3.5 mr-1 text-[#F4D03F]" />
+                                  {story.location}
+                                </p>
+                                {"fieldPhotoCaption" in story && (story as any).fieldPhotoCaption && (
+                                  <p className="text-emerald-300 text-[11px] font-bold bg-black/60 border border-emerald-500/40 px-3 py-1 rounded-full backdrop-blur-md truncate max-w-[280px]">
+                                    📸 {(story as any).fieldPhotoCaption}
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
 

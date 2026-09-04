@@ -9,6 +9,7 @@ export interface PollinationDetail {
     economicImpact: string;
     estimatedMarketValueUsdBn?: number;
     image: string;
+    galleryImages?: string[];
 }
 
 export const beePollinationData: Record<string, PollinationDetail> = {
@@ -46,7 +47,14 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         regionalTrends2026: "Export-quality mangoes require uniform pollination to prevent early fruit drop, a key metric tracked by BeeYield.",
         economicImpact: "Proper pollination increases fruit retention and size, directly boosting export revenues.",
         estimatedMarketValueUsdBn: 4.6,
-        image: "/images/pollination/mango-panicles-close-bloom.png"
+        image: "/images/pollination/mango-panicles-close-bloom.png",
+        galleryImages: [
+            "/images/pollination/mango-panicles-close-bloom.png",
+            "/images/pollination/mango-orchard-pink-panicles.png",
+            "/images/pollination/mango-tree-full-blossom.png",
+            "/images/pollination/mango-bloom-pollination.jpg",
+            "/images/pollination/mango-orchard-flowering.jpg"
+        ]
     },
 
     "Avocados": {
@@ -83,7 +91,14 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         regionalTrends2026: "Citrus greening resilience is bolstered by strong ecosystem services, including pollination.",
         economicImpact: "Improves fruit weight and juice content per hectare.",
         estimatedMarketValueUsdBn: 2.2,
-        image: "/images/pollination/orange-tree-citrus-fruits.jpg"
+        image: "/images/pollination/orange-tree-citrus-fruits.jpg",
+        galleryImages: [
+            "/images/pollination/orange-tree-citrus-fruits.jpg",
+            "/images/pollination/orange-tree-heavy-fruiting.jpg",
+            "/images/pollination/orange-citrus-orchard.jpg",
+            "/images/pollination/citrus-mango-intercrop.jpg",
+            "/images/pollination/mango-orange-farm-wide.jpg"
+        ]
     },
     "Citrus": {
         cropName: "Citrus",
@@ -95,7 +110,14 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         regionalTrends2026: "Integrated dryland citrus and mango agroforestry creates extended forage corridors for commercial pollinating colonies.",
         economicImpact: "Enhances fruit diameter, rind consistency, and sugar content (Brix) for premium local and export markets.",
         estimatedMarketValueUsdBn: 2.8,
-        image: "/images/pollination/orange-tree-heavy-fruiting.jpg"
+        image: "/images/pollination/orange-tree-heavy-fruiting.jpg",
+        galleryImages: [
+            "/images/pollination/orange-tree-heavy-fruiting.jpg",
+            "/images/pollination/orange-tree-citrus-fruits.jpg",
+            "/images/pollination/orange-citrus-orchard.jpg",
+            "/images/pollination/citrus-mango-intercrop.jpg",
+            "/images/pollination/mango-orange-farm-wide.jpg"
+        ]
     },
     "Tomatoes": {
         cropName: "Tomatoes",

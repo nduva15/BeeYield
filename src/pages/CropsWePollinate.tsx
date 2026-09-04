@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Users, Cpu, Sprout, ArrowRight, Check,
   Globe, Flower2, Wheat, MapPin, Mail,
-  Sparkles, Camera, CheckCircle2
+  Sparkles, Camera, CheckCircle2, Layers
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
@@ -13,6 +13,7 @@ import { dashboardPollinationCropDetails } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
+  const [highlightFilter, setHighlightFilter] = useState<"all" | "mangoes" | "citrus" | "hardware">("all");
   const pollinationCrops = dashboardPollinationCropDetails;
 
   const locations = [
@@ -238,184 +239,187 @@ const CropsWePollinate = () => {
       {/* Latest Pollination Field Highlight: BeeYield and Apisense at Work */}
       <section id="latest-field-highlight" className="py-20 bg-background border-y border-border/50">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
+          <div className="max-w-4xl mx-auto text-center mb-10">
             <Badge className="bg-[#1B9157]/15 text-[#1B9157] border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-4">
               <Camera className="w-3.5 h-3.5 mr-1.5 inline" />
               Kenya Pollination & Mango Bloom Season • Field Operation
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight">
               BeeYield and Apisense at Work: <br />
-              <span className="text-[#1B9157]">Mangoes & Oranges</span> Orchard
+              <span className="text-[#1B9157]">Mangoes, Oranges & Citrus</span> Orchard
             </h2>
             <p className="mt-4 text-neutral-600 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
               It is currently peak <strong>Pollination and Mango Bloom Season in Kenya</strong>! BeeYield and Apisense are deployed in the field across Makueni County. Our colonies are actively working the dense <strong>flowering mango panicles</strong> and <strong>developing citrus orange groves</strong>, with real-time <strong>Apisense™ in-hive telemetry</strong> monitoring acoustic vitality, brood temperature, and foraging velocity under ancient Baobabs.
             </p>
           </div>
 
-          {/* 6-Photo Showcase Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
-            {/* Photo 1: Mango Bloom */}
-            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src="/images/pollination/mango-panicles-close-bloom.png"
-                  alt="Mango Floral Panicles in Peak Bloom"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-amber-600/90 text-white border-none text-xs font-bold">
-                    🥭 Mangoes • Bloom Season
-                  </Badge>
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
-                <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Dense Mango Flower Panicles</h3>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Peak anthesis in Kenya's mango season. Thousands of delicate florets require high-density bee visits to secure fertilization and eliminate early fruit drop.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-[#1B9157]">
-                  <CheckCircle2 className="w-4 h-4" /> 90% Pollination Dependency
-                </div>
-              </div>
-            </div>
-
-            {/* Photo 2: Orange Citrus */}
-            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src="/images/pollination/orange-tree-citrus-fruits.jpg"
-                  alt="Citrus Orange Setting and Maturing"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-orange-600/90 text-white border-none text-xs font-bold">
-                    🍊 Oranges • Fruit Setting
-                  </Badge>
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
-                <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Citrus Fruit Setting & Development</h3>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Orange trees loaded with young spherical fruits and late blossoms. Bee pollination directly boosts fruit circumference, juice volume, and sugar Brix levels.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-orange-600">
-                  <CheckCircle2 className="w-4 h-4" /> Higher Juice Content & Brix
-                </div>
-              </div>
-            </div>
-
-            {/* Photo 3: Apisense In-Hive Probe */}
-            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src="/images/pollination/apisense-internal-sensor-probe.png"
-                  alt="Apisense In-Hive Telemetry Probe with Live Bees"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-yellow-600/90 text-white border-none text-xs font-bold">
-                    🐝 BeeYield & Apisense at Work
-                  </Badge>
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
-                <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Apisense™ In-Hive Telemetry</h3>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Apisense sensor probe mounted inside the brood comb with live honeybees actively working. Tracks acoustics, brood temperature, and queen vigor in real time.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-yellow-700">
-                  <CheckCircle2 className="w-4 h-4" /> Real-Time Colony Health Telemetry
-                </div>
-              </div>
-            </div>
-
-            {/* Photo 4: BeeYield Field Gateway */}
-            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src="/images/pollination/beeyield-apisense-gateway-field.png"
-                  alt="BeeYield Field Gateway with Dual Antennas"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-blue-600/90 text-white border-none text-xs font-bold">
-                    📡 BeeYield Field Gateway
-                  </Badge>
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
-                <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Autonomous Solar Field Gateway</h3>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Solar-powered wireless hub mounted on the hive stand in the orchard. Streams in-hive Apisense telemetry directly to the BeeYield analytics dashboard.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-blue-600">
-                  <CheckCircle2 className="w-4 h-4" /> 24/7 Field Telemetry Stream
-                </div>
-              </div>
-            </div>
-
-            {/* Photo 5: Mango Tree Full Blossom */}
-            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src="/images/pollination/mango-tree-full-blossom.png"
-                  alt="Full Blooming Mango Tree in Orchard"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-lime-700/90 text-white border-none text-xs font-bold">
-                    🥭 Full Mango Bloom
-                  </Badge>
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
-                <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Synchronized Bloom Canopy</h3>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Vibrant flowering canopy in the dryland orchard. Mobile BeeYield colonies positioned to ensure top branches receive complete pollination pressure.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-lime-700">
-                  <CheckCircle2 className="w-4 h-4" /> 100% Upper Branch Receptivity
-                </div>
-              </div>
-            </div>
-
-            {/* Photo 6: Mixed Intercrop Agroforestry */}
-            <div className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src="/images/pollination/citrus-mango-intercrop.jpg"
-                  alt="Citrus and Mango Intercropped Rows"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-teal-700/90 text-white border-none text-xs font-bold">
-                    🌳 Intercrop Synergy • Oranges & Mangoes
-                  </Badge>
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
-                <div>
-                  <h3 className="text-lg font-bold text-neutral-900">Intercropped Agroforestry Rows</h3>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    Synergistic pollination: bees forage across complementary floral nectar and pollen curves of mangoes and citrus, maintaining peak hive vigor throughout the season.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold text-teal-700">
-                  <CheckCircle2 className="w-4 h-4" /> Multi-Crop Revenue Boost
-                </div>
-              </div>
-            </div>
+          {/* Interactive Category Filter Pills */}
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            {[
+              { id: "all", label: "All Field Photos (9)" },
+              { id: "mangoes", label: "🥭 Mangoes (3)" },
+              { id: "citrus", label: "🍊 Oranges & Citrus (3)" },
+              { id: "hardware", label: "📡 Field Telemetry (3)" },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                size="sm"
+                variant={highlightFilter === tab.id ? "default" : "outline"}
+                className={`rounded-full px-4 font-bold transition-all ${
+                  highlightFilter === tab.id
+                    ? "bg-[#1B9157] text-white hover:bg-[#157746] shadow-sm"
+                    : "border-neutral-200 hover:bg-neutral-100 text-neutral-700"
+                }`}
+                onClick={() => setHighlightFilter(tab.id as any)}
+              >
+                {tab.label}
+              </Button>
+            ))}
           </div>
+
+          {/* 9-Photo Showcase Grid with Dynamic Filtering */}
+          {(() => {
+            const fieldHighlights = [
+              {
+                id: "mango-bloom",
+                category: "mangoes",
+                title: "Dense Mango Flower Panicles",
+                description: "Peak anthesis in Kenya's mango season. Thousands of delicate florets require high-density bee visits to secure fertilization and eliminate early fruit drop.",
+                image: "/images/pollination/mango-panicles-close-bloom.png",
+                badge: "🥭 Mangoes • Bloom Season",
+                badgeColor: "bg-amber-600/90 text-white",
+                metric: "90% Pollination Dependency",
+                metricColor: "text-[#1B9157]",
+              },
+              {
+                id: "mango-pink",
+                category: "mangoes",
+                title: "Pink Panicle Canopy Bloom",
+                description: "Flowering mango panicles exhibiting vibrant pink hues across the upper canopy. Strategic hive placement ensures forager bees access both outer branches and interior tree crowns.",
+                image: "/images/pollination/mango-orchard-pink-panicles.png",
+                badge: "🥭 Mangoes • Canopy Burst",
+                badgeColor: "bg-rose-600/90 text-white",
+                metric: "Export Grade Volume Target",
+                metricColor: "text-rose-700",
+              },
+              {
+                id: "mango-blossom",
+                category: "mangoes",
+                title: "Synchronized Bloom Canopy",
+                description: "Vibrant flowering canopy in the dryland orchard. Mobile BeeYield colonies positioned to ensure top branches receive complete pollination pressure.",
+                image: "/images/pollination/mango-tree-full-blossom.png",
+                badge: "🥭 Full Mango Bloom",
+                badgeColor: "bg-lime-700/90 text-white",
+                metric: "100% Upper Branch Receptivity",
+                metricColor: "text-lime-700",
+              },
+              {
+                id: "citrus-heavy",
+                category: "citrus",
+                title: "Citrus Tree in Heavy Fruiting",
+                description: "Orange branches loaded with dense clusters of plump, developing citrus fruits following successful pollination. Multiple bee visits ensure uniform roundness and maximum fruit retention.",
+                image: "/images/pollination/orange-tree-heavy-fruiting.jpg",
+                badge: "🍊 Citrus • Heavy Fruiting",
+                badgeColor: "bg-orange-600/90 text-white",
+                metric: "90%+ First-Grade Market Packout",
+                metricColor: "text-orange-600",
+              },
+              {
+                id: "citrus-fruits",
+                category: "citrus",
+                title: "Citrus Fruit Setting & Development",
+                description: "Orange trees loaded with young spherical fruits and late blossoms. Bee pollination directly boosts fruit circumference, juice volume, and sugar Brix levels.",
+                image: "/images/pollination/orange-tree-citrus-fruits.jpg",
+                badge: "🍊 Oranges • Fruit Setting",
+                badgeColor: "bg-amber-600/90 text-white",
+                metric: "Higher Juice Content & Brix",
+                metricColor: "text-amber-700",
+              },
+              {
+                id: "citrus-intercrop",
+                category: "citrus",
+                title: "Intercropped Agroforestry Rows",
+                description: "Synergistic pollination: bees forage across complementary floral nectar and pollen curves of mangoes and citrus, maintaining peak hive vigor throughout the season.",
+                image: "/images/pollination/citrus-mango-intercrop.jpg",
+                badge: "🌳 Intercrop Synergy • Oranges & Mangoes",
+                badgeColor: "bg-teal-700/90 text-white",
+                metric: "Multi-Crop Revenue Boost",
+                metricColor: "text-teal-700",
+              },
+              {
+                id: "apisense-probe",
+                category: "hardware",
+                title: "Apisense™ In-Hive Telemetry",
+                description: "Apisense sensor probe mounted inside the brood comb with live honeybees actively working. Tracks acoustics, brood temperature, and queen vigor in real time.",
+                image: "/images/pollination/apisense-internal-sensor-probe.png",
+                badge: "🐝 BeeYield & Apisense at Work",
+                badgeColor: "bg-yellow-600/90 text-white",
+                metric: "Real-Time Colony Health Telemetry",
+                metricColor: "text-yellow-700",
+              },
+              {
+                id: "beeyield-gateway",
+                category: "hardware",
+                title: "Autonomous Solar Field Gateway",
+                description: "Solar-powered wireless hub mounted on the hive stand in the orchard. Streams in-hive Apisense telemetry directly to the BeeYield analytics dashboard.",
+                image: "/images/pollination/beeyield-apisense-gateway-field.png",
+                badge: "📡 BeeYield Field Gateway",
+                badgeColor: "bg-blue-600/90 text-white",
+                metric: "24/7 Field Telemetry Stream",
+                metricColor: "text-blue-600",
+              },
+              {
+                id: "farm-panorama",
+                category: "hardware",
+                title: "Dual-Crop Dryland Orchard Panorama",
+                description: "Comprehensive field perspective of the Makueni orchard showing structured orange tree rows in the foreground and tall, blossoming mango trees in the midground against native Baobab trees.",
+                image: "/images/pollination/mango-orange-farm-wide.jpg",
+                badge: "🌳 Baobab Agroforestry Zone",
+                badgeColor: "bg-emerald-700/90 text-white",
+                metric: "Semi-Arid Habitat Synergy",
+                metricColor: "text-emerald-700",
+              },
+            ];
+
+            const filtered = highlightFilter === "all" 
+              ? fieldHighlights 
+              : fieldHighlights.filter(h => h.category === highlightFilter);
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
+                {filtered.map((item) => (
+                  <div
+                    key={item.id}
+                    className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <Badge className={`${item.badgeColor} border-none text-xs font-bold shadow-md`}>
+                          {item.badge}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
+                      <div>
+                        <h3 className="text-lg font-bold text-neutral-900">{item.title}</h3>
+                        <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                      <div className={`flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold ${item.metricColor}`}>
+                        <CheckCircle2 className="w-4 h-4 shrink-0" /> {item.metric}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
       </section>
 
@@ -437,33 +441,75 @@ const CropsWePollinate = () => {
 
           {/* Crops Cards */}
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {pollinationCrops.map((crop, index) => (
-              <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all group bg-[#FFF9F0]">
-                <div className="relative h-64 overflow-hidden">
-                  <div className="absolute top-4 right-4 z-20">
-                    <Badge className="bg-[#1B9157] text-white backdrop-blur-md border-none px-3 py-1 font-black">
-                      {crop.beeDependence}
-                    </Badge>
+            {pollinationCrops.map((crop, index) => {
+              const isSpotlightCrop = ["Mangoes", "Oranges", "Citrus"].includes(crop.cropName);
+              const targetHash = crop.cropName === "Mangoes" ? "mangoes" : crop.cropName === "Oranges" ? "oranges" : crop.cropName === "Citrus" ? "citrus" : "latest-pollination";
+
+              return (
+                <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all group bg-[#FFF9F0] flex flex-col justify-between">
+                  <div className="relative h-64 overflow-hidden">
+                    <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-1.5">
+                      <Badge className="bg-[#1B9157] text-white backdrop-blur-md border-none px-3 py-1 font-black">
+                        {crop.beeDependence}
+                      </Badge>
+                      {isSpotlightCrop && (
+                        <Badge className="bg-amber-500/95 text-white backdrop-blur-md border-none px-2.5 py-0.5 text-[10px] font-bold shadow">
+                          ⭐ Authentic Dispatch
+                        </Badge>
+                      )}
+                    </div>
+                    <img
+                      src={crop.image}
+                      alt={crop.cropName}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A2612]/90 via-[#0A2612]/25 to-transparent" />
+                    <div className="absolute bottom-5 left-5 right-5 space-y-1">
+                      <h3 className="text-[2.2rem] font-black text-white leading-none tracking-tighter drop-shadow-md">{crop.cropName}</h3>
+                      <p className="text-xs text-white/80 line-clamp-1">{crop.beeyieldAdvantage}</p>
+                    </div>
                   </div>
-                  <img
-                    src={crop.image}
-                    alt={crop.cropName}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A2612]/90 via-transparent to-transparent" />
-                  <div className="absolute bottom-6 left-6 space-y-1">
-                    <h3 className="text-[2.5rem] font-black text-[#1A1A1A] leading-none tracking-tighter">{crop.cropName}</h3>
+
+                  {/* Micro Plantation Gallery for Spotlight Crops */}
+                  {crop.galleryImages && crop.galleryImages.length > 0 && (
+                    <div className="p-4 bg-amber-50/70 border-t border-amber-100/80">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-bold text-neutral-800 flex items-center gap-1">
+                          <Camera className="w-3 h-3 text-[#1B9157]" /> Plantation Photos
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-full">
+                          {crop.galleryImages.length} Field Photos
+                        </span>
+                      </div>
+                      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                        {crop.galleryImages.map((img, imgIdx) => (
+                          <Link
+                            key={imgIdx}
+                            to={`/media#${targetHash}`}
+                            className="relative w-16 h-12 rounded-lg overflow-hidden border border-neutral-300 flex-shrink-0 group/mini hover:scale-105 transition-transform shadow-xs"
+                          >
+                            <img src={img} alt={`${crop.cropName} photo ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/15 group-hover/mini:bg-transparent transition-colors" />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="p-4 border-t border-border/40 flex items-center justify-between bg-card/50">
+                    <span className="text-xs font-semibold text-neutral-600">
+                      {crop.optimalHivesPerAcre}
+                    </span>
                     <Link
-                      to={`/media#${crop.cropName === "Mangoes" ? "mangoes" : crop.cropName === "Oranges" ? "oranges" : "latest-pollination"}`}
-                      className="inline-flex items-center gap-2 text-gray-600 hover:text-[#1A1A1A] text-xs font-black mt-2 transition-colors"
+                      to={`/media#${targetHash}`}
+                      className="inline-flex items-center gap-1.5 text-[#1B9157] hover:text-[#157746] text-xs font-black transition-colors"
                     >
-                      View Media Case Study <ArrowRight className="w-3 h-3" />
+                      View Media Case Study <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
-                </div>
-
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
