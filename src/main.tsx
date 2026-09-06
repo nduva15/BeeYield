@@ -175,6 +175,7 @@ root.render(
                                                         <Route path="/diseases" element={<Diseases />} />
                                                         <Route path="/media" element={<Media />} />
                                                         <Route path="/shared-run/:id" element={<SharedRun />} />
+                                                        <Route path="/shared/:id" element={<SharedRun />} />
                                                         <Route path="/oauth/consent" element={<OAuthConsent />} />
                                                         <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                                                         <Route path="/auth" element={<Auth />} />

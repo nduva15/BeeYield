@@ -40,6 +40,7 @@ const Layout = ({ children }: LayoutProps) => {
     '/auth/callback',
     '/integrations/callback',
     '/shared-run/',
+    '/shared/',
     '/.lovable',
   ];
 
