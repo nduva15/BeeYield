@@ -119,20 +119,20 @@ const Media = () => {
     },
     {
       id: "orange-citrus-fruits",
-      title: "Developing Citrus Fruits with Ancient Baobab Shelter",
+      title: "Developing Citrus Fruits in Commercial Grove",
       crop: "Oranges",
-      cropScientific: "Citrus sinensis (Semi-Arid Dryland)",
-      category: "Agroforestry Fruit Setting",
+      cropScientific: "Citrus sinensis (Commercial Groves)",
+      category: "Fruit Setting & Sizing",
       badge: "70% Bee Dependency",
       badgeColor: "bg-amber-600/15 text-amber-800 border-amber-300 dark:text-amber-200",
       description:
-        "Developing citrus fruits hanging from healthy branches with the iconic silhouette of a native Baobab in the background. BeeYield manages hive placement to maximize forager efficiency in dryland heat.",
+        "Developing citrus fruits hanging from healthy branches in active fruit development. BeeYield manages strategic hive placement to maximize forager efficiency and ensure uniform fruit set.",
       image: "/images/pollination/orange-tree-citrus-fruits.jpg",
-      thumbLabel: "Citrus & Baobab",
+      thumbLabel: "Citrus Fruits",
       cropType: "Oranges",
       fieldObservations: [
         "Healthy deep-green foliage and firm spherical citrus fruitlets",
-        "Dryland microclimate moderated by surrounding indigenous trees",
+        "Even pollination coverage across all branch tiers",
         "Brix sugar accumulation elevated by complete stigmatic fertilization",
       ],
       agronomicImpact:
@@ -160,88 +160,151 @@ const Media = () => {
         "Ensures every tree row achieves identical fruit set density, streamlining harvest scheduling and grading.",
     },
     {
-      id: "citrus-mango-intercrop",
-      title: "Citrus & Mango Agroforestry Rows Under Active Pollination",
-      crop: "Citrus & Mangoes Intercrop",
-      cropScientific: "Mixed Citrus sinensis & Mangifera indica",
-      category: "Agroforestry Synergy",
-      badge: "Multi-Crop Synergy",
-      badgeColor: "bg-teal-500/15 text-teal-700 border-teal-300 dark:text-teal-300",
+      id: "citrus-bloom-buds",
+      title: "Citrus Flower Buds in Peak Bloom Season",
+      crop: "Citrus & Oranges",
+      cropScientific: "Citrus sinensis (Bloom Anthesis)",
+      category: "Peak Bloom Season",
+      badge: "Peak Bloom Surge",
+      badgeColor: "bg-amber-500/15 text-amber-800 border-amber-300 dark:text-amber-200",
       description:
-        "Close-order rows demonstrating how high-density mobile hives provide coordinated pollination across distinct crop flowering rhythms, maintaining vigorous colony health and optimal foraging pressure.",
-      image: "/images/pollination/citrus-mango-intercrop.jpg",
-      thumbLabel: "Intercrop Rows",
-      cropType: "Oranges & Mangoes",
+        "Dense floral buds and opening white citrus blossoms loaded with fragrant nectar. Intensive honeybee visitation during anthesis prevents premature flower drop and secures uniform fruit set.",
+      image: "/images/pollination/citrus-bloom-buds-closeup.jpg",
+      thumbLabel: "Citrus Bloom",
+      cropType: "Citrus",
       fieldObservations: [
-        "Balanced pollen and nectar nutrition for pollinating colonies",
-        "Zero competition between crops; synchronized blooming peaks",
-        "Documented +20% to +30% yield uplift in partner grower tests",
+        "Plentiful flower bud clusters with high pollen viability",
+        "Multiple bee visits per blossom ensuring complete ovule fertilization",
+        "High nectar secretion attracting steady morning forager traffic",
       ],
       agronomicImpact:
-        "Precision colony distribution prevents over-visitation while ensuring zero floral spikes remain unfertilized throughout the multi-week flowering window.",
+        "Directly prevents post-bloom flower drop, delivering heavy cluster retention across all productive branches.",
     },
     {
-      id: "farm-panorama",
-      title: "Dual-Crop Mixed Orchard Panorama (Mangoes & Oranges)",
-      crop: "Mangoes, Oranges & Citrus",
-      cropScientific: "Mixed Agroforestry System",
-      category: "Dryland Orchard Layout & Habitat Synergy",
+      id: "citrus-drip-irrigation",
+      title: "Commercial Citrus Grove Under Drip Irrigation",
+      crop: "Citrus & Oranges",
+      cropScientific: "Citrus spp. (Irrigated Blocks)",
+      category: "Commercial Irrigation Management",
       badge: "Commercial Operation",
       badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
       description:
-        "Comprehensive field perspective of the Makueni orchard showing structured orange tree rows in the foreground and tall, blossoming mango trees in the midground against the iconic native Baobab tree.",
+        "Neat rows of mature citrus trees receiving precision drip irrigation while honeybees from nearby apiary stands actively work the blooming canopy.",
+      image: "/images/pollination/citrus-grove-drip-irrigation.jpg",
+      thumbLabel: "Irrigated Grove",
+      cropType: "Citrus",
+      fieldObservations: [
+        "Targeted drip lines maintaining steady tree hydration through bloom",
+        "Dedicated apiary units positioned along wind-sheltered grove corridors",
+        "Uniform flowering across all irrigated tree rows",
+      ],
+      agronomicImpact:
+        "Synchronizes moisture availability with peak pollinator activity to accelerate cell division in newly fertilized fruitlets.",
+    },
+    {
+      id: "mango-florets-new",
+      title: "Fresh Mango Inflorescence in Full Anthesis",
+      crop: "Mangoes",
+      cropScientific: "Mangifera indica (Peak Anthesis)",
+      category: "Floral Anthesis & Bloom Peak",
+      badge: "Peak Bloom Window",
+      badgeColor: "bg-amber-600/15 text-amber-800 border-amber-300 dark:text-amber-200",
+      description:
+        "Close view of flowering mango panicles with thousands of fresh florets opening synchronously. High bee density ensures that hermaphrodite flowers receive necessary cross-pollination before stigmas dry.",
+      image: "/images/pollination/mango-flowering-panicles-new.jpg",
+      thumbLabel: "Fresh Florets",
+      cropType: "Mangoes",
+      fieldObservations: [
+        "Abundant pollen grains ready for active honeybee collection",
+        "Active morning bee traffic depositing viable grains onto stigmas",
+        "Significantly lower blight and abortion in pollinated panicles",
+      ],
+      agronomicImpact:
+        "Crucial for transforming delicate inflorescences into clusters of export-grade mango fruitlets.",
+    },
+    {
+      id: "maize-intercrop",
+      title: "Maize & Vegetable Field Intercrop Under Drip Irrigation",
+      crop: "Maize & Companion Crops",
+      cropScientific: "Zea mays & Brassica spp.",
+      category: "Crop Intercropping & Pollination",
+      badge: "Horticulture Intercrop",
+      badgeColor: "bg-green-600/15 text-green-800 border-green-300 dark:text-green-200",
+      description:
+        "Commercial field beds showing healthy rows of vegetables under precision drip irrigation intercropped with developing maize stalks. Honeybees forage across tassels for protein-rich pollen, supporting nearby companion crops.",
+      image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+      thumbLabel: "Maize Intercrop",
+      cropType: "Maize",
+      fieldObservations: [
+        "Uniform crop beds under high-efficiency drip irrigation tubing",
+        "Emerging maize tassels providing abundant pollen for bee colonies",
+        "Synergistic companion planting maximizing land productivity and pollinator nutrition",
+      ],
+      agronomicImpact:
+        "Promotes better ear filling and tip kernel set in maize while maintaining strong pollinator populations for intercropped vegetables.",
+    },
+    {
+      id: "maize-panoramic",
+      title: "Maize Horticultural Plantation Across Scenic Ridge",
+      crop: "Maize & Crops",
+      cropScientific: "Zea mays (Irrigated Commercial Scheme)",
+      category: "Field Landscape & Crop Rows",
+      badge: "Commercial Field Block",
+      badgeColor: "bg-teal-600/15 text-teal-800 border-teal-300 dark:text-teal-200",
+      description:
+        "Panoramic perspective of structured crop rows stretching across the red soils of Makueni with distant mountain ridges. Honeybees traverse the entire planting area to gather tassel pollen during morning dehiscence.",
+      image: "/images/pollination/maize-horticulture-field-panoramic.jpg",
+      thumbLabel: "Horticulture Field",
+      cropType: "Maize",
+      fieldObservations: [
+        "Large-scale drip irrigation infrastructure ensuring unbroken crop growth",
+        "Excellent air drainage and sunlight penetration down the planting rows",
+        "Consistent pollinator foraging paths connecting field blocks with nearby apiaries",
+      ],
+      agronomicImpact:
+        "Secures full cob fertilization across thousands of plants, preventing barren ear tips and loose kernels.",
+    },
+    {
+      id: "maize-vertical-rows",
+      title: "Maize Pollination Rows & Tassel Development",
+      crop: "Maize",
+      cropScientific: "Zea mays (Tasseling Phase)",
+      category: "Tasseling & Pollen Window",
+      badge: "Tassel Anthesis",
+      badgeColor: "bg-lime-600/15 text-lime-800 border-lime-300 dark:text-lime-200",
+      description:
+        "Vertical perspective down the crop rows showing strong maize stalks preparing for full silking. Honeybees collect high volumes of tassel pollen, boosting colony protein reserves for orchard pollination.",
+      image: "/images/pollination/maize-crop-rows-vertical.png",
+      thumbLabel: "Crop Rows",
+      cropType: "Maize",
+      fieldObservations: [
+        "Sturdy upright stalks with healthy green leaf area index",
+        "Tassels emerging synchronously across the planting blocks",
+        "Irrigation lines keeping root zones moist for peak pollen production",
+      ],
+      agronomicImpact:
+        "Ensures vigorous pollen shed coincident with silk emergence for 100% cob fill.",
+    },
+    {
+      id: "farm-panorama",
+      title: "Dual-Crop Commercial Orchard (Mangoes & Citrus)",
+      crop: "Mangoes & Citrus",
+      cropScientific: "Mixed Orchard Production System",
+      category: "Commercial Orchard Layout",
+      badge: "Commercial Operation",
+      badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
+      description:
+        "Comprehensive field perspective of the Makueni orchard showing structured orange tree rows in the foreground and tall, blossoming mango trees in the midground.",
       image: "/images/pollination/mango-orange-farm-wide.jpg",
       thumbLabel: "Mixed Orchard",
-      cropType: "Mixed Orchard",
+      cropType: "Mangoes & Citrus",
       fieldObservations: [
         "Dual-crop synergistic foraging across two flower bloom curves",
-        "Semi-arid soil conservation integrated with mobile precision apiaries",
+        "Commercial orchard layout integrated with mobile precision apiaries",
         "Maximized farm revenue per acre through simultaneous crop boost",
       ],
       agronomicImpact:
         "Co-locating hives between citrus and mango orchards leverages staggered floral peaks, maintaining sustained foraging momentum and robust colony health.",
-    },
-    {
-      id: "apisense-probe",
-      title: "Apisense™ In-Hive Telemetry Probe on Brood Comb",
-      crop: "BeeYield & Apisense Telemetry",
-      cropScientific: "In-Hive Acoustic & Environmental Sensor",
-      category: "Apisense at Work • In-Hive Hardware",
-      badge: "Apisense at Work",
-      badgeColor: "bg-yellow-500/15 text-yellow-700 border-yellow-300 dark:text-yellow-300",
-      description:
-        "Real-time in-hive probe by Apisense deployed directly inside the brood comb. The non-invasive sensor monitors acoustic frequencies, brood temperatures (34.5°C - 35.5°C), and relative humidity while honeybees actively build and tend the comb.",
-      image: "/images/pollination/apisense-internal-sensor-probe.png",
-      thumbLabel: "Apisense Probe",
-      cropType: "Field Telemetry",
-      fieldObservations: [
-        "Real-time acoustic analysis detecting queen presence and foraging vigor",
-        "Immediate detection of microclimate deviations without opening the hive",
-        "Live data streamed via BeeYield field telemetry gateway",
-      ],
-      agronomicImpact:
-        "Enables growers and apiary managers to verify colony pollination intensity hour-by-hour without disrupting the delicate brood nest.",
-    },
-    {
-      id: "beeyield-gateway",
-      title: "BeeYield Field Telemetry Gateway with Dual Antennas",
-      crop: "BeeYield Field Gateway",
-      cropScientific: "Solar-Powered Wireless Telemetry Hub",
-      category: "BeeYield and Apisense at Work",
-      badge: "Field Gateway Node",
-      badgeColor: "bg-blue-500/15 text-blue-700 border-blue-300 dark:text-blue-300",
-      description:
-        "Solar-powered wireless telemetry gateway node mounted directly on the hive stand in the orchard. Captures signals from Apisense in-hive probes and relays continuous metrics over cellular/mesh to the BeeYield cloud platform.",
-      image: "/images/pollination/beeyield-apisense-gateway-field.png",
-      thumbLabel: "Solar Gateway",
-      cropType: "Field Telemetry",
-      fieldObservations: [
-        "Continuous solar-backed autonomous operation in harsh semi-arid conditions",
-        "Dual high-gain omnidirectional antennas ensuring orchard-wide coverage",
-        "Secured on elevated predator-proof metal hive stands",
-      ],
-      agronomicImpact:
-        "Guarantees zero data blackout across remote dryland orchards, enabling precision deployment timing for both mango and citrus bloom cycles.",
     },
   ];
 
@@ -328,8 +391,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "25" },
             { label: "Yield", value: "+12%" },
           ],
-          image: "/images/pollination/maize-baobab-agroforestry.png",
-          fieldPhotoCaption: "Maize Agroforestry Under Baobab Canopy • Kibwezi, Makueni",
+          image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+          fieldPhotoCaption: "Commercial Maize & Vegetable Intercrop Under Drip Irrigation • Kibwezi, Makueni",
         },
         {
           farmer: "Sarah Chepkoech",
@@ -726,7 +789,7 @@ const Media = () => {
             { label: "Fruit Size", value: "Large" },
           ],
           image: "/images/pollination/orange-tree-citrus-fruits.jpg",
-          fieldPhotoCaption: "Developing Citrus Fruits with Baobab • Kibwezi",
+          fieldPhotoCaption: "Developing Citrus Fruits in Bloom Season • Kibwezi",
         },
         {
           farmer: "Mariam Abdi",
@@ -831,24 +894,24 @@ const Media = () => {
             { label: "Export Grade", value: "Grade 1" },
           ],
           image: "/images/pollination/orange-tree-citrus-fruits.jpg",
-          fieldPhotoCaption: "Spherical Citrus Development Under Baobab Shelter • Kibwezi",
+          fieldPhotoCaption: "Spherical Citrus Development in Commercial Orchard • Kibwezi",
         },
         {
           farmer: "Samuel Kituku",
           location: "Mbuinzau, Makueni",
-          role: "Agroforestry Citrus Grower",
+          role: "Commercial Citrus & Mango Grower",
           acres: 35,
           description:
-            "We intercrop citrus with mango trees to balance soil moisture and wind. The bees forage back and forth between citrus and mango blooms, keeping colony vigor peak throughout both cycles.",
+            "We manage contiguous blocks of citrus and mango trees. The bees forage across citrus and mango blooms, keeping colony vigor peak throughout both cycles.",
           quote:
-            "The intercrop pollination synergy gave us two bumper crops in one season.",
+            "The coordinated orchard pollination gave us two bumper crops in one season.",
           stats: [
             { label: "Dual Yield", value: "+28%" },
             { label: "Acres Pollinated", value: "35" },
             { label: "Bee Vigor", value: "Optimal" },
           ],
           image: "/images/pollination/citrus-mango-intercrop.jpg",
-          fieldPhotoCaption: "Citrus & Mango Intercropped Agroforestry Rows • Mbuinzau",
+          fieldPhotoCaption: "Citrus & Mango Tree Rows in Active Bloom • Mbuinzau",
         },
         {
           farmer: "Charles Musyoka",
@@ -856,7 +919,7 @@ const Media = () => {
           role: "Irrigated Citrus Planter",
           acres: 30,
           description:
-            "Semi-arid heat can desiccate citrus blossoms within hours. By having Apisense telemetry monitor morning hive flight triggers, bees saturated the flowers at the exact peak of nectar secretion.",
+            "Semi-arid heat can desiccate citrus blossoms within hours. By synchronizing hive placement to morning flight triggers, bees saturated the flowers at the exact peak of nectar secretion.",
           quote:
             "Precision timing gave us complete fertilization before the midday heat set in.",
           stats: [
@@ -870,10 +933,10 @@ const Media = () => {
         {
           farmer: "Joyce Kalondu",
           location: "Sultan Hamud, Makueni",
-          role: "Citrus & Dryland Farmer",
+          role: "Citrus & Fruit Farmer",
           acres: 15,
           description:
-            "Our citrus trees grow under the majestic canopy of ancient Baobabs. The bees love this microclimate, resulting in rich juice sacs and deep orange rind pigmentation.",
+            "Our citrus trees thrive with intensive bee pollination during peak bloom season. The bees work the blossoms steadily, resulting in rich juice sacs and deep orange rind pigmentation.",
           quote:
             "Our juice processors paid us a 20% premium because of the high sugar and juice volume.",
           stats: [
@@ -882,7 +945,7 @@ const Media = () => {
             { label: "Premium Paid", value: "+20%" },
           ],
           image: "/images/pollination/mango-orange-farm-wide.jpg",
-          fieldPhotoCaption: "Baobab Agroforestry Citrus Plantation • Sultan Hamud",
+          fieldPhotoCaption: "Commercial Citrus & Orange Plantation • Sultan Hamud",
         },
       ],
     },
@@ -1245,13 +1308,13 @@ const Media = () => {
               Field Dispatch • Active Pollination Contract
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
-              Dual-Crop Precision Pollination: <br className="hidden sm:inline" />
-              <span className="text-[#1B9157]">Mangoes, Oranges & Citrus</span> Orchard
+              Crop Pollination & Bloom Season: <br className="hidden sm:inline" />
+              <span className="text-[#1B9157]">Mangoes, Citrus & Oranges, and Maize</span>
             </h2>
             <p className="mt-4 text-muted-foreground text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
               Photographic proof from our active field operations in Makueni County.
-              This farm features an integrated orchard where <strong>mango trees are in dense floral panicle bloom</strong> and{" "}
-              <strong>citrus orange trees are in fruit development</strong>, sheltered by ancient Baobabs in Kenya's semi-arid dryland.
+              This season features high-density pollination deployments where <strong>mango trees are in dense floral panicle bloom</strong>,{" "}
+              <strong>citrus orange trees are in peak bloom and fruit development</strong>, and <strong>maize crop rows are in active tasseling</strong> under drip irrigation.
             </p>
           </div>
 
@@ -1287,7 +1350,7 @@ const Media = () => {
                     </p>
                     <p className="text-xs text-white/80 flex items-center gap-1.5 font-medium">
                       <MapPin className="w-3.5 h-3.5 text-[#F4D03F]" />
-                      Makueni County, Kenya &bull; Mixed Mango & Citrus Agroforestry Zone
+                      Makueni County, Kenya &bull; Commercial Mango, Citrus & Maize Pollination Blocks
                     </p>
                   </div>
                 </div>

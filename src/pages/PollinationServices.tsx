@@ -7,7 +7,8 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import {
     Check, TrendingUp, Shield, BarChart3, ArrowRight,
     Cpu, Eye, Zap, Target, Leaf, Award, Clock, Users,
-    Activity, Database, Radio, Smartphone, ChevronRight, Globe
+    Activity, Database, Radio, Smartphone, ChevronRight, Globe,
+    Camera, CheckCircle2
 } from "lucide-react";
 import { QuickLink as Link } from "@/components/QuickLink";
 import {
@@ -476,6 +477,160 @@ const PollinationServices = () => {
                                 Start Pollination Project
                             </Button>
                         </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Kenya Field Operations: Peak Bloom Season Showcase */}
+            <section className="py-24 bg-gradient-to-b from-[#fdfbf6] via-[#f8faf8] to-background border-t border-border/40">
+                <div className="container mx-auto px-4 sm:px-6">
+                    <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
+                        <Badge className="bg-[#1B9157]/15 text-[#1B9157] border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider">
+                            <Camera className="w-3.5 h-3.5 mr-1.5 inline" />
+                            Kenya Field Operations • Peak Bloom Season
+                        </Badge>
+                        <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight leading-tight">
+                            Bloom Season in Action: <br />
+                            <span className="text-[#1B9157]">Mangoes, Citrus & Oranges, and Maize</span>
+                        </h2>
+                        <p className="text-lg text-neutral-600 max-w-3xl mx-auto font-medium leading-relaxed">
+                            Authentic field dispatches from commercial orchards and drip-irrigated crop fields across Makueni County.
+                            BeeYield colonies are actively deployed to maximize fruit set, prevent flower drop, and ensure complete cob grain filling.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16">
+                        {/* 1. Mango Bloom Season */}
+                        <div className="bg-card rounded-[2.5rem] overflow-hidden border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group">
+                            <div className="relative aspect-[4/3] overflow-hidden">
+                                <img
+                                    src="/images/pollination/mango-panicles-close-bloom.png"
+                                    alt="Mango Flower Panicles in Bloom"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                />
+                                <div className="absolute top-4 left-4">
+                                    <Badge className="bg-amber-600 text-white font-bold border-none text-xs">
+                                        🥭 Mango Bloom Season
+                                    </Badge>
+                                </div>
+                                <div className="absolute bottom-3 left-3 right-3 flex gap-1.5 overflow-hidden">
+                                    {["/images/pollination/mango-orchard-pink-panicles.png", "/images/pollination/mango-tree-full-blossom.png", "/images/pollination/mango-flowering-panicles-new.jpg"].map((img, i) => (
+                                        <div key={i} className="w-12 h-9 rounded-lg overflow-hidden border border-white/60 shadow">
+                                            <img src={img} alt="Mango bloom thumbnail" className="w-full h-full object-cover" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-8 flex-1 flex flex-col justify-between space-y-4">
+                                <div>
+                                    <h3 className="text-2xl font-black text-neutral-900 tracking-tight mb-2">
+                                        Dense Mango Flower Panicles
+                                    </h3>
+                                    <p className="text-sm text-neutral-600 font-medium leading-relaxed">
+                                        During the intensive flowering window, each mango panicle bears over 2,000 delicate florets. Precision hive placement ensures rapid stigmatic coverage before flower drying, eliminating early fruit abortion.
+                                    </p>
+                                </div>
+                                <div className="pt-4 border-t border-border/60 flex items-center justify-between">
+                                    <span className="text-xs font-bold text-[#1B9157] flex items-center gap-1.5">
+                                        <CheckCircle2 className="w-4 h-4" /> 90% Pollination Dependency
+                                    </span>
+                                    <Link to="/crops-we-pollinate" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
+                                        View Crop <ArrowRight className="w-3.5 h-3.5" />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 2. Citrus & Oranges Bloom & Fruit Setting */}
+                        <div className="bg-card rounded-[2.5rem] overflow-hidden border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group">
+                            <div className="relative aspect-[4/3] overflow-hidden">
+                                <img
+                                    src="/images/pollination/orange-tree-heavy-fruiting.jpg"
+                                    alt="Citrus Tree in Heavy Fruiting"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                />
+                                <div className="absolute top-4 left-4">
+                                    <Badge className="bg-orange-600 text-white font-bold border-none text-xs">
+                                        🍊 Citrus & Orange Groves
+                                    </Badge>
+                                </div>
+                                <div className="absolute bottom-3 left-3 right-3 flex gap-1.5 overflow-hidden">
+                                    {["/images/pollination/citrus-bloom-buds-closeup.jpg", "/images/pollination/orange-tree-citrus-fruits.jpg", "/images/pollination/citrus-grove-drip-irrigation.jpg"].map((img, i) => (
+                                        <div key={i} className="w-12 h-9 rounded-lg overflow-hidden border border-white/60 shadow">
+                                            <img src={img} alt="Citrus thumbnail" className="w-full h-full object-cover" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-8 flex-1 flex flex-col justify-between space-y-4">
+                                <div>
+                                    <h3 className="text-2xl font-black text-neutral-900 tracking-tight mb-2">
+                                        Citrus Bloom & Fruit Setting
+                                    </h3>
+                                    <p className="text-sm text-neutral-600 font-medium leading-relaxed">
+                                        Sweetly scented white citrus blossoms open with high nectar secretion. Managed honeybee foraging increases fruit retention, promotes uniform circumference, and elevates sugar Brix levels.
+                                    </p>
+                                </div>
+                                <div className="pt-4 border-t border-border/60 flex items-center justify-between">
+                                    <span className="text-xs font-bold text-orange-600 flex items-center gap-1.5">
+                                        <CheckCircle2 className="w-4 h-4" /> High Brix & Fruit Packout
+                                    </span>
+                                    <Link to="/crops-we-pollinate" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
+                                        View Crop <ArrowRight className="w-3.5 h-3.5" />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 3. Maize & Vegetable Intercrop */}
+                        <div className="bg-card rounded-[2.5rem] overflow-hidden border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group">
+                            <div className="relative aspect-[4/3] overflow-hidden">
+                                <img
+                                    src="/images/pollination/maize-vegetable-intercrop-drip.jpg"
+                                    alt="Maize & Vegetable Field Intercrop Under Drip Irrigation"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                />
+                                <div className="absolute top-4 left-4">
+                                    <Badge className="bg-emerald-600 text-white font-bold border-none text-xs">
+                                        🌽 Maize & Companion Crops
+                                    </Badge>
+                                </div>
+                                <div className="absolute bottom-3 left-3 right-3 flex gap-1.5 overflow-hidden">
+                                    {["/images/pollination/maize-horticulture-field-panoramic.jpg", "/images/pollination/maize-crop-rows-vertical.png", "/images/pollination/maize-tasseling-closeup.png"].map((img, i) => (
+                                        <div key={i} className="w-12 h-9 rounded-lg overflow-hidden border border-white/60 shadow">
+                                            <img src={img} alt="Maize thumbnail" className="w-full h-full object-cover" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-8 flex-1 flex flex-col justify-between space-y-4">
+                                <div>
+                                    <h3 className="text-2xl font-black text-neutral-900 tracking-tight mb-2">
+                                        Maize Intercrop & Tasseling
+                                    </h3>
+                                    <p className="text-sm text-neutral-600 font-medium leading-relaxed">
+                                        Commercial beds under precision drip irrigation featuring vegetable crops intercropped with tasseling maize. Honeybees collect protein-dense tassel pollen, enhancing silk coverage and kernel fill to the tip.
+                                    </p>
+                                </div>
+                                <div className="pt-4 border-t border-border/60 flex items-center justify-between">
+                                    <span className="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
+                                        <CheckCircle2 className="w-4 h-4" /> 100% Cob Tip Filling
+                                    </span>
+                                    <Link to="/crops-we-pollinate" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
+                                        View Crop <ArrowRight className="w-3.5 h-3.5" />
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap justify-center gap-4">
+                        <Button size="lg" className="bg-[#1B9157] hover:bg-[#157746] text-white font-black rounded-2xl px-10 h-14 shadow-lg text-xs" asChild>
+                            <Link to="/crops-we-pollinate">Explore All Crops We Pollinate</Link>
+                        </Button>
+                        <Button size="lg" variant="outline" className="border-2 border-neutral-300 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
+                            <Link to="/media">View Field Photo Gallery & Media</Link>
+                        </Button>
                     </div>
                 </div>
             </section>

@@ -86,7 +86,7 @@ const CropsWePollinate = () => {
                 <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 mt-8">
                   <img
                     src="/images/pollination/orange-tree-citrus-fruits.jpg"
-                    alt="Citrus Setting with Baobab"
+                    alt="Citrus & Orange Fruit Setting in Bloom Season"
                     className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
@@ -97,25 +97,25 @@ const CropsWePollinate = () => {
 
                 <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 -mt-4">
                   <img
-                    src="/images/pollination/apisense-internal-sensor-probe.png"
-                    alt="BeeYield and Apisense at Work - Bees on Comb"
+                    src="/images/pollination/maize-vegetable-intercrop-drip.jpg"
+                    alt="Maize & Vegetable Intercrop Pollination"
                     className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
-                    🐝 BeeYield & Apisense at Work
+                    🌽 Maize & Crop Rows
                   </span>
                 </div>
 
                 <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 mt-4">
                   <img
-                    src="/images/pollination/mango-orange-farm-wide.jpg"
-                    alt="Dryland Baobab Orchard Layout"
+                    src="/images/pollination/citrus-grove-drip-irrigation.jpg"
+                    alt="Citrus Grove Under Drip Irrigation"
                     className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
-                    🌳 Baobab Agroforestry
+                    🍊 Citrus Grove in Bloom
                   </span>
                 </div>
               </div>
@@ -245,21 +245,21 @@ const CropsWePollinate = () => {
               Kenya Pollination & Mango Bloom Season • Field Operation
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight">
-              BeeYield and Apisense at Work: <br />
-              <span className="text-[#1B9157]">Mangoes, Oranges & Citrus</span> Orchard
+              BeeYield at Work: <br />
+              <span className="text-[#1B9157]">Mangoes, Citrus & Oranges, and Maize</span> Pollination
             </h2>
             <p className="mt-4 text-neutral-600 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-              It is currently peak <strong>Pollination and Mango Bloom Season in Kenya</strong>! BeeYield and Apisense are deployed in the field across Makueni County. Our colonies are actively working the dense <strong>flowering mango panicles</strong> and <strong>developing citrus orange groves</strong>, with real-time <strong>Apisense™ in-hive telemetry</strong> monitoring acoustic vitality, brood temperature, and foraging velocity under ancient Baobabs.
+              It is currently peak <strong>Pollination, Mango Bloom Season, and Citrus Bloom Season in Kenya</strong>! BeeYield colonies are actively deployed across orchards and farms in Makueni County. Our bees work the dense <strong>flowering mango panicles</strong>, <strong>fragrant citrus & orange blooms</strong>, and <strong>tasseling maize intercrops</strong> to drive maximum fruit set, kernel filling, and harvest yields.
             </p>
           </div>
 
           {/* Interactive Category Filter Pills */}
           <div className="flex flex-wrap justify-center gap-2 mb-10">
             {[
-              { id: "all", label: "All Field Photos (9)" },
-              { id: "mangoes", label: "🥭 Mangoes (3)" },
-              { id: "citrus", label: "🍊 Oranges & Citrus (3)" },
-              { id: "hardware", label: "📡 Field Telemetry (3)" },
+              { id: "all", label: "All Crop Pollination (12)" },
+              { id: "mangoes", label: "🥭 Mango Bloom Season (4)" },
+              { id: "citrus", label: "🍊 Citrus & Oranges (4)" },
+              { id: "maize", label: "🌽 Maize & Crops (4)" },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -277,14 +277,14 @@ const CropsWePollinate = () => {
             ))}
           </div>
 
-          {/* 9-Photo Showcase Grid with Dynamic Filtering */}
+          {/* 12-Photo Showcase Grid with Dynamic Filtering */}
           {(() => {
             const fieldHighlights = [
               {
                 id: "mango-bloom",
                 category: "mangoes",
                 title: "Dense Mango Flower Panicles",
-                description: "Peak anthesis in Kenya's mango season. Thousands of delicate florets require high-density bee visits to secure fertilization and eliminate early fruit drop.",
+                description: "Peak anthesis in Kenya's mango bloom season. Thousands of delicate florets require high-density bee visits to secure fertilization and eliminate early fruit drop.",
                 image: "/images/pollination/mango-panicles-close-bloom.png",
                 badge: "🥭 Mangoes • Bloom Season",
                 badgeColor: "bg-amber-600/90 text-white",
@@ -295,7 +295,7 @@ const CropsWePollinate = () => {
                 id: "mango-pink",
                 category: "mangoes",
                 title: "Pink Panicle Canopy Bloom",
-                description: "Flowering mango panicles exhibiting vibrant pink hues across the upper canopy. Strategic hive placement ensures forager bees access both outer branches and interior tree crowns.",
+                description: "Flowering mango panicles exhibiting vibrant pink hues across the upper canopy. Strategic hive placement ensures forager bees access both outer branches and interior crowns.",
                 image: "/images/pollination/mango-orchard-pink-panicles.png",
                 badge: "🥭 Mangoes • Canopy Burst",
                 badgeColor: "bg-rose-600/90 text-white",
@@ -306,12 +306,34 @@ const CropsWePollinate = () => {
                 id: "mango-blossom",
                 category: "mangoes",
                 title: "Synchronized Bloom Canopy",
-                description: "Vibrant flowering canopy in the dryland orchard. Mobile BeeYield colonies positioned to ensure top branches receive complete pollination pressure.",
+                description: "Vibrant flowering canopy in the commercial orchard. Mobile BeeYield colonies positioned to ensure top branches receive complete pollination pressure.",
                 image: "/images/pollination/mango-tree-full-blossom.png",
                 badge: "🥭 Full Mango Bloom",
                 badgeColor: "bg-lime-700/90 text-white",
                 metric: "100% Upper Branch Receptivity",
                 metricColor: "text-lime-700",
+              },
+              {
+                id: "mango-florets",
+                category: "mangoes",
+                title: "Fresh Blooming Mango Florets",
+                description: "Dense flower clusters in active bloom. Morning bee foraging surges deposit pollen onto receptive stigmas across commercial orchards.",
+                image: "/images/pollination/mango-flowering-panicles-new.jpg",
+                badge: "🥭 Fresh Florets in Bloom",
+                badgeColor: "bg-amber-700/90 text-white",
+                metric: "Rapid Nectar & Pollen Deposition",
+                metricColor: "text-amber-700",
+              },
+              {
+                id: "citrus-buds",
+                category: "citrus",
+                title: "Citrus Flower Buds in Peak Bloom",
+                description: "Sweetly fragrant white citrus flowers opening along branches. Bees transfer pollen across multiple blossoms to prevent flower drop.",
+                image: "/images/pollination/citrus-bloom-buds-closeup.jpg",
+                badge: "🍊 Citrus • Bloom Season",
+                badgeColor: "bg-amber-500/90 text-white",
+                metric: "Complete Floral Receptivity",
+                metricColor: "text-amber-700",
               },
               {
                 id: "citrus-heavy",
@@ -336,48 +358,59 @@ const CropsWePollinate = () => {
                 metricColor: "text-amber-700",
               },
               {
-                id: "citrus-intercrop",
+                id: "citrus-grove",
                 category: "citrus",
-                title: "Intercropped Agroforestry Rows",
-                description: "Synergistic pollination: bees forage across complementary floral nectar and pollen curves of mangoes and citrus, maintaining peak hive vigor throughout the season.",
-                image: "/images/pollination/citrus-mango-intercrop.jpg",
-                badge: "🌳 Intercrop Synergy • Oranges & Mangoes",
+                title: "Commercial Citrus Grove Under Drip",
+                description: "Structured rows of healthy citrus trees under precision drip irrigation, serviced by dedicated BeeYield colonies stationed throughout the grove blocks.",
+                image: "/images/pollination/citrus-grove-drip-irrigation.jpg",
+                badge: "🍊 Citrus Grove Pollination",
+                badgeColor: "bg-emerald-700/90 text-white",
+                metric: "Optimized Orchard Fruit Set",
+                metricColor: "text-emerald-700",
+              },
+              {
+                id: "maize-intercrop",
+                category: "maize",
+                title: "Maize & Vegetable Intercrop Rows",
+                description: "Drip-irrigated commercial beds with leafy greens and brassicas intercropped alongside tasseling maize, creating rich multi-layer pollinator foraging.",
+                image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+                badge: "🌽 Maize & Vegetable Intercrop",
+                badgeColor: "bg-emerald-600/90 text-white",
+                metric: "Multi-Crop Floral Synergy",
+                metricColor: "text-emerald-700",
+              },
+              {
+                id: "maize-panoramic",
+                category: "maize",
+                title: "Horticultural Maize Plantation",
+                description: "Expansive field perspective of irrigated crop beds against mountain ridgelines, where honeybees actively gather high-protein maize tassel pollen.",
+                image: "/images/pollination/maize-horticulture-field-panoramic.jpg",
+                badge: "🌽 Irrigated Crop Fields",
                 badgeColor: "bg-teal-700/90 text-white",
-                metric: "Multi-Crop Revenue Boost",
+                metric: "Full Tassel Anthesis Window",
                 metricColor: "text-teal-700",
               },
               {
-                id: "apisense-probe",
-                category: "hardware",
-                title: "Apisense™ In-Hive Telemetry",
-                description: "Apisense sensor probe mounted inside the brood comb with live honeybees actively working. Tracks acoustics, brood temperature, and queen vigor in real time.",
-                image: "/images/pollination/apisense-internal-sensor-probe.png",
-                badge: "🐝 BeeYield & Apisense at Work",
+                id: "maize-vertical",
+                category: "maize",
+                title: "Maize Pollination & Tassel Emergence",
+                description: "Vigorous crop rows showing early tassel emergence and silk reception. Bees collect abundant pollen, supporting surrounding companion crops.",
+                image: "/images/pollination/maize-crop-rows-vertical.png",
+                badge: "🌽 Maize Pollen Season",
+                badgeColor: "bg-lime-700/90 text-white",
+                metric: "Enhanced Tip Fill & Cob Weight",
+                metricColor: "text-lime-700",
+              },
+              {
+                id: "maize-tassel",
+                category: "maize",
+                title: "Maize Tasseling & Pollen Shedding",
+                description: "Golden anthers actively shedding nutrient-dense pollen. Bees rapidly forage across the field tassels, transferring grains and boosting cob uniformity.",
+                image: "/images/pollination/maize-tasseling-closeup.png",
+                badge: "🌽 Tasseling Stage",
                 badgeColor: "bg-yellow-600/90 text-white",
-                metric: "Real-Time Colony Health Telemetry",
+                metric: "Uniform Kernel Fill to the Tip",
                 metricColor: "text-yellow-700",
-              },
-              {
-                id: "beeyield-gateway",
-                category: "hardware",
-                title: "Autonomous Solar Field Gateway",
-                description: "Solar-powered wireless hub mounted on the hive stand in the orchard. Streams in-hive Apisense telemetry directly to the BeeYield analytics dashboard.",
-                image: "/images/pollination/beeyield-apisense-gateway-field.png",
-                badge: "📡 BeeYield Field Gateway",
-                badgeColor: "bg-blue-600/90 text-white",
-                metric: "24/7 Field Telemetry Stream",
-                metricColor: "text-blue-600",
-              },
-              {
-                id: "farm-panorama",
-                category: "hardware",
-                title: "Dual-Crop Dryland Orchard Panorama",
-                description: "Comprehensive field perspective of the Makueni orchard showing structured orange tree rows in the foreground and tall, blossoming mango trees in the midground against native Baobab trees.",
-                image: "/images/pollination/mango-orange-farm-wide.jpg",
-                badge: "🌳 Baobab Agroforestry Zone",
-                badgeColor: "bg-emerald-700/90 text-white",
-                metric: "Semi-Arid Habitat Synergy",
-                metricColor: "text-emerald-700",
               },
             ];
 

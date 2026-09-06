@@ -19,17 +19,20 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         dependencyPercent: 20,
         optimalHivesPerAcre: "0.5 - 1.0 Hives",
         targetFPA: 8,
-        beeyieldAdvantage: "While wind-pollinated, BeeYield monitors ensure bees collect high-protein maize pollen during gaps in other blooms, maintaining colony strength for subsequent crops.",
-        regionalTrends2026: "Precision planting requires synchronized pest management, which BeeYield's sensors detect via acoustic anomalies.",
-        economicImpact: "A staple food security crop; healthy pollinator populations in maize fields support surrounding biodiversity.",
+        beeyieldAdvantage: "While wind-pollinated, BeeYield managed colonies collect rich maize tassel pollen, boosting silk receptivity and ensuring dense kernel tip-fill across rows.",
+        regionalTrends2026: "Intercropping maize with vegetables under drip irrigation provides continuous forage, optimizing pollination and overall farm yield.",
+        economicImpact: "A vital staple and cash crop; managed pollination in maize intercrops improves ear filling and supports companion vegetable crops.",
         estimatedMarketValueUsdBn: 3.2,
-        image: "/images/pollination/maize-field-panorama-mountain.png",
+        image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
         galleryImages: [
-            "/images/pollination/maize-field-panorama-mountain.png",
+            "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+            "/images/pollination/maize-horticulture-field-panoramic.jpg",
+            "/images/pollination/maize-crop-rows-vertical.png",
+            "/images/pollination/maize-field-rows-panorama.jpg",
             "/images/pollination/maize-tasseling-closeup.png",
-            "/images/pollination/maize-field-dryland-hills.png",
-            "/images/pollination/maize-baobab-agroforestry.png",
-            "/images/pollination/maize-dense-tasseling-field.png"
+            "/images/pollination/maize-field-panorama-mountain.png",
+            "/images/pollination/maize-dense-tasseling-field.png",
+            "/images/pollination/maize-field-dryland-hills.png"
         ]
     },
     "Sunflower": {
@@ -60,7 +63,12 @@ export const beePollinationData: Record<string, PollinationDetail> = {
             "/images/pollination/mango-orchard-pink-panicles.png",
             "/images/pollination/mango-tree-full-blossom.png",
             "/images/pollination/mango-bloom-pollination.jpg",
-            "/images/pollination/mango-orchard-flowering.jpg"
+            "/images/pollination/mango-orchard-flowering.jpg",
+            "/images/pollination/mango-flowering-panicles-new.jpg",
+            "/images/pollination/mango-bloom-canopy-wide.jpg",
+            "/images/pollination/mango-panicle-closeup-new.jpg",
+            "/images/pollination/mango-flowering-branch.jpg",
+            "/images/pollination/mango-bloom-season-tree.jpg"
         ]
     },
 
@@ -104,7 +112,11 @@ export const beePollinationData: Record<string, PollinationDetail> = {
             "/images/pollination/orange-tree-heavy-fruiting.jpg",
             "/images/pollination/orange-citrus-orchard.jpg",
             "/images/pollination/citrus-mango-intercrop.jpg",
-            "/images/pollination/mango-orange-farm-wide.jpg"
+            "/images/pollination/mango-orange-farm-wide.jpg",
+            "/images/pollination/citrus-grove-drip-irrigation.jpg",
+            "/images/pollination/citrus-tree-canopy-closeup.jpg",
+            "/images/pollination/citrus-papaya-intercrop.jpg",
+            "/images/pollination/citrus-tree-young-orchard.jpg"
         ]
     },
     "Citrus": {
@@ -113,8 +125,8 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         dependencyPercent: 75,
         optimalHivesPerAcre: "2.0 - 3.5 Hives",
         targetFPA: 22,
-        beeyieldAdvantage: "Continuous telemetry tracking during the rapid citrus bloom surge ensures maximum flower visits before petal fall, drastically reducing fruit drop and increasing juice density.",
-        regionalTrends2026: "Integrated dryland citrus and mango agroforestry creates extended forage corridors for commercial pollinating colonies.",
+        beeyieldAdvantage: "Strategic hive placement during the rapid citrus bloom surge ensures maximum flower visits before petal fall, drastically reducing fruit drop and increasing juice density.",
+        regionalTrends2026: "Commercial orchards synchronizing citrus and mango bloom management achieve extended forage windows and superior fruit set.",
         economicImpact: "Enhances fruit diameter, rind consistency, and sugar content (Brix) for premium local and export markets.",
         estimatedMarketValueUsdBn: 2.8,
         image: "/images/pollination/orange-tree-heavy-fruiting.jpg",
@@ -123,7 +135,11 @@ export const beePollinationData: Record<string, PollinationDetail> = {
             "/images/pollination/orange-tree-citrus-fruits.jpg",
             "/images/pollination/orange-citrus-orchard.jpg",
             "/images/pollination/citrus-mango-intercrop.jpg",
-            "/images/pollination/mango-orange-farm-wide.jpg"
+            "/images/pollination/mango-orange-farm-wide.jpg",
+            "/images/pollination/citrus-bloom-buds-closeup.jpg",
+            "/images/pollination/citrus-bloom-branch-detail.jpg",
+            "/images/pollination/citrus-papaya-orchard-rows.jpg",
+            "/images/pollination/citrus-grove-drip-irrigation.jpg"
         ]
     },
     "Tomatoes": {
