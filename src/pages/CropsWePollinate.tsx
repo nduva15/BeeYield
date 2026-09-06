@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Users, Cpu, Sprout, ArrowRight, Check,
-  Globe, Flower2, Wheat, MapPin, Mail,
-  Sparkles, Camera, CheckCircle2, Layers
+  ArrowRight, Check,
+  Globe, Flower2, MapPin, Mail,
+  Camera
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
@@ -13,7 +13,6 @@ import { dashboardPollinationCropDetails } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
-  const [highlightFilter, setHighlightFilter] = useState<"all" | "mangoes" | "citrus" | "maize">("all");
   const pollinationCrops = dashboardPollinationCropDetails;
 
   const locations = [
@@ -61,7 +60,7 @@ const CropsWePollinate = () => {
                   <Link to="/contact">Get a Free Consultation</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="rounded-full border-2 border-neutral-200 text-neutral-900 hover:bg-[#F9F7F2] font-bold h-14 px-8" asChild>
-                  <Link to="#latest-field-highlight">Latest Field Photos</Link>
+                  <Link to="#crops">Explore Crops</Link>
                 </Button>
               </div>
             </div>
@@ -236,258 +235,7 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
-      {/* Latest Pollination Field Highlight: BeeYield and Apisense at Work */}
-      <section id="latest-field-highlight" className="py-20 bg-background border-y border-border/50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-10">
-            <Badge className="bg-[#1B9157]/15 text-[#1B9157] border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-4">
-              <Camera className="w-3.5 h-3.5 mr-1.5 inline" />
-              Kenya Pollination & Mango Bloom Season • Field Operation
-            </Badge>
-            <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight">
-              BeeYield at Work: <br />
-              <span className="text-[#1B9157]">Mangoes, Citrus & Oranges, and Maize</span> Pollination
-            </h2>
-            <p className="mt-4 text-neutral-600 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-              It is currently peak <strong>Pollination, Mango Bloom Season, and Citrus Bloom Season in Kenya</strong>! BeeYield colonies are actively deployed across orchards and farms in Makueni County. Our bees work the dense <strong>flowering mango panicles</strong>, <strong>fragrant citrus & orange blooms</strong>, and <strong>tasseling maize intercrops</strong> to drive maximum fruit set, kernel filling, and harvest yields.
-            </p>
-          </div>
 
-          {/* Interactive Category Filter Pills */}
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
-            {[
-              { id: "all", label: "All Field Photos (15)" },
-              { id: "mangoes", label: "🥭 Mango Bloom (5)" },
-              { id: "citrus", label: "🍊 Citrus & Oranges (5)" },
-              { id: "maize", label: "🌽 Maize & Crops (5)" },
-            ].map((tab) => (
-              <Button
-                key={tab.id}
-                size="sm"
-                variant={highlightFilter === tab.id ? "default" : "outline"}
-                className={`rounded-full px-4 font-bold transition-all ${
-                  highlightFilter === tab.id
-                    ? "bg-[#1B9157] text-white hover:bg-[#157746] shadow-sm"
-                    : "border-neutral-200 hover:bg-neutral-100 text-neutral-700"
-                }`}
-                onClick={() => setHighlightFilter(tab.id as any)}
-              >
-                {tab.label}
-              </Button>
-            ))}
-          </div>
-
-          {/* 15-Photo Showcase Grid with Dynamic Filtering */}
-          {(() => {
-            const fieldHighlights = [
-              {
-                id: "mango-bloom",
-                category: "mangoes",
-                title: "Dense Mango Flower Panicles",
-                description: "Peak anthesis in Kenya's mango bloom season. Thousands of delicate florets require high-density bee visits to secure fertilization and eliminate early fruit drop.",
-                image: "/images/pollination/mango-panicles-close-bloom.png",
-                badge: "🥭 Mangoes • Bloom Season",
-                badgeColor: "bg-amber-600/90 text-white",
-                metric: "90% Pollination Dependency",
-                metricColor: "text-[#1B9157]",
-              },
-              {
-                id: "mango-pink",
-                category: "mangoes",
-                title: "Pink Panicle Canopy Bloom",
-                description: "Flowering mango panicles exhibiting vibrant pink hues across the upper canopy. Strategic hive placement ensures forager bees access both outer branches and interior crowns.",
-                image: "/images/pollination/mango-orchard-pink-panicles.png",
-                badge: "🥭 Mangoes • Canopy Burst",
-                badgeColor: "bg-rose-600/90 text-white",
-                metric: "Export Grade Volume Target",
-                metricColor: "text-rose-700",
-              },
-              {
-                id: "mango-blossom",
-                category: "mangoes",
-                title: "Synchronized Bloom Canopy",
-                description: "Vibrant flowering canopy in the commercial orchard. Mobile BeeYield colonies positioned to ensure top branches receive complete pollination pressure.",
-                image: "/images/pollination/mango-tree-full-blossom.png",
-                badge: "🥭 Full Mango Bloom",
-                badgeColor: "bg-lime-700/90 text-white",
-                metric: "100% Upper Branch Receptivity",
-                metricColor: "text-lime-700",
-              },
-              {
-                id: "mango-florets",
-                category: "mangoes",
-                title: "Fresh Blooming Mango Florets",
-                description: "Dense flower clusters in active bloom. Morning bee foraging surges deposit pollen onto receptive stigmas across commercial orchards.",
-                image: "/images/pollination/mango-flowering-panicles-new.jpg",
-                badge: "🥭 Fresh Florets in Bloom",
-                badgeColor: "bg-amber-700/90 text-white",
-                metric: "Rapid Nectar & Pollen Deposition",
-                metricColor: "text-amber-700",
-              },
-              {
-                id: "mango-canopy-wide",
-                category: "mangoes",
-                title: "Expansive Mango Orchard Canopy",
-                description: "High-density mango orchard showing full seasonal blossom cover. Synchronized colony stocking drives higher fruit set rates across whole blocks.",
-                image: "/images/pollination/mango-bloom-canopy-wide.jpg",
-                badge: "🥭 Orchard Canopy Bloom",
-                badgeColor: "bg-emerald-700/90 text-white",
-                metric: "Full Orchard Block Coverage",
-                metricColor: "text-emerald-700",
-              },
-              {
-                id: "citrus-buds",
-                category: "citrus",
-                title: "Citrus Flower Buds in Peak Bloom",
-                description: "Sweetly fragrant white citrus flowers opening along branches. Bees transfer pollen across multiple blossoms to prevent flower drop.",
-                image: "/images/pollination/citrus-bloom-buds-closeup.jpg",
-                badge: "🍊 Citrus • Bloom Season",
-                badgeColor: "bg-amber-500/90 text-white",
-                metric: "Complete Floral Receptivity",
-                metricColor: "text-amber-700",
-              },
-              {
-                id: "citrus-branch-detail",
-                category: "citrus",
-                title: "Delicate Citrus Blossoms & Pollen",
-                description: "Close-up of newly opened citrus blossoms offering copious nectar and pollen. Targeted pollination during early anthesis secures optimal ovule fertilization.",
-                image: "/images/pollination/citrus-bloom-branch-detail.jpg",
-                badge: "🍊 Citrus Blossom Anthesis",
-                badgeColor: "bg-orange-600/90 text-white",
-                metric: "Enhanced Ovule Fertilization",
-                metricColor: "text-orange-600",
-              },
-              {
-                id: "citrus-heavy",
-                category: "citrus",
-                title: "Citrus Tree in Heavy Fruiting",
-                description: "Orange branches loaded with dense clusters of plump, developing citrus fruits following successful pollination. Multiple bee visits ensure uniform roundness and maximum fruit retention.",
-                image: "/images/pollination/orange-tree-heavy-fruiting.jpg",
-                badge: "🍊 Citrus • Heavy Fruiting",
-                badgeColor: "bg-orange-600/90 text-white",
-                metric: "90%+ First-Grade Market Packout",
-                metricColor: "text-orange-600",
-              },
-              {
-                id: "citrus-fruits",
-                category: "citrus",
-                title: "Citrus Fruit Setting & Development",
-                description: "Orange trees loaded with young spherical fruits and late blossoms. Bee pollination directly boosts fruit circumference, juice volume, and sugar Brix levels.",
-                image: "/images/pollination/orange-tree-citrus-fruits.jpg",
-                badge: "🍊 Oranges • Fruit Setting",
-                badgeColor: "bg-amber-600/90 text-white",
-                metric: "Higher Juice Content & Brix",
-                metricColor: "text-amber-700",
-              },
-              {
-                id: "citrus-grove",
-                category: "citrus",
-                title: "Commercial Citrus Grove Under Drip",
-                description: "Structured rows of healthy citrus trees under precision drip irrigation, serviced by dedicated BeeYield colonies stationed throughout the grove blocks.",
-                image: "/images/pollination/citrus-grove-drip-irrigation.jpg",
-                badge: "🍊 Citrus Grove Pollination",
-                badgeColor: "bg-emerald-700/90 text-white",
-                metric: "Optimized Orchard Fruit Set",
-                metricColor: "text-emerald-700",
-              },
-              {
-                id: "maize-intercrop",
-                category: "maize",
-                title: "Maize & Vegetable Intercrop Rows",
-                description: "Drip-irrigated commercial beds with leafy greens and brassicas intercropped alongside tasseling maize, creating rich multi-layer pollinator foraging.",
-                image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
-                badge: "🌽 Maize & Vegetable Intercrop",
-                badgeColor: "bg-emerald-600/90 text-white",
-                metric: "Multi-Crop Floral Synergy",
-                metricColor: "text-emerald-700",
-              },
-              {
-                id: "maize-panoramic",
-                category: "maize",
-                title: "Horticultural Maize Plantation",
-                description: "Expansive field perspective of irrigated crop beds against mountain ridgelines, where honeybees actively gather high-protein maize tassel pollen.",
-                image: "/images/pollination/maize-horticulture-field-panoramic.jpg",
-                badge: "🌽 Irrigated Crop Fields",
-                badgeColor: "bg-teal-700/90 text-white",
-                metric: "Full Tassel Anthesis Window",
-                metricColor: "text-teal-700",
-              },
-              {
-                id: "maize-vertical",
-                category: "maize",
-                title: "Maize Pollination & Tassel Emergence",
-                description: "Vigorous crop rows showing early tassel emergence and silk reception. Bees collect abundant pollen, supporting surrounding companion crops.",
-                image: "/images/pollination/maize-crop-rows-vertical.png",
-                badge: "🌽 Maize Pollen Season",
-                badgeColor: "bg-lime-700/90 text-white",
-                metric: "Enhanced Tip Fill & Cob Weight",
-                metricColor: "text-lime-700",
-              },
-              {
-                id: "maize-tassel",
-                category: "maize",
-                title: "Maize Tasseling & Pollen Shedding",
-                description: "Golden anthers actively shedding nutrient-dense pollen. Bees rapidly forage across the field tassels, transferring grains and boosting cob uniformity.",
-                image: "/images/pollination/maize-tasseling-closeup.png",
-                badge: "🌽 Tasseling Stage",
-                badgeColor: "bg-yellow-600/90 text-white",
-                metric: "Uniform Kernel Fill to the Tip",
-                metricColor: "text-yellow-700",
-              },
-              {
-                id: "maize-panorama-rows",
-                category: "maize",
-                title: "Precision Maize Planting Rows",
-                description: "Contoured crop lines optimized for uniform flowering synchrony. Strong forager bee presence accelerates complete silk receptivity and kernel development.",
-                image: "/images/pollination/maize-field-rows-panorama.jpg",
-                badge: "🌽 Uniform Crop Rows",
-                badgeColor: "bg-green-700/90 text-white",
-                metric: "Maximized Kernel Uniformity",
-                metricColor: "text-green-700",
-              },
-            ];
-
-            const filtered = highlightFilter === "all" 
-              ? fieldHighlights 
-              : fieldHighlights.filter(h => h.category === highlightFilter);
-
-            return (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
-                {filtered.map((item) => (
-                  <div
-                    key={item.id}
-                    className="group rounded-3xl overflow-hidden bg-card border border-border/70 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col"
-                  >
-                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute top-3 left-3">
-                        <Badge className={`${item.badgeColor} border-none text-xs font-bold shadow-md`}>
-                          {item.badge}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="p-6 flex-1 flex flex-col justify-between space-y-3">
-                      <div>
-                        <h3 className="text-lg font-bold text-neutral-900">{item.title}</h3>
-                        <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                          {item.description}
-                        </p>
-                      </div>
-                      <div className={`flex items-center gap-2 pt-2 border-t border-border/40 text-xs font-semibold ${item.metricColor}`}>
-                        <CheckCircle2 className="w-4 h-4 shrink-0" /> {item.metric}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            );
-          })()}
-        </div>
-      </section>
 
       {/* Crops Grid */}
       <section id="crops" className="py-20 bg-secondary/10">
