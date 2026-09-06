@@ -18,10 +18,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { glass, PageHeader } from './GlassTheme';
 
 interface SupportCenterViewProps {
-    onTabChange: (tab: string) => void;
+    onTabChange?: (tab: string) => void;
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
-const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
+const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOpen, onClose }) => {
     const [activeTab, setActiveTab] = React.useState<'all' | 'new' | 'in_progress' | 'resolved'>('all');
     const [filterText, setFilterText] = React.useState('');
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
@@ -107,11 +109,13 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
         setIsSubmitting(false);
     };
 
-    return (
+    if (isOpen !== undefined && !isOpen) return null;
+
+    const content = (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={glass.page}
+            className={cn(glass.page, isOpen ? "p-6 sm:p-8" : "")}
         >
             <PageHeader
                 icon={Headphones}
@@ -119,12 +123,22 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
                 title={<>Support <span className="text-[#F4D03F]">Page View</span></>}
                 subtitle="High-priority assistance for your apiculture operations."
                 actions={
-                    <button
-                        onClick={() => setIsDialogOpen(true)}
-                        className={glass.btnPrimary}
-                    >
-                        New Ticket <ChevronRight className="w-4 h-4 ml-1" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsDialogOpen(true)}
+                            className="h-9 px-4 rounded-xl font-bold text-xs bg-[#F59E0B] hover:bg-[#EAB308] text-black flex items-center gap-1.5 transition-all shadow-md"
+                        >
+                            + New Ticket <ChevronRight className="w-4 h-4 ml-1" />
+                        </button>
+                        {onClose && (
+                            <button
+                                onClick={onClose}
+                                className="w-9 h-9 rounded-xl border border-white/10 hover:bg-white/10 flex items-center justify-center text-muted-foreground hover:text-white transition-all shadow-sm"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        )}
+                    </div>
                 }
             />
 
@@ -411,6 +425,18 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = () => {
             </div>
         </motion.div>
     );
+
+    if (isOpen) {
+        return (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+                <div className="bg-[#12110E] text-foreground border border-white/10 rounded-3xl w-full max-w-5xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-y-auto custom-scroll">
+                    {content}
+                </div>
+            </div>
+        );
+    }
+
+    return content;
 };
 
 export default SupportCenterView;

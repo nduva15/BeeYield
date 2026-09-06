@@ -47,6 +47,8 @@ import ApiarySizing from "@/components/beeyield/lovable_ai/ApiarySizing";
 import YieldProjection from "@/components/beeyield/lovable_ai/YieldProjection";
 import MeasurementDataTools from "@/components/beeyield/lovable_ai/MeasurementDataTools";
 import KnowledgeDashboard from "@/components/beeyield/lovable_ai/KnowledgeDashboard";
+import HiveHealthDashboard from "@/components/beeyield/lovable_ai/HiveHealthDashboard";
+import SupportPageModal from "@/components/beeyield/lovable_ai/SupportPageModal";
 
 type Message = {
   id: string;
@@ -183,6 +185,8 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [measurementToolsOpen, setMeasurementToolsOpen] = useState(false);
   const [knowledgeHubOpen, setKnowledgeHubOpen] = useState(false);
+  const [hiveHealthOpen, setHiveHealthOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"welcome" | "hub">("hub");
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
@@ -548,10 +552,10 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
-                onClick={() => { if (onTabChange) onTabChange("home"); else navigate("/beeyield-dashboard?tab=home"); }}
+                onClick={() => setHiveHealthOpen(true)}
                 className="cursor-pointer"
               >
-                <HeartPulse className="w-4 h-4 mr-2" /> Hive Health Dashboard
+                <HeartPulse className="w-4 h-4 mr-2 text-amber-500" /> Hive Health Dashboard
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => { if (onTabChange) onTabChange("integrations"); else navigate("/beeyield-dashboard?tab=integrations"); }}
@@ -560,10 +564,10 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <Plug className="w-4 h-4 mr-2" /> Integrations (Shopify, QuickBooks, eTIMS)
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => { if (onTabChange) onTabChange("support"); else navigate("/beeyield-dashboard?tab=support"); }}
+                onClick={() => setSupportOpen(true)}
                 className="cursor-pointer"
               >
-                <LifeBuoy className="w-4 h-4 mr-2" /> Support & Tickets
+                <LifeBuoy className="w-4 h-4 mr-2 text-amber-500" /> Support & Tickets
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => { if (onTabChange) onTabChange("settings"); else navigate("/beeyield-dashboard?tab=settings"); }}
@@ -872,6 +876,8 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
       <MeasurementDataTools isOpen={measurementToolsOpen} onClose={() => setMeasurementToolsOpen(false)} />
+      <HiveHealthDashboard isOpen={hiveHealthOpen} onClose={() => setHiveHealthOpen(false)} />
+      <SupportPageModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} onTabChange={onTabChange} />
 
       {knowledgeHubOpen && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
