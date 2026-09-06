@@ -177,6 +177,25 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         economicImpact: "Supports the biodiversity necessary for sustainable large-scale plantation management.",
         estimatedMarketValueUsdBn: 0.8,
         image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600"
+    },
+    "Vegetables": {
+        cropName: "Vegetables",
+        beeDependence: "High (Fruit & Seed Set)",
+        dependencyPercent: 80,
+        optimalHivesPerAcre: "2.0 - 4.0 Hives",
+        targetFPA: 20,
+        beeyieldAdvantage: "Generalist honeybee colonies visit peppers, courgettes, squash, and cucurbits equally, eliminating misshapen fruit and boosting marketable pack-out.",
+        regionalTrends2026: "Intensive horticulture under drip irrigation is expanding rapidly. Managed pollination is essential for consistent size, shape, and yield.",
+        economicImpact: "Improves fruit shape, weight uniformity, and seed count across diverse vegetable crops, directly raising market value.",
+        estimatedMarketValueUsdBn: 1.9,
+        image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+        galleryImages: [
+            "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+            "/images/pollination/maize-horticulture-field-panoramic.jpg",
+            "/images/pollination/citrus-papaya-intercrop.jpg",
+            "/images/pollination/citrus-papaya-orchard-rows.jpg",
+            "/images/pollination/maize-field-rows-panorama.jpg"
+        ]
     }
 };
 
@@ -191,6 +210,7 @@ export const DASHBOARD_POLLINATION_CROPS = [
     "Tomatoes",
     "Onions",
     "Sisal",
+    "Vegetables",
 ] as const;
 
 export const dashboardPollinationCropNames = [...DASHBOARD_POLLINATION_CROPS];
