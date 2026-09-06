@@ -363,9 +363,10 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
             </button>
             <button onClick={doTest} disabled={busy !== ""}
               className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
-              {busy === "test" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Verify connection
+              {busy === "test" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Test connection
             </button>
             <button onClick={doSync} disabled={busy !== "" || conn?.status !== "connected"}
+              title={conn?.status !== "connected" ? "Run Test connection first — syncing stays locked until credentials verify" : undefined}
               className="px-3 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5 disabled:opacity-40">
               {busy === "sync" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />} Run sync
             </button>
@@ -376,6 +377,35 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
               </button>
             )}
           </div>
+
+          {conn?.status !== "connected" && (
+            <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-honey" />
+              Nothing is written to {meta.name} until a Test connection passes — inspections and audits saved before then
+              are queued in the timeline below and can be re-synced with one click.
+            </p>
+          )}
+
+          {checks && (
+            <div className={`rounded-lg border p-4 ${checks.every((c) => c.ok || !c.critical) ? "border-emerald-500/30 bg-emerald-500/5" : "border-red-500/30 bg-red-500/5"}`}>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3" /> Credential validation
+              </p>
+              <ul className="space-y-1.5">
+                {checks.map((c) => (
+                  <li key={c.label} className="flex items-start gap-2 text-xs">
+                    {c.ok
+                      ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                      : <AlertCircle className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${c.critical ? "text-red-400" : "text-honey"}`} />}
+                    <span className="text-foreground font-medium">{c.label}</span>
+                    <span className="text-muted-foreground">— {c.detail}</span>
+                    {!c.critical && !c.ok && <span className="ml-auto text-[10px] text-honey shrink-0">warning only</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
 
           {summary && (
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
