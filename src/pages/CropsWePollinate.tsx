@@ -13,7 +13,7 @@ import { dashboardPollinationCropDetails } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
-  const [highlightFilter, setHighlightFilter] = useState<"all" | "mangoes" | "citrus" | "maize" | "iot">("all");
+  const [highlightFilter, setHighlightFilter] = useState<"all" | "mangoes" | "citrus" | "maize">("all");
   const pollinationCrops = dashboardPollinationCropDetails;
 
   const locations = [
@@ -109,13 +109,13 @@ const CropsWePollinate = () => {
 
                 <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 mt-4">
                   <img
-                    src="/images/pollination/apisense-internal-sensor-probe.png"
-                    alt="Precision Pollination IoT In-Hive Sensor & Bees"
+                    src="/images/pollination/citrus-bloom-buds-closeup.jpg"
+                    alt="Citrus Flower Buds in Peak Bloom"
                     className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
-                    🐝 IoT Device & Active Bees
+                    🍊 Citrus Bloom Buds
                   </span>
                 </div>
               </div>
@@ -257,10 +257,9 @@ const CropsWePollinate = () => {
           <div className="flex flex-wrap justify-center gap-2 mb-10">
             {[
               { id: "all", label: "All Field Photos (15)" },
-              { id: "mangoes", label: "🥭 Mango Bloom (4)" },
-              { id: "citrus", label: "🍊 Citrus & Oranges (4)" },
-              { id: "maize", label: "🌽 Maize & Crops (4)" },
-              { id: "iot", label: "🐝 IoT Devices & Bees (3)" },
+              { id: "mangoes", label: "🥭 Mango Bloom (5)" },
+              { id: "citrus", label: "🍊 Citrus & Oranges (5)" },
+              { id: "maize", label: "🌽 Maize & Crops (5)" },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -326,6 +325,17 @@ const CropsWePollinate = () => {
                 metricColor: "text-amber-700",
               },
               {
+                id: "mango-canopy-wide",
+                category: "mangoes",
+                title: "Expansive Mango Orchard Canopy",
+                description: "High-density mango orchard showing full seasonal blossom cover. Synchronized colony stocking drives higher fruit set rates across whole blocks.",
+                image: "/images/pollination/mango-bloom-canopy-wide.jpg",
+                badge: "🥭 Orchard Canopy Bloom",
+                badgeColor: "bg-emerald-700/90 text-white",
+                metric: "Full Orchard Block Coverage",
+                metricColor: "text-emerald-700",
+              },
+              {
                 id: "citrus-buds",
                 category: "citrus",
                 title: "Citrus Flower Buds in Peak Bloom",
@@ -335,6 +345,17 @@ const CropsWePollinate = () => {
                 badgeColor: "bg-amber-500/90 text-white",
                 metric: "Complete Floral Receptivity",
                 metricColor: "text-amber-700",
+              },
+              {
+                id: "citrus-branch-detail",
+                category: "citrus",
+                title: "Delicate Citrus Blossoms & Pollen",
+                description: "Close-up of newly opened citrus blossoms offering copious nectar and pollen. Targeted pollination during early anthesis secures optimal ovule fertilization.",
+                image: "/images/pollination/citrus-bloom-branch-detail.jpg",
+                badge: "🍊 Citrus Blossom Anthesis",
+                badgeColor: "bg-orange-600/90 text-white",
+                metric: "Enhanced Ovule Fertilization",
+                metricColor: "text-orange-600",
               },
               {
                 id: "citrus-heavy",
@@ -414,37 +435,15 @@ const CropsWePollinate = () => {
                 metricColor: "text-yellow-700",
               },
               {
-                id: "iot-probe",
-                category: "iot",
-                title: "Precision In-Hive IoT Sensor & Bees",
-                description: "Apisense IoT sensor probe positioned inside the active brood comb with working honeybees clustering on comb wax. Monitors real-time acoustic frequencies, brood temperatures, and hive vitality during crop pollination.",
-                image: "/images/pollination/apisense-internal-sensor-probe.png",
-                badge: "🐝 In-Hive IoT & Bees",
-                badgeColor: "bg-amber-600/90 text-white",
-                metric: "Live Colony Vitality & Acoustics",
-                metricColor: "text-amber-700",
-              },
-              {
-                id: "iot-gateway",
-                category: "iot",
-                title: "Autonomous Solar IoT Field Gateway",
-                description: "Solar-powered wireless IoT communication node deployed beside commercial hives in the orchard. Relays real-time pollination flight data and weather metrics directly to the grower dashboard.",
-                image: "/images/pollination/beeyield-apisense-gateway-field.png",
-                badge: "📡 Solar IoT Field Gateway",
-                badgeColor: "bg-blue-600/90 text-white",
-                metric: "24/7 Field Data Stream",
-                metricColor: "text-blue-600",
-              },
-              {
-                id: "bee-comb",
-                category: "iot",
-                title: "Active Honeybee Colony on Comb",
-                description: "Dense population of honeybees actively drawing wax, raising brood, and preparing for morning foraging flights across flowering mango panicles, citrus blooms, and tasseling maize.",
-                image: "/images/pollination/hive-comb-inspection-6.png",
-                badge: "🐝 High-Vigor Foraging Bees",
-                badgeColor: "bg-emerald-600/90 text-white",
-                metric: "Peak Foraging Workforce",
-                metricColor: "text-emerald-700",
+                id: "maize-panorama-rows",
+                category: "maize",
+                title: "Precision Maize Planting Rows",
+                description: "Contoured crop lines optimized for uniform flowering synchrony. Strong forager bee presence accelerates complete silk receptivity and kernel development.",
+                image: "/images/pollination/maize-field-rows-panorama.jpg",
+                badge: "🌽 Uniform Crop Rows",
+                badgeColor: "bg-green-700/90 text-white",
+                metric: "Maximized Kernel Uniformity",
+                metricColor: "text-green-700",
               },
             ];
 
