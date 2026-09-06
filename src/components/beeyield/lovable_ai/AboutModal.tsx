@@ -32,7 +32,7 @@ interface AboutModalProps {
 export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scroll" hideClose>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scroll">
         <DialogHeader>
           <DialogTitle className="text-2xl font-display text-honey flex items-center gap-2">
             🐝 About Beeyield AI

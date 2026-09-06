@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Wifi, Database, Settings, LogIn, LogOut, Cpu, Plug, LifeBuoy } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Cpu, LogIn, LogOut, Plug, LifeBuoy, Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,46 +7,47 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/beeyield/lovable_ai/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import beeyieldLogo from "@/assets/Logo.png";
+import beeyieldLogo from "@/assets/beeyield-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
+import { useAuth } from "@/hooks/use-auth";
+import { useNavigate } from "react-router-dom";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
-import ChatHistory, { type Conversation } from "@/components/beeyield/lovable_ai/ChatHistory";
-import AboutModal from "@/components/beeyield/lovable_ai/AboutModal";
-import MessageActions from "@/components/beeyield/lovable_ai/MessageActions";
-import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer";
-import BeeGallery from "@/components/beeyield/lovable_ai/BeeGallery";
-import BeeDiseasesPage from "@/components/beeyield/lovable_ai/BeeDiseasesPage";
-import PollinationCharts from "@/components/beeyield/lovable_ai/PollinationCharts";
-import PollinationLookup from "@/components/beeyield/lovable_ai/PollinationLookup";
-import HarvestCalculator from "@/components/beeyield/lovable_ai/HarvestCalculator";
-import PrecisionDrilldown from "@/components/beeyield/lovable_ai/PrecisionDrilldown";
-import HivePlacementMap from "@/components/beeyield/lovable_ai/HivePlacementMap";
-import BeeFlightTracker from "@/components/beeyield/lovable_ai/BeeFlightTracker";
-import BloomPhenology from "@/components/beeyield/lovable_ai/BloomPhenology";
-import MOAView from "@/components/beeyield/lovable_ai/MOAView";
-import FloragePage from "@/components/beeyield/lovable_ai/FloragePage";
-import ActivityCounter from "@/components/beeyield/lovable_ai/ActivityCounter";
-import ActivityForecaster from "@/components/beeyield/lovable_ai/ActivityForecaster";
-import PollinationPlanning from "@/components/beeyield/lovable_ai/PollinationPlanning";
-import PollinationCalcs from "@/components/beeyield/lovable_ai/PollinationCalcs";
-import AlertsPage from "@/components/beeyield/lovable_ai/AlertsPage";
-import MOACompare from "@/components/beeyield/lovable_ai/MOACompare";
-import BeeSpeciesPage from "@/components/beeyield/lovable_ai/BeeSpeciesPage";
-import BeeyieldCalculators from "@/components/beeyield/lovable_ai/BeeyieldCalculators";
-import VarroaSimulator from "@/components/beeyield/lovable_ai/VarroaSimulator";
-import DatasetImport from "@/components/beeyield/lovable_ai/DatasetImport";
-import FeedingSchedule from "@/components/beeyield/lovable_ai/FeedingSchedule";
-import KnowledgeSearch from "@/components/beeyield/lovable_ai/KnowledgeSearch";
-import ApiarySizing from "@/components/beeyield/lovable_ai/ApiarySizing";
-import YieldProjection from "@/components/beeyield/lovable_ai/YieldProjection";
-import MeasurementDataTools from "@/components/beeyield/lovable_ai/MeasurementDataTools";
-import KnowledgeDashboard from "@/components/beeyield/lovable_ai/KnowledgeDashboard";
-import HiveHealthDashboard from "@/components/beeyield/lovable_ai/HiveHealthDashboard";
-import SupportPageModal from "@/components/beeyield/lovable_ai/SupportPageModal";
+import ChatHistory, { type Conversation } from "@/components/ChatHistory";
+import AboutModal from "@/components/AboutModal";
+import MessageActions from "@/components/MessageActions";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
+import BeeGallery from "@/components/BeeGallery";
+import BeeDiseasesPage from "@/components/BeeDiseasesPage";
+import PollinationCharts from "@/components/PollinationCharts";
+import PollinationLookup from "@/components/PollinationLookup";
+import HarvestCalculator from "@/components/HarvestCalculator";
+import PrecisionDrilldown from "@/components/PrecisionDrilldown";
+import HivePlacementMap from "@/components/HivePlacementMap";
+import BeeFlightTracker from "@/components/BeeFlightTracker";
+import BloomPhenology from "@/components/BloomPhenology";
+import MOAView from "@/components/MOAView";
+import MeasurementDataTools from "@/components/MeasurementDataTools";
+import FloragePage from "@/components/FloragePage";
+import ActivityCounter from "@/components/ActivityCounter";
+import ActivityForecaster from "@/components/ActivityForecaster";
+import PollinationPlanning from "@/components/PollinationPlanning";
+import PollinationCalcs from "@/components/PollinationCalcs";
+import AlertsPage from "@/components/AlertsPage";
+import MOACompare from "@/components/MOACompare";
+import BeeSpeciesPage from "@/components/BeeSpeciesPage";
+import BeeyieldCalculators from "@/components/BeeyieldCalculators";
+import VarroaSimulator from "@/components/VarroaSimulator";
+import DatasetImport from "@/components/DatasetImport";
+import FeedingSchedule from "@/components/FeedingSchedule";
+import KnowledgeSearch from "@/components/KnowledgeSearch";
+import ApiarySizing from "@/components/ApiarySizing";
+import YieldProjection from "@/components/YieldProjection";
+import HiveHealthDashboard from "@/components/HiveHealthDashboard";
+import SupportPageModal from "@/components/SupportPageModal";
 
 type Message = {
   id: string;
@@ -84,12 +83,11 @@ async function streamBeeyield(
   onDone: () => void,
   onError: (err: string) => void
 ) {
-  const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "";
   const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
     body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType, promptVariant }),
   });
@@ -144,14 +142,14 @@ interface IndexProps {
   onTabChange?: (tab: string) => void;
 }
 
-export default function Index({ embedded = false, initialMessage, onInitialMessageConsumed, onTabChange }: IndexProps) {
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+export default function Index({ embedded = false, initialMessage, onInitialMessageConsumed, onTabChange }: IndexProps = {}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const deviceId = useDeviceId();
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
 
   // Conversation state
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -171,6 +169,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [floragePageOpen, setFloragePageOpen] = useState(false);
   const [activityCounterOpen, setActivityCounterOpen] = useState(false);
   const [activityForecasterOpen, setActivityForecasterOpen] = useState(false);
+  const [measurementToolsOpen, setMeasurementToolsOpen] = useState(false);
   const [pollinationPlanningOpen, setPollinationPlanningOpen] = useState(false);
   const [pollinationCalcsOpen, setPollinationCalcsOpen] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
@@ -183,11 +182,8 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
-  const [measurementToolsOpen, setMeasurementToolsOpen] = useState(false);
-  const [knowledgeHubOpen, setKnowledgeHubOpen] = useState(false);
   const [hiveHealthOpen, setHiveHealthOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"welcome" | "hub">("hub");
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -239,7 +235,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
     await supabase.from("chat_messages").insert({ conversation_id: convId, role, content });
   };
 
-  const createConversation = useCallback(async (title: string): Promise<string> => {
+  const createConversation = async (title: string): Promise<string> => {
     const { data } = await supabase
       .from("conversations")
       .insert({ device_id: deviceId, title })
@@ -248,7 +244,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
     if (!data) throw new Error("Failed to create conversation");
     loadConversations();
     return data.id;
-  }, [deviceId, loadConversations]);
+  };
 
   const clearAttachments = useCallback(() => {
     setAttachedImage(null);
@@ -276,7 +272,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
     toast.success(`Audio attached: ${file.name}`);
   };
 
-  const send = useCallback(async (text: string) => {
+  const send = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
     let imgBase64: string | null = null;
@@ -358,7 +354,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       toast.error("Failed to connect to Beeyield AI");
       setIsLoading(false);
     }
-  }, [isLoading, attachedImage, attachedAudio, nextMessageId, imagePreviewUrl, messages, clearAttachments, conversationId, createConversation, promptVariant, loadConversations]);
+  };
 
   const initialConsumedRef = useRef(false);
   useEffect(() => {
@@ -367,7 +363,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       send(initialMessage);
       onInitialMessageConsumed?.();
     }
-  }, [initialMessage, send, onInitialMessageConsumed]);
+  }, [initialMessage, onInitialMessageConsumed]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -401,7 +397,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   };
 
   return (
-    <div className={`flex flex-col w-full bg-background honeycomb-bg overflow-hidden ${embedded ? "h-[calc(100vh-140px)] rounded-xl border border-border" : "h-screen"}`}>
+    <div className="flex flex-col h-screen w-full bg-background honeycomb-bg overflow-hidden">
       {/* Chat History Sidebar */}
       <ChatHistory
         conversations={conversations}
@@ -425,7 +421,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
             <History className="w-4 h-4" />
             <span className="text-xs font-medium">History</span>
           </button>
-          <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto object-contain" />
+          <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto" />
           <div className="hidden sm:block">
             <div className="font-display font-bold text-foreground text-base leading-tight">Beeyield AI</div>
             <div className="text-xs text-muted-foreground">The World's Most Comprehensive Bee Knowledge System</div>
@@ -442,7 +438,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <span className="text-xs font-medium hidden sm:inline">Tools</span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 max-h-[85vh] overflow-y-auto custom-scroll bg-popover border-border z-50">
+            <DropdownMenuContent align="end" className="w-64 bg-popover border-border z-50">
               <DropdownMenuLabel className="text-honey">Knowledge & Reference</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setGalleryOpen(true)} className="cursor-pointer">
                 <Bug className="w-4 h-4 mr-2" /> Bee Species Gallery
@@ -513,9 +509,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
 
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-honey">Knowledge & Planning</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setKnowledgeHubOpen(true)} className="cursor-pointer text-honey font-bold">
-                <Info className="w-4 h-4 mr-2" /> 🐝 Bee Knowledge Hub (3.2M Datasets)
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setDatasetImportOpen(true)} className="cursor-pointer">
                 <Download className="w-4 h-4 mr-2" /> Dataset Import & Re-index
               </DropdownMenuItem>
@@ -526,7 +519,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <Calculator className="w-4 h-4 mr-2" /> Feeding Schedule Timeline
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setApiarySizingOpen(true)} className="cursor-pointer">
-                <Database className="w-4 h-4 mr-2" /> Apiary & Equipment Sizing
+                <Layers className="w-4 h-4 mr-2" /> Apiary & Equipment Sizing
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setYieldProjectionOpen(true)} className="cursor-pointer">
                 <BarChart3 className="w-4 h-4 mr-2" /> Honey Yield Projection
@@ -544,7 +537,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
               <DropdownMenuSeparator />
               {user ? (
                 <DropdownMenuItem onClick={() => void signOut()} className="cursor-pointer">
-                  <LogOut className="w-4 h-4 mr-2" /> Sign out{user?.user_metadata?.full_name ? ` (${user.user_metadata.full_name})` : ""}
+                  <LogOut className="w-4 h-4 mr-2" /> Sign out{profile?.full_name ? ` (${profile.full_name})` : ""}
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem onClick={() => navigate("/auth?next=/")} className="cursor-pointer">
@@ -558,7 +551,10 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <HeartPulse className="w-4 h-4 mr-2 text-amber-500" /> Hive Health Dashboard
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => { if (onTabChange) onTabChange("integrations"); else navigate("/beeyield-dashboard?tab=integrations"); }}
+                onClick={() => {
+                  const base = window.location.hostname.includes("beeyield.com") ? "" : "https://beeyield.com";
+                  window.open(`${base}/beeyield-dashboard?tab=integrations`, "_blank");
+                }}
                 className="cursor-pointer"
               >
                 <Plug className="w-4 h-4 mr-2" /> Integrations (Shopify, QuickBooks, eTIMS)
@@ -570,7 +566,10 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <LifeBuoy className="w-4 h-4 mr-2 text-amber-500" /> Support & Tickets
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => { if (onTabChange) onTabChange("settings"); else navigate("/beeyield-dashboard?tab=settings"); }}
+                onClick={() => {
+                  const base = window.location.hostname.includes("beeyield.com") ? "" : "https://beeyield.com";
+                  window.open(`${base}/beeyield-dashboard?tab=settings`, "_blank");
+                }}
                 className="cursor-pointer"
               >
                 <Settings className="w-4 h-4 mr-2" /> Settings — Control Center
@@ -629,54 +628,23 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto custom-scroll px-4 py-6 space-y-6">
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center min-h-full text-center animate-fade-in max-w-4xl mx-auto w-full py-4">
-            <div className="flex items-center gap-2 mb-4 bg-muted/60 p-1 rounded-xl border border-border">
-              <button
-                onClick={() => setViewMode("hub")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  viewMode === "hub"
-                    ? "bg-honey text-black shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                🐝 Bee Knowledge Hub (3.2M Datasets)
-              </button>
-              <button
-                onClick={() => setViewMode("welcome")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  viewMode === "welcome"
-                    ? "bg-honey text-black shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                💬 Quick Suggestions
-              </button>
+          <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in max-w-3xl mx-auto w-full">
+            <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto mb-4 opacity-90" />
+            <h1 className="font-display text-3xl font-bold text-honey mb-2">Welcome to Beeyield AI</h1>
+            <p className="text-muted-foreground max-w-xl mb-8 text-sm leading-relaxed">
+              The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-2xl">
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => send(s)}
+                  className="text-left px-3 py-2.5 rounded-lg text-xs border border-border hover:border-primary/50 hover:bg-muted transition-all text-muted-foreground hover:text-foreground leading-relaxed"
+                >
+                  {s}
+                </button>
+              ))}
             </div>
-
-            {viewMode === "hub" ? (
-              <div className="w-full text-left bg-card/60 backdrop-blur-md border border-border rounded-2xl overflow-hidden shadow-lg">
-                <KnowledgeDashboard onAsk={(q) => send(q)} />
-              </div>
-            ) : (
-              <div className="w-full flex flex-col items-center">
-                <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto max-w-[220px] object-contain mb-4 opacity-90" />
-                <h1 className="font-display text-3xl font-bold text-honey mb-2">Welcome to Beeyield AI</h1>
-                <p className="text-muted-foreground max-w-xl mb-8 text-sm leading-relaxed">
-                  The world's most comprehensive bee knowledge system. Powered by an extensive dataset covering every bee species, honey variety, disease, treatment, pollination science, and global industry research. Ask anything.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-2xl">
-                  {SUGGESTIONS.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => send(s)}
-                      className="text-left px-3 py-2.5 rounded-lg text-xs border border-border hover:border-primary/50 hover:bg-muted transition-all text-muted-foreground hover:text-foreground leading-relaxed"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -862,6 +830,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       <MOAView isOpen={moaOpen} onClose={() => setMoaOpen(false)} />
       <FloragePage isOpen={floragePageOpen} onClose={() => setFloragePageOpen(false)} />
       <ActivityCounter isOpen={activityCounterOpen} onClose={() => setActivityCounterOpen(false)} />
+      <MeasurementDataTools isOpen={measurementToolsOpen} onClose={() => setMeasurementToolsOpen(false)} />
       <ActivityForecaster isOpen={activityForecasterOpen} onClose={() => setActivityForecasterOpen(false)} />
       <PollinationPlanning isOpen={pollinationPlanningOpen} onClose={() => setPollinationPlanningOpen(false)} />
       <PollinationCalcs isOpen={pollinationCalcsOpen} onClose={() => setPollinationCalcsOpen(false)} />
@@ -875,30 +844,8 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       <KnowledgeSearch isOpen={knowledgeSearchOpen} onClose={() => setKnowledgeSearchOpen(false)} />
       <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
-      <MeasurementDataTools isOpen={measurementToolsOpen} onClose={() => setMeasurementToolsOpen(false)} />
       <HiveHealthDashboard isOpen={hiveHealthOpen} onClose={() => setHiveHealthOpen(false)} />
-      <SupportPageModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} onTabChange={onTabChange} />
-
-      {knowledgeHubOpen && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl relative overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-sidebar">
-              <h2 className="font-display text-lg font-bold text-honey flex items-center gap-2">
-                <span>🐝</span> Bee Knowledge Hub (3.2M+ Datasets)
-              </h2>
-              <button
-                onClick={() => setKnowledgeHubOpen(false)}
-                className="w-8 h-8 rounded-lg border border-border hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <KnowledgeDashboard onAsk={(q) => { setKnowledgeHubOpen(false); send(q); }} />
-            </div>
-          </div>
-        </div>
-      )}
+      <SupportPageModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
     </div>
   );
 }

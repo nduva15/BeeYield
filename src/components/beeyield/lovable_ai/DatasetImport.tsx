@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Upload, Database, RefreshCw, CheckCircle2, AlertTriangle, Trash2, FileText } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X, Upload, Database, RefreshCw, CheckCircle2, AlertTriangle, Trash2, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -22,19 +22,19 @@ type KindKey = typeof KINDS[number]["key"];
 
 const COLORS = ["hsl(var(--honey))", "hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--destructive))"];
 
-export default function DatasetImport({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
+export default function DatasetImport({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const deviceId = useDeviceId();
   const [imports, setImports] = useState<Imp[]>([]);
   const [kind, setKind] = useState<KindKey>("bees");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const load = useCallback(async () => {
+  const load = async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("dataset_imports").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
     setImports((data ?? []) as Imp[]);
-  }, [deviceId]);
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId, load]);
+  };
+  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
 
   const handleFile = async (file: File) => {
     setBusy(true);
@@ -88,7 +88,7 @@ export default function DatasetImport({ isOpen, onClose, embedded = false }: { i
   const byStatus = ["pending", "ready", "indexing", "indexed", "blocked"].map((s) => ({ name: s, value: imports.filter((i) => i.reindex_status === s).length })).filter((x) => x.value > 0);
 
   return (
-    <div className={embedded ? "relative z-0 bg-background overflow-visible custom-scroll pt-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -98,6 +98,7 @@ export default function DatasetImport({ isOpen, onClose, embedded = false }: { i
               <p className="text-xs text-muted-foreground">Upload bee / honey / disease / florage CSVs to feed the AI knowledge base</p>
             </div>
           </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">
