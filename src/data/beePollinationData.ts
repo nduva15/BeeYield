@@ -23,7 +23,14 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         regionalTrends2026: "Precision planting requires synchronized pest management, which BeeYield's sensors detect via acoustic anomalies.",
         economicImpact: "A staple food security crop; healthy pollinator populations in maize fields support surrounding biodiversity.",
         estimatedMarketValueUsdBn: 3.2,
-        image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600"
+        image: "/images/pollination/maize-field-panorama-mountain.png",
+        galleryImages: [
+            "/images/pollination/maize-field-panorama-mountain.png",
+            "/images/pollination/maize-tasseling-closeup.png",
+            "/images/pollination/maize-field-dryland-hills.png",
+            "/images/pollination/maize-baobab-agroforestry.png",
+            "/images/pollination/maize-dense-tasseling-field.png"
+        ]
     },
     "Sunflower": {
         cropName: "Sunflower",

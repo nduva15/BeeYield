@@ -442,8 +442,8 @@ const CropsWePollinate = () => {
           {/* Crops Cards */}
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {pollinationCrops.map((crop, index) => {
-              const isSpotlightCrop = ["Mangoes", "Oranges", "Citrus"].includes(crop.cropName);
-              const targetHash = crop.cropName === "Mangoes" ? "mangoes" : crop.cropName === "Oranges" ? "oranges" : crop.cropName === "Citrus" ? "citrus" : "latest-pollination";
+              const isSpotlightCrop = ["Mangoes", "Oranges", "Citrus", "Maize"].includes(crop.cropName);
+              const targetHash = crop.cropName === "Mangoes" ? "mangoes" : crop.cropName === "Oranges" ? "oranges" : crop.cropName === "Citrus" ? "citrus" : crop.cropName === "Maize" ? "maize" : "latest-pollination";
 
               return (
                 <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all group bg-[#FFF9F0] flex flex-col justify-between">

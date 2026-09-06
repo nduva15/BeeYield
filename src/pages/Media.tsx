@@ -277,7 +277,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "40" },
             { label: "Cob Fill", value: "100%" },
           ],
-          image: "/images/maize_case.png",
+          image: "/images/pollination/maize-field-panorama-mountain.png",
+          fieldPhotoCaption: "Maize Field Panorama with Mountain Backdrop • Makueni County",
         },
         {
           farmer: "Peter Korir",
@@ -293,8 +294,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "100" },
             { label: "Grade", value: "Premium" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1634467524884-897d0af5e104?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/maize-tasseling-closeup.png",
+          fieldPhotoCaption: "Maize Tasseling at Silk Stage • Mbuinzau, Makueni",
         },
         {
           farmer: "Alice Wanjiku",
@@ -310,8 +311,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "15" },
             { label: "Grain fill", value: "High" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/maize-field-dryland-hills.png",
+          fieldPhotoCaption: "Intercropped Maize & Beans Field • Makindu, Makueni",
         },
         {
           farmer: "Robert Kemboi",
@@ -327,8 +328,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "25" },
             { label: "Yield", value: "+12%" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1629007687834-0466be24751f?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/maize-baobab-agroforestry.png",
+          fieldPhotoCaption: "Maize Agroforestry Under Baobab Canopy • Kibwezi, Makueni",
         },
         {
           farmer: "Sarah Chepkoech",
@@ -344,8 +345,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "60" },
             { label: "Quality", value: "High" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1595126868697-7c7038e827e8?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/maize-dense-tasseling-field.png",
+          fieldPhotoCaption: "Dense Commercial Maize Tasseling Field • Mbuinzau, Makueni",
         },
       ],
     },
