@@ -219,3 +219,57 @@ export function voteClassifications(items: Classification[]): Classification {
     beeConfidence: items.reduce((a, it) => a + it.beeConfidence, 0) / items.length,
   };
 }
+
+/* ------------------------------------------------------- provenance ---- */
+
+/**
+ * Model card surfaced on the Acoustic Audit result screen, so every prediction
+ * is traceable to the pipeline and corpora it came from.
+ */
+export const MODEL_META = {
+  name: "BeeYield Acoustic — corpus-Gaussian MFCC",
+  version: "1.2.0",
+  inferenceMode: "corpus-gaussian-mfcc" as const,
+  runsOn: "On-device (browser Web Audio + DSP) — no audio leaves the phone",
+  pipeline:
+    "22.05 kHz mono → 100 Hz–8 kHz bandpass → 2.0 s windows / 0.5 s overlap → 128-band mel filterbank → log power → DCT-II → 13 MFCC + delta statistics",
+  featureDim: FEATURE_DIM,
+  classes: HEALTH_CLASSES,
+  gate: "Bee / not-bee linear gate rejects wind, traffic and silence before the state classifier scores a window",
+  datasets: [
+    {
+      name: "To bee or not to bee (annotated)",
+      role: "Bee / not-bee gating stage",
+      source: "BEE-SOUND-ANALYSIS · modules/models/hive_state/Bee_NotBee_classification",
+    },
+    {
+      name: "NU-Hive / OSBH beehive states",
+      role: "Active · missing queen · swarm class statistics (~300k 2 s windows after segmentation)",
+      source: "Audio-based identification of beehive states",
+    },
+    {
+      name: "beepiping (Fourer & Orlowska, DCASE 2022)",
+      role: "Queen piping event detection, 300–500 Hz band",
+      source: "BEE-SOUND-ANALYSIS · piping module",
+    },
+  ],
+  weights:
+    "The upstream repository ships the training/inference pipeline with an empty weights/ directory (checkpoints are produced per deployment by tools/train_architecture.py). BeeYield therefore reproduces the same feature path and scores it with per-class diagonal-covariance Gaussians whose statistics come from the corpora above — it is corpus-calibrated, not a retrained neural checkpoint.",
+  confidence: {
+    headline: "Confidence = the winning class's share of probability, averaged across every bee-gated window in the clip.",
+    steps: [
+      "Each 2 s window becomes a 13-dimension MFCC + delta feature vector.",
+      "Windows that fail the bee / not-bee gate are discarded and never vote.",
+      "Each surviving window is scored against the four class Gaussians (log-likelihood + class prior).",
+      "Log-likelihoods pass through a temperature-scaled softmax (T = 4.5, fitted so held-out accuracy tracks the corpus baseline) to become per-window probabilities.",
+      "Window probabilities are averaged; the highest-probability class wins and its averaged probability is the confidence score.",
+    ],
+    reading: [
+      "Above 70% — a clear acoustic signature; act on it alongside a physical check.",
+      "45–70% — indicative only; re-record for 30 s at the entrance in calm weather.",
+      "Below 45% or few windows scored — treat as inconclusive; the clip was short, noisy or largely non-bee.",
+    ],
+    caveat:
+      "Acoustic screening narrows down what to look for. It does not replace opening the hive or a laboratory diagnosis.",
+  },
+} as const;

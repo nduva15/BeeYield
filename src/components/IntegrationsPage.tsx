@@ -7,7 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import {
   saveIntegration, testIntegration, syncIntegration, disconnectIntegration,
+  type Check,
 } from "@/lib/integrations.functions";
+import SyncTimeline from "@/components/SyncTimeline";
 import { toast } from "sonner";
 
 type Provider = "shopify" | "quickbooks" | "etims";
@@ -42,6 +44,7 @@ const PROVIDERS: {
   secretFields: Field[];
   steps: string[];
   capabilities: string[];
+  required: string[];
 }[] = [
   {
     id: "shopify",
@@ -69,6 +72,7 @@ const PROVIDERS: {
       "Paste your store domain and the token here, then run Verify connection.",
     ],
     capabilities: ["Product & variant counts", "Order volume", "Inventory locations", "Sync activity log"],
+    required: ["storeUrl", "accessToken"],
   },
   {
     id: "quickbooks",
@@ -99,6 +103,7 @@ const PROVIDERS: {
       "Map the income and expense accounts that BeeYield should post to.",
     ],
     capabilities: ["Company info check", "Chart of accounts count", "Item & invoice totals", "Account mapping"],
+    required: ["realmId", "accessToken"],
   },
   {
     id: "etims",
@@ -124,6 +129,7 @@ const PROVIDERS: {
       "Once initialised, pull code lists so sales invoices carry the right tax and classification codes.",
     ],
     capabilities: ["Device initialisation", "Code & classification lists", "Tax-ready sales invoicing", "Audit trail"],
+    required: ["tin", "deviceSerial"],
   },
 ];
 
@@ -143,6 +149,7 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
   const [secrets, setSecrets] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<"" | "save" | "test" | "sync" | "disconnect">("");
   const [summary, setSummary] = useState<Record<string, string | number> | null>(null);
+  const [checks, setChecks] = useState<Check[] | null>(null);
 
   const meta = useMemo(() => PROVIDERS.find((p) => p.id === active)!, [active]);
   const conn = useMemo(() => connections.find((c) => c.provider === active), [connections, active]);
@@ -163,6 +170,7 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
     setConfig((existing?.config as Record<string, string>) ?? {});
     setSecrets({});
     setSummary(null);
+    setChecks(null);
   }, [active, connections]);
 
   const doSave = async () => {
@@ -177,12 +185,25 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
   };
 
   const doTest = async () => {
+    // Client-side preflight so obvious gaps are named before any network call.
+    const missing = [...meta.configFields, ...meta.secretFields]
+      .filter((f) => meta.required.includes(f.key))
+      .filter((f) => !(f.secret ? secrets[f.key] || conn?.status !== "disconnected" : config[f.key]?.trim()))
+      .map((f) => f.label);
+    if (missing.length > 0) {
+      toast.error("Missing required credentials", { description: missing.join(", ") });
+      setChecks(missing.map((label) => ({ label, ok: false, detail: "Required — fill this in before testing", critical: true })));
+      return;
+    }
+
     setBusy("test");
+    setChecks(null);
     try {
       await saveIntegration({ data: { deviceId, provider: active, config, secrets } });
       const res = await testIntegration({ data: { deviceId, provider: active } });
-      if (res.ok) toast.success(`${meta.name} connected — ${res.account}`);
-      else toast.error(res.error);
+      setChecks(res.checks ?? []);
+      if (res.ok) toast.success(`${meta.name} verified — ${res.account}`, { description: res.detail });
+      else toast.error(`${meta.name} not verified`, { description: res.error ?? "One or more checks failed" });
       setSecrets({});
       await load();
     } catch (e) {
@@ -342,9 +363,10 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
             </button>
             <button onClick={doTest} disabled={busy !== ""}
               className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
-              {busy === "test" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Verify connection
+              {busy === "test" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Test connection
             </button>
             <button onClick={doSync} disabled={busy !== "" || conn?.status !== "connected"}
+              title={conn?.status !== "connected" ? "Run Test connection first — syncing stays locked until credentials verify" : undefined}
               className="px-3 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5 disabled:opacity-40">
               {busy === "sync" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />} Run sync
             </button>
@@ -355,6 +377,35 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
               </button>
             )}
           </div>
+
+          {conn?.status !== "connected" && (
+            <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-honey" />
+              Nothing is written to {meta.name} until a Test connection passes — inspections and audits saved before then
+              are queued in the timeline below and can be re-synced with one click.
+            </p>
+          )}
+
+          {checks && (
+            <div className={`rounded-lg border p-4 ${checks.every((c) => c.ok || !c.critical) ? "border-emerald-500/30 bg-emerald-500/5" : "border-red-500/30 bg-red-500/5"}`}>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3" /> Credential validation
+              </p>
+              <ul className="space-y-1.5">
+                {checks.map((c) => (
+                  <li key={c.label} className="flex items-start gap-2 text-xs">
+                    {c.ok
+                      ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                      : <AlertCircle className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${c.critical ? "text-red-400" : "text-honey"}`} />}
+                    <span className="text-foreground font-medium">{c.label}</span>
+                    <span className="text-muted-foreground">— {c.detail}</span>
+                    {!c.critical && !c.ok && <span className="ml-auto text-[10px] text-honey shrink-0">warning only</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
 
           {summary && (
             <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">

@@ -644,10 +644,37 @@ async function pushToQuickBooks(config: Config, secrets: Secrets, rec: RecordPay
 }
 
 
+/** Push one record to one provider, logging the outcome against the record. */
+async function pushRecord(deviceId: string, provider: "shopify" | "quickbooks", rec: RecordPayload, event: string) {
+  const db = await admin();
+  const ref = { recordId: rec.recordId, recordKind: rec.kind, hiveLabel: rec.hiveLabel };
+  try {
+    const { config, secrets } = await loadCreds(deviceId, provider);
+    const detail =
+      provider === "shopify" ? await pushToShopify(config, secrets, rec) : await pushToQuickBooks(config, secrets, rec);
+    await db
+      .from("integration_connections")
+      .update({ last_sync_at: new Date().toISOString(), status: "connected", last_error: null })
+      .eq("device_id", deviceId)
+      .eq("provider", provider);
+    await log(deviceId, provider, event, "ok", detail, ref);
+    return { provider, ok: true, detail };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Sync failed";
+    await db
+      .from("integration_connections")
+      .update({ status: "error", last_error: message })
+      .eq("device_id", deviceId)
+      .eq("provider", provider);
+    await log(deviceId, provider, event, "error", message, ref);
+    return { provider, ok: false, detail: message };
+  }
+}
+
 /**
- * Auto-sync a saved inspection or acoustic audit to every connected provider.
- * Never throws — each provider result is logged and returned so the UI can
- * report partial success.
+ * Auto-sync a saved inspection or acoustic audit to every verified provider.
+ * Only connections that passed a Test Connection ("connected") are eligible, so
+ * unvalidated credentials never reach a live store or ledger. Never throws.
  */
 export const syncRecordToIntegrations = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => recordSchema.parse(input))
@@ -659,35 +686,118 @@ export const syncRecordToIntegrations = createServerFn({ method: "POST" })
       .eq("device_id", data.deviceId)
       .in("provider", ["shopify", "quickbooks"]);
 
-    const targets = (conns ?? []).filter((c) => c.sync_enabled !== false && c.status !== "disconnected");
-    if (targets.length === 0) return { ok: true as const, results: [] as { provider: string; ok: boolean; detail: string }[] };
-
+    const targets = (conns ?? []).filter((c) => c.sync_enabled !== false && c.status === "connected");
     const results: { provider: string; ok: boolean; detail: string }[] = [];
+
+    const unverified = (conns ?? []).filter((c) => c.sync_enabled !== false && c.status === "configured");
+    for (const conn of unverified) {
+      await log(
+        data.deviceId,
+        conn.provider,
+        `${data.kind} auto-sync`,
+        "skipped",
+        "Credentials not verified yet — run Test connection before syncing.",
+        { recordId: data.recordId, recordKind: data.kind, hiveLabel: data.hiveLabel },
+      );
+      results.push({ provider: conn.provider, ok: false, detail: "Not verified — run Test connection first" });
+    }
+
     for (const conn of targets) {
-      const provider = conn.provider as "shopify" | "quickbooks";
-      try {
-        const { config, secrets } = await loadCreds(data.deviceId, provider);
-        const detail =
-          provider === "shopify"
-            ? await pushToShopify(config, secrets, data)
-            : await pushToQuickBooks(config, secrets, data);
-        await db
-          .from("integration_connections")
-          .update({ last_sync_at: new Date().toISOString(), status: "connected", last_error: null })
-          .eq("device_id", data.deviceId)
-          .eq("provider", provider);
-        await log(data.deviceId, provider, `${data.kind} auto-sync`, "ok", detail);
-        results.push({ provider, ok: true, detail });
-      } catch (e) {
-        const message = e instanceof Error ? e.message : "Sync failed";
-        await db
-          .from("integration_connections")
-          .update({ status: "error", last_error: message })
-          .eq("device_id", data.deviceId)
-          .eq("provider", provider);
-        await log(data.deviceId, provider, `${data.kind} auto-sync`, "error", message);
-        results.push({ provider, ok: false, detail: message });
-      }
+      results.push(await pushRecord(data.deviceId, conn.provider as "shopify" | "quickbooks", data, `${data.kind} auto-sync`));
     }
     return { ok: true as const, results };
+  });
+
+/* ------------------------------------------------------- re-sync one ---- */
+
+const resyncSchema = z.object({
+  deviceId: z.string().min(4),
+  provider: z.enum(["shopify", "quickbooks"]),
+  kind: z.enum(["inspection", "acoustic"]),
+  recordId: z.string().min(1),
+});
+
+/** Rebuilds the record payload from the database so a failed sync can be retried. */
+async function buildPayload(deviceId: string, kind: "inspection" | "acoustic", recordId: string): Promise<RecordPayload> {
+  const db = await admin();
+  if (kind === "inspection") {
+    const { data: r } = await db
+      .from("inspections").select("*").eq("device_id", deviceId).eq("id", recordId).maybeSingle();
+    if (!r) throw new Error("Inspection no longer exists");
+    return recordSchema.parse({
+      deviceId,
+      kind,
+      recordId,
+      hiveLabel: r.hive_label,
+      title: `Hive inspection — ${r.colony_health}`,
+      summary: [
+        r.issues?.length ? `Issues: ${r.issues.join(", ")}` : "No issues recorded",
+        r.actions?.length ? `Actions: ${r.actions.join(", ")}` : "",
+        r.notes ?? "",
+      ].filter(Boolean).join("\n"),
+      status: r.colony_health,
+      occurredAt: r.inspected_on,
+      metrics: {
+        broodFrames: r.brood_frames,
+        honeyFrames: r.honey_frames,
+        varroaPer300: r.varroa_count,
+        queenCells: r.queen_cells,
+        queenSeen: r.queen_seen,
+        temperament: r.temperament,
+        location: r.location,
+      },
+    });
+  }
+  const { data: r } = await db
+    .from("sound_analyses").select("*").eq("device_id", deviceId).eq("id", recordId).maybeSingle();
+  if (!r) throw new Error("Acoustic audit no longer exists");
+  const diseases = Array.isArray(r.disease_predictions)
+    ? (r.disease_predictions as { name?: string; score?: number }[])
+    : [];
+  return recordSchema.parse({
+    deviceId,
+    kind,
+    recordId,
+    hiveLabel: r.hive_label,
+    title: `Acoustic audit — ${r.health_state} (${Math.round(Number(r.health_confidence) * 100)}% confidence)`,
+    summary:
+      diseases.slice(0, 3).map((d) => `${d.name ?? "indicator"} ${Math.round((d.score ?? 0) * 100)}%`).join("; ") ||
+      "No acoustic disease indicators above threshold",
+    status: r.health_state,
+    occurredAt: (r.recorded_at ?? r.created_at ?? new Date().toISOString()).slice(0, 10),
+    metrics: {
+      durationSec: Number(r.duration_sec),
+      windows: r.segments,
+      pipingDetected: r.piping_detected,
+      confidencePct: Math.round(Number(r.health_confidence) * 100),
+    },
+  });
+}
+
+/** One-click retry for a record that failed (or was skipped) on a provider. */
+export const resyncRecord = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => resyncSchema.parse(input))
+  .handler(async ({ data }) => {
+    const db = await admin();
+    const { data: conn } = await db
+      .from("integration_connections")
+      .select("status")
+      .eq("device_id", data.deviceId)
+      .eq("provider", data.provider)
+      .maybeSingle();
+    if (conn?.status !== "connected") {
+      return { ok: false as const, detail: "Run Test connection for this provider before re-syncing." };
+    }
+    try {
+      const payload = await buildPayload(data.deviceId, data.kind, data.recordId);
+      const res = await pushRecord(data.deviceId, data.provider, payload, `${data.kind} re-sync`);
+      return { ok: res.ok, detail: res.detail };
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Re-sync failed";
+      await log(data.deviceId, data.provider, `${data.kind} re-sync`, "error", message, {
+        recordId: data.recordId,
+        recordKind: data.kind,
+      });
+      return { ok: false as const, detail: message };
+    }
   });
