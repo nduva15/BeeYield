@@ -968,8 +968,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "8" },
             { label: "Defects", value: "-15%" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+          fieldPhotoCaption: "Vegetable Intercrop Beds Under Drip Irrigation • Makueni County",
         },
         {
           farmer: "Njoroge K.",
@@ -984,8 +984,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "5" },
             { label: "Shape", value: "Perfect" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1595855709915-f5b2b295ba5d?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/maize-horticulture-field-panoramic.jpg",
+          fieldPhotoCaption: "Commercial Horticulture Field Panorama • Kibwezi, Makueni",
         },
         {
           farmer: "Horti-Coop",
@@ -1000,8 +1000,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "20" },
             { label: "Yield", value: "+12%" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1557844352-761f2565b576?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/citrus-papaya-intercrop.jpg",
+          fieldPhotoCaption: "Intercropped Citrus, Papaya & Vegetable Rows • Mbuinzau, Makueni",
         },
         {
           farmer: "Local school farm",
@@ -1016,8 +1016,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "2" },
             { label: "Learning", value: "High" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1621459586195-2cc677054f0c?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/citrus-papaya-orchard-rows.jpg",
+          fieldPhotoCaption: "Mixed Orchard & Vegetable Rows • Makindu, Makueni",
         },
         {
           farmer: "Urban Grower",
@@ -1032,8 +1032,8 @@ const Media = () => {
             { label: "Acres Pollinated", value: "1" },
             { label: "Density", value: "High" },
           ],
-          image:
-            "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&q=80&w=1200",
+          image: "/images/pollination/maize-field-rows-panorama.jpg",
+          fieldPhotoCaption: "Intensive Crop Rows & Companion Planting • Kibwezi, Makueni",
         },
       ],
     },
