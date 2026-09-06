@@ -7,7 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import {
   saveIntegration, testIntegration, syncIntegration, disconnectIntegration,
+  type Check,
 } from "@/lib/integrations.functions";
+import SyncTimeline from "@/components/SyncTimeline";
 import { toast } from "sonner";
 
 type Provider = "shopify" | "quickbooks" | "etims";
@@ -42,6 +44,7 @@ const PROVIDERS: {
   secretFields: Field[];
   steps: string[];
   capabilities: string[];
+  required: string[];
 }[] = [
   {
     id: "shopify",
@@ -69,6 +72,7 @@ const PROVIDERS: {
       "Paste your store domain and the token here, then run Verify connection.",
     ],
     capabilities: ["Product & variant counts", "Order volume", "Inventory locations", "Sync activity log"],
+    required: ["storeUrl", "accessToken"],
   },
   {
     id: "quickbooks",
@@ -99,6 +103,7 @@ const PROVIDERS: {
       "Map the income and expense accounts that BeeYield should post to.",
     ],
     capabilities: ["Company info check", "Chart of accounts count", "Item & invoice totals", "Account mapping"],
+    required: ["realmId", "accessToken"],
   },
   {
     id: "etims",
@@ -124,6 +129,7 @@ const PROVIDERS: {
       "Once initialised, pull code lists so sales invoices carry the right tax and classification codes.",
     ],
     capabilities: ["Device initialisation", "Code & classification lists", "Tax-ready sales invoicing", "Audit trail"],
+    required: ["tin", "deviceSerial"],
   },
 ];
 
@@ -143,6 +149,7 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
   const [secrets, setSecrets] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<"" | "save" | "test" | "sync" | "disconnect">("");
   const [summary, setSummary] = useState<Record<string, string | number> | null>(null);
+  const [checks, setChecks] = useState<Check[] | null>(null);
 
   const meta = useMemo(() => PROVIDERS.find((p) => p.id === active)!, [active]);
   const conn = useMemo(() => connections.find((c) => c.provider === active), [connections, active]);
@@ -180,7 +187,7 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
   const doTest = async () => {
     // Client-side preflight so obvious gaps are named before any network call.
     const missing = [...meta.configFields, ...meta.secretFields]
-      .filter((f) => meta.required?.includes(f.key))
+      .filter((f) => meta.required.includes(f.key))
       .filter((f) => !(f.secret ? secrets[f.key] || conn?.status !== "disconnected" : config[f.key]?.trim()))
       .map((f) => f.label);
     if (missing.length > 0) {
