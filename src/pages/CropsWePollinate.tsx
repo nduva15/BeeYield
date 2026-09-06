@@ -13,7 +13,7 @@ import { dashboardPollinationCropDetails } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
-  const [highlightFilter, setHighlightFilter] = useState<"all" | "mangoes" | "citrus" | "hardware">("all");
+  const [highlightFilter, setHighlightFilter] = useState<"all" | "mangoes" | "citrus" | "maize" | "iot">("all");
   const pollinationCrops = dashboardPollinationCropDetails;
 
   const locations = [
@@ -109,13 +109,13 @@ const CropsWePollinate = () => {
 
                 <div className="relative group overflow-hidden rounded-3xl shadow-2xl border-4 border-[#F4D03F]/100 mt-4">
                   <img
-                    src="/images/pollination/citrus-grove-drip-irrigation.jpg"
-                    alt="Citrus Grove Under Drip Irrigation"
+                    src="/images/pollination/apisense-internal-sensor-probe.png"
+                    alt="Precision Pollination IoT In-Hive Sensor & Bees"
                     className="h-48 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   <span className="absolute bottom-2.5 left-2.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-bold text-white">
-                    🍊 Citrus Grove in Bloom
+                    🐝 IoT Device & Active Bees
                   </span>
                 </div>
               </div>
@@ -256,10 +256,11 @@ const CropsWePollinate = () => {
           {/* Interactive Category Filter Pills */}
           <div className="flex flex-wrap justify-center gap-2 mb-10">
             {[
-              { id: "all", label: "All Crop Pollination (12)" },
-              { id: "mangoes", label: "🥭 Mango Bloom Season (4)" },
+              { id: "all", label: "All Field Photos (15)" },
+              { id: "mangoes", label: "🥭 Mango Bloom (4)" },
               { id: "citrus", label: "🍊 Citrus & Oranges (4)" },
               { id: "maize", label: "🌽 Maize & Crops (4)" },
+              { id: "iot", label: "🐝 IoT Devices & Bees (3)" },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -277,7 +278,7 @@ const CropsWePollinate = () => {
             ))}
           </div>
 
-          {/* 12-Photo Showcase Grid with Dynamic Filtering */}
+          {/* 15-Photo Showcase Grid with Dynamic Filtering */}
           {(() => {
             const fieldHighlights = [
               {
@@ -411,6 +412,39 @@ const CropsWePollinate = () => {
                 badgeColor: "bg-yellow-600/90 text-white",
                 metric: "Uniform Kernel Fill to the Tip",
                 metricColor: "text-yellow-700",
+              },
+              {
+                id: "iot-probe",
+                category: "iot",
+                title: "Precision In-Hive IoT Sensor & Bees",
+                description: "Apisense IoT sensor probe positioned inside the active brood comb with working honeybees clustering on comb wax. Monitors real-time acoustic frequencies, brood temperatures, and hive vitality during crop pollination.",
+                image: "/images/pollination/apisense-internal-sensor-probe.png",
+                badge: "🐝 In-Hive IoT & Bees",
+                badgeColor: "bg-amber-600/90 text-white",
+                metric: "Live Colony Vitality & Acoustics",
+                metricColor: "text-amber-700",
+              },
+              {
+                id: "iot-gateway",
+                category: "iot",
+                title: "Autonomous Solar IoT Field Gateway",
+                description: "Solar-powered wireless IoT communication node deployed beside commercial hives in the orchard. Relays real-time pollination flight data and weather metrics directly to the grower dashboard.",
+                image: "/images/pollination/beeyield-apisense-gateway-field.png",
+                badge: "📡 Solar IoT Field Gateway",
+                badgeColor: "bg-blue-600/90 text-white",
+                metric: "24/7 Field Data Stream",
+                metricColor: "text-blue-600",
+              },
+              {
+                id: "bee-comb",
+                category: "iot",
+                title: "Active Honeybee Colony on Comb",
+                description: "Dense population of honeybees actively drawing wax, raising brood, and preparing for morning foraging flights across flowering mango panicles, citrus blooms, and tasseling maize.",
+                image: "/images/pollination/hive-comb-inspection-6.png",
+                badge: "🐝 High-Vigor Foraging Bees",
+                badgeColor: "bg-emerald-600/90 text-white",
+                metric: "Peak Foraging Workforce",
+                metricColor: "text-emerald-700",
               },
             ];
 
