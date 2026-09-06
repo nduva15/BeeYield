@@ -163,6 +163,7 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
     setConfig((existing?.config as Record<string, string>) ?? {});
     setSecrets({});
     setSummary(null);
+    setChecks(null);
   }, [active, connections]);
 
   const doSave = async () => {
@@ -177,12 +178,25 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
   };
 
   const doTest = async () => {
+    // Client-side preflight so obvious gaps are named before any network call.
+    const missing = [...meta.configFields, ...meta.secretFields]
+      .filter((f) => meta.required?.includes(f.key))
+      .filter((f) => !(f.secret ? secrets[f.key] || conn?.status !== "disconnected" : config[f.key]?.trim()))
+      .map((f) => f.label);
+    if (missing.length > 0) {
+      toast.error("Missing required credentials", { description: missing.join(", ") });
+      setChecks(missing.map((label) => ({ label, ok: false, detail: "Required — fill this in before testing", critical: true })));
+      return;
+    }
+
     setBusy("test");
+    setChecks(null);
     try {
       await saveIntegration({ data: { deviceId, provider: active, config, secrets } });
       const res = await testIntegration({ data: { deviceId, provider: active } });
-      if (res.ok) toast.success(`${meta.name} connected — ${res.account}`);
-      else toast.error(res.error);
+      setChecks(res.checks ?? []);
+      if (res.ok) toast.success(`${meta.name} verified — ${res.account}`, { description: res.detail });
+      else toast.error(`${meta.name} not verified`, { description: res.error ?? "One or more checks failed" });
       setSecrets({});
       await load();
     } catch (e) {
