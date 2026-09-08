@@ -418,7 +418,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
             case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'hive-health':
-            case 'sensor-vitals': return <HiveHealthDashboard isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
@@ -454,7 +454,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-settings': return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
             case 'billing': return <BillingView onTabChange={handleTabChange} />;
             case 'integrations': return <IntegrationsView />;
-            case 'support': return <SupportPageModal isOpen={true} onClose={() => handleTabChange('home')} embedded={true} onTabChange={handleTabChange} />;
+            case 'support': return <SupportCenterView onTabChange={handleTabChange} />;
             case 'settings': return <SettingsView onTabChange={handleTabChange} />;
             default: return (
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">

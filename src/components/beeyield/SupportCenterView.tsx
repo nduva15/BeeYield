@@ -16,6 +16,7 @@ import { Loader2, Send, Printer, Headphones, Mail, Phone, MapPin, Search, Activi
 import { beeyieldService, SupportRequest } from '@/services/beeyieldService';
 import { AnimatePresence, motion } from 'framer-motion';
 import { glass, PageHeader } from './GlassTheme';
+import { BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 
 interface SupportCenterViewProps {
     onTabChange?: (tab: string) => void;
@@ -120,7 +121,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
             <PageHeader
                 icon={Headphones}
                 label="Help Desk"
-                title={<>Support <span className="text-[#F4D03F]">Page View</span></>}
+                title={<>Support <span className="text-[#F4D03F]">Desk & Tickets</span></>}
                 subtitle="High-priority assistance for your apiculture operations."
                 actions={
                     <div className="flex items-center gap-2">
@@ -436,7 +437,11 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
         );
     }
 
-    return content;
+    return (
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+            {content}
+        </BeeYieldPageShell>
+    );
 };
 
 export default SupportCenterView;
