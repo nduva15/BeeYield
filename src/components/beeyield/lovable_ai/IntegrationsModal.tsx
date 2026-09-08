@@ -127,7 +127,7 @@ export default function IntegrationsModal({ isOpen, onClose, embedded = false }:
   if (!isOpen) return null;
 
   const content = (
-    <div className="flex flex-col h-full max-h-[85vh]">
+    <div className={`flex flex-col h-full ${embedded ? 'w-full min-h-[650px]' : 'max-h-[85vh]'}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-sidebar shrink-0">
         <div className="flex items-center gap-3">

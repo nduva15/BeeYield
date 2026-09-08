@@ -104,6 +104,8 @@ import FeedingSchedule from '@/components/beeyield/lovable_ai/FeedingSchedule';
 import ApiarySizing from '@/components/beeyield/lovable_ai/ApiarySizing';
 import YieldProjection from '@/components/beeyield/lovable_ai/YieldProjection';
 import MeasurementDataTools from '@/components/beeyield/lovable_ai/MeasurementDataTools';
+import HiveHealthDashboard from '@/components/beeyield/lovable_ai/HiveHealthDashboard';
+import SupportPageModal from '@/components/beeyield/lovable_ai/SupportPageModal';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -415,7 +417,8 @@ const BeeYieldDashboard: React.FC = () => {
             case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
             case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
             case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
+            case 'hive-health':
+            case 'sensor-vitals': return <HiveHealthDashboard isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
@@ -451,7 +454,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-settings': return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
             case 'billing': return <BillingView onTabChange={handleTabChange} />;
             case 'integrations': return <IntegrationsView />;
-            case 'support': return <SupportCenterView onTabChange={handleTabChange} />;
+            case 'support': return <SupportPageModal isOpen={true} onClose={() => handleTabChange('home')} embedded={true} onTabChange={handleTabChange} />;
             case 'settings': return <SettingsView onTabChange={handleTabChange} />;
             default: return (
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">

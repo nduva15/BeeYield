@@ -47,6 +47,7 @@ import ApiarySizing from "@/components/ApiarySizing";
 import YieldProjection from "@/components/YieldProjection";
 import HiveHealthDashboard from "@/components/HiveHealthDashboard";
 import SupportPageModal from "@/components/SupportPageModal";
+import IntegrationsModal from "./IntegrationsModal";
 
 type Message = {
   id: string;
@@ -182,6 +183,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [hiveHealthOpen, setHiveHealthOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [integrationsOpen, setIntegrationsOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -540,34 +542,52 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
-                onClick={() => setHiveHealthOpen(true)}
+                onClick={() => {
+                  if (onTabChange) {
+                    onTabChange("sensor-vitals");
+                  } else {
+                    setHiveHealthOpen(true);
+                  }
+                }}
                 className="cursor-pointer"
               >
                 <HeartPulse className="w-4 h-4 mr-2 text-amber-500" /> Hive Health Dashboard
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  const base = window.location.hostname.includes("beeyield.com") ? "" : "https://beeyield.com";
-                  window.open(`${base}/beeyield-dashboard?tab=integrations`, "_blank");
+                  if (onTabChange) {
+                    onTabChange("integrations");
+                  } else {
+                    setIntegrationsOpen(true);
+                  }
                 }}
                 className="cursor-pointer"
               >
-                <Plug className="w-4 h-4 mr-2" /> Integrations (Shopify, QuickBooks, eTIMS)
+                <Plug className="w-4 h-4 mr-2 text-amber-500" /> Integrations (Shopify, QuickBooks, eTIMS)
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => setSupportOpen(true)}
+                onClick={() => {
+                  if (onTabChange) {
+                    onTabChange("support");
+                  } else {
+                    setSupportOpen(true);
+                  }
+                }}
                 className="cursor-pointer"
               >
                 <LifeBuoy className="w-4 h-4 mr-2 text-amber-500" /> Support & Tickets
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  const base = window.location.hostname.includes("beeyield.com") ? "" : "https://beeyield.com";
-                  window.open(`${base}/beeyield-dashboard?tab=settings`, "_blank");
+                  if (onTabChange) {
+                    onTabChange("settings");
+                  } else {
+                    navigate("/beeyield-dashboard?tab=settings");
+                  }
                 }}
                 className="cursor-pointer"
               >
-                <Settings className="w-4 h-4 mr-2" /> Settings — Control Center
+                <Settings className="w-4 h-4 mr-2 text-amber-500" /> Settings — Control Center
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
                 <Info className="w-4 h-4 mr-2" /> About Beeyield AI
@@ -840,6 +860,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
       <HiveHealthDashboard isOpen={hiveHealthOpen} onClose={() => setHiveHealthOpen(false)} />
       <SupportPageModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
+      <IntegrationsModal isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />
     </div>
   );
 }

@@ -25,6 +25,7 @@ export interface SupportPageModalProps {
   isOpen: boolean;
   onClose: () => void;
   onTabChange?: (tab: string) => void;
+  embedded?: boolean;
 }
 
 type SupportTicket = {
@@ -37,7 +38,7 @@ type SupportTicket = {
   created_at: string;
 };
 
-export default function SupportPageModal({ isOpen, onClose, onTabChange }: SupportPageModalProps) {
+export default function SupportPageModal({ isOpen, onClose, onTabChange, embedded = false }: SupportPageModalProps) {
   const [activeTab, setActiveTab] = useState<"all" | "new" | "in_progress" | "resolved">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
@@ -114,35 +115,38 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange }: Suppo
   const resolvedCount = tickets.filter((t) => t.status === "resolved").length;
   const lastContact = tickets.length > 0 ? new Date(tickets[0].created_at).toLocaleDateString() : "None";
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-[#12110E] text-white border border-white/10 rounded-3xl w-full max-w-5xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-hidden">
-        {/* Top Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-[#12110E]">
-          <div>
-            <h1 className="text-xl font-bold font-display tracking-tight text-white flex items-center gap-1.5">
-              Support <span className="text-[#F4D03F]">Page View</span>
-            </h1>
-            <p className="text-xs text-white/60 mt-0.5">
-              High-priority assistance for your apiculture operations.
-            </p>
-          </div>
+  if (!isOpen && !embedded) return null;
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsNewTicketOpen(true)}
-              className="h-9 px-4 rounded-xl font-bold text-xs bg-[#F59E0B] hover:bg-[#EAB308] text-black flex items-center gap-1.5 transition-all shadow-md active:scale-95"
-            >
-              + New Ticket <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+  const content = (
+    <div className="flex flex-col h-full w-full">
+      {/* Top Header */}
+      <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-[#12110E]">
+        <div>
+          <h1 className="text-xl font-bold font-display tracking-tight text-white flex items-center gap-1.5">
+            Support <span className="text-[#F4D03F]">Page View</span>
+          </h1>
+          <p className="text-xs text-white/60 mt-0.5">
+            High-priority assistance for your apiculture operations.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsNewTicketOpen(true)}
+            className="h-9 px-4 rounded-xl font-bold text-xs bg-[#F59E0B] hover:bg-[#EAB308] text-black flex items-center gap-1.5 transition-all shadow-md active:scale-95"
+          >
+            + New Ticket <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+          {!embedded && (
             <button
               onClick={onClose}
               className="w-9 h-9 rounded-xl border border-white/10 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all shadow-sm"
             >
               <X className="w-4 h-4" />
             </button>
-          </div>
+          )}
         </div>
+      </div>
 
         {/* Scrollable Body */}
         <div className="p-6 space-y-6 overflow-y-auto custom-scroll">
@@ -426,6 +430,22 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange }: Suppo
           </div>
         </div>
       )}
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="w-full bg-[#12110E] text-white border border-white/10 rounded-3xl shadow-sm flex flex-col overflow-hidden">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div className="bg-[#12110E] text-white border border-white/10 rounded-3xl w-full max-w-5xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-hidden">
+        {content}
+      </div>
     </div>
   );
 }

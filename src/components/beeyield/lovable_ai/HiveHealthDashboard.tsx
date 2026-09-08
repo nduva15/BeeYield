@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 export interface HiveHealthDashboardProps {
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
 }
 
 type HiveRecord = {
@@ -40,7 +41,7 @@ type HiveRecord = {
   notes?: string;
 };
 
-export default function HiveHealthDashboard({ isOpen, onClose }: HiveHealthDashboardProps) {
+export default function HiveHealthDashboard({ isOpen, onClose, embedded = false }: HiveHealthDashboardProps) {
   const [selectedHive, setSelectedHive] = useState<string>("all");
   const [coords, setCoords] = useState<string>("-1.286, 36.817");
   const [isLocating, setIsLocating] = useState<boolean>(false);
@@ -167,42 +168,45 @@ export default function HiveHealthDashboard({ isOpen, onClose }: HiveHealthDashb
     { date: "09-12", max: 27, min: 16, rain: 14 },
   ];
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      <div className="bg-[#FAF9F5] text-foreground border border-[#E7E5E4] rounded-3xl w-full max-w-5xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-hidden">
-        {/* Top Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E5E4] bg-white/90 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shadow-sm">
-              <HeartPulse className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold font-display tracking-tight text-foreground flex items-center gap-1.5">
-                Hive Health <span className="text-amber-500">Dashboard</span>
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                Inspections, acoustic audits and live weather in one trend view.
-              </p>
-            </div>
-          </div>
+  if (!isOpen && !embedded) return null;
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => void loadData()}
-              disabled={isRefreshing}
-              className="h-8 px-3 rounded-lg border border-border bg-white hover:bg-muted text-xs font-medium flex items-center gap-1.5 transition-all text-foreground shadow-sm disabled:opacity-50"
-            >
-              <RotateCw className={`w-3.5 h-3.5 text-muted-foreground ${isRefreshing ? "animate-spin" : ""}`} />
-              Refresh
-            </button>
+  const content = (
+    <div className="flex flex-col h-full w-full">
+      {/* Top Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E5E4] bg-white/90 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shadow-sm">
+            <HeartPulse className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold font-display tracking-tight text-foreground flex items-center gap-1.5">
+              Hive Health <span className="text-amber-500">Dashboard</span>
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Inspections, acoustic audits and live weather in one trend view.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => void loadData()}
+            disabled={isRefreshing}
+            className="h-8 px-3 rounded-lg border border-border bg-white hover:bg-muted text-xs font-medium flex items-center gap-1.5 transition-all text-foreground shadow-sm disabled:opacity-50"
+          >
+            <RotateCw className={`w-3.5 h-3.5 text-muted-foreground ${isRefreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+          {!embedded && (
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg border border-border bg-white hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-all shadow-sm"
             >
               <X className="w-4 h-4" />
             </button>
-          </div>
+          )}
         </div>
+      </div>
 
         {/* Scrollable Body */}
         <div className="p-6 space-y-5 overflow-y-auto custom-scroll">
@@ -660,6 +664,22 @@ export default function HiveHealthDashboard({ isOpen, onClose }: HiveHealthDashb
           </div>
         </div>
       )}
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="w-full bg-[#FAF9F5] text-foreground border border-[#E7E5E4] rounded-3xl shadow-sm flex flex-col overflow-hidden">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div className="bg-[#FAF9F5] text-foreground border border-[#E7E5E4] rounded-3xl w-full max-w-5xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-hidden">
+        {content}
+      </div>
     </div>
   );
 }
