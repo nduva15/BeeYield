@@ -373,50 +373,50 @@ const BeeYieldDashboard: React.FC = () => {
             case 'precision-pollination-folder':
             case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
             case 'pollination-grid':
-            case 'precision-pollination-grid': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'precision-pollination-grid': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'pollination-intelligence':
             case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
-            case 'pollination-calcs': return <PollinationCalcs isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'pollination-calcs': return <PollinationCalcs isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'bee-calculator':
-            case 'yield-predict': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'yield-predict': return <HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'activity-counter':
-            case 'vpm-counter': return <ActivityCounter isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'vpm-counter': return <ActivityCounter isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'activity-forecast':
-            case 'bfh-forecast': return <ActivityForecaster isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'bfh-forecast': return <ActivityForecaster isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'moa-viewer':
-            case 'moa-view': return <MOAView isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'moa-view': return <MOAView isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'florage-database':
-            case 'florage-page': return <FloragePage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'site-map': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'pollination-planning-ai': return <PollinationPlanning isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'florage-page': return <FloragePage isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'site-map': return <HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'pollination-planning-ai': return <PollinationPlanning isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'pollination-planning': return <PollinationEngine onTabChange={handleTabChange} embedded={true} />;
             case 'saturation-math': return <SpatialCoverageView embedded={true} />;
             case 'hpa-optimizer': return <HpaOptimizer embedded={true} />;
-            case 'pollination-lookup': return <PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'pollination-analytics': return <PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'pollination-lookup': return <PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'pollination-analytics': return <PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'foraging-optimizer': return <ForagingOptimizer onTabChange={handleTabChange} />;
             case 'bloom-tracking':
-            case 'bloom-phenology': return <BloomPhenologyEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'bloom-phenology': return <BloomPhenologyEmbed isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'flight-mapping-tactical':
-            case 'flight-tracker': return <FlightTrackerEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'bee-diseases': return <BeeDiseasesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'bee-gallery': return <BeeGallery isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'bee-species-edit': return <BeeSpeciesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'beeyield-calculators': return <BeeyieldCalculators isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'varroa-simulator': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'dataset-import': return <DatasetImport isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'feeding-schedule': return <FeedingSchedule isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'apiary-sizing': return <ApiarySizing isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
-            case 'yield-projection': return <YieldProjection isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'flight-tracker': return <FlightTrackerEmbed isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'bee-diseases': return <BeeDiseasesPage isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'bee-gallery': return <BeeGallery isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'bee-species-edit': return <BeeSpeciesPage isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'beeyield-calculators': return <BeeyieldCalculators isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'varroa-simulator': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'dataset-import': return <DatasetImport isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'feeding-schedule': return <FeedingSchedule isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'apiary-sizing': return <ApiarySizing isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'yield-projection': return <YieldProjection isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
             case 'master-map': return <MasterMapView />;
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
             case 'site-reports-tactical': return <PollinationReports />;
-            case 'precision-drilldown': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'precision-drilldown': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
             case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
-            case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'hive-health':
             case 'sensor-vitals': return <HiveHealthDashboard isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
@@ -426,7 +426,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'harvests': return <HarvestsView onTabChange={handleTabChange} />;
             case 'flight-map': return <FlightMapView />;
 
-            case 'varroa': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'varroa': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} embedded={true} />;
             case 'acoustic-spectral': return <AcousticSpectralView onTabChange={handleTabChange} embedded={true} />;
             case 'sound-analysis':
@@ -440,7 +440,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'online':
             case 'bluetooth':
             case 'usb':
-            case 'measurement-tools': return <MeasurementDataTools isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'measurement-tools': return <MeasurementDataTools isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'notes': return <MyNotesView onTabChange={handleTabChange} />;
             case 'requests': return <MyRequestsView onTabChange={handleTabChange} />;
             case 'task': return <MyTaskView onTabChange={handleTabChange} />;

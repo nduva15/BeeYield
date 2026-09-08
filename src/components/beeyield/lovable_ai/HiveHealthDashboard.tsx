@@ -171,7 +171,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
   if (!isOpen && !embedded) return null;
 
   const content = (
-    <div className="flex flex-col h-full w-full">
+    <>
+      <div className="flex flex-col h-full w-full">
       {/* Top Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E5E4] bg-white/90 backdrop-blur-md">
         <div className="flex items-center gap-3">
@@ -664,7 +665,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 
   if (embedded) {
