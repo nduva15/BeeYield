@@ -1,0 +1,3 @@
+[submodule "beeknowledge-hub"]
+	path = beeknowledge-hub
+	url = https://github.com/nduva15/beeknowledge-hub.git
