@@ -11,8 +11,6 @@ export default tseslint.config(
       "dist",
       "dist/**",
       "**/node_modules/**",
-      "beeknowledge-hub",
-      "beeknowledge-hub/**",
       "backend",
       "backend/**",
       "services",

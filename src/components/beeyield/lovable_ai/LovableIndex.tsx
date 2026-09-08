@@ -43,7 +43,6 @@ import BeeyieldCalculators from "@/components/BeeyieldCalculators";
 import VarroaSimulator from "@/components/VarroaSimulator";
 import DatasetImport from "@/components/DatasetImport";
 import FeedingSchedule from "@/components/FeedingSchedule";
-import KnowledgeSearch from "@/components/KnowledgeSearch";
 import ApiarySizing from "@/components/ApiarySizing";
 import YieldProjection from "@/components/YieldProjection";
 import HiveHealthDashboard from "@/components/HiveHealthDashboard";
@@ -179,7 +178,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [varroaSimOpen, setVarroaSimOpen] = useState(false);
   const [datasetImportOpen, setDatasetImportOpen] = useState(false);
   const [feedingScheduleOpen, setFeedingScheduleOpen] = useState(false);
-  const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [hiveHealthOpen, setHiveHealthOpen] = useState(false);
@@ -512,9 +510,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
               <DropdownMenuItem onClick={() => setDatasetImportOpen(true)} className="cursor-pointer">
                 <Download className="w-4 h-4 mr-2" /> Dataset Import & Re-index
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setKnowledgeSearchOpen(true)} className="cursor-pointer">
-                <Info className="w-4 h-4 mr-2" /> Knowledge Base Search
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setFeedingScheduleOpen(true)} className="cursor-pointer">
                 <Calculator className="w-4 h-4 mr-2" /> Feeding Schedule Timeline
               </DropdownMenuItem>
@@ -841,7 +836,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       <VarroaSimulator isOpen={varroaSimOpen} onClose={() => setVarroaSimOpen(false)} />
       <DatasetImport isOpen={datasetImportOpen} onClose={() => setDatasetImportOpen(false)} />
       <FeedingSchedule isOpen={feedingScheduleOpen} onClose={() => setFeedingScheduleOpen(false)} />
-      <KnowledgeSearch isOpen={knowledgeSearchOpen} onClose={() => setKnowledgeSearchOpen(false)} />
       <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
       <HiveHealthDashboard isOpen={hiveHealthOpen} onClose={() => setHiveHealthOpen(false)} />

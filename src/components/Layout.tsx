@@ -23,8 +23,6 @@ const Layout = ({ children }: LayoutProps) => {
     '/login',
     '/signup',
     '/auth',
-    '/beeknowledge-hub',
-    '/knowledge-hub',
     '/oauth/consent',
     '/beeyield-dashboard',
     '/beeyield-login',
