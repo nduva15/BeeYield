@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { analyzeBlob, type AnalysisResult } from "@/lib/bee-sound";
 import { MODEL_META } from "@/lib/bee-sound-model";
-import { downloadReportPdf, safeName } from "@/lib/report-pdf";
+import { downloadReportPdf, safeName, type ReportSection } from "@/lib/report-pdf";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
@@ -55,14 +55,8 @@ function auditPdf(opts: {
   notes?: string | null;
   ai?: string | null;
 }) {
-  downloadReportPdf({
-    kind: "acoustic audit",
-    title: `Acoustic audit — ${opts.hive}`,
-    subtitle: `Recorded ${opts.when} · ${opts.durationSec.toFixed(1)} s · ${opts.segments} scored window(s)`,
-    badge: `${opts.state.toUpperCase()} · ${(opts.confidence * 100).toFixed(0)}%`,
-    fileName: `beeyield-acoustic-${safeName(opts.hive)}-${safeName(opts.when)}.pdf`,
-    sections: [
-      {
+  const sections: ReportSection[] = [
+    {
         type: "kv",
         heading: "Result",
         rows: [
@@ -79,7 +73,7 @@ function auditPdf(opts: {
         ? [{
             type: "bars" as const,
             heading: "Disease risk ranking",
-            rows: opts.diseases.map((d) => ({ label: `${d.name} (${d.severity})`, value: d.score })),
+            rows: opts.diseases.map((d) => ({ label: `${d.name} (${d.severity})`, pct: d.score })),
           },
           {
             type: "list" as const,
@@ -103,8 +97,15 @@ function auditPdf(opts: {
       { type: "list", heading: "Reading the score", items: [...MODEL_META.confidence.reading] },
       { type: "text", heading: "Limitations", body: `${MODEL_META.weights}\n\n${MODEL_META.confidence.caveat}` },
       ...(opts.notes ? [{ type: "text" as const, heading: "Notes", body: opts.notes }] : []),
-      ...(opts.ai ? [{ type: "text" as const, heading: "AI interpretation", body: opts.ai }] : []),
-    ],
+    ...(opts.ai ? [{ type: "text" as const, heading: "AI interpretation", body: opts.ai }] : []),
+  ];
+  downloadReportPdf({
+    kind: "acoustic audit",
+    title: `Acoustic audit — ${opts.hive}`,
+    subtitle: `Recorded ${opts.when} · ${opts.durationSec.toFixed(1)} s · ${opts.segments} scored window(s)`,
+    badge: `${opts.state.toUpperCase()} · ${(opts.confidence * 100).toFixed(0)}%`,
+    fileName: `beeyield-acoustic-${safeName(opts.hive)}-${safeName(opts.when)}.pdf`,
+    sections,
   });
 }
 
