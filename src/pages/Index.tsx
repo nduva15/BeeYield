@@ -31,6 +31,7 @@ import BeeFlightTracker from "@/components/BeeFlightTracker";
 import BloomPhenology from "@/components/BloomPhenology";
 import { MOAView } from "@/components/LazyMaps";
 import MeasurementDataTools from "@/components/MeasurementDataTools";
+import ToolSidebar, { type ToolGroup } from "@/components/ToolSidebar";
 import FloragePage from "@/components/FloragePage";
 import ActivityCounter from "@/components/ActivityCounter";
 import ActivityForecaster from "@/components/ActivityForecaster";
@@ -166,6 +167,7 @@ export default function Index() {
   const [activityCounterOpen, setActivityCounterOpen] = useState(false);
   const [activityForecasterOpen, setActivityForecasterOpen] = useState(false);
   const [measurementToolsOpen, setMeasurementToolsOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(true);
   const [pollinationPlanningOpen, setPollinationPlanningOpen] = useState(false);
   const [pollinationCalcsOpen, setPollinationCalcsOpen] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
@@ -387,6 +389,70 @@ export default function Index() {
     loadConversations();
   };
 
+  const toolGroups: ToolGroup[] = [
+    {
+      label: "Apiary operations",
+      items: [
+        { label: "Hive Health Dashboard", icon: HeartPulse, onClick: () => setHealthDashOpen(true) },
+        { label: "Inspections & Diagnostics", icon: ClipboardList, onClick: () => setInspectionsOpen(true) },
+        { label: "Acoustic Audit (Sound Analysis)", icon: AudioLines, onClick: () => setSoundAnalysisOpen(true) },
+        { label: "Alerts", icon: Bug, onClick: () => setAlertsOpen(true) },
+        { label: "Hive Placement Map", icon: MapPin, onClick: () => setSiteMapOpen(true) },
+        { label: "Feeding Schedule Timeline", icon: Calculator, onClick: () => setFeedingScheduleOpen(true) },
+        { label: "Apiary & Equipment Sizing", icon: Layers, onClick: () => setApiarySizingOpen(true) },
+      ],
+    },
+    {
+      label: "Yield & pollination",
+      items: [
+        { label: "Harvest Calculator", icon: Calculator, onClick: () => setCalculatorOpen(true) },
+        { label: "Honey Yield Projection", icon: BarChart3, onClick: () => setYieldProjectionOpen(true) },
+        { label: "Precision Pollination Drilldown", icon: Target, onClick: () => setDrilldownOpen(true) },
+        { label: "Pollination Planning", icon: Target, onClick: () => setPollinationPlanningOpen(true) },
+        { label: "Pollination Calcs", icon: Calculator, onClick: () => setPollinationCalcsOpen(true) },
+        { label: "Pollination Data & Charts", icon: BarChart3, onClick: () => setPollinationOpen(true) },
+        { label: "Stocking Density Lookup", icon: Flower2, onClick: () => setLookupOpen(true) },
+        { label: "MOA — Multi-Objective View", icon: Layers, onClick: () => setMoaOpen(true) },
+        { label: "MOA Run Comparison", icon: Layers, onClick: () => setMoaCompareOpen(true) },
+      ],
+    },
+    {
+      label: "Bloom & flight",
+      items: [
+        { label: "Bloom Phenology", icon: Sprout, onClick: () => setBloomPhenologyOpen(true) },
+        { label: "Bee Flight & Activity Tracker", icon: Plane, onClick: () => setFlightTrackerOpen(true) },
+        { label: "Quick Activity Counter", icon: Plane, onClick: () => setActivityCounterOpen(true) },
+        { label: "Bee Activity Forecaster", icon: BarChart3, onClick: () => setActivityForecasterOpen(true) },
+        { label: "Florage Database", icon: Sprout, onClick: () => setFloragePageOpen(true) },
+      ],
+    },
+    {
+      label: "Knowledge & reference",
+      items: [
+        { label: "Bee Species Gallery", icon: Bug, onClick: () => setGalleryOpen(true) },
+        { label: "Bee Species (Editable)", icon: Bug, onClick: () => setSpeciesEditOpen(true) },
+        { label: "Bee Diseases (Editable)", icon: HeartPulse, onClick: () => setDiseasesOpen(true) },
+        { label: "Varroa Simulator", icon: HeartPulse, onClick: () => setVarroaSimOpen(true) },
+        { label: "Beeyield Calculators", icon: Calculator, onClick: () => setCalculatorsOpen(true) },
+        { label: "Knowledge Base Search", icon: Info, onClick: () => setKnowledgeSearchOpen(true) },
+        { label: "Dataset Import & Re-index", icon: Download, onClick: () => setDatasetImportOpen(true) },
+      ],
+    },
+    {
+      label: "Business & devices",
+      items: [
+        { label: "Integrations (Shopify, QuickBooks, eTIMS)", icon: Plug, onClick: () => setIntegrationsOpen(true) },
+        { label: "My Devices, USB, Bluetooth & Online", icon: Cpu, onClick: () => (user ? setMeasurementToolsOpen(true) : navigate("/auth?next=/")) },
+        { label: "Support & Tickets", icon: LifeBuoy, onClick: () => setSupportOpen(true) },
+        { label: "Settings — Control Center", icon: SettingsIcon, onClick: () => setSettingsOpen(true) },
+        { label: "About Beeyield AI", icon: Info, onClick: () => setAboutOpen(true) },
+        user
+          ? { label: `Sign out${profile?.full_name ? ` (${profile.full_name})` : ""}`, icon: LogOut, onClick: () => void signOut() }
+          : { label: "Sign in / Sign up", icon: LogIn, onClick: () => navigate("/auth?next=/") },
+      ],
+    },
+  ];
+
   return (
     <div className="flex h-screen w-full bg-background honeycomb-bg overflow-hidden">
       <ToolSidebar groups={toolGroups} open={toolsOpen} onClose={() => setToolsOpen(false)} />
@@ -421,146 +487,14 @@ export default function Index() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted"
-                title="Open expert tools menu"
-              >
-                <Menu className="w-4 h-4" />
-                <span className="text-xs font-medium hidden sm:inline">Tools</span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 bg-popover border-border z-50">
-              <DropdownMenuLabel className="text-honey">Knowledge & Reference</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setGalleryOpen(true)} className="cursor-pointer">
-                <Bug className="w-4 h-4 mr-2" /> Bee Species Gallery
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDiseasesOpen(true)} className="cursor-pointer">
-                <HeartPulse className="w-4 h-4 mr-2" /> Bee Diseases (Editable)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSpeciesEditOpen(true)} className="cursor-pointer">
-                <Bug className="w-4 h-4 mr-2" /> Bee Species (Editable)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setCalculatorsOpen(true)} className="cursor-pointer">
-                <Calculator className="w-4 h-4 mr-2" /> Beeyield Calculators
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setVarroaSimOpen(true)} className="cursor-pointer">
-                <HeartPulse className="w-4 h-4 mr-2" /> Varroa Simulator
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setPollinationOpen(true)} className="cursor-pointer">
-                <BarChart3 className="w-4 h-4 mr-2" /> Pollination Data & Charts
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLookupOpen(true)} className="cursor-pointer">
-                <Flower2 className="w-4 h-4 mr-2" /> Stocking Density Lookup
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-honey">Precision Apiary Tools</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setCalculatorOpen(true)} className="cursor-pointer">
-                <Calculator className="w-4 h-4 mr-2" /> Harvest Calculator
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDrilldownOpen(true)} className="cursor-pointer">
-                <Target className="w-4 h-4 mr-2" /> Precision Pollination Drilldown
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSiteMapOpen(true)} className="cursor-pointer">
-                <MapPin className="w-4 h-4 mr-2" /> Hive Placement Map
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setInspectionsOpen(true)} className="cursor-pointer">
-                <ClipboardList className="w-4 h-4 mr-2" /> Inspections & Diagnostics
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSoundAnalysisOpen(true)} className="cursor-pointer">
-                <AudioLines className="w-4 h-4 mr-2" /> Acoustic Audit (Sound Analysis)
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-honey">Bloom & Flight Expert</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setBloomPhenologyOpen(true)} className="cursor-pointer">
-                <Sprout className="w-4 h-4 mr-2" /> Bloom Phenology
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFlightTrackerOpen(true)} className="cursor-pointer">
-                <Plane className="w-4 h-4 mr-2" /> Bee Flight & Activity Tracker
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setMoaOpen(true)} className="cursor-pointer">
-                <Layers className="w-4 h-4 mr-2" /> MOA — Multi-Objective View
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFloragePageOpen(true)} className="cursor-pointer">
-                <Sprout className="w-4 h-4 mr-2" /> Florage Database
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setActivityCounterOpen(true)} className="cursor-pointer">
-                <Plane className="w-4 h-4 mr-2" /> Quick Activity Counter
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setActivityForecasterOpen(true)} className="cursor-pointer">
-                <BarChart3 className="w-4 h-4 mr-2" /> Bee Activity Forecaster
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setPollinationPlanningOpen(true)} className="cursor-pointer">
-                <Target className="w-4 h-4 mr-2" /> Pollination Planning
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setPollinationCalcsOpen(true)} className="cursor-pointer">
-                <Calculator className="w-4 h-4 mr-2" /> Pollination Calcs
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setMoaCompareOpen(true)} className="cursor-pointer">
-                <Layers className="w-4 h-4 mr-2" /> MOA Run Comparison
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setAlertsOpen(true)} className="cursor-pointer">
-                <Bug className="w-4 h-4 mr-2" /> Alerts
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-honey">Knowledge & Planning</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setDatasetImportOpen(true)} className="cursor-pointer">
-                <Download className="w-4 h-4 mr-2" /> Dataset Import & Re-index
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setKnowledgeSearchOpen(true)} className="cursor-pointer">
-                <Info className="w-4 h-4 mr-2" /> Knowledge Base Search
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setFeedingScheduleOpen(true)} className="cursor-pointer">
-                <Calculator className="w-4 h-4 mr-2" /> Feeding Schedule Timeline
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setApiarySizingOpen(true)} className="cursor-pointer">
-                <Layers className="w-4 h-4 mr-2" /> Apiary & Equipment Sizing
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setYieldProjectionOpen(true)} className="cursor-pointer">
-                <BarChart3 className="w-4 h-4 mr-2" /> Honey Yield Projection
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-honey">Measurement Data Tools</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => (user ? setMeasurementToolsOpen(true) : navigate("/auth?next=/"))}
-                className="cursor-pointer"
-              >
-                <Cpu className="w-4 h-4 mr-2" /> My Devices, USB, Bluetooth & Online
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              {user ? (
-                <DropdownMenuItem onClick={() => void signOut()} className="cursor-pointer">
-                  <LogOut className="w-4 h-4 mr-2" /> Sign out{profile?.full_name ? ` (${profile.full_name})` : ""}
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem onClick={() => navigate("/auth?next=/")} className="cursor-pointer">
-                  <LogIn className="w-4 h-4 mr-2" /> Sign in / Sign up
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem onClick={() => setHealthDashOpen(true)} className="cursor-pointer">
-                <HeartPulse className="w-4 h-4 mr-2" /> Hive Health Dashboard
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIntegrationsOpen(true)} className="cursor-pointer">
-                <Plug className="w-4 h-4 mr-2" /> Integrations (Shopify, QuickBooks, eTIMS)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSupportOpen(true)} className="cursor-pointer">
-                <LifeBuoy className="w-4 h-4 mr-2" /> Support & Tickets
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSettingsOpen(true)} className="cursor-pointer">
-                <SettingsIcon className="w-4 h-4 mr-2" /> Settings — Control Center
-              </DropdownMenuItem>
-
-              <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
-                <Info className="w-4 h-4 mr-2" /> About Beeyield AI
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <button
+            onClick={() => setToolsOpen((v) => !v)}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted"
+            title={toolsOpen ? "Hide tools" : "Show tools"}
+          >
+            <Menu className="w-4 h-4" />
+            <span className="text-xs font-medium hidden sm:inline">Tools</span>
+          </button>
           {messages.length > 0 && (
             <button
               onClick={() => {
