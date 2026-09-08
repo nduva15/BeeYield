@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     User, Shield, Bell, Globe, Lock as LockIcon, MapPin, Activity, Save, Trash2, Key, Smartphone, Layers, Hexagon, Cpu, ShieldCheck, Check, Mail,
-    Settings, LogOut, ChevronRight, Palette, Fingerprint, CreditCard, Receipt, Plus, XCircle, ExternalLink, Clock, ArrowUpRight, ArrowDownRight,
+    Settings, LogOut, ChevronRight, Palette, Fingerprint, CreditCard, Receipt, Plus, XCircle, X, ExternalLink, Clock, ArrowUpRight, ArrowDownRight,
     Camera, Loader2
 } from "lucide-react";
 import { Button } from '@/components/ui/button';
@@ -224,46 +224,53 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     if (!mounted) return null;
 
     return (
-        <BeeYieldPageShell>
-            <BeeYieldPageHeader
-                icon={Settings}
-                label="Settings"
-                title={<>Control <span className="text-primary">Center</span></>}
-                subtitle="Manage your account, modules, alerts, and security settings."
-                actions={
-                    <div className="flex items-center gap-2 bg-muted/50 border border-primary/20 px-4 h-10 rounded-xl shadow-sm">
-                        <Activity className="w-4 h-4 text-beeyield-green animate-pulse" />
-                        <span className="text-xs font-semibold text-foreground">
-                            Sync: <span className="text-beeyield-green">{isSyncing ? 'Syncing…' : 'On'}</span>
-                        </span>
-                    </div>
-                }
-            />
-
-            {pageError && (
-                <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-5 py-4">
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="space-y-1">
-                            <p className="text-xs font-semibold text-destructive">Settings error</p>
-                            <p className="text-sm font-semibold text-foreground break-words">{pageError}</p>
+        <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+            <div className="w-full max-w-7xl mx-auto bg-[#FAF9F5] text-foreground border border-[#E7E5E4] rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col space-y-6">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-[#F59E0B]/10 border border-[#F59E0B]/20 flex items-center justify-center text-[#F59E0B]">
+                            <Settings className="w-5 h-5" />
                         </div>
+                        <div>
+                            <h1 className="text-xl font-bold font-display tracking-tight text-foreground flex items-center gap-1.5">
+                                Control <span className="text-[#F59E0B]">Center</span>
+                            </h1>
+                            <p className="text-xs text-muted-foreground">
+                                Profile, modules, alerting, security and billing
+                            </p>
+                        </div>
+                    </div>
+
+                    {onTabChange && (
                         <button
                             type="button"
-                            className={cn(glass.btnSecondary, "h-9 px-4 text-xs font-semibold")}
-                            onClick={() => setPageError(null)}
+                            onClick={() => onTabChange('home')}
+                            className="w-8 h-8 rounded-lg border border-[#E7E5E4] bg-white hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-all shadow-sm"
                         >
-                            Dismiss
+                            <X className="w-4 h-4" />
                         </button>
-                    </div>
+                    )}
                 </div>
-            )}
 
-            <Tabs
-                value={activeTab}
-                onValueChange={setActiveTab}
-                className="w-full space-y-6"
-            >
-                <TabsList className="bg-muted/30 p-1 h-9 w-full grid grid-cols-5 rounded-xl border border-border/40 backdrop-blur-xl">
+                {pageError && (
+                    <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-5 py-4">
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="space-y-1">
+                                <p className="text-xs font-semibold text-destructive">Settings error</p>
+                                <p className="text-sm font-semibold text-foreground break-words">{pageError}</p>
+                            </div>
+                            <button
+                                type="button"
+                                className={cn(glass.btnSecondary, "h-9 px-4 text-xs font-semibold")}
+                                onClick={() => setPageError(null)}
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-2">
                     {[
                         { value: 'identity', label: 'Profile', icon: User },
                         { value: 'modules', label: 'Modules', icon: Layers },
@@ -271,18 +278,35 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         { value: 'security', label: 'Security', icon: ShieldCheck },
                         { value: 'billing', label: 'Billing', icon: CreditCard },
                     ].map(tab => (
-                        <TabsTrigger
+                        <button
                             key={tab.value}
-                            value={tab.value}
-                            className="h-full rounded-lg text-xs font-semibold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border/40 transition-all flex items-center justify-center gap-1.5"
+                            type="button"
+                            onClick={() => setActiveTab(tab.value)}
+                            className={cn(
+                                "h-9 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all border",
+                                activeTab === tab.value
+                                    ? "bg-[#F59E0B]/15 border-[#F59E0B]/60 text-[#B45309] dark:text-[#FCD34D] shadow-sm font-bold"
+                                    : "bg-white border-[#E7E5E4] text-muted-foreground hover:text-foreground hover:bg-gray-50"
+                            )}
                         >
                             <tab.icon className="w-3.5 h-3.5" /> {tab.label}
-                        </TabsTrigger>
+                        </button>
                     ))}
-                </TabsList>
+                </div>
 
-                <TabsContent value="identity" className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <Tabs
+                    value={activeTab}
+                    onValueChange={setActiveTab}
+                    className="w-full space-y-6"
+                >
+                    <TabsContent value="identity" className="space-y-6">
+                        {!user ? (
+                            <div className="rounded-2xl border border-[#E7E5E4] bg-white p-6 space-y-2 shadow-sm">
+                                <h3 className="text-lg font-bold text-[#F59E0B]">Profile</h3>
+                                <p className="text-sm text-muted-foreground">Sign in to manage your profile details.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         {/* Profile Summary */}
                         <div className="lg:col-span-4 space-y-4">
                             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
@@ -444,7 +468,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 </BeeYieldCard>
                             </motion.div>
                         </div>
-                    </div>
+                    )}
                 </TabsContent>
 
                 <TabsContent value="modules" className="space-y-6">
@@ -916,6 +940,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     </motion.div>
                 </TabsContent>
             </Tabs>
+            </div>
         </BeeYieldPageShell>
     );
 };

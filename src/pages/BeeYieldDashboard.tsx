@@ -417,7 +417,13 @@ const BeeYieldDashboard: React.FC = () => {
             case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
             case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
             case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} />;
-            case 'hive-health':
+            case 'hive-health': return (
+                <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
+                    <div className="max-w-7xl mx-auto">
+                        <HiveHealthDashboard isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />
+                    </div>
+                </BeeYieldPageShell>
+            );
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;

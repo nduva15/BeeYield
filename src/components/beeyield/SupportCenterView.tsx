@@ -113,15 +113,11 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
     if (isOpen !== undefined && !isOpen) return null;
 
     const content = (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn(glass.page, isOpen ? "p-6 sm:p-8" : "")}
-        >
+        <div className="w-full max-w-7xl mx-auto bg-[#FAF9F5] text-foreground border border-[#E7E5E4] rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col space-y-6">
             <PageHeader
                 icon={Headphones}
                 label="Help Desk"
-                title={<>Support <span className="text-[#F4D03F]">Desk & Tickets</span></>}
+                title={<>Support <span className="text-[#F4D03F]">Page View</span></>}
                 subtitle="High-priority assistance for your apiculture operations."
                 actions={
                     <div className="flex items-center gap-2">
@@ -134,7 +130,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
                         {onClose && (
                             <button
                                 onClick={onClose}
-                                className="w-9 h-9 rounded-xl border border-white/10 hover:bg-white/10 flex items-center justify-center text-muted-foreground hover:text-white transition-all shadow-sm"
+                                className="w-9 h-9 rounded-xl border border-[#E7E5E4] bg-white hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-all shadow-sm"
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -152,21 +148,21 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
                 {/* KPI Section */}
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                     {[
-                        { label: 'Total Tickets', value: stats.total, border: 'border-border/' },
-                        { label: 'Pending', value: stats.pending, border: 'border-amber-500/20' },
-                        { label: 'In Progress', value: stats.active, border: 'border-[#1B9157]/20' },
-                        { label: 'Resolved', value: stats.completed, border: 'border-gray-200' },
-                        { label: 'Last Contact', value: stats.lastRequest, border: 'border-border/' },
+                        { label: 'Total Tickets', value: stats.total },
+                        { label: 'Pending', value: stats.pending },
+                        { label: 'In Progress', value: stats.active },
+                        { label: 'Resolved', value: stats.completed },
+                        { label: 'Last Contact', value: stats.lastRequest },
                     ].map((stat, i) => (
-                        <div key={i} className={cn(glass.card, "p-4")}>
-                            <p className={glass.microLabel}>{stat.label}</p>
-                            <p className="text-xl font-bold tracking-tight text-foreground mt-2 truncate">{stat.value}</p>
+                        <div key={i} className="bg-white border border-[#E7E5E4] rounded-2xl p-4 shadow-sm">
+                            <p className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">{stat.label}</p>
+                            <p className="text-2xl font-bold tracking-tight text-foreground mt-2 truncate">{stat.value}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Contact Hero */}
-                <div className={cn(glass.card, "p-6 lg:p-8 relative overflow-hidden")}>
+                <div className="bg-white border border-[#E7E5E4] rounded-2xl p-6 lg:p-8 relative overflow-hidden shadow-sm">
                     <div className="absolute -top-10 -right-10 w-64 h-64 bg-[#F4D03F]/5 rounded-full blur-3xl pointer-events-none" />
                     
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
@@ -193,17 +189,17 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
                                 ))}
                             </div>
 
-                            <div className={cn(glass.badge, "bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20 w-fit py-1.5")}>
-                                <Activity className="w-3.5 h-3.5 mr-2 animate-pulse" />
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-[#1B9157]/10 text-[#1B9157] border border-[#1B9157]/20">
+                                <Activity className="w-3.5 h-3.5 animate-pulse" />
                                 SLA: &lt; 2 Hours
                             </div>
                         </div>
 
                         <div className="lg:col-span-4 flex flex-col gap-3 justify-center">
-                            <button className={glass.btnSecondary}>
+                            <button className={cn(glass.btnSecondary, "bg-white border-[#E7E5E4] hover:bg-gray-50")}>
                                 <Activity className="w-4 h-4" /> Troubleshooting
                             </button>
-                            <button onClick={() => window.print()} className={glass.btnSecondary}>
+                            <button onClick={() => window.print()} className={cn(glass.btnSecondary, "bg-white border-[#E7E5E4] hover:bg-gray-50")}>
                                 <Printer className="w-4 h-4" /> Export Service Form
                             </button>
                         </div>
@@ -213,7 +209,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
                 {/* Tickets Ledger */}
                 <div className="space-y-4">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex bg-gray-100/50 p-1 rounded-xl border border-gray-100 w-fit">
+                        <div className="flex bg-white p-1 rounded-xl border border-[#E7E5E4] w-fit shadow-sm">
                             {['all', 'new', 'in_progress', 'resolved'].map((tab) => (
                                 <button
                                     key={tab}
@@ -221,11 +217,11 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
                                     className={cn(
                                         "px-4 h-8 rounded-lg text-xs font-bold uppercase tracking-wider transition-all",
                                         activeTab === tab
-                                            ? "bg-white text-foreground shadow-sm border border-border/"
-                                            : "text-muted-foreground hover:text-gray-800"
+                                            ? "bg-[#F59E0B] text-black shadow-sm"
+                                            : "text-muted-foreground hover:text-foreground"
                                     )}
                                 >
-                                    {tab.replace('_', ' ')}
+                                    {tab === 'in_progress' ? 'In Progress' : tab}
                                 </button>
                             ))}
                         </div>
@@ -239,21 +235,23 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
                                 value={filterText}
                                 onChange={(e) => setFilterText(e.target.value)}
                                 placeholder="Search tickets..."
-                                className={cn(glass.input, "pl-10 w-full")}
+                                className="pl-10 w-full h-10 rounded-xl border border-[#E7E5E4] bg-white text-xs text-foreground placeholder:text-muted-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F4D03F]/30"
                             />
                         </div>
                     </div>
 
-                    <div className={cn(glass.table, "min-h-[400px]")}>
+                    <div className="bg-white border border-[#E7E5E4] rounded-2xl overflow-hidden shadow-sm min-h-[360px]">
                         {loading ? (
-                            <div className="flex items-center justify-center h-[400px]">
+                            <div className="flex items-center justify-center h-[360px]">
                                 <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]/50" />
                             </div>
                         ) : filteredRequests.length === 0 ? (
-                            <div className={cn(glass.emptyState, "h-[400px] border-none bg-transparent")}>
-                                <Send className="w-12 h-12 text-[#F4D03F]/40" />
-                                <h3 className="text-sm font-bold text-foreground">No Tickets Found</h3>
-                                <p className="text-xs text-muted-foreground">All support channels are synchronized.</p>
+                            <div className="p-16 text-center flex flex-col items-center justify-center space-y-3">
+                                <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-[#F59E0B] mb-1">
+                                    <Send className="w-6 h-6 rotate-45" />
+                                </div>
+                                <h3 className="font-bold text-base text-foreground">No Tickets Found</h3>
+                                <p className="text-xs text-muted-foreground">All support channels are synchronized</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
