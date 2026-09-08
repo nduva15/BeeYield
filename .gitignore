@@ -61,10 +61,11 @@ __pycache__/
 venv/
 ENV/
 env/
-Lib/
-lib/
+/Lib/
+/lib/
 backend/Lib/
 backend/lib/
+!src/lib/
 site-packages/
 **/site-packages/**
 *.dist-info/

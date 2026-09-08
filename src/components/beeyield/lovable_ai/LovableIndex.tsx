@@ -48,6 +48,10 @@ import YieldProjection from "./YieldProjection";
 import HiveHealthDashboard from "./HiveHealthDashboard";
 import SupportPageModal from "./SupportPageModal";
 import IntegrationsModal from "./IntegrationsModal";
+import InspectionsPage from "./InspectionsPage";
+import SoundAnalysis from "./SoundAnalysis";
+import SettingsPage from "./SettingsPage";
+import { ClipboardList, AudioLines } from "lucide-react";
 
 type Message = {
   id: string;
@@ -184,6 +188,9 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [hiveHealthOpen, setHiveHealthOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
+  const [inspectionsOpen, setInspectionsOpen] = useState(false);
+  const [soundAnalysisOpen, setSoundAnalysisOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [promptVariant, setPromptVariant] = useState<"baseline" | "bloom" | "flight" | "bloom_flight">("baseline");
 
   // Media state
@@ -554,6 +561,18 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <HeartPulse className="w-4 h-4 mr-2 text-amber-500" /> Hive Health Dashboard
               </DropdownMenuItem>
               <DropdownMenuItem
+                onClick={() => setInspectionsOpen(true)}
+                className="cursor-pointer"
+              >
+                <ClipboardList className="w-4 h-4 mr-2 text-amber-500" /> Inspections & Diagnostics
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setSoundAnalysisOpen(true)}
+                className="cursor-pointer"
+              >
+                <AudioLines className="w-4 h-4 mr-2 text-amber-500" /> Acoustic Audit (Sound Analysis)
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => {
                   if (onTabChange) {
                     onTabChange("integrations");
@@ -582,7 +601,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                   if (onTabChange) {
                     onTabChange("settings");
                   } else {
-                    navigate("/beeyield-dashboard?tab=settings");
+                    setSettingsOpen(true);
                   }
                 }}
                 className="cursor-pointer"
@@ -877,6 +896,9 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       <HiveHealthDashboard isOpen={hiveHealthOpen} onClose={() => setHiveHealthOpen(false)} />
       <SupportPageModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
       <IntegrationsModal isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />
+      <InspectionsPage isOpen={inspectionsOpen} onClose={() => setInspectionsOpen(false)} />
+      <SoundAnalysis isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />
+      <SettingsPage isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 }
