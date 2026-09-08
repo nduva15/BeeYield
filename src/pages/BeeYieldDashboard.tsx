@@ -1,7 +1,7 @@
 import React from 'react';
 import ErrorBoundary from '@/components/beeyield/ErrorBoundary';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useDevices } from '@/hooks/useDevices';
@@ -113,12 +113,17 @@ const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
 const BeeYieldDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut, beeyieldUser } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useLanguage();
     const { moduleFlags } = useSettings();
     const effectiveUser = beeyieldUser || user;
     const effectiveEmail = beeyieldUser?.email || user?.email;
 
-    const [activeTab, setActiveTab] = React.useState('home');
+    const isDirectAiRoute = location.pathname === '/beeyield-ai' || location.pathname === '/assistant';
+    const [activeTab, setActiveTab] = React.useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('tab') || (isDirectAiRoute ? 'assistant' : 'home');
+    });
     const [aiInitialMessage, setAiInitialMessage] = React.useState<string | null>(null);
     const [viewParams, setViewParams] = React.useState<{ message?: string, action?: string } | null>(null);
     const [dashboardOpenedAt] = React.useState(() => Date.now());
