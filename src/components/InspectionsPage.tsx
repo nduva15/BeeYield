@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, ClipboardList, Plus, Search, Trash2, HeartPulse, AlertTriangle, Activity,
-  Sparkles, Loader2, Save, CalendarDays, MapPin, Crown, Bug,
+  Sparkles, Loader2, Save, CalendarDays, MapPin, Crown, Bug, FileDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -9,6 +9,7 @@ import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
+import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 
 type Inspection = {
   id: string;
@@ -83,6 +84,40 @@ function healthTone(h: string) {
   if (h === "Watch") return "text-honey bg-honey/10 border-honey/30";
   if (h === "At risk") return "text-orange-400 bg-orange-500/10 border-orange-500/30";
   return "text-red-400 bg-red-500/10 border-red-500/30";
+}
+
+function inspectionPdf(r: Inspection) {
+  downloadReportPdf({
+    kind: "inspection",
+    title: `Hive inspection — ${r.hive_label}`,
+    subtitle: `${r.location || "Location not recorded"} · inspected ${r.inspected_on}`,
+    badge: r.colony_health.toUpperCase(),
+    fileName: `beeyield-inspection-${safeName(r.hive_label)}-${r.inspected_on}.pdf`,
+    sections: [
+      {
+        type: "kv",
+        heading: "Colony summary",
+        rows: [
+          ["Hive", r.hive_label],
+          ["Batch", r.batch],
+          ["Inspected on", r.inspected_on],
+          ["Location", r.location || "—"],
+          ["Colony health", r.colony_health],
+          ["Temperament", r.temperament],
+          ["Queen sighted", r.queen_seen ? "Yes" : "No"],
+          ["Queen cells", String(r.queen_cells)],
+          ["Brood frames", String(r.brood_frames)],
+          ["Honey frames", String(r.honey_frames)],
+          ["Varroa / 300 bees", String(r.varroa_count)],
+          ["Weather", r.weather || "—"],
+        ],
+      },
+      { type: "list", heading: "Issues found", items: r.issues ?? [] },
+      { type: "list", heading: "Actions taken", items: r.actions ?? [] },
+      ...(r.notes ? [{ type: "text" as const, heading: "Beekeeper notes", body: r.notes }] : []),
+      ...(r.ai_insights ? [{ type: "text" as const, heading: "AI diagnosis", body: r.ai_insights }] : []),
+    ],
+  });
 }
 
 export default function InspectionsPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -436,9 +471,15 @@ Return: (1) most likely diagnosis with confidence, (2) differential diagnoses to
                         <MarkdownRenderer content={r.ai_insights} />
                       </div>
                     )}
-                    <button onClick={() => remove(r.id)} className="text-red-400 flex items-center gap-1">
-                      <Trash2 className="w-3.5 h-3.5" /> Delete record
-                    </button>
+                    <div className="flex flex-wrap items-center gap-3 pt-1">
+                      <button onClick={() => inspectionPdf(r)}
+                        className="px-3 py-1.5 rounded-lg border border-honey/50 text-honey flex items-center gap-1.5">
+                        <FileDown className="w-3.5 h-3.5" /> Download PDF report
+                      </button>
+                      <button onClick={() => remove(r.id)} className="text-red-400 flex items-center gap-1">
+                        <Trash2 className="w-3.5 h-3.5" /> Delete record
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
