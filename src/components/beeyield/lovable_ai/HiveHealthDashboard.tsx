@@ -128,7 +128,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     setRecords(updated);
     try {
       localStorage.setItem("beeyield_hive_health_records", JSON.stringify(updated));
-    } catch {}
+    } catch { /* localStorage quota exceeded – ignore */ }
 
     setNewRecordOpen(false);
     setRecordNotes("");

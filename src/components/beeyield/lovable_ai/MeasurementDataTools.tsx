@@ -538,7 +538,7 @@ export default function MeasurementDataTools({ isOpen, onClose }: { isOpen: bool
   const ingestSerialLine = async (line: string) => {
     // Accept "T=24.5;H=61;W=38.2;B=88" or JSON payloads from the hub.
     if (!user) return;
-    let temp: number | null = null, hum: number | null = null, wt: number | null = null, bat: number | null = null;
+    let temp: number | null, hum: number | null, wt: number | null, bat: number | null;
     try {
       const j = JSON.parse(line);
       temp = j.t ?? j.temperature ?? null; hum = j.h ?? j.humidity ?? null;

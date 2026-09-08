@@ -88,7 +88,7 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
       setTickets(updated);
       try {
         localStorage.setItem("beeyield_support_tickets", JSON.stringify(updated));
-      } catch {}
+      } catch { /* localStorage quota exceeded – ignore */ }
 
       setIsSubmitting(false);
       setIsNewTicketOpen(false);
