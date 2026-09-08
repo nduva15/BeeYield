@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, Plug, ShoppingBag, Receipt, Calculator, Loader2, RefreshCw, Save,
-  CheckCircle2, AlertCircle, Unplug, ExternalLink, KeyRound, ListChecks,
+  CheckCircle2, AlertCircle, Unplug, ExternalLink, KeyRound, ListChecks, ShieldCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
