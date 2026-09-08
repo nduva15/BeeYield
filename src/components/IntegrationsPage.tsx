@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, Plug, ShoppingBag, Receipt, Calculator, Loader2, RefreshCw, Save,
-  CheckCircle2, AlertCircle, Unplug, ExternalLink, KeyRound, ListChecks,
+  CheckCircle2, AlertCircle, Unplug, ExternalLink, KeyRound, ListChecks, ShieldCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -69,7 +69,7 @@ const PROVIDERS: {
       "In Shopify admin open Settings → Apps and sales channels → Develop apps.",
       "Create an app named “BeeYield” and configure Admin API scopes: read_products, write_products, read_orders, read_inventory, write_inventory, read_locations.",
       "Install the app and copy the Admin API access token (shown once).",
-      "Paste your store domain and the token here, then run Verify connection.",
+      "Paste your store domain and the token here, then run Test connection.",
     ],
     capabilities: ["Product & variant counts", "Order volume", "Inventory locations", "Sync activity log"],
     required: ["storeUrl", "accessToken"],
@@ -99,7 +99,7 @@ const PROVIDERS: {
     steps: [
       "Create an app at developer.intuit.com and add the Accounting scope (com.intuit.quickbooks.accounting).",
       "Run the OAuth 2.0 playground against your company to obtain the access + refresh tokens and Realm ID.",
-      "Paste the Realm ID, environment and tokens here, then Verify connection.",
+      "Paste the Realm ID, environment and tokens here, then Test connection.",
       "Map the income and expense accounts that BeeYield should post to.",
     ],
     capabilities: ["Company info check", "Chart of accounts count", "Item & invoice totals", "Account mapping"],
@@ -125,7 +125,7 @@ const PROVIDERS: {
     steps: [
       "Sign in to the eTIMS taxpayer portal and register an OSCU/VSCU device for your apiary business.",
       "Note the device serial number and branch ID issued for the registration.",
-      "Paste your KRA PIN, branch ID and device serial here, then Verify connection — BeeYield calls selectInitOsdcInfo.",
+      "Paste your KRA PIN, branch ID and device serial here, then Test connection — BeeYield calls selectInitOsdcInfo.",
       "Once initialised, pull code lists so sales invoices carry the right tax and classification codes.",
     ],
     capabilities: ["Device initialisation", "Code & classification lists", "Tax-ready sales invoicing", "Audit trail"],
@@ -451,6 +451,11 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
               </div>
             )}
           </div>
+        </div>
+
+        {/* Per-record sync timeline across providers */}
+        <div className="mt-6">
+          <SyncTimeline deviceId={deviceId} />
         </div>
       </div>
     </div>

@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   X, AudioWaveform, Mic, Square, Upload, Loader2, Sparkles, Save, Trash2,
-  Activity, ShieldAlert, Radio, Crown,
+  Activity, ShieldAlert, Radio, Crown, FileDown, Cpu, Info,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { analyzeBlob, type AnalysisResult } from "@/lib/bee-sound";
+import { MODEL_META } from "@/lib/bee-sound-model";
+import { downloadReportPdf, safeName, type ReportSection } from "@/lib/report-pdf";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
@@ -39,6 +41,120 @@ function sevTone(s: string) {
   if (s === "high") return "text-red-400 bg-red-500/10 border-red-500/30";
   if (s === "moderate") return "text-honey bg-honey/10 border-honey/30";
   return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
+}
+
+function auditPdf(opts: {
+  hive: string;
+  when: string;
+  state: string;
+  confidence: number;
+  segments: number;
+  durationSec: number;
+  piping: string;
+  diseases: Disease[];
+  notes?: string | null;
+  ai?: string | null;
+}) {
+  const sections: ReportSection[] = [
+    {
+        type: "kv",
+        heading: "Result",
+        rows: [
+          ["Hive", opts.hive],
+          ["Recorded at", opts.when],
+          ["Health state", opts.state],
+          ["Confidence", `${(opts.confidence * 100).toFixed(1)}%`],
+          ["Queen piping", opts.piping],
+          ["Clip length", `${opts.durationSec.toFixed(1)} s`],
+          ["Windows scored", String(opts.segments)],
+        ],
+      },
+      ...(opts.diseases.length > 0
+        ? [{
+            type: "bars" as const,
+            heading: "Disease risk ranking",
+            rows: opts.diseases.map((d) => ({ label: `${d.name} (${d.severity})`, pct: d.score })),
+          },
+          {
+            type: "list" as const,
+            heading: "Acoustic evidence",
+            items: opts.diseases.map((d) => `${d.name}: ${d.acousticMarker} — ${d.rationale}`),
+          }]
+        : []),
+      {
+        type: "kv",
+        heading: "Model",
+        rows: [
+          ["Model", MODEL_META.name],
+          ["Version", MODEL_META.version],
+          ["Runs on", MODEL_META.runsOn],
+          ["Signal pipeline", MODEL_META.pipeline],
+          ["Classes", MODEL_META.classes.join(", ")],
+        ],
+      },
+      { type: "text", heading: "How the confidence score is computed", body: MODEL_META.confidence.headline },
+      { type: "list", heading: "Scoring steps", items: [...MODEL_META.confidence.steps] },
+      { type: "list", heading: "Reading the score", items: [...MODEL_META.confidence.reading] },
+      { type: "text", heading: "Limitations", body: `${MODEL_META.weights}\n\n${MODEL_META.confidence.caveat}` },
+      ...(opts.notes ? [{ type: "text" as const, heading: "Notes", body: opts.notes }] : []),
+    ...(opts.ai ? [{ type: "text" as const, heading: "AI interpretation", body: opts.ai }] : []),
+  ];
+  downloadReportPdf({
+    kind: "acoustic audit",
+    title: `Acoustic audit — ${opts.hive}`,
+    subtitle: `Recorded ${opts.when} · ${opts.durationSec.toFixed(1)} s · ${opts.segments} scored window(s)`,
+    badge: `${opts.state.toUpperCase()} · ${(opts.confidence * 100).toFixed(0)}%`,
+    fileName: `beeyield-acoustic-${safeName(opts.hive)}-${safeName(opts.when)}.pdf`,
+    sections,
+  });
+}
+
+function ModelCard() {
+  return (
+    <details className="rounded-xl border border-border bg-card p-4">
+      <summary className="cursor-pointer text-xs font-semibold text-honey flex items-center gap-1.5">
+        <Cpu className="w-3.5 h-3.5" /> Model card &amp; how the confidence score is computed
+      </summary>
+      <div className="mt-3 space-y-3 text-[11px] text-muted-foreground">
+        <div className="grid sm:grid-cols-2 gap-2">
+          {[
+            ["Model", MODEL_META.name],
+            ["Version", MODEL_META.version],
+            ["Runs on", MODEL_META.runsOn],
+            ["Feature dimensions", `${MODEL_META.featureDim} MFCC + delta statistics`],
+            ["States", MODEL_META.classes.join(" · ")],
+            ["Noise gate", MODEL_META.gate],
+          ].map(([k, v]) => (
+            <div key={k} className="rounded-lg border border-border bg-background p-2">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground/70">{k}</p>
+              <p className="text-foreground">{v}</p>
+            </div>
+          ))}
+        </div>
+        <p><span className="text-foreground font-medium">Signal pipeline: </span>{MODEL_META.pipeline}</p>
+        <div>
+          <p className="text-foreground font-medium mb-1">Training corpora</p>
+          <ul className="space-y-1 list-disc list-inside">
+            {MODEL_META.datasets.map((d) => (
+              <li key={d.name}><span className="text-foreground">{d.name}</span> — {d.role} <span className="opacity-70">({d.source})</span></li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-lg border border-honey/25 bg-honey/5 p-3">
+          <p className="text-foreground font-medium flex items-center gap-1.5 mb-1"><Info className="w-3.5 h-3.5 text-honey" /> Confidence</p>
+          <p>{MODEL_META.confidence.headline}</p>
+          <ol className="mt-2 space-y-1 list-decimal list-inside">
+            {MODEL_META.confidence.steps.map((t) => <li key={t}>{t}</li>)}
+          </ol>
+          <ul className="mt-2 space-y-1 list-disc list-inside">
+            {MODEL_META.confidence.reading.map((t) => <li key={t}>{t}</li>)}
+          </ul>
+        </div>
+        <p className="opacity-80">{MODEL_META.weights}</p>
+        <p className="text-honey">{MODEL_META.confidence.caveat}</p>
+      </div>
+    </details>
+  );
 }
 
 export default function SoundAnalysis({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -442,7 +558,27 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                 className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Archive scan
               </button>
+              <button
+                onClick={() => auditPdf({
+                  hive: hiveLabel || "Unlabelled hive",
+                  when: new Date().toLocaleString(),
+                  state: result.health.state,
+                  confidence: result.health.confidence,
+                  segments: result.health.windowsAnalyzed,
+                  durationSec: result.durationSec,
+                  piping: result.piping.detected
+                    ? `Detected in ${result.piping.events} window(s) (${(result.piping.confidence * 100).toFixed(0)}%)`
+                    : "Not detected",
+                  diseases: result.diseases,
+                  notes,
+                  ai: aiText,
+                })}
+                className="px-3 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5">
+                <FileDown className="w-3.5 h-3.5" /> Download PDF report
+              </button>
             </div>
+
+            <ModelCard />
 
             {aiText && (
               <div className="rounded-xl border border-honey/20 bg-card p-4">
@@ -468,7 +604,25 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                   <span className="text-muted-foreground">{h.duration_sec}s · {h.segments} windows</span>
                   {h.piping_detected && <span className="text-honey">piping</span>}
                   {top && <span className="text-muted-foreground truncate max-w-[240px]">top risk: {top.name} {(top.score * 100).toFixed(0)}%</span>}
-                  <button onClick={() => remove(h.id)} aria-label="Delete scan" className="ml-auto text-red-400">
+                  <button
+                    onClick={() => auditPdf({
+                      hive: h.hive_label,
+                      when: new Date(h.recorded_at).toLocaleString(),
+                      state: h.health_state,
+                      confidence: h.health_confidence,
+                      segments: h.segments,
+                      durationSec: h.duration_sec,
+                      piping: h.piping_detected
+                        ? `Detected (${(h.piping_confidence * 100).toFixed(0)}%)`
+                        : "Not detected",
+                      diseases: Array.isArray(h.disease_predictions) ? (h.disease_predictions as Disease[]) : [],
+                      notes: h.notes,
+                      ai: h.ai_insights,
+                    })}
+                    className="ml-auto text-honey flex items-center gap-1" aria-label="Download PDF report">
+                    <FileDown className="w-3.5 h-3.5" /> PDF
+                  </button>
+                  <button onClick={() => remove(h.id)} aria-label="Delete scan" className="text-red-400">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
