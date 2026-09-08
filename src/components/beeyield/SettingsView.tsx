@@ -468,7 +468,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 </BeeYieldCard>
                             </motion.div>
                         </div>
-                    )}
+                    </div>
+                )}
                 </TabsContent>
 
                 <TabsContent value="modules" className="space-y-6">

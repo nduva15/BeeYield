@@ -422,13 +422,13 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
                     )}
                 </AnimatePresence>
             </div>
-        </motion.div>
+        </div>
     );
 
     if (isOpen) {
         return (
-            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-                <div className="bg-[#12110E] text-foreground border border-white/10 rounded-3xl w-full max-w-5xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-y-auto custom-scroll">
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+                <div className="bg-[#FAF9F5] text-foreground border border-[#E7E5E4] rounded-3xl w-full max-w-5xl shadow-2xl flex flex-col my-auto max-h-[94vh] overflow-y-auto custom-scroll">
                     {content}
                 </div>
             </div>
