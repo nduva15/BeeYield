@@ -44,7 +44,7 @@ export default function ToolSidebar({
 
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-40 w-72 flex-shrink-0 border-r border-border bg-sidebar flex flex-col transition-transform duration-200 ${
-          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          open ? "translate-x-0" : "-translate-x-full lg:hidden"
         }`}
       >
         <div className="flex items-center gap-2 px-3 py-3 border-b border-border">

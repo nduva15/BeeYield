@@ -388,7 +388,9 @@ export default function Index() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-full bg-background honeycomb-bg overflow-hidden">
+    <div className="flex h-screen w-full bg-background honeycomb-bg overflow-hidden">
+      <ToolSidebar groups={toolGroups} open={toolsOpen} onClose={() => setToolsOpen(false)} />
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
       {/* Chat History Sidebar */}
       <ChatHistory
         conversations={conversations}
@@ -794,6 +796,8 @@ export default function Index() {
         <p className="text-center text-xs text-muted-foreground mt-2 max-w-4xl mx-auto">
           Beeyield AI — Specialized exclusively in bees, honey, apiculture, and pollination science
         </p>
+      </div>
+
       </div>
 
       {/* About Modal */}
