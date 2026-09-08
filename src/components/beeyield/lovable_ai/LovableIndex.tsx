@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Cpu, LogIn, LogOut, Plug, LifeBuoy, Settings } from "lucide-react";
+import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Cpu, LogIn, LogOut, Plug, LifeBuoy, Settings, ExternalLink, BookOpen } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -589,6 +589,13 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
               >
                 <Settings className="w-4 h-4 mr-2 text-amber-500" /> Settings — Control Center
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => window.open("https://nduva15.github.io/beeknowledge-hub/", "_blank")}
+                className="cursor-pointer font-medium text-amber-500 hover:text-amber-400"
+              >
+                <BookOpen className="w-4 h-4 mr-2 text-amber-500" /> BeeKnowledge Hub (Lovable Docs)
+                <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setAboutOpen(true)} className="cursor-pointer">
                 <Info className="w-4 h-4 mr-2" /> About Beeyield AI
               </DropdownMenuItem>
@@ -613,6 +620,15 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
               <Download className="w-4 h-4" />
             </button>
           )}
+          <button
+            onClick={() => window.open("https://nduva15.github.io/beeknowledge-hub/", "_blank")}
+            className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-honey border border-honey/30 hover:border-honey hover:bg-honey/10 px-2.5 py-1.5 rounded-lg transition-all"
+            title="Open BeeKnowledge Hub on GitHub Pages"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-honey" />
+            <span>Knowledge Hub</span>
+            <ExternalLink className="w-3 h-3 opacity-60" />
+          </button>
           <select
             value={promptVariant}
             onChange={(e) => setPromptVariant(e.target.value as typeof promptVariant)}
