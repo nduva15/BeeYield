@@ -41,11 +41,9 @@ export default function AlertsPage({ isOpen, onClose }: { isOpen: boolean; onClo
   const [events, setEvents] = useState<AlertEvent[]>([]);
   const [showNew, setShowNew] = useState(false);
   const [draft, setDraft] = useState(EMPTY_RULE);
-  const [pushPerm, setPushPerm] = useState<NotificationPermission>("default");
-
-  useEffect(() => {
-    if ("Notification" in window) setPushPerm(Notification.permission);
-  }, []);
+  const [pushPerm, setPushPerm] = useState<NotificationPermission>(() =>
+    typeof window !== "undefined" && "Notification" in window ? Notification.permission : "default",
+  );
 
   const load = useCallback(async () => {
     const [{ data: r }, { data: e }] = await Promise.all([

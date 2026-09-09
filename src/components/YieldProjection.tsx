@@ -52,12 +52,12 @@ export default function YieldProjection({ isOpen, onClose }: { isOpen: boolean; 
     { k: "Precip", v: calc.precipF * 100 },
   ];
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("yield_projections").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(30);
     setRuns((data ?? []) as Run[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  useEffect(() => { if (isOpen && deviceId) void load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
     const inputs = { hives, broodFrames, nectarScore, bloomDays, tempC, windKmh, precipMm, pricePerKg };

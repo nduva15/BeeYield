@@ -35,8 +35,7 @@ const CropsWePollinate = () => {
           </div>
           {/* Honeycomb Pattern */}
           <svg className="absolute inset-0 w-full h-full opacity-[0.04]" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <pattern id="honeycomb-crops" x="0" y="0" width="20" he
-              ight="17.32" patternUnits="userSpaceOnUse">
+            <pattern id="honeycomb-crops" x="0" y="0" width="20" height="17.32" patternUnits="userSpaceOnUse">
               <polygon points="10,0 20,5.77 20,17.32 10,23.09 0,17.32 0,5.77" fill="none" stroke="currentColor" strokeWidth="0.5" />
             </pattern>
             <rect width="100%" height="100%" fill="url(#honeycomb-crops)" />
