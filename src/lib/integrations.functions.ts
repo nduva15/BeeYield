@@ -18,9 +18,10 @@ const actionSchema = z.object({
 type Secrets = Record<string, string>;
 type Config = Record<string, string>;
 
+import { supabase } from "@/integrations/supabase/client";
+
 async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
+  return supabase;
 }
 
 async function log(
