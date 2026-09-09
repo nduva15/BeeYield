@@ -51,7 +51,7 @@ export default function ActivityCounter({
       toast.error("Run a count first");
       return;
     }
-    const { error } = await (supabase as any).from("bee_flight_logs").insert({
+    const { error } = await supabase.from("bee_flight_logs").insert({
       device_id: deviceId,
       hive_label: hiveLabel,
       bees_per_minute: count,
