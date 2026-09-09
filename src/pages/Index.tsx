@@ -579,7 +579,7 @@ export default function Index() {
     {
       label: "Business & devices",
       items: [
-        { label: "Our Story (2020–2026)", icon: BookOpen, onClick: () => navigate("/our-story") },
+        { label: "About BeeYield (Our Story)", icon: BookOpen, onClick: () => navigate("/about") },
         {
           label: "Integrations (Shopify, QuickBooks, eTIMS)",
           icon: Plug,

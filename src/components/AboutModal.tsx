@@ -88,7 +88,7 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
               </p>
             </div>
             <Link
-              to="/our-story"
+              to="/about"
               onClick={() => onOpenChange(false)}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold text-xs hover:bg-amber-400 transition-colors flex-shrink-0"
             >
