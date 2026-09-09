@@ -18,7 +18,7 @@ site-packages
 **/*.egg-info
 
 # Massive Sub-projects
-beeknowledge-hub
+beeyield-companion
 beeyield-sound-analysis
 .vercel
 .docs
