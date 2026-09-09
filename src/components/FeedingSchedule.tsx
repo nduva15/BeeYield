@@ -35,12 +35,12 @@ export default function FeedingSchedule({ isOpen, onClose }: { isOpen: boolean; 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [active, setActive] = useState<Plan>({ hive_label: "Hive 1", plan_label: "Season plan", plan: defaultPlan() });
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("feeding_schedules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
     setPlans(((data ?? []) as unknown) as Plan[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  useEffect(() => { if (isOpen && deviceId) void load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
     if (active.id) {

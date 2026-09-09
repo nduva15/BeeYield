@@ -52,9 +52,8 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [obsRes, runRes] = await Promise.all([
-      (supabase as any).from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
+      supabase.from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
       supabase.from("harvest_runs").select("id,crop,created_at").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
     ]);
     if (obsRes.data) setObs(obsRes.data as Obs[]);
@@ -108,8 +107,7 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
 
   const saveObs = async () => {
     setSaving(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any).from("bloom_observations").insert({
+    const { error } = await supabase.from("bloom_observations").insert({
       device_id: deviceId, crop, region,
       run_id: selectedRunId || null,
       version_id: selectedVersionId !== "current" ? selectedVersionId : null,

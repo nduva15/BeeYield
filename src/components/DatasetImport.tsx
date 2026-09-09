@@ -29,12 +29,12 @@ export default function DatasetImport({ isOpen, onClose }: { isOpen: boolean; on
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("dataset_imports").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
     setImports((data ?? []) as Imp[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  useEffect(() => { if (isOpen && deviceId) void load(); }, [isOpen, deviceId, load]);
 
   const handleFile = async (file: File) => {
     setBusy(true);

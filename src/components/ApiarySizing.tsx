@@ -52,12 +52,12 @@ export default function ApiarySizing({ isOpen, onClose }: { isOpen: boolean; onC
     });
   }, [out]);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("apiary_sizing_runs").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20);
     setRuns((data ?? []) as Run[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  useEffect(() => { if (isOpen && deviceId) void load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
     const inputs = { crop, hectares, supersPerHive, framesPerSuper, hivesPerTruck, transportKm, costPerKm, bloomStart };

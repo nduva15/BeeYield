@@ -37,8 +37,7 @@ type SavedRun = {
   ai_forecast: string | null;
   notes: string | null;
   prompt_variant: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  assumptions: any | null;
+  assumptions: Record<string, unknown> | null;
   created_at: string;
 };
 
@@ -49,8 +48,7 @@ type RunVersion = {
   ai_forecast: string | null;
   local_estimate_kg: number | null;
   prompt_variant: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  assumptions: any | null;
+  assumptions: Record<string, unknown> | null;
   created_at: string;
 };
 
@@ -245,8 +243,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
       ai_forecast: aiText || null,
       notes: notes.trim() || null,
       prompt_variant: promptVariant,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      assumptions: assumptions as any,
+      assumptions: assumptions as unknown as Record<string, unknown>,
     });
     setSaving(false);
     if (error) {
@@ -268,8 +265,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
       ai_forecast: aiText,
       local_estimate_kg: Number(apiaryHarvest.toFixed(2)),
       prompt_variant: promptVariant,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      assumptions: assumptions as any,
+      assumptions: assumptions as unknown as Record<string, unknown>,
     });
     if (error) { toast.error("Failed to save version"); return; }
     toast.success(`Saved as v${nextN} on ${run.crop}`);

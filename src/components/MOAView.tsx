@@ -72,32 +72,24 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
   // Initial load
   const load = useCallback(async () => {
     setLoading(true);
-    const queries: Promise<unknown>[] = [
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (supabase as any).from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (supabase as any).from("bloom_observations").select("*").order("created_at", { ascending: false }).limit(50),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (supabase as any).from("bee_flight_logs").select("*").order("observed_at", { ascending: false }).limit(50),
-    ];
-    if (readOnly && initialRunId) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queries[0] = (supabase as any).from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("id", initialRunId);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queries[1] = (supabase as any).from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queries[2] = (supabase as any).from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [r, b, f] = await Promise.all(queries) as any[];
+    const runQuery = readOnly && initialRunId
+      ? supabase.from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("id", initialRunId)
+      : supabase.from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20);
+    const bloomQuery = readOnly && initialRunId
+      ? supabase.from("bloom_observations").select("*").order("created_at", { ascending: false }).limit(50)
+      : supabase.from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50);
+    const flightQuery = readOnly && initialRunId
+      ? supabase.from("bee_flight_logs").select("*").order("observed_at", { ascending: false }).limit(50)
+      : supabase.from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50);
+
+    const [r, b, f] = await Promise.all([runQuery, bloomQuery, flightQuery]);
     if (r.data) {
-      setRuns(r.data);
+      setRuns(r.data as unknown as Run[]);
       const target = initialRunId || r.data[0]?.id || "";
       if (target) setSelectedRunId(target);
     }
-    if (b.data) setBlooms(b.data);
-    if (f.data) setFlights(f.data);
+    if (b.data) setBlooms(b.data as unknown as Bloom[]);
+    if (f.data) setFlights(f.data as unknown as Flight[]);
     setLoading(false);
   }, [deviceId, readOnly, initialRunId]);
 
@@ -107,10 +99,9 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
   useEffect(() => {
     if (!selectedRunId) { setVersions([]); return; }
     (async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data } = await (supabase as any).from("harvest_run_versions").select("id,version_label,site_layout,moa_filters").eq("run_id", selectedRunId).order("created_at", { ascending: true });
+      const { data } = await supabase.from("harvest_run_versions").select("id,version_label,site_layout,moa_filters").eq("run_id", selectedRunId).order("created_at", { ascending: true });
       if (data) {
-        setVersions(data);
+        setVersions(data as unknown as Version[]);
         const targetV = initialVersionId || data[data.length - 1]?.id || "";
         if (targetV) setSelectedVersionId(targetV);
       }
@@ -164,8 +155,7 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
 
   const persistFilters = async () => {
     if (!selectedVersionId) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any).from("harvest_run_versions").update({ moa_filters: filters }).eq("id", selectedVersionId);
+    const { error } = await supabase.from("harvest_run_versions").update({ moa_filters: filters as unknown as Record<string, unknown> }).eq("id", selectedVersionId);
     if (error) toast.error("Save failed"); else toast.success("MOA view saved to version");
   };
 
