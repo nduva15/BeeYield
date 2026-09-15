@@ -6,6 +6,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useDeviceId } from "@/hooks/use-device-id";
 import MarkdownRenderer from "./MarkdownRenderer";
 
@@ -155,7 +156,7 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
 
   const persistFilters = async () => {
     if (!selectedVersionId) return;
-    const { error } = await supabase.from("harvest_run_versions").update({ moa_filters: filters as unknown as Record<string, unknown> }).eq("id", selectedVersionId);
+    const { error } = await supabase.from("harvest_run_versions").update({ moa_filters: filters as unknown as Json }).eq("id", selectedVersionId);
     if (error) toast.error("Save failed"); else toast.success("MOA view saved to version");
   };
 

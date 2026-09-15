@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
-import { dashboardPollinationCropDetails } from "@/data/beePollinationData";
+import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
@@ -186,11 +186,8 @@ const CropsWePollinate = () => {
                         <Geography
                           key={geo.rsmKey}
                           geography={geo}
-                          style={{
-                            default: { fill: "hsl(var(--muted))", stroke: "hsl(var(--border))", strokeWidth: 0.5 },
-                            hover: { fill: "hsl(var(--secondary)/0.6)", outline: "none" },
-                            pressed: { fill: "hsl(var(--secondary)/0.8)", outline: "none" },
-                          }}
+                          className="fill-muted stroke-border hover:fill-secondary/60 transition-colors outline-none"
+                          style={{ strokeWidth: 0.5 }}
                         />
                       ))
                     }
@@ -242,7 +239,7 @@ const CropsWePollinate = () => {
         <div className="container mx-auto px-4">
           {/* Crop Navigation Pills */}
           <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {pollinationCrops.map((c, i) => (
+            {pollinationCrops.map((c: PollinationCropDetail, i: number) => (
               <Badge
                 key={i}
                 variant="outline"
@@ -255,7 +252,7 @@ const CropsWePollinate = () => {
 
           {/* Crops Cards */}
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {pollinationCrops.map((crop, index) => {
+            {pollinationCrops.map((crop: PollinationCropDetail, index: number) => {
               const isSpotlightCrop = ["Mangoes", "Oranges", "Citrus", "Maize", "Vegetables"].includes(crop.cropName);
               const targetHash = crop.cropName === "Mangoes" ? "mangoes" : crop.cropName === "Oranges" ? "oranges" : crop.cropName === "Citrus" ? "citrus" : crop.cropName === "Maize" ? "maize" : crop.cropName === "Vegetables" ? "vegetables" : "latest-pollination";
 
@@ -296,7 +293,7 @@ const CropsWePollinate = () => {
                         </span>
                       </div>
                       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-                        {crop.galleryImages.map((img, imgIdx) => (
+                        {crop.galleryImages.map((img: string, imgIdx: number) => (
                           <Link
                             key={imgIdx}
                             to={`/media#${targetHash}`}

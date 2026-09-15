@@ -3,6 +3,7 @@ import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy
 import { toast } from "sonner";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { downloadPDF, downloadCSV, type AssumptionsBlock, type ExportPayload } from "@/lib/harvest-export";
@@ -243,7 +244,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
       ai_forecast: aiText || null,
       notes: notes.trim() || null,
       prompt_variant: promptVariant,
-      assumptions: assumptions as unknown as Record<string, unknown>,
+      assumptions: assumptions as unknown as Json,
     });
     setSaving(false);
     if (error) {
@@ -265,7 +266,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
       ai_forecast: aiText,
       local_estimate_kg: Number(apiaryHarvest.toFixed(2)),
       prompt_variant: promptVariant,
-      assumptions: assumptions as unknown as Record<string, unknown>,
+      assumptions: assumptions as unknown as Json,
     });
     if (error) { toast.error("Failed to save version"); return; }
     toast.success(`Saved as v${nextN} on ${run.crop}`);
