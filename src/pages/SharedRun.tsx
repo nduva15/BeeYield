@@ -169,9 +169,9 @@ export default function SharedRun() {
       <header className="border-b border-border bg-gradient-amber">
         <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-background/20 backdrop-blur flex items-center justify-center">
-              <Calculator className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <Link to="/" className="flex items-center gap-2">
+              <img src="/logo.png" alt="BeeYield Logo" className="h-9 w-auto object-contain" />
+            </Link>
             <div>
               <h1 className="font-display text-xl font-bold text-primary-foreground">BeeYield Harvest Forecast</h1>
               <p className="text-xs text-primary-foreground/80 flex items-center gap-1.5">

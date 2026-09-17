@@ -98,7 +98,9 @@ export default function OAuthConsent() {
     <main className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6 shadow-sm">
         <div className="text-center mb-6">
-          <div className="text-4xl mb-2">🐝</div>
+          <div className="flex justify-center mb-4">
+            <img src="/logo.png" alt="BeeYield Logo" className="h-12 w-auto object-contain" />
+          </div>
           <h1 className="font-display text-xl font-bold text-foreground">
             Connect {clientName} to BeeYield
           </h1>
