@@ -41,6 +41,11 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+ALTER TABLE public.chat_messages
+    ADD COLUMN IF NOT EXISTS session_id UUID REFERENCES chat_sessions(id) ON DELETE CASCADE,
+    ADD COLUMN IF NOT EXISTS sources JSONB DEFAULT '[]',
+    ADD COLUMN IF NOT EXISTS suggestions JSONB DEFAULT '[]';
+
 
 -- F7: Sensor Health Diagnostics
 

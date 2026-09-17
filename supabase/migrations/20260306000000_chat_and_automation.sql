@@ -19,14 +19,17 @@ CREATE INDEX IF NOT EXISTS idx_chat_sessions_updated_at ON chat_sessions(updated
 -- RLS
 ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own chat sessions" ON chat_sessions;
 CREATE POLICY "Users can view own chat sessions"
     ON chat_sessions FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own chat sessions" ON chat_sessions;
 CREATE POLICY "Users can insert own chat sessions"
     ON chat_sessions FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own chat sessions" ON chat_sessions;
 CREATE POLICY "Users can delete own chat sessions"
     ON chat_sessions FOR DELETE
     USING (auth.uid() = user_id);
@@ -51,6 +54,11 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+ALTER TABLE public.chat_messages
+    ADD COLUMN IF NOT EXISTS session_id UUID REFERENCES chat_sessions(id) ON DELETE CASCADE,
+    ADD COLUMN IF NOT EXISTS sources JSONB DEFAULT '[]',
+    ADD COLUMN IF NOT EXISTS suggestions JSONB DEFAULT '[]';
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id ON chat_messages(session_id);
 CREATE INDEX IF NOT EXISTS idx_chat_messages_created_at ON chat_messages(session_id, created_at ASC);
@@ -58,18 +66,21 @@ CREATE INDEX IF NOT EXISTS idx_chat_messages_created_at ON chat_messages(session
 -- RLS (messages inherit access from session ownership)
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view messages in own sessions" ON chat_messages;
 CREATE POLICY "Users can view messages in own sessions"
     ON chat_messages FOR SELECT
     USING (
         session_id IN (SELECT id FROM chat_sessions WHERE user_id = auth.uid())
     );
 
+DROP POLICY IF EXISTS "Users can insert messages in own sessions" ON chat_messages;
 CREATE POLICY "Users can insert messages in own sessions"
     ON chat_messages FOR INSERT
     WITH CHECK (
         session_id IN (SELECT id FROM chat_sessions WHERE user_id = auth.uid())
     );
 
+DROP POLICY IF EXISTS "Users can delete messages in own sessions" ON chat_messages;
 CREATE POLICY "Users can delete messages in own sessions"
     ON chat_messages FOR DELETE
     USING (
@@ -77,6 +88,7 @@ CREATE POLICY "Users can delete messages in own sessions"
     );
 
 -- Trigger: update session timestamp when new message is inserted
+DROP TRIGGER IF EXISTS trg_update_session_on_message ON chat_messages;
 CREATE TRIGGER trg_update_session_on_message
     AFTER INSERT ON chat_messages
     FOR EACH ROW
@@ -100,14 +112,14 @@ CREATE INDEX IF NOT EXISTS idx_automation_logs_created_at ON automation_logs(cre
 -- RLS: automation logs are system-level, backend uses service role
 ALTER TABLE automation_logs ENABLE ROW LEVEL SECURITY;
 
--- Allow authenticated users to read automation logs related to their tasks
+DROP POLICY IF EXISTS "Users can view own automation logs" ON automation_logs;
 CREATE POLICY "Users can view own automation logs"
     ON automation_logs FOR SELECT
     USING (
         task_id IN (SELECT id FROM tasks WHERE user_id = auth.uid())
     );
 
--- Service role can insert (backend worker)
+DROP POLICY IF EXISTS "Service role can insert automation logs" ON automation_logs;
 CREATE POLICY "Service role can insert automation logs"
     ON automation_logs FOR INSERT
     WITH CHECK (true);
