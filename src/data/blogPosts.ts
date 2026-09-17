@@ -59,8 +59,8 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Berry Precision Pollination",
     tags: ["Strawberries", "Blackberries", "Buzz Pollination", "Bumblebees", "Apisense IoT", "Class I Yields", "Polytunnels", "Zero Waste"],
     featured: true,
-    coverImage: "/images/blog/berry-buzz-pollination.jpg",
-    coverAlt: "Furry bumblebee actively buzz-pollinating a white strawberry flower in a modern commercial greenhouse polytunnel",
+    coverImage: "/images/bees/bumblebee.jpg",
+    coverAlt: "Furry bumblebee executing buzz pollination with flight muscle vibration",
     author: TIMOTHY_AUTHOR,
     stats: [
       { label: "Class I Yield", value: "+10%", sub: "Increase in market-ready berries" },
@@ -70,24 +70,24 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     mediaGallery: [
       {
-        src: "/images/blog/berry-buzz-pollination.jpg",
-        alt: "Furry bumblebee actively buzz-pollinating a white strawberry flower",
-        caption: "A bumblebee (Bombus) executing rapid flight-muscle vibration ('buzz pollination') on a strawberry flower inside a commercial polytunnel.",
+        src: "/images/bees/bumblebee.jpg",
+        alt: "Furry bumblebee actively buzz-pollinating a flower",
+        caption: "A bumblebee (Bombus) executing rapid flight-muscle vibration ('buzz pollination') on a flower inside a commercial polytunnel.",
       },
       {
-        src: "/images/blog/apisense-berry-greenhouse.jpg",
-        alt: "BeeYield Apisense IoT sensor unit in action inside a commercial greenhouse",
-        caption: "BeeYield Apisense IoT sensor node deployed along strawberry tabletop gutters, tracking real-time pollinator density and microclimates.",
+        src: "/images/pollination/beeyield-apisense-deployment.png",
+        alt: "BeeYield Apisense IoT sensor unit in action in commercial crop",
+        caption: "BeeYield Apisense IoT sensor node deployed along crop rows, tracking real-time pollinator density and microclimates.",
       },
       {
-        src: "/images/blog/berry-harvest-class1.jpg",
-        alt: "Class I export grade strawberries and ripe blackberries in compostable punnets",
-        caption: "Uniformly shaped, deep crimson strawberries and blackberries in compostable punnets, achieving peak Brix sweetness and zero harvest waste.",
+        src: "/images/pollination/orange-tree-citrus-fruits.jpg",
+        alt: "Heavy fruit set achieved via synchronized pollination",
+        caption: "Uniformly shaped, premium export grade fruit clusters developed through thorough multi-ovule insect pollination.",
       },
       {
         src: "/images/blog/apisense-iot-telemetry.jpg",
         alt: "Live BeeYield Apisense IoT dashboard tracking pollinator activity",
-        caption: "Live BeeYield Apisense IoT dashboard tracking foraging flight velocity, ambient greenhouse humidity, and pollinator activity curves.",
+        caption: "Live BeeYield Apisense IoT dashboard tracking foraging flight velocity, ambient humidity, and pollinator activity curves.",
       },
     ],
     content: `
@@ -95,7 +95,7 @@ export const BLOG_POSTS: BlogPost[] = [
 
 Peak flowering in a polytunnel or glasshouse is a striking sight, but high flower density doesn't automatically translate to a high-grade harvest. Unpollinated or unevenly visited blooms consume vital plant energy without producing market-ready fruit. Maximizing Class I yields within your crop's natural capacity requires site-specific intervention: enter precision pollination powered by **BeeYield™**.
 
-![Furry bumblebee actively buzz-pollinating a white strawberry flower inside a commercial polytunnel](/images/blog/berry-buzz-pollination.jpg)
+![Furry bumblebee executing rapid flight-muscle vibration ('buzz pollination') on flower](/images/bees/bumblebee.jpg)
 
 Whether cultivating everbearing strawberries on elevated tabletop gutters or managing dense cane blackberry rows under covered high tunnels, commercial berry producers operate under razor-thin margins. Misshapen berries, hollow centers, dull coloring, and staggered ripening can decimate farm gate profitability. At BeeYield, our mission is to transform the unpredictable biological engine of pollination into a measurable, verifiable, and optimized agronomic asset.
 
@@ -121,7 +121,7 @@ Globally, **over $5 billion in annual strawberry revenue relies directly on effe
 
 Despite their unmatched capability, commercial bumblebee colonies introduce severe management challenges when deployed into polytunnels and glasshouses:
 
-![BeeYield Apisense IoT sensor node deployed along strawberry tabletop gutters, tracking real-time pollinator density and microclimates](/images/blog/apisense-berry-greenhouse.jpg)
+![BeeYield Apisense IoT sensor node deployed along crop rows, tracking real-time pollinator density](/images/pollination/beeyield-apisense-deployment.png)
 
 ### 1. Erratic Foraging Patterns
 Unlike honeybees, which utilize sophisticated waggle-dance communication to recruit colony members to rich floral resources, bumblebees forage independently. They cannot communicate specific row locations to their nestmates. Consequently, foragers often over-visit flowers near the hive entrance while leaving blooms at the tunnel's far end completely unpollinated.
@@ -138,7 +138,7 @@ Without active, continuous data, localized pollination deficits go undetected fo
 
 BeeYield™ eliminates guesswork by deploying targeted **Apisense IoT sensor technology** throughout your covered growing zones to track pollinator density, colony health, and flight velocity in real time.
 
-![Live BeeYield Apisense IoT dashboard tracking foraging flight velocity, ambient greenhouse humidity, and pollinator activity curves](/images/blog/apisense-iot-telemetry.jpg)
+![Live BeeYield Apisense IoT dashboard tracking foraging flight velocity, ambient humidity, and pollinator activity curves](/images/blog/apisense-iot-telemetry.jpg)
 
 Born from our foundational work in Kenya and strengthened through global partnerships with European IoT leaders **Apisense.io** and **Intelligent Hives**, our technology platform bridges the gap between insect biology and modern farm management:
 
@@ -153,7 +153,7 @@ Born from our foundational work in Kenya and strengthened through global partner
 
 Recent commercial trials demonstrate the immediate return on investment when growers deploy BeeYield™ to maintain optimal pollination density throughout bloom:
 
-![Uniformly shaped, deep crimson strawberries and blackberries in compostable punnets, achieving peak Brix sweetness and zero harvest waste](/images/blog/berry-harvest-class1.jpg)
+![High yield fruit development achieved via synchronized pollination](/images/pollination/orange-tree-citrus-fruits.jpg)
 
 ### Strawberries:
 - **+10% Increase in Class I Berry Yield**: Elimination of misshapen and unfertilized cull berries directly translates to higher packout ratios in premium export punnets.
@@ -171,7 +171,7 @@ Recent commercial trials demonstrate the immediate return on investment when gro
 
 At BeeYield, our roots trace back to Kibwezi and Makueni County, Kenya, where our founder, **Timothy Nduva**, started with a handful of hives and a clear mission: **protect pollinators, empower growers, and ensure sustainable food security through data**. 
 
-When agrochemical drift and climate volatility devastated traditional beekeeping in our region, we didn't back down. We pivoted into precision apiculture, integrating IoT hardware, acoustic machine learning, and agronomic intelligence. Today, with over 184 hives owned, 22 active IoT sensor hubs, 95+ and counting acres pollinated, and partnerships spanning from smallholder Kenyan apiaries to European IoT pioneers, BeeYield is proving that nature and technology are strongest together.
+When agrochemical drift and climate volatility devastated traditional beekeeping in our region in 2025, we didn't back down. We pivoted into precision apiculture, integrating IoT hardware, acoustic machine learning, and agronomic intelligence. Today, with over 184 hives owned, 22 active IoT sensor hubs, 95+ and counting acres pollinated, and partnerships spanning from smallholder Kenyan apiaries to European IoT pioneers, BeeYield is proving that nature and technology are strongest together.
 
 Our ambition is to make precision pollination standard practice across Africa and global high-value horticulture:
 - **Zero Chemical Mortality**: Aligning real-time bee flight data with orchard and polytunnel spray schedules to eliminate pollinator mortality.
@@ -198,7 +198,7 @@ Don't leave your harvest to chance. Partner with BeeYield™ to deploy Apisense 
     readTime: "7 min read",
     category: "Precision Agriculture",
     tags: ["Precision Pollination", "Kenya Agriculture", "IoT Sensors", "Mango Orchards", "Food Security"],
-    featured: true,
+    featured: false,
     coverImage: "/images/blog/mango-tree-full-bloom.jpg",
     coverAlt: "Full bloom mango tree in Makueni, Kenya with dense floral panicles",
     author: TIMOTHY_AUTHOR,
@@ -206,7 +206,7 @@ Don't leave your harvest to chance. Partner with BeeYield™ to deploy Apisense 
       { label: "Food Crops", value: "75%", sub: "Rely directly on pollinators" },
       { label: "Yield Uplift", value: "+9% to 18%", sub: "Observed across Makueni trials" },
       { label: "Intelligent Hives", value: "184 Hives", sub: "Connected via IoT across 95 and counting acres" },
-      { label: "Active Sensors", value: "22 Hubs", sub: "Real-time acoustic & microclimate telemetry (2,000+ daily data points)" },
+      { label: "Active Sensors", value: "22 Hubs", sub: "Real-time acoustic & microclimate telemetry" },
     ],
     mediaGallery: [
       {
@@ -301,22 +301,22 @@ At BeeYield, we believe every flower deserves the chance to be pollinated by a s
     id: "enhancing-yield-quality-and-quantity",
     slug: "enhancing-yield-quality-and-quantity",
     title: "Enhancing Yield Quality and Quantity: Bridging the 44-Million-Ton Global Fruit Deficit",
-    subtitle: "Why the world is losing 44 million metric tons of fruit to inadequate pollination, and how precision monitoring bridges the gap",
-    excerpt: "Research shows the agricultural world loses around 44 million metric tons of fruit each year purely due to pollinator deficits. Precision apiculture, acoustic IoT sensing, and real-time behavioral telemetry offer the master key to unlocking maximum fruit size, shape, sugar content, and export packout ratios.",
+    subtitle: "According to Timothy Nduva, CEO of BeeYield: How precision apiculture, Apisense IoT sensors, and biological intelligence bridge the global pollination gap",
+    excerpt: "The world is losing an estimated 44 million metric tons of fruit annually due to inadequate pollination. Headquartered in Kibwezi, Kenya, BeeYield combines affordable Apisense IoT sensors, artificial intelligence, and precision management to raise crop yields by up to 30%, bridge the food security gap, and protect pollinators across Africa.",
     date: "2026-08-18",
     displayDate: "August 18, 2026",
-    readTime: "8 min read",
+    readTime: "9 min read",
     category: "AgTech & Yield Science",
-    tags: ["Fruit Deficit", "Crop Quality", "Precision Agriculture", "Almond Benchmarks", "IoT Telemetry", "Food Security"],
+    tags: ["Fruit Deficit", "Crop Quality", "Precision Agriculture", "Apisense IoT", "Food Security", "Kenya Agriculture", "Timothy Nduva"],
     featured: false,
     coverImage: "/images/blog/mango-young-fruit-set.jpg",
     coverAlt: "Young fruit set on pollinated mango panicle in Makueni orchard",
     author: TIMOTHY_AUTHOR,
     stats: [
       { label: "Global Fruit Lost", value: "44M MT", sub: "Annual shortfall from poor pollination" },
-      { label: "World Crops Dependent", value: "75%", sub: "Of leading food crops require pollinators" },
-      { label: "Yield Increase Benchmark", value: "+25% to 30%", sub: "Demonstrated in managed commercial studies" },
-      { label: "Export Packout Boost", value: "+28%", sub: "Grade-A marketable yield from uniform pollination" },
+      { label: "Yield Capacity", value: "+30%", sub: "Maximum yield boost with precision management" },
+      { label: "African Ag Value", value: "$18B", sub: "Annual economic value from bee pollination" },
+      { label: "Colony Loss Threat", value: "40%", sub: "Managed colonies lost between 2021–2026" },
     ],
     mediaGallery: [
       {
@@ -325,69 +325,105 @@ At BeeYield, we believe every flower deserves the chance to be pollinated by a s
         caption: "Pea-sized mango fruitlets successfully setting on a panicle following thorough bee pollination in Makueni.",
       },
       {
-        src: "/images/blog/apisense-iot-telemetry.jpg",
-        alt: "Telemetry data showing bee activity parameters",
-        caption: "IoT sensors track foraging flight intensity, internal humidity, and ambient temperature to verify optimal pollination hours.",
+        src: "/images/bees/western-honey-bee.jpg",
+        alt: "Western Honey Bee (Apis mellifera)",
+        caption: "Western Honey Bee (Apis mellifera) — the primary pollinator delivering $18B in annual value to African agriculture.",
       },
       {
-        src: "/images/blog/mango-orchard-canopy.jpg",
-        alt: "Healthy mango tree canopy",
-        caption: "Well-pollinated orchards produce uniform canopy fruit distribution rather than patchy localized fruit clusters.",
+        src: "/images/bees/bumblebee.jpg",
+        alt: "Bumblebee buzz pollinator",
+        caption: "Bumblebee (Bombus) executing sonication to release tightly held pollen from flower anthers.",
       },
       {
-        src: "/images/blog/mango-pollination-field.jpg",
-        alt: "BeeYield hives deployed in flowering orchard",
-        caption: "Strategic hive placement along orchard windbreaks ensures flight paths directly intersect flowering rows.",
+        src: "/images/pollination/beeyield-apisense-deployment.png",
+        alt: "BeeYield Apisense IoT field deployment",
+        caption: "BeeYield Apisense IoT sensor node deployed on an active hive in a commercial Kenyan orchard.",
       },
       {
-        src: "/images/story/2025-iot-pivot.jpg",
-        alt: "BeeYield field team installing acoustic IoT monitoring",
-        caption: "BeeYield agronomists installing real-time acoustic sensors to track pollination flight intensity across commercial blocks.",
+        src: "/images/pollination/beeyield-apisense-gateway-field.png",
+        alt: "BeeYield solar-powered gateway node",
+        caption: "Solar-powered in-field gateway node providing real-time telemetry across 95+ pollinated acres.",
+      },
+      {
+        src: "/images/pollination/apisense-sensor-comb-inspection.png",
+        alt: "Apisense internal comb probe",
+        caption: "Apisense internal sensor probe monitoring brood temperature, acoustics, and colony health.",
+      },
+      {
+        src: "/images/pollination/orange-tree-heavy-fruiting.jpg",
+        alt: "Heavy citrus fruit set from precision pollination",
+        caption: "Heavy fruit set on commercial citrus trees following synchronized pollinator stocking.",
+      },
+      {
+        src: "/partners/apisense.png",
+        alt: "Apisense.io Global Partner",
+        caption: "Global Partner: Apisense.io (Poland) — Collaborating with BeeYield on IoT disease detection and hive telemetry.",
+      },
+      {
+        src: "/partners/intelligenthives.png",
+        alt: "Intelligent Hives Partner",
+        caption: "Global Partner: Intelligent Hives (Poland) — Precision pollination in-land telemetry & automated weight scales.",
       },
     ],
     content: `
-# Enhancing Yield Quality and Quantity: The Global Pollination Imperative
+# Enhancing Yield Quality and Quantity: Bridging the 44-Million-Ton Global Fruit Deficit
 
-The agricultural world is losing an estimated **44 million metric tons of fruit annually** purely due to inadequate pollination. In an era of escalating food security crises, shifting climate patterns, and shrinking arable land, closing this pollination gap represents the single highest-return intervention available to horticultural producers worldwide.
+The world is losing around **44 million metric tons of fruits** due to inadequate pollination. Adapting precision pollination methods is a key to bridge the gap.
 
-According to the **Food and Agriculture Organization of the United Nations (FAO)** and the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES), animal pollinators contribute directly to the production of roughly **75% of the world's leading food crop species**. Yet, when pollination is suboptimal, farmers suffer a double blow: their harvests yield fewer total kilograms, and the produce they do harvest is misshapen, downgraded, or unmarketable.
+![Pea-sized mango fruitlets successfully setting on a panicle following thorough bee pollination in Makueni](/images/blog/mango-young-fruit-set.jpg)
+
+In an era of escalating food security crises, shifting climate patterns, and shrinking arable land, closing this pollination gap represents the single highest-return intervention available to horticultural producers worldwide. 
+
+---
+
+## Overview of Precision Pollination Insights
+
+According to **Timothy Nduva, CEO of BeeYield**, precision pollination technology is emerging as a vital tool to boost agricultural output while addressing severe pollinator decline.
+
+### Core Findings & Data:
+* **Yield Capacity:** Data-driven agtech firm **BeeYield** estimates that optimizing commercial pollination through precision management can raise crop yields by **up to 30%**.
+* **Technology Infrastructure:** Headquartered in **Kibwezi, Kenya**, BeeYield combines affordable IoT sensors (**Apisense**), artificial intelligence, and data analytics to monitor hive activity and improve efficiency across commercial crops.
+* **Economic Importance:** Approximately **75% of leading global food crops** rely on pollinators, with bees serving as the primary contributor. Bee pollination adds roughly **$18 billion in economic value annually** to African agriculture alone.
+* **Systemic Threats:** Meeting food demands for a growing global population requires producing more food with reduced resources. However, managed honeybee colonies suffered a loss of **nearly 40% between 2021 and 2026**, posing a significant risk to crop security and the broader food supply chain.
 
 ---
 
 ## Pollinators Play a Critical Role in Crop Yield
 
-Without insect pollination, flowering fruit trees cannot complete fertilization. Insect pollinators — predominantly honey bees (*Apis mellifera*), stingless bees (*Meliponini*), solitary bees, and beneficial syrphid flies — transfer pollen grains from the male anther to the receptive female stigma.
+Without pollination, many crops would not be able to produce fruit, vegetables, or seeds. Insect pollinators, such as bees, butterflies, and moths, transfer pollen from the male part of a plant to the female part, allowing the plant to produce seeds or fruit. 
+
+![Western Honey Bee (Apis mellifera) transferring pollen across flowering blossom](/images/bees/western-honey-bee.jpg)
+
+This process ensures that the plant can reproduce and continue to produce crops in future growing seasons. Pollinators are estimated to contribute to the production of around **75% of the world’s food crops**.
 
 When adequate pollinator populations are present during bloom:
 - **Floret Shedding Decreases**: Flowers transition into fertilized fruitlets instead of desiccating and dropping off the tree.
 - **Initial Fruit Retention Multiplies**: Ovaries receive multi-grain pollen loads that trigger immediate cell division.
 - **Resource Efficiency Peaks**: The heavy investments farmers make in drip fertigation, pruning, bio-stimulants, and compost are fully converted into saleable crop biomass.
 
-![Pea-sized mango fruitlets successfully setting on a panicle following thorough bee pollination in Makueni](/images/blog/mango-young-fruit-set.jpg)
-
-When pollinator density is deficient, the result is catastrophic: millions of open blossoms wither unfertilized, leaving trees with sparse, localized fruit clusters despite favorable soil nutrition and water availability.
-
 ---
 
-## Pollination Determines Fruit Quality, Not Just Volume
+## Pollinators Can Also Improve the Quality of the Crops Produced
 
-A widespread misconception among conventional growers is that pollination is binary — that a flower either sets a fruit or fails entirely. Agronomic science tells a very different story: **pollination is a quantitative spectrum directly determining commercial quality**.
+Pollination can increase the **size, shape, and colour of fruit**, as well as improve their **taste and nutritional value**. This is particularly important for crops that are sold in markets or exported, as high-quality produce commands a higher price. In short, pollinators are essential for crop yield and can help to ensure that the food we produce is of high quality and nutritional value.
 
-Inside the flower ovary, multiple ovules must each receive viable pollen grains for complete fertilization. In crops like mangoes, avocados, apples, and strawberries:
-1. **Auxin & Gibberellin Hormone Secretion**: Fully fertilized seeds secrete plant hormones that stimulate surrounding flesh cells to expand evenly.
+![Bumblebee executing buzz pollination to release tightly held pollen from flower anthers](/images/bees/bumblebee.jpg)
+
+### How Complete Pollination Dictates Commercial Packout:
+1. **Auxin & Hormone Secretion**: Fully fertilized seeds secrete plant hormones that stimulate surrounding flesh cells to expand evenly.
 2. **Symmetrical Shape & Density**: Uneven or incomplete pollination leads to lopsided development, flat sides, and internal deformities. In Kenya's commercial export corridors, misshapen fruits fail stringent EuroGAP standards and are discarded or dumped onto oversaturated local markets at 80% price discounts.
-3. **Brix Sweetness & Dry Matter**: Thorough pollination correlates with accelerated carbohydrate accumulation, resulting in higher sugar content (Brix levels) and richer aroma profiles.
+3. **Taste & Brix Sweetness**: Thorough pollination accelerates carbohydrate accumulation, resulting in higher sugar content (Brix levels) and richer aroma profiles.
 4. **Post-Harvest Shelf Life**: Uniformly pollinated fruits maintain firmer pulp cell walls, significantly resisting fungal rots and chilling injury during marine transit to Europe and the Middle East.
 
 ---
 
-## The Serious Risk to Food Security: The 44-Million-Ton Deficit
+## The Decline in Pollinator Numbers Presents a Serious Risk to Food Security
 
-The global loss of 44 million metric tons of fruit is not theoretical — it directly impacts farmer livelihood and global nutritional security. 
+According to the **Food and Agriculture Organization of the United Nations (FAO)**, pollinators are estimated to contribute to the production of around **75% of the world’s food crops**. In some cases, the contribution of pollinators to crop yield can be significant. 
 
-Leading horticultural benchmarks underscore the massive financial upside of precision pollination:
-- **The California Almond Benchmark**: In California's Central Valley, almond orchards that rely systematically on calibrated honey bee stocking achieve a **25% to 30% yield increase** compared to pollinator-deficient orchards.
-- **Kenyan Mango & Avocado Operations**: In our own trials across Makueni, Machakos, and Murang'a, orchards with IoT-managed pollinator densities experienced an average **+28% boost in Grade-A export packout ratios**, turning marginal farming blocks into highly profitable export operations.
+For example, a study in California found that almonds, which rely almost entirely on honeybee pollination, had a **yield increase of 25% due to pollination**.
+
+![Indigenous African Stingless Bee (Meliponula) navigating dense inner blossoms](/images/bees/stingless-bee.jpg)
 
 As wild pollinator populations continue to decline due to unchecked pesticide usage, habitat destruction, and climate volatility, relying on wild pollinators alone is an unmanageable risk for modern agribusiness.
 
@@ -397,51 +433,646 @@ As wild pollinator populations continue to decline due to unchecked pesticide us
 
 Faced with declining wild bee counts, some farming systems have attempted artificial pollination alternatives:
 - **Tractor Air-Blowers & Drone Dusting**: Mechanical sprayers blow dried pollen across canopies. However, pollen viability degrades rapidly within hours of exposure to sunlight and ambient humidity, resulting in erratic, low-efficiency fruit set at exorbitant equipment costs.
-- **Manual Hand-Brushing**: While common in small greenhouse trial plots, hand-brushing individual blossoms with cotton swabs is economically impossible on commercial acreage where a single mature tree bears upwards of 10,000 florets.
+- **Manual Hand-Brushing**: While common in small greenhouse trial plots, hand-brushing individual blossoms with cotton swabs is economically impossible on commercial acreage where a single mature tree bears upwards of 20,000 florets.
 
-**Nature's biological engine cannot be replaced by machines; it must be monitored and empowered.**
-
----
-
-## How BeeYield IoT Technology Bridges the Deficit
-
-BeeYield's precision apiculture stack empowers growers and beekeepers to replace guesswork with real-time biological visibility:
-
-![Real-time BeeYield IoT telemetry tracking active flight hours, colony acoustics, and ambient bloom temperatures](/images/blog/apisense-iot-telemetry.jpg)
-
-### 1. Granular Understanding of Pollinator Behavior
-Using non-invasive acoustic sensors and microclimate stations, our **Apisense IoT units** track exact flight curves throughout the day. Growers know precisely when foraging activity peaks (typically between 8:00 AM and 11:30 AM), how temperature and humidity influence flight range, and which corners of the orchard require additional hive placement.
-
-### 2. Synchronized Stocking Density
-BeeYield aligns hive deployment directly with phenological bloom stages. Colonies arrive on-site precisely as anthesis commences (10% bloom) and are maintained at 2 to 4 hives per acre until petal fall, ensuring no flowering window is squandered.
-
-### 3. Early Warning Disease & Colony Health Telemetry
-Continuous acoustic analysis detects internal hive anomalies — including queen loss, swarm preparation, or pesticide intoxication — days before visible symptoms appear, protecting the colony's pollination capacity throughout the contract window.
-
-### 4. Elimination of Agrochemical Conflicts
-By sharing live foraging activity telemetry with orchard spray teams, farm managers establish strict spray moratoriums during active bee flight hours, completely eliminating pesticide-induced bee mortality.
+**Nature's biological engine cannot be replaced by machines; it must be monitored, protected, and empowered.**
 
 ---
 
-![Commercial orchard canopy producing uniform fruit distribution across scaffolds](/images/blog/mango-orchard-canopy.jpg)
+## Our Story: Born in Kibwezi, Driven by Innovation
 
-## Practical Agronomic Checklist for Commercial Growers
+BeeYield's journey began with our founder and CEO, **Timothy Nduva**. A graduate of Strathmore University in Finance, Marketing, and Information Technology, Timothy started as a passionate beekeeper in **Kibwezi, Makueni County, Kenya**.
 
-To capture maximum yield quality and volume this season, orchard managers should adopt four best practices:
+![BeeYield field team installing acoustic IoT monitoring in 2025 apiary pivot](/images/story/2025-iot-pivot.jpg)
 
-1. **Conduct Pre-Bloom Soil & Foliar Audits**: Ensure balanced levels of Boron and Potassium to support pollen tube elongation and cell wall integrity.
-2. **Establish Calibrated Stocking Rates**: Introduce 2 to 4 strong, disease-free colonies per acre positioned within 150 meters of target bloom zones.
-3. **Protect Canopy Microclimates**: Maintain perimeter windbreaks to prevent high winds from suppressing bee flight and drying out floral stigmas.
-4. **Integrate Real-Time IoT Monitoring**: Deploy sensor-equipped hives to track flight volume and verify adequate pollination hours before flowers senesce.
+In **2025**, a severe crisis hit: agrochemical spraying on neighboring farms caused catastrophic bee mortality across our apiaries. Faced with the choice between quitting or innovating, Timothy chose to protect the bees. That moment marked the birth of BeeYield's precision apiculture model.
+
+Today, BeeYield has grown into an agtech leader:
+- **184+ Hives Owned** and managing over **205+ additional partner hives**.
+- **22 Active IoT Sensor Hubs** operating continuously in the field.
+- **95+ and Counting Acres Pollinated** across Makueni, Machakos, Murang'a, and Kibwezi.
+- **Over 2,000 Daily Telemetry Data Points** tracking acoustics, temperature, humidity, and foraging flight curves.
+- **Proprietary Bee Sound ML Models** trained on over 350,000 bee acoustic signatures to detect disease, queen status, and swarming before human inspection can.
 
 ---
 
-## Final Thoughts: The High Return on Precision Pollination
+## The BeeYield Apisense Solution: Sensors & Crops in Action
 
-In the words of BeeYield founder Timothy Mathuva:
-> *"Pollination is the only agricultural input that pays for itself ten times over within the same season. When you give healthy bees the data and environment they need to do their work, the orchard rewards you with fruit that is heavier, sweeter, and built to travel the world."*
+Overall, **BeeYield Apisense pollinator monitoring technology** can help farmers to better understand and manage pollinator populations, leading to improved crop yields through increased pollination rates and reduced reliance on artificial pollination methods.
 
-By bridging the 44-million-ton fruit deficit through precision apiculture, we secure our food systems, empower smallholder and commercial beekeepers, and ensure Kenya's agricultural exports remain globally competitive.
+![BeeYield Apisense smart IoT hive deployment in orchard](/images/pollination/beeyield-apisense-deployment.png)
+
+### 1. Better Understanding of Pollinator Behaviour
+Using non-invasive acoustic sensors and microclimate stations, **BeeYield Apisense IoT units** track exact flight curves throughout the day. Growers discover exactly when foraging activity peaks (typically 8:00 AM to 11:30 AM), how ambient temperature dictates flight range, and which orchard zones suffer flight deficits.
+
+![BeeYield solar-powered gateway node providing real-time telemetry across crop acreage](/images/pollination/beeyield-apisense-gateway-field.png)
+
+### 2. Improved Pollination Rates
+Colony stocking is synchronized with crop phenology. Hives arrive on-site precisely at early bloom (10% anthesis) and are maintained at calibrated densities (2 to 4 hives per acre) until petal fall, ensuring no flowering window is lost.
+
+![Apisense internal sensor comb probe during colony health inspection](/images/pollination/apisense-sensor-comb-inspection.png)
+
+![Real-time BeeYield Apisense IoT telemetry tracking flight velocity, hive humidity, and ambient temperature](/images/blog/apisense-iot-telemetry.jpg)
+
+### 3. Reduced Reliance on Artificial Pollination Methods
+By maintaining healthy, electronically monitored bee colonies in target crop zones, growers achieve natural, multi-ovule pollination without spending capital on futile mechanical dusters or manual labor.
+
+### 4. Increased Crop Yield
+Across extensive commercial trials in Kenya, our precision pollination deployments have driven:
+- **+9% to +30% Total Harvest Weight Increase**
+- **+28% Higher Grade-A Export Packout Ratios**
+- **Elimination of Agrochemical Bee Kills** via real-time spray moratorium alerts.
+
+![Heavy fruit set on commercial citrus trees following synchronized pollinator stocking](/images/pollination/orange-tree-heavy-fruiting.jpg)
+
+![Commercial sunflower pollination block in Kenya](/images/sunflower_case.png)
+
+---
+
+## Who We Work With: Our Commercial & Non-Profit Partners
+
+We’re proud and grateful to work with a diverse group of commercial and non-for-profit partners who share our commitment to biodiversity, farmer prosperity, and precision agriculture.
+
+| Partner | Partnership Focus | Headquarters |
+| :--- | :--- | :--- |
+| **Apisense.io** | Global Field Partner Program for IoT disease detection & hive telemetry | Poland |
+| **Intelligent Hives** | Precision pollination in-land telemetry & automated weight scales | Poland |
+| **BeeYield Partner Farmers** | 40+ enrolled commercial and smallholder farms across Makueni & Kibwezi | Kenya |
+
+![Apisense.io - Global Field Partner](/partners/apisense.png)
+
+![Intelligent Hives - Technology Partner](/partners/intelligenthives.png)
+
+Together with our technology partners and local farming cooperatives, we are building a resilient, data-driven pollination infrastructure for Africa and the world.
+
+---
+
+## Get in Touch: Partner with BeeYield
+
+Are you a commercial grower seeking to increase Class I fruit packout, maximize harvest tonnage, or deploy Apisense IoT sensors in your orchards or covered tunnels? 
+
+[**Get in touch with the BeeYield team today**](/contact) to schedule a consultation with our lead agronomists and discover how precision pollination can transform your harvest this season.
+    `,
+  },
+  {
+    id: "why-10-frame-hives-mean-better-pollination",
+    slug: "why-10-frame-hives-mean-better-pollination",
+    title: "Why 10-Frame Hives Mean Better Pollination for Your Crops",
+    subtitle: "Larger bee colonies don't just have more bees — they're exponentially more efficient pollinators. Discover why hive strength and colony biomass outperform raw hive counts.",
+    excerpt: "When investing in pollination services for your operation, colony biomass and frame coverage matter far more than raw hive count. Discover how 10-frame colonies provide 2x the field foragers, start foraging 45 minutes earlier, and deliver exponentially higher fruit set across commercial crops.",
+    date: "2026-08-04",
+    displayDate: "August 4, 2026",
+    readTime: "8 min read",
+    category: "Apiary Dynamics",
+    tags: ["10-Frame Hives", "Colony Strength", "Foraging Efficiency", "Apisense IoT", "Commercial Pollination", "Fruit Set"],
+    featured: false,
+    coverImage: "/images/pollination/hive-comb-inspection-6.png",
+    coverAlt: "Dense 10-frame bee colony with wall-to-wall worker bees covering comb",
+    author: TIMOTHY_AUTHOR,
+    stats: [
+      { label: "Forager Ratio", value: "2x Higher", sub: "Field bees vs nurse bees in 10-frame hives" },
+      { label: "Flight Window", value: "+45 Min", sub: "Earlier morning foraging start" },
+      { label: "Fruit Set Uplift", value: "+25% to 35%", sub: "Compared to weak 6-frame colonies" },
+      { label: "Thermal Stability", value: "35.0°C", sub: "Consistent brood nest temperature" },
+    ],
+    mediaGallery: [
+      {
+        src: "/images/pollination/hive-comb-inspection-6.png",
+        alt: "Full 10-frame comb covered in active worker bees",
+        caption: "A healthy 10-frame hive displaying robust comb coverage, excellent brood solidness, and high worker density.",
+      },
+      {
+        src: "/images/pollination/hive-comb-inspection-7.png",
+        alt: "Beekeeper inspecting high-density brood comb",
+        caption: "Careful frame inspection verifying queen laying patterns, nectar reserves, and high forager populations.",
+      },
+      {
+        src: "/images/pollination/apisense-sensor-comb-inspection.png",
+        alt: "BeeYield Apisense internal probe inside hive comb",
+        caption: "BeeYield Apisense sensor inserted into comb frames, measuring thermal regulation and acoustic activity.",
+      },
+      {
+        src: "/images/bees/western-honey-bee.jpg",
+        alt: "Western honeybee worker forager on flower",
+        caption: "Worker bees from strong colonies forage systematically across rows, carrying high pollen loads directly to receptive stigmas.",
+      },
+    ],
+    content: `
+# Why 10-Frame Hives Mean Better Pollination for Your Crops
+
+When you're investing in pollination services for your operation, hive size and colony strength matter far more than raw box counts. Understanding the biological difference between 6-frame and 10-frame colonies helps growers make informed decisions that directly impact their marketable fruit set and bottom-line crop yield.
+
+![Full 10-frame comb covered in active worker bees](/images/pollination/hive-comb-inspection-6.png)
+
+At **BeeYield**, we manage commercial pollination with an agronomist's discipline: deploying certified high-density colonies monitored with IoT sensors rather than dropping weak, uninspected boxes into orchard rows.
+
+---
+
+## The Efficiency of Larger Colonies
+
+A 10-frame bee colony is not just slightly larger than a 6-frame box — it functions as an exponentially more effective **superorganism**. 
+
+These colonies are dramatically more productive because the internal ratio of "house bees" (nurses, cleaners, and guards) to "field bees" (active foragers) shifts in favor of crop pollination:
+
+1. **Fixed Thermal Overhead**: In every honeybee colony, a minimum baseline population must stay inside the hive around the clock to incubate the brood nest at exactly 34.5°C to 35.5°C. In a 6-frame hive, up to 70% of the bee population is tied down with domestic nursing and heating duties.
+2. **Surplus Foraging Biomass**: In a robust 10-frame hive containing 40,000 to 50,000 bees, the fixed heating demand is easily satisfied by a fraction of the population. The surplus bees — often **over 50% of the total workforce** — are released into the field as active foragers.
+3. **The 2x Multiplier**: While a 6-frame colony might muster 3,000 to 5,000 field foragers on a warm morning, a 10-frame colony reliably deploys **12,000 to 20,000 field foragers** — up to **four times the active flower-visiting capacity**!
+
+---
+
+## Extended Flight Windows: Starting Earlier, Working Later
+
+Recent horticultural studies demonstrate that strong colonies begin foraging approximately **45 minutes earlier in the morning** and continue flying nearly **40 minutes later into the evening** than weaker colonies:
+
+![Beekeeper inspecting high-density brood comb](/images/pollination/hive-comb-inspection-7.png)
+
+### Why Morning Flight Is Decisive:
+- **Floral Anthesis Timing**: In fruit crops like mangoes, avocados, and citrus, floral anthers dehisce and stigmas reach maximum receptivity in the morning as relative humidity dips.
+- **Pollen Viability**: High midday heat degrades pollen grains and evaporates nectar. Bees that arrive early capture fresh, viable pollen loads when flower receptivity is at its peak.
+- **Thermal Buffering**: Weak hives cannot fly in cool morning air because doing so would expose their brood nest to chilling. A 10-frame colony possesses ample thermal mass, allowing field foragers to launch at lower ambient temperatures (as low as 15°C).
+
+That equates to **nearly 1.5 extra hours of daily pollination activity** when every floret counts.
+
+---
+
+## BeeYield Apisense In-Hive Telemetry: Verifying Strength Digitally
+
+How do you know you're getting true 10-frame strength instead of an empty box with a handful of bees? 
+
+At **BeeYield**, we eliminate guesswork using **Apisense IoT hive sensors**:
+
+![BeeYield Apisense sensor inserted into comb frames](/images/pollination/apisense-sensor-comb-inspection.png)
+
+1. **Acoustic Frequency Signatures**: Healthy, queen-right colonies generate characteristic buzzing frequencies between 100 Hz and 300 Hz. Our machine learning algorithms verify worker density and queen health remotely.
+2. **Core Brood Temperature Stability**: Internal thermal probes verify that the brood cluster is tightly maintained at 35°C, confirming a dense cluster of worker bees.
+3. **Automated Weight & In-and-Out Activity**: IoT weight scales track daily pollen and nectar accumulation, proving that thousands of foragers are actively returning to the hive with full corbiculae (pollen baskets).
+
+---
+
+## The Economic Advantages for Commercial Growers
+
+Deploying fewer, stronger hives delivers measurable operational cost savings:
+
+| Agronomic Metric | 6-Frame Weak Colonies | 10-Frame Strong Colonies (BeeYield) |
+| :--- | :--- | :--- |
+| **Active Field Foragers** | 3,000 – 5,000 bees | 12,000 – 20,000 bees |
+| **Morning Flight Start** | Delayed until mid-morning | Starts 45 minutes earlier |
+| **Weather Resilience** | Stalls during mild wind or overcast skies | Strong flight persistence |
+| **Hives Needed Per Acre** | 4 to 6 hives | 2 to 3 hives |
+| **Orchard Placement Footprint** | Crowded rows, high rental fees | Compact placement, lower logistics cost |
+| **Commercial Packout Uplift** | Inconsistent, variable fruit set | +25% to +35% uniform fruit set |
+
+![Worker bees from strong colonies forage systematically across rows](/images/bees/western-honey-bee.jpg)
+
+---
+
+## The BeeYield Standard: Guaranteed Colony Strength
+
+When you contract pollination services with BeeYield, our service level agreement certifies:
+- Minimum **8 to 10 frames covered in adult bees**.
+- Active, laying queen with verified solid brood patterns.
+- Pre-deployment Apisense IoT telemetry certifying disease-free status and strong colony acoustics.
+- Strategic orchard orientation (southeast facing) to maximize morning sun exposure and flight hours.
+
+**Don't pay for empty boxes. Partner with BeeYield to deploy verified 10-frame colony power across your orchards this season.**
+    `,
+  },
+  {
+    id: "future-of-african-production-depends-on-pollination-infrastructure",
+    slug: "future-of-african-production-depends-on-pollination-infrastructure",
+    title: "The Future of African Agricultural Production Depends on Pollination Infrastructure",
+    subtitle: "With global beekeepers facing up to 62% colony losses and agriculture needing to produce 60% more food by 2050, precision pollination monitoring is critical infrastructure. BeeYield CEO Timothy Nduva shares how data-driven hive management protects both bees and yields at commercial scale.",
+    excerpt: "Food security, climate resilience, and agricultural productivity intersect most sharply where pollinators meet flowering crops. BeeYield CEO Timothy Nduva explores why real-time pollination telemetry is essential infrastructure for Africa's horticultural future.",
+    date: "2026-07-29",
+    displayDate: "July 29, 2026",
+    readTime: "9 min read",
+    category: "AgTech & Infrastructure",
+    tags: ["Food Security", "Agricultural Infrastructure", "African Agriculture", "IoT Telemetry", "Apisense", "Timothy Nduva", "Climate Resilience"],
+    featured: false,
+    coverImage: "/images/pollination/beeyield-apisense-gateway-field.png",
+    coverAlt: "Solar-powered BeeYield Apisense IoT gateway node deployed in commercial agricultural field",
+    author: TIMOTHY_AUTHOR,
+    stats: [
+      { label: "Food Demand by 2050", value: "+60%", sub: "Increase needed globally" },
+      { label: "African Ag Value", value: "$18B", sub: "Annual economic contribution of bees" },
+      { label: "Colony Loss Threat", value: "40% – 62%", sub: "Severe annual losses in stressed regions" },
+      { label: "Yield Capacity", value: "+30%", sub: "Boost achievable via precision stocking" },
+    ],
+    mediaGallery: [
+      {
+        src: "/images/pollination/beeyield-apisense-gateway-field.png",
+        alt: "BeeYield solar-powered gateway node in field",
+        caption: "Ruggedized solar IoT gateway transmitting real-time hive health and microclimate telemetry across farming acreage.",
+      },
+      {
+        src: "/images/story/2025-iot-pivot.jpg",
+        alt: "BeeYield 2025 IoT apiary pivot in Kenya",
+        caption: "BeeYield field team installing real-time acoustic monitoring hardware following the 2025 pesticide crisis in Kibwezi.",
+      },
+      {
+        src: "/images/pollination/beeyield-apisense-deployment.png",
+        alt: "BeeYield Apisense IoT hive node deployed in orchard",
+        caption: "In-hive Apisense sensor node monitoring internal temperature, humidity, and acoustics in real time.",
+      },
+      {
+        src: "/images/pollination/apisense-colony-monitoring.png",
+        alt: "Apisense colony monitoring node",
+        caption: "Non-invasive acoustic monitoring device alerting farm managers to swarming, stress, or queen loss.",
+      },
+    ],
+    content: `
+# The Future of African Agricultural Production Depends on Pollination Infrastructure
+
+Food security, climate resilience, and environmental sustainability are no longer separate conversations. They intersect most sharply in agriculture, where farmers are under relentless pressure to produce more food with fewer resources while reducing their environmental footprint.
+
+![Solar-powered BeeYield Apisense IoT gateway node deployed in commercial agricultural field](/images/pollination/beeyield-apisense-gateway-field.png)
+
+A recent global agricultural report highlighted that farms worldwide must **increase food production by approximately 60% by 2050** to sustain population growth. At the same time, extreme weather events, biodiversity loss, and agrochemical pressures are reshaping how food is grown. 
+
+While heavy investments pour into precision tractors, satellite imagery, and automated drip irrigation, one foundational pillar of food production is routinely overlooked: **pollination infrastructure**.
+
+---
+
+## The Fragile Foundation: Up to 62% Colony Losses
+
+Last year, commercial beekeepers in North America and parts of Europe reported losing **up to 62% of their colonies**, while African apiaries faced severe localized collapses due to uncoordinated agrochemical spraying and prolonged droughts. 
+
+When bloom arrives, healthy hive supplies struggle to keep up with grower demand. Without sufficient pollinators, farmers cannot take full advantage of short flowering windows. The resultant yield setbacks ripple through an entire year of farming operations:
+- **Almonds, Apples, and Berries**: Rely almost 100% on animal pollination for commercial fruit set.
+- **Mangoes, Avocados, and Macadamia**: Suffer 30% to 50% reductions in Grade-A packout when pollinator density drops.
+- **Seed Crops (Sunflower, Canola, Onions)**: Cannot produce viable commercial seed without cross-flower insect visits.
+
+In Africa alone, **bee pollination contributes roughly $18 billion annually** to agricultural output. Yet, for decades, pollination has been treated as an informal, unmonitored transaction: drop a wooden box under a tree and hope for the best.
+
+---
+
+## Why Pollination Must Be Treated as Critical Infrastructure
+
+We treat irrigation canals, electrical grids, and cold storage facilities as critical infrastructure because modern farming cannot function without them. **Pollination is no different.**
+
+![BeeYield field team installing real-time acoustic monitoring hardware](/images/story/2025-iot-pivot.jpg)
+
+Without insect pollination, billions of dollars spent on hybrid seeds, drip fertigation, organic fertilizers, and canopy pruning yield hollow, misshapen, or stunted harvests. Precision pollination turns this erratic biological variable into an optimized, predictable production asset.
+
+---
+
+## Born in Kibwezi: Our 2025 Crisis and Technological Pivot
+
+At BeeYield, our journey into precision apiculture wasn't conceived in a laboratory — it was forged through crisis. 
+
+In early **2025**, in **Kibwezi, Makueni County, Kenya**, our founding apiary was hit by massive colony mortality caused by off-target pesticide spraying on neighboring farms. Decades of beekeeping heritage were wiped out in a single afternoon.
+
+Faced with this catastrophe, our founder and CEO, **Timothy Nduva**, recognized that the traditional beekeeping model was broken. We needed **real-time visibility**. We needed technology that could bridge the gap between growers, beekeepers, and agrochemical applicators.
+
+![In-hive Apisense sensor node monitoring internal temperature, humidity, and acoustics in real time](/images/pollination/beeyield-apisense-deployment.png)
+
+We partnered with leading European IoT innovators **Apisense.io** and **Intelligent Hives** to pioneer a ruggedized, affordable sensor architecture tailored for African commercial agriculture:
+- **Acoustic Frequency Telemetry**: Continuous monitoring of hive audio frequencies to detect queenlessness, swarming prep, and viral infections days before symptoms appear externally.
+- **Microclimate Synchronization**: In-hive and in-field sensors measuring temperature, humidity, and solar radiation to predict daily flight windows.
+- **Agrochemical Moratorium Coordination**: Automated alerts notifying orchard managers when bees are in active flight, establishing zero-spray windows that eliminate chemical mortality.
+
+---
+
+## Scaling Precision Pollination Across Africa
+
+Today, BeeYield operates across over **95+ and counting acres** in Kenya, managing **184+ owned hives** and coordinating **205+ partner hives** equipped with **22 active IoT sensor hubs**.
+
+![Non-invasive acoustic monitoring device alerting farm managers to swarming, stress, or queen loss](/images/pollination/apisense-colony-monitoring.png)
+
+Our field data proves the economic impact:
+1. **+9% to +30% Yield Boost**: Calibrated hive placement during early bloom significantly multiplies harvest tonnage.
+2. **+28% Higher Export Quality**: Fully pollinated fruits meet strict European export standards for symmetry, sugar concentration, and shelf life.
+3. **Zero Agrochemical Bee Kills**: Data-driven coordination has achieved a 100% survival rate across our monitored apiaries during commercial spray seasons.
+
+---
+
+## The Road Ahead: Food Security Through Biological Intelligence
+
+Feeding 10 billion people by 2050 without destroying our planet's remaining biodiversity is the defining challenge of our generation. We cannot afford to clear more forests or consume more freshwater. We must produce more food from existing cultivated land.
+
+Precision pollination infrastructure provides the bridge: maximizing crop potential, protecting vital pollinator species, and empowering commercial growers with actionable data.
+
+At BeeYield, we are building the digital nervous system for sustainable agriculture — starting in Kenya, and scaling to the world.
+    `,
+  },
+  {
+    id: "best-practices-before-during-and-after-bloom",
+    slug: "best-practices-before-during-and-after-bloom",
+    title: "Best Practices Before, During, and After Bloom: Lessons from Mango & Citrus Orchards",
+    subtitle: "Successful orchard pollination depends on thoughtful preparation, clear communication, and disciplined orchard management before, during, and after bloom. An agronomist's guide by BeeYield CEO Timothy Nduva.",
+    excerpt: "Successful mango and citrus pollination requires disciplined preparation, site access management, strategic hive placement, and strict pesticide stewardship before, during, and after bloom. Discover best practices to maximize fruit set, protect pollinator health, and optimize crop ROI with BeeYield.",
+    date: "2026-06-12",
+    displayDate: "June 12, 2026",
+    readTime: "9 min read",
+    category: "Orchard Management",
+    tags: ["Mango Orchards", "Citrus Groves", "Bloom Management", "Hive Placement", "Pesticide Stewardship", "Cover Crops", "Apisense IoT"],
+    featured: false,
+    coverImage: "/images/pollination/mango-bloom-pollination.jpg",
+    coverAlt: "Active honeybees foraging across a vibrant mango panicle in full bloom",
+    author: TIMOTHY_AUTHOR,
+    stats: [
+      { label: "Extra Flight Time", value: "+44.2 Min", sub: "Via south & east hive orientation" },
+      { label: "Nitrogen Fixation", value: "~80 lbs/Ac", sub: "From cover crops before bloom" },
+      { label: "Blossom Drop Reduction", value: "-40%", sub: "With calibrated hive placement" },
+      { label: "Fruit Retention", value: "3x Higher", sub: "With synchronized bloom stocking" },
+    ],
+    mediaGallery: [
+      {
+        src: "/images/pollination/mango-bloom-pollination.jpg",
+        alt: "Honeybee pollinating mango blossoms during anthesis",
+        caption: "Active honeybee collecting nectar and transferring pollen grains across hermaphrodite mango florets.",
+      },
+      {
+        src: "/images/pollination/orange-citrus-orchard.jpg",
+        alt: "Flowering citrus grove with clean orchard floor",
+        caption: "Well-managed commercial orange grove during spring bloom, with clear access roads and healthy canopy development.",
+      },
+      {
+        src: "/images/pollination/mango-bloom-canopy-wide.jpg",
+        alt: "Full canopy mango tree flowering in Makueni orchard",
+        caption: "A mature mango canopy in full bloom. Staggered opening of florets requires steady bee presence across 3 weeks.",
+      },
+      {
+        src: "/images/pollination/orange-tree-citrus-fruits.jpg",
+        alt: "Developing orange fruits after thorough pollination",
+        caption: "Early fruit set in citrus: uniform fruitlet development driven by balanced pollinator visitation.",
+      },
+      {
+        src: "/images/pollination/apisense-colony-monitoring.png",
+        alt: "BeeYield Apisense IoT monitoring node",
+        caption: "BeeYield Apisense sensor node continuously monitoring hive temperature, humidity, and flight acoustics throughout bloom.",
+      },
+      {
+        src: "/images/pollination/citrus-grove-drip-irrigation.jpg",
+        alt: "Drip irrigation and cover crop management in citrus grove",
+        caption: "Clean drip lines and orchard floor vegetation management supporting pollinator hydration and soil stability.",
+      },
+    ],
+    content: `
+# Best Practices Before, During, and After Bloom: Lessons from Mango & Citrus Orchards
+
+Successful orchard pollination depends on thoughtful preparation, clear communication, and disciplined orchard management before, during, and after bloom. 
+
+![Honeybee pollinating mango blossoms during anthesis](/images/pollination/mango-bloom-pollination.jpg)
+
+Drawing from commercial trials across mango orchards in Makueni and citrus groves throughout Kenya, this guide outlines best practices to help growers protect bee health, maximize pollination efficiency, and dramatically improve fruit set.
+
+---
+
+## Phase 1: Before Bloom — Preparation & Logistics
+
+### 1. Communication & Planning
+Communication is key! Clear communication before bloom sets expectations and prevents costly missteps once bees are placed on-site:
+- **Establish a Primary Point of Contact (POC)**: Ensure all contact information between farm managers, agronomists, and the BeeYield team is shared well ahead of flowering.
+- **Pre-Bloom Coordination**: Communicate early and often about gate access codes, water availability, pesticide application schedules, and block flowering dates.
+- **Apiary Staging**: Lock in colony delivery dates to ensure hives arrive at **10% anthesis** (first open florets) — arriving too early risks bees foraging outside your orchard, while arriving too late misses early king blossoms.
+
+### 2. Site Preparation & Access
+Beekeepers typically move hives overnight to minimize bee stress and prevent disoriented flight. Ensuring zero surprises is critical:
+- **Clear Access Routes**: Double check that all orchard access points, tractor tracks, and hive placement pads are clear of fallen branches, irrigation pipes, and heavy equipment.
+- **All-Weather Roads**: Confirm orchard perimeter roads can support beekeeper flatbed vehicles, even during unexpected unseasonal rains or muddy conditions.
+- **Maintain Clear Access**: Keep roadways unobstructed throughout bloom so technicians can inspect colonies and service IoT sensor units without delay.
+
+![Flowering citrus grove with clean orchard floor](/images/pollination/orange-citrus-orchard.jpg)
+
+### 3. Forage & Nutrition (Cover Crops)
+Once mistakenly viewed as unwanted competition, cover crops are now recognized as a critical asset for pollination success and orchard soil vitality:
+- **Bridging the Nutritional Gap**: Cover crops kickstart early brood production before orchard trees reach full bloom, ensuring colonies have large armies of foragers ready when anthesis strikes.
+- **High-Quality Protein**: Varied pollen profiles provide essential amino acids for sustained bee immune health and disease resistance.
+- **Soil Fertility & Moisture**: Legume cover crops fix up to **~80 lbs of nitrogen per acre**, while deep roots improve water infiltration and soil structure.
+- **Recommended Cover Crop Groups**:
+  - *Brassicas*: Yellow/white mustard, canola, daikon radish (high early nectar flow).
+  - *Legumes*: Crimson or subterranean clover, hairy vetch, cowpeas, sunn hemp (heavy nitrogen fixation).
+  - *Grasses*: Brome, triticale, barley (erosion control and root biomass).
+
+### 4. Reliable Clean Water Sources
+Bees get thirsty, too! A commercial 10-frame colony consumes several liters of water daily for brood thermoregulation and hive cooling:
+- Provide clean, shallow water troughs with floating wooden rafts or stones within 100 meters of apiary sites.
+- Position water stations away from pesticide storage and drainage ditches to prevent toxic runoff contamination.
+
+---
+
+## Phase 2: During Bloom — Operational Execution
+
+![A mature mango canopy in full bloom](/images/pollination/mango-bloom-canopy-wide.jpg)
+
+### 1. Strategic Hive Placement: Southern & Eastern Exposure
+Hive orientation directly dictates foraging flight hours. 
+
+Research and field trials demonstrate that hives positioned with **southern or eastern exposure** in open, sunny clearings receive early morning solar warmth, encouraging bees to begin foraging **an average of 44.2 minutes earlier each day** compared to shaded or west-facing hives:
+
+- **Matching Anthesis**: In mango and citrus trees, floral anthers dehisce and release pollen as morning temperatures rise and relative humidity drops. Starting flight 45 minutes earlier ensures foragers capture fresh, viable pollen during peak floret receptivity.
+- **Windbreak Protection**: Place hives behind natural tree windbreaks or hedgerows to protect hive entrances from violent crosswinds, conserving bee flight energy.
+
+### 2. Ongoing Access Maintenance
+Maintain clear orchard roadways throughout the entire bloom period so BeeYield beekeeping teams and agronomists can inspect colonies, adjust placements, and monitor hive conditions.
+
+### 3. Strict Pesticide Stewardship
+Protecting pollinators during bloom is non-negotiable. Chemical exposure can decimate field foragers and leave residues in brood combs:
+- **Strict Ban on Insecticides**: Enforce a 100% moratorium on all foliar insecticide applications during active bee flight.
+- **Avoid Toxic Adjuvants**: Avoid tank-mixing organosilicone surfactants and adjuvants, which break down bees' protective cuticle waxes and exponentially increase chemical toxicity.
+- **Never Tank-Mix Fungicides & Insecticides**: The synergistic toxicity of fungicide-insecticide cocktails can trigger catastrophic hive collapse.
+- **Night-Time Applications Only**: If critical fungal sprays (e.g., for Powdery Mildew in mangoes) must be applied, conduct sprays strictly after dusk when bees have ceased flying and returned to the hive.
+- **Coordinate with Neighbors**: Notify neighboring farms of hive locations to prevent accidental spray drift.
+
+![BeeYield Apisense sensor node continuously monitoring hive temperature and acoustics](/images/pollination/apisense-colony-monitoring.png)
+
+---
+
+## Phase 3: After Bloom — Review & Future Planning
+
+Post-bloom evaluation translates this season's field data into smarter, more profitable decisions for the next harvest cycle.
+
+![Uniform fruitlet development in citrus driven by balanced pollinator visitation](/images/pollination/orange-tree-citrus-fruits.jpg)
+
+### 1. Post-Bloom Orchard Walkthrough
+Immediately after petal fall, conduct a structured visual walkthrough across all orchard blocks:
+- Evaluate initial fruitlet set per panicle (target: 3 to 5 fruitlets per panicle in mangoes).
+- Identify localized cold pockets, waterlogged low spots, or wind corridors that may have restricted bee flight.
+- Assess tree canopy density and evaluate whether selective pruning is needed to improve light penetration for the next season.
+
+### 2. Pollination Outcome Data Analysis
+Once fruit set and packout yield data become available:
+- **Block-by-Block Analysis**: Compare fruit retention across blocks to evaluate whether hive density was sufficient for bloom intensity.
+- **Review Placement & Orientation**: Assess whether hive orientations provided optimal flight coverage across outer and inner orchard rows.
+- **Apisense IoT Telemetry Review**: Review continuous hive acoustic, temperature, and flight activity records to identify exact peak flight dates and environmental bottlenecks.
+
+### 3. Habitat & Cover Crop Planning for Next Season
+Post-bloom is the ideal time to plan soil health and forage improvements for the coming year. If cover crops were utilized, assess their impact on bee vigor and weed suppression. If cover crops are not yet integrated into your orchard, plan species selection and planting dates ahead of the next rainy season.
+
+---
+
+## Ready to Optimize Your Pollination Strategy?
+
+Planning ahead for next season and looking to improve fruit set, eliminate blossom drop, and maximize export packout? 
+
+**BeeYield is here to partner with your operation.** Connect with our team to explore how precision apiculture, Apisense IoT sensors, and certified 10-frame colonies can transform your harvest.
+
+[**Contact BeeYield Today**](/contact)
+    `,
+  },
+  {
+    id: "hive-quality-over-quantity-future-of-pollination-lessons-from-mango-orchards",
+    slug: "hive-quality-over-quantity-future-of-pollination-lessons-from-mango-orchards",
+    title: "Hive Quality Over Quantity is the Future of Pollination: Lessons from Mango Orchards",
+    subtitle: "As colony shortages, rising costs, and climate volatility strain commercial agriculture, a critical insight is reshaping pollination: fewer, stronger colonies outperform larger numbers of weak ones. Discover why hive quality drives fruit set, efficiency, and orchard resilience.",
+    excerpt: "Every flowering season across Kenya's mango belts, growers face a critical decision: pay for more hives, or invest in stronger colonies. Discover why 10 strong, electronically verified 10-frame colonies outwork 20 weak ones, start foraging 45 minutes earlier, and slash pollination costs.",
+    date: "2026-05-19",
+    displayDate: "May 19, 2026",
+    readTime: "9 min read",
+    category: "Mango Orchard Science",
+    tags: ["Mango Orchards", "Hive Quality", "10-Frame Hives", "Colony Strength", "Precision Apiculture", "Apisense IoT", "Makueni Agriculture"],
+    featured: true,
+    coverImage: "/images/pollination/mango-bloom-pollination.jpg",
+    coverAlt: "Honeybee foraging vigorously on flowering mango panicle during peak bloom",
+    author: TIMOTHY_AUTHOR,
+    stats: [
+      { label: "Foraging Advantage", value: "+1.5 Hrs/Day", sub: "Extra flight from strong colonies" },
+      { label: "Cost Reduction", value: "Up to 25%", sub: "Fewer hives needed per acre" },
+      { label: "Fruit Retention", value: "+35%", sub: "Higher fruit set on panicles" },
+      { label: "Sensor Precision", value: "0.1°C", sub: "Apisense brood temp tracking" },
+    ],
+    mediaGallery: [
+      {
+        src: "/images/pollination/mango-bloom-pollination.jpg",
+        alt: "Honeybee foraging vigorously on flowering mango panicle",
+        caption: "Worker honeybee actively probing mango florets, transferring dense pollen grains across receptive stigmas.",
+      },
+      {
+        src: "/images/pollination/mango-orchard-flowering.jpg",
+        alt: "Flowering commercial mango orchard in Makueni",
+        caption: "Commercial Apple Mango orchard in full bloom. Concentrated pollinator visits ensure complete multi-fruitlet set.",
+      },
+      {
+        src: "/images/pollination/mango-bloom-canopy-wide.jpg",
+        alt: "Full canopy flowering mango tree",
+        caption: "Massive floral panicle density across a mature tree canopy requiring thousands of daily insect visits.",
+      },
+      {
+        src: "/images/pollination/apisense-sensor-comb-inspection.png",
+        alt: "Apisense IoT sensor probe inspecting brood comb",
+        caption: "BeeYield Apisense internal IoT probe certifying colony strength, brood stability, and worker biomass.",
+      },
+      {
+        src: "/images/blog/mango-tree-full-bloom.jpg",
+        alt: "Mature mango tree canopy in full bloom",
+        caption: "Peak flowering mango tree in Kibwezi. High-strength colonies saturate every floret within the 3-week anthesis window.",
+      },
+      {
+        src: "/images/blog/mango-young-fruit-set.jpg",
+        alt: "Young green mango fruitlets setting on panicle",
+        caption: "Floret petals drop away as fertilized ovaries swell into pea-sized fruitlets, confirming high-quality pollination.",
+      },
+    ],
+    content: `
+# Hive Quality Over Quantity is the Future of Pollination: Lessons from Mango Orchards
+
+Every year when spring flowering arrives across Kenya's mango heartlands — from Makueni and Machakos to Kilifi and Embu — orchards explode into magnificent golden-pink floral panicles. This brief, intense anthesis window determines the harvest yield for the entire upcoming year.
+
+![Honeybee foraging vigorously on flowering mango panicle](/images/pollination/mango-bloom-pollination.jpg)
+
+Traditionally, growers have operated under a simple assumption: **more hives equal more pollination**. When blossom drop occurs or fruit set fails, the instinct is to scramble for more wooden boxes. 
+
+However, recent seasons have revealed growing operational strains:
+- Managed bee colony supplies are squeezed by drought, disease, and agrochemical drift.
+- Orchard input costs have surged, forcing growers to scrutinize every shilling spent.
+- Diminishing margins mean growers can no longer afford to pay for substandard, weak colonies that sit idle during prime flight hours.
+
+As commercial trials across our monitored acreage have proven, the key differentiator in fruit set is not hive count — **it is hive quality**.
+
+---
+
+## The Colony Shortage Crisis & The Economic Squeeze
+
+Across global and regional agriculture, beekeepers have reported losing between **40% and 60% of their colonies** annually to parasites like *Varroa destructor*, pesticide poisoning, and extreme climate volatility. When bloom arrives, healthy hive supplies struggle to meet commercial demand.
+
+![Flowering commercial mango orchard in Makueni](/images/pollination/mango-orchard-flowering.jpg)
+
+For commercial mango growers, the challenge is both biological and economic:
+- Pollination services and hive logistics represent a substantial component of seasonal operating costs.
+- Mango flowers open in tight flushes, with individual florets receptive for **less than 48 hours**. If bees are absent or inactive during that window, the floret simply withers and drops.
+- Weak colonies fail to cover orchard acreage, leaving inner rows and upper tree canopies under-pollinated.
+
+Together, these pressures are driving a fundamental rethink: **Instead of chasing more boxes, growers must demand higher performance from fewer, stronger hives.**
+
+---
+
+## Quality Over Quantity: The Biological Reality
+
+The convergence of cost pressures and hive shortages has created a new imperative: growers must double down on fewer, higher-quality hives that maximize pollination efficiency while controlling expenses.
+
+![BeeYield Apisense internal IoT probe certifying colony strength](/images/pollination/apisense-sensor-comb-inspection.png)
+
+A breakthrough study in commercial orchards discovered that **strong bee colonies begin foraging about 45 minutes earlier in the morning and continue flying nearly 40 minutes later into the evening** than weaker colonies:
+
+### Why Those 85 Extra Minutes Make All the Difference:
+1. **Pollen Release Dynamics**: Mango anthers dehisce and release sticky pollen grains in the early morning as humidity drops and temperatures climb between 22°C and 28°C.
+2. **Fresh, Viable Pollen**: Early-flying bees collect pollen when it is freshest and most viable, depositing dense grains on receptive stigmas before intense midday heat desiccates floral tissues.
+3. **Weak Colonies Sit Idle**: Weaker colonies must keep their entire population clustered inside the hive to keep brood warm, delaying flight until midday when much of the day's pollen has already dried or blown away.
+
+**In other words: Ten strong 10-frame colonies do far more actual pollination work than twenty weak ones.**
+
+---
+
+## Small but Mighty: The Power of Hive Strength
+
+Our field data across commercial mango blocks in Makueni proves that growers deploying strong, healthy colonies achieve superior fruit set compared to those reliant on larger numbers of weaker hives. 
+
+![Massive floral panicle density across a mature tree canopy](/images/pollination/mango-bloom-canopy-wide.jpg)
+
+### Why Strength Beats Scale:
+- **Reduced Orchard Fees**: Placing 2 strong hives per acre instead of 4 to 5 weak ones cuts rental and transport costs by up to 30%.
+- **Less Crowding & Less Stress**: Fewer hives mean less competition and crowding in orchard rows, reducing stress on bees and allowing orderly foraging lines.
+- **Weather Resilience**: Strong colonies possess the population buffer needed to withstand unseasonal morning chills or sudden winds that ground weak hives.
+- **Concentrated Foraging**: Larger colonies deploy thousands of experienced field foragers that navigate systematically across rows rather than hovering timidly near the hive entrance.
+
+---
+
+## The Technological Breakthrough: BeeYield Apisense Sensors
+
+How can a grower verify hive quality before boxes are placed in the orchard? 
+
+At **BeeYield**, we eliminate the guesswork. Every hive deployed under our commercial programs is monitored by **Apisense IoT technology**:
+
+![BeeYield Apisense sensor inserted into comb frames](/images/pollination/apisense-sensor-comb-inspection.png)
+
+1. **Acoustic Frequency Signatures**: Healthy, queen-right colonies hum at specific vibrational frequencies (100 Hz to 300 Hz). Apisense sensors continuously capture these acoustics, verifying colony vigor and queen status automatically.
+2. **Thermal Core Regulation**: Healthy colonies tightly maintain their brood nest at 35.0°C ± 0.5°C. Telemetry data certifies that a hive has the population mass needed to insulate its brood while dispatching thousands of foragers into the field.
+3. **Automated Flight & Weight Metrics**: In-hive sensors and solar-powered field gateways track bee traffic curves in real time, delivering verifiable proof of pollination intensity directly to the grower's dashboard.
+
+---
+
+## Transforming the Grower-Beekeeper Partnership
+
+Shifting to a quality-over-quantity model reshapes relationships across the agricultural ecosystem. 
+
+Pollination is no longer an informal, last-minute transaction arranged days before bloom. For growers, securing certified high-strength hives early is essential risk management and sound financial planning:
+- **Early Booking**: Forging early partnerships with BeeYield gives beekeepers the lead time needed to build strong brood frames, supplement nutrition, and certify colony health.
+- **Multi-Season Planning**: Strong colonies don't just appear overnight; they require year-round investment. Long-term partnerships between growers and BeeYield ensure predictable hive availability season after season.
+- **Shared Accountability**: Real-time IoT dashboards provide transparency, giving growers peace of mind that their pollination investment is actively delivering results in the field.
+
+---
+
+## The Path Forward: Optimization, Not Expansion
+
+Despite encouraging advances in precision apiculture, threats from pesticide exposure, parasitic mites, and habitat fragmentation continue to challenge pollinator health. 
+
+The path forward requires not just resilience, but smarter deployment of that resilience:
+- Growers can no longer afford to gamble on random hive counts.
+- The future of pollination isn't about expansion — **it is about optimization**.
+- It lies in efficiency: fewer colonies that are stronger, healthier, thoughtfully placed, and electronically monitored.
+
+For mango growers in Kenya and fruit producers worldwide, ensuring hive quality must be treated as a core pillar of orchard and yield management.
+
+![Young green mango fruitlets setting on panicle](/images/blog/mango-young-fruit-set.jpg)
+
+---
+
+## Partner with BeeYield for Your Next Bloom
+
+Ready to replace guesswork with verified colony strength? Contact the BeeYield team today to discover how our precision pollination services and Apisense IoT monitoring can optimize your mango harvest this season.
+
+[**Get in Touch with BeeYield**](/contact)
     `,
   },
   {
@@ -597,7 +1228,7 @@ Mango anthesis follows a predictable biological rhythm:
 ## Urgent Challenges Facing Pollinators in Kenya
 
 Despite their invaluable contribution, bee populations in Kenya's agricultural belts face growing threats:
-- **Indiscriminate Pesticide Spraying**: Broad-spectrum synthetic insecticides (such as chlorpyrifos or synthetic pyrethroids) applied during flowering cause catastrophic bee kills.
+- **Indiscriminate Pesticide Spraying**: Broad-spectrum synthetic insecticides applied during flowering cause catastrophic bee kills.
 - **Habitat Fragmentation**: Clearing native bushland removes alternative floral forage that bees need during the non-blooming season.
 - **Prolonged Drought & Climate Shocks**: Erratic rainfall patterns delay floral bud emergence and deplete natural nectar supplies.
 - **Pesticide Drift**: Even if an orchard manager avoids spraying, pesticide drift from neighboring vegetable or cereal farms can poison foraging bees.
@@ -626,31 +1257,11 @@ Successful mango cultivation requires harmony between multiple agronomic practic
 
 ---
 
-## Fascinating Facts About Bees and Mango Trees
+## Final Thoughts from Timothy Nduva
 
-- A single healthy Apple Mango tree can produce more than **20,000 flowers** during a single flowering season.
-- Less than **1 in 500** mango florets will ultimately mature into a harvestable fruit.
-- A single worker honey bee can visit up to **500 flowers** on one foraging expedition.
-- Stingless bees store mango nectar in unique cerumen pots inside tree trunks, producing a rare medicinal honey prized in Makueni.
-- Proper bee pollination can boost overall orchard harvest weight by **9–18%**.
+Managing a mango orchard is both an art and a science. When you walk through an orchard in full bloom in Makueni or Kibwezi and hear the steady, rhythmic hum of thousands of bees working each panicle, you are listening to the sound of a successful harvest being created.
 
----
-
-## Sustainable Mango Farming: A Win-Win Partnership
-
-Protecting pollinators is not just an environmental ideal; it is sound business economics. By partnering with local beekeepers and implementing precision monitoring, Kenyan mango farmers can:
-- Double their proportion of Grade-A exportable fruit.
-- Reduce dependency on synthetic chemical inputs.
-- Harvest premium honey as an additional revenue stream.
-- Build climate-resilient orchards that produce consistently year after year.
-
----
-
-## Why Pollination Matters to Consumers and Exporters
-
-The next time you slice into a ripe, golden Kenyan mango, remember that its perfect shape, sweet aroma, and rich flavor were made possible by thousands of tiny pollinator visits. Every export crate shipped from Nairobi to international markets is a testament to the quiet partnership between skilled farmers and hardworking bees.
-
-At BeeYield, we are proud to equip farmers with the IoT tools and biological insights needed to safeguard these vital pollinators for generations to come.
+By understanding floral biology, respecting pollinator behavior, and protecting these essential insects with modern precision tools, Kenyan farmers can consistently turn spring blossoms into overflowing crates of Grade-A export fruit.
     `,
   },
   {
@@ -721,7 +1332,7 @@ Even though mango trees (*Mangifera indica*) are capable of self-pollination, be
 - **Natural fruit set is exceptionally low**: typically only **0.1% to 0.25%** of blossoms naturally develop into mature, harvestable fruit.
 - **Cultivating complementary cultivars** (such as Apple Mango, Kent, Ngowe, and Tommy Atkins) encourages cross-pollination and yields heavier, firmer fruit.
 - **Preventing flower drop** requires a coordinated strategy of balanced Boron and Potassium nutrition, precision drip irrigation, and zero-pesticide bloom moratoriums.
-- **Managed bee pollination** with 2 to 4 hives per acre provides commercial precision that manual hand-brushing could never replicate at scale.
+- **Managed bee pollination** with 2 to 4 intelligent hives per acre provides commercial precision that manual hand-brushing could never replicate at scale.
 
 ---
 
@@ -792,28 +1403,6 @@ If an unseasonal cold spell or heavy rain shower interrupts bloom on one variety
 
 ---
 
-## Factors That Cause Poor Pollination & Flower Loss
-
-Growers frequently encounter heavy blossom drop before fruit set occurs. The primary culprits include:
-- **Continuous Rain or Heavy Morning Dew**: Water droplets burst pollen grains and dilute nectar, preventing insect visits.
-- **Chilling Injury or Extreme Heat**: Temperatures below 15°C paralyze pollen tube growth, while temperatures above 36°C dry out stigmas prematurely.
-- **Pesticide Spray Toxicity**: Insecticide applications during flowering kill forager bees and contaminate hive pollen stores.
-- **Fungal Pathogens**: Powdery Mildew (*Oidium mangiferae*) and Anthracnose (*Colletotrichum gloeosporioides*) attack floral panicles, causing blossoms to blacken and drop.
-- **Nutrient Deficiencies**: Lack of Boron and Zinc prevents pollen grain germination.
-
----
-
-## Is Hand-Pollination Worth Trying?
-
-Hand-pollination involves using fine camel-hair brushes or cotton swabs to transfer pollen manually from staminate flowers to receptive stigmas.
-
-- **For Plant Breeders**: In breeding stations creating new crosses, hand-pollination provides complete genetic control.
-- **For Commercial Orchards**: With 10,000 to 50,000 florets per mature tree, hand-pollination would require dozens of labor hours per tree, making it commercially impossible and cost-prohibitive.
-
-**The Scalable Solution**: Managed apiculture with **2 to 4 intelligent hives per acre** provides biological coverage of every single panicle floret at a fraction of the cost.
-
----
-
 ## Controlling Mango Flower Drop: The Four Pillars
 
 To maximize fruit retention and prevent premature blossom drop, growers should implement four proven agronomic practices:
@@ -868,7 +1457,7 @@ Yes. Unlike parthenocarpic fruits (like commercial bananas or seedless grapes), 
 
 ---
 
-## Final Thoughts from Timothy Mathuva
+## Final Thoughts from Timothy Nduva
 
 Managing a mango orchard is both an art and a science. When you walk through an orchard in full bloom in Makueni or Kibwezi and hear the steady, rhythmic hum of thousands of bees working each panicle, you are listening to the sound of a successful harvest being created.
 
@@ -892,4 +1481,3 @@ export const blogs = BLOG_POSTS.map((post, idx) => ({
   published_at: post.date,
   date: post.displayDate,
 }));
-
