@@ -107,6 +107,7 @@ import MeasurementDataTools from '@/components/beeyield/lovable_ai/MeasurementDa
 import HiveHealthDashboard from '@/components/beeyield/lovable_ai/HiveHealthDashboard';
 import SupportPageModal from '@/components/beeyield/lovable_ai/SupportPageModal';
 import SettingsPage from '@/components/beeyield/lovable_ai/SettingsPage';
+import InspectionsPage from '@/components/beeyield/lovable_ai/InspectionsPage';
 import IntegrationsPage from '@/components/beeyield/lovable_ai/IntegrationsPage';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
@@ -435,7 +436,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
-            case 'inspections': return <InspectionsView onTabChange={handleTabChange} />;
+            case 'inspections': return renderEmbedded(<InspectionsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'harvests': return <HarvestsView onTabChange={handleTabChange} />;
             case 'flight-map': return <FlightMapView />;
 
