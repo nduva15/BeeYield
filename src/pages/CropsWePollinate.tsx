@@ -157,14 +157,14 @@ const CropsWePollinate = () => {
             </Card>
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">2</p>
-                <p className="text-muted-foreground font-medium">Counties</p>
+                <p className="text-4xl font-bold text-primary mb-2">1</p>
+                <p className="text-muted-foreground font-medium">County (Makueni & Counting)</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">9</p>
-                <p className="text-muted-foreground font-medium">Crop Varieties</p>
+                <p className="text-4xl font-bold text-primary mb-2">9+</p>
+                <p className="text-muted-foreground font-medium">Crops & Counting</p>
               </CardContent>
             </Card>
           </div>
