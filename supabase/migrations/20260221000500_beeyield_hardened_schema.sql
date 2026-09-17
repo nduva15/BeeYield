@@ -60,6 +60,43 @@ CREATE TABLE IF NOT EXISTS public.pollination_contracts (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE public.orchards
+ADD COLUMN IF NOT EXISTS grower_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS name TEXT,
+ADD COLUMN IF NOT EXISTS boundary_geojson JSONB,
+ADD COLUMN IF NOT EXISTS acreage DECIMAL(10,2),
+ADD COLUMN IF NOT EXISTS crop_type TEXT;
+
+ALTER TABLE public.telemetry_gateways
+ADD COLUMN IF NOT EXISTS mac_address TEXT,
+ADD COLUMN IF NOT EXISTS beekeeper_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS apiary_id UUID REFERENCES public.apiaries(id),
+ADD COLUMN IF NOT EXISTS battery_pct INTEGER DEFAULT 100,
+ADD COLUMN IF NOT EXISTS rssi_dbm INTEGER,
+ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Online';
+
+ALTER TABLE public.calculator_logs
+ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS module_type TEXT,
+ADD COLUMN IF NOT EXISTS input_json JSONB,
+ADD COLUMN IF NOT EXISTS output_json JSONB;
+
+ALTER TABLE public.yield_predictions
+ADD COLUMN IF NOT EXISTS orchard_id UUID REFERENCES public.orchards(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS apiary_id UUID REFERENCES public.apiaries(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS forecast_date DATE DEFAULT CURRENT_DATE,
+ADD COLUMN IF NOT EXISTS predicted_yield_kg DECIMAL(12,2),
+ADD COLUMN IF NOT EXISTS confidence_score DECIMAL(4,2);
+
+ALTER TABLE public.pollination_contracts
+ADD COLUMN IF NOT EXISTS grower_id UUID REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS beekeeper_id UUID REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS orchard_id UUID REFERENCES public.orchards(id),
+ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active',
+ADD COLUMN IF NOT EXISTS start_date DATE,
+ADD COLUMN IF NOT EXISTS end_date DATE,
+ADD COLUMN IF NOT EXISTS terms_json JSONB;
+
 -- 2. PROFESSIONAL RLS (PRD SECTION 6 COMPLIANCE)
 
 -- DROPPING LEGACY POLICIES
@@ -76,6 +113,9 @@ BEGIN
     -- Sensor Data
     DROP POLICY IF EXISTS "Read own sensor data" ON sensor_readings;
     DROP POLICY IF EXISTS "Growers see contracted sensor data" ON sensor_readings;
+    DROP POLICY IF EXISTS "Beekeepers manage own sensor readings" ON sensor_readings;
+    -- Calculators
+    DROP POLICY IF EXISTS "Users manage own calculator logs" ON calculator_logs;
 EXCEPTION
     WHEN undefined_object THEN null;
 END $$;

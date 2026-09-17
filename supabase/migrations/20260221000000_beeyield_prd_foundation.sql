@@ -23,6 +23,15 @@ CREATE TABLE IF NOT EXISTS public.orchards (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE public.orchards
+ADD COLUMN IF NOT EXISTS grower_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS name TEXT,
+ADD COLUMN IF NOT EXISTS location_name TEXT,
+ADD COLUMN IF NOT EXISTS boundary_geojson JSONB,
+ADD COLUMN IF NOT EXISTS acreage DECIMAL(10,2),
+ADD COLUMN IF NOT EXISTS crop_type TEXT,
+ADD COLUMN IF NOT EXISTS notes TEXT;
+
 -- 3. CREATE TELEMETRY GATEWAYS TABLE
 CREATE TABLE IF NOT EXISTS public.telemetry_gateways (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -38,6 +47,16 @@ CREATE TABLE IF NOT EXISTS public.telemetry_gateways (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE public.telemetry_gateways
+ADD COLUMN IF NOT EXISTS mac_address TEXT,
+ADD COLUMN IF NOT EXISTS beekeeper_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS apiary_id UUID REFERENCES public.apiaries(id) ON DELETE SET NULL,
+ADD COLUMN IF NOT EXISTS orchard_id UUID REFERENCES public.orchards(id) ON DELETE SET NULL,
+ADD COLUMN IF NOT EXISTS battery_pct INTEGER DEFAULT 100,
+ADD COLUMN IF NOT EXISTS rssi_dbm INTEGER,
+ADD COLUMN IF NOT EXISTS last_ping TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Online';
+
 -- 4. CREATE CALCULATOR LOGS TABLE
 CREATE TABLE IF NOT EXISTS public.calculator_logs (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -47,6 +66,12 @@ CREATE TABLE IF NOT EXISTS public.calculator_logs (
     output_json JSONB NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+ALTER TABLE public.calculator_logs
+ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS module_type TEXT,
+ADD COLUMN IF NOT EXISTS input_json JSONB,
+ADD COLUMN IF NOT EXISTS output_json JSONB;
 
 -- 5. CREATE YIELD PREDICTIONS TABLE
 CREATE TABLE IF NOT EXISTS public.yield_predictions (
@@ -59,6 +84,14 @@ CREATE TABLE IF NOT EXISTS public.yield_predictions (
     model_version TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+ALTER TABLE public.yield_predictions
+ADD COLUMN IF NOT EXISTS apiary_id UUID REFERENCES public.apiaries(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS orchard_id UUID REFERENCES public.orchards(id) ON DELETE CASCADE,
+ADD COLUMN IF NOT EXISTS predicted_yield_kg DECIMAL(10,2),
+ADD COLUMN IF NOT EXISTS confidence_pct INTEGER,
+ADD COLUMN IF NOT EXISTS forecast_date DATE,
+ADD COLUMN IF NOT EXISTS model_version TEXT;
 
 -- 6. CREATE POLLINATION CONTRACTS TABLE
 CREATE TABLE IF NOT EXISTS public.pollination_contracts (
@@ -78,6 +111,20 @@ CREATE TABLE IF NOT EXISTS public.pollination_contracts (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE public.pollination_contracts
+ADD COLUMN IF NOT EXISTS grower_id UUID REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS beekeeper_id UUID REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS orchard_id UUID REFERENCES public.orchards(id) ON DELETE SET NULL,
+ADD COLUMN IF NOT EXISTS hive_count_ordered INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS hive_count_deployed INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS start_date DATE,
+ADD COLUMN IF NOT EXISTS end_date DATE,
+ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending',
+ADD COLUMN IF NOT EXISTS target_fpa DECIMAL(4,2),
+ADD COLUMN IF NOT EXISTS actual_fpa DECIMAL(4,2),
+ADD COLUMN IF NOT EXISTS payment_amount DECIMAL(12,2),
+ADD COLUMN IF NOT EXISTS terms_json JSONB;
+
 -- 7. SECURITY: ROW LEVEL SECURITY (RLS)
 -- Enable RLS on all new tables
 ALTER TABLE public.orchards ENABLE ROW LEVEL SECURITY;
@@ -89,23 +136,28 @@ ALTER TABLE public.pollination_contracts ENABLE ROW LEVEL SECURITY;
 -- 8. POLICIES
 
 -- ORCHARDS: Growers own their orchards.
+DROP POLICY IF EXISTS "Growers manage own orchards" ON public.orchards;
 CREATE POLICY "Growers manage own orchards" ON public.orchards
     FOR ALL USING (auth.uid() = grower_id);
 
+DROP POLICY IF EXISTS "Beekeepers see relevant orchards" ON public.orchards;
 CREATE POLICY "Beekeepers see relevant orchards" ON public.orchards
     FOR SELECT USING (
         id IN (SELECT orchard_id FROM public.pollination_contracts WHERE beekeeper_id = auth.uid())
     );
 
 -- TELEMETRY GATEWAYS: Owner-based management
+DROP POLICY IF EXISTS "Beekeepers manage own gateways" ON public.telemetry_gateways;
 CREATE POLICY "Beekeepers manage own gateways" ON public.telemetry_gateways
     FOR ALL USING (auth.uid() = beekeeper_id);
 
 -- CALCULATOR LOGS: Private to user
+DROP POLICY IF EXISTS "Users view own calculator logs" ON public.calculator_logs;
 CREATE POLICY "Users view own calculator logs" ON public.calculator_logs
     FOR ALL USING (auth.uid() = user_id);
 
 -- YIELD PREDICTIONS: Visible to associated user
+DROP POLICY IF EXISTS "Users view own yield predictions" ON public.yield_predictions;
 CREATE POLICY "Users view own yield predictions" ON public.yield_predictions
     FOR SELECT USING (
         apiary_id IN (SELECT id FROM public.apiaries WHERE user_id = auth.uid()) OR
@@ -113,11 +165,13 @@ CREATE POLICY "Users view own yield predictions" ON public.yield_predictions
     );
 
 -- POLLINATION CONTRACTS: Both parties can view
+DROP POLICY IF EXISTS "Parties view own contracts" ON public.pollination_contracts;
 CREATE POLICY "Parties view own contracts" ON public.pollination_contracts
     FOR ALL USING (auth.uid() = grower_id OR auth.uid() = beekeeper_id);
 
 -- 9. REFINING CORE TABLES (Existing Policies)
 -- Ensure Beekeeper vs Grower logic for Hives & Apiaries
+DROP POLICY IF EXISTS "Growers see contracted apiaries" ON public.apiaries;
 CREATE POLICY "Growers see contracted apiaries" ON public.apiaries
     FOR SELECT USING (
         id IN (SELECT apiary_id FROM public.hives WHERE id IN (
@@ -136,6 +190,7 @@ BEGIN
         WHERE table_schema = 'public' 
         AND table_name IN ('orchards', 'telemetry_gateways', 'pollination_contracts')
     LOOP
+        EXECUTE format('DROP TRIGGER IF EXISTS update_%I_updated_at ON public.%I', t, t);
         EXECUTE format('CREATE TRIGGER update_%I_updated_at BEFORE UPDATE ON public.%I FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column()', t, t);
     END LOOP;
 END;
