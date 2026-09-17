@@ -21,6 +21,21 @@ CREATE TABLE IF NOT EXISTS public.case_study_stories (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+ALTER TABLE public.case_study_categories
+    ADD COLUMN IF NOT EXISTS title TEXT,
+    ADD COLUMN IF NOT EXISTS category_name TEXT;
+
+ALTER TABLE public.case_study_stories
+    ADD COLUMN IF NOT EXISTS category_id TEXT,
+    ADD COLUMN IF NOT EXISTS farmer TEXT,
+    ADD COLUMN IF NOT EXISTS location TEXT,
+    ADD COLUMN IF NOT EXISTS role TEXT,
+    ADD COLUMN IF NOT EXISTS acres INTEGER,
+    ADD COLUMN IF NOT EXISTS description TEXT,
+    ADD COLUMN IF NOT EXISTS quote TEXT,
+    ADD COLUMN IF NOT EXISTS image_url TEXT,
+    ADD COLUMN IF NOT EXISTS stats_json JSONB DEFAULT '[]'::jsonb;
+
 -- Enable RLS
 ALTER TABLE public.case_study_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.case_study_stories ENABLE ROW LEVEL SECURITY;

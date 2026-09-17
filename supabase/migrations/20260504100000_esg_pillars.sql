@@ -9,6 +9,13 @@ CREATE TABLE IF NOT EXISTS public.esg_pillars (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+ALTER TABLE public.esg_pillars
+    ADD COLUMN IF NOT EXISTS title TEXT,
+    ADD COLUMN IF NOT EXISTS icon TEXT,
+    ADD COLUMN IF NOT EXISTS color TEXT DEFAULT 'bg-white border-neutral-200/60',
+    ADD COLUMN IF NOT EXISTS impact TEXT,
+    ADD COLUMN IF NOT EXISTS initiatives_json JSONB DEFAULT '[]'::jsonb;
+
 -- Enable RLS
 ALTER TABLE public.esg_pillars ENABLE ROW LEVEL SECURITY;
 
