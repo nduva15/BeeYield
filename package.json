@@ -144,7 +144,7 @@
     "typescript-eslint": "^8.57.2",
     "vite": "^6.4.3",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.2"
+    "vitest": "^5.0.1"
   },
   "pnpm": {
     "overrides": {
@@ -188,7 +188,9 @@
       "fflate": ">=0.8.3",
       "@humanfs/node": ">=0.16.8",
       "postcss-selector-parser": ">=6.1.4",
-      "browserslist": ">=4.28.8"
+      "browserslist": ">=4.28.8",
+      "vitest": ">=4.1.11",
+      "@vitest/mocker": ">=4.1.11"
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
