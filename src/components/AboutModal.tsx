@@ -10,6 +10,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import beeyieldLogo from "@/assets/beeyield-logo.png";
 
 const stats = [
   { label: "Bee Species Covered", value: "20,000+", icon: "🐝" },
@@ -63,8 +64,9 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scroll">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-display text-honey flex items-center gap-2">
-            🐝 About Beeyield AI
+          <DialogTitle className="text-2xl font-display text-honey flex items-center gap-3">
+            <img src={beeyieldLogo} alt="BeeYield Logo" className="h-8 w-auto object-contain" />
+            <span>About Beeyield AI</span>
           </DialogTitle>
         </DialogHeader>
 

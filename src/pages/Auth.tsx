@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import beeyieldLogo from "@/assets/beeyield-logo.png";
 
 function safeNext(raw: string | null): string {
   if (!raw) return "/";
@@ -92,7 +93,9 @@ export default function Auth() {
     <main className="min-h-screen flex items-center justify-center p-4 bg-background honeycomb-bg">
       <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6 shadow-sm">
         <div className="text-center mb-6">
-          <div className="text-4xl mb-2">🐝</div>
+          <div className="flex justify-center mb-3">
+            <img src={beeyieldLogo} alt="BeeYield" className="h-12 w-auto object-contain" />
+          </div>
           <h1 className="font-display text-2xl font-bold text-foreground">
             {mode === "signin" ? "Sign in to Beeyield" : mode === "signup" ? "Create your Beeyield account" : "Reset your password"}
           </h1>

@@ -841,34 +841,58 @@ export default function About() {
             </h2>
           </FadeIn>
 
+          {/* Trio Founders Banner */}
+          <FadeIn>
+            <div className="mb-10 relative overflow-hidden rounded-3xl border border-amber-500/30 shadow-2xl group">
+              <img
+                src="/images/team/all-three-founders.jpg"
+                alt="All Three BeeYield Founders: Timothy, Agatha, and Carole Nduva at Kibwezi Apiary"
+                className="w-full h-72 md:h-96 object-cover object-center group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-6 md:p-8">
+                <span className="inline-block px-3 py-1 bg-amber-500 text-black font-black text-xs rounded-full w-max mb-2">
+                  The Three Sibling Founders
+                </span>
+                <h3 className="text-2xl md:text-3xl font-display font-bold text-white">
+                  Timothy, Agatha & Carole Nduva
+                </h3>
+                <p className="text-sm text-neutral-200 mt-1 max-w-2xl">
+                  Building Africa's premier precision apiculture & pollination intelligence network together at the Kibwezi apiary in Makueni County, Kenya.
+                </p>
+              </div>
+            </div>
+          </FadeIn>
+
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             {[
               {
-                name: "Timothy",
-                role: "Co-Founder • Tech & Operations",
+                name: "Timothy Nduva",
+                role: "Co-Founder • CEO & Operations",
                 education:
                   "BSc Finance & Marketing, Diploma IT — Strathmore University | Private Pilot License (in progress)",
-                desc: "The builder. Quit his job to save the bees. Built the webapp, learned IoT, reached out to global partners, and manages daily operations. Currently pursuing his 3rd degree in Aviation.",
-                emoji: "👨‍💻",
+                desc: "The builder. Quit his job to save the bees. Built the platform, learned IoT, reached out to global partners, and manages daily field operations. Currently pursuing his 3rd degree in Aviation.",
+                image: "/images/team/timothy-nduva.jpg",
               },
               {
-                name: "Agatha",
-                role: "Co-Founder • IT & Data",
+                name: "Agatha Nduva",
+                role: "Co-Founder • CTO & Data Systems",
                 education: "Strathmore University Graduate — IT",
-                desc: "The technologist. Brings IT expertise to BeeYield's data systems and digital infrastructure. Helps drive the tech vision alongside Timothy.",
-                emoji: "👩‍💻",
+                desc: "The technologist. Brings deep IT expertise to BeeYield's telemetry data systems and digital infrastructure. Architects data security, backend ingestion, and system integrity.",
+                image: "/images/team/agatha-nduva.jpg",
               },
               {
-                name: "Carole",
-                role: "Co-Founder • Projects & Finance",
+                name: "Carole Nduva",
+                role: "Co-Founder • COO & Growth",
                 education: "Strathmore University Graduate — Project Management & Sales/Finance",
-                desc: "The strategist. Manages farmer partnerships, project planning, and financial operations. Her sales skills are core to every farmer relationship we've built.",
-                emoji: "👩‍💼",
+                desc: "The strategist. Manages farmer partnerships, operational expansion, project planning, and financial growth. Her leadership is core to every community apiary partnership.",
+                image: "/images/team/carole-nduva.jpg",
               },
             ].map((member, i) => (
               <FadeIn key={member.name} delay={i * 100}>
-                <div className="p-6 rounded-2xl border border-border bg-background text-center hover:border-amber-500/20 transition-all duration-300 h-full flex flex-col">
-                  <div className="text-4xl mb-3">{member.emoji}</div>
+                <div className="p-6 rounded-2xl border border-border bg-background text-center hover:border-amber-500/40 transition-all duration-300 h-full flex flex-col group">
+                  <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-amber-500/40 shadow-lg group-hover:border-amber-500 group-hover:scale-105 transition-all">
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover object-center" />
+                  </div>
                   <h3 className="font-display text-xl font-bold">{member.name}</h3>
                   <div className="text-xs text-amber-500 font-medium mb-2">{member.role}</div>
                   <div className="text-[10px] text-muted-foreground italic mb-3">
