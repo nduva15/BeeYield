@@ -360,7 +360,7 @@ const Team = () => {
                                         src={member.image} 
                                         alt={member.name} 
                                         className={cn(
-                                            "w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0",
+                                            "w-full h-full object-cover transition-all duration-700 group-hover:scale-105",
                                             member.image === LOGO ? "opacity-10 p-12" : ""
                                         )}
                                     />
