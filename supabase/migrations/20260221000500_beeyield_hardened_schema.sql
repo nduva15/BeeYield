@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS public.orchards (
 CREATE TABLE IF NOT EXISTS public.telemetry_gateways (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     mac_address TEXT UNIQUE NOT NULL,
-    beekeeper_id UUID REFERENCES auth.users(id) ON DELETE NOT NULL,
+    beekeeper_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     apiary_id UUID REFERENCES public.apiaries(id),
     battery_pct INTEGER DEFAULT 100,
     rssi_dbm INTEGER,
