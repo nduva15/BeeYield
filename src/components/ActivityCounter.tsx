@@ -6,9 +6,7 @@ import { useDeviceId } from "@/hooks/use-device-id";
 
 // Lightweight one-tap activity counter — quicker workflow than the full BeeFlightTracker.
 // Tap "+1" each time a bee exits the entrance during the 60-second window.
-export default function ActivityCounter({
-  isOpen,
-  onClose,
+export default function ActivityCounter({ isOpen, onClose, embedded = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -95,21 +93,23 @@ export default function ActivityCounter({
                 note: "Inspect for swarm prep or robbing.",
               };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl">
+    <div className={embedded ? "w-full flex justify-center py-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center p-4"}>
+      <div className={embedded ? "bg-card border border-border rounded-2xl max-w-xl w-full p-6 shadow-md" : "bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl"}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Plane className="w-5 h-5 text-honey" />
             <h2 className="font-display text-lg font-bold text-honey">Quick Activity Counter</h2>
           </div>
-          <button
+          {!embedded && (
+            <button
             onClick={onClose}
             className="w-8 h-8 rounded-lg border border-border flex items-center justify-center"
           >
             <X className="w-4 h-4" />
           </button>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-4">

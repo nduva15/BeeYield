@@ -40,13 +40,14 @@ const CROPS: Crop[] = [
 ];
 
 interface Props {
+  embedded?: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
 
 type Mode = "single" | "compare";
 
-export default function PollinationLookup({ isOpen, onClose }: Props) {
+export default function PollinationLookup({ isOpen, onClose, embedded = false }: Props) {
   const [mode, setMode] = useState<Mode>("single");
   const [cropName, setCropName] = useState(CROPS[0].name);
   const [acres, setAcres] = useState<number>(10);
@@ -221,11 +222,11 @@ export default function PollinationLookup({ isOpen, onClose }: Props) {
     toast.success("PDF exported");
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-5xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Flower2 className="w-7 h-7 text-honey" />
@@ -247,6 +248,7 @@ export default function PollinationLookup({ isOpen, onClose }: Props) {
               <Building2 className="w-3.5 h-3.5" />
               {brand.farmName ? brand.farmName.slice(0, 16) : "Farm branding"}
             </button>
+            {!embedded && (
             <button
               onClick={onClose}
               className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
@@ -254,6 +256,7 @@ export default function PollinationLookup({ isOpen, onClose }: Props) {
             >
               <X className="w-4 h-4" />
             </button>
+          )}
           </div>
         </div>
 

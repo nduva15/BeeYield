@@ -29,7 +29,7 @@ type Obs = {
 type RunRow = { id: string; crop: string; created_at: string };
 type RunVersion = { id: string; version_label: string; created_at: string };
 
-export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BloomPhenology({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [obs, setObs] = useState<Obs[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);
@@ -132,16 +132,18 @@ export default function BloomPhenology({ isOpen, onClose }: { isOpen: boolean; o
     toast.success("Bloom CSV exported");
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-5xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3"><Flower2 className="w-7 h-7 text-honey" />
             <div><h1 className="font-display text-2xl font-bold text-honey">Bloom Phenology</h1>
               <p className="text-xs text-muted-foreground">Expert tables × your observations × AI bloom-shift insights</p></div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 rounded-xl border border-border bg-muted/30">

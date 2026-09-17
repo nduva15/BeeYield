@@ -43,6 +43,7 @@ type Bloom = { id: string; crop: string; intensity: number; bloom_start: string 
 type Flight = { id: string; hive_label: string; bees_per_minute: number; pollen_loads: number; florage_source: string | null; observed_at: string };
 
 interface Props {
+  embedded?: boolean;
   isOpen: boolean;
   onClose: () => void;
   readOnly?: boolean;
@@ -54,7 +55,7 @@ const DEFAULT_FILTERS: Filters = {
   showCoverage: true, showBloom: true, showFlight: true, showDiagnostics: true, selectedHive: null,
 };
 
-export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId }: Props) {
+export default function MOAView({ isOpen, onClose, embedded = false, readOnly = false, initialRunId, initialVersionId }: Props) {
   const deviceId = useDeviceId();
   const [runs, setRuns] = useState<Run[]>([]);
   const [versions, setVersions] = useState<Version[]>([]);
@@ -261,10 +262,10 @@ Required sections:
     } finally { setExporting(false); }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background overflow-hidden flex flex-col">
+    <div className={embedded ? "w-full space-y-4 rounded-xl border border-border bg-card overflow-hidden" : "fixed inset-0 z-50 bg-background overflow-hidden flex flex-col"}>
       {/* Header */}
       <div className="flex-shrink-0 border-b border-border bg-card px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
@@ -295,7 +296,9 @@ Required sections:
               <Save className="w-3 h-3" /> Save filters
             </button>
           )}
-          <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
       </div>
 
@@ -330,7 +333,7 @@ Required sections:
           No saved harvest runs yet. Save a run from the Harvest Calculator to load the MOA view.
         </div>
       ) : (
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden">
+        <div className={embedded ? "grid grid-cols-1 md:grid-cols-5 min-h-[600px] h-[75vh]" : "flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden"}>
           {/* Map */}
           <div ref={mapWrapRef} className="md:col-span-3 relative border-r border-border">
             <MapContainer center={center} zoom={15} style={{ width: "100%", height: "100%" }}>
