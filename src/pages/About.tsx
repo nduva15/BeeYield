@@ -262,15 +262,15 @@ const TIMELINE: YearMilestone[] = [
   {
     year: "2026",
     title: "The Technology Year",
-    subtitle: "22 IoT devices, 95 acres pollinated, global partnerships",
+    subtitle: "22 IoT devices, 95 and counting acres pollinated, global partnerships",
     image: "/images/story/2025-iot-pivot.jpg",
     imageAlt:
       "2026 — IoT devices deployed, global partnerships with Apisense and Intelligent Hives",
     color: "from-violet-600 to-purple-500",
     stats: [
       { label: "IoT Devices", value: "22" },
-      { label: "Acres Pollinated", value: "95+" },
-      { label: "Data Points/Day", value: "2,000+" },
+      { label: "Acres Pollinated", value: "95+ & Counting" },
+      { label: "Data Points/Day", value: "2,000+ & Growing" },
       { label: "Honey to Date", value: "988 kg" },
     ],
     highlights: [
@@ -280,9 +280,9 @@ const TIMELINE: YearMilestone[] = [
       "Intelligent Hives prototype became our first operational precision pollination prototype",
       "Devices collect temperature, weight, humidity, pressure, outside temp, colony state, and Varroa detection",
       "Also detect Asian hornets — proven incredibly useful for colony protection",
-      "Collecting 2,000+ data points daily across all sensor categories — unprecedented for a Kenyan operation",
+      "Collecting over 2,000 data points daily and growing across all sensor categories — unprecedented for a Kenyan operation",
       "3 farmers enrolled in IoT device program with 22 devices working in hives right now",
-      "Pollinated 95+ acres — started with a goal of 15 acres, exceeded by 6x",
+      "Pollinated 95 and counting acres — started with a goal of 15 acres, exceeded by 6x",
       "Mango bloom season in Makueni, Kenya — targeting 150 acres before year-end",
       "18% average yield increase for pollinated farms — aiming for 25%+",
       "Built Bee LLM and bee sound analysis — trained on 350K+ bee sounds via Kaggle for disease detection",
@@ -308,7 +308,7 @@ const IMPACT_STATS = [
   { icon: Hexagon, label: "Hives Owned", value: 184, suffix: "" },
   { icon: Scale, label: "Honey Sold (kg)", value: 988, suffix: " kg" },
   { icon: Users, label: "Partner Farmers", value: 40, suffix: "" },
-  { icon: MapPin, label: "Acres Pollinated", value: 95, suffix: "+" },
+  { icon: MapPin, label: "Acres Pollinated & Counting", value: 95, suffix: "+" },
   { icon: Wifi, label: "IoT Devices Active", value: 22, suffix: "" },
   { icon: TreePine, label: "Trees Planted", value: 1500, suffix: "+" },
   { icon: Leaf, label: "CO₂ Offset", value: 3, suffix: " tons" },
@@ -496,7 +496,7 @@ export default function About() {
               {
                 icon: Wifi,
                 title: "Precision Pollination",
-                desc: "22 IoT devices deployed, 2,000+ data points daily, real-time temperature, weight, humidity, pressure, colony state, Varroa detection, and Asian hornet alerts. We use data to protect bees and maximize yields for Kenyan smallholders.",
+                desc: "22 IoT devices deployed, over 2,000 data points daily and growing, real-time temperature, weight, humidity, pressure, colony state, Varroa detection, and Asian hornet alerts. We use data to protect bees and maximize yields for Kenyan smallholders.",
                 color: "text-blue-400",
               },
             ].map((item, i) => (
@@ -1070,7 +1070,7 @@ export default function About() {
               This Is Just The Beginning
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-              988 kg of honey. 95 acres pollinated. 1,500 trees planted. 3 tons of CO₂ offset. 40
+              988 kg of honey. 95 and counting acres pollinated. 1,500 trees planted. 3 tons of CO₂ offset. 40
               partner farmers. 22 IoT devices. 2 global partnerships. Zero external funding.
               <br />
               <br />

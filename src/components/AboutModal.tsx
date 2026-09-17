@@ -85,7 +85,7 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   From 4 hives from our dad to 184 hives, 22 IoT devices, and precision pollination
-                  across 95 acres in Kenya.
+                  across 95 and counting acres in Kenya.
                 </p>
               </div>
               <Link

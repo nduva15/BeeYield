@@ -65,8 +65,8 @@ export const BLOG_POSTS: BlogPost[] = [
     stats: [
       { label: "Food Crops", value: "75%", sub: "Rely directly on pollinators" },
       { label: "Yield Uplift", value: "+18% to 38%", sub: "Observed across Makueni trials" },
-      { label: "Colonies Monitored", value: "184 Hives", sub: "Connected via IoT across 95 acres" },
-      { label: "Active Sensors", value: "22 Hubs", sub: "Real-time acoustic & microclimate telemetry" },
+      { label: "Colonies Monitored", value: "184 Hives", sub: "Connected via IoT across 95 and counting acres" },
+      { label: "Active Sensors", value: "22 Hubs", sub: "Real-time acoustic & microclimate telemetry (2,000+ daily data points)" },
     ],
     mediaGallery: [
       {
