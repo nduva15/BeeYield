@@ -16,26 +16,38 @@ CREATE TABLE IF NOT EXISTS public.flower_sources (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 2. Add description if missing (resilience)
+-- 2. Add columns if missing and relax constraints (resilience)
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'description') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'description') THEN
         ALTER TABLE public.flower_sources ADD COLUMN description TEXT;
     END IF;
     
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'name') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'name') THEN
         ALTER TABLE public.flower_sources ADD COLUMN name TEXT;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'flower_type') THEN
+        ALTER TABLE public.flower_sources ALTER COLUMN flower_type DROP NOT NULL;
     END IF;
 END $$;
 
 -- 3. Seed flower sources
 INSERT INTO public.flower_sources (name, scientific_name, bloom_start_month, bloom_end_month, nectar_potential, pollen_potential, optimal_temp_min, optimal_temp_max, description)
-VALUES 
-('Rapeseed', 'Brassica napus', 4, 6, 0.9, 0.7, 12, 25, 'High nectar value, early spring bloom.'),
-('Lavender', 'Lavandula', 6, 8, 0.8, 0.4, 18, 35, 'Excellent honey quality, heat resistant.'),
-('Acacia', 'Robinia pseudoacacia', 5, 5, 1.0, 0.2, 15, 28, 'Peak nectar flow, very short duration.'),
-('Coffee', 'Coffea', 2, 4, 0.7, 0.5, 18, 30, 'Important tropical source.')
-ON CONFLICT (id) DO NOTHING;
+SELECT 'Rapeseed', 'Brassica napus', 4, 6, 0.9, 0.7, 12, 25, 'High nectar value, early spring bloom.'
+WHERE NOT EXISTS (SELECT 1 FROM public.flower_sources WHERE name = 'Rapeseed');
+
+INSERT INTO public.flower_sources (name, scientific_name, bloom_start_month, bloom_end_month, nectar_potential, pollen_potential, optimal_temp_min, optimal_temp_max, description)
+SELECT 'Lavender', 'Lavandula', 6, 8, 0.8, 0.4, 18, 35, 'Excellent honey quality, heat resistant.'
+WHERE NOT EXISTS (SELECT 1 FROM public.flower_sources WHERE name = 'Lavender');
+
+INSERT INTO public.flower_sources (name, scientific_name, bloom_start_month, bloom_end_month, nectar_potential, pollen_potential, optimal_temp_min, optimal_temp_max, description)
+SELECT 'Acacia', 'Robinia pseudoacacia', 5, 5, 1.0, 0.2, 15, 28, 'Peak nectar flow, very short duration.'
+WHERE NOT EXISTS (SELECT 1 FROM public.flower_sources WHERE name = 'Acacia');
+
+INSERT INTO public.flower_sources (name, scientific_name, bloom_start_month, bloom_end_month, nectar_potential, pollen_potential, optimal_temp_min, optimal_temp_max, description)
+SELECT 'Coffee', 'Coffea', 2, 4, 0.7, 0.5, 18, 30, 'Important tropical source.'
+WHERE NOT EXISTS (SELECT 1 FROM public.flower_sources WHERE name = 'Coffee');
 
 -- 4. Extend infrastructure_registry for mobility/routing
 ALTER TABLE public.infrastructure_registry ADD COLUMN IF NOT EXISTS radius_km FLOAT DEFAULT 2.0;

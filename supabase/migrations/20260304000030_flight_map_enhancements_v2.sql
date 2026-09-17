@@ -16,39 +16,43 @@ CREATE TABLE IF NOT EXISTS public.flower_sources (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 2. Granular column injection for flower_sources (Fix for 42703)
+-- 2. Granular column injection for flower_sources (Fix for 42703 and 23502)
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'scientific_name') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'scientific_name') THEN
         ALTER TABLE public.flower_sources ADD COLUMN scientific_name TEXT;
     END IF;
     
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'bloom_start_month') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'bloom_start_month') THEN
         ALTER TABLE public.flower_sources ADD COLUMN bloom_start_month INTEGER DEFAULT 1;
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'bloom_end_month') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'bloom_end_month') THEN
         ALTER TABLE public.flower_sources ADD COLUMN bloom_end_month INTEGER DEFAULT 12;
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'nectar_potential') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'nectar_potential') THEN
         ALTER TABLE public.flower_sources ADD COLUMN nectar_potential FLOAT DEFAULT 0.5;
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'pollen_potential') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'pollen_potential') THEN
         ALTER TABLE public.flower_sources ADD COLUMN pollen_potential FLOAT DEFAULT 0.5;
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'optimal_temp_min') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'optimal_temp_min') THEN
         ALTER TABLE public.flower_sources ADD COLUMN optimal_temp_min FLOAT DEFAULT 15.0;
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'optimal_temp_max') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'optimal_temp_max') THEN
         ALTER TABLE public.flower_sources ADD COLUMN optimal_temp_max FLOAT DEFAULT 32.0;
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'flower_sources' AND column_name = 'description') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'description') THEN
         ALTER TABLE public.flower_sources ADD COLUMN description TEXT;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'flower_sources' AND column_name = 'flower_type') THEN
+        ALTER TABLE public.flower_sources ALTER COLUMN flower_type DROP NOT NULL;
     END IF;
 END $$;
 
@@ -87,10 +91,18 @@ NOTIFY pgrst, 'reload schema';
 DO $$
 BEGIN
     INSERT INTO public.flower_sources (name, scientific_name, bloom_start_month, bloom_end_month, nectar_potential, pollen_potential, optimal_temp_min, optimal_temp_max, description)
-    VALUES 
-    ('Rapeseed', 'Brassica napus', 4, 6, 0.9, 0.7, 12, 25, 'High nectar value, early spring bloom.'),
-    ('Lavender', 'Lavandula', 6, 8, 0.8, 0.4, 18, 35, 'Excellent honey quality, heat resistant.'),
-    ('Acacia', 'Robinia pseudoacacia', 5, 5, 1.0, 0.2, 15, 28, 'Peak nectar flow, very short duration.'),
-    ('Coffee', 'Coffea', 2, 4, 0.7, 0.5, 18, 30, 'Important tropical source.')
-    ON CONFLICT DO NOTHING;
+    SELECT 'Rapeseed', 'Brassica napus', 4, 6, 0.9, 0.7, 12, 25, 'High nectar value, early spring bloom.'
+    WHERE NOT EXISTS (SELECT 1 FROM public.flower_sources WHERE name = 'Rapeseed');
+
+    INSERT INTO public.flower_sources (name, scientific_name, bloom_start_month, bloom_end_month, nectar_potential, pollen_potential, optimal_temp_min, optimal_temp_max, description)
+    SELECT 'Lavender', 'Lavandula', 6, 8, 0.8, 0.4, 18, 35, 'Excellent honey quality, heat resistant.'
+    WHERE NOT EXISTS (SELECT 1 FROM public.flower_sources WHERE name = 'Lavender');
+
+    INSERT INTO public.flower_sources (name, scientific_name, bloom_start_month, bloom_end_month, nectar_potential, pollen_potential, optimal_temp_min, optimal_temp_max, description)
+    SELECT 'Acacia', 'Robinia pseudoacacia', 5, 5, 1.0, 0.2, 15, 28, 'Peak nectar flow, very short duration.'
+    WHERE NOT EXISTS (SELECT 1 FROM public.flower_sources WHERE name = 'Acacia');
+
+    INSERT INTO public.flower_sources (name, scientific_name, bloom_start_month, bloom_end_month, nectar_potential, pollen_potential, optimal_temp_min, optimal_temp_max, description)
+    SELECT 'Coffee', 'Coffea', 2, 4, 0.7, 0.5, 18, 30, 'Important tropical source.'
+    WHERE NOT EXISTS (SELECT 1 FROM public.flower_sources WHERE name = 'Coffee');
 END $$;
