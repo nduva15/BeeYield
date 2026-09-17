@@ -651,6 +651,17 @@ export default function Index() {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => navigate("/blogs")}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border hover:border-emerald-500/50 transition-all text-muted-foreground hover:text-foreground bg-muted hover:bg-emerald-500/10"
+              title="BeeYield Field Agronomy Blogs & Journal"
+            >
+              <BookOpen className="w-4 h-4 text-emerald-500" />
+              <span className="text-xs font-semibold">Blogs</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 font-bold leading-none">
+                4
+              </span>
+            </button>
+            <button
               onClick={() => setToolsOpen((v) => !v)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted"
               title={toolsOpen ? "Hide tools" : "Show tools"}

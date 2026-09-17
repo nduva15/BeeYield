@@ -93,6 +93,8 @@ export const BLOG_POSTS: BlogPost[] = [
 
 Pollination sits at the heart of plant reproduction, driving the production of fruits, vegetables, and seeds across every farming region in Kenya. Roughly three-quarters of the world's food crops rely on animal pollinators, bees chief among them, and Kenya's own export crops — from avocados and macadamia to coffee and mangoes — are no exception. 
 
+![Full bloom mango tree in Makueni, Kenya with dense floral panicles](/images/blog/mango-tree-full-bloom.jpg)
+
 Yet bee populations here face mounting pressure from habitat loss, pesticide exposure, shifting weather patterns, and disease, leaving many farms with unreliable and inconsistent pollination outcomes.
 
 ---
@@ -125,6 +127,8 @@ With better data on colony strength and forage conditions comes better forecasti
 ---
 
 ## The Technology Behind BeeYield
+
+![Live BeeYield IoT hive telemetry tracking active hives, internal humidity, colony health status, and foraging temperatures](/images/blog/apisense-iot-telemetry.jpg)
 
 Our end-to-end stack combines ruggedized field hardware with intelligent machine learning:
 
@@ -217,6 +221,8 @@ When adequate pollinator populations are present during bloom:
 - **Initial Fruit Retention Multiplies**: Ovaries receive multi-grain pollen loads that trigger immediate cell division.
 - **Resource Efficiency Peaks**: The heavy investments farmers make in drip fertigation, pruning, bio-stimulants, and compost are fully converted into saleable crop biomass.
 
+![Pea-sized mango fruitlets successfully setting on a panicle following thorough bee pollination in Makueni](/images/blog/mango-young-fruit-set.jpg)
+
 When pollinator density is deficient, the result is catastrophic: millions of open blossoms wither unfertilized, leaving trees with sparse, localized fruit clusters despite favorable soil nutrition and water availability.
 
 ---
@@ -259,6 +265,8 @@ Faced with declining wild bee counts, some farming systems have attempted artifi
 
 BeeYield's precision apiculture stack empowers growers and beekeepers to replace guesswork with real-time biological visibility:
 
+![Real-time BeeYield IoT telemetry tracking active flight hours, colony acoustics, and ambient bloom temperatures](/images/blog/apisense-iot-telemetry.jpg)
+
 ### 1. Granular Understanding of Pollinator Behavior
 Using non-invasive acoustic sensors and microclimate stations, our **Apisense IoT units** track exact flight curves throughout the day. Growers know precisely when foraging activity peaks (typically between 8:00 AM and 11:30 AM), how temperature and humidity influence flight range, and which corners of the orchard require additional hive placement.
 
@@ -272,6 +280,8 @@ Continuous acoustic analysis detects internal hive anomalies — including queen
 By sharing live foraging activity telemetry with orchard spray teams, farm managers establish strict spray moratoriums during active bee flight hours, completely eliminating pesticide-induced bee mortality.
 
 ---
+
+![Commercial orchard canopy producing uniform fruit distribution across scaffolds](/images/blog/mango-orchard-canopy.jpg)
 
 ## Practical Agronomic Checklist for Commercial Growers
 
@@ -347,6 +357,8 @@ When people think about growing delicious mangoes, they often picture healthy or
 
 These tiny pollinators play a vital role in the life cycle of mango trees (*Mangifera indica*) and are one of nature's most valuable partners in commercial fruit production. Without effective insect pollination, many mango flowers would never develop into the juicy, aromatic fruits enjoyed across Kenya and exported worldwide. 
 
+![Fragrant florets open in sequence along the panicle rachis, secreting nectar that draws active bee foragers](/images/blog/mango-panicles-close.jpg)
+
 Bees transfer pollen from one flower to another, enabling fertilization to take place and dramatically increasing the chances of successful fruit formation. Their daily foraging activity supports healthier orchards, improves fruit set, and contributes to bountiful, high-grade harvests.
 
 ---
@@ -379,6 +391,8 @@ Several factors dictate whether a blossom successfully transitions into a fruit:
 Bees dramatically elevate the probability that hermaphrodite flowers receive viable pollen during peak receptivity.
 
 ---
+
+![Dense blossom clusters on an Apple Mango tree in Kibwezi, showing both staminate and hermaphrodite flowers](/images/blog/mango-blossom-cluster.jpg)
 
 ## Step-by-Step: How Bees Pollinate Mango Florets
 
@@ -427,6 +441,8 @@ Managed bees also forage on surrounding indigenous trees (acacias, baobabs, and 
 
 ---
 
+![Real-time temperature and weather monitoring ensures beekeepers know when foraging conditions are prime](/images/blog/apisense-iot-telemetry.jpg)
+
 ## Synchronizing Bee Activity with the Flowering Calendar
 
 Mango anthesis follows a predictable biological rhythm:
@@ -456,6 +472,8 @@ Kenyan growers partnering with BeeYield implement simple, highly effective polli
 4. **Preserving Natural Nesting Sites**: Leave deadwood stumps and undisturbed earth banks on orchard boundaries for native solitary bees and stingless bee colonies.
 
 ---
+
+![Sequential opening of florets along the inflorescence axis during the 3-week anthesis period](/images/blog/mango-flowering-stage.jpg)
 
 ## The Interconnected Orchard Ecosystem
 
@@ -565,6 +583,8 @@ Even though mango trees (*Mangifera indica*) are capable of self-pollination, be
 
 ---
 
+![Microscopic detail of male stamen and hermaphrodite pistil structure](/images/blog/mango-inflorescence-detail.jpg)
+
 ## Mango Trees Are Monoecious: Anatomy of Floral Reproductive Organs
 
 Mango inflorescences exhibit a distinctive botanical trait: they are **monoecious**, meaning each panicle contains a mixture of two flower types:
@@ -596,8 +616,12 @@ Triggered by cool night temperatures and a temporary cessation of vegetative flu
 ### Stage 2: Inflorescence Elongation
 The terminal buds burst, rapidly elongating into large, branched pyramidal panicles ranging from 15 to 45 cm in length. Secondary and tertiary branchlets develop hundreds of tightly clustered flower buds.
 
+![Staggered opening of florets on the panicle extends the pollination window across 14 to 28 days](/images/blog/mango-panicle-anthesis.jpg)
+
 ### Stage 3: Peak Anthesis (The Pollination Window)
 Individual florets open progressively from the base of the panicle towards the apex over a **14- to 24-day period**. Peak nectar secretion occurs during sunny mornings between 8:00 AM and 11:30 AM. Stigmas remain receptive for roughly 48 to 72 hours after opening. **This is the critical window where managed bee presence is mandatory.**
+
+![Early fruit set: florets dry up while fertilized ovaries swell into green mango fruitlets](/images/blog/mango-young-fruit-set.jpg)
 
 ### Stage 4: Post-Bloom & Initial Fruit Set
 Fertilized ovaries swell into tiny green fruitlets (pinhead stage), while unfertilized florets wither and shed. Within 10 to 20 days, fruitlets reach pea-size and enter the first physiological drop phase.
@@ -668,6 +692,8 @@ To maximize fruit retention and prevent premature blossom drop, growers should i
 - Plant natural windbreaks (such as Casuarina, Grevillea, or Acacia) along orchard perimeters to reduce wind speed, preserving delicate blossom panicles and allowing bees to fly smoothly.
 
 ---
+
+![Field apiary placed strategically under acacia windbreaks adjacent to flowering mango groves in Kibwezi](/images/blog/mango-pollination-field.jpg)
 
 ## Four Actionable Strategies to Maximize Pollination Rates
 

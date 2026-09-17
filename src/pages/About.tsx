@@ -415,6 +415,20 @@ export default function About() {
                 <Users className="w-4 h-4" /> Timothy • Agatha • Carole
               </span>
             </div>
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              <Link
+                to="/blogs"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all shadow-md"
+              >
+                <BookOpen className="w-3.5 h-3.5" /> Read Field Blogs (4 Dispatches)
+              </Link>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-amber-500/30 hover:bg-amber-500/10 text-amber-300 font-semibold text-xs transition-all"
+              >
+                Launch BeeGPT AI →
+              </Link>
+            </div>
           </FadeIn>
           <FadeIn delay={500}>
             <a
