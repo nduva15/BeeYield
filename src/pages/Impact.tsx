@@ -97,7 +97,7 @@ const Impact = () => {
       doc.setFontSize(9);
       doc.setTextColor(51, 65, 85);
       const kpis = [
-        `• Monitored Hives: ${liveStats?.hive_count || "184"} Smart Hives in Active Deployment`,
+        `• Intelligent Hives: ${liveStats?.hive_count || "184"} Smart Hives in Active Deployment`,
         '• IoT Telemetry Nodes: 22 Live Nodes (Apisense & Intelligent Hives)',
         '• Land Under Pollination: 95+ Verified Acres (and counting)',
         '• Counties Served: 1 County (Makueni & Counting)',
@@ -167,7 +167,7 @@ const Impact = () => {
         {
           id: 'Batch KIB-ACAC-2026-01',
           name: '100% Pure Raw Acacia Honey',
-          details: 'Apiary: Kibwezi Base | Hives: 184 Monitored Nodes | Moisture: 17.2% (Standard <18%) | HMF: <10 mg/kg | 100% Unpasteurized & Cold-Filtered | Zero Sugar Adulteration | Verified Under-Hive Weight Telemetry',
+          details: 'Apiary: Kibwezi Base | Hives: 184 Intelligent Nodes | Moisture: 17.2% (Standard <18%) | HMF: <10 mg/kg | 100% Unpasteurized & Cold-Filtered | Zero Sugar Adulteration | Verified Under-Hive Weight Telemetry',
         },
         {
           id: 'Batch MAK-FLOR-2026-02',

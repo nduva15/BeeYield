@@ -102,7 +102,7 @@ const ESG = () => {
           `Precision Pollination: 95+ Verified Acres (and counting)`,
           `Carbon Sequestration: 3.0 Tons CO₂ Offset`,
           `Indigenous Flora Restored: 2,500+ Native Trees`,
-          `Managed Inventory: ${liveStats?.hive_count || "184"} Monitored Hives`,
+          `Managed Inventory: ${liveStats?.hive_count || "184"} Intelligent Hives`,
           `Pollinators Protected: 2.4M+ Active Bees`
         ];
 
@@ -155,7 +155,7 @@ const ESG = () => {
     { value: "95+", label: "Acres Pollinated", icon: MapPin, description: "Bio-verified coverage" },
     { value: "3t", label: "Carbon Offset", icon: TreePine, description: "CO₂ sequestered to date" },
     { value: "2,500+", label: "Trees Planted", icon: Sprout, description: "Flora restoration" },
-    { value: "184+", label: "Monitored Hives", icon: Bug, description: "Active colony inventory" },
+    { value: "184+", label: "Intelligent Hives", icon: Bug, description: "Active colony inventory" },
     { value: "2.4M+", label: "Pollinators", icon: Heart, description: "Estimated bees supported" },
   ];
 
@@ -499,7 +499,7 @@ const ESG = () => {
                 Data-Driven <br />Food Security.
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-xl">
-                In semi-arid Makueni, pollination isn't just a service—it's food security. We deploy 22 monitored hives across 95 and counting acres of smallholder avocado and mango farms to maximize fruit set and yield.
+                In semi-arid Makueni, pollination isn't just a service—it's food security. We deploy 22 intelligent hives across 95 and counting acres of smallholder avocado and mango farms to maximize fruit set and yield.
               </p>
 
               <div className="grid grid-cols-2 gap-10">

@@ -255,7 +255,7 @@ const PollinationServices = () => {
                                 <p className="text-5xl sm:text-6xl font-black text-neutral-900">184</p>
                             </div>
                             <p className="text-neutral-800 font-medium leading-relaxed relative z-10 max-w-[80%]">
-                                BeeYield manages a growing network of monitored hives in the region.
+                                BeeYield manages a growing network of intelligent hives in the region.
                             </p>
                         </div>
 

@@ -665,7 +665,7 @@ const Traceability = () => {
                         Today, we've grown to <span className="text-[#1B9157] font-black">184 hives across a thriving 5-acre apiary</span>. Our commitment remains radical: we only harvest 50% of the honey our bees produce.
                       </p>
                       <p className="text-neutral-600 font-normal">
-                        Timothy, along with his sisters Agatha and Carole, has turned a modest family venture into a modern beekeeping operation — using sensor-monitored hives to ensure transparency, protect the African honey bee, and restore biodiversity in their native Kenya.
+                        Timothy, along with his sisters Agatha and Carole, has turned a modest family venture into a modern beekeeping operation — using intelligent hives to ensure transparency, protect the African honey bee, and restore biodiversity in their native Kenya.
                       </p>
                     </div>
 

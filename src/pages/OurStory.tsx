@@ -261,7 +261,7 @@ const OurStory = () => {
               Our Story <span className="text-beeyield-green">in Photos</span>
             </h2>
             <p className="text-neutral-400 text-base">
-              4 curated 3-photo slideshows tracking our journey from early in-hive hardware experiments in Kibwezi to 22 IoT-monitored hive stations across Kenya.
+              4 curated 3-photo slideshows tracking our journey from early in-hive hardware experiments in Kibwezi to 22 intelligent hive stations across Kenya.
             </p>
           </div>
 
@@ -459,7 +459,7 @@ const OurStory = () => {
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">95 and counting acres</strong> of farmland with <strong className="text-foreground">22 IoT-monitored hives</strong>, proving the value of managed precision pollination services in Kenya.
+                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">95 and counting acres</strong> of farmland with <strong className="text-foreground">22 intelligent hives</strong>, proving the value of managed precision pollination services in Kenya.
                 </p>
                 <p>
                   Today, BeeYield uses continuous under-hive weight telemetry, acoustic monitoring, and climate tracking to deliver transparent pollination results with <strong className="text-foreground">3 tons</strong> of carbon offset.

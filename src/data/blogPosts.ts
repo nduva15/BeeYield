@@ -65,7 +65,7 @@ export const BLOG_POSTS: BlogPost[] = [
     stats: [
       { label: "Food Crops", value: "75%", sub: "Rely directly on pollinators" },
       { label: "Yield Uplift", value: "+9% to 18%", sub: "Observed across Makueni trials" },
-      { label: "Colonies Monitored", value: "184 Hives", sub: "Connected via IoT across 95 and counting acres" },
+      { label: "Intelligent Hives", value: "184 Hives", sub: "Connected via IoT across 95 and counting acres" },
       { label: "Active Sensors", value: "22 Hubs", sub: "Real-time acoustic & microclimate telemetry (2,000+ daily data points)" },
     ],
     mediaGallery: [
@@ -670,7 +670,7 @@ Hand-pollination involves using fine camel-hair brushes or cotton swabs to trans
 - **For Plant Breeders**: In breeding stations creating new crosses, hand-pollination provides complete genetic control.
 - **For Commercial Orchards**: With 10,000 to 50,000 florets per mature tree, hand-pollination would require dozens of labor hours per tree, making it commercially impossible and cost-prohibitive.
 
-**The Scalable Solution**: Managed apiculture with **2 to 4 IoT-monitored colonies per acre** provides biological coverage of every single panicle floret at a fraction of the cost.
+**The Scalable Solution**: Managed apiculture with **2 to 4 intelligent hives per acre** provides biological coverage of every single panicle floret at a fraction of the cost.
 
 ---
 

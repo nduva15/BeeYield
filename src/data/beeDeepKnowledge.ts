@@ -30,7 +30,7 @@ export const beeDeepKnowledge: Record<string, any> = {
     },
     environmentalImpact: {
         mortalityTrends: {
-            status2026: "Global average loss remains at 60%, but BeeYield-monitored colonies report only 12-15% loss.",
+            status2026: "Global average loss remains at 60%, but BeeYield intelligent hives report only 12-15% loss.",
             prevention: "Advanced local climate alerts and early-warning pesticide detection."
         },
         urbanBeekeeping: {

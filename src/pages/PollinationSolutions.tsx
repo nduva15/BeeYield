@@ -363,7 +363,7 @@ const PollinationSolutions = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Monitored Hives</span>
+                <span className="font-bold text-lg">Intelligent Hives</span>
               </div>
             </div>
           </div>
@@ -449,7 +449,7 @@ const PollinationSolutions = () => {
               <div className="w-px h-8 bg-primary/20 hidden sm:block"></div>
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center"><Activity className="h-4 w-4 text-primary" /></div>
-                <span className="font-bold text-base text-foreground/80">Monitored Hives</span>
+                <span className="font-bold text-base text-foreground/80">Intelligent Hives</span>
               </div>
             </div>
           </div>
@@ -516,7 +516,7 @@ const PollinationSolutions = () => {
               <CardContent className="p-8">
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"><Globe className="h-8 w-8 text-primary" /></div>
                 <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">Goal 1</p>
-                <h3 className="text-2xl font-bold mb-4 text-foreground">Monitored Hives Network</h3>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Intelligent Hives Network</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 2M hives</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">A network of sensor-equipped hives across Makueni and Kitui. Beekeepers get real-time colony health and pollination data.</p>
               </CardContent>
@@ -634,7 +634,7 @@ const PollinationSolutions = () => {
                   {supportType === "monthly" && <span className="text-muted-foreground">/mo</span>}
                 </div>
                 <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Partner with a monitored hive</li>
+                  <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Partner with an intelligent hive</li>
                   <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Access to webinars &amp; events</li>
                   <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Exclusive network insights</li>
                 </ul>

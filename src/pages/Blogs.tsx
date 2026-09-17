@@ -572,7 +572,7 @@ export default function BlogsPage() {
                 Ready to Maximize Fruit Set on Your Orchard?
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Whether you cultivate Apple Mangoes in Makueni, Hass Avocados in Murang'a, or Macadamia in Embu, our IoT-monitored precision pollination teams deliver verified yield improvements.
+                Whether you cultivate Apple Mangoes in Makueni, Hass Avocados in Murang'a, or Macadamia in Embu, our intelligent hive precision pollination teams deliver verified yield improvements.
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-4">

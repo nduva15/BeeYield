@@ -10,7 +10,7 @@ export const BEEYIELD_TRACEABILITY_STORY = {
   apiaryFootprint: "5-acre apiary",
   treesPlanted: "2,500+",
   conservationFocus:
-    "BeeYield pairs ethical harvesting with biodiversity restoration, tree planting, and monitored hive care so every harvest protects the colony and the landscape around it.",
+    "BeeYield pairs ethical harvesting with biodiversity restoration, tree planting, and intelligent hive care so every harvest protects the colony and the landscape around it.",
   fiftyFifty:
     "We follow a 50/50 harvest journey: a documented portion is harvested for people and an equal reserve is left in the hive to sustain the bees through the season.",
   esgCommitment:
