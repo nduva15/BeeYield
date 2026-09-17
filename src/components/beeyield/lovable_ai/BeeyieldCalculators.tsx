@@ -14,7 +14,7 @@ const TABS = [
   { key: "quiz", label: "Quizzes & decisions", Icon: HelpCircle },
 ];
 
-export default function BeeyieldCalculators({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BeeyieldCalculators({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [tab, setTab] = useState("feed");
 
@@ -27,32 +27,53 @@ export default function BeeyieldCalculators({ isOpen, onClose }: { isOpen: boole
   };
 
   if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Calculator className="w-6 h-6 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Beeyield Calculators</h1>
-              <p className="text-xs text-muted-foreground">Quick numbers for feeding, equipment sizing, ROI & beekeeper decisions</p>
-            </div>
+
+  const content = (
+    <div className="w-full space-y-4">
+      <div className="flex items-center justify-between pb-3 border-b border-border/40">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey shrink-0">
+            <Calculator className="w-5 h-5" />
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          <div>
+            <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">Beeyield <span className="text-honey">Calculators</span></h2>
+            <p className="text-xs text-muted-foreground">Quick numbers for feeding, equipment sizing, ROI & beekeeper decisions</p>
+          </div>
         </div>
+        {!embedded && (
+          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted" title="Close">
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
 
-        <div className="flex flex-wrap gap-2 mb-4">
-          {TABS.map(({ key, label, Icon }) => (
-            <button key={key} onClick={() => setTab(key)} className={`px-3 py-2 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition ${tab === key ? "bg-honey text-honey-foreground border-honey" : "border-border text-muted-foreground hover:border-primary/50"}`}>
-              <Icon className="w-3.5 h-3.5" />{label}
-            </button>
-          ))}
-        </div>
+      <div className="flex flex-wrap gap-2">
+        {TABS.map(({ key, label, Icon }) => (
+          <button key={key} onClick={() => setTab(key)} className={`px-3 py-2 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition ${tab === key ? "bg-honey text-honey-foreground border-honey shadow-sm" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}>
+            <Icon className="w-3.5 h-3.5" />{label}
+          </button>
+        ))}
+      </div>
 
-        {tab === "feed" && <FeedingCalcs onSave={saveRun} />}
-        {tab === "equip" && <EquipCalcs onSave={saveRun} />}
-        {tab === "econ" && <EconCalcs onSave={saveRun} />}
-        {tab === "quiz" && <QuizDeck />}
+      {tab === "feed" && <FeedingCalcs onSave={saveRun} />}
+      {tab === "equip" && <EquipCalcs onSave={saveRun} />}
+      {tab === "econ" && <EconCalcs onSave={saveRun} />}
+      {tab === "quiz" && <QuizDeck />}
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="w-full max-w-full space-y-4">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="bg-card border border-border/60 rounded-2xl w-full max-w-5xl shadow-2xl p-4 sm:p-6 overflow-y-auto max-h-[90vh] my-auto">
+        {content}
       </div>
     </div>
   );

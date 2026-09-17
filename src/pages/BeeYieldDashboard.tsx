@@ -363,6 +363,14 @@ const BeeYieldDashboard: React.FC = () => {
         );
     };
 
+        const renderEmbedded = (component: React.ReactNode) => (
+        <BeeYieldPageShell className="p-3 sm:p-4 lg:p-6 space-y-6 pb-20 w-full">
+            <div className="max-w-7xl mx-auto w-full">
+                {component}
+            </div>
+        </BeeYieldPageShell>
+    );
+
     const renderBaseContent = () => {
         switch (activeTab) {
             case 'home': return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
@@ -405,15 +413,15 @@ const BeeYieldDashboard: React.FC = () => {
             case 'bloom-phenology': return <BloomPhenologyEmbed isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'flight-mapping-tactical':
             case 'flight-tracker': return <FlightTrackerEmbed isOpen={true} onClose={() => handleTabChange('home')} />;
-            case 'bee-diseases': return <BeeDiseasesPage isOpen={true} onClose={() => handleTabChange('home')} />;
-            case 'bee-gallery': return <BeeGallery isOpen={true} onClose={() => handleTabChange('home')} />;
-            case 'bee-species-edit': return <BeeSpeciesPage isOpen={true} onClose={() => handleTabChange('home')} />;
-            case 'beeyield-calculators': return <BeeyieldCalculators isOpen={true} onClose={() => handleTabChange('home')} />;
-            case 'varroa-simulator': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'bee-diseases': return renderEmbedded(<BeeDiseasesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'bee-gallery': return renderEmbedded(<BeeGallery isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'bee-species-edit': return renderEmbedded(<BeeSpeciesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'beeyield-calculators': return renderEmbedded(<BeeyieldCalculators isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'varroa-simulator': return renderEmbedded(<VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'dataset-import': return <DatasetImport isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'feeding-schedule': return <FeedingSchedule isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'apiary-sizing': return <ApiarySizing isOpen={true} onClose={() => handleTabChange('home')} />;
-            case 'yield-projection': return <YieldProjection isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'yield-projection': return renderEmbedded(<YieldProjection isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'orchard-mapper': return <OrchardMapper onTabChange={handleTabChange} />;
             case 'master-map': return <MasterMapView />;
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
@@ -421,7 +429,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'precision-drilldown': return <PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} />;
             case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
             case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
-            case 'sensor-alerts': return <AlertsPage isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'sensor-alerts': return renderEmbedded(<AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'hive-health': return (
                 <BeeYieldPageShell className="p-4 lg:p-6 space-y-6 pb-20">
                     <div className="max-w-7xl mx-auto">
@@ -437,7 +445,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'harvests': return <HarvestsView onTabChange={handleTabChange} />;
             case 'flight-map': return <FlightMapView />;
 
-            case 'varroa': return <VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'varroa': return renderEmbedded(<VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} embedded={true} />;
             case 'acoustic-spectral': return <AcousticSpectralView onTabChange={handleTabChange} embedded={true} />;
             case 'sound-analysis':
@@ -451,7 +459,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'online':
             case 'bluetooth':
             case 'usb':
-            case 'measurement-tools': return <MeasurementDataTools isOpen={true} onClose={() => handleTabChange('home')} />;
+            case 'measurement-tools': return renderEmbedded(<MeasurementDataTools isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'notes': return <MyNotesView onTabChange={handleTabChange} />;
             case 'requests': return <MyRequestsView onTabChange={handleTabChange} />;
             case 'task': return <MyTaskView onTabChange={handleTabChange} />;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   X, Cpu, Usb, Bluetooth, Wifi, Plus, Trash2, ScanLine, ArrowLeft, ArrowRight, Check,
   Loader2, Thermometer, Droplets, Scale, BatteryCharging, MapPin, Boxes, Terminal,
@@ -32,13 +32,12 @@ const yearColor = (y: number) => QUEEN_YEAR_COLORS[y % 5] ?? "#d8d3c8";
 /* ------------------------------------------------------------------ QR scanner */
 
 function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; onCancel: () => void }) {
-  const reactId = useId();
-  const elId = `qr-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const elId = useRef(`qr-${Math.random().toString(36).slice(2)}`);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    const scanner = new Html5Qrcode(elId);
+    const scanner = new Html5Qrcode(elId.current);
     scannerRef.current = scanner;
     scanner
       .start(
@@ -54,11 +53,11 @@ function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; o
     return () => {
       if (scanner.isScanning) void scanner.stop().catch(() => undefined);
     };
-  }, [elId, onResult]);
+  }, [onResult]);
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl overflow-hidden border-2 border-honey/60 bg-black/80" id={elId} />
+      <div className="rounded-xl overflow-hidden border-2 border-honey/60 bg-black/80" id={elId.current} />
       {err && (
         <p className="text-xs text-destructive">
           {err} — enter the serial manually below instead.
@@ -505,7 +504,7 @@ function BluetoothPanel({ onPaired }: { onPaired: (name: string, id: string) => 
 
 type Tab = "devices" | "usb" | "bluetooth" | "online";
 
-export default function MeasurementDataTools({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function MeasurementDataTools({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("devices");
   const [apiaries, setApiaries] = useState<Apiary[]>([]);
@@ -538,7 +537,7 @@ export default function MeasurementDataTools({ isOpen, onClose }: { isOpen: bool
   const ingestSerialLine = async (line: string) => {
     // Accept "T=24.5;H=61;W=38.2;B=88" or JSON payloads from the hub.
     if (!user) return;
-    let temp: number | null, hum: number | null, wt: number | null, bat: number | null;
+    let temp: number | null = null, hum: number | null = null, wt: number | null = null, bat: number | null = null;
     try {
       const j = JSON.parse(line);
       temp = j.t ?? j.temperature ?? null; hum = j.h ?? j.humidity ?? null;
@@ -592,21 +591,22 @@ export default function MeasurementDataTools({ isOpen, onClose }: { isOpen: bool
     { id: "online", label: "Online", icon: Wifi },
   ];
 
-  return (
-    <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-honey bg-honey/15 rounded-full px-3 py-1 mb-2">
-              <Wifi className="w-3 h-3" /> Measurement Data Tools
-            </span>
-            <h2 className="font-display text-3xl font-bold">Hive <span className="text-honey">Monitoring</span></h2>
-            <p className="text-sm text-muted-foreground">Remote telemetry and real-time environmental metrics for your colonies.</p>
-          </div>
+  const content = (
+    <div className="w-full space-y-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-honey bg-honey/15 rounded-full px-3 py-1 mb-2">
+            <Wifi className="w-3 h-3" /> Measurement Data Tools
+          </span>
+          <h2 className="font-display text-2xl sm:text-3xl font-bold">Hive <span className="text-honey">Monitoring</span></h2>
+          <p className="text-sm text-muted-foreground">Remote telemetry and real-time environmental metrics for your colonies.</p>
+        </div>
+        {!embedded && (
           <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted" title="Close">
             <X className="w-4 h-4" />
           </button>
-        </div>
+        )}
+      </div>
 
         {!user ? (
           <div className="rounded-xl border border-border p-10 text-center text-sm text-muted-foreground">
@@ -787,6 +787,21 @@ export default function MeasurementDataTools({ isOpen, onClose }: { isOpen: bool
             )}
           </>
         )}
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="w-full max-w-full space-y-6">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="bg-card border border-border/60 rounded-2xl w-full max-w-6xl shadow-2xl p-4 sm:p-6 overflow-y-auto max-h-[90vh] my-auto">
+        {content}
       </div>
     </div>
   );
