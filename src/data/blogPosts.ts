@@ -734,3 +734,20 @@ By understanding floral biology, respecting pollinator behavior, and protecting 
     `,
   },
 ];
+
+// Backward-compatibility export for cmsService and legacy routes
+export const blogs = BLOG_POSTS.map((post, idx) => ({
+  id: post.id || idx + 1,
+  slug: post.slug,
+  title: post.title,
+  excerpt: post.excerpt,
+  content: post.content,
+  featured_image: post.coverImage,
+  category: post.category,
+  tags: post.tags,
+  author_name: post.author.name,
+  read_time_minutes: parseInt(post.readTime) || 7,
+  published_at: post.date,
+  date: post.displayDate,
+}));
+
