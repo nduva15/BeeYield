@@ -70,7 +70,7 @@ const CropsWePollinate = () => {
                   <Link to="/contact">Get a Free Consultation</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="rounded-full border-2 border-neutral-200 text-neutral-900 hover:bg-[#F9F7F2] font-bold h-14 px-8" asChild>
-                  <Link to="#crops">Explore Crops</Link>
+                  <Link to="/media">Explore Crops</Link>
                 </Button>
               </div>
             </div>
