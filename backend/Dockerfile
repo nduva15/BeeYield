@@ -34,12 +34,14 @@ RUN apt-get update && \
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 
-# Ensure patched runtime libraries, then purge build/packaging tools and stale base-image dist-info
-# This completely eliminates setuptools CVEs (e.g. CVE-2025-47273) and wheel CVEs from the runtime image
+# Ensure patched runtime libraries, then purge build and packaging tools (pip, setuptools, wheel)
+# This completely eliminates all pip CVEs (#341, #342, #343, #344, #345, #392), setuptools CVEs, and wheel CVEs from the runtime image
 RUN pip install --upgrade --no-cache-dir "msgpack>=1.1.0" && \
-    pip uninstall -y setuptools wheel && \
-    rm -rf /usr/local/lib/python3.11/site-packages/setuptools* \
+    pip uninstall -y pip setuptools wheel && \
+    rm -rf /usr/local/lib/python3.11/site-packages/pip* \
+           /usr/local/lib/python3.11/site-packages/setuptools* \
            /usr/local/lib/python3.11/site-packages/wheel* \
+           /usr/local/bin/pip* \
            /root/.cache
 
 # Copy application code
