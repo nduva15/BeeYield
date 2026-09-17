@@ -759,7 +759,7 @@ Commitment Page (beeyield.com/commitment):
 - Title: "Our Commitment To The Future"
 - 8 UN Sustainable Development Goals with measurable impact:
   1. SDG 1 - No Poverty: 50+ farmers trained on bee disease prevention.
-  2. SDG 2 - Zero Hunger: 95 and counting acres pollinated, increasing crop yields by 9–18%.
+  2. SDG 2 - Zero Hunger: 95 and counting acres pollinated across 1 county (Makueni & counting) for 9+ crops & counting, increasing crop yields by 9–18%.
   3. SDG 6 - Clean Water: 2,500+ trees restoring biodiversity.
   4. SDG 7 - Clean Energy: Solar-powered hive monitoring sensors in development.
   5. SDG 8 - Decent Work: Creating sustainable livelihoods for rural youth.
