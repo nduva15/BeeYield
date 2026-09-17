@@ -38,7 +38,7 @@ BEGIN
         first_name = 'Timothy',
         last_name = 'Nduva',
         email = v_email,
-        role = 'farmer'
+        role = 'super_admin'
     WHERE id = v_user_id;
 
     -- 4. Link Apiaries to Farmer
