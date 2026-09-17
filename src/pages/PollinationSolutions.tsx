@@ -555,7 +555,7 @@ const PollinationSolutions = () => {
                 <h3 className="text-3xl font-bold mb-4 text-foreground">Improving Mango Pollination</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">In partnership with local mango growers in Makueni County, BeeYield is deploying hive sensors to track colony conditions during flowering.</p>
                 <ul className="space-y-2 text-sm">
-                  <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> 40% increase in mango yields observed</li>
+                  <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> 9–18% increase in mango yields observed</li>
                   <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> Training 50+ local beekeepers</li>
                 </ul>
               </div>

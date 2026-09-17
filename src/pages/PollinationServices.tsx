@@ -67,7 +67,7 @@ const PollinationServices = () => {
         <BeeYieldPageShell className="bg-background">
             <SEO 
                 title="Precision Pollination Services & Bee Intelligence"
-                description="BeeYield provides world-class precision pollination services and IoT-enabled beekeeping in Kenya. Increase crop yield by up to 35% with verifiable data."
+                description="BeeYield provides world-class precision pollination services and IoT-enabled beekeeping in Kenya. Increase crop yield by 9–18% with verifiable data."
                 keywords="precision pollination Kenya, crop yield improvement, Kibwezi bees, Makueni pollination, sustainable beekeeping Africa, IoT agriculture"
                 url="/pollination-services"
                 image="/og-image.png"
@@ -166,7 +166,7 @@ const PollinationServices = () => {
                             {/* Premium Stats Row */}
                             <div className="flex flex-wrap gap-8 pt-8 border-t border-neutral-100">
                                 {[
-                                    { label: "Yield Increase", value: "35%", color: "text-[#1B9157]" },
+                                    { label: "Yield Increase", value: "9–18%", color: "text-[#1B9157]" },
                                     { label: "Managed Hives", value: "184+", color: "text-[#F4D03F]" },
                                     { label: "Uptime", value: "99.9%", color: "text-[#1B9157]" }
                                 ].map((stat, i) => (
@@ -416,7 +416,7 @@ const PollinationServices = () => {
                                     <tr>
                                         <td className="p-6 font-bold border-b border-border">Yield Impact</td>
                                         <td className="p-6 border-b border-border text-muted-foreground">Variable (weather dependent)</td>
-                                        <td className="p-6 border-b border-border font-black text-[#F4D03F]">Up to 35% Average Increase*</td>
+                                        <td className="p-6 border-b border-border font-black text-[#F4D03F]">9–18% Average Increase*</td>
                                     </tr>
                                     <tr className="bg-amber-50/30">
                                         <td className="p-6 font-bold">Best For</td>
@@ -662,7 +662,7 @@ const PollinationServices = () => {
                                     What results can farmers expect with BeeYield?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    On average, our partners have seen up to a <strong className="font-bold text-foreground">35% increase in crop yield</strong>. More importantly, we provide <strong className="font-bold text-foreground">300% more colony data</strong>, giving you verifiable proof of pollination activity. This leads to higher quality fruit, better seed set, and more consistent harvests across your entire field. Results may vary depending on crop type, climate, and conditions.
+                                    On average, our partners have seen a <strong className="font-bold text-foreground">9–18% increase in crop yield</strong>. More importantly, we provide <strong className="font-bold text-foreground">300% more colony data</strong>, giving you verifiable proof of pollination activity. This leads to higher quality fruit, better seed set, and more consistent harvests across your entire field. Results may vary depending on crop type, climate, and conditions.
                                 </AccordionContent>
                             </AccordionItem>
 
@@ -706,7 +706,7 @@ const PollinationServices = () => {
                                 "name": "What results can farmers expect with BeeYield?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Results vary by crop and conditions. Some partners have seen up to a 35% increase in yield. We also provide verifiable field and hive data so you can quantify pollination activity instead of relying on estimates."
+                                    "text": "Results vary by crop and conditions. Partner farms observe a 9–18% increase in crop yield. We also provide verifiable field and hive data so you can quantify pollination activity instead of relying on estimates."
                                 }
                             },
                             {

@@ -73,7 +73,7 @@ const Media = () => {
         "Synchronized floral anthesis across north and south-facing canopy quadrants",
       ],
       agronomicImpact:
-        "Ensures upper branch blooms contribute equally to harvest tonnage rather than drying out unfertilized, raising total orchard packout by up to 35%.",
+        "Ensures upper branch blooms contribute equally to harvest tonnage rather than drying out unfertilized, raising total orchard packout by 9–18%.",
     },
     {
       id: "mango-full-tree",

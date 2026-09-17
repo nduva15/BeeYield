@@ -15,7 +15,7 @@ export const beeDeepKnowledge: Record<string, any> = {
         },
         pollinationServices: {
             forecast2026: "Global market valued at USD 2.73 Billion; critical shortage of wild pollinators drives demand.",
-            beeyieldRole: "BeeYield's Precision Pollination™ service utilizes IoT nodes to ensure optimal bee density per acre, increasing crop yields by up to 25% compared to traditional methods."
+            beeyieldRole: "BeeYield's Precision Pollination™ service utilizes IoT nodes to ensure optimal bee density per acre, increasing crop yields by 9–18% compared to traditional methods."
         }
     },
     iotTechnology: {

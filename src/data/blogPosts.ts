@@ -64,9 +64,9 @@ export const BLOG_POSTS: BlogPost[] = [
     author: TIMOTHY_AUTHOR,
     stats: [
       { label: "Food Crops", value: "75%", sub: "Rely directly on pollinators" },
-      { label: "Yield Uplift", value: "+18% to 38%", sub: "Observed across Makueni trials" },
-      { label: "Colonies Monitored", value: "184 Hives", sub: "Connected via IoT across 95 acres" },
-      { label: "Active Sensors", value: "22 Hubs", sub: "Real-time acoustic & microclimate telemetry" },
+      { label: "Yield Uplift", value: "+9% to 18%", sub: "Observed across Makueni trials" },
+      { label: "Colonies Monitored", value: "184 Hives", sub: "Connected via IoT across 95 and counting acres" },
+      { label: "Active Sensors", value: "22 Hubs", sub: "Real-time acoustic & microclimate telemetry (2,000+ daily data points)" },
     ],
     mediaGallery: [
       {
@@ -492,7 +492,7 @@ Successful mango cultivation requires harmony between multiple agronomic practic
 - Less than **1 in 500** mango florets will ultimately mature into a harvestable fruit.
 - A single worker honey bee can visit up to **500 flowers** on one foraging expedition.
 - Stingless bees store mango nectar in unique cerumen pots inside tree trunks, producing a rare medicinal honey prized in Makueni.
-- Proper bee pollination can boost overall orchard harvest weight by **over 35%**.
+- Proper bee pollination can boost overall orchard harvest weight by **9–18%**.
 
 ---
 

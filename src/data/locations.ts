@@ -19,7 +19,7 @@ export const locations: LocationData[] = [
         crops: ['Mango', 'Sisal', 'Maize', 'Beans'],
         stats: [
             { label: 'Hives in Region', value: '450+' },
-            { label: 'Avg Yield Increase', value: '38%' },
+            { label: 'Avg Yield Increase', value: '9–18%' },
             { label: 'Managed Acres', value: '1,200' }
         ],
         heroImage: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=1920'
@@ -33,7 +33,7 @@ export const locations: LocationData[] = [
         crops: ['Macadamia', 'Coffee', 'Mango', 'Sunflower'],
         stats: [
             { label: 'Beekeepers Trained', value: '250+' },
-            { label: 'Avg Yield Increase', value: '35%' },
+            { label: 'Avg Yield Increase', value: '9–18%' },
             { label: 'Water Points built', value: '12' }
         ],
         heroImage: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=1920'
@@ -46,7 +46,7 @@ export const locations: LocationData[] = [
         address: 'Embu Town Center, Embu County, Kenya',
         crops: ['Macadamia', 'Coffee', 'Tea', 'Dairy'],
         stats: [
-            { label: 'Yield Increase', value: '42%' },
+            { label: 'Yield Increase', value: '9–18%' },
             { label: 'Hives Placed', value: '300+' },
             { label: 'Local Partners', value: '15' }
         ],

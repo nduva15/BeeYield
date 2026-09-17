@@ -434,12 +434,12 @@ const ESG = () => {
                   Farmer Prosperity & Women-Led Innovation
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Founded in Kibwezi by siblings Timothy, Agatha, and Carole Nduva, BeeYield champions inclusive technology. With 66% women leadership in founding engineering, we empower smallholder mango and avocado growers with precision pollination that increases crop yields up to 35%.
+                  Founded in Kibwezi by siblings Timothy, Agatha, and Carole Nduva, BeeYield champions inclusive technology. With 66% women leadership in founding engineering, we empower smallholder mango and avocado growers with precision pollination that increases crop yields by 9–18%.
                 </p>
                 <div className="grid grid-cols-2 gap-6 pt-4 border-t border-neutral-200">
                   <div>
-                    <span className="text-3xl font-black text-amber-600">45</span>
-                    <p className="text-xs font-semibold text-neutral-500 mt-1">Acres Pollinated</p>
+                    <span className="text-3xl font-black text-amber-600">95+</span>
+                    <p className="text-xs font-semibold text-neutral-500 mt-1">Acres Pollinated (and counting)</p>
                   </div>
                   <div>
                     <span className="text-3xl font-black text-amber-600">66%</span>
@@ -504,8 +504,8 @@ const ESG = () => {
 
               <div className="grid grid-cols-2 gap-10">
                 <div className="space-y-2">
-                  <p className="text-4xl font-bold text-beeyield-green">45</p>
-                  <p className="text-sm font-semibold text-muted-foreground">Acres supported</p>
+                  <p className="text-4xl font-bold text-beeyield-green">95+</p>
+                  <p className="text-sm font-semibold text-muted-foreground">Acres supported (and counting)</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-4xl font-bold text-beeyield-green">100%</p>
