@@ -772,7 +772,7 @@ export default function About() {
               Our Pollination Journey
             </h2>
             <p className="text-center text-muted-foreground max-w-xl mx-auto mb-12">
-              From traditional hive-moving to IoT-monitored precision pollination.
+              From traditional hive-moving to intelligent hive precision pollination.
             </p>
           </FadeIn>
 
