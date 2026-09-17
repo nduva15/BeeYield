@@ -25,7 +25,7 @@ const EMPTY: Omit<Disease, "id" | "is_default"> = {
   symptoms: [], treatments: [], prevention: "", affected_castes: "", notes: "",
 };
 
-export default function BeeDiseasesPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [rows, setRows] = useState<Disease[]>([]);
   const [loading, setLoading] = useState(false);
@@ -118,26 +118,30 @@ export default function BeeDiseasesPage({ isOpen, onClose }: { isOpen: boolean; 
   };
 
   if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="w-6 h-6 text-destructive" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-foreground">Bee Diseases (Editable)</h1>
-              <p className="text-xs text-muted-foreground">{rows.length} diseases · CRUD + CSV · per-device + global defaults</p>
-            </div>
+
+  const content = (
+    <div className="w-full space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/40">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive shrink-0">
+            <AlertTriangle className="w-5 h-5" />
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={exportCSV} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5"><Download className="w-3.5 h-3.5" />Export</button>
-            <label className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 cursor-pointer"><Upload className="w-3.5 h-3.5" />Import
-              <input type="file" accept=".csv" className="hidden" onChange={(e) => e.target.files?.[0] && importCSV(e.target.files[0])} />
-            </label>
-            <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />New</button>
-            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          <div>
+            <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">Bee Diseases (Editable)</h2>
+            <p className="text-xs text-muted-foreground">{rows.length} diseases · CRUD + CSV · per-device + global defaults</p>
           </div>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button onClick={exportCSV} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:bg-muted transition-colors"><Download className="w-3.5 h-3.5" />Export</button>
+          <label className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 cursor-pointer hover:bg-muted transition-colors"><Upload className="w-3.5 h-3.5" />Import
+            <input type="file" accept=".csv" className="hidden" onChange={(e) => e.target.files?.[0] && importCSV(e.target.files[0])} />
+          </label>
+          <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:opacity-90 transition-opacity"><Plus className="w-3.5 h-3.5" />New</button>
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors"><X className="w-4 h-4" /></button>
+          )}
+        </div>
+      </div>
 
         <div className="space-y-2 mb-4">
           <div className="relative">
@@ -218,6 +222,21 @@ export default function BeeDiseasesPage({ isOpen, onClose }: { isOpen: boolean; 
         <div className="mt-4 p-3 rounded-lg border border-border bg-muted/30 text-xs text-muted-foreground">
           <b>CSV format:</b> name, pathogen, type, severity, symptoms, treatments, prevention, affected_castes, notes — symptoms/treatments use pipe `|` separator.
         </div>
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="w-full max-w-full space-y-4">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="bg-card border border-border/60 rounded-2xl w-full max-w-6xl shadow-2xl p-4 sm:p-6 overflow-y-auto max-h-[90vh] my-auto">
+        {content}
       </div>
     </div>
   );

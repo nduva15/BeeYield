@@ -504,7 +504,7 @@ function BluetoothPanel({ onPaired }: { onPaired: (name: string, id: string) => 
 
 type Tab = "devices" | "usb" | "bluetooth" | "online";
 
-export default function MeasurementDataTools({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function MeasurementDataTools({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("devices");
   const [apiaries, setApiaries] = useState<Apiary[]>([]);
@@ -591,21 +591,22 @@ export default function MeasurementDataTools({ isOpen, onClose }: { isOpen: bool
     { id: "online", label: "Online", icon: Wifi },
   ];
 
-  return (
-    <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-honey bg-honey/15 rounded-full px-3 py-1 mb-2">
-              <Wifi className="w-3 h-3" /> Measurement Data Tools
-            </span>
-            <h2 className="font-display text-3xl font-bold">Hive <span className="text-honey">Monitoring</span></h2>
-            <p className="text-sm text-muted-foreground">Remote telemetry and real-time environmental metrics for your colonies.</p>
-          </div>
+  const content = (
+    <div className="w-full space-y-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-honey bg-honey/15 rounded-full px-3 py-1 mb-2">
+            <Wifi className="w-3 h-3" /> Measurement Data Tools
+          </span>
+          <h2 className="font-display text-2xl sm:text-3xl font-bold">Hive <span className="text-honey">Monitoring</span></h2>
+          <p className="text-sm text-muted-foreground">Remote telemetry and real-time environmental metrics for your colonies.</p>
+        </div>
+        {!embedded && (
           <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted" title="Close">
             <X className="w-4 h-4" />
           </button>
-        </div>
+        )}
+      </div>
 
         {!user ? (
           <div className="rounded-xl border border-border p-10 text-center text-sm text-muted-foreground">
@@ -786,6 +787,21 @@ export default function MeasurementDataTools({ isOpen, onClose }: { isOpen: bool
             )}
           </>
         )}
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="w-full max-w-full space-y-6">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="bg-card border border-border/60 rounded-2xl w-full max-w-6xl shadow-2xl p-4 sm:p-6 overflow-y-auto max-h-[90vh] my-auto">
+        {content}
       </div>
     </div>
   );
