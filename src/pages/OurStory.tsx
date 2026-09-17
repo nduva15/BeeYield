@@ -138,6 +138,18 @@ const OurStory = () => {
                 <p>
                   BeeYield was built together with Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>. Combining software engineering, product architecture, and IoT research, the siblings transformed a small family apiary into a precision pollination engine.
                 </p>
+                {/* Founders Avatars */}
+                <div className="pt-2 flex items-center gap-4">
+                  <div className="flex -space-x-3">
+                    <img src="/images/team/timothy-nduva.jpg" alt="Timothy Nduva" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" title="Timothy Nduva - CEO & Co-Founder" />
+                    <img src="/images/team/agatha-nduva.jpg" alt="Agatha Nduva" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" title="Agatha Nduva - CTO & Co-Founder" />
+                    <img src="/images/team/carole-nduva.jpg" alt="Carole Nduva" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" title="Carole Nduva - COO & Co-Founder" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">Timothy, Agatha & Carole Nduva</p>
+                    <p className="text-[10px] text-muted-foreground">The Three Sibling Co-Founders</p>
+                  </div>
+                </div>
                 <p>
                   What started with 4 hives on half an acre has grown into 184+ hives, 22 IoT devices deployed, and 95 and counting acres precision-pollinated across Kenya.
                 </p>

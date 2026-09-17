@@ -62,7 +62,7 @@ const HeroSection = () => {
     <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-[#FFF9F0]">
       <SEO 
         title="Premium Pure Raw Honey | Traceable & Sustainable Origin"
-        description="Experience the purest raw honey from Kenya. Every jar is 100% traceable via HoneyChain™. Support our 50/50 promise to keep bees thriving in Makueni and Kibwezi."
+        description="Experience the purest raw honey from Kenya. Every jar is 100% traceable via BeeYield. Support our 50/50 promise to keep bees thriving in Makueni and Kibwezi."
         keywords="raw honey Kenya, buy pure honey Nairobi, traceable honey jar, Kibwezi honey company, sustainable beekeeping Makueni, African honey export"
         url="/honey"
         image="/og-image.png"
@@ -111,7 +111,7 @@ const HeroSection = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-500 mb-10 max-w-lg leading-relaxed font-medium">
-              Experience the world's most transparent honey. Powered by <span className="text-beeyield-gold font-bold">HoneyChain™</span> and a commitment to protecting 50% of the surplus for the bees.
+              Experience the world's most transparent honey. Powered by <span className="text-beeyield-gold font-bold">BeeYield</span> and a commitment to protecting 50% of the surplus for the bees.
             </p>
 
             {/* CTA Group */}
@@ -989,7 +989,7 @@ const MissionStatementSection = () => {
 const faqs_structured = [
   {
     q: "How can I check if my honey is authentic?",
-    a: "Every jar of BeeYield honey features a unique HoneyChain™ QR code. By scanning it, you can see the 'Harvest Record' showing exact hive location and data."
+    a: "Every jar of BeeYield honey features a unique BeeYield QR code. By scanning it, you can see the 'Harvest Record' showing exact hive location and data."
   },
   {
     q: "Where is BeeYield honey harvested?",
@@ -1063,8 +1063,8 @@ const HoneyLanding = () => {
     <BeeYieldPageShell className="bg-[#FFF9F0] p-0 md:p-0 -m-4 md:-m-6">
       <SEO
         title="Premium Traceable Honey from Kibwezi"
-        description="Shop 100% raw, traceable honey from Kibwezi. Powered by HoneyChainâ„¢ technology and the 50/50 Harvest Promise. Supporting sustainable pollination in Kenya."
-        keywords="honey, raw honey, Kibwezi honey, traceable honey, HoneyChain, beekeeping Kenya, sustainable honey, Acacia honey"
+        description="Shop 100% raw, traceable honey from Kibwezi. Powered by BeeYield technology and the 50/50 Harvest Promise. Supporting sustainable pollination in Kenya."
+        keywords="honey, raw honey, Kibwezi honey, traceable honey, BeeYield, beekeeping Kenya, sustainable honey, Acacia honey"
       />
 
       {/* Structured Data for AEO / SEO */}

@@ -124,7 +124,7 @@ const Impact = () => {
       doc.text('• Habitat Fidelity Rate: 95% — optimal forage diversity index maintained', 16, yPos); yPos += 5.5;
       doc.text('• Chemical-Free Baseline: 100% — zero synthetic pesticides or organophosphates in hives', 16, yPos); yPos += 5.5;
       doc.text('• Acoustic Health Baseline: 88% — low stress & normal queen piping frequencies', 16, yPos); yPos += 5.5;
-      doc.text('• Traceability Integrity Score: 99.9% — tamper-proof HoneyChain™ batch hashing', 16, yPos); yPos += 9;
+      doc.text('• Traceability Integrity Score: 99.9% — tamper-proof BeeYield batch hashing', 16, yPos); yPos += 9;
 
       doc.setFontSize(13);
       doc.setTextColor(15, 23, 42);
@@ -151,7 +151,7 @@ const Impact = () => {
 
       doc.setFontSize(16);
       doc.setTextColor(27, 145, 87);
-      doc.text('HoneyChain™ Traceability Batches & Tree Commitment', 14, 20);
+      doc.text('BeeYield Traceability Batches & Tree Commitment', 14, 20);
 
       doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.5);
@@ -160,7 +160,7 @@ const Impact = () => {
       yPos = 33;
       doc.setFontSize(13);
       doc.setTextColor(15, 23, 42);
-      doc.text('5. Authenticated Harvest Batches (HoneyChain™)', 14, yPos);
+      doc.text('5. Authenticated Harvest Batches (BeeYield Traceability)', 14, yPos);
       yPos += 7;
 
       const batches = [
@@ -223,7 +223,7 @@ const Impact = () => {
       const milestones = [
         '• 2020: Founded by siblings Timothy, Agatha, and Carole Nduva with 4 hives on ¼ acre in Kibwezi.',
         '• 2021–2023: Scaled to 75 hives, planted first 113 indigenous trees, initiated pollination trials.',
-        '• 2024–2025: Surpassed 150 hives, enrolled 40 partner beekeepers, established HoneyChain™ traceability.',
+        '• 2024–2025: Surpassed 150 hives, enrolled 40 partner beekeepers, established BeeYield traceability.',
         '• 2026 (The Tech Year): 184 hives, 22 IoT devices deployed with global partners (Apisense & Intelligent Hives Poland), 95 and counting acres precision-pollinated across 1 county (Makueni & counting) for 9+ crops & counting, over 2,000 data points daily & growing, 988 kg lifetime honey, 100% reinvested with zero external capital.',
       ];
 

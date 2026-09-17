@@ -50,10 +50,10 @@ export const BrandedProductImage: React.FC<BrandedProductImageProps> = ({
                     </div>
 
 
-                    {/* HoneyChain Traceability Stamp */}
+                    {/* BeeYield Traceability Stamp */}
                     <div className="bg-green-50 backdrop-blur-md px-2 py-1 rounded-full border border-green-200/50 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                         <ShieldCheck className="h-3 w-3 text-green-700" />
-                        <span className="text-[8px] font-black uppercase tracking-tighter text-green-700">HoneyChain™ Secure</span>
+                        <span className="text-[8px] font-black uppercase tracking-tighter text-green-700">BeeYield™ Secure</span>
                     </div>
                 </div>
             )}

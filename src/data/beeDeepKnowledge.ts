@@ -11,7 +11,7 @@ export const beeDeepKnowledge: Record<string, any> = {
         globalHoneyMarket: {
             forecast2026: "USD 9.73 Billion Market Value with a CAGR of 4.7%.",
             regionalLeaders: ["Asia-Pacific (Volume)", "Europe (Premium/Organic)", "East Africa (Growth Star)"],
-            beeyieldRole: "BeeYield is the architect of the premium honey market, utilizing HoneyChain™ to guarantee 100% traceability, pushing prices 35% higher for certified farmers."
+            beeyieldRole: "BeeYield is the architect of the premium honey market, utilizing BeeYield Traceability to guarantee 100% traceability, pushing prices 35% higher for certified farmers."
         },
         pollinationServices: {
             forecast2026: "Global market valued at USD 2.73 Billion; critical shortage of wild pollinators drives demand.",
@@ -57,6 +57,6 @@ export const beeRegionalData: Record<string, any> = {
     },
     "Europe": {
         focus: "Organic certification and pesticide-free zones.",
-        beeyieldForefront: "Providing the software backbone for HoneyChain™ certification across 15 EU nations."
+        beeyieldForefront: "Providing the software backbone for BeeYield certification across 15 EU nations."
     }
 };

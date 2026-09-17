@@ -1,10 +1,16 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Database, Globe, Shield, Microscope, Heart, Zap } from "lucide-react";
+  Database,
+  Globe,
+  Shield,
+  Microscope,
+  Heart,
+  Zap,
+  BookOpen,
+  ArrowRight,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import beeyieldLogo from "@/assets/beeyield-logo.png";
 
 const stats = [
   { label: "Bee Species Covered", value: "20,000+", icon: "🐝" },
@@ -16,12 +22,36 @@ const stats = [
 ];
 
 const capabilities = [
-  { icon: Database, title: "Comprehensive Database", desc: "Every bee species, honey variety, disease, treatment protocol, and research finding in one system." },
-  { icon: Microscope, title: "Image Identification", desc: "Upload bee photos for species identification, hive inspection analysis, and disease detection." },
-  { icon: Globe, title: "Global Industry Data", desc: "Real-time statistics on honey production, colony losses, trade data, and market projections." },
-  { icon: Shield, title: "Disease & Treatment", desc: "Complete protocols for Varroa, AFB, EFB, Nosema, CCD, and every known bee pathology." },
-  { icon: Heart, title: "Bee Products Science", desc: "Royal jelly, propolis, bee pollen, beeswax, apitoxin — composition and medicinal applications." },
-  { icon: Zap, title: "Voice & Audio Input", desc: "Ask questions by voice, attach audio recordings, or type naturally in any format." },
+  {
+    icon: Database,
+    title: "Comprehensive Database",
+    desc: "Every bee species, honey variety, disease, treatment protocol, and research finding in one system.",
+  },
+  {
+    icon: Microscope,
+    title: "Image Identification",
+    desc: "Upload bee photos for species identification, hive inspection analysis, and disease detection.",
+  },
+  {
+    icon: Globe,
+    title: "Global Industry Data",
+    desc: "Real-time statistics on honey production, colony losses, trade data, and market projections.",
+  },
+  {
+    icon: Shield,
+    title: "Disease & Treatment",
+    desc: "Complete protocols for Varroa, AFB, EFB, Nosema, CCD, and every known bee pathology.",
+  },
+  {
+    icon: Heart,
+    title: "Bee Products Science",
+    desc: "Royal jelly, propolis, bee pollen, beeswax, apitoxin — composition and medicinal applications.",
+  },
+  {
+    icon: Zap,
+    title: "Voice & Audio Input",
+    desc: "Ask questions by voice, attach audio recordings, or type naturally in any format.",
+  },
 ];
 
 interface AboutModalProps {
@@ -34,21 +64,65 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scroll">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-display text-honey flex items-center gap-2">
-            🐝 About Beeyield AI
+          <DialogTitle className="text-2xl font-display text-honey flex items-center gap-3">
+            <img src={beeyieldLogo} alt="BeeYield Logo" className="h-8 w-auto object-contain" />
+            <span>About Beeyield AI</span>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 pt-2">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Beeyield AI is the world's most comprehensive bee knowledge system, powered by over 750,000 curated datasets 
-            covering every aspect of apiculture, entomology, and pollination science. From species identification to 
-            disease treatment protocols, honey composition analysis to global industry statistics.
+            Beeyield AI is the world's most comprehensive bee knowledge system, powered by over
+            750,000 curated datasets covering every aspect of apiculture, entomology, and
+            pollination science. From species identification to disease treatment protocols, honey
+            composition analysis to global industry statistics.
           </p>
+
+          {/* Our Story Banner & Field Blogs */}
+          <div className="space-y-2">
+            <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <div className="font-display text-sm font-bold text-amber-400 flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4" /> The BeeYield Story: 2020–2026
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  From 4 hives from our dad to 184 hives, 22 IoT devices, and precision pollination
+                  across 95 and counting acres in Kenya.
+                </p>
+              </div>
+              <Link
+                to="/about"
+                onClick={() => onOpenChange(false)}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold text-xs hover:bg-amber-400 transition-colors flex-shrink-0"
+              >
+                Read Our Story <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <div className="font-display text-sm font-bold text-emerald-400 flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4" /> BeeYield Field Blogs & Agronomy
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  4 in-depth dispatches on mango bloom anthesis, the 44M-ton fruit deficit, and IoT pollinator monitoring.
+                </p>
+              </div>
+              <Link
+                to="/blogs"
+                onClick={() => onOpenChange(false)}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-500 transition-colors flex-shrink-0"
+              >
+                Read 4 Blogs <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
 
           {/* Stats Grid */}
           <div>
-            <h3 className="font-display text-base font-bold text-foreground mb-3">Global Bee Data</h3>
+            <h3 className="font-display text-base font-bold text-foreground mb-3">
+              Global Bee Data
+            </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {stats.map((s) => (
                 <div key={s.label} className="knowledge-card rounded-xl p-3 text-center">
@@ -65,11 +139,16 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
             <h3 className="font-display text-base font-bold text-foreground mb-3">Capabilities</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {capabilities.map((c) => (
-                <div key={c.title} className="flex gap-3 p-3 rounded-xl border border-border bg-card">
+                <div
+                  key={c.title}
+                  className="flex gap-3 p-3 rounded-xl border border-border bg-card"
+                >
                   <c.icon className="w-5 h-5 text-honey flex-shrink-0 mt-0.5" />
                   <div>
                     <div className="text-sm font-semibold text-foreground">{c.title}</div>
-                    <div className="text-xs text-muted-foreground leading-relaxed mt-0.5">{c.desc}</div>
+                    <div className="text-xs text-muted-foreground leading-relaxed mt-0.5">
+                      {c.desc}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -80,18 +159,41 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
           <div className="p-4 rounded-xl border border-primary/20 bg-primary/5">
             <h3 className="font-display text-sm font-bold text-honey mb-2">⚡ Quick Bee Facts</h3>
             <ul className="text-xs text-muted-foreground space-y-1.5">
-              <li>🏆 Oldest honey found: <span className="text-foreground font-medium">5,500 years old</span> in Egyptian tombs</li>
-              <li>🔬 Largest bee: <span className="text-foreground font-medium">Megachile pluto</span> at 38mm wingspan</li>
-              <li>⚡ Fastest bee: <span className="text-foreground font-medium">Carpenter bee</span> at ~30 mph</li>
-              <li>🌍 Top producer: <span className="text-foreground font-medium">China</span> with 446,000 MT/year</li>
-              <li>🧬 Genome sequenced: <span className="text-foreground font-medium">2006</span> — 236 million base pairs</li>
-              <li>🌡️ Brood temperature: <span className="text-foreground font-medium">35°C</span> maintained year-round</li>
-              <li>💰 Pollination value: <span className="text-foreground font-medium">$235–577 billion USD</span> globally</li>
+              <li>
+                🏆 Oldest honey found:{" "}
+                <span className="text-foreground font-medium">5,500 years old</span> in Egyptian
+                tombs
+              </li>
+              <li>
+                🔬 Largest bee: <span className="text-foreground font-medium">Megachile pluto</span>{" "}
+                at 38mm wingspan
+              </li>
+              <li>
+                ⚡ Fastest bee: <span className="text-foreground font-medium">Carpenter bee</span>{" "}
+                at ~30 mph
+              </li>
+              <li>
+                🌍 Top producer: <span className="text-foreground font-medium">China</span> with
+                446,000 MT/year
+              </li>
+              <li>
+                🧬 Genome sequenced: <span className="text-foreground font-medium">2006</span> — 236
+                million base pairs
+              </li>
+              <li>
+                🌡️ Brood temperature: <span className="text-foreground font-medium">35°C</span>{" "}
+                maintained year-round
+              </li>
+              <li>
+                💰 Pollination value:{" "}
+                <span className="text-foreground font-medium">$235–577 billion USD</span> globally
+              </li>
             </ul>
           </div>
 
           <p className="text-[11px] text-muted-foreground text-center">
-            Beeyield AI — Specialized exclusively in bees, honey, apiculture, and pollination science
+            Beeyield AI — Specialized exclusively in bees, honey, apiculture, and pollination
+            science
           </p>
         </div>
       </DialogContent>

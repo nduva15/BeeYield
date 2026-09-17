@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
-import { dashboardPollinationCropDetails } from "@/data/beePollinationData";
+import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
@@ -34,6 +34,36 @@ const CropsWePollinate = () => {
 
   return (
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
+      {/* Branded Top Navigation Header */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <Link to="/" className="flex items-center gap-2.5 group transition-transform hover:scale-105" aria-label="BeeYield Home">
+            <img src="/logo.png" alt="BeeYield Logo" className="h-9 w-9 object-contain" />
+            <span className="font-display text-xl font-black text-[#1B9157] tracking-tight">BeeYield</span>
+          </Link>
+          <nav className="flex items-center gap-3 sm:gap-6 text-sm font-bold">
+            <Link to="/" className="text-neutral-600 hover:text-[#1B9157] dark:text-neutral-300 dark:hover:text-white transition-colors">
+              Home
+            </Link>
+            <Link to="/about" className="text-neutral-600 hover:text-[#1B9157] dark:text-neutral-300 dark:hover:text-white transition-colors">
+              Our Story
+            </Link>
+            <Link to="/crops-we-pollinate" className="text-[#1B9157] border-b-2 border-[#1B9157] pb-0.5">
+              Crops
+            </Link>
+            <Link to="/blogs" className="text-neutral-600 hover:text-[#1B9157] dark:text-neutral-300 dark:hover:text-white transition-colors">
+              Blogs
+            </Link>
+            <Link to="/media" className="text-neutral-600 hover:text-[#1B9157] dark:text-neutral-300 dark:hover:text-white transition-colors">
+              Media
+            </Link>
+            <Button size="sm" className="rounded-full bg-[#1B9157] hover:bg-[#157746] text-white font-bold text-xs shadow-md hidden sm:inline-flex" asChild>
+              <Link to="/contact">Get Consult</Link>
+            </Button>
+          </nav>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#F0F7F0] py-20 md:py-32">
         {/* Animated Background */}
@@ -196,11 +226,8 @@ const CropsWePollinate = () => {
                         <Geography
                           key={geo.rsmKey}
                           geography={geo}
-                          style={{
-                            default: { fill: "hsl(var(--muted))", stroke: "hsl(var(--border))", strokeWidth: 0.5 },
-                            hover: { fill: "hsl(var(--secondary)/0.6)", outline: "none" },
-                            pressed: { fill: "hsl(var(--secondary)/0.8)", outline: "none" },
-                          }}
+                          className="fill-muted stroke-border hover:fill-secondary/60 transition-colors outline-none"
+                          style={{ strokeWidth: 0.5 }}
                         />
                       ))
                     }
@@ -252,7 +279,7 @@ const CropsWePollinate = () => {
         <div className="container mx-auto px-4">
           {/* Crop Navigation Pills */}
           <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {pollinationCrops.map((c, i) => (
+            {pollinationCrops.map((c: PollinationCropDetail, i: number) => (
               <Badge
                 key={i}
                 variant="outline"
@@ -265,9 +292,10 @@ const CropsWePollinate = () => {
 
           {/* Crops Cards */}
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {pollinationCrops.map((crop, index) => {
-              const isSpotlightCrop = ["Mangoes", "Oranges", "Citrus", "Maize", "Vegetables"].includes(crop.cropName);
-              const targetHash = crop.cropName === "Mangoes" ? "mangoes" : crop.cropName === "Oranges" ? "oranges" : crop.cropName === "Citrus" ? "citrus" : crop.cropName === "Maize" ? "maize" : crop.cropName === "Vegetables" ? "vegetables" : "latest-pollination";
+            {pollinationCrops.map((crop: PollinationCropDetail, index: number) => {
+              const isSpotlightCrop = !!(crop.galleryImages && crop.galleryImages.length > 0);
+              const cropLower = crop.cropName.toLowerCase();
+              const targetHash = ["mangoes", "oranges", "citrus", "maize", "vegetables", "beans", "sunflowers", "avocados", "macadamia", "coffee"].find(c => cropLower.includes(c)) || "latest-pollination";
 
               return (
                 <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all group bg-[#FFF9F0] flex flex-col justify-between">
@@ -306,7 +334,7 @@ const CropsWePollinate = () => {
                         </span>
                       </div>
                       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-                        {crop.galleryImages.map((img, imgIdx) => (
+                        {crop.galleryImages.map((img: string, imgIdx: number) => (
                           <Link
                             key={imgIdx}
                             to={`/media#${targetHash}`}
@@ -365,6 +393,20 @@ const CropsWePollinate = () => {
           </Button>
         </div>
       </section>
+
+      {/* Page Footer with Official BeeYield Logo */}
+      <footer className="border-t border-border/40 bg-[#0A2612] text-white py-12">
+        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="BeeYield Logo" className="h-9 w-9 object-contain" />
+            <div>
+              <span className="font-display text-lg font-bold text-white">BeeYield</span>
+              <p className="text-xs text-white/60">Your partner in pollination • Makueni & Kibwezi, Kenya</p>
+            </div>
+          </div>
+          <p className="text-xs text-white/50">© 2026 BeeYield. All rights reserved.</p>
+        </div>
+      </footer>
     </BeeYieldPageShell>
   );
 };

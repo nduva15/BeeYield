@@ -1,226 +1,135 @@
-export interface PollinationDetail {
-    cropName: string;
-    beeDependence: string;
-    dependencyPercent: number;
-    optimalHivesPerAcre: string;
-    targetFPA: number;
-    beeyieldAdvantage: string;
-    regionalTrends2026: string;
-    economicImpact: string;
-    estimatedMarketValueUsdBn?: number;
-    image: string;
-    galleryImages?: string[];
+export interface PollinationCropDetail {
+  cropName: string;
+  beeDependence: string;
+  image: string;
+  beeyieldAdvantage: string;
+  optimalHivesPerAcre: string;
+  galleryImages?: string[];
 }
 
-export const beePollinationData: Record<string, PollinationDetail> = {
-    "Maize": {
-        cropName: "Maize",
-        beeDependence: "Low (Pollen Collection)",
-        dependencyPercent: 20,
-        optimalHivesPerAcre: "0.5 - 1.0 Hives",
-        targetFPA: 8,
-        beeyieldAdvantage: "While wind-pollinated, BeeYield managed colonies collect rich maize tassel pollen, boosting silk receptivity and ensuring dense kernel tip-fill across rows.",
-        regionalTrends2026: "Intercropping maize with vegetables under drip irrigation provides continuous forage, optimizing pollination and overall farm yield.",
-        economicImpact: "A vital staple and cash crop; managed pollination in maize intercrops improves ear filling and supports companion vegetable crops.",
-        estimatedMarketValueUsdBn: 3.2,
-        image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
-        galleryImages: [
-            "/images/pollination/maize-vegetable-intercrop-drip.jpg",
-            "/images/pollination/maize-horticulture-field-panoramic.jpg",
-            "/images/pollination/maize-crop-rows-vertical.png",
-            "/images/pollination/maize-field-rows-panorama.jpg",
-            "/images/pollination/maize-tasseling-closeup.png",
-            "/images/pollination/maize-field-panorama-mountain.png",
-            "/images/pollination/maize-dense-tasseling-field.png",
-            "/images/pollination/maize-field-dryland-hills.png"
-        ]
-    },
-    "Sunflower": {
-        cropName: "Sunflower",
-        beeDependence: "100% (High)",
-        dependencyPercent: 100,
-        optimalHivesPerAcre: "1.5 - 2.5 Hives",
-        targetFPA: 16,
-        beeyieldAdvantage: "BeeYield's 'Flora-Sync' ensures hives are active during the critical morning window when sunflower pollen is most viable.",
-        regionalTrends2026: "Expansion of sunflower for oil production in Arid regions requires robust, drought-tolerant pollinator management.",
-        economicImpact: "Seed set is directly correlated to bee visits; adequate pollination can double oil yield per acre.",
-        estimatedMarketValueUsdBn: 2.4,
-        image: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=600"
-    },
-    "Mangoes": {
-        cropName: "Mangoes",
-        beeDependence: "High (Yield & Quality)",
-        dependencyPercent: 90,
-        optimalHivesPerAcre: "2.0 - 4.0 Hives",
-        targetFPA: 24,
-        beeyieldAdvantage: "Our specific hive placement strategy encourages both bee and dipteran (fly) pollination, which is crucial for mango fruit set.",
-        regionalTrends2026: "Export-quality mangoes require uniform pollination to prevent early fruit drop, a key metric tracked by BeeYield.",
-        economicImpact: "Proper pollination increases fruit retention and size, directly boosting export revenues.",
-        estimatedMarketValueUsdBn: 4.6,
-        image: "/images/pollination/mango-panicles-close-bloom.png",
-        galleryImages: [
-            "/images/pollination/mango-panicles-close-bloom.png",
-            "/images/pollination/mango-orchard-pink-panicles.png",
-            "/images/pollination/mango-tree-full-blossom.png",
-            "/images/pollination/mango-bloom-pollination.jpg",
-            "/images/pollination/mango-orchard-flowering.jpg",
-            "/images/pollination/mango-flowering-panicles-new.jpg",
-            "/images/pollination/mango-bloom-canopy-wide.jpg",
-            "/images/pollination/mango-panicle-closeup-new.jpg",
-            "/images/pollination/mango-flowering-branch.jpg",
-            "/images/pollination/mango-bloom-season-tree.jpg"
-        ]
-    },
-
-    "Avocados": {
-        cropName: "Avocados",
-        beeDependence: "High (Cross-Pollination)",
-        dependencyPercent: 85,
-        optimalHivesPerAcre: "2.0 - 4.0 Hives",
-        targetFPA: 32,
-        beeyieldAdvantage: "We map A and B flower type opening times to ensure bee activity overlaps perfectly with female stage receptivity.",
-        regionalTrends2026: "Booming export demand requires intensive pollination management to maximize fruit set per tree.",
-        economicImpact: "Critical for preventing 'cukes' (seedless fruit) and ensuring market-standard sizes.",
-        estimatedMarketValueUsdBn: 5.1,
-        image: "https://images.unsplash.com/photo-1519162808019-7de1683fa2ad?auto=format&fit=crop&q=80&w=600"
-    },
-    "Beans": {
-        cropName: "Beans",
-        beeDependence: "Medium (Yield Stability)",
-        dependencyPercent: 60,
-        optimalHivesPerAcre: "1.0 - 1.5 Hives",
-        targetFPA: 12,
-        beeyieldAdvantage: "BeeYield's sensors track foraging intensity to ensure consistent pod set across the entire field.",
-        regionalTrends2026: " shift towards high-value export varieties necessitates reliable pollination services.",
-        economicImpact: "Increases pod fill and seed quality, essential for both consumption and seed production.",
-        estimatedMarketValueUsdBn: 1.8,
-        image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600"
-    },
-    "Oranges": {
-        cropName: "Oranges",
-        beeDependence: "Medium to High",
-        dependencyPercent: 70,
-        optimalHivesPerAcre: "1.5 - 2.5 Hives",
-        targetFPA: 20,
-        beeyieldAdvantage: "We manage hive strength to prevent over-pollination in seedless varieties while ensuring max set for juice varieties.",
-        regionalTrends2026: "Citrus greening resilience is bolstered by strong ecosystem services, including pollination.",
-        economicImpact: "Improves fruit weight and juice content per hectare.",
-        estimatedMarketValueUsdBn: 2.2,
-        image: "/images/pollination/orange-tree-citrus-fruits.jpg",
-        galleryImages: [
-            "/images/pollination/orange-tree-citrus-fruits.jpg",
-            "/images/pollination/orange-tree-heavy-fruiting.jpg",
-            "/images/pollination/orange-citrus-orchard.jpg",
-            "/images/pollination/citrus-mango-intercrop.jpg",
-            "/images/pollination/mango-orange-farm-wide.jpg",
-            "/images/pollination/citrus-grove-drip-irrigation.jpg",
-            "/images/pollination/citrus-tree-canopy-closeup.jpg",
-            "/images/pollination/citrus-papaya-intercrop.jpg",
-            "/images/pollination/citrus-tree-young-orchard.jpg"
-        ]
-    },
-    "Citrus": {
-        cropName: "Citrus",
-        beeDependence: "High (Fruit Set & Quality)",
-        dependencyPercent: 75,
-        optimalHivesPerAcre: "2.0 - 3.5 Hives",
-        targetFPA: 22,
-        beeyieldAdvantage: "Strategic hive placement during the rapid citrus bloom surge ensures maximum flower visits before petal fall, drastically reducing fruit drop and increasing juice density.",
-        regionalTrends2026: "Commercial orchards synchronizing citrus and mango bloom management achieve extended forage windows and superior fruit set.",
-        economicImpact: "Enhances fruit diameter, rind consistency, and sugar content (Brix) for premium local and export markets.",
-        estimatedMarketValueUsdBn: 2.8,
-        image: "/images/pollination/orange-tree-heavy-fruiting.jpg",
-        galleryImages: [
-            "/images/pollination/orange-tree-heavy-fruiting.jpg",
-            "/images/pollination/orange-tree-citrus-fruits.jpg",
-            "/images/pollination/orange-citrus-orchard.jpg",
-            "/images/pollination/citrus-mango-intercrop.jpg",
-            "/images/pollination/mango-orange-farm-wide.jpg",
-            "/images/pollination/citrus-bloom-buds-closeup.jpg",
-            "/images/pollination/citrus-bloom-branch-detail.jpg",
-            "/images/pollination/citrus-papaya-orchard-rows.jpg",
-            "/images/pollination/citrus-grove-drip-irrigation.jpg"
-        ]
-    },
-    "Tomatoes": {
-        cropName: "Tomatoes",
-        beeDependence: "High (Buzz Pollination)",
-        dependencyPercent: 75,
-        optimalHivesPerAcre: "Specialized Management",
-        targetFPA: 12,
-        beeyieldAdvantage: "BeeYield enables precise monitoring of bumblebee colony health for greenhouse tomato production.",
-        regionalTrends2026: "Greenhouse automation integration with biological pollinators is the future of intensive farming.",
-        economicImpact: "Essential for fruit set in enclosed environments; directly determines yield per square meter.",
-        estimatedMarketValueUsdBn: 2.9,
-        image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=600"
-    },
-    "Onions": {
-        cropName: "Onions",
-        beeDependence: "100% (Seed Production)",
-        dependencyPercent: 100,
-        optimalHivesPerAcre: "4.0 - 6.0 Hives",
-        targetFPA: 48,
-        beeyieldAdvantage: "Our high-density hive placement overcomes the natural unattractiveness of onion flowers to ensure full seed set.",
-        regionalTrends2026: "Rising demand for hybrid onion seed requires technical pollination mastery.",
-        economicImpact: "The primary factor determining seed yield; unpollinated flowers produce no seed.",
-        estimatedMarketValueUsdBn: 1.4,
-        image: "/images/onion-plantation.png"
-    },
-    "Sisal": {
-        cropName: "Sisal",
-        beeDependence: "Low (Ecological Support)",
-        dependencyPercent: 15,
-        optimalHivesPerAcre: "Ecological Placement",
-        targetFPA: 4,
-        beeyieldAdvantage: "Sisal poles provide critical forage during dearth periods, which BeeYield maps to maintain year-round apiary health.",
-        regionalTrends2026: "Sustainable fiber production is increasingly valued, with pollinators playing a key ecosystem role.",
-        economicImpact: "Supports the biodiversity necessary for sustainable large-scale plantation management.",
-        estimatedMarketValueUsdBn: 0.8,
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600"
-    },
-    "Vegetables": {
-        cropName: "Vegetables",
-        beeDependence: "High (Fruit & Seed Set)",
-        dependencyPercent: 80,
-        optimalHivesPerAcre: "2.0 - 4.0 Hives",
-        targetFPA: 20,
-        beeyieldAdvantage: "Generalist honeybee colonies visit peppers, courgettes, squash, and cucurbits equally, eliminating misshapen fruit and boosting marketable pack-out.",
-        regionalTrends2026: "Intensive horticulture under drip irrigation is expanding rapidly. Managed pollination is essential for consistent size, shape, and yield.",
-        economicImpact: "Improves fruit shape, weight uniformity, and seed count across diverse vegetable crops, directly raising market value.",
-        estimatedMarketValueUsdBn: 1.9,
-        image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
-        galleryImages: [
-            "/images/pollination/maize-vegetable-intercrop-drip.jpg",
-            "/images/pollination/maize-horticulture-field-panoramic.jpg",
-            "/images/pollination/citrus-papaya-intercrop.jpg",
-            "/images/pollination/citrus-papaya-orchard-rows.jpg",
-            "/images/pollination/maize-field-rows-panorama.jpg"
-        ]
-    }
-};
-
-export const DASHBOARD_POLLINATION_CROPS = [
-    "Maize",
-    "Sunflower",
-    "Mangoes",
-    "Avocados",
-    "Beans",
-    "Oranges",
-    "Citrus",
-    "Tomatoes",
-    "Onions",
-    "Sisal",
-    "Vegetables",
-] as const;
-
-export const dashboardPollinationCropNames = [...DASHBOARD_POLLINATION_CROPS];
-
-export const dashboardPollinationCropDetails = DASHBOARD_POLLINATION_CROPS.map(
-    (name) => beePollinationData[name]
-);
-
-export const globalPollinationTrends2026 = {
-    "Precision Pollination™": "A market segment created by BeeYield, where IoT sensors and advanced algorithms ensure exactly the right amount of pollination for every square meter of farm.",
-    "Pollinator Depletion Reserve": "BeeYield's initiative to create 'Safe Zones' around industrial farms, restoring 2,500+ trees per region to support wild bee populations.",
-    "Pollination-as-a-Service (PaaS)": "By 2026, PaaS is the primary model for commercial beekeeping, with BeeYield's platform acting as the global marketplace for farmers and beekeepers."
-};
+export const dashboardPollinationCropDetails: PollinationCropDetail[] = [
+  {
+    cropName: "Mangoes",
+    beeDependence: "Essential (90%+)",
+    image: "/images/pollination/mango-panicles-close-bloom.png",
+    beeyieldAdvantage: "Synchronized bloom-burst apiary deployment delivers up to 38% higher fruit set.",
+    optimalHivesPerAcre: "2 – 3 Hives / Acre",
+    galleryImages: [
+      "/images/pollination/mango-panicles-close-bloom.png",
+      "/images/pollination/mango-flowering-panicles-new.jpg",
+      "/images/pollination/mango-bloom-pollination.jpg",
+      "/images/pollination/mango-orchard-pink-panicles.png",
+      "/images/pollination/mango-tree-full-blossom.png",
+    ],
+  },
+  {
+    cropName: "Oranges",
+    beeDependence: "High (70%+)",
+    image: "/images/pollination/orange-tree-citrus-fruits.jpg",
+    beeyieldAdvantage: "Optimized nectar forager activity increases fruit diameter and sweetness.",
+    optimalHivesPerAcre: "2 – 4 Hives / Acre",
+    galleryImages: [
+      "/images/pollination/orange-tree-citrus-fruits.jpg",
+      "/images/pollination/orange-citrus-orchard.jpg",
+      "/images/pollination/orange-tree-heavy-fruiting.jpg",
+      "/images/pollination/citrus-bloom-buds-closeup.jpg",
+    ],
+  },
+  {
+    cropName: "Citrus",
+    beeDependence: "High (75%+)",
+    image: "/images/pollination/citrus-bloom-buds-closeup.jpg",
+    beeyieldAdvantage: "Targeted flight radius saturation ensures uniform blossom cross-pollination.",
+    optimalHivesPerAcre: "2 – 3 Hives / Acre",
+    galleryImages: [
+      "/images/pollination/citrus-bloom-buds-closeup.jpg",
+      "/images/pollination/citrus-bloom-branch-detail.jpg",
+      "/images/pollination/citrus-tree-canopy-closeup.jpg",
+      "/images/pollination/citrus-grove-drip-irrigation.jpg",
+    ],
+  },
+  {
+    cropName: "Maize",
+    beeDependence: "Supplemental (20%+)",
+    image: "/images/pollination/maize-field-panorama-mountain.png",
+    beeyieldAdvantage: "Pollen scavenging drives intercrop kernel filling and overall yield stability.",
+    optimalHivesPerAcre: "1 – 2 Hives / Acre",
+    galleryImages: [
+      "/images/pollination/maize-field-panorama-mountain.png",
+      "/images/pollination/maize-tasseling-closeup.png",
+      "/images/pollination/maize-pollination-stage.png",
+      "/images/pollination/maize-dense-tasseling-field.png",
+      "/images/pollination/maize-silking-mountain-view.png",
+    ],
+  },
+  {
+    cropName: "Vegetables",
+    beeDependence: "Essential (85%+)",
+    image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+    beeyieldAdvantage: "Multi-point precision placement optimizes seed setting and market-grade shape.",
+    optimalHivesPerAcre: "2 – 4 Hives / Acre",
+    galleryImages: [
+      "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+      "/images/pollination/citrus-papaya-intercrop.jpg",
+      "/images/pollination/citrus-papaya-orchard-rows.jpg",
+      "/images/onion-plantation.png",
+    ],
+  },
+  {
+    cropName: "Beans",
+    beeDependence: "Moderate (40%+)",
+    image: "/images/beans_case.png",
+    beeyieldAdvantage: "Forager tripping mechanism stimulates maximum flower fertilization and pod count.",
+    optimalHivesPerAcre: "1 – 2 Hives / Acre",
+    galleryImages: [
+      "/images/beans_case.png",
+      "/images/pollination/maize-vegetable-intercrop-drip.jpg",
+    ],
+  },
+  {
+    cropName: "Sunflowers",
+    beeDependence: "High (65%+)",
+    image: "/images/sunflower_case.png",
+    beeyieldAdvantage: "Cross-row hybrid flight optimization maximizes seed fill and oil content.",
+    optimalHivesPerAcre: "1.5 – 3 Hives / Acre",
+    galleryImages: [
+      "/images/sunflower_case.png",
+      "/images/pollination/gateway-solar-node.png",
+    ],
+  },
+  {
+    cropName: "Avocados",
+    beeDependence: "Essential (90%+)",
+    image: "/images/pollination/citrus-mango-intercrop.jpg",
+    beeyieldAdvantage: "Dichogamous daily schedule tracking matches specific male/female flower openings.",
+    optimalHivesPerAcre: "2 – 3 Hives / Acre",
+    galleryImages: [
+      "/images/pollination/citrus-mango-intercrop.jpg",
+      "/images/pollination/mango-orange-farm-wide.jpg",
+      "/images/land_case.png",
+    ],
+  },
+  {
+    cropName: "Coffee",
+    beeDependence: "Moderate (30%+)",
+    image: "/images/pollination/citrus-bloom-branch-detail.jpg",
+    beeyieldAdvantage: "Short intense bloom pollination yields heavier, denser coffee cherries.",
+    optimalHivesPerAcre: "1 – 2 Hives / Acre",
+    galleryImages: [
+      "/images/pollination/citrus-bloom-branch-detail.jpg",
+      "/images/pollination/citrus-tree-canopy-closeup.jpg",
+    ],
+  },
+  {
+    cropName: "Macadamia",
+    beeDependence: "Very High (80%+)",
+    image: "/images/pollination/citrus-tree-young-orchard.jpg",
+    beeyieldAdvantage: "Dense racemose bloom saturation maximizes nut retention and kernel grade.",
+    optimalHivesPerAcre: "4 – 6 Hives / Acre",
+    galleryImages: [
+      "/images/pollination/citrus-tree-young-orchard.jpg",
+      "/images/pollination/citrus-grove-drip-irrigation.jpg",
+      "/images/pollination/apisense-sensor-comb-inspection.png",
+    ],
+  },
+];

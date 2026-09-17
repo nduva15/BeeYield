@@ -213,7 +213,7 @@ const EXAMPLE_BATCHES: Record<string, TraceResponse> = {
             honeychain: {
                 verified: true,
                 status: "confirmed",
-                network: "HoneyChain",
+                network: "BeeYield Ledger",
             },
             polygon: {
                 verified: true,
@@ -353,7 +353,7 @@ const EXAMPLE_BATCHES: Record<string, TraceResponse> = {
             honeychain: {
                 verified: true,
                 status: "confirmed",
-                network: "HoneyChain",
+                network: "BeeYield Ledger",
             },
             polygon: {
                 verified: true,
@@ -493,7 +493,7 @@ const EXAMPLE_BATCHES: Record<string, TraceResponse> = {
             honeychain: {
                 verified: true,
                 status: "confirmed",
-                network: "HoneyChain",
+                network: "BeeYield Ledger",
             },
             polygon: {
                 verified: true,

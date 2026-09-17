@@ -53,33 +53,33 @@ const Team = () => {
     const founders = [
         {
             name: "Timothy Nduva",
-            role: "CEO & Founder",
-            department: "Directorate",
-            description: "A visionary leader committed to the intersection of traditional apiology and digital precision. Timothy oversees the global strategic direction of the BeeYield ecosystem.",
-            image: TIMOTHY_PHOTO,
+            role: "Co-Founder & CEO",
+            department: "Directorate & Field Ops",
+            description: "A visionary leader committed to the intersection of traditional apiology and digital precision. Timothy oversees the global strategic direction and field deployments of the BeeYield ecosystem.",
+            image: "/images/team/timothy-nduva.jpg",
             linkedin: "https://linkedin.com/in/timothynduva",
             email: "info@beeyield.com",
             achievements: ["Vision Lead", "Architecture Head", "Global Strategy"]
         },
         {
-            name: "Carole Nduva",
-            role: "Technical Director",
-            department: "Operations",
-            description: "Master of operational logistics and partner engineering. Carole leads the team in scaling BeeYield's physical and digital infrastructure across international borders.",
-            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
+            name: "Agatha Nduva",
+            role: "Co-Founder & CTO",
+            department: "Engineering & Data",
+            description: "Pioneer in distributed telemetry systems and data security. Agatha ensures that every byte of bee telemetry is secured, verified, and processed with high fidelity across all IoT nodes.",
+            image: "/images/team/agatha-nduva.jpg",
+            linkedin: "https://linkedin.com/in/agathanduva",
             email: "info@beeyield.com",
-            achievements: ["Ops Scalability", "Partner Systems", "Logistics Core"]
+            achievements: ["System Architecture", "Telemetry Security", "Data Protocols"]
         },
         {
-            name: "Agatha Nduva",
-            role: "Technical Director",
-            department: "Engineering",
-            description: "Pioneer in distributed systems and data security. Agatha ensures that every byte of bee telemetry is secured, verified, and processed with high fidelity.",
-            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
+            name: "Carole Nduva",
+            role: "Co-Founder & COO",
+            department: "Operations & Growth",
+            description: "Master of operational logistics, community apiary scaling, and partner engineering. Carole leads the team in scaling BeeYield's grower relationships and regional expansion.",
+            image: "/images/team/carole-nduva.jpg",
+            linkedin: "https://linkedin.com/in/carolenduva",
             email: "info@beeyield.com",
-            achievements: ["System Integrity", "Data Security", "Protocol Lead"]
+            achievements: ["Ops Scalability", "Farmer Relations", "Project Growth"]
         },
     ];
 
@@ -245,16 +245,16 @@ const Team = () => {
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="relative aspect-video rounded-[2.5rem] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm"
+                            className="relative aspect-video rounded-[2.5rem] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-md group"
                         >
-                            <img src={"https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80"} alt="Family Origins" className="w-full h-full object-cover grayscale opacity-20" />
-                            <div className="absolute inset-0 flex items-center justify-center p-12 text-center text-neutral-900">
-                                <div className="space-y-4">
-                                    <div className="h-16 w-16 bg-beeyield-green/10 rounded-full flex items-center justify-center mx-auto text-beeyield-green">
-                                        <Home className="h-8 w-8" />
+                            <img src="/images/team/all-three-founders.jpg" alt="All Three Founders in Kibwezi" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-8 text-white">
+                                <div className="space-y-1">
+                                    <div className="h-10 w-10 bg-beeyield-green/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white mb-2">
+                                        <Home className="h-5 w-5" />
                                     </div>
-                                    <h4 className="text-xl font-bold">Born in Kibwezi</h4>
-                                    <p className="text-sm font-medium opacity-70">Makueni County, Kenya • 2020</p>
+                                    <h4 className="text-lg font-bold">Born in Kibwezi</h4>
+                                    <p className="text-xs font-medium opacity-80">Makueni County, Kenya • Timothy, Agatha & Carole Nduva</p>
                                 </div>
                             </div>
                         </motion.div>
@@ -317,11 +317,31 @@ const Team = () => {
             ═══════════════════════════════════════════════════════════════ */}
             <section className="py-32 bg-white relative">
                 <div className="container mx-auto px-4">
-                    <div className="text-center mb-24">
+                    <div className="text-center mb-16">
                         <Badge className="bg-amber-500/10 text-amber-700 border-none px-5 py-2 font-semibold text-[10px] rounded-full">
                             The Directorate
                         </Badge>
                         <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mt-6">Our Leadership</h2>
+                    </div>
+
+                    {/* Trio Founders Showcase */}
+                    <div className="max-w-7xl mx-auto mb-16 rounded-[2.5rem] overflow-hidden border border-neutral-200 shadow-xl relative group">
+                        <img 
+                            src="/images/team/all-three-founders.jpg" 
+                            alt="The Three Sibling Founders: Timothy, Agatha, and Carole Nduva" 
+                            className="w-full h-80 md:h-[420px] object-cover object-center group-hover:scale-102 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-8 md:p-12">
+                            <span className="inline-block px-3 py-1 bg-amber-500 text-neutral-900 font-black text-xs rounded-full w-max mb-3">
+                                Kibwezi Apiary • Sibling Co-Founders
+                            </span>
+                            <h3 className="text-2xl md:text-4xl font-bold text-white tracking-tight">
+                                Timothy Nduva, Agatha Nduva & Carole Nduva
+                            </h3>
+                            <p className="text-sm md:text-base text-neutral-200 mt-2 max-w-2xl font-medium">
+                                Uniting apiculture biology, distributed IoT engineering, and field operations to transform African beekeeping from our home base in Makueni County.
+                            </p>
+                        </div>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">

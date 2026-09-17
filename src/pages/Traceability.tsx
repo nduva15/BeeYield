@@ -321,16 +321,16 @@ const Traceability = () => {
   return (
     <BeeYieldPageShell className="bg-background">
       <SEO 
-        title="Honey Traceability & Origin Verification | HoneyChain™"
-        description="Verify the journey of your BeeYield honey jar. Use HoneyChain™ to trace origin, harvest dates, and hive health from Makueni County, Kenya."
-        keywords="honey traceability, verify honey purity, HoneyChain, Kenyan honey origin, food safety Kenya, blockchain honey, Kibwezi honey records"
+        title="Honey Traceability & Origin Verification | BeeYield"
+        description="Verify the journey of your BeeYield honey jar. Use BeeYield to trace origin, harvest dates, and hive health from Makueni County, Kenya."
+        keywords="honey traceability, verify honey purity, BeeYield, Kenyan honey origin, food safety Kenya, blockchain honey, Kibwezi honey records"
         url="/traceability"
         image="/og-image.png"
         schema={{
           "@context": "https://schema.org",
           "@type": "HowTo",
           "name": "How to Trace Your Honey Jar",
-          "description": "Follow these steps to verify the authenticity and origin of your BeeYield honey using our HoneyChain™ system.",
+          "description": "Follow these steps to verify the authenticity and origin of your BeeYield honey using our BeeYield system.",
           "step": [
             {
               "@type": "HowToStep",
@@ -1037,7 +1037,7 @@ const Traceability = () => {
 
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
-                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">HoneyChain</p>
+                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">BeeYield Ledger</p>
                                             <p className="text-sm font-black text-white">{traceData?.blockchain_status?.honeychain?.verified ? "Verified" : "Not verified"}</p>
                                           </div>
                                           <div className="text-right">
