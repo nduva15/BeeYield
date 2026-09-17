@@ -9,8 +9,15 @@ if (typeof window !== 'undefined') {
     initPrefetch();
 
     window.addEventListener('vite:preloadError', (event) => {
-        console.warn('Vite preload dynamic import error detected (likely new deployment). Reloading page...', event);
-        window.location.reload();
+        const lastReload = Number(sessionStorage.getItem('vite_preload_reload_time') || '0');
+        const now = Date.now();
+        if (now - lastReload > 10000) {
+            sessionStorage.setItem('vite_preload_reload_time', String(now));
+            console.warn('Vite preload dynamic import error detected (likely new deployment). Reloading page...', event);
+            window.location.reload();
+        } else {
+            console.error('Vite preload dynamic import error persisted after reload:', event);
+        }
     });
 }
 
@@ -39,21 +46,38 @@ const retryLazyImport = <T extends { default: React.ComponentType<any> }>(
     loader().catch(async (error) => {
         const isChunkError = 
             error?.message?.includes('dynamically imported module') || 
-            error?.message?.includes('Failed to fetch') ||
-            error?.message?.includes('MIME type') ||
-            error?.name === 'TypeError';
+            error?.message?.includes('Failed to fetch dynamically imported module') ||
+            error?.message?.includes('Loading chunk') ||
+            error?.message?.includes('Loading CSS chunk') ||
+            (error?.message?.includes('Failed to fetch') && error?.message?.includes('.js'));
             
         if (isChunkError) {
-            console.warn('Vite chunk load failed (likely new deployment). Reloading page...', error);
-            window.location.reload();
-            return new Promise(() => {}) as Promise<T>;
-        }
-        
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        return loader().catch((retryErr) => {
-            if (retryErr?.message?.includes('dynamically imported module') || retryErr?.message?.includes('Failed to fetch') || retryErr?.message?.includes('MIME type')) {
+            const lastReload = Number(sessionStorage.getItem('last_chunk_reload') || '0');
+            const now = Date.now();
+            if (now - lastReload > 10000) {
+                sessionStorage.setItem('last_chunk_reload', String(now));
+                console.warn('Vite chunk load failed (likely new deployment). Reloading page...', error);
                 window.location.reload();
                 return new Promise(() => {}) as Promise<T>;
+            }
+        }
+        
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        return loader().catch((retryErr) => {
+            const isRetryChunkError =
+                retryErr?.message?.includes('dynamically imported module') ||
+                retryErr?.message?.includes('Failed to fetch dynamically imported module') ||
+                retryErr?.message?.includes('Loading chunk') ||
+                (retryErr?.message?.includes('Failed to fetch') && retryErr?.message?.includes('.js'));
+
+            if (isRetryChunkError) {
+                const lastReload = Number(sessionStorage.getItem('last_chunk_reload') || '0');
+                const now = Date.now();
+                if (now - lastReload > 10000) {
+                    sessionStorage.setItem('last_chunk_reload', String(now));
+                    window.location.reload();
+                    return new Promise(() => {}) as Promise<T>;
+                }
             }
             throw retryErr;
         });
