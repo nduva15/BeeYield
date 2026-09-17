@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BlogsRouteImport } from './routes/blogs'
 import { Route as OurStoryRouteImport } from './routes/our-story'
 import { Route as SharedRunIdRouteImport } from './routes/shared-run.$id'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -30,6 +31,11 @@ const AboutRoute = AboutRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogsRoute = BlogsRouteImport.update({
+  id: '/blogs',
+  path: '/blogs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OurStoryRoute = OurStoryRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/blogs': typeof BlogsRoute
   '/our-story': typeof OurStoryRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/blogs': typeof BlogsRoute
   '/our-story': typeof OurStoryRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/blogs': typeof BlogsRoute
   '/our-story': typeof OurStoryRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/blogs'
     | '/our-story'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/blogs'
     | '/our-story'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/blogs'
     | '/our-story'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  BlogsRoute: typeof BlogsRoute
   OurStoryRoute: typeof OurStoryRoute
   SharedRunIdRoute: typeof SharedRunIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blogs': {
+      id: '/blogs'
+      path: '/blogs'
+      fullPath: '/blogs'
+      preLoaderRoute: typeof BlogsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/our-story': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  BlogsRoute: BlogsRoute,
   OurStoryRoute: OurStoryRoute,
   SharedRunIdRoute: SharedRunIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,

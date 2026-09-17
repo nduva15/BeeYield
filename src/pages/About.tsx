@@ -20,6 +20,7 @@ import {
   Volume2,
   Globe,
   Sprout,
+  BookOpen,
 } from "lucide-react";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 
@@ -1070,6 +1071,12 @@ export default function About() {
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold shadow-lg hover:shadow-amber-500/30 transition-all duration-300 hover:scale-105"
               >
                 Try BeeGPT AI <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to="/blogs"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-amber-500/30 hover:bg-amber-500/10 text-amber-300 font-semibold transition-all duration-300 hover:scale-105"
+              >
+                Read Field Blogs <BookOpen className="w-4 h-4" />
               </Link>
             </div>
           </FadeIn>
