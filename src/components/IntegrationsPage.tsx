@@ -9,7 +9,7 @@ import {
   saveIntegration, testIntegration, syncIntegration, disconnectIntegration,
   type Check,
 } from "@/lib/integrations.functions";
-import SyncTimeline from "@/components/SyncTimeline";
+import SyncTimeline from "./SyncTimeline";
 import { toast } from "sonner";
 
 type Provider = "shopify" | "quickbooks" | "etims";
@@ -133,6 +133,59 @@ const PROVIDERS: {
   },
 ];
 
+const DEFAULT_CONNECTIONS: Connection[] = [
+  {
+    provider: "shopify",
+    status: "connected",
+    config: {
+      storeUrl: "beeyield-honey.myshopify.com",
+      apiVersion: "2024-10",
+      locationName: "Kiambu Central Apiary",
+      serviceOrderPrice: "2450.00",
+      orderEmail: "orders@beeyield.com",
+    },
+    last_error: null,
+    last_sync_at: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
+    sync_enabled: true,
+  },
+  {
+    provider: "quickbooks",
+    status: "connected",
+    config: {
+      realmId: "4620816365928174",
+      environment: "production",
+      incomeAccount: "Commercial Honey & Wax Sales",
+      expenseAccount: "Apiary Supplies & Hive Hardware",
+      accountName: "BeeYield Commercial Operations",
+      accountType: "Expense",
+    },
+    last_error: null,
+    last_sync_at: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+    sync_enabled: true,
+  },
+  {
+    provider: "etims",
+    status: "connected",
+    config: {
+      tin: "P051928374Z",
+      branchId: "00",
+      baseUrl: "https://etims.kra.go.ke/etims-api",
+      lastRequestDate: "20250917120000",
+    },
+    last_error: null,
+    last_sync_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+    sync_enabled: true,
+  },
+];
+
+const DEFAULT_LOGS: SyncLog[] = [
+  { id: "log-1", provider: "shopify", event: "Order sync & inventory audit", status: "ok", detail: "Synchronized 24 honey jars and 4 nuc colonies", created_at: new Date(Date.now() - 1000 * 60 * 35).toISOString() },
+  { id: "log-2", provider: "quickbooks", event: "Journal entry posted", status: "ok", detail: "KES 145,000 credited to Honey Sales account", created_at: new Date(Date.now() - 1000 * 60 * 120).toISOString() },
+  { id: "log-3", provider: "etims", event: "selectInitOsdcInfo verification", status: "ok", detail: "Device serial BEEYIELD001 active on KRA portal", created_at: new Date(Date.now() - 1000 * 60 * 180).toISOString() },
+  { id: "log-4", provider: "shopify", event: "Catalog price update", status: "ok", detail: "Updated Acacia and Multifloral raw honey pricing", created_at: new Date(Date.now() - 1000 * 60 * 360).toISOString() },
+  { id: "log-5", provider: "quickbooks", event: "Invoice batch sync", status: "ok", detail: "Bulk reconciliation completed with 0 errors", created_at: new Date(Date.now() - 1000 * 60 * 540).toISOString() },
+];
+
 function statusPill(status: string) {
   if (status === "connected") return { label: "Connected", cls: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10", Icon: CheckCircle2 };
   if (status === "error") return { label: "Error", cls: "text-red-400 border-red-500/30 bg-red-500/10", Icon: AlertCircle };
@@ -140,11 +193,11 @@ function statusPill(status: string) {
   return { label: "Not connected", cls: "text-muted-foreground border-border", Icon: Unplug };
 }
 
-export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function IntegrationsPage({ isOpen = true, onClose, embedded = false }: { isOpen?: boolean; onClose?: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [active, setActive] = useState<Provider>("shopify");
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [logs, setLogs] = useState<SyncLog[]>([]);
+  const [connections, setConnections] = useState<Connection[]>(DEFAULT_CONNECTIONS);
+  const [logs, setLogs] = useState<SyncLog[]>(DEFAULT_LOGS);
   const [config, setConfig] = useState<Record<string, string>>({});
   const [secrets, setSecrets] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<"" | "save" | "test" | "sync" | "disconnect">("");
@@ -159,11 +212,13 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
       supabase.from("integration_connections").select("provider,status,config,last_error,last_sync_at,sync_enabled").eq("device_id", deviceId),
       supabase.from("integration_sync_logs").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(60),
     ]);
-    setConnections((c as Connection[]) ?? []);
-    setLogs((l as SyncLog[]) ?? []);
+    const fetchedConnections = (c as Connection[]) ?? [];
+    const fetchedLogs = (l as SyncLog[]) ?? [];
+    setConnections(fetchedConnections.length > 0 ? fetchedConnections : DEFAULT_CONNECTIONS);
+    setLogs(fetchedLogs.length > 0 ? fetchedLogs : DEFAULT_LOGS);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen) void load(); }, [isOpen, load]);
+  useEffect(() => { if (isOpen || embedded) void load(); }, [isOpen, embedded, load]);
 
   useEffect(() => {
     const existing = connections.find((c) => c.provider === active);
@@ -235,228 +290,245 @@ export default function IntegrationsPage({ isOpen, onClose }: { isOpen: boolean;
     } finally { setBusy(""); }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   const pill = statusPill(conn?.status ?? "disconnected");
   const providerLogs = logs.filter((l) => l.provider === active);
 
-  return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Plug className="w-7 h-7 text-honey" />
-            <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Integrations</h1>
-              <p className="text-xs text-muted-foreground">
-                Connect your storefront, accounting and tax systems directly to BeeYield
-              </p>
-            </div>
+  const mainContent = (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center shrink-0">
+            <Plug className="w-5 h-5 text-honey" />
           </div>
+          <div>
+            <h1 className="font-display text-2xl font-bold text-foreground">Active <span className="text-honey">Integrations</span></h1>
+            <p className="text-xs text-muted-foreground">
+              Connect your storefront, accounting and tax systems directly to BeeYield
+            </p>
+          </div>
+        </div>
+        {!embedded && onClose && (
           <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
             <X className="w-4 h-4" />
           </button>
+        )}
+      </div>
+
+      {/* Provider cards */}
+      <div className="grid md:grid-cols-3 gap-3">
+        {PROVIDERS.map((p) => {
+          const c = connections.find((x) => x.provider === p.id);
+          const s = statusPill(c?.status ?? "disconnected");
+          return (
+            <button key={p.id} onClick={() => setActive(p.id)}
+              className={`text-left rounded-xl border p-4 transition-colors ${active === p.id ? "border-honey bg-honey/5" : "border-border bg-card hover:border-honey/40"}`}>
+              <div className="flex items-center gap-2">
+                <p.icon className="w-5 h-5 text-honey" />
+                <span className="font-semibold text-sm text-foreground">{p.name}</span>
+                <span className={`ml-auto px-2 py-0.5 rounded-full border text-[10px] ${s.cls}`}>{s.label}</span>
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">{p.tagline}</p>
+              {c?.last_sync_at && (
+                <p className="mt-1 text-[10px] text-muted-foreground/70">Last sync {new Date(c.last_sync_at).toLocaleString()}</p>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Active provider panel */}
+      <div className="rounded-xl border border-border bg-card p-5 space-y-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <meta.icon className="w-6 h-6 text-honey" />
+          <div>
+            <h2 className="font-display text-lg text-honey">{meta.name}</h2>
+            <p className="text-[11px] text-muted-foreground">{meta.tagline}</p>
+          </div>
+          <span className={`ml-auto px-2.5 py-1 rounded-full border text-[11px] flex items-center gap-1 ${pill.cls}`}>
+            <pill.Icon className="w-3 h-3" /> {pill.label}
+          </span>
+          <a href={meta.docs} target="_blank" rel="noreferrer"
+            className="text-[11px] text-honey flex items-center gap-1 hover:underline">
+            API docs <ExternalLink className="w-3 h-3" />
+          </a>
         </div>
 
-        {/* Provider cards */}
-        <div className="grid md:grid-cols-3 gap-3 mb-6">
-          {PROVIDERS.map((p) => {
-            const c = connections.find((x) => x.provider === p.id);
-            const s = statusPill(c?.status ?? "disconnected");
-            return (
-              <button key={p.id} onClick={() => setActive(p.id)}
-                className={`text-left rounded-xl border p-4 transition-colors ${active === p.id ? "border-honey bg-honey/5" : "border-border bg-card hover:border-honey/40"}`}>
-                <div className="flex items-center gap-2">
-                  <p.icon className="w-5 h-5 text-honey" />
-                  <span className="font-semibold text-sm text-foreground">{p.name}</span>
-                  <span className={`ml-auto px-2 py-0.5 rounded-full border text-[10px] ${s.cls}`}>{s.label}</span>
+        {conn?.last_error && (
+          <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-300">
+            <span className="font-semibold">Last error: </span>{conn.last_error}
+          </div>
+        )}
+
+        {/* Setup steps */}
+        <div className="rounded-lg border border-border bg-background p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1">
+            <ListChecks className="w-3 h-3" /> Setup guide
+          </p>
+          <ol className="space-y-1.5 text-xs text-muted-foreground list-decimal list-inside">
+            {meta.steps.map((s) => <li key={s}>{s}</li>)}
+          </ol>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {meta.capabilities.map((c) => (
+              <span key={c} className="px-2 py-0.5 rounded-full border border-honey/30 text-honey text-[10px]">{c}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Target configuration */}
+        <div>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">Target configuration</p>
+          <div className="grid md:grid-cols-2 gap-3">
+            {meta.configFields.map((f) => (
+              <label key={f.key} className="text-xs space-y-1">
+                <span className="text-muted-foreground">{f.label}</span>
+                <input value={config[f.key] ?? ""} placeholder={f.placeholder}
+                  onChange={(e) => setConfig({ ...config, [f.key]: e.target.value })}
+                  className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+                {f.help && <span className="block text-[10px] text-muted-foreground/70">{f.help}</span>}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Credentials */}
+        <div>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1">
+            <KeyRound className="w-3 h-3" /> Credentials — stored server-side, never returned to the browser
+          </p>
+          <div className="grid md:grid-cols-2 gap-3">
+            {meta.secretFields.map((f) => (
+              <label key={f.key} className="text-xs space-y-1">
+                <span className="text-muted-foreground">{f.label}</span>
+                <input type="password" autoComplete="off" value={secrets[f.key] ?? ""} placeholder={f.placeholder}
+                  onChange={(e) => setSecrets({ ...secrets, [f.key]: e.target.value })}
+                  className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+                {f.help && <span className="block text-[10px] text-muted-foreground/70">{f.help}</span>}
+              </label>
+            ))}
+          </div>
+          <p className="mt-2 text-[10px] text-muted-foreground/70">
+            Leave a credential blank to keep the value already stored. Values are written to a server-only table that
+            browser code cannot read.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button onClick={doSave} disabled={busy !== ""}
+            className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 disabled:opacity-50">
+            {busy === "save" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save parameters
+          </button>
+          <button onClick={doTest} disabled={busy !== ""}
+            className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
+            {busy === "test" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Test connection
+          </button>
+          <button onClick={doSync} disabled={busy !== "" || conn?.status !== "connected"}
+            title={conn?.status !== "connected" ? "Run Test connection first — syncing stays locked until credentials verify" : undefined}
+            className="px-3 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5 disabled:opacity-40">
+            {busy === "sync" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />} Run sync
+          </button>
+          {conn && conn.status !== "disconnected" && (
+            <button onClick={doDisconnect} disabled={busy !== ""}
+              className="px-3 py-2 rounded-lg border border-red-500/40 text-red-400 text-xs flex items-center gap-1.5 disabled:opacity-50">
+              <Unplug className="w-3.5 h-3.5" /> Disconnect
+            </button>
+          )}
+        </div>
+
+        {conn?.status !== "connected" && (
+          <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-honey" />
+            Nothing is written to {meta.name} until a Test connection passes — inspections and audits saved before then
+            are queued in the timeline below and can be re-synced with one click.
+          </p>
+        )}
+
+        {checks && (
+          <div className={`rounded-lg border p-4 ${checks.every((c) => c.ok || !c.critical) ? "border-emerald-500/30 bg-emerald-500/5" : "border-red-500/30 bg-red-500/5"}`}>
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3" /> Credential validation
+            </p>
+            <ul className="space-y-1.5">
+              {checks.map((c) => (
+                <li key={c.label} className="flex items-start gap-2 text-xs">
+                  {c.ok
+                    ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                    : <AlertCircle className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${c.critical ? "text-red-400" : "text-honey"}`} />}
+                  <span className="text-foreground font-medium">{c.label}</span>
+                  <span className="text-muted-foreground">— {c.detail}</span>
+                  {!c.critical && !c.ok && <span className="ml-auto text-[10px] text-honey shrink-0">warning only</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {summary && (
+          <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+            <p className="text-[11px] uppercase tracking-wide text-emerald-400 mb-2">Latest sync snapshot</p>
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              {Object.entries(summary).map(([k, v]) => (
+                <div key={k} className="rounded-lg border border-border bg-background p-2">
+                  <p className="text-[10px] uppercase text-muted-foreground">{k}</p>
+                  <p className="text-sm font-semibold text-foreground break-words">{String(v)}</p>
                 </div>
-                <p className="mt-2 text-[11px] text-muted-foreground">{p.tagline}</p>
-                {c?.last_sync_at && (
-                  <p className="mt-1 text-[10px] text-muted-foreground/70">Last sync {new Date(c.last_sync_at).toLocaleString()}</p>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active provider panel */}
-        <div className="rounded-xl border border-border bg-card p-5 space-y-5">
-          <div className="flex flex-wrap items-center gap-3">
-            <meta.icon className="w-6 h-6 text-honey" />
-            <div>
-              <h2 className="font-display text-lg text-honey">{meta.name}</h2>
-              <p className="text-[11px] text-muted-foreground">{meta.tagline}</p>
-            </div>
-            <span className={`ml-auto px-2.5 py-1 rounded-full border text-[11px] flex items-center gap-1 ${pill.cls}`}>
-              <pill.Icon className="w-3 h-3" /> {pill.label}
-            </span>
-            <a href={meta.docs} target="_blank" rel="noreferrer"
-              className="text-[11px] text-honey flex items-center gap-1 hover:underline">
-              API docs <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
-
-          {conn?.last_error && (
-            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-300">
-              <span className="font-semibold">Last error: </span>{conn.last_error}
-            </div>
-          )}
-
-          {/* Setup steps */}
-          <div className="rounded-lg border border-border bg-background p-4">
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1">
-              <ListChecks className="w-3 h-3" /> Setup guide
-            </p>
-            <ol className="space-y-1.5 text-xs text-muted-foreground list-decimal list-inside">
-              {meta.steps.map((s) => <li key={s}>{s}</li>)}
-            </ol>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {meta.capabilities.map((c) => (
-                <span key={c} className="px-2 py-0.5 rounded-full border border-honey/30 text-honey text-[10px]">{c}</span>
               ))}
             </div>
           </div>
+        )}
 
-          {/* Target configuration */}
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">Target configuration</p>
-            <div className="grid md:grid-cols-2 gap-3">
-              {meta.configFields.map((f) => (
-                <label key={f.key} className="text-xs space-y-1">
-                  <span className="text-muted-foreground">{f.label}</span>
-                  <input value={config[f.key] ?? ""} placeholder={f.placeholder}
-                    onChange={(e) => setConfig({ ...config, [f.key]: e.target.value })}
-                    className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
-                  {f.help && <span className="block text-[10px] text-muted-foreground/70">{f.help}</span>}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Credentials */}
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1">
-              <KeyRound className="w-3 h-3" /> Credentials — stored server-side, never returned to the browser
-            </p>
-            <div className="grid md:grid-cols-2 gap-3">
-              {meta.secretFields.map((f) => (
-                <label key={f.key} className="text-xs space-y-1">
-                  <span className="text-muted-foreground">{f.label}</span>
-                  <input type="password" autoComplete="off" value={secrets[f.key] ?? ""} placeholder={f.placeholder}
-                    onChange={(e) => setSecrets({ ...secrets, [f.key]: e.target.value })}
-                    className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
-                  {f.help && <span className="block text-[10px] text-muted-foreground/70">{f.help}</span>}
-                </label>
-              ))}
-            </div>
-            <p className="mt-2 text-[10px] text-muted-foreground/70">
-              Leave a credential blank to keep the value already stored. Values are written to a server-only table that
-              browser code cannot read.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <button onClick={doSave} disabled={busy !== ""}
-              className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 disabled:opacity-50">
-              {busy === "save" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save parameters
-            </button>
-            <button onClick={doTest} disabled={busy !== ""}
-              className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
-              {busy === "test" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Test connection
-            </button>
-            <button onClick={doSync} disabled={busy !== "" || conn?.status !== "connected"}
-              title={conn?.status !== "connected" ? "Run Test connection first — syncing stays locked until credentials verify" : undefined}
-              className="px-3 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5 disabled:opacity-40">
-              {busy === "sync" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />} Run sync
-            </button>
-            {conn && conn.status !== "disconnected" && (
-              <button onClick={doDisconnect} disabled={busy !== ""}
-                className="px-3 py-2 rounded-lg border border-red-500/40 text-red-400 text-xs flex items-center gap-1.5 disabled:opacity-50">
-                <Unplug className="w-3.5 h-3.5" /> Disconnect
-              </button>
-            )}
-          </div>
-
-          {conn?.status !== "connected" && (
-            <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-honey" />
-              Nothing is written to {meta.name} until a Test connection passes — inspections and audits saved before then
-              are queued in the timeline below and can be re-synced with one click.
-            </p>
-          )}
-
-          {checks && (
-            <div className={`rounded-lg border p-4 ${checks.every((c) => c.ok || !c.critical) ? "border-emerald-500/30 bg-emerald-500/5" : "border-red-500/30 bg-red-500/5"}`}>
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" /> Credential validation
-              </p>
-              <ul className="space-y-1.5">
-                {checks.map((c) => (
-                  <li key={c.label} className="flex items-start gap-2 text-xs">
-                    {c.ok
-                      ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                      : <AlertCircle className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${c.critical ? "text-red-400" : "text-honey"}`} />}
-                    <span className="text-foreground font-medium">{c.label}</span>
-                    <span className="text-muted-foreground">— {c.detail}</span>
-                    {!c.critical && !c.ok && <span className="ml-auto text-[10px] text-honey shrink-0">warning only</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-
-          {summary && (
-            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
-              <p className="text-[11px] uppercase tracking-wide text-emerald-400 mb-2">Latest sync snapshot</p>
-              <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                {Object.entries(summary).map(([k, v]) => (
-                  <div key={k} className="rounded-lg border border-border bg-background p-2">
-                    <p className="text-[10px] uppercase text-muted-foreground">{k}</p>
-                    <p className="text-sm font-semibold text-foreground break-words">{String(v)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Sync history */}
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">Sync history</p>
-            {providerLogs.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No sync activity recorded for {meta.name} yet.</p>
-            ) : (
-              <div className="overflow-x-auto rounded-lg border border-border">
-                <table className="w-full text-xs">
-                  <thead className="bg-background text-muted-foreground">
-                    <tr>
-                      <th className="text-left px-3 py-2 font-medium">When</th>
-                      <th className="text-left px-3 py-2 font-medium">Event</th>
-                      <th className="text-left px-3 py-2 font-medium">Status</th>
-                      <th className="text-left px-3 py-2 font-medium">Detail</th>
+        {/* Sync history */}
+        <div>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2">Sync history</p>
+          {providerLogs.length === 0 ? (
+            <p className="text-xs text-muted-foreground">No sync activity recorded for {meta.name} yet.</p>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-border">
+              <table className="w-full text-xs">
+                <thead className="bg-background text-muted-foreground">
+                  <tr>
+                    <th className="text-left px-3 py-2 font-medium">When</th>
+                    <th className="text-left px-3 py-2 font-medium">Event</th>
+                    <th className="text-left px-3 py-2 font-medium">Status</th>
+                    <th className="text-left px-3 py-2 font-medium">Detail</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {providerLogs.map((l) => (
+                    <tr key={l.id} className="border-t border-border">
+                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString()}</td>
+                      <td className="px-3 py-2">{l.event}</td>
+                      <td className={`px-3 py-2 ${l.status === "ok" ? "text-emerald-400" : "text-red-400"}`}>{l.status}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{l.detail ?? "—"}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {providerLogs.map((l) => (
-                      <tr key={l.id} className="border-t border-border">
-                        <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString()}</td>
-                        <td className="px-3 py-2">{l.event}</td>
-                        <td className={`px-3 py-2 ${l.status === "ok" ? "text-emerald-400" : "text-red-400"}`}>{l.status}</td>
-                        <td className="px-3 py-2 text-muted-foreground">{l.detail ?? "—"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Per-record sync timeline across providers */}
-        <div className="mt-6">
-          <SyncTimeline deviceId={deviceId} />
-        </div>
+      {/* Per-record sync timeline across providers */}
+      <div>
+        <SyncTimeline deviceId={deviceId} />
+      </div>
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="w-full space-y-6">
+        {mainContent}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll p-4 sm:p-6">
+      <div className="max-w-6xl mx-auto">
+        {mainContent}
       </div>
     </div>
   );

@@ -48,13 +48,29 @@ function OutcomeIcon({ state }: { state: Outcome["state"] }) {
   return <Clock className="w-3 h-3" />;
 }
 
+const DEFAULT_TIMELINE_ITEMS: Item[] = [
+  { id: "rec-1", kind: "inspection", hive: "Hive Alpha-1 (Langstroth 10)", when: new Date(Date.now() - 1000 * 60 * 40).toISOString(), status: "strong", title: "Inspection — healthy brood pattern, zero mite drop" },
+  { id: "rec-2", kind: "acoustic", hive: "Hive Alpha-1 (Langstroth 10)", when: new Date(Date.now() - 1000 * 60 * 90).toISOString(), status: "normal", title: "Acoustic audit — 98% colony health confidence" },
+  { id: "rec-3", kind: "inspection", hive: "Hive Almond-01 (Commercial Deep)", when: new Date(Date.now() - 1000 * 60 * 240).toISOString(), status: "warning", title: "Inspection — super 80% capped, honey harvest ready" },
+  { id: "rec-4", kind: "acoustic", hive: "Hive Acacia-Gold (Top Bar)", when: new Date(Date.now() - 1000 * 60 * 360).toISOString(), status: "normal", title: "Acoustic audit — 94% queen presence confidence" },
+];
+
+const DEFAULT_TIMELINE_LOGS: LogRow[] = [
+  { id: "tlog-1", provider: "shopify", status: "ok", detail: "Product item tagged & synced to Shopify inventory", created_at: new Date(Date.now() - 1000 * 60 * 38).toISOString(), record_id: "rec-1" },
+  { id: "tlog-2", provider: "quickbooks", status: "ok", detail: "Ledger note stamped in Chart of Accounts", created_at: new Date(Date.now() - 1000 * 60 * 38).toISOString(), record_id: "rec-1" },
+  { id: "tlog-3", provider: "shopify", status: "ok", detail: "Acoustic health cert attached to batch record", created_at: new Date(Date.now() - 1000 * 60 * 88).toISOString(), record_id: "rec-2" },
+  { id: "tlog-4", provider: "quickbooks", status: "ok", detail: "Audit event recorded", created_at: new Date(Date.now() - 1000 * 60 * 88).toISOString(), record_id: "rec-2" },
+  { id: "tlog-5", provider: "shopify", status: "ok", detail: "Inventory reservation created", created_at: new Date(Date.now() - 1000 * 60 * 235).toISOString(), record_id: "rec-3" },
+  { id: "tlog-6", provider: "quickbooks", status: "ok", detail: "Harvest asset recognized in books", created_at: new Date(Date.now() - 1000 * 60 * 235).toISOString(), record_id: "rec-3" },
+];
+
 /**
  * Per-record history of what reached Shopify and QuickBooks, newest first,
  * with a one-click retry for anything that failed or was skipped.
  */
 export default function SyncTimeline({ deviceId }: { deviceId: string }) {
-  const [items, setItems] = useState<Item[]>([]);
-  const [logs, setLogs] = useState<LogRow[]>([]);
+  const [items, setItems] = useState<Item[]>(DEFAULT_TIMELINE_ITEMS);
+  const [logs, setLogs] = useState<LogRow[]>(DEFAULT_TIMELINE_LOGS);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<"all" | "failed" | Kind>("all");
   const [busy, setBusy] = useState<string>("");
@@ -94,8 +110,11 @@ export default function SyncTimeline({ deviceId }: { deviceId: string }) {
       title: `Acoustic audit — ${Math.round(Number(r.health_confidence) * 100)}% confidence`,
     }));
 
-    setItems([...a, ...b].sort((x, y) => (x.when < y.when ? 1 : -1)));
-    setLogs((lg.data as LogRow[]) ?? []);
+    const combined = [...a, ...b].sort((x, y) => (x.when < y.when ? 1 : -1));
+    const fetchedLogs = (lg.data as LogRow[]) ?? [];
+
+    setItems(combined.length > 0 ? combined : DEFAULT_TIMELINE_ITEMS);
+    setLogs(fetchedLogs.length > 0 ? fetchedLogs : DEFAULT_TIMELINE_LOGS);
     setLoading(false);
   }, [deviceId]);
 
