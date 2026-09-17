@@ -106,6 +106,8 @@ import YieldProjection from '@/components/beeyield/lovable_ai/YieldProjection';
 import MeasurementDataTools from '@/components/beeyield/lovable_ai/MeasurementDataTools';
 import HiveHealthDashboard from '@/components/beeyield/lovable_ai/HiveHealthDashboard';
 import SupportPageModal from '@/components/beeyield/lovable_ai/SupportPageModal';
+import SettingsPage from '@/components/beeyield/lovable_ai/SettingsPage';
+import IntegrationsPage from '@/components/beeyield/lovable_ai/IntegrationsPage';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 const NEW_ACCOUNT_ONBOARDING_WINDOW_MS = 1000 * 60 * 60 * 24 * 7;
@@ -464,9 +466,9 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-reports':
             case 'meters-settings': return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
             case 'billing': return <BillingView onTabChange={handleTabChange} />;
-            case 'integrations': return <IntegrationsView />;
+            case 'integrations': return renderEmbedded(<IntegrationsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'support': return <SupportCenterView onTabChange={handleTabChange} />;
-            case 'settings': return <SettingsView onTabChange={handleTabChange} />;
+            case 'settings': return renderEmbedded(<SettingsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             default: return (
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">
                     <h3 className="text-lg font-medium text-foreground">{navItems.find(i => i.id === activeTab)?.label || t('view_content')}</h3>
