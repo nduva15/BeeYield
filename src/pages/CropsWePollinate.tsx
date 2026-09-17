@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,16 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
 const CropsWePollinate = () => {
   const pollinationCrops = dashboardPollinationCropDetails;
+
+  useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.replace("#", "");
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 150);
+    }
+  }, []);
 
   const locations = [
     { continent: "Africa", countries: ["Kenya"], color: "bg-primary" }
