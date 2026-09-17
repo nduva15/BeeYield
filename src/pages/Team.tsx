@@ -86,7 +86,7 @@ const Team = () => {
     const specialistRoles = [
         { title: "Beekeepers", icon: Bug, desc: "Field experts maintaining colony health and biological integrity." },
         { title: "Engineers", icon: Cpu, desc: "Building the hardware and low-latency sensors that power our hives." },
-        { title: "Data Scientists", icon: Binary, desc: "Extracting actionable insights from millions of environmental data points." },
+        { title: "Data Scientists", icon: Binary, desc: "Extracting actionable insights from over 2,000 environmental and hive data points daily and growing." },
         { title: "Programmers", icon: Code, desc: "Architecting the distributed OS and AI models that drive pollination." },
         { title: "Researchers", icon: Microscope, desc: "Advancing the frontiers of apicultural science and biodiversity." },
         { title: "Agriculturalists", icon: Leaf, desc: "Bridging the gap between bee health and industrial crop yields." },
@@ -293,7 +293,7 @@ const Team = () => {
                             { number: "184+", label: "Beehives", desc: "Scale Capacity" },
                             { number: "1M+", label: "Bee Colonies", desc: "Population" },
                             { number: "2,500+", label: "Trees", desc: "Restoration" },
-                            { number: "25+", label: "Acres", desc: "Pollinated" },
+                            { number: "95+", label: "Acres", desc: "Pollinated & Counting" },
                         ].map((stat, i) => (
                             <motion.div
                                 key={i}
