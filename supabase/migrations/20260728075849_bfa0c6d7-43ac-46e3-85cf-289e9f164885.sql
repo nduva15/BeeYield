@@ -139,13 +139,29 @@ CREATE TABLE IF NOT EXISTS public.devices (
 );
 
 ALTER TABLE public.devices
+  ADD COLUMN IF NOT EXISTS id UUID DEFAULT gen_random_uuid(),
+  ADD COLUMN IF NOT EXISTS serial TEXT,
   ADD COLUMN IF NOT EXISTS device_kind TEXT DEFAULT 'hub',
   ADD COLUMN IF NOT EXISTS link_type TEXT DEFAULT 'online',
   ADD COLUMN IF NOT EXISTS confirmation_code TEXT,
   ADD COLUMN IF NOT EXISTS label TEXT,
   ADD COLUMN IF NOT EXISTS firmware TEXT,
   ADD COLUMN IF NOT EXISTS battery_pct NUMERIC,
-  ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ;
+  ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS apiary_id UUID REFERENCES public.apiaries(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS hive_id UUID REFERENCES public.hives(id) ON DELETE SET NULL;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conrelid = 'public.devices'::regclass AND contype IN ('p', 'u') 
+        AND conkey = ARRAY[(SELECT attnum FROM pg_attribute WHERE attrelid = 'public.devices'::regclass AND attname = 'id')]
+    ) THEN
+        ALTER TABLE public.devices ADD CONSTRAINT devices_id_key UNIQUE (id);
+    END IF;
+EXCEPTION
+    WHEN duplicate_table OR duplicate_object THEN null;
+END $$;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.devices TO authenticated;
 GRANT ALL ON public.devices TO service_role;
@@ -175,6 +191,17 @@ CREATE TABLE IF NOT EXISTS public.device_measurements (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE public.device_measurements
+  ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  ADD COLUMN IF NOT EXISTS device_id UUID REFERENCES public.devices(id) ON DELETE CASCADE,
+  ADD COLUMN IF NOT EXISTS hive_id UUID REFERENCES public.hives(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'online',
+  ADD COLUMN IF NOT EXISTS temperature_c NUMERIC,
+  ADD COLUMN IF NOT EXISTS humidity_pct NUMERIC,
+  ADD COLUMN IF NOT EXISTS weight_kg NUMERIC,
+  ADD COLUMN IF NOT EXISTS battery_pct NUMERIC,
+  ADD COLUMN IF NOT EXISTS raw JSONB;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.device_measurements TO authenticated;
 GRANT ALL ON public.device_measurements TO service_role;
