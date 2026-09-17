@@ -1,6 +1,6 @@
 import { Link as RouterLink } from "react-router-dom";
 import { QuickLink as Link } from "./QuickLink";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Globe, Activity, Cpu } from "lucide-react";
 import Logo from "@/assets/Logo.png";
 import { Newsletter } from "@/components/Newsletter";
 
@@ -96,7 +96,36 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-border/40 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+        {/* Global Partners Strip */}
+        <div className="mt-10 pt-6 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-4">
+            <span className="font-semibold uppercase tracking-wider text-foreground/70">Partners:</span>
+            <span className="inline-flex items-center gap-1.5 font-medium text-foreground/90">
+              <Globe className="h-3.5 w-3.5 text-primary" /> Farmers
+            </span>
+            <span className="text-border hidden sm:inline">•</span>
+            <a
+              href="https://apisense.ai/en"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-medium text-foreground/90 hover:text-primary transition-colors"
+            >
+              <Activity className="h-3.5 w-3.5 text-primary" /> ApiSense
+            </a>
+            <span className="text-border hidden sm:inline">•</span>
+            <a
+              href="https://intelligenthives.eu/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-medium text-foreground/90 hover:text-primary transition-colors"
+            >
+              <Cpu className="h-3.5 w-3.5 text-primary" /> Intelligent Hives
+            </a>
+          </div>
+          <span className="text-[11px] text-muted-foreground/80 font-medium">Precision Apiculture & Telemetry Network</span>
+        </div>
+
+        <div className="mt-6 border-t border-border/40 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} BeeYield. All rights reserved.</p>
           <div className="flex gap-6">
             <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>

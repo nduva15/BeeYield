@@ -67,7 +67,7 @@ const CommitmentPage = () => {
       number: 17,
       title: "Partnerships for the Goals",
       description: "We collaborate with strategic partners to scale our impact and share knowledge across borders, building a resilient ecosystem for bees and people.",
-      impact: "Partnering with Farmers, ApiSense & Technical Hive Partners",
+      impact: "Partnering with Farmers, ApiSense & Intelligent Hives",
       color: "from-blue-700 to-blue-900",
       icon: Heart,
     },

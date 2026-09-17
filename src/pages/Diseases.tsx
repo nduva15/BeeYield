@@ -1450,11 +1450,12 @@ const Diseases = () => {
                             BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities. Apisense is supported by national and international beekeeping associations.
                         </p>
 
-                        <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
+                        <div className="grid sm:grid-cols-4 gap-6 max-w-4xl mx-auto">
                             {[
+                                { label: "Farmers", subtitle: "Community Orchards", icon: Globe },
                                 { label: "Apisense", subtitle: "IoT Disease Partner", icon: Cpu },
-                                { label: "BeeYield", subtitle: "Precision Pollination", icon: Activity },
-                                { label: "Global Research", subtitle: "Universities & Labs", icon: Globe },
+                                { label: "Intelligent Hives", subtitle: "Telemetry & Bio-Sensors", icon: Activity },
+                                { label: "Global Research", subtitle: "Universities & Labs", icon: Sparkles },
                             ].map((partner, i) => (
                                 <motion.div
                                     key={i}
