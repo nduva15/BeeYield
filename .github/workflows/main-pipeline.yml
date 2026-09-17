@@ -630,7 +630,13 @@ jobs:
           echo "Running performance tests..."
 
       - name: Update Deployment Status
+        env:
+          STATUS_PAGE_API: ${{ secrets.STATUS_PAGE_API }}
         run: |
-          curl -X POST ${{ secrets.STATUS_PAGE_API }} \
-            -H "Content-Type: application/json" \
-            -d '{"status":"operational","message":"Deployment successful"}'
+          if [ -n "$STATUS_PAGE_API" ]; then
+            curl -X POST "$STATUS_PAGE_API" \
+              -H "Content-Type: application/json" \
+              -d '{"status":"operational","message":"Deployment successful"}'
+          else
+            echo "Status page update skipped: STATUS_PAGE_API secret is not configured."
+          fi
