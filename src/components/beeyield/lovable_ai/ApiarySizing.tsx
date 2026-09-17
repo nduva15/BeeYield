@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { X, Box, Save, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +18,7 @@ const CROPS: Record<string, { hivesPerHa: number; bloomDays: number }> = {
   "Acacia (forest)": { hivesPerHa: 1.5, bloomDays: 35 },
 };
 
-export default function ApiarySizing({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function ApiarySizing({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [crop, setCrop] = useState("Almond");
   const [hectares, setHectares] = useState(40);
@@ -52,12 +52,12 @@ export default function ApiarySizing({ isOpen, onClose }: { isOpen: boolean; onC
     });
   }, [out]);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("apiary_sizing_runs").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20);
     setRuns((data ?? []) as Run[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  useEffect(() => { if (isOpen && deviceId) void load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
     const inputs = { crop, hectares, supersPerHive, framesPerSuper, hivesPerTruck, transportKm, costPerKm, bloomStart };
@@ -67,10 +67,10 @@ export default function ApiarySizing({ isOpen, onClose }: { isOpen: boolean; onC
     load();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-6xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <Box className="w-6 h-6 text-honey" />
@@ -79,7 +79,9 @@ export default function ApiarySizing({ isOpen, onClose }: { isOpen: boolean; onC
               <p className="text-xs text-muted-foreground">Hives, supers and transport for a target crop bloom</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 mb-4">

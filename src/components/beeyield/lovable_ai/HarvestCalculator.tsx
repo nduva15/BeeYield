@@ -3,6 +3,7 @@ import { X, Calculator, Loader2, Sparkles, Save, FileDown, History, Trash2, Copy
 import { toast } from "sonner";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { downloadPDF, downloadCSV, type AssumptionsBlock, type ExportPayload } from "@/lib/harvest-export";
@@ -37,8 +38,7 @@ type SavedRun = {
   ai_forecast: string | null;
   notes: string | null;
   prompt_variant: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  assumptions: any | null;
+  assumptions: Record<string, unknown> | null;
   created_at: string;
 };
 
@@ -49,18 +49,18 @@ type RunVersion = {
   ai_forecast: string | null;
   local_estimate_kg: number | null;
   prompt_variant: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  assumptions: any | null;
+  assumptions: Record<string, unknown> | null;
   created_at: string;
 };
 
 interface Props {
+  embedded?: boolean;
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
 }
 
-export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: Props) {
+export default function HarvestCalculator({ isOpen, onClose, embedded = false, onOpenPlanning }: Props) {
   const deviceId = useDeviceId();
   const [hives, setHives] = useState(10);
   const [acres, setAcres] = useState(0);
@@ -191,11 +191,10 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
     setAiText("");
     setAiOpen(true);
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ messages: [{ role: "user", content: buildPrompt() }], promptVariant }),
       });
@@ -246,8 +245,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
       ai_forecast: aiText || null,
       notes: notes.trim() || null,
       prompt_variant: promptVariant,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      assumptions: assumptions as any,
+      assumptions: assumptions as unknown as Json,
     });
     setSaving(false);
     if (error) {
@@ -269,8 +267,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
       ai_forecast: aiText,
       local_estimate_kg: Number(apiaryHarvest.toFixed(2)),
       prompt_variant: promptVariant,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      assumptions: assumptions as any,
+      assumptions: assumptions as unknown as Json,
     });
     if (error) { toast.error("Failed to save version"); return; }
     toast.success(`Saved as v${nextN} on ${run.crop}`);
@@ -411,11 +408,11 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
     } catch { /* canceled */ }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-5xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Calculator className="w-7 h-7 text-honey" />
@@ -432,6 +429,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
             >
               <History className="w-3.5 h-3.5" /> History ({savedRuns.length})
             </button>
+            {!embedded && (
             <button
               onClick={onClose}
               className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
@@ -439,6 +437,7 @@ export default function HarvestCalculator({ isOpen, onClose, onOpenPlanning }: P
             >
               <X className="w-4 h-4" />
             </button>
+          )}
           </div>
         </div>
 

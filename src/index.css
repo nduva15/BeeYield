@@ -1002,19 +1002,46 @@ All colors MUST be HSL.
   }
 }
 
-/* Embedded dashboard tool wrapper: neutralize modal fixed overlays and conform to container */
-.beeyield-embedded-tool,
-.beeyield-embedded-tool > .fixed.inset-0,
-.beeyield-embedded-tool [class*="fixed"][class*="inset-0"] {
-  position: static !important;
-  inset: auto !important;
-  z-index: auto !important;
-  background: transparent !important;
-  backdrop-filter: none !important;
-  overflow: visible !important;
+/* Embedded dashboard tool wrapper: neutralize modal fixed overlays and conform to InspectionsView spacing */
+.beeyield-embedded-tool {
   width: 100% !important;
+  max-width: 1400px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  position: relative !important;
+  z-index: 10 !important;
 }
 
-.beeyield-embedded-tool button:has(> svg.lucide-x) {
+.beeyield-embedded-tool .fixed.inset-0,
+.beeyield-embedded-tool [class*="fixed"][class*="inset-0"],
+.beeyield-embedded-tool div[class*="fixed"][class*="z-50"],
+.beeyield-embedded-tool div[class*="fixed"][class*="z-60"] {
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 1 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  overflow: visible !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+.beeyield-embedded-tool [class*="max-w-"] {
+  max-width: 100% !important;
+}
+
+.beeyield-embedded-tool button[aria-label="Close"],
+.beeyield-embedded-tool button:has(> svg.lucide-x),
+.beeyield-embedded-tool button:has(> svg[class*="lucide-x"]) {
   display: none !important;
 }

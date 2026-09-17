@@ -40,7 +40,7 @@ type Log = {
 type RunRow = { id: string; crop: string; created_at: string };
 type RunVersion = { id: string; version_label: string; created_at: string };
 
-export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BeeFlightTracker({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [logs, setLogs] = useState<Log[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);
@@ -88,9 +88,8 @@ export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean;
   };
 
   const load = useCallback(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [logRes, runRes] = await Promise.all([
-      (supabase as any).from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50),
+      supabase.from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50),
       supabase.from("harvest_runs").select("id,crop,created_at").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
     ]);
     if (logRes.data) setLogs(logRes.data as Log[]);
@@ -124,8 +123,7 @@ export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean;
       ? [anchor, projectPoint(anchor, flightBearingDeg, distance)]
       : null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any).from("bee_flight_logs").insert({
+    const { error } = await supabase.from("bee_flight_logs").insert({
       run_id: selectedRunId || null,
       version_id: selectedVersionId !== "current" ? selectedVersionId : null,
       device_id: deviceId,
@@ -161,9 +159,9 @@ export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean;
     setAi("");
     try {
       const prompt = `As Beeyield AI, analyze this bee flight + foraging snapshot and combine it with bloom phenology context to give expert recommendations.\n\nHive: ${hiveLabel}\nObserved at: ${observedAt}\nForager rate: ${bpm} bees/min entering\nPollen loads observed: ${pollen}/min\nFlorage source: ${florage}\nFlorage indicator: ${florageIndicator}\nMean flight distance: ${distance} m\nFlight bearing: ${flightBearingDeg} degrees\nForaging zone: ${getForagingZone(distance)}\nStorage level: ${storageLevelPct}%\nNutrition score: ${nutritionScore}/100\nWeather: ${weather}\nNotes: ${notes || "(none)"}\n\nProvide: colony-strength estimate, foraging-zone health, bloom-stage inference, expected nectar inflow (kg/day), and 5 expert recommendations.`;
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "flight-only" }),
       });
       if (!resp.ok || !resp.body) {
@@ -250,11 +248,11 @@ export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean;
     toast.success("Flights CSV exported");
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-5xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Plane className="w-7 h-7 text-honey" />
@@ -263,9 +261,11 @@ export default function BeeFlightTracker({ isOpen, onClose }: { isOpen: boolean;
               <p className="text-xs text-muted-foreground">Foraging zones, activity counter, flight paths, and storage or nutrition indicators</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center">
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center">
             <X className="w-4 h-4" />
           </button>
+          )}
         </div>
 
         <div className="p-5 rounded-xl border border-honey/40 bg-honey/5 mb-4 flex items-center gap-4 flex-wrap">

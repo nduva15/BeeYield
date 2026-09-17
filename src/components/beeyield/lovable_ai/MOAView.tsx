@@ -6,6 +6,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useDeviceId } from "@/hooks/use-device-id";
 import MarkdownRenderer from "./MarkdownRenderer";
 
@@ -42,6 +43,7 @@ type Bloom = { id: string; crop: string; intensity: number; bloom_start: string 
 type Flight = { id: string; hive_label: string; bees_per_minute: number; pollen_loads: number; florage_source: string | null; observed_at: string };
 
 interface Props {
+  embedded?: boolean;
   isOpen: boolean;
   onClose: () => void;
   readOnly?: boolean;
@@ -53,7 +55,7 @@ const DEFAULT_FILTERS: Filters = {
   showCoverage: true, showBloom: true, showFlight: true, showDiagnostics: true, selectedHive: null,
 };
 
-export default function MOAView({ isOpen, onClose, readOnly = false, initialRunId, initialVersionId }: Props) {
+export default function MOAView({ isOpen, onClose, embedded = false, readOnly = false, initialRunId, initialVersionId }: Props) {
   const deviceId = useDeviceId();
   const [runs, setRuns] = useState<Run[]>([]);
   const [versions, setVersions] = useState<Version[]>([]);
@@ -72,32 +74,24 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
   // Initial load
   const load = useCallback(async () => {
     setLoading(true);
-    const queries: Promise<unknown>[] = [
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (supabase as any).from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (supabase as any).from("bloom_observations").select("*").order("created_at", { ascending: false }).limit(50),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (supabase as any).from("bee_flight_logs").select("*").order("observed_at", { ascending: false }).limit(50),
-    ];
-    if (readOnly && initialRunId) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queries[0] = (supabase as any).from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("id", initialRunId);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queries[1] = (supabase as any).from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queries[2] = (supabase as any).from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [r, b, f] = await Promise.all(queries) as any[];
+    const runQuery = readOnly && initialRunId
+      ? supabase.from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("id", initialRunId)
+      : supabase.from("harvest_runs").select("id,crop,region,hives,acres,hhi,site_layout").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(20);
+    const bloomQuery = readOnly && initialRunId
+      ? supabase.from("bloom_observations").select("*").order("created_at", { ascending: false }).limit(50)
+      : supabase.from("bloom_observations").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50);
+    const flightQuery = readOnly && initialRunId
+      ? supabase.from("bee_flight_logs").select("*").order("observed_at", { ascending: false }).limit(50)
+      : supabase.from("bee_flight_logs").select("*").eq("device_id", deviceId).order("observed_at", { ascending: false }).limit(50);
+
+    const [r, b, f] = await Promise.all([runQuery, bloomQuery, flightQuery]);
     if (r.data) {
-      setRuns(r.data);
+      setRuns(r.data as unknown as Run[]);
       const target = initialRunId || r.data[0]?.id || "";
       if (target) setSelectedRunId(target);
     }
-    if (b.data) setBlooms(b.data);
-    if (f.data) setFlights(f.data);
+    if (b.data) setBlooms(b.data as unknown as Bloom[]);
+    if (f.data) setFlights(f.data as unknown as Flight[]);
     setLoading(false);
   }, [deviceId, readOnly, initialRunId]);
 
@@ -107,10 +101,9 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
   useEffect(() => {
     if (!selectedRunId) { setVersions([]); return; }
     (async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data } = await (supabase as any).from("harvest_run_versions").select("id,version_label,site_layout,moa_filters").eq("run_id", selectedRunId).order("created_at", { ascending: true });
+      const { data } = await supabase.from("harvest_run_versions").select("id,version_label,site_layout,moa_filters").eq("run_id", selectedRunId).order("created_at", { ascending: true });
       if (data) {
-        setVersions(data);
+        setVersions(data as unknown as Version[]);
         const targetV = initialVersionId || data[data.length - 1]?.id || "";
         if (targetV) setSelectedVersionId(targetV);
       }
@@ -164,8 +157,7 @@ export default function MOAView({ isOpen, onClose, readOnly = false, initialRunI
 
   const persistFilters = async () => {
     if (!selectedVersionId) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any).from("harvest_run_versions").update({ moa_filters: filters }).eq("id", selectedVersionId);
+    const { error } = await supabase.from("harvest_run_versions").update({ moa_filters: filters as unknown as Json }).eq("id", selectedVersionId);
     if (error) toast.error("Save failed"); else toast.success("MOA view saved to version");
   };
 
@@ -187,9 +179,9 @@ Required sections:
 3. **Feeding & Florage Plan** — 3 numbered actions (sugar syrup ratio, pollen patty timing, supplementary forage species to plant).
 4. **48-Hour Decision** — single clear go/no-go recommendation.`;
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "bloom_flight" }),
       });
       if (!resp.ok || !resp.body) { toast.error("AI failed"); setDiagLoading(false); return; }
@@ -270,10 +262,10 @@ Required sections:
     } finally { setExporting(false); }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background overflow-hidden flex flex-col">
+    <div className={embedded ? "w-full space-y-4 rounded-xl border border-border bg-card overflow-hidden" : "fixed inset-0 z-50 bg-background overflow-hidden flex flex-col"}>
       {/* Header */}
       <div className="flex-shrink-0 border-b border-border bg-card px-4 py-2 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
@@ -304,7 +296,9 @@ Required sections:
               <Save className="w-3 h-3" /> Save filters
             </button>
           )}
-          <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-8 h-8 rounded-md border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
       </div>
 
@@ -339,7 +333,7 @@ Required sections:
           No saved harvest runs yet. Save a run from the Harvest Calculator to load the MOA view.
         </div>
       ) : (
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden">
+        <div className={embedded ? "grid grid-cols-1 md:grid-cols-5 min-h-[600px] h-[75vh]" : "flex-1 grid grid-cols-1 md:grid-cols-5 overflow-hidden"}>
           {/* Map */}
           <div ref={mapWrapRef} className="md:col-span-3 relative border-r border-border">
             <MapContainer center={center} zoom={15} style={{ width: "100%", height: "100%" }}>

@@ -8,6 +8,7 @@ import { X, Target, Wind, Mountain, Compass } from "lucide-react";
  */
 
 interface Props {
+  embedded?: boolean;
   isOpen: boolean;
   onClose: () => void;
   onOpenPlanning?: () => void;
@@ -44,7 +45,7 @@ const COMPASS_DIRS = [
   { label: "W", deg: 270 }, { label: "NW", deg: 315 },
 ];
 
-export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: Props) {
+export default function PrecisionDrilldown({ isOpen, onClose, embedded = false, onOpenPlanning }: Props) {
   const [cropName, setCropName] = useState(CROP_PROFILES[0].name);
   const [acres, setAcres] = useState(20);
   const [hives, setHives] = useState(40);
@@ -114,11 +115,11 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: 
     };
   }, [acres, hives, crop, fieldShape, windKmh, windDirDeg, fieldOrientationDeg, slopePct, orientationDeg]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-5xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Target className="w-7 h-7 text-honey" />
@@ -136,6 +137,7 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: 
                 Open Pollination Planning
               </button>
             )}
+            {!embedded && (
             <button
               onClick={onClose}
               className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground"
@@ -143,6 +145,7 @@ export default function PrecisionDrilldown({ isOpen, onClose, onOpenPlanning }: 
             >
               <X className="w-4 h-4" />
             </button>
+          )}
           </div>
         </div>
 

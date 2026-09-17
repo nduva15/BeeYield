@@ -23,7 +23,7 @@ const STOCKING: Record<string, { hivesPerHa: number; expectedYieldKgPerHa: numbe
   general:    { hivesPerHa: 3,   expectedYieldKgPerHa: 15,  bloomDays: 21, transportNote: "Generic baseline — refine with local florage" },
 };
 
-export default function PollinationCalcs({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function PollinationCalcs({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [crop, setCrop] = useState("almond");
   const [hectares, setHectares] = useState(10);
@@ -84,9 +84,9 @@ Crop: ${crop}, Area: ${hectares} ha, Current hives: ${currentHives}, Recommended
 
 In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives short, (2) transport scheduling risks, (3) florage gaps to address with cover crops, (4) expected pollination success score (0–100) with reasoning.`;
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "baseline" }),
       });
       if (!resp.ok || !resp.body) { toast.error("AI failed"); setLoadingAi(false); return; }
@@ -98,17 +98,17 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
         for (const ln of lines) {
           if (!ln.startsWith("data: ")) continue;
           const data = ln.slice(6); if (data === "[DONE]") continue;
-          try { const j = JSON.parse(data); const t = j.choices?.[0]?.delta?.content; if (t) setAiNarrative((p) => p + t); } catch { /* non-JSON SSE chunk – skip */ }
+          try { const j = JSON.parse(data); const t = j.choices?.[0]?.delta?.content; if (t) setAiNarrative((p) => p + t); } catch {}
         }
       }
     } catch (e) { toast.error("AI error"); }
     setLoadingAi(false);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-6xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Calculator className="w-7 h-7 text-honey" />
@@ -117,7 +117,9 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
               <p className="text-xs text-muted-foreground">Hives needed · transport · expected yield · timeline</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">

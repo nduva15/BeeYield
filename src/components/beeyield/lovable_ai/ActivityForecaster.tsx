@@ -16,7 +16,7 @@ import { evaluateAlerts } from "./AlertsPage";
 
 type Forecast = { date: string; hour: number; tempC: number; windKmh: number; precipMm: number; predictedBpm: number; band: string };
 
-export default function ActivityForecaster({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function ActivityForecaster({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [hiveLabel, setHiveLabel] = useState("Hive 1");
   const [lat, setLat] = useState("-2.4078");
@@ -138,9 +138,9 @@ Inputs:
 
 Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); (3) hive-management actions per day band (feed, inspect, harvest, swarm-watch); (4) supplementary feeding recommendations.`;
     try {
-      const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      const resp = await fetch("/api/public/beegpt", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "flight" }),
       });
       if (!resp.ok || !resp.body) { toast.error("AI failed"); setAiLoading(false); return; }
@@ -174,10 +174,10 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
     };
   });
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-5xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-5xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <CloudSun className="w-7 h-7 text-honey" />
@@ -186,7 +186,9 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
               <p className="text-xs text-muted-foreground">7-day activity prediction · Open-Meteo weather × florage × baseline</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4 p-4 rounded-xl border border-border bg-muted/30">

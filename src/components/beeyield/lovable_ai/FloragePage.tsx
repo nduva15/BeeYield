@@ -64,7 +64,7 @@ const EMPTY_DRAFT: Omit<FloragePlant, "id" | "is_default"> = {
   name: "", latin: "", bloom: "", nectar: 5, pollen: 5, radius: 800, notes: "",
 };
 
-export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function FloragePage({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [plants, setPlants] = useState<FloragePlant[]>([]);
   const [loading, setLoading] = useState(false);
@@ -213,10 +213,10 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
     reader.readAsText(f);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-6xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Sprout className="w-7 h-7 text-honey" />
@@ -229,7 +229,9 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
             <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5 hover:opacity-90"><Plus className="w-3.5 h-3.5" />New plant</button>
             <button onClick={() => setShowImport((s) => !s)} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Upload className="w-3.5 h-3.5" />Import CSV</button>
             <button onClick={exportCsv} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Download className="w-3.5 h-3.5" />Export</button>
+            {!embedded && (
             <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
           </div>
         </div>
 
@@ -265,7 +267,7 @@ export default function FloragePage({ isOpen, onClose }: { isOpen: boolean; onCl
               <input type="number" value={draft.radius} onChange={(e) => setDraft({ ...draft, radius: Number(e.target.value) })} placeholder="Radius (m)" className="px-3 py-2 rounded-lg bg-background border border-border text-xs" />
               <label className="text-xs flex items-center gap-2">Nectar <input type="number" min={0} max={10} value={draft.nectar} onChange={(e) => setDraft({ ...draft, nectar: Number(e.target.value) })} className="w-16 px-2 py-1 rounded bg-background border border-border" /></label>
               <label className="text-xs flex items-center gap-2">Pollen <input type="number" min={0} max={10} value={draft.pollen} onChange={(e) => setDraft({ ...draft, pollen: Number(e.target.value) })} className="w-16 px-2 py-1 rounded bg-background border border-border" /></label>
-              <input value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Notes" className="md:col-span-2 px-3 py-2 rounded-lg bg-background border border-border text-xs" />
+              <input value={draft.notes ?? ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Notes" className="md:col-span-2 px-3 py-2 rounded-lg bg-background border border-border text-xs" />
             </div>
             <div className="flex gap-2 mt-3">
               <button onClick={save} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save</button>

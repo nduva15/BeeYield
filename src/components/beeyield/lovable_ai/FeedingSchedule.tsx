@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Calendar, Save, Plus, Trash2, Beaker } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,17 +30,17 @@ function defaultPlan(): Action[] {
   ];
 }
 
-export default function FeedingSchedule({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function FeedingSchedule({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [active, setActive] = useState<Plan>({ hive_label: "Hive 1", plan_label: "Season plan", plan: defaultPlan() });
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("feeding_schedules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
     setPlans(((data ?? []) as unknown) as Plan[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  useEffect(() => { if (isOpen && deviceId) void load(); }, [isOpen, deviceId, load]);
 
   const save = async () => {
     if (active.id) {
@@ -62,10 +62,10 @@ export default function FeedingSchedule({ isOpen, onClose }: { isOpen: boolean; 
   let total = 0;
   sorted.forEach((a) => { total += a.kg; cumulative.push({ date: a.date.slice(5), kg: total }); });
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-6xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Calendar className="w-6 h-6 text-honey" />
@@ -74,7 +74,9 @@ export default function FeedingSchedule({ isOpen, onClose }: { isOpen: boolean; 
               <p className="text-xs text-muted-foreground">Plan syrup, fondant and winter-gap actions per hive</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 mb-4">

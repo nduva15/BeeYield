@@ -53,6 +53,7 @@ const flightIcon = L.divIcon({
 });
 
 interface Props {
+  embedded?: boolean;
   isOpen: boolean;
   onClose: () => void;
   readOnly?: boolean;
@@ -196,9 +197,7 @@ function coercePoints(values: SiteLayout["field"] | SiteLayout["hives"] | null |
   return values.map(coercePoint).filter(Boolean) as LatLng[];
 }
 
-export default function HivePlacementMap({
-  isOpen,
-  onClose,
+export default function HivePlacementMap({ isOpen, onClose, embedded = false,
   readOnly = false,
   initialRunId,
   initialVersionId,
@@ -521,11 +520,11 @@ export default function HivePlacementMap({
     return [...field, ...hives, ...bloomPoints, ...flightPoints, ...commentPoints];
   }, [field, hives, filteredBlooms, filteredFlights, comments]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-7xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-7xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <MapPin className="w-7 h-7 text-honey" />
@@ -538,9 +537,11 @@ export default function HivePlacementMap({
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground" aria-label="Close">
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground" aria-label="Close">
             <X className="w-4 h-4" />
           </button>
+          )}
         </div>
 
         <div className="flex items-center gap-2 mb-3 flex-wrap p-3 rounded-xl border border-border bg-muted/20">

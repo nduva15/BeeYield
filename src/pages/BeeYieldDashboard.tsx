@@ -364,11 +364,9 @@ const BeeYieldDashboard: React.FC = () => {
     };
 
         const renderEmbedded = (component: React.ReactNode) => (
-        <BeeYieldPageShell className="p-3 sm:p-4 lg:p-6 space-y-6 pb-20 w-full">
-            <div className="max-w-7xl mx-auto w-full">
-                {component}
-            </div>
-        </BeeYieldPageShell>
+        <div className="w-full max-w-[1400px] mx-auto space-y-6 pb-20 beeyield-embedded-tool">
+            {component}
+        </div>
     );
 
     const renderBaseContent = () => {

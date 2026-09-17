@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { X, Upload, Database, RefreshCw, CheckCircle2, AlertTriangle, Trash2, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,19 +22,19 @@ type KindKey = typeof KINDS[number]["key"];
 
 const COLORS = ["hsl(var(--honey))", "hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--destructive))"];
 
-export default function DatasetImport({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function DatasetImport({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [imports, setImports] = useState<Imp[]>([]);
   const [kind, setKind] = useState<KindKey>("bees");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("dataset_imports").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
     setImports((data ?? []) as Imp[]);
-  };
-  useEffect(() => { if (isOpen && deviceId) load(); }, [isOpen, deviceId]);
+  }, [deviceId]);
+  useEffect(() => { if (isOpen && deviceId) void load(); }, [isOpen, deviceId, load]);
 
   const handleFile = async (file: File) => {
     setBusy(true);
@@ -82,14 +82,14 @@ export default function DatasetImport({ isOpen, onClose }: { isOpen: boolean; on
     load();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   const byKind = KINDS.map((k) => ({ name: k.label.split(" ")[0], rows: imports.filter((i) => i.dataset_kind === k.key).reduce((s, i) => s + i.row_count, 0) }));
   const byStatus = ["pending", "ready", "indexing", "indexed", "blocked"].map((s) => ({ name: s, value: imports.filter((i) => i.reindex_status === s).length })).filter((x) => x.value > 0);
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-6xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Database className="w-6 h-6 text-honey" />
@@ -98,7 +98,9 @@ export default function DatasetImport({ isOpen, onClose }: { isOpen: boolean; on
               <p className="text-xs text-muted-foreground">Upload bee / honey / disease / florage CSVs to feed the AI knowledge base</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          {!embedded && (
+            <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center"><X className="w-4 h-4" /></button>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">
