@@ -898,6 +898,7 @@ export interface BatchVerificationDetails {
 export interface BatchBlockchainStatus {
     overall: string;
     block_hash?: string;
+    beeyield_ledger?: BatchVerificationDetails;
     honeychain?: BatchVerificationDetails;
     polygon?: BatchVerificationDetails;
 }

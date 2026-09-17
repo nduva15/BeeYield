@@ -170,7 +170,7 @@ export async function generateReport(
   return invoke<AIResponse>("generate_report", { request });
 }
 
-// ── HoneyChain Commands ──────────────────────────────────────
+// ── BeeYield Ledger Commands ──────────────────────────────────
 
 export async function verifyBatch(
   batchCode: string

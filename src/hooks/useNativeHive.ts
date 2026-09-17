@@ -60,7 +60,7 @@ export function useNativeHive() {
     generateReport: (req: bridge.ReportRequest) =>
       wrap(() => bridge.generateReport(req)),
 
-    // ── HoneyChain ───────────────────────────────────
+    // ── BeeYield Ledger ──────────────────────────────
     verifyBatch: (batchCode: string) =>
       wrap(() => bridge.verifyBatch(batchCode)),
 

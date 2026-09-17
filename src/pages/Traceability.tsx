@@ -1038,7 +1038,7 @@ const Traceability = () => {
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
                                             <p className="text-xs font-semibold text-[#1B9157] mb-1">BeeYield Ledger</p>
-                                            <p className="text-sm font-black text-white">{traceData?.blockchain_status?.honeychain?.verified ? "Verified" : "Not verified"}</p>
+                                            <p className="text-sm font-black text-white">{(traceData?.blockchain_status?.beeyield_ledger?.verified ?? traceData?.blockchain_status?.honeychain?.verified) ? "Verified" : "Not verified"}</p>
                                           </div>
                                           <div className="text-right">
                                             <p className="text-xs font-semibold text-[#1B9157] mb-1">Polygon</p>
