@@ -117,8 +117,13 @@ async function probeEtims(config: Config, secrets: Secrets) {
   });
   const body = await res.text();
   if (!res.ok) throw new Error(`eTIMS responded ${res.status}: ${body.slice(0, 300)}`);
-  let parsed: { resultCd?: string; resultMsg?: string };
-  try { parsed = JSON.parse(body); } catch { throw new Error(`eTIMS returned a non-JSON response: ${body.slice(0, 200)}`); }
+  const parsed = (() => {
+    try {
+      return JSON.parse(body) as { resultCd?: string; resultMsg?: string };
+    } catch {
+      throw new Error(`eTIMS returned a non-JSON response: ${body.slice(0, 200)}`);
+    }
+  })();
   if (parsed.resultCd && parsed.resultCd !== "000" && parsed.resultCd !== "001") {
     throw new Error(`eTIMS ${parsed.resultCd}: ${parsed.resultMsg ?? "initialisation refused"}`);
   }
