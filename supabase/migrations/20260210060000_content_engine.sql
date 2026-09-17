@@ -57,6 +57,15 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Ensure all content engine columns exist if blog_posts table already existed
+ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS subtitle TEXT;
+ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS content_html TEXT DEFAULT '';
+ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS content_markdown TEXT DEFAULT '';
+ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS pillar content_pillar;
+ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS author_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS word_count INTEGER DEFAULT 0;
+ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS target_word_count INTEGER DEFAULT 6000;
+
 -- ============================================================
 -- BLOG_CHAPTERS — The Modular AI Writer sections
 -- ============================================================
