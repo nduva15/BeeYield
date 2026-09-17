@@ -81,7 +81,7 @@ const ESG = () => {
 
         doc.setFontSize(12);
         doc.setTextColor(75, 85, 99);
-        const introText = "BeeYield delivers measurable environmental, social, and governance outcomes: 22 IoT devices monitoring 45 precision-pollinated acres, 3 tons of carbon offset, and verifiable bio-data across Kenyan apiaries.";
+        const introText = "BeeYield delivers measurable environmental, social, and governance outcomes: 22 IoT devices monitoring 95 and counting acres pollinated, 3 tons of carbon offset, and verifiable bio-data across Kenyan apiaries.";
         const introLines = doc.splitTextToSize(introText, pageWidth - 28);
         doc.text(introLines, 14, yPos);
         yPos += introLines.length * 7 + 10;
@@ -99,7 +99,7 @@ const ESG = () => {
 
         const stats = [
           `IoT Devices Deployed: 22 Live Telemetry Nodes`,
-          `Precision Pollination: 45 Verified Acres`,
+          `Precision Pollination: 95+ Verified Acres (and counting)`,
           `Carbon Sequestration: 3.0 Tons CO₂ Offset`,
           `Indigenous Flora Restored: 2,500+ Native Trees`,
           `Managed Inventory: ${liveStats?.hive_count || "184"} Monitored Hives`,
@@ -124,7 +124,7 @@ const ESG = () => {
           "1. Hive Health - Continuous acoustic & temperature telemetry from 22 deployed IoT nodes",
           "2. Traceability - Verifiable honey batch provenance and weight gain telemetry",
           "3. The 50/50 Anchor - 50% harvest reserved for colony climate resilience",
-          "4. Precision Pollination - Real-time bloom telemetry across 45 client acres",
+          "4. Precision Pollination - Real-time bloom telemetry across 95 and counting client acres",
           "5. Women-Led Engineering - 66% diversity in founding leadership (Agatha, Carole, Timothy)",
           "6. Circular Ecosystems - Zero-waste, chemical-free operations with 2,500+ trees",
         ];
@@ -152,7 +152,7 @@ const ESG = () => {
 
   const impactStats = [
     { value: "22", label: "IoT Devices", icon: Radio, description: "Deployed across apiaries" },
-    { value: "45", label: "Acres Pollinated", icon: MapPin, description: "Bio-verified coverage" },
+    { value: "95+", label: "Acres Pollinated", icon: MapPin, description: "Bio-verified coverage" },
     { value: "3t", label: "Carbon Offset", icon: TreePine, description: "CO₂ sequestered to date" },
     { value: "2,500+", label: "Trees Planted", icon: Sprout, description: "Flora restoration" },
     { value: "184+", label: "Monitored Hives", icon: Bug, description: "Active colony inventory" },
@@ -189,7 +189,7 @@ const ESG = () => {
               <span className="text-beeyield-green">by Integrity.</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12">
-              Every ESG metric at BeeYield is backed by authentic field telemetry from 22 deployed IoT devices across 45 pollinated acres and 3 tons of carbon offset — zero AI imagery, 100% ground truth.
+              Every ESG metric at BeeYield is backed by authentic field telemetry from 22 deployed IoT devices across 95 and counting pollinated acres and 3 tons of carbon offset — zero AI imagery, 100% ground truth.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
@@ -303,7 +303,7 @@ const ESG = () => {
                   image: ESG_IMAGES.apisenseCluster1,
                   title: "Active Colony Around Probe",
                   subtitle: "Hundreds of bees clustered on sensor",
-                  badge: "45 Acres Served",
+                  badge: "95+ Acres Served (and counting)",
                   description: "Dense bee cluster surrounding the in-hive ApiSense probe, showing zero repellent behavior."
                 }
               ]}
@@ -395,7 +395,7 @@ const ESG = () => {
                   Biodiversity Stewardship & Carbon Offsets
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Through precision pollination across 45 client acres and the restoration of 2,500+ indigenous trees in Makueni County, we have sequestered 3 tons of CO₂. Continuous under-hive load-cell telemetry verifies nectar flow rates without disrupting colony homeostasis.
+                  Through precision pollination across 95 and counting client acres and the restoration of 2,500+ indigenous trees in Makueni County, we have sequestered 3 tons of CO₂. Continuous under-hive load-cell telemetry verifies nectar flow rates without disrupting colony homeostasis.
                 </p>
                 <div className="grid grid-cols-2 gap-6 pt-4 border-t border-neutral-200">
                   <div>
@@ -499,7 +499,7 @@ const ESG = () => {
                 Data-Driven <br />Food Security.
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-xl">
-                In semi-arid Makueni, pollination isn't just a service—it's food security. We deploy 22 monitored hives across 45 acres of smallholder avocado and mango farms to maximize fruit set and yield.
+                In semi-arid Makueni, pollination isn't just a service—it's food security. We deploy 22 monitored hives across 95 and counting acres of smallholder avocado and mango farms to maximize fruit set and yield.
               </p>
 
               <div className="grid grid-cols-2 gap-10">
@@ -547,7 +547,7 @@ const ESG = () => {
             </div>
             <h3 className="text-3xl md:text-5xl font-bold text-neutral-900 tracking-tight">Verified by Design.</h3>
             <p className="text-muted-foreground text-lg">
-              22 IoT devices deployed. 45 acres precision-pollinated. 3 tons of carbon offset. Every jar traceable to its source apiary.
+              22 IoT devices deployed. 95 and counting acres precision-pollinated. 3 tons of carbon offset. Every jar traceable to its source apiary.
             </p>
             <div className="flex flex-wrap justify-center gap-6 pt-4">
               <Link to="/contact" className="px-10 py-5 bg-neutral-900 text-white rounded-2xl font-bold shadow-xl shadow-neutral-900/20 hover:bg-neutral-800 transition-all text-sm">
