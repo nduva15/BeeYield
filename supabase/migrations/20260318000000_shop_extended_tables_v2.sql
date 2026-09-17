@@ -123,8 +123,8 @@ BEGIN
                WHERE table_schema = 'public' 
                AND table_name IN ('wishlists', 'wallets', 'wallet_transactions', 'addresses', 'payment_methods')
     LOOP
-        EXECUTE format('DROP POLICY IF EXISTS "Users manage own %%I" ON public.%%I', tbl, tbl);
-        EXECUTE format('CREATE POLICY "Users manage own %%I" ON public.%%I FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id)', tbl, tbl);
+        EXECUTE format('DROP POLICY IF EXISTS "Users manage own %I" ON public.%I', tbl, tbl);
+        EXECUTE format('CREATE POLICY "Users manage own %I" ON public.%I FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id)', tbl, tbl);
     END LOOP;
 END;
 $$;
@@ -159,8 +159,8 @@ BEGIN
              WHERE table_schema = 'public' 
              AND table_name IN ('products', 'product_variants', 'wallets', 'addresses', 'order_tracking')
     LOOP
-        EXECUTE format('DROP TRIGGER IF EXISTS update_%%I_updated_at ON public.%%I', t, t);
-        EXECUTE format('CREATE TRIGGER update_%%I_updated_at BEFORE UPDATE ON public.%%I FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column()', t, t);
+        EXECUTE format('DROP TRIGGER IF EXISTS update_%I_updated_at ON public.%I', t, t);
+        EXECUTE format('CREATE TRIGGER update_%I_updated_at BEFORE UPDATE ON public.%I FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column()', t, t);
     END LOOP;
 END;
 $$;
