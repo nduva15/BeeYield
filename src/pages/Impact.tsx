@@ -78,7 +78,7 @@ const Impact = () => {
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      const summaryText = 'BeeYield supports healthier hives, stronger pollination, and traceable harvests. With 22 IoT devices deployed across 45 acres of pollinated farmland, we deliver precision agriculture through real-time sensor data while offsetting 3 tons of carbon through native tree restoration.';
+      const summaryText = 'BeeYield supports healthier hives, stronger pollination, and traceable harvests. With 22 IoT devices deployed across 95 and counting acres of pollinated farmland, we deliver precision agriculture through real-time sensor data while offsetting 3 tons of carbon through native tree restoration.';
       const summaryLines = doc.splitTextToSize(summaryText, pageWidth - 28);
       doc.text(summaryLines, 14, yPos);
       yPos += summaryLines.length * 7 + 10;
@@ -95,7 +95,7 @@ const Impact = () => {
       doc.setTextColor(75, 85, 99);
       doc.text(`• Monitored hives: ${liveStats?.hive_count || "184"}`, 20, yPos + 5);
       doc.text('• IoT Devices Deployed: 22 Live Nodes', 20, yPos + 15);
-      doc.text('• Acres Pollinated: 45 Verified Acres', 20, yPos + 25);
+      doc.text('• Acres Pollinated: 95+ Verified Acres (and counting)', 20, yPos + 25);
       doc.text('• Indigenous Flora Restored: 2,500+ Trees', 20, yPos + 35);
       doc.text('• Carbon Offset: 3.0 Tons CO₂', 20, yPos + 45);
       yPos += 65;
@@ -139,7 +139,7 @@ const Impact = () => {
 
   const stats = [
     { label: "IoT Devices Deployed", value: "22", icon: Radio, color: "text-[#1B9157]", bg: "bg-emerald-50" },
-    { label: "Acres Pollinated", value: "45", icon: Sprout, color: "text-[#F4D03F]", bg: "bg-amber-50" },
+    { label: "Acres Pollinated", value: "95+", icon: Sprout, color: "text-[#F4D03F]", bg: "bg-amber-50" },
     { label: "Carbon Offset", value: "3t", icon: TreePine, color: "text-lime-600", bg: "bg-lime-50" },
     { label: "Bees Protected", value: "2.4M+", icon: Bug, color: "text-amber-600", bg: "bg-amber-50" },
     { label: "Trees Planted", value: "2,500+", icon: TreePine, color: "text-[#1B9157]", bg: "bg-emerald-50" },
@@ -177,7 +177,7 @@ const Impact = () => {
               <span className="text-beeyield-gold italic">Quantified.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
-              22 IoT devices deployed. 45 acres precision-pollinated. 3 tons of carbon offset. Every metric is backed by authentic sensor data from our Kenyan apiaries — zero AI imagery.
+              22 IoT devices deployed. 95 and counting acres precision-pollinated. 3 tons of carbon offset. Every metric is backed by authentic sensor data from our Kenyan apiaries — zero AI imagery.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
@@ -266,7 +266,7 @@ const Impact = () => {
                   image: IMPACT_IMAGES.deployedHive2,
                   title: "Kenyan Top-Bar Hive Stand",
                   subtitle: "Weatherproof antenna unit mounted on lid",
-                  badge: "45 Acres Served",
+                  badge: "95+ Acres Served (and counting)",
                   description: "Robust solar-powered node operating at commercial orchard boundaries to monitor pollinator foraging density."
                 },
                 {
@@ -401,7 +401,7 @@ const Impact = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 to-transparent"></div>
                 <div className="absolute bottom-10 left-10 text-white">
                   <p className="text-sm font-semibold mb-2">Location: Makueni, Kenya</p>
-                  <h4 className="text-2xl font-bold">22 Devices. 45 Acres. Real Impact.</h4>
+                  <h4 className="text-2xl font-bold">22 Devices. 95+ Acres. Real Impact.</h4>
                 </div>
               </div>
             </motion.div>
@@ -417,7 +417,7 @@ const Impact = () => {
                   Radical Ecological <br />Transparency.
                 </h2>
                 <p className="text-lg text-slate-600 leading-relaxed font-medium">
-                  We don't just harvest honey; we steward a biome. With 22 IoT devices deployed across 45 acres of precision-pollinated farmland and 3 tons of carbon offset through 2,500+ native trees, our impact is verifiable from satellite to in-hive sensor.
+                  We don't just harvest honey; we steward a biome. With 22 IoT devices deployed across 95 and counting acres of precision-pollinated farmland and 3 tons of carbon offset through 2,500+ native trees, our impact is verifiable from satellite to in-hive sensor.
                 </p>
               </div>
 
@@ -469,7 +469,7 @@ const Impact = () => {
           <div className="max-w-3xl mb-20">
             <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter">The 2030 <br />Biosphere Roadmap.</h2>
             <p className="text-slate-400 text-lg font-medium leading-relaxed">
-              Our architecture is designed for scale. Building on 22 deployed devices, 45 acres pollinated, and 3 tons of carbon offset, we aim to be the digital backbone for ethical apiculture across Sub-Saharan Africa.
+              Our architecture is designed for scale. Building on 22 deployed devices, 95 and counting acres pollinated, and 3 tons of carbon offset, we aim to be the digital backbone for ethical apiculture across Sub-Saharan Africa.
             </p>
           </div>
 
@@ -509,7 +509,7 @@ const Impact = () => {
             </div>
             <h3 className="text-3xl md:text-4xl font-black text-[#1A1A1A] mb-6">Invest in Planetary Health.</h3>
             <p className="text-slate-500 mb-10 text-lg">
-              Whether you're a consumer, partner, or researcher, you're part of this ecosystem. 22 devices deployed. 45 acres served. 3 tons of carbon offset. Let's make every drop count.
+              Whether you're a consumer, partner, or researcher, you're part of this ecosystem. 22 devices deployed. 95 and counting acres served. 3 tons of carbon offset. Let's make every drop count.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/contact" className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black shadow-xl hover:bg-neutral-800 transition-all flex items-center gap-2">
