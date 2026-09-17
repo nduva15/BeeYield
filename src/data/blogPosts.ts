@@ -1,3 +1,5 @@
+import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
+
 export interface BlogAuthor {
   name: string;
   role: string;
@@ -38,10 +40,10 @@ export interface BlogPost {
 }
 
 export const TIMOTHY_AUTHOR: BlogAuthor = {
-  name: "Timothy Mathuva",
+  name: "Timothy Nduva",
   role: "Founder & Lead Agronomist, BeeYield",
   bio: "Finance & Marketing graduate from Strathmore University, veteran beekeeper, and founder of BeeYield. Building precision apiculture and IoT pollinator monitoring across Kibwezi and Makueni, Kenya.",
-  avatar: "/images/story/2023-fruitful-year.jpg",
+  avatar: TIMOTHY_PHOTO,
 };
 
 export const BLOG_POSTS: BlogPost[] = [

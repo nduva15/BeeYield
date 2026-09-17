@@ -215,6 +215,9 @@ export default function BlogsPage() {
               <img
                 src={activePost.author.avatar}
                 alt={activePost.author.name}
+                onError={(e) => {
+                  e.currentTarget.src = "/images/timothy-nduva.png";
+                }}
                 className="w-12 h-12 rounded-full object-cover border-2 border-emerald-500/40 shadow-sm"
               />
               <div>
@@ -322,6 +325,9 @@ export default function BlogsPage() {
               <img
                 src={activePost.author.avatar}
                 alt={activePost.author.name}
+                onError={(e) => {
+                  e.currentTarget.src = "/images/timothy-nduva.png";
+                }}
                 className="w-16 h-16 rounded-full object-cover border-2 border-emerald-500/40 flex-shrink-0"
               />
               <div className="space-y-1 flex-1">
@@ -469,6 +475,9 @@ export default function BlogsPage() {
                       <img
                         src={filteredPosts[0].author.avatar}
                         alt={filteredPosts[0].author.name}
+                        onError={(e) => {
+                          e.currentTarget.src = "/images/timothy-nduva.png";
+                        }}
                         className="w-9 h-9 rounded-full object-cover border border-emerald-500/30"
                       />
                       <div>
@@ -537,6 +546,9 @@ export default function BlogsPage() {
                       <img
                         src={post.author.avatar}
                         alt={post.author.name}
+                        onError={(e) => {
+                          e.currentTarget.src = "/images/timothy-nduva.png";
+                        }}
                         className="w-7 h-7 rounded-full object-cover border border-emerald-500/30"
                       />
                       <span className="text-xs font-semibold text-foreground">{post.author.name}</span>
