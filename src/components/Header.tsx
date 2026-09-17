@@ -106,6 +106,17 @@ const Header = () => {
             Shop
           </Link>
 
+          <Link
+            to="/blogs"
+            className={`text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 flex items-center gap-1.5 ${isActive("/blogs") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80 hover:text-beeyield-green"
+              }`}
+          >
+            Blogs
+            <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/30">
+              4
+            </span>
+          </Link>
+
 
         </div>
 

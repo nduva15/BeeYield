@@ -61,7 +61,17 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             {children}
           </a>
         ),
-        hr: () => <hr className="my-3 border-border" />,
+        img: ({ src, alt }) => (
+          <figure className="my-6 rounded-2xl overflow-hidden border border-border/60 bg-card shadow-sm">
+            <img src={src} alt={alt || ""} className="w-full h-auto max-h-[520px] object-cover" />
+            {alt && (
+              <figcaption className="p-3 text-xs text-muted-foreground bg-muted/30 italic text-center border-t border-border/40">
+                {alt}
+              </figcaption>
+            )}
+          </figure>
+        ),
+        hr: () => <hr className="my-4 border-border/60" />,
         table: ({ children }) => (
           <div className="overflow-x-auto my-2">
             <table className="w-full text-xs border-collapse border border-border rounded">{children}</table>
