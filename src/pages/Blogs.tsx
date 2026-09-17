@@ -62,7 +62,7 @@ export default function BlogsPage() {
   const handleSelectPost = (slug: string) => {
     setSelectedSlug(slug);
     if (typeof window !== "undefined") {
-      window.location.hash = slug;
+      window.history.pushState(null, "", `#${slug}`);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
