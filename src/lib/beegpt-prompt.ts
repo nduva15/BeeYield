@@ -717,9 +717,9 @@ Our Story Page (beeyield.com/ourstory):
 - Origin: "A Pandemic Spark, a Family Mission" — In 2020, as the world slowed during the COVID pandemic, Timothy Nduva found himself restless in rural Kibwezi, Kenya. While attending Strathmore University, Timothy's curiosity and drive for innovation grew. The unique challenges of the pandemic became the spark that ignited BeeYield's vision.
 - Family: Timothy's sisters, Agatha and Carole, brought their own unique skills — ranging from web development and product design to IoT research. Together, the siblings transformed a small family apiary into a platform for technological advancement and agricultural impact.
 - Started with just half an acre and four hives, quickly became a family mission to empower farmers, advance pollination.
-- Growth Stats: 184+ Beehives (from 4 to 184), 1M+ Bee Colonies (thriving), 2,500+ Trees Planted (restoring the ecosystem), 25+ Acres Pollinated (client farmlands served).
+- Growth Stats: 184+ Beehives (from 4 to 184), 1M+ Bee Colonies (thriving), 2,500+ Trees Planted (restoring the ecosystem), 95 and counting acres pollinated (client farmlands served), over 2,000 data points daily and growing.
 - Values: Family-Driven (built by siblings Timothy, Agatha, and Carole), Guardians of Nature (2,500+ trees planted, ecosystem builders), Precision Pollination (using technology to maximize impact for farmers across Kenya).
-- Pollination Journey: Started with traditional methods — moving hives to client farms and letting nature do its work. Successfully pollinated 25 acres+ of farmland. Now evolving toward precision pollination using sensors, data, and hive management.
+- Pollination Journey: Started with traditional methods — moving hives to client farms and letting nature do its work. Successfully pollinated 95 and counting acres of farmland with over 2,000 data points collected daily and growing. Now evolving toward precision pollination using sensors, data, and hive management.
 - Video: YouTube embed of BeeYield story (youtube.com/embed/vV-m_k8E5Yc).
 - CTA: "Join Us on Our Journey" with links to Contact and Careers.
 
@@ -748,7 +748,7 @@ ESG Page (beeyield.com/esg):
 - Title: "Governance by Integrity."
 - Subtitle: "The BeeYield ESG framework is an immutable commitment to transparency, ecological restoration, and tactical precision in apiculture."
 - Downloadable ESG Report 2026 (PDF).
-- Live Impact Stats: 20+ Custodians, 25 Acres, 2,500+ Trees, 184 Smart Hives, 943kg Yield, 2.4M+ Pollinators.
+- Live Impact Stats: 20+ Custodians, 95 and counting acres pollinated, over 2,000 data points daily and growing, 2,500+ Trees, 184 Smart Hives, 943kg Yield, 2.4M+ Pollinators.
 - Four ESG Strategic Pillars:
   1. Ecological Intelligence: Acoustic analysis, real-time hive snapshots (Temp, Humidity, Mass), predictive swarming analytics, automated health scoring. Impact: 15% increase in colony resilience.
   2. Radical Transparency: Wasm-powered cryptographic batch verification, immutable records, Hive ID to jar tracking, QR-based public access. Impact: 100% elimination of harvest fraud.
@@ -759,7 +759,7 @@ Commitment Page (beeyield.com/commitment):
 - Title: "Our Commitment To The Future"
 - 8 UN Sustainable Development Goals with measurable impact:
   1. SDG 1 - No Poverty: 50+ farmers trained on bee disease prevention.
-  2. SDG 2 - Zero Hunger: 25 acres pollinated, increasing crop yields by up to 40%.
+  2. SDG 2 - Zero Hunger: 95 and counting acres pollinated, increasing crop yields by up to 40%.
   3. SDG 6 - Clean Water: 2,500+ trees restoring biodiversity.
   4. SDG 7 - Clean Energy: Solar-powered hive monitoring sensors in development.
   5. SDG 8 - Decent Work: Creating sustainable livelihoods for rural youth.
