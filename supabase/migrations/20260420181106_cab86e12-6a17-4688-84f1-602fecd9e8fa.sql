@@ -1,4 +1,4 @@
-CREATE TABLE public.harvest_runs (
+CREATE TABLE IF NOT EXISTS public.harvest_runs (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   device_id TEXT NOT NULL,
   hives INTEGER NOT NULL,
@@ -15,10 +15,11 @@ CREATE TABLE public.harvest_runs (
 
 ALTER TABLE public.harvest_runs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow all access to harvest runs" ON public.harvest_runs;
 CREATE POLICY "Allow all access to harvest runs"
 ON public.harvest_runs
 FOR ALL
 USING (true)
 WITH CHECK (true);
 
-CREATE INDEX idx_harvest_runs_device_id ON public.harvest_runs(device_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_harvest_runs_device_id ON public.harvest_runs(device_id, created_at DESC);

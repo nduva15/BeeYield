@@ -1,1 +1,1 @@
-ALTER TABLE public.harvest_runs ADD COLUMN notes TEXT;
+ALTER TABLE public.harvest_runs ADD COLUMN IF NOT EXISTS notes TEXT;

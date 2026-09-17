@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS public.bee_species (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.bee_species ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all access to bee species" ON public.bee_species;
 CREATE POLICY "Allow all access to bee species" ON public.bee_species FOR ALL USING (true) WITH CHECK (true);
 
 -- Bee diseases (editable)
@@ -36,6 +37,7 @@ CREATE TABLE IF NOT EXISTS public.bee_diseases (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.bee_diseases ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all access to bee diseases" ON public.bee_diseases;
 CREATE POLICY "Allow all access to bee diseases" ON public.bee_diseases FOR ALL USING (true) WITH CHECK (true);
 
 -- Varroa simulations
@@ -50,6 +52,7 @@ CREATE TABLE IF NOT EXISTS public.varroa_simulations (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.varroa_simulations ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all access to varroa simulations" ON public.varroa_simulations;
 CREATE POLICY "Allow all access to varroa simulations" ON public.varroa_simulations FOR ALL USING (true) WITH CHECK (true);
 
 -- Calculator runs (feeding/equipment/economics/quizzes)
@@ -64,6 +67,7 @@ CREATE TABLE IF NOT EXISTS public.calculator_runs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.calculator_runs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all access to calculator runs" ON public.calculator_runs;
 CREATE POLICY "Allow all access to calculator runs" ON public.calculator_runs FOR ALL USING (true) WITH CHECK (true);
 
 -- Alert dedupe

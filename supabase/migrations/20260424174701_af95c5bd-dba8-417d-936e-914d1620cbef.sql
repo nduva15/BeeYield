@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS public.bloom_observations (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.bloom_observations ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all access to bloom observations" ON public.bloom_observations;
 CREATE POLICY "Allow all access to bloom observations"
   ON public.bloom_observations FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE INDEX IF NOT EXISTS idx_bloom_device ON public.bloom_observations(device_id);
@@ -48,6 +49,7 @@ CREATE TABLE IF NOT EXISTS public.bee_flight_logs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.bee_flight_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all access to bee flight logs" ON public.bee_flight_logs;
 CREATE POLICY "Allow all access to bee flight logs"
   ON public.bee_flight_logs FOR ALL TO public USING (true) WITH CHECK (true);
 CREATE INDEX IF NOT EXISTS idx_flight_device ON public.bee_flight_logs(device_id);
