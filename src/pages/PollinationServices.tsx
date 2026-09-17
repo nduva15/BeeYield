@@ -241,10 +241,10 @@ const PollinationServices = () => {
                         <div className="bg-[#FAEFC8] rounded-[2.5rem] p-8 sm:p-10 h-[22rem] sm:h-96 flex flex-col justify-between relative overflow-hidden group transition-transform hover:-translate-y-1 duration-300">
                             <div className="relative z-10">
                                 <h3 className="text-sm font-black text-neutral-800 mb-4">Acres</h3>
-                                <p className="text-5xl sm:text-6xl font-black text-neutral-900">25<sup className="text-3xl sm:text-4xl">+</sup></p>
+                                <p className="text-5xl sm:text-6xl font-black text-neutral-900">95<sup className="text-3xl sm:text-4xl">+</sup></p>
                             </div>
                             <p className="text-neutral-800 font-medium leading-relaxed relative z-10 max-w-[80%]">
-                                Acres pollinated by BeeYield Precision Pollination solutions across East Africa.
+                                95 and counting acres pollinated by BeeYield Precision Pollination solutions across East Africa.
                             </p>
                         </div>
 
@@ -263,10 +263,10 @@ const PollinationServices = () => {
                         <div className="bg-[#FAEFC8] rounded-[2.5rem] p-8 sm:p-10 h-[22rem] sm:h-96 flex flex-col justify-between relative overflow-hidden group transition-transform hover:-translate-y-1 duration-300">
                             <div className="relative z-10">
                                 <h3 className="text-sm font-black text-neutral-800 mb-4">Data Points</h3>
-                                <p className="text-4xl sm:text-5xl font-black text-neutral-900 leading-tight">Growing <br /> Daily</p>
+                                <p className="text-4xl sm:text-5xl font-black text-neutral-900 leading-tight">2,000<sup className="text-2xl sm:text-3xl font-black">+</sup> <br /> Daily</p>
                             </div>
                             <p className="text-neutral-800 font-medium leading-relaxed relative z-10 max-w-[80%]">
-                                BeeYield sensors collect critical colony health and activity data points daily.
+                                Over 2,000 data points daily and growing, collected by BeeYield sensors for colony health and activity.
                             </p>
                         </div>
                     </div>
