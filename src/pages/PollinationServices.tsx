@@ -447,7 +447,7 @@ const PollinationServices = () => {
                         {pollinationCrops.map((crop, index) => (
                             <Link
                                 key={index}
-                                to="/media"
+                                to="/crops-we-pollinate#crops"
                                 className="group relative overflow-hidden rounded-[2rem] aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 bg-[#FFF9F0]"
                             >
                                 <img
@@ -471,12 +471,15 @@ const PollinationServices = () => {
                         ))}
                     </div>
 
-                    <div className="mt-20 text-center">
-                        <Link to="/contact">
-                            <Button size="lg" className="bg-neutral-900 hover:bg-neutral-800 text-[#1A1A1A] font-black rounded-2xl px-12 h-14 shadow-2xl text-[10px] transition-all hover:scale-105 active:scale-95">
-                                Start Pollination Project
-                            </Button>
-                        </Link>
+                    <div className="mt-16 text-center flex flex-wrap justify-center gap-4">
+                        <Button size="lg" className="bg-[#1B9157] hover:bg-[#157746] text-white font-black rounded-2xl px-10 h-14 shadow-xl text-xs transition-all hover:scale-105 active:scale-95" asChild>
+                            <Link to="/crops-we-pollinate#crops">
+                                Explore All Crops We Pollinate <ArrowRight className="ml-2 h-4 w-4 inline" />
+                            </Link>
+                        </Button>
+                        <Button size="lg" variant="outline" className="border-2 border-neutral-300 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
+                            <Link to="/contact">Start Pollination Project</Link>
+                        </Button>
                     </div>
                 </div>
             </section>
@@ -534,7 +537,7 @@ const PollinationServices = () => {
                                     <span className="text-xs font-bold text-[#1B9157] flex items-center gap-1.5">
                                         <CheckCircle2 className="w-4 h-4" /> 90% Pollination Dependency
                                     </span>
-                                    <Link to="/crops-we-pollinate" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
+                                    <Link to="/crops-we-pollinate#crops" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
                                         View Crop <ArrowRight className="w-3.5 h-3.5" />
                                     </Link>
                                 </div>
@@ -575,7 +578,7 @@ const PollinationServices = () => {
                                     <span className="text-xs font-bold text-orange-600 flex items-center gap-1.5">
                                         <CheckCircle2 className="w-4 h-4" /> High Brix & Fruit Packout
                                     </span>
-                                    <Link to="/crops-we-pollinate" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
+                                    <Link to="/crops-we-pollinate#crops" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
                                         View Crop <ArrowRight className="w-3.5 h-3.5" />
                                     </Link>
                                 </div>
@@ -616,7 +619,7 @@ const PollinationServices = () => {
                                     <span className="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
                                         <CheckCircle2 className="w-4 h-4" /> 100% Cob Tip Filling
                                     </span>
-                                    <Link to="/crops-we-pollinate" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
+                                    <Link to="/crops-we-pollinate#crops" className="text-xs font-black text-primary hover:underline flex items-center gap-1">
                                         View Crop <ArrowRight className="w-3.5 h-3.5" />
                                     </Link>
                                 </div>
@@ -626,10 +629,10 @@ const PollinationServices = () => {
 
                     <div className="flex flex-wrap justify-center gap-4">
                         <Button size="lg" className="bg-[#1B9157] hover:bg-[#157746] text-white font-black rounded-2xl px-10 h-14 shadow-lg text-xs" asChild>
-                            <Link to="/crops-we-pollinate">Explore All Crops We Pollinate</Link>
+                            <Link to="/crops-we-pollinate#crops">Explore All Crops We Pollinate</Link>
                         </Button>
                         <Button size="lg" variant="outline" className="border-2 border-neutral-300 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
-                            <Link to="/media">View Field Photo Gallery & Media</Link>
+                            <Link to="/crops-we-pollinate#crops">View Field Photo Gallery & Media</Link>
                         </Button>
                     </div>
                 </div>
