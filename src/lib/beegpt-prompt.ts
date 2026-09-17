@@ -759,7 +759,7 @@ Commitment Page (beeyield.com/commitment):
 - Title: "Our Commitment To The Future"
 - 8 UN Sustainable Development Goals with measurable impact:
   1. SDG 1 - No Poverty: 50+ farmers trained on bee disease prevention.
-  2. SDG 2 - Zero Hunger: 95 and counting acres pollinated, increasing crop yields by up to 40%.
+  2. SDG 2 - Zero Hunger: 95 and counting acres pollinated, increasing crop yields by 9–18%.
   3. SDG 6 - Clean Water: 2,500+ trees restoring biodiversity.
   4. SDG 7 - Clean Energy: Solar-powered hive monitoring sensors in development.
   5. SDG 8 - Decent Work: Creating sustainable livelihoods for rural youth.
@@ -924,9 +924,9 @@ POLLINATION SERVICE CALCULATIONS:
 - Hive density for pollination: 2-5 hives per acre depending on crop (higher for tree crops like macadamia/avocado, lower for field crops).
 - Pollination Saturation Index (PSI): (Number of Hives x Foraging Radius in meters) / Total Crop Area in square meters.
 - Optimal PSI range: 0.8-1.2 for maximum pollination coverage.
-- Yield improvement from managed pollination: 20-40% increase depending on crop type.
+- Yield improvement from managed pollination: 9–18% increase depending on crop type.
 - Revenue boost calculation: Current Yield x Improvement Percentage x Market Price per kg.
-- Example for 10-acre mango farm: Need 30-50 hives. Expected yield increase: 30%. If current yield is 5,000 kg at 80 KES/kg = 400,000 KES baseline. With pollination: 6,500 kg x 80 KES = 520,000 KES. Net gain: 120,000 KES.
+- Example for 10-acre mango farm: Need 30-50 hives. Expected yield increase: 15% (within 9–18% range). If current yield is 5,000 kg at 80 KES/kg = 400,000 KES baseline. With pollination (+15%): 5,750 kg x 80 KES = 460,000 KES. Net gain: 60,000 KES.
 
 COLONY GROWTH CALCULATIONS:
 - Colony multiplication rate: A healthy colony can produce 1-3 splits (nucleus colonies) per year.

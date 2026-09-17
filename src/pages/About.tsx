@@ -284,7 +284,7 @@ const TIMELINE: YearMilestone[] = [
       "3 farmers enrolled in IoT device program with 22 devices working in hives right now",
       "Pollinated 95 and counting acres — started with a goal of 15 acres, exceeded by 6x",
       "Mango bloom season in Makueni, Kenya — targeting 150 acres before year-end",
-      "18% average yield increase for pollinated farms — aiming for 25%+",
+      "9–18% average yield increase for pollinated farms",
       "Built Bee LLM and bee sound analysis — trained on 350K+ bee sounds via Kaggle for disease detection",
       "Started mobile app development on August 3rd for full audience experience",
       "203 kg honey harvested so far this year, bringing total to 988 kg lifetime",
