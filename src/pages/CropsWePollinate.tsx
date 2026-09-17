@@ -396,13 +396,21 @@ const CropsWePollinate = () => {
 
       {/* Page Footer with Official BeeYield Logo */}
       <footer className="border-t border-border/40 bg-[#0A2612] text-white py-12">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="BeeYield Logo" className="h-9 w-9 object-contain" />
             <div>
               <span className="font-display text-lg font-bold text-white">BeeYield</span>
               <p className="text-xs text-white/60">Your partner in pollination • Makueni & Kibwezi, Kenya</p>
             </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-white/80">
+            <span className="text-amber-400 font-semibold uppercase tracking-wider text-[11px]">Partners:</span>
+            <span className="font-medium">Farmers</span>
+            <span className="text-white/40">•</span>
+            <a href="https://apisense.ai/en" target="_blank" rel="noopener noreferrer" className="hover:text-amber-400 transition-colors underline-offset-4 hover:underline">ApiSense</a>
+            <span className="text-white/40">•</span>
+            <a href="https://intelligenthives.eu/" target="_blank" rel="noopener noreferrer" className="hover:text-amber-400 transition-colors underline-offset-4 hover:underline">Intelligent Hives</a>
           </div>
           <p className="text-xs text-white/50">© 2026 BeeYield. All rights reserved.</p>
         </div>

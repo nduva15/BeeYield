@@ -1101,11 +1101,21 @@ export default function About() {
             </div>
           </FadeIn>
           <FadeIn delay={300}>
-            <p className="mt-12 text-xs text-muted-foreground">
-              © {new Date().getFullYear()} BeeYield — Makueni, Kenya
-              <br />
-              Three siblings. One mission. Modernizing pollination for Africa and beyond.
-            </p>
+            <div className="mt-12 pt-6 border-t border-border/40 text-center space-y-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-muted-foreground">
+                <span className="text-amber-400 font-semibold uppercase tracking-wider text-[11px]">Global Partners:</span>
+                <span className="font-medium text-foreground">Farmers</span>
+                <span>•</span>
+                <a href="https://apisense.ai/en" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-amber-400 transition-colors">ApiSense</a>
+                <span>•</span>
+                <a href="https://intelligenthives.eu/" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-amber-400 transition-colors">Intelligent Hives</a>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                © {new Date().getFullYear()} BeeYield — Makueni, Kenya
+                <br />
+                Three siblings. One mission. Modernizing pollination for Africa and beyond.
+              </p>
+            </div>
           </FadeIn>
         </div>
       </section>

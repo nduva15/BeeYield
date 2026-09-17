@@ -937,10 +937,20 @@ export default function Index() {
             title="Attach audio"
           />
 
-          <p className="text-center text-xs text-muted-foreground mt-2 max-w-4xl mx-auto">
-            Beeyield AI — Specialized exclusively in bees, honey, apiculture, and pollination
-            science
-          </p>
+          <div className="text-center text-xs text-muted-foreground mt-2 max-w-4xl mx-auto space-y-1">
+            <p>
+              Beeyield AI — Specialized exclusively in bees, honey, apiculture, and pollination
+              science
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] text-muted-foreground/80">
+              <span className="text-amber-400 font-semibold uppercase tracking-wider text-[10px]">Partners:</span>
+              <span className="text-foreground/80">Farmers</span>
+              <span>•</span>
+              <a href="https://apisense.ai/en" target="_blank" rel="noopener noreferrer" className="hover:text-amber-400 transition-colors">ApiSense</a>
+              <span>•</span>
+              <a href="https://intelligenthives.eu/" target="_blank" rel="noopener noreferrer" className="hover:text-amber-400 transition-colors">Intelligent Hives</a>
+            </div>
+          </div>
         </div>
       </div>
 
