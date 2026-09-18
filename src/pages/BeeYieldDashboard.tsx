@@ -108,6 +108,7 @@ import HiveHealthDashboard from '@/components/beeyield/lovable_ai/HiveHealthDash
 import SupportPageModal from '@/components/beeyield/lovable_ai/SupportPageModal';
 import SettingsPage from '@/components/beeyield/lovable_ai/SettingsPage';
 import InspectionsPage from '@/components/beeyield/lovable_ai/InspectionsPage';
+import HarvestsPage from '@/components/beeyield/lovable_ai/HarvestsPage';
 import IntegrationsPage from '@/components/beeyield/lovable_ai/IntegrationsPage';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
@@ -437,7 +438,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
             case 'inspections': return renderEmbedded(<InspectionsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'harvests': return <HarvestsView onTabChange={handleTabChange} />;
+            case 'harvests': return renderEmbedded(<HarvestsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} onTabChange={handleTabChange} />);
             case 'flight-map': return <FlightMapView />;
 
             case 'varroa': return renderEmbedded(<VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
