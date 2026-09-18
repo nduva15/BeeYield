@@ -32,6 +32,7 @@ import {
   LifeBuoy,
   BookOpen,
   Settings as SettingsIcon,
+  Package,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -81,6 +82,7 @@ import KnowledgeSearch from "@/components/KnowledgeSearch";
 import ApiarySizing from "@/components/ApiarySizing";
 import YieldProjection from "@/components/YieldProjection";
 import InspectionsPage from "@/components/InspectionsPage";
+import HarvestsPage from "@/components/HarvestsPage";
 import SoundAnalysis from "@/components/SoundAnalysis";
 import IntegrationsPage from "@/components/IntegrationsPage";
 import SettingsPage from "@/components/SettingsPage";
@@ -229,6 +231,7 @@ export default function Index() {
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [inspectionsOpen, setInspectionsOpen] = useState(false);
+  const [harvestsOpen, setHarvestsOpen] = useState(false);
   const [soundAnalysisOpen, setSoundAnalysisOpen] = useState(false);
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -499,6 +502,7 @@ export default function Index() {
     {
       label: "Yield & pollination",
       items: [
+        { label: "Harvest Logs & Verification", icon: Package, onClick: () => setHarvestsOpen(true) },
         { label: "Harvest Calculator", icon: Calculator, onClick: () => setCalculatorOpen(true) },
         {
           label: "Honey Yield Projection",
@@ -1003,6 +1007,7 @@ export default function Index() {
       <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
       <InspectionsPage isOpen={inspectionsOpen} onClose={() => setInspectionsOpen(false)} />
+      <HarvestsPage isOpen={harvestsOpen} onClose={() => setHarvestsOpen(false)} />
       <SoundAnalysis isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />
       <IntegrationsPage isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />
       <SettingsPage isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
