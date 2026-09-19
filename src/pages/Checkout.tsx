@@ -541,7 +541,7 @@ const Checkout = () => {
 
                     <div className="mt-8 text-center no-print">
                         <button
-                            onClick={() => navigate('/buyer-dashboard?tab=orders')}
+                            onClick={() => navigate(`/buyer-dashboard?tab=orders&track=${orderId || orderNumber}`)}
                             className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 mx-auto font-bold"
                         >
                             Track Your Order in Dashboard <ArrowRight className="w-4 h-4" />

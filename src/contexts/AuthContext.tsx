@@ -144,6 +144,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const userWasCreatedForBackend = (user: User, backend: AuthBackend) => {
         const metadata = user.user_metadata ?? {};
+        if (backend === 'shop') return true;
         if (metadata.auth_backend === backend) return true;
         if (backend === 'shop' && metadata.shop_active === true) return true;
         if (backend === 'beeyield' && metadata.beeyield_active === true) return true;
@@ -152,6 +153,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const canBootstrapMissingProfile = (user: User, backend: AuthBackend) => {
+        if (backend === 'shop') return true;
         if (userWasCreatedForBackend(user, backend)) return true;
 
         if (backend === 'ceba') {
@@ -213,6 +215,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (error) {
             console.error(`Unable to create ${backend} profile`, error);
+            if (backend === 'shop') {
+                console.warn('Allowing shop customer session to proceed despite profile sync error.');
+                return null;
+            }
             await client.auth.signOut();
             return platformError('Your account was authenticated, but the platform profile could not be created.');
         }

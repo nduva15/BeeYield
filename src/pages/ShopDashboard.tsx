@@ -34,7 +34,7 @@ import {
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getUserOrders, getProducts, Product, waitForVaultedPaymentMethod } from '@/services/shopService';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -69,6 +69,8 @@ import { motion } from 'framer-motion';
 const ShopDashboard = () => {
     const { user, signOut, loading: authLoading, session } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [quickTrackQuery, setQuickTrackQuery] = useState('');
     const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot-password'>('login');
     const [activeTab, setActiveTab] = useState<string>('overview');
     const [orders, setOrders] = useState<Order[]>([]);
@@ -153,10 +155,49 @@ const ShopDashboard = () => {
 
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(location.search);
         const tab = params.get('tab');
+        const trackId = params.get('track');
         if (tab) setActiveTab(tab);
-    }, []);
+        if (trackId) {
+            setActiveTab('orders');
+            handleTrackOrder({ id: trackId, order_number: trackId } as any);
+        }
+    }, [location.search]);
+
+    // Pre-fill shipping details from customer profile
+    useEffect(() => {
+        if (user) {
+            setShippingDetails(prev => ({
+                ...prev,
+                fullName: prev.fullName || user.user_metadata?.full_name || user.user_metadata?.name || '',
+                email: prev.email || user.email || '',
+                phone: prev.phone || user.user_metadata?.phone || '',
+            }));
+        }
+    }, [user]);
+
+    // Pre-fill shipping details from saved addresses
+    useEffect(() => {
+        if (addresses.length > 0) {
+            const def = addresses.find(a => a.is_default) || addresses[0];
+            if (def) {
+                setShippingDetails(prev => ({
+                    ...prev,
+                    fullName: prev.fullName || def.name,
+                    phone: prev.phone || def.phone,
+                    email: prev.email || def.email || user?.email || '',
+                    street: prev.street || def.street,
+                    apartment: prev.apartment || def.apartment || '',
+                    building: prev.building || def.building || '',
+                    floor: prev.floor || def.floor || '',
+                    city: prev.city || def.city,
+                    county: prev.county || def.county,
+                    postalCode: prev.postalCode || def.postal_code || '',
+                }));
+            }
+        }
+    }, [addresses, user]);
 
     // Local state
     const [addresses, setAddresses] = useState<Address[]>([]);
@@ -592,6 +633,46 @@ const ShopDashboard = () => {
                             title="Order History"
                             subtitle="View and track all your transactions with BeeYield."
                         />
+
+                        {/* Quick Consignment Tracking Bar */}
+                        <div className={cn(glass.section, "p-4 sm:p-5 bg-gradient-to-r from-amber-500/5 via-white/80 to-amber-500/10 border border-[#F4D03F]/30 shadow-sm")}>
+                            <div className="flex flex-col sm:flex-row items-center gap-3">
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <div className="p-2.5 bg-[#F4D03F]/20 rounded-xl text-[#B78103]">
+                                        <Truck className="w-5 h-5" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-black uppercase tracking-wider text-[#1A1A1A]">Track Any Shipment</p>
+                                        <p className="text-[11px] text-gray-500 truncate">Enter your Order ID (e.g. BY-XXXX) for instant live logistics telemetry.</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
+                                    <Input
+                                        placeholder="BY-XXXXXX or Order ID"
+                                        value={quickTrackQuery}
+                                        onChange={e => setQuickTrackQuery(e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter' && quickTrackQuery.trim()) {
+                                                handleTrackOrder({ id: quickTrackQuery.trim(), order_number: quickTrackQuery.trim() } as any);
+                                            }
+                                        }}
+                                        className="h-10 rounded-xl bg-white border-gray-200 text-xs font-mono font-bold w-full sm:w-56"
+                                    />
+                                    <Button
+                                        onClick={() => {
+                                            if (!quickTrackQuery.trim()) {
+                                                toast.error('Please enter an Order ID or Consignment Number');
+                                                return;
+                                            }
+                                            handleTrackOrder({ id: quickTrackQuery.trim(), order_number: quickTrackQuery.trim() } as any);
+                                        }}
+                                        className="h-10 px-4 rounded-xl bg-[#1A1A1A] hover:bg-black text-[#F4D03F] text-xs font-bold shrink-0"
+                                    >
+                                        Track
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
 
                         {orders.length === 0 ? (
                             <div className={cn(glass.section, "py-20 text-center")}>
@@ -1147,18 +1228,34 @@ const ShopDashboard = () => {
                 const checkoutTotalWithShipping: number = totalPrice + checkoutShippingCost;
 
                 const processDashboardPayment = async () => {
+                    if (!shippingDetails.fullName.trim()) {
+                        toast.error('Please enter your full recipient name for delivery.');
+                        setCheckoutStep('shipping');
+                        return;
+                    }
+                    if (!shippingDetails.phone.trim()) {
+                        toast.error('Please provide a valid delivery contact phone number.');
+                        setCheckoutStep('shipping');
+                        return;
+                    }
+                    if (!shippingDetails.street.trim() || !shippingDetails.city.trim()) {
+                        toast.error('Please specify your street and destination city/town.');
+                        setCheckoutStep('shipping');
+                        return;
+                    }
+
                     setIsProcessing(true);
                     try {
                         const orderData: CheckoutOrder = {
                             shipping_address: {
-                                first_name: shippingDetails.fullName.split(' ')[0] || '',
-                                last_name: shippingDetails.fullName.split(' ').slice(1).join(' ') || '',
-                                email: shippingDetails.email,
+                                first_name: shippingDetails.fullName.split(' ')[0] || 'Valued',
+                                last_name: shippingDetails.fullName.split(' ').slice(1).join(' ') || 'Customer',
+                                email: shippingDetails.email || user?.email || '',
                                 phone: shippingDetails.phone,
                                 address: shippingDetails.street,
                                 city: shippingDetails.city,
-                                county: shippingDetails.county,
-                                postal_code: shippingDetails.postalCode,
+                                county: shippingDetails.county || shippingDetails.city,
+                                postal_code: shippingDetails.postalCode || '00100',
                             },
                             payment_method: paymentMethod,
                             payment_method_id: paymentMethod === 'card' ? (selectedPaymentMethodId || undefined) : undefined,
@@ -1168,17 +1265,18 @@ const ShopDashboard = () => {
                                 quantity: item.quantity
                             })),
                             total_kes: checkoutTotalWithShipping,
-                            notes: shippingDetails.notes + (shippingDetails.building ? ` | Bldg: ${shippingDetails.building}` : "") + (shippingDetails.apartment ? ` | Apt: ${shippingDetails.apartment}` : "")
+                            notes: (shippingDetails.notes || '') + (shippingDetails.building ? ` | Bldg: ${shippingDetails.building}` : "") + (shippingDetails.apartment ? ` | Apt: ${shippingDetails.apartment}` : "")
                         };
 
-
                         const response = await initializeCheckout(orderData, session?.access_token);
-                        setOrderNumber(response.order_id || `BY-${Date.now().toString(36).toUpperCase()}`);
+                        const humanOrderNumber = response.order_number || response.order_id || `BY-${Date.now().toString(36).slice(-6).toUpperCase()}`;
+                        setOrderNumber(humanOrderNumber);
                         clearCart();
                         setCheckoutStep('confirmation');
-                        toast.success('Order placed successfully!');
-                    } catch (error) {
-                        toast.error('Payment failed. Please try again.');
+                        toast.success('Order placed successfully! Tracking telemetry active.');
+                    } catch (error: any) {
+                        console.error('Checkout failed:', error);
+                        toast.error(error?.message || 'Payment processing could not be completed. Please try again.');
                     } finally {
                         setIsProcessing(false);
                     }
@@ -1223,8 +1321,25 @@ const ShopDashboard = () => {
                                 </div>
                                 
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                    <Button onClick={() => navigate('/shop')} className={cn(glass.btnPrimary, "px-10 h-14")}>Explore More</Button>
-                                    <Button onClick={() => setActiveTab('orders')} className={cn(glass.btnSecondary, "px-10 h-14")}>Track My Assets</Button>
+                                    <Button onClick={() => navigate('/shop')} className={cn(glass.btnPrimary, "px-8 h-14")}>
+                                        Explore More Harvests
+                                    </Button>
+                                    <Button 
+                                        onClick={() => {
+                                            setActiveTab('orders');
+                                            handleTrackOrder({ id: orderNumber, order_number: orderNumber } as any);
+                                        }} 
+                                        className={cn(glass.btnSecondary, "px-8 h-14 border-[#F4D03F]/40 text-[#1A1A1A] font-bold hover:bg-[#F4D03F]/10")}
+                                    >
+                                        <Truck className="w-4 h-4 mr-2 text-[#F4D03F]" /> Track Shipment Live
+                                    </Button>
+                                    <Button 
+                                        onClick={() => navigate(`/receipt/${orderNumber}`)} 
+                                        variant="outline"
+                                        className="rounded-2xl px-6 h-14 border-gray-200 text-gray-700 font-bold hover:bg-gray-50"
+                                    >
+                                        <FileText className="w-4 h-4 mr-2 text-gray-500" /> View Receipt
+                                    </Button>
                                 </div>
                             </div>
                         ) : (
@@ -1669,18 +1784,24 @@ const ShopDashboard = () => {
 
             {/* Tracking Modal */}
             <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
-                <DialogContent className="max-w-md rounded-[32px] p-8 border-none shadow-premium bg-white overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#F4D03F]/5 blur-3xl -translate-y-1/2 translate-x-1/2" />
-                    <DialogHeader className="mb-6">
-                        <div className="flex items-center gap-3 mb-2">
-                             <div className="p-2 bg-[#F4D03F]/10 rounded-xl">
-                                <Truck className="w-5 h-5 text-[#F4D03F]" />
-                             </div>
-                             <DialogTitle className="text-2xl font-black text-[#1A1A1A]">Logistic <span className="text-[#F4D03F] italic">Telemetry</span></DialogTitle>
+                <DialogContent className="max-w-lg rounded-[32px] p-6 sm:p-8 border-none shadow-premium bg-white overflow-hidden max-h-[90vh] overflow-y-auto custom-scroll">
+                    <div className="absolute top-0 right-0 w-36 h-36 bg-[#F4D03F]/10 blur-3xl -translate-y-1/2 translate-x-1/2" />
+                    <DialogHeader className="mb-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-[#F4D03F]/15 rounded-2xl text-[#B78103]">
+                                    <Truck className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <DialogTitle className="text-2xl font-black text-[#1A1A1A] tracking-tight">
+                                        Shipment <span className="text-[#F4D03F] italic">Tracking</span>
+                                    </DialogTitle>
+                                    <DialogDescription className="text-gray-400 font-bold text-xs mt-0.5">
+                                        Consignment: {trackingOrder?.order_number || trackingOrder?.id || 'Active Consignment'}
+                                    </DialogDescription>
+                                </div>
+                            </div>
                         </div>
-                        <DialogDescription className="text-gray-400 font-medium tracking-tight">
-                            Identity: {trackingOrder?.order_number || trackingOrder?.id || 'UNIDENTIFIED'}
-                        </DialogDescription>
                     </DialogHeader>
                     
                     {loadingTracking ? (
@@ -1689,45 +1810,112 @@ const ShopDashboard = () => {
                                 <div className="absolute inset-0 bg-[#F4D03F]/20 blur-xl rounded-full scale-150 animate-pulse" />
                                 <Loader className="w-12 h-12 text-[#F4D03F] animate-spin relative z-10" />
                             </div>
-                            <p className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[3px]">Syncing Logistics Network</p>
+                            <p className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[3px]">Contacting Logistics Relay...</p>
                         </div>
                     ) : trackingInfo ? (
-                        <div className="space-y-8 pt-2">
-                            <div className="flex items-center justify-between p-6 bg-[#1A1A1A] rounded-2xl border border-white/5 shadow-premium">
-                                <div>
-                                    <p className="text-[9px] font-black text-white/40 uppercase tracking-[2px] mb-1">Current Protocol</p>
-                                    <p className="text-xl font-black text-[#F4D03F] capitalize tracking-tighter">{trackingInfo.current_status}</p>
+                        <div className="space-y-6 pt-1">
+                            {/* Route & Status Banner */}
+                            <div className="p-5 bg-gradient-to-br from-[#1A1A1A] to-neutral-900 rounded-2xl border border-white/5 shadow-xl text-white space-y-4">
+                                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                                    <div>
+                                        <p className="text-[9px] font-black text-white/50 uppercase tracking-[2px]">Current Status</p>
+                                        <p className="text-lg font-black text-[#F4D03F] capitalize tracking-tight flex items-center gap-2 mt-0.5">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                                            {trackingInfo.current_status}
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[9px] font-black text-white/50 uppercase tracking-[2px]">Delivery Window</p>
+                                        <Badge className="bg-[#F4D03F] text-[#1A1A1A] border-none font-black text-[10px] px-3 py-1 mt-0.5">
+                                            {trackingInfo.estimated_delivery}
+                                        </Badge>
+                                    </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-[9px] font-black text-white/40 uppercase tracking-[2px] mb-1">Estimated Drift</p>
-                                    <Badge className="bg-[#F4D03F] text-[#1A1A1A] border-none font-black text-[10px] px-3">{trackingInfo.estimated_delivery}</Badge>
+
+                                {/* Waypoint info */}
+                                <div className="grid grid-cols-2 gap-3 text-xs">
+                                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <p className="text-[10px] text-white/40 uppercase font-bold flex items-center gap-1">
+                                            <MapPin className="w-3 h-3 text-[#F4D03F]" /> Origin
+                                        </p>
+                                        <p className="font-bold text-white/90 text-xs mt-0.5">
+                                            {(trackingInfo as any).origin || "Kibwezi Apiary Centre, Makueni"}
+                                        </p>
+                                    </div>
+                                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <p className="text-[10px] text-white/40 uppercase font-bold flex items-center gap-1">
+                                            <Truck className="w-3 h-3 text-emerald-400" /> Carrier
+                                        </p>
+                                        <p className="font-bold text-white/90 text-xs mt-0.5 truncate">
+                                            {(trackingInfo as any).carrier || "BeeYield Express Logistics"}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="relative pl-8 space-y-10 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
-                                {(trackingInfo.events || []).map((event: any, i: number) => (
-                                    <div key={i} className="relative group">
-                                        <div className={cn(
-                                            "absolute -left-[27px] top-1.5 w-3.5 h-3.5 rounded-full border-4 border-white shadow-premium transition-all z-10",
-                                            i === 0 ? 'bg-[#F4D03F] scale-125' : 'bg-gray-200'
-                                        )} />
-                                        <div className="space-y-1">
-                                            <p className={cn("text-[11px] font-black tracking-widest uppercase mb-1", i === 0 ? 'text-[#1A1A1A]' : 'text-gray-400')}>{event.status}</p>
-                                            <p className="text-[13px] text-gray-500 font-medium leading-relaxed">{event.description}</p>
-                                            <div className="flex items-center gap-3 text-[10px] font-bold text-gray-300 tracking-tight pt-1">
-                                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {event.created_at ? new Date(event.created_at).toLocaleString() : 'N/A'}</span>
-                                                {event.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {event.location}</span>}
+                            {/* Milestones timeline */}
+                            <div className="space-y-2">
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Consignment Milestones</p>
+                                <div className="relative pl-7 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+                                    {(trackingInfo.events || []).map((event: any, i: number, arr: any[]) => {
+                                        const isLatest = i === arr.length - 1;
+                                        return (
+                                            <div key={i} className="relative group">
+                                                <div className={cn(
+                                                    "absolute -left-[24px] top-1 w-3.5 h-3.5 rounded-full border-2 border-white shadow-md transition-all z-10",
+                                                    isLatest ? 'bg-emerald-500 scale-125 ring-4 ring-emerald-500/20' : 'bg-[#F4D03F]'
+                                                )} />
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className={cn("text-xs font-black tracking-wide uppercase", isLatest ? 'text-[#1A1A1A]' : 'text-gray-600')}>
+                                                            {event.status}
+                                                        </p>
+                                                        <span className="text-[10px] font-bold text-gray-400 flex items-center gap-1">
+                                                            <Clock className="w-3 h-3 text-gray-300" />
+                                                            {event.created_at ? new Date(event.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recorded'}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                                                        {event.description}
+                                                    </p>
+                                                    {event.location && (
+                                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-400 pt-0.5">
+                                                            <MapPin className="w-3 h-3 text-[#F4D03F]" /> {event.location}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="pt-2 flex gap-3">
+                                {trackingOrder && (
+                                    <Button
+                                        onClick={() => navigate(`/receipt/${trackingOrder.order_number || trackingOrder.id}`)}
+                                        variant="outline"
+                                        className="flex-1 rounded-xl h-11 text-xs font-bold border-gray-200"
+                                    >
+                                        <FileText className="w-4 h-4 mr-2 text-[#F4D03F]" /> View Official Receipt
+                                    </Button>
+                                )}
+                                <Button
+                                    onClick={() => trackingOrder && handleTrackOrder(trackingOrder)}
+                                    className="rounded-xl h-11 px-5 text-xs font-bold bg-[#1A1A1A] text-white hover:bg-black"
+                                >
+                                    Refresh Relay
+                                </Button>
                             </div>
                         </div>
                     ) : (
-                        <div className="text-center py-20 bg-gray-50/50 rounded-3xl border border-dashed border-gray-100">
-                            <Package className="w-12 h-12 mx-auto text-gray-200 mb-4" />
+                        <div className="text-center py-16 bg-gray-50/50 rounded-3xl border border-dashed border-gray-100">
+                            <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
                             <p className="text-sm font-bold text-[#1A1A1A]">Telemetry Unavailable</p>
-                            <p className="text-[11px] text-gray-400 mt-1">Satellite sync pending for this shipment.</p>
+                            <p className="text-xs text-gray-400 mt-1 max-w-xs mx-auto">
+                                Please check back shortly as the Kibwezi fulfillment center uploads dispatch logs.
+                            </p>
                         </div>
                     )}
                 </DialogContent>

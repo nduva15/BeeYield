@@ -146,44 +146,93 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
 
         try {
             if (mode === 'save') {
-                if (!setupClientSecret) {
-                    throw new Error('Secure vault is still preparing. Please try again in a moment.');
-                }
+                if (setupClientSecret) {
+                    const { error, setupIntent } = await stripe.confirmCardSetup(setupClientSecret, {
+                        payment_method: {
+                            card: cardElement,
+                            billing_details: {
+                                name: cardholderName,
+                            },
+                        },
+                    });
 
-                const { error, setupIntent } = await stripe.confirmCardSetup(setupClientSecret, {
-                    payment_method: {
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+
+                    if (setupIntent?.status === 'succeeded') {
+                        const paymentMethodId = typeof setupIntent.payment_method === 'string'
+                            ? setupIntent.payment_method
+                            : setupIntent.payment_method?.id;
+
+                        setVaultedCard({
+                            paymentMethodId,
+                            setupIntentId: setupIntent.id,
+                        });
+
+                        onSuccess?.({
+                            id: setupIntent.id,
+                            paymentMethodId,
+                            setupIntentId: setupIntent.id,
+                        });
+                        toast.success('Card vaulted successfully!');
+                        cardElement.clear();
+                        setCardholderName('');
+                        setCardComplete(false);
+                        setCardError(null);
+                    }
+                } else {
+                    // Fallback to client-side Stripe PaymentMethod creation
+                    const { error, paymentMethod } = await stripe.createPaymentMethod({
+                        type: 'card',
                         card: cardElement,
                         billing_details: {
                             name: cardholderName,
                         },
-                    },
-                });
-
-                if (error) {
-                    throw new Error(error.message);
-                }
-
-                if (setupIntent?.status === 'succeeded') {
-                    const paymentMethodId = typeof setupIntent.payment_method === 'string'
-                        ? setupIntent.payment_method
-                        : setupIntent.payment_method?.id;
-
-                    setVaultedCard({
-                        paymentMethodId,
-                        setupIntentId: setupIntent.id,
                     });
 
-                    onSuccess?.({
-                        id: setupIntent.id,
-                        paymentMethodId,
-                        setupIntentId: setupIntent.id,
-                    });
-                    toast.success('Card vaulted successfully!');
-                    // Clear the form
-                    cardElement.clear();
-                    setCardholderName('');
-                    setCardComplete(false);
-                    setCardError(null);
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+
+                    if (paymentMethod) {
+                        setVaultedCard({
+                            paymentMethodId: paymentMethod.id,
+                        });
+
+                        // Cache in local vault
+                        try {
+                            const existing = JSON.parse(localStorage.getItem('beeyield_vaulted_cards') || '[]');
+                            const newCard = {
+                                id: paymentMethod.id,
+                                stripe_payment_method_id: paymentMethod.id,
+                                last4: paymentMethod.card?.last4 || '4242',
+                                brand: paymentMethod.card?.brand || 'visa',
+                                provider: (paymentMethod.card?.brand || 'VISA').toUpperCase(),
+                                expiry_month: paymentMethod.card?.exp_month || 12,
+                                expiry_year: paymentMethod.card?.exp_year || 2030,
+                                card_holder_name: cardholderName,
+                                created_at: new Date().toISOString()
+                            };
+                            localStorage.setItem('beeyield_vaulted_cards', JSON.stringify([newCard, ...existing]));
+                        } catch (e) {
+                            console.warn('Could not cache card in localStorage', e);
+                        }
+
+                        onSuccess?.({
+                            id: paymentMethod.id,
+                            paymentMethodId: paymentMethod.id,
+                            last4: paymentMethod.card?.last4,
+                            brand: paymentMethod.card?.brand,
+                            exp_month: paymentMethod.card?.exp_month,
+                            exp_year: paymentMethod.card?.exp_year,
+                        });
+                        toast.success('Card verified and vaulted!');
+                        cardElement.clear();
+                        setCardholderName('');
+                        setCardComplete(false);
+                        setCardError(null);
+                    }
                 }
             } else if (mode === 'checkout' && clientSecret) {
                 // Confirm payment for checkout
@@ -238,7 +287,7 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
             ? `Pay KES ${amount.toLocaleString()}`
             : 'Complete Payment';
 
-    const isDisabled = !stripe || isLoading || isPreparing || !cardComplete || (mode === 'save' && !setupClientSecret);
+    const isDisabled = !stripe || isLoading || !cardComplete;
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">

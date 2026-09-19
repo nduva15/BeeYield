@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2, Printer, ArrowLeft, Download, CheckCircle2, MapPin, Phone, Mail, Globe, ShieldCheck, Package } from 'lucide-react';
+import { Loader2, Printer, ArrowLeft, Download, CheckCircle2, MapPin, Phone, Mail, Globe, ShieldCheck, Package, Truck } from 'lucide-react';
 import { getOrder, downloadInvoice } from '@/services/shopService';
 import { toast } from 'sonner';
 import logo from '@/assets/Logo.png';
@@ -84,6 +84,13 @@ const Receipt = () => {
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
                 </Button>
                 <div className="flex gap-3">
+                    <Button 
+                        variant="outline" 
+                        onClick={() => navigate(`/shop-dashboard?tab=orders&track=${order.order_number || order.id || id}`)} 
+                        className="gap-2 rounded-full border-amber-300 bg-amber-50/70 hover:bg-amber-100 text-[#1A1A1A] font-bold shadow-sm"
+                    >
+                        <Truck className="w-4 h-4 text-amber-600" /> Track Shipment
+                    </Button>
                     <Button variant="outline" onClick={() => window.print()} className="gap-2 rounded-full border-slate-200 shadow-sm">
                         <Printer className="w-4 h-4" /> Print
                     </Button>
