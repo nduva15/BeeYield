@@ -367,8 +367,8 @@ const BeeYieldDashboard: React.FC = () => {
         );
     };
 
-        const renderEmbedded = (component: React.ReactNode) => (
-        <div className="w-full max-w-[1400px] mx-auto space-y-6 pb-20 beeyield-embedded-tool">
+    const renderEmbedded = (component: React.ReactNode) => (
+        <div className="w-full max-w-full mx-auto space-y-4 sm:space-y-6 pb-12 sm:pb-20 px-1 sm:px-2 beeyield-embedded-tool overflow-x-hidden">
             {component}
         </div>
     );

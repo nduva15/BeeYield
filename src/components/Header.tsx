@@ -38,7 +38,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-beeyield-gold/20 bg-white/80 backdrop-blur-xl shadow-sm">
-      <nav className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
+      <nav className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Left side - Logo (all devices) */}
         <Link to="/" className="flex items-center space-x-2.5 flex-shrink-0 transition-all hover:scale-105 active:scale-95 group" aria-label="BeeYield home">
           <div className="relative">
@@ -144,11 +144,16 @@ const Header = () => {
             </Link>
           </Button>
 
-          {/* Desktop Pages Dropdown */}
-          <div className="hidden lg:block relative z-[200]">
+          {/* Navigation Pages Dropdown (Available on Phone, Pad & Laptop) */}
+          <div className="relative z-[200]">
             <DropdownMenu>
-              <DropdownMenuTrigger className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 text-beeyield-green outline-none">
-                <Menu className="h-6 w-6" />
+              <DropdownMenuTrigger 
+                className="p-1.5 sm:p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 text-beeyield-green outline-none flex items-center gap-1"
+                aria-label="Navigation Pages Dropdown"
+                title="Navigation & Pages"
+              >
+                <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+                <span className="text-[11px] font-bold text-beeyield-green hidden md:inline">Pages</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64 flex flex-col p-4 bg-gradient-to-br from-beeyield-gold to-beeyield-green border-none rounded-2xl shadow-2xl z-[100] gap-1 max-h-[85vh] overflow-y-auto">
                 <div className="px-4 py-1.5 mb-1">
@@ -223,7 +228,7 @@ const Header = () => {
           />
 
           {/* Menu Panel */}
-          <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-3xl bg-white/95 backdrop-blur-xl border border-beeyield-gold/20 p-4 sm:p-6 shadow-2xl animate-in fade-in slide-in-from-top-2 lg:hidden">
+          <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100vh-4.5rem)] overflow-y-auto rounded-3xl bg-white/98 backdrop-blur-2xl border border-beeyield-gold/30 p-4 sm:p-6 shadow-2xl animate-in fade-in slide-in-from-top-2 lg:hidden">
             {/* Main Navigation Section (Pages in Header) */}
             <div className="flex flex-col space-y-1 pb-4 border-b border-beeyield-gold/20">
               <span className="text-[10px] uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black">Main Navigation</span>

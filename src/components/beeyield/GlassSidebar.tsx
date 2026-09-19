@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown, LogOut, Settings, Sun, Moon, Lock as LockIcon, ShieldCheck } from "lucide-react";
+import { ChevronDown, LogOut, Settings, Sun, Moon, Lock as LockIcon, ShieldCheck, X } from "lucide-react";
 import { NavItem } from './DashboardSidebar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { glass } from './GlassTheme';
@@ -14,6 +14,8 @@ interface GlassSidebarProps {
     onTabChange: (tab: string) => void;
     onLogout: () => void;
     navItems: NavItem[];
+    mobileOpen?: boolean;
+    onMobileClose?: () => void;
 }
 
 const GlassSidebar: React.FC<GlassSidebarProps> = ({
@@ -21,7 +23,9 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     activeTab,
     onTabChange,
     onLogout,
-    navItems
+    navItems,
+    mobileOpen = false,
+    onMobileClose
 }) => {
     const [expandedFolders, setExpandedFolders] = React.useState<string[]>(['beeyield', 'precision-pollination-folder', 'meters']);
     const { theme, setTheme } = useTheme();
@@ -41,32 +45,51 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     };
 
     return (
-        <div
-            className={cn(
-                "fixed left-0 top-0 bottom-0 w-[280px] bg-sidebar border-r border-border z-50 hidden md:flex flex-col antialiased transition-all",
-                className
+        <>
+            {/* Mobile Backdrop */}
+            {mobileOpen && (
+                <div
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 md:hidden animate-in fade-in"
+                    onClick={onMobileClose}
+                />
             )}
-        >
-            {/* Brand Header */}
-            <div className="h-16 flex items-center px-5 border-b border-border/50">
-                <button
-                    onClick={() => onTabChange('home')}
-                    className="flex items-center gap-3 w-full text-left group transition-colors"
-                >
-                    <div className="w-9 h-9 flex items-center justify-center flex-shrink-0 bg-primary/10 rounded-xl border border-border p-1.5 transition-all group-hover:scale-110">
-                        <img src={Logo} alt="Beeeyield" className="w-full h-full object-contain" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-base font-bold text-foreground tracking-tight leading-none">Beeeyield <span className="text-[#F4D03F]">Dashboard</span></span>
-                        <span className="text-[10px] text-muted-foreground font-medium mt-0.5">Management Platform</span>
-                    </div>
-                </button>
-            </div>
+
+            <div
+                className={cn(
+                    "fixed left-0 top-0 bottom-0 w-[280px] bg-sidebar border-r border-border z-50 flex flex-col antialiased transition-transform duration-300 shadow-2xl md:shadow-none",
+                    mobileOpen ? "translate-x-0 !flex" : "-translate-x-full md:translate-x-0 hidden md:flex",
+                    className
+                )}
+            >
+                {/* Brand Header with Close on Mobile */}
+                <div className="h-16 flex items-center justify-between px-5 border-b border-border/50">
+                    <button
+                        onClick={() => { onTabChange('home'); onMobileClose?.(); }}
+                        className="flex items-center gap-3 text-left group transition-colors flex-1"
+                    >
+                        <div className="w-9 h-9 flex items-center justify-center flex-shrink-0 bg-primary/10 rounded-xl border border-border p-1.5 transition-all group-hover:scale-110">
+                            <img src={Logo} alt="Beeeyield" className="w-full h-full object-contain" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-base font-bold text-foreground tracking-tight leading-none">Beeeyield <span className="text-[#F4D03F]">Dashboard</span></span>
+                            <span className="text-[10px] text-muted-foreground font-medium mt-0.5">Management Platform</span>
+                        </div>
+                    </button>
+                    {mobileOpen && (
+                        <button
+                            onClick={onMobileClose}
+                            className="md:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+                            aria-label="Close navigation drawer"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    )}
+                </div>
 
             {/* User Profile Summary */}
             <div className="px-5 py-4 border-b border-border/50 bg-muted/30">
                 <button 
-                  onClick={() => onTabChange('settings')}
+                  onClick={() => { onTabChange('settings'); onMobileClose?.(); }}
                   className="flex items-center gap-3 group w-full text-left"
                 >
                     <div className="w-10 h-10 rounded-xl bg-card border border-border/50 flex-shrink-0 flex items-center justify-center overflow-hidden shadow-sm group-hover:border-border/ transition-all">
@@ -96,7 +119,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                         return (
                             <div key={item.id} className="w-full">
                                 <button
-                                    onClick={() => isFolder ? toggleFolder(item.id) : onTabChange(item.id)}
+                                    onClick={() => { if (isFolder) { toggleFolder(item.id); } else { onTabChange(item.id); onMobileClose?.(); } }}
                                     className={cn(
                                         "w-full flex items-center justify-between h-9 px-3 transition-all rounded-lg group relative text-[13px]",
                                         isActive
@@ -149,7 +172,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                             {sub.items.map((subItem: any) => (
                                                                 <button
                                                                     key={subItem.id}
-                                                                    onClick={() => onTabChange(subItem.id)}
+                                                                    onClick={() => { onTabChange(subItem.id); onMobileClose?.(); }}
                                                                     className={cn(
                                                                         "w-full text-left h-8 px-3 text-[12px] rounded-md transition-all flex items-center gap-2 group/sub",
                                                                         activeTab === subItem.id

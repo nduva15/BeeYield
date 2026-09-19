@@ -13,7 +13,33 @@ import {
     ShieldCheck,
     Hexagon,
     Command,
+    Menu,
+    Smartphone,
+    Tablet,
+    Laptop,
+    MonitorSmartphone,
+    Lock,
+    Unlock,
+    LayoutGrid,
+    ClipboardList,
+    Award,
+    MapPin,
+    Navigation,
+    Bot,
+    Brain,
+    Heart,
+    Volume2,
+    Bug,
+    Sparkles,
+    Gauge,
+    Cpu,
+    Scale,
+    Zap,
+    Puzzle,
+    Banknote,
+    LifeBuoy
 } from 'lucide-react';
+import { NavItem } from './DashboardSidebar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -35,13 +61,21 @@ interface DashboardHeaderProps {
     onLogout: () => void;
     activeTab: string;
     onQuickAction: () => void;
+    navItems?: NavItem[];
+    onToggleMobileSidebar?: () => void;
+    deviceMode?: 'auto' | 'phone' | 'pad' | 'laptop';
+    onDeviceModeChange?: (mode: 'auto' | 'phone' | 'pad' | 'laptop') => void;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     onTabChange,
     onLogout,
     activeTab,
-    onQuickAction
+    onQuickAction,
+    navItems = [],
+    onToggleMobileSidebar,
+    deviceMode = 'auto',
+    onDeviceModeChange
 }) => {
     const { user, beeyieldUser } = useAuth();
     const { language, setLanguage, t } = useLanguage();
@@ -69,32 +103,168 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const userName = (beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User').split(' ')[0];
     const avatarUrl = user?.user_metadata?.avatar_url;
 
+    const navCategories = [
+        {
+            title: "Operations & Hives",
+            items: [
+                { id: 'home', label: 'Overview', icon: LayoutGrid },
+                { id: 'beeyield', label: 'My Hives & Apiaries', icon: Hexagon },
+                { id: 'inspections', label: 'Inspections & Audits', icon: ClipboardList },
+                { id: 'harvests', label: 'Honey Harvest Batches', icon: Award },
+                { id: 'places', label: 'My Places & Maps', icon: MapPin },
+                { id: 'flight-map', label: 'Flight Mapping', icon: Navigation },
+            ]
+        },
+        {
+            title: "Intelligence & Neural Hive",
+            items: [
+                { id: 'assistant', label: 'BeeYield AI Assistant', icon: Bot },
+                { id: 'pollination-intelligence', label: 'Pollination Intelligence', icon: Brain },
+                { id: 'hive-health', label: 'Hive Health Monitor', icon: Heart },
+                { id: 'acoustic-transformer', label: 'Acoustic Mood Transformer', icon: Volume2 },
+                { id: 'sound-analysis', label: 'Sound Spectrogram', icon: Activity },
+                { id: 'bee-diseases', label: 'Pathogen & Disease Guide', icon: Bug },
+                { id: 'varroa-simulator', label: 'Varroa Mite Simulator', icon: Sparkles },
+            ]
+        },
+        {
+            title: "IoT Hardware & Sensors",
+            items: [
+                { id: 'sensor-alerts', label: 'Sensor Real-Time Alerts', icon: Bell },
+                { id: 'continuous-monitor', label: 'Continuous Telemetry', icon: Gauge },
+                { id: 'devices', label: 'Hardware & IoT Nodes', icon: Cpu },
+                { id: 'measurement-tools', label: 'Measurement Data Tools', icon: Scale },
+                { id: 'meters', label: 'IoT Flow & Smart Meters', icon: Zap },
+            ]
+        },
+        {
+            title: "Platform & Settings",
+            items: [
+                { id: 'settings', label: 'Dashboard Settings', icon: Settings },
+                { id: 'integrations', label: 'Connected Integrations', icon: Puzzle },
+                { id: 'billing', label: 'Billing & Subscriptions', icon: Banknote },
+                { id: 'support', label: 'Support & Help Desk', icon: LifeBuoy },
+            ]
+        }
+    ];
+
+    const currentItem = navCategories.flatMap(c => c.items).find(i => i.id === activeTab) || 
+        navItems.find(i => i.id === activeTab);
+    const CurrentIcon = (currentItem as any)?.icon || Hexagon;
+    const currentLabel = (currentItem as any)?.label || activeTab.replace(/-/g, ' ');
+
     return (
         <header className={cn(
             "h-16 sticky top-0 z-40 flex items-center justify-between px-4 md:px-6 transition-all duration-300",
             scrolled ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-lg" : "bg-transparent"
         )}>
-            {/* Left: Breadcrumb & Welcome */}
-            <div className="flex items-center gap-4">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-3">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F4D03F]/10 border border-border rounded-lg">
-                            <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wider uppercase">Beeeyield Dashboard</span>
-                        </div>
-                        <span className="text-gray-300">/</span>
-                        <motion.span
-                            key={activeTab}
-                            initial={{ opacity: 0, x: -6 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="text-[11px] font-medium text-muted-foreground tracking-wider"
+            {/* Left: Hamburger, View Dropdown, & Breadcrumbs */}
+            <div className="flex items-center gap-2 sm:gap-3">
+                {/* Mobile Drawer Trigger (phone & pad) */}
+                <button
+                    onClick={onToggleMobileSidebar}
+                    className="md:hidden p-2 rounded-xl bg-muted/40 hover:bg-[#F4D03F]/15 border border-border text-foreground transition-all flex items-center justify-center shrink-0"
+                    aria-label="Open navigation menu"
+                    title="Open Navigation Menu"
+                >
+                    <Menu className="w-5 h-5 text-[#F4D03F]" />
+                </button>
+
+                {/* View Selector Dropdown - ALWAYS VISIBLE ON PHONE, PAD, AND LAPTOP */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button
+                            className="flex items-center gap-2 px-3 py-1.5 bg-muted/40 hover:bg-[#F4D03F]/15 border border-border/80 hover:border-[#F4D03F]/40 rounded-xl transition-all group outline-none shrink-0"
+                            title="Switch Dashboard View"
                         >
-                            {activeTab.replace(/-/g, ' ')}
-                        </motion.span>
-                    </div>
-                    <h2 className="text-lg font-bold text-foreground tracking-tight hidden md:block">
-                        Welcome, <span className="text-[#F4D03F]">{userName}</span>
-                    </h2>
+                            <div className="w-5 h-5 rounded-lg bg-[#F4D03F]/15 flex items-center justify-center text-[#B78103] dark:text-[#F4D03F] shrink-0">
+                                <CurrentIcon className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-xs font-bold text-foreground capitalize tracking-tight flex items-center gap-1 max-w-[130px] sm:max-w-[200px] truncate">
+                                {currentLabel}
+                                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform shrink-0" />
+                            </span>
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                        align="start"
+                        sideOffset={8}
+                        className="w-72 max-h-[82vh] overflow-y-auto rounded-2xl border border-border p-2 shadow-2xl bg-card/95 backdrop-blur-2xl z-50 custom-scrollbar"
+                    >
+                        <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-[#B78103] dark:text-[#F4D03F]">
+                            BeeYield Expert Views
+                        </DropdownMenuLabel>
+                        <div className="space-y-3">
+                            {navCategories.map((category) => (
+                                <div key={category.title} className="space-y-0.5">
+                                    <p className="px-3 text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider">{category.title}</p>
+                                    {category.items.map((item) => {
+                                        const ItemIcon = item.icon;
+                                        const isActive = activeTab === item.id;
+                                        return (
+                                            <DropdownMenuItem
+                                                key={item.id}
+                                                onClick={() => onTabChange(item.id)}
+                                                className={cn(
+                                                    "px-3 py-2 text-xs rounded-xl cursor-pointer flex items-center justify-between transition-colors",
+                                                    isActive 
+                                                        ? "bg-[#F4D03F]/20 text-foreground font-bold" 
+                                                        : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                                                )}
+                                            >
+                                                <div className="flex items-center gap-2.5 min-w-0">
+                                                    <ItemIcon className={cn("w-4 h-4 shrink-0", isActive ? "text-[#F4D03F]" : "text-muted-foreground/70")} />
+                                                    <span className="truncate">{item.label}</span>
+                                                </div>
+                                                {isActive && (
+                                                    <span className="w-2 h-2 rounded-full bg-[#F4D03F] shrink-0" />
+                                                )}
+                                            </DropdownMenuItem>
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                        </div>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Breadcrumbs (Hidden on tiny phone screens, visible on pad & laptop) */}
+                <div className="hidden sm:flex items-center gap-2">
+                    <span className="text-border">•</span>
+                    <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wide uppercase">OS</span>
+                    <span className="text-border">/</span>
+                    <span className="text-[11px] font-medium text-muted-foreground capitalize truncate max-w-[120px]">
+                        {activeTab.replace(/-/g, ' ')}
+                    </span>
                 </div>
+            </div>
+
+            {/* Center: Device Lock Mode Switcher (Phone / Pad / Laptop / Auto) */}
+            <div className="hidden lg:flex items-center gap-1 p-1 bg-muted/40 border border-border/80 rounded-2xl shadow-sm">
+                {[
+                    { id: 'phone', label: 'Phone', icon: Smartphone, size: '390px' },
+                    { id: 'pad', label: 'Pad', icon: Tablet, size: '768px' },
+                    { id: 'laptop', label: 'Laptop', icon: Laptop, size: '1280px' },
+                    { id: 'auto', label: 'Auto', icon: MonitorSmartphone, size: 'Fluid' },
+                ].map(dev => (
+                    <button
+                        key={dev.id}
+                        onClick={() => onDeviceModeChange?.(dev.id as any)}
+                        className={cn(
+                            "flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all",
+                            deviceMode === dev.id
+                                ? "bg-[#F4D03F] text-neutral-900 shadow-sm"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                        )}
+                        title={`Lock Viewport to ${dev.label} (${dev.size})`}
+                    >
+                        <dev.icon className="w-3.5 h-3.5" />
+                        <span className="text-[11px]">{dev.label}</span>
+                        {deviceMode === dev.id && (
+                            <Lock className="w-2.5 h-2.5 ml-0.5 opacity-80" />
+                        )}
+                    </button>
+                ))}
             </div>
 
             {/* Right: Controls */}
