@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
 
 const CommitmentPage = () => {
   const sdgs = [
@@ -163,6 +164,9 @@ const CommitmentPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Panda Miti Initiative - 45,000 Trees Around Kibwezi */}
+      <PandaMitiSection />
 
       {/* CTA Section */}
       <section className="py-32 relative overflow-hidden z-10">

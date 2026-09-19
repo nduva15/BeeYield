@@ -186,6 +186,7 @@ root.render(
                                                         <Route path="/impact" element={<Impact />} />
                                                         <Route path="/esg" element={<ESG />} />
                                                         <Route path="/commitment" element={<Commitment />} />
+                                                        <Route path="/sdg" element={<Commitment />} />
                                                         <Route path="/ourstory" element={<OurStory />} />
                                                         <Route path="/about" element={<OurStory />} />
 

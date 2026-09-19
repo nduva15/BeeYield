@@ -1135,6 +1135,9 @@ const HoneyLanding = () => {
 
       <FlashSaleSection />
       <FAQSection />
+      {/* Panda Miti Initiative - 45,000 Trees Around Kibwezi */}
+      <PandaMitiSection />
+
       <NewsletterSection />
     </BeeYieldPageShell>
   );

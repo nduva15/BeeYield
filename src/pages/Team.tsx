@@ -40,6 +40,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
 import { cn } from "@/lib/utils";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import SEO from "@/components/SEO";
@@ -386,6 +387,9 @@ const Team = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Panda Miti Initiative - 45,000 Trees Around Kibwezi */}
+            <PandaMitiSection />
 
             {/* FINAL CTA */}
             <section className="bg-neutral-50 py-24 border-t border-neutral-200 text-center">
