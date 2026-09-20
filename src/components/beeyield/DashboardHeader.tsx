@@ -15,10 +15,6 @@ import {
     Hexagon,
     Command,
     Menu,
-    Smartphone,
-    Tablet,
-    Laptop,
-    MonitorSmartphone,
     Lock,
     Unlock,
     LayoutGrid,
@@ -251,34 +247,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                         {activeTab.replace(/-/g, ' ')}
                     </span>
                 </div>
-            </div>
-
-            {/* Center: Device Lock Mode Switcher (Phone / Pad / Laptop / Auto) */}
-            <div className="hidden lg:flex items-center gap-1 p-1 bg-muted/40 border border-border/80 rounded-2xl shadow-sm">
-                {[
-                    { id: 'phone', label: 'Phone', icon: Smartphone, size: '390px' },
-                    { id: 'pad', label: 'Pad', icon: Tablet, size: '768px' },
-                    { id: 'laptop', label: 'Laptop', icon: Laptop, size: '1280px' },
-                    { id: 'auto', label: 'Auto', icon: MonitorSmartphone, size: 'Fluid' },
-                ].map(dev => (
-                    <button
-                        key={dev.id}
-                        onClick={() => onDeviceModeChange?.(dev.id as any)}
-                        className={cn(
-                            "flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all",
-                            deviceMode === dev.id
-                                ? "bg-[#F4D03F] text-neutral-900 shadow-sm"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
-                        )}
-                        title={`Lock Viewport to ${dev.label} (${dev.size})`}
-                    >
-                        <dev.icon className="w-3.5 h-3.5" />
-                        <span className="text-[11px]">{dev.label}</span>
-                        {deviceMode === dev.id && (
-                            <Lock className="w-2.5 h-2.5 ml-0.5 opacity-80" />
-                        )}
-                    </button>
-                ))}
             </div>
 
             {/* Right: Controls */}
