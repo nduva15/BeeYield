@@ -18,14 +18,19 @@ docker-compose*
 deploy.sh
 Makefile
 render.yaml
+*.ps1
 
-# Research, Data & Large Artifacts
-bee_research_10k.csv
-*.sql
-output
-output/**
-scratch
-scratch/**
+# Supabase Local Migrations & Dumps
+supabase
+supabase/**
+
+# Developer & Agent Tooling
+.github
+.github/**
+.claude
+.claude/**
+scripts
+scripts/**
 tools
 tools/**
 tests
@@ -33,6 +38,15 @@ tests/**
 .docs
 docs
 repo-sync-temp
+
+# Research, Data & Large Artifacts
+bee_research_10k.csv
+*.csv
+*.sql
+output
+output/**
+scratch
+scratch/**
 
 # Build Caches & Python
 *.tsbuildinfo
@@ -43,3 +57,5 @@ __pycache__
 # Temporary & Local Scratch Dirs
 .cache
 .output
+.vercel
+dist
