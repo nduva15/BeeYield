@@ -144,8 +144,8 @@ const Header = () => {
             </Link>
           </Button>
 
-          {/* Navigation Pages Dropdown (Available on Phone, Pad & Laptop) */}
-          <div className="relative z-[200]">
+          {/* Navigation Directory Dropdown (Desktop / Laptop) */}
+          <div className="hidden lg:block relative z-[200]">
             <DropdownMenu>
               <DropdownMenuTrigger 
                 className="p-1.5 sm:p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 text-beeyield-green outline-none flex items-center gap-1"
@@ -229,7 +229,7 @@ const Header = () => {
 
           {/* Menu Panel */}
           <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100vh-4.5rem)] overflow-y-auto rounded-3xl bg-white/98 backdrop-blur-2xl border border-beeyield-gold/30 p-4 sm:p-6 shadow-2xl animate-in fade-in slide-in-from-top-2 lg:hidden">
-            {/* Main Navigation Section (Pages in Header) */}
+            {/* Main Navigation Section */}
             <div className="flex flex-col space-y-1 pb-4 border-b border-beeyield-gold/20">
               <span className="text-[10px] uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black">Main Navigation</span>
               <Link
@@ -294,7 +294,7 @@ const Header = () => {
               </Link>
             </div>
 
-            {/* Other Pages one per line */}
+            {/* Company Directory */}
             <div className="flex flex-col space-y-1 pt-4">
               <span className="text-[10px] uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black">Company</span>
               {[

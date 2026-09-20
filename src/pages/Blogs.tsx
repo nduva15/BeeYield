@@ -109,35 +109,7 @@ export default function BlogsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-300">
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <img src={beeyieldLogo} alt="BeeYield" className="h-8 w-auto transition-transform group-hover:scale-105" />
-            <div className="flex flex-col">
-              <span className="font-display font-black text-lg text-foreground tracking-tight flex items-center gap-1.5">
-                BeeYield <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Blogs</span>
-              </span>
-              <span className="text-[10px] text-muted-foreground hidden sm:block">Field Agronomy & Pollination Journal</span>
-            </div>
-          </Link>
 
-          <div className="flex items-center gap-3">
-            <Link
-              to="/about"
-              className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg hover:bg-muted"
-            >
-              Our Story
-            </Link>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 px-3.5 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all"
-            >
-              Launch AI Platform <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </div>
-      </header>
 
       {/* ARTICLE READER VIEW */}
       {activePost ? (

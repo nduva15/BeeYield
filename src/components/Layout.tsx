@@ -4,7 +4,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
 import { PartnersMarquee } from "./PartnersMarquee";
-
+import { PandaMitiSection } from "./beeyield/PandaMitiSection";
 
 interface LayoutProps {
   children: ReactNode;
@@ -56,6 +56,21 @@ const Layout = ({ children }: LayoutProps) => {
     );
   }
 
+  // Frontend marketing pages that have their own inline placement for PandaMitiSection
+  // (e.g. Home page has it placed directly above the FAQ section)
+  const pagesWithCustomPandaMiti = new Set([
+    '/',
+    '/pollination-services',
+    '/commitment',
+    '/sdg',
+    '/crops-we-pollinate',
+    '/honey',
+    '/pollination-solutions',
+    '/team',
+  ]);
+
+  const shouldRenderPandaMitiInLayout = !pagesWithCustomPandaMiti.has(pathname);
+
   return (
     <div className="flex min-h-screen flex-col">
       <CartDrawer />
@@ -64,6 +79,13 @@ const Layout = ({ children }: LayoutProps) => {
       <main className="flex-1 overflow-x-hidden animate-in fade-in duration-500">
         {children}
       </main>
+
+      {shouldRenderPandaMitiInLayout && (
+        <section id="panda-miti" className="border-t border-border/40">
+          <PandaMitiSection />
+        </section>
+      )}
+
       <PartnersMarquee />
       <Footer />
     </div>
