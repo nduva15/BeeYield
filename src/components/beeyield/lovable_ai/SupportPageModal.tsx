@@ -236,11 +236,11 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
               </div>
               <div className="flex items-center gap-2 text-white/80">
                 <Phone className="w-4 h-4 text-amber-400" />
-                <span>Phone: <strong>+254 700 000 000</strong></span>
+                <span>Phone: <strong>+254 742 004 187</strong></span>
               </div>
               <div className="flex items-center gap-2 text-white/80">
                 <MapPin className="w-4 h-4 text-amber-400" />
-                <span>Hub: <strong>Kibwezi, Kenya</strong></span>
+                <span>Location: <strong>Kibwezi, Kenya</strong></span>
               </div>
             </div>
 

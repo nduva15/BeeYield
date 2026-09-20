@@ -129,7 +129,7 @@ export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
                     </div>
                     <div className="text-right text-[12px] text-muted-foreground/70 font-medium">
                         <p>info@beeyield.com</p>
-                        <p>+1 (800) 123-4567</p>
+                        <p>+254 742 004 187</p>
                     </div>
                 </div>
             </div>

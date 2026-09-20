@@ -177,8 +177,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange, isOp
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {[
                                     { icon: Mail, label: 'Mail', value: 'support@beeyield.com' },
-                                    { icon: Phone, label: 'Phone', value: '+254 700 000 000' },
-                                    { icon: MapPin, label: 'Hub', value: 'Kibwezi, Kenya' }
+                                    { icon: Phone, label: 'Phone', value: '+254 742 004 187' },
+                                    { icon: MapPin, label: 'Location', value: 'Kibwezi, Kenya' }
                                 ].map((item, idx) => (
                                     <div key={idx} className="space-y-1">
                                         <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/70">

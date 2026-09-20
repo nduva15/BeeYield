@@ -215,7 +215,7 @@ const Contact = () => {
           "@type": "LocalBusiness",
           "name": "BeeYield Kibwezi HQ",
           "image": "/og-image.png",
-          "telephone": "+254 700 000000",
+          "telephone": "+254 742 004 187",
           "email": "info@beeyield.com",
           "address": {
             "@type": "PostalAddress",
@@ -727,7 +727,7 @@ const Contact = () => {
               <Phone className="h-6 w-6 text-primary" />
             </div>
             <h3 className="font-bold mb-2">Call Us</h3>
-            <p className="text-muted-foreground">+1 (800) 123-4567</p>
+            <p className="text-muted-foreground">+254 742 004 187</p>
           </div>
           <div className="p-6">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">

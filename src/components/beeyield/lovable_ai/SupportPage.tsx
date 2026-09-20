@@ -180,8 +180,8 @@ export default function SupportPage({ isOpen, onClose }: { isOpen: boolean; onCl
           </p>
           <div className="grid lg:grid-cols-[1fr_1fr_1fr_auto] gap-4 items-start">
             <Contact icon={Mail} label="Mail" value="support@beeyield.com" href="mailto:support@beeyield.com" />
-            <Contact icon={Phone} label="Phone" value="+254 700 000 000" href="tel:+254700000000" />
-            <Contact icon={MapPin} label="Hub" value="Kibwezi, Kenya" />
+            <Contact icon={Phone} label="Phone" value="+254 742 004 187" href="tel:+254742004187" />
+            <Contact icon={MapPin} label="Location" value="Kibwezi, Kenya" />
             <div className="space-y-2 w-full lg:w-64">
               <a href="https://docs.lovable.dev" target="_blank" rel="noreferrer"
                 className="w-full px-4 py-2 rounded-lg border border-border text-sm flex items-center justify-center gap-2 hover:bg-muted">
