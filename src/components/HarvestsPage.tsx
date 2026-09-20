@@ -186,6 +186,7 @@ function harvestPdf(r: Harvest) {
         type: "kv",
         heading: "Extraction & yield summary",
         rows: [
+          ["Farmer / Apiarist", "Timothy Nduva"],
           ["Hive label", r.hive_label],
           ["Batch / Lot code", r.batch],
           ["Harvest date", r.harvested_on],

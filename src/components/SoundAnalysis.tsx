@@ -60,6 +60,7 @@ function auditPdf(opts: {
         type: "kv",
         heading: "Result",
         rows: [
+          ["Lead Farmer / Apiarist", "Timothy Nduva"],
           ["Hive", opts.hive],
           ["Recorded at", opts.when],
           ["Health state", opts.state],

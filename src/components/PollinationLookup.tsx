@@ -10,7 +10,7 @@ const loadBrand = (): Brand => {
     const raw = localStorage.getItem(BRAND_KEY);
     if (raw) return JSON.parse(raw);
   } catch { /* ignore */ }
-  return { farmName: "", logoDataUrl: null };
+  return { farmName: "Timothy Nduva's Farm", logoDataUrl: null };
 };
 
 type Crop = {
@@ -171,7 +171,7 @@ export default function PollinationLookup({ isOpen, onClose, embedded = false }:
       doc.text("Pollination Comparison Report · BeeYield", textStartX, 46);
     } else {
       doc.setFontSize(18);
-      doc.text("BeeYield Pollination Compare", textStartX, 34);
+      doc.text("BeeYield Pollination Compare · Farmer: Timothy Nduva", textStartX, 34);
     }
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
@@ -213,8 +213,8 @@ export default function PollinationLookup({ isOpen, onClose, embedded = false }:
       doc.setFontSize(8);
       doc.setTextColor(150);
       const footer = brand.farmName.trim()
-        ? `${brand.farmName.trim()} · BeeYield Pollination · Page ${i} / ${total}`
-        : `BeeYield Pollination Lookup · Page ${i} / ${total}`;
+        ? `${brand.farmName.trim()} · Farmer: Timothy Nduva · BeeYield Pollination · Page ${i} / ${total}`
+        : `BeeYield Pollination Lookup · Farmer: Timothy Nduva · Page ${i} / ${total}`;
       doc.text(footer, pageW - margin, pageH - 16, { align: "right" });
     }
 
