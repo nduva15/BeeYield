@@ -658,13 +658,13 @@ const Media = () => {
             className="mb-4 px-4 py-1.5 rounded-full text-[#1B9157] border-[#1B9157]/30 bg-[#1B9157]/10 font-bold uppercase tracking-wider text-xs"
           >
             <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-[#1B9157]" />
-            Verified Field Operations • 105 Acres Total
+            Verified Field Operations • 105 Acres and Counting
           </Badge>
           <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-foreground">
-            Field Media & <span className="text-[#1B9157]">105 Acres Pollinated</span>
+            Field Media & <span className="text-[#1B9157]">105 Acres and Counting</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-            Photographic proof and verified dispatches across <strong>105 total contracted acres</strong> in Makueni County.
+            Photographic proof and verified dispatches across <strong>105 acres and counting</strong> in Makueni County.
             Featuring our partner farmers across Kibarani, Kiunduani, Kavita, and Mbuinzau.
           </p>
 
@@ -681,7 +681,7 @@ const Media = () => {
               }
             >
               <Camera className="w-3.5 h-3.5 mr-1.5" />
-              Field Dispatch (105 Acres)
+              Field Dispatch (105 Acres and Counting)
             </Button>
             <Button
               variant="outline"
@@ -743,13 +743,13 @@ const Media = () => {
           <div className="max-w-4xl mx-auto text-center mb-8">
             <Badge className="bg-primary/15 text-primary border-primary/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider mb-2">
               <Users className="w-3.5 h-3.5 mr-1.5 inline" />
-              Verified Partner Network • 105 Acres Total
+              Verified Partner Network • 105 Acres and Counting
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">
               Meet Our Partner Farmers in Makueni County
             </h2>
             <p className="text-sm md:text-base text-muted-foreground mt-2">
-              Exact distribution of our 105 total pollinated acres across Kibarani, Kiunduani, Kavita, and Mbuinzau.
+              Exact distribution across our 105 acres and counting in Kibarani, Kiunduani, Kavita, and Mbuinzau.
             </p>
           </div>
 
@@ -794,7 +794,7 @@ const Media = () => {
 
           <div className="mt-8 text-center">
             <Badge variant="outline" className="text-xs px-4 py-1.5 font-bold border-primary/30 text-primary bg-primary/5">
-              Total Verified Acreage: 25 + 18 + 18 + 15 + 15 + 14 = 105 Acres Pollinated
+              Total Verified Acreage: 25 + 18 + 18 + 15 + 15 + 14 = 105 Acres and Counting Pollinated
             </Badge>
           </div>
         </div>
@@ -812,7 +812,7 @@ const Media = () => {
               Field Photography • Active Pollination Contracts
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
-              105 Acres in Active Bloom: <br className="hidden sm:inline" />
+              105 Acres and Counting in Active Bloom: <br className="hidden sm:inline" />
               <span className="text-[#1B9157]">Mangoes, Citrus & Oranges, Vegetables, and Maize</span>
             </h2>
             <p className="mt-4 text-muted-foreground text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
@@ -861,7 +861,7 @@ const Media = () => {
                     </p>
                     <p className="text-xs text-white/80 flex items-center gap-1.5 font-medium">
                       <MapPin className="w-3.5 h-3.5 text-[#F4D03F]" />
-                      Part of 105 Total Acres Under Contract in Makueni County
+                      Part of 105 Acres and Counting in Makueni County
                     </p>
                   </div>
                 </div>
@@ -969,7 +969,7 @@ const Media = () => {
         </div>
       </section>
 
-      {/* Verified Case Studies by Crop (105 Acres) */}
+      {/* Verified Case Studies by Crop (105 Acres and Counting) */}
       <div className="container mx-auto px-4 py-20">
         <div className="space-y-32">
           {caseStudies.map((study, index) => (

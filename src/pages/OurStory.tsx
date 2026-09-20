@@ -77,7 +77,7 @@ const OurStory = () => {
                 </div>
                 <div className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
                   <Scale className="w-4 h-4 text-beeyield-green" />
-                  <span className="text-xs font-bold text-neutral-900">95+ Acres Pollinated (and counting)</span>
+                  <span className="text-xs font-bold text-neutral-900">105 Acres and Counting Pollinated</span>
                 </div>
                 <div className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
                   <TreePine className="w-4 h-4 text-beeyield-green" />
@@ -140,7 +140,7 @@ const OurStory = () => {
                   BeeYield was built together with Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>. Combining software engineering, product architecture, and IoT research, the siblings transformed a small family apiary into a precision pollination engine.
                 </p>
                 <p>
-                  What started with 4 hives on half an acre has grown into 184+ hives, 22 IoT devices deployed, and 95 and counting acres precision-pollinated across Kenya.
+                  What started with 4 hives on half an acre has grown into 184+ hives, 22 IoT devices deployed, and 105 and counting acres precision-pollinated across Kenya.
                 </p>
               </div>
             </div>
@@ -170,7 +170,7 @@ const OurStory = () => {
             {[
               { number: "184+", label: "Beehives", desc: "Active colony inventory" },
               { number: "22", label: "IoT Devices", desc: "Live telemetry nodes" },
-              { number: "95+", label: "Acres Pollinated", desc: "Client orchards served (and counting)" },
+              { number: "105+", label: "Acres Pollinated", desc: "Client orchards served (105 and counting)" },
               { number: "3t", label: "Carbon Offset", desc: "CO₂ sequestered to date" },
             ].map((stat, i) => (
               <Card key={i} className="text-center border-border/50 bg-white rounded-3xl shadow-sm hover:shadow-md transition-all">
@@ -313,7 +313,7 @@ const OurStory = () => {
                   image: STORY_IMAGES.deployedHive2,
                   title: "Top-Bar Hive Station on Stand",
                   subtitle: "Weatherproof antenna unit mounted on lid",
-                  badge: "95+ Acres Served (and counting)",
+                  badge: "105 Acres and Counting Served",
                   description: "Robust solar-powered node operating at commercial orchard boundaries to monitor pollinator foraging density."
                 },
                 {
@@ -425,7 +425,7 @@ const OurStory = () => {
               {
                 icon: Cpu,
                 title: "Precision Pollination",
-                desc: "With 22 IoT devices deployed across 95 and counting acres, we use real-time sensor data to optimize fruit set and yield for Kenyan smallholders."
+                desc: "With 22 IoT devices deployed across 105 and counting acres, we use real-time sensor data to optimize fruit set and yield for Kenyan smallholders."
               }
             ].map((item, i) => (
               <Card key={i} className="group border-border/50 rounded-3xl transition-all hover:border-primary/50 hover:shadow-lg bg-neutral-50/50">
@@ -460,7 +460,7 @@ const OurStory = () => {
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">95 and counting acres</strong> of farmland with <strong className="text-foreground">22 intelligent hives</strong>, proving the value of managed precision pollination services in Kenya.
+                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">105 and counting acres</strong> of farmland with <strong className="text-foreground">22 intelligent hives</strong>, proving the value of managed precision pollination services in Kenya.
                 </p>
                 <p>
                   Today, BeeYield uses continuous under-hive weight telemetry, acoustic monitoring, and climate tracking to deliver transparent pollination results with <strong className="text-foreground">3 tons</strong> of carbon offset.
@@ -555,7 +555,7 @@ const OurStory = () => {
                 Join Us on Our <span className="text-[#1B9157]">Journey</span>
               </h2>
               <p className="text-neutral-300 max-w-2xl mx-auto mb-10 text-lg relative z-10">
-                From a family dream in rural Kenya to 22 IoT devices monitoring 95 and counting acres — we're just getting started. Partner with us to modernize agriculture.
+                From a family dream in rural Kenya to 22 IoT devices monitoring 105 and counting acres — we're just getting started. Partner with us to modernize agriculture.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
                 <Button size="lg" className="bg-white text-neutral-950 hover:bg-neutral-100 font-bold px-8 h-12 rounded-xl" asChild>

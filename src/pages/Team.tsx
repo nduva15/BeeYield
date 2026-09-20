@@ -294,7 +294,7 @@ const Team = () => {
                             { number: "184+", label: "Beehives", desc: "Scale Capacity" },
                             { number: "1M+", label: "Bee Colonies", desc: "Population" },
                             { number: "2,500+", label: "Trees", desc: "Restoration" },
-                            { number: "95+", label: "Acres", desc: "Pollinated & Counting" },
+                            { number: "105+", label: "Acres", desc: "Pollinated & Counting" },
                         ].map((stat, i) => (
                             <motion.div
                                 key={i}

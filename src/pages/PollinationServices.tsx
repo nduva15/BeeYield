@@ -239,10 +239,10 @@ const PollinationServices = () => {
                         <div className="bg-[#FAEFC8] rounded-[2.5rem] p-8 sm:p-10 h-[22rem] sm:h-96 flex flex-col justify-between relative overflow-hidden group transition-transform hover:-translate-y-1 duration-300">
                             <div className="relative z-10">
                                 <h3 className="text-sm font-black text-neutral-800 mb-4">Acres</h3>
-                                <p className="text-5xl sm:text-6xl font-black text-neutral-900">95<sup className="text-3xl sm:text-4xl">+</sup></p>
+                                <p className="text-5xl sm:text-6xl font-black text-neutral-900">105<sup className="text-3xl sm:text-4xl">+</sup></p>
                             </div>
                             <p className="text-neutral-800 font-medium leading-relaxed relative z-10 max-w-[80%]">
-                                95 and counting acres pollinated by BeeYield Precision Pollination solutions across East Africa.
+                                105 and counting acres pollinated by BeeYield Precision Pollination solutions across East Africa.
                             </p>
                         </div>
 
@@ -396,7 +396,7 @@ const PollinationServices = () => {
                     <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
                         <Badge className="bg-[#1B9157]/15 text-[#1B9157] border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider">
                             <Sparkles className="w-3.5 h-3.5 mr-1.5 inline" />
-                            105 Partner Acres Verified • Makueni County
+                            105 Acres and Counting • Makueni County
                         </Badge>
                         <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight leading-tight">
                             Crops We Pollinate: <br />
@@ -404,7 +404,7 @@ const PollinationServices = () => {
                         </h2>
                         <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto font-medium leading-relaxed">
                             Authentic field dispatches from commercial orchards and drip-irrigated holdings across Makueni County.
-                            BeeYield IoT nodes and precision colonies maximize fruit set and protect yields across 105 partner acres.
+                            BeeYield IoT nodes and precision colonies maximize fruit set and protect yields across 105 acres and counting.
                         </p>
                     </div>
 
@@ -562,7 +562,7 @@ const PollinationServices = () => {
                                 What Our Partner Farmers Say
                             </h3>
                             <p className="text-sm text-muted-foreground font-medium mt-1">
-                                Verified testimonials from smallholder and commercial growers across our 105-acre network.
+                                Verified testimonials from smallholder and commercial growers across our 105 acres and counting network.
                             </p>
                         </div>
 
@@ -624,7 +624,7 @@ const PollinationServices = () => {
                     <div className="flex flex-wrap justify-center gap-4">
                         <Button size="lg" className="bg-[#1B9157] hover:bg-[#157746] text-white font-black rounded-2xl px-10 h-14 shadow-lg text-xs" asChild>
                             <Link to="/media">
-                                View All 105 Acres Photo Gallery & Media <ArrowRight className="ml-2 w-4 h-4 inline" />
+                                View All 105 Acres and Counting Photo Gallery & Media <ArrowRight className="ml-2 w-4 h-4 inline" />
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" className="border-2 border-neutral-300 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
