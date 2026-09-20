@@ -726,7 +726,7 @@ Our Story Page (beeyield.com/ourstory):
 Contact Page (beeyield.com/contact):
 - DIRECT CONTACT DETAILS (ALWAYS provide these when asked about contacting BeeYield):
   Email: info@beeyield.com
-  Phone: +1 (800) 123-4567
+  Phone: +254 742 004 187
   Physical Location: Kibwezi, Makueni County, Kenya
 - Five contact form tabs: Quick Message, Grower Inquiries, Beekeeper Inquiries, Diseases Inquiry, and General Inquiries.
 - Quick Message: fields for Full Name, Email, Subject, and Message.
