@@ -65,12 +65,12 @@ const DEFAULT_MEASUREMENTS: Measurement[] = [
 
 function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; onCancel: () => void }) {
   const scannerId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
-  const elId = useRef(`qr-${scannerId}`);
+  const containerId = `qr-${scannerId}`;
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    const scanner = new Html5Qrcode(elId.current);
+    const scanner = new Html5Qrcode(containerId);
     scannerRef.current = scanner;
     scanner
       .start(
@@ -86,11 +86,11 @@ function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; o
     return () => {
       if (scanner.isScanning) void scanner.stop().catch(() => undefined);
     };
-  }, [onResult]);
+  }, [containerId, onResult]);
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl overflow-hidden border-2 border-honey/60 bg-black/80" id={elId.current} />
+      <div className="rounded-xl overflow-hidden border-2 border-honey/60 bg-black/80" id={containerId} />
       {err && (
         <p className="text-xs text-destructive">
           {err} — enter the serial manually below instead.
