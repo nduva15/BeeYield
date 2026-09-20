@@ -389,8 +389,250 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-            {/* Panda Miti Initiative - 45,000 Trees Around Kibwezi */}
-            <PandaMitiSection />
+            {/* Crops We Pollinate & Voices from the Field (Authentic Media Photos & Farmer Quotes) */}
+            <section className="py-24 bg-gradient-to-b from-[#FFFDF9] via-[#FDFBF7] to-background border-t border-border/40 relative overflow-hidden">
+                <div className="container mx-auto px-4 sm:px-6">
+                    {/* Header */}
+                    <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
+                        <Badge className="bg-[#1B9157]/15 text-[#1B9157] border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider">
+                            <Sparkles className="w-3.5 h-3.5 mr-1.5 inline" />
+                            105 Partner Acres Verified • Makueni County
+                        </Badge>
+                        <h2 className="text-3xl md:text-5xl font-black text-neutral-900 tracking-tight leading-tight">
+                            Crops We Pollinate: <br />
+                            <span className="text-[#1B9157]">Voices From The Field</span>
+                        </h2>
+                        <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto font-medium leading-relaxed">
+                            Authentic field dispatches from commercial orchards and drip-irrigated holdings across Makueni County.
+                            BeeYield IoT nodes and precision colonies maximize fruit set and protect yields across 105 partner acres.
+                        </p>
+                    </div>
+
+                    {/* Crops Grid (Using Authentic Photos from the Media Page) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-20">
+                        {/* Crop 1: Mangoes */}
+                        <div className="bg-card rounded-[2rem] overflow-hidden border border-border/70 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group">
+                            <div className="relative aspect-[4/3] overflow-hidden">
+                                <img
+                                    src="/images/pollination/mango-panicles-close-bloom.png"
+                                    alt="Mango Flower Panicles in Bloom"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    loading="lazy"
+                                />
+                                <div className="absolute top-3 left-3">
+                                    <Badge className="bg-amber-600/90 text-white font-bold border-none text-[11px] shadow-sm">
+                                        43 Acres Total
+                                    </Badge>
+                                </div>
+                                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/40 to-transparent p-3 pt-6">
+                                    <span className="text-[11px] text-amber-200 font-bold flex items-center gap-1">
+                                        <MapPin className="w-3 h-3" /> Kibarani & Kiunduani
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                                <div>
+                                    <h3 className="text-lg font-black text-foreground tracking-tight">Mangoes (Apple & Ngowe)</h3>
+                                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                                        Over 2,000 florets per panicle pollinated during morning anthesis to prevent premature flower drop.
+                                    </p>
+                                </div>
+                                <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                                    <span className="font-bold text-[#1B9157] flex items-center gap-1">
+                                        <CheckCircle2 className="w-3.5 h-3.5" /> 90% Bee Dependency
+                                    </span>
+                                    <span className="text-[11px] text-muted-foreground font-semibold">Farmer Clement & Christopher</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Crop 2: Citrus & Oranges */}
+                        <div className="bg-card rounded-[2rem] overflow-hidden border border-border/70 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group">
+                            <div className="relative aspect-[4/3] overflow-hidden">
+                                <img
+                                    src="/images/pollination/orange-heavy-fruiting-branches.jpg"
+                                    alt="Citrus & Orange Groves"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    loading="lazy"
+                                />
+                                <div className="absolute top-3 left-3">
+                                    <Badge className="bg-orange-600/90 text-white font-bold border-none text-[11px] shadow-sm">
+                                        18 Acres Total
+                                    </Badge>
+                                </div>
+                                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/40 to-transparent p-3 pt-6">
+                                    <span className="text-[11px] text-orange-200 font-bold flex items-center gap-1">
+                                        <MapPin className="w-3 h-3" /> Kiunduani, Makueni
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                                <div>
+                                    <h3 className="text-lg font-black text-foreground tracking-tight">Citrus & Orange Groves</h3>
+                                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                                        High nectar flowers visited continuously to guarantee uniform fruit circumference and high sugar Brix.
+                                    </p>
+                                </div>
+                                <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                                    <span className="font-bold text-orange-600 flex items-center gap-1">
+                                        <CheckCircle2 className="w-3.5 h-3.5" /> High Brix & Packout
+                                    </span>
+                                    <span className="text-[11px] text-muted-foreground font-semibold">Farmer Ngumbau</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Crop 3: Maize */}
+                        <div className="bg-card rounded-[2rem] overflow-hidden border border-border/70 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group">
+                            <div className="relative aspect-[4/3] overflow-hidden">
+                                <img
+                                    src="/images/pollination/maize-field-panorama-mountain.png"
+                                    alt="Maize Field Tasseling"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    loading="lazy"
+                                />
+                                <div className="absolute top-3 left-3">
+                                    <Badge className="bg-emerald-600/90 text-white font-bold border-none text-[11px] shadow-sm">
+                                        15 Acres Total
+                                    </Badge>
+                                </div>
+                                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/40 to-transparent p-3 pt-6">
+                                    <span className="text-[11px] text-emerald-200 font-bold flex items-center gap-1">
+                                        <MapPin className="w-3 h-3" /> Mbuinzau, Makueni
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                                <div>
+                                    <h3 className="text-lg font-black text-foreground tracking-tight">Maize Anthesis & Tasseling</h3>
+                                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                                        Active pollen gathering during tasseling induces complete silk coverage and 100% cob tip kernel filling.
+                                    </p>
+                                </div>
+                                <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                                    <span className="font-bold text-emerald-600 flex items-center gap-1">
+                                        <CheckCircle2 className="w-3.5 h-3.5" /> 100% Tip Filling
+                                    </span>
+                                    <span className="text-[11px] text-muted-foreground font-semibold">Farmer Mbilu</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Crop 4: Mixed Fruit & Ecosystem Restoration */}
+                        <div className="bg-card rounded-[2rem] overflow-hidden border border-border/70 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group">
+                            <div className="relative aspect-[4/3] overflow-hidden">
+                                <img
+                                    src="/images/pollination/mango-orange-farm-wide.jpg"
+                                    alt="Mixed Orchard & Ecological Restoration"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    loading="lazy"
+                                />
+                                <div className="absolute top-3 left-3">
+                                    <Badge className="bg-teal-600/90 text-white font-bold border-none text-[11px] shadow-sm">
+                                        29 Acres Total
+                                    </Badge>
+                                </div>
+                                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/40 to-transparent p-3 pt-6">
+                                    <span className="text-[11px] text-teal-200 font-bold flex items-center gap-1">
+                                        <MapPin className="w-3 h-3" /> Kavita & Mbuinzau
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                                <div>
+                                    <h3 className="text-lg font-black text-foreground tracking-tight">Restoration & Vegetables</h3>
+                                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                                        Drip-irrigated horticulture and agroforestry corridors supporting native biodiversity and year-round forage.
+                                    </p>
+                                </div>
+                                <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                                    <span className="font-bold text-teal-600 flex items-center gap-1">
+                                        <CheckCircle2 className="w-3.5 h-3.5" /> Zero Crop Waste
+                                    </span>
+                                    <span className="text-[11px] text-muted-foreground font-semibold">Farmer Gabriel & Redempta</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Verified Farmer Quotes */}
+                    <div className="max-w-6xl mx-auto mb-16">
+                        <div className="text-center mb-10">
+                            <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+                                What Our Partner Farmers Say
+                            </h3>
+                            <p className="text-sm text-muted-foreground font-medium mt-1">
+                                Verified testimonials from smallholder and commercial growers across our 105-acre network.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Quote 1: Clement */}
+                            <div className="bg-card rounded-2xl p-6 border border-border/80 shadow-sm flex flex-col justify-between relative group hover:border-[#1B9157]/40 transition-all">
+                                <Quote className="w-8 h-8 text-[#1B9157]/20 absolute top-5 right-5" />
+                                <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 font-medium leading-relaxed italic mb-6">
+                                    "Being the first receiver of BeeYield's IoT disease and pollination devices in Kibarani has helped me truly understand bees. Seeing real-time colony health allowed us to time hive placement with bloom. Our mangoes, oranges, and citrus have never had such dense fruit set."
+                                </p>
+                                <div className="flex items-center gap-3 pt-4 border-t border-border/60">
+                                    <div className="w-10 h-10 rounded-full bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-700 font-black text-sm shrink-0">
+                                        FC
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h4 className="text-xs font-bold text-foreground">Farmer Clement</h4>
+                                        <p className="text-[11px] text-muted-foreground">Kibarani • 25 Acres (Mangoes & Citrus)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Quote 2: Christopher */}
+                            <div className="bg-card rounded-2xl p-6 border border-border/80 shadow-sm flex flex-col justify-between relative group hover:border-[#1B9157]/40 transition-all">
+                                <Quote className="w-8 h-8 text-[#1B9157]/20 absolute top-5 right-5" />
+                                <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 font-medium leading-relaxed italic mb-6">
+                                    "BeeYield has been life changing for our farm. When varroa mites threatened our colonies, ApiSense tech identified the hive acoustic anomalies in time before collapse occurred. That timely intervention saved our hives and protected all 18 acres of blooming mangoes."
+                                </p>
+                                <div className="flex items-center gap-3 pt-4 border-t border-border/60">
+                                    <div className="w-10 h-10 rounded-full bg-rose-500/15 border border-rose-400/30 flex items-center justify-center text-rose-700 font-black text-sm shrink-0">
+                                        CK
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h4 className="text-xs font-bold text-foreground">Farmer Christopher</h4>
+                                        <p className="text-[11px] text-muted-foreground">Kiunduani • 18 Acres (Export Mangoes)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Quote 3: Gabriel Kavita */}
+                            <div className="bg-card rounded-2xl p-6 border border-border/80 shadow-sm flex flex-col justify-between relative group hover:border-[#1B9157]/40 transition-all">
+                                <Quote className="w-8 h-8 text-[#1B9157]/20 absolute top-5 right-5" />
+                                <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 font-medium leading-relaxed italic mb-6">
+                                    "Bees are very dear to my heart. Seeing them return and thrive across our 14 acres in Kavita has brought genuine ecological restoration to our land. Partnering with BeeYield has made me so happy—our soil is reviving, fruit set is up, and nature is flourishing."
+                                </p>
+                                <div className="flex items-center gap-3 pt-4 border-t border-border/60">
+                                    <div className="w-10 h-10 rounded-full bg-teal-500/15 border border-teal-400/30 flex items-center justify-center text-teal-700 font-black text-sm shrink-0">
+                                        GK
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h4 className="text-xs font-bold text-foreground">Farmer Gabriel Kavita</h4>
+                                        <p className="text-[11px] text-muted-foreground">Kavita • 14 Acres (Restoration & Fruit)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section CTAs */}
+                    <div className="flex flex-wrap justify-center gap-4">
+                        <Button size="lg" className="bg-[#1B9157] hover:bg-[#157746] text-white font-black rounded-2xl px-10 h-14 shadow-lg text-xs" asChild>
+                            <Link to="/media">
+                                View All 105 Acres Photo Gallery & Media <ArrowRight className="ml-2 w-4 h-4 inline" />
+                            </Link>
+                        </Button>
+                        <Button size="lg" variant="outline" className="border-2 border-neutral-300 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
+                            <Link to="/contact">Request Pollination Assessment</Link>
+                        </Button>
+                    </div>
+                </div>
+            </section>
 
             {/* FAQ Section */}
             <section className="py-24 bg-background relative overflow-hidden">
