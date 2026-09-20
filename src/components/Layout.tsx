@@ -66,7 +66,6 @@ const Layout = ({ children }: LayoutProps) => {
     '/crops-we-pollinate',
     '/honey',
     '/pollination-solutions',
-    '/team',
   ]);
 
   // Pages where Panda Miti Initiative should NOT be displayed
@@ -86,7 +85,11 @@ const Layout = ({ children }: LayoutProps) => {
     pathname === '/contact' ||
     pathname.startsWith('/contact') ||
     pathname === '/careers' ||
-    pathname.startsWith('/career');
+    pathname.startsWith('/career') ||
+    pathname === '/team' ||
+    pathname.startsWith('/team') ||
+    pathname === '/media' ||
+    pathname.startsWith('/media');
 
   const shouldRenderPandaMitiInLayout =
     !pagesWithCustomPandaMiti.has(pathname) && !isExcludedFromPandaMiti;
