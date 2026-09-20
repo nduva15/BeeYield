@@ -32,7 +32,7 @@ import {
     Map
 } from 'lucide-react';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getUserOrders, getProducts, Product, waitForVaultedPaymentMethod } from '@/services/shopService';
@@ -154,8 +154,30 @@ const ShopDashboard = () => {
     });
 
 
-    const handleTrackOrderRef = useRef(handleTrackOrder);
-    handleTrackOrderRef.current = handleTrackOrder;
+    const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
+    const [isTrackingOpen, setIsTrackingOpen] = useState(false);
+    const [trackingInfo, setTrackingInfo] = useState<{
+        current_status: string;
+        estimated_delivery: string;
+        events: { status: string; description: string; created_at: string; location?: string }[];
+    } | null>(null);
+    const [loadingTracking, setLoadingTracking] = useState(false);
+
+    const handleTrackOrder = useCallback(async (order: Order) => {
+        setTrackingOrder(order);
+        setIsTrackingOpen(true);
+        setLoadingTracking(true);
+        try {
+            const { getOrderTracking } = await import('@/services/shopService');
+            const info = await getOrderTracking(order.id);
+            setTrackingInfo(info as any);
+        } catch (error) {
+            console.error("Tracking unavailable:", error);
+            setTrackingInfo(null);
+        } finally {
+            setLoadingTracking(false);
+        }
+    }, []);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -164,9 +186,9 @@ const ShopDashboard = () => {
         if (tab) setActiveTab(tab);
         if (trackId) {
             setActiveTab('orders');
-            handleTrackOrderRef.current({ id: trackId, order_number: trackId } as any);
+            handleTrackOrder({ id: trackId, order_number: trackId } as any);
         }
-    }, [location.search]);
+    }, [location.search, handleTrackOrder]);
 
     // Pre-fill shipping details from customer profile
     useEffect(() => {
@@ -217,7 +239,6 @@ const ShopDashboard = () => {
         phone: ''
     });
     const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string | null>(null);
-    const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
 
     const loadSuggestions = async () => {
         try {
@@ -425,29 +446,7 @@ const ShopDashboard = () => {
         }
     };
 
-    const [isTrackingOpen, setIsTrackingOpen] = useState(false);
-    const [trackingInfo, setTrackingInfo] = useState<{
-        current_status: string;
-        estimated_delivery: string;
-        events: { status: string; description: string; created_at: string; location?: string }[];
-    } | null>(null);
-    const [loadingTracking, setLoadingTracking] = useState(false);
 
-    const handleTrackOrder = async (order: Order) => {
-        setTrackingOrder(order);
-        setIsTrackingOpen(true);
-        setLoadingTracking(true);
-        try {
-            const { getOrderTracking } = await import('@/services/shopService');
-            const info = await getOrderTracking(order.id);
-            setTrackingInfo(info as any);
-        } catch (error) {
-            console.error("Tracking unavailable:", error);
-            setTrackingInfo(null);
-        } finally {
-            setLoadingTracking(false);
-        }
-    };
 
     const handleDownloadInvoice = async (order: Order) => {
         try {

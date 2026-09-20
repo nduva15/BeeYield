@@ -1095,20 +1095,21 @@ export const getWishlist = async (): Promise<WishlistItem[]> => {
         const data = await apiGet<any[]>("/shop/wishlist");
         return toArray<any>(data).map(normalizeWishlistItem);
     } catch (error) {
-        console.error("Error fetching wishlist via API, falling back to Supabase:", error);
+        console.warn("API /shop/wishlist unavailable, falling back to Supabase:", error);
         try {
-            const { data: { user } } = await supabaseShop.auth.getUser();
+            const client = supabaseShop || supabaseBeeYield || supabaseCEBA;
+            if (!client) return [];
+            const { data: { user } } = await client.auth.getUser();
             if (!user?.id) return [];
 
-            const { data, error: sbError } = await supabaseShop
+            const { data, error: sbError } = await client
                 .from("wishlists")
                 .select("*, product:products(*, variants:product_variants(*))")
                 .eq("user_id", user.id);
 
-            if (sbError) throw sbError;
+            if (sbError) return [];
             return toArray<any>(data).map(normalizeWishlistItem);
         } catch (fallbackError) {
-            console.error("Supabase wishlist fallback failed:", fallbackError);
             return [];
         }
     }
