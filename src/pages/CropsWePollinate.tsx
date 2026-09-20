@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
 
 const CropsWePollinate = () => {
   const pollinationCrops = dashboardPollinationCropDetails;
@@ -34,35 +35,7 @@ const CropsWePollinate = () => {
 
   return (
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
-      {/* Branded Top Navigation Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2.5 group transition-transform hover:scale-105" aria-label="BeeYield Home">
-            <img src="/logo.png" alt="BeeYield Logo" className="h-9 w-9 object-contain" />
-            <span className="font-display text-xl font-black text-[#1B9157] tracking-tight">BeeYield</span>
-          </Link>
-          <nav className="flex items-center gap-3 sm:gap-6 text-sm font-bold">
-            <Link to="/" className="text-neutral-600 hover:text-[#1B9157] dark:text-neutral-300 dark:hover:text-white transition-colors">
-              Home
-            </Link>
-            <Link to="/about" className="text-neutral-600 hover:text-[#1B9157] dark:text-neutral-300 dark:hover:text-white transition-colors">
-              Our Story
-            </Link>
-            <Link to="/crops-we-pollinate" className="text-[#1B9157] border-b-2 border-[#1B9157] pb-0.5">
-              Crops
-            </Link>
-            <Link to="/blogs" className="text-neutral-600 hover:text-[#1B9157] dark:text-neutral-300 dark:hover:text-white transition-colors">
-              Blogs
-            </Link>
-            <Link to="/media" className="text-neutral-600 hover:text-[#1B9157] dark:text-neutral-300 dark:hover:text-white transition-colors">
-              Media
-            </Link>
-            <Button size="sm" className="rounded-full bg-[#1B9157] hover:bg-[#157746] text-white font-bold text-xs shadow-md hidden sm:inline-flex" asChild>
-              <Link to="/contact">Get Consult</Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
+      
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#F0F7F0] py-20 md:py-32">
@@ -366,6 +339,9 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
+      {/* Panda Miti Initiative - 45,000 Trees */}
+      <PandaMitiSection />
+
       {/* Missing Crop CTA */}
       <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
         {/* Background Pattern */}
@@ -394,19 +370,7 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
-      {/* Page Footer with Official BeeYield Logo */}
-      <footer className="border-t border-border/40 bg-[#0A2612] text-white py-12">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="BeeYield Logo" className="h-9 w-9 object-contain" />
-            <div>
-              <span className="font-display text-lg font-bold text-white">BeeYield</span>
-              <p className="text-xs text-white/60">Your partner in pollination • Makueni & Kibwezi, Kenya</p>
-            </div>
-          </div>
-          <p className="text-xs text-white/50">© 2026 BeeYield. All rights reserved.</p>
-        </div>
-      </footer>
+      
     </BeeYieldPageShell>
   );
 };

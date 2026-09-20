@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
@@ -644,6 +645,9 @@ const PollinationSolutions = () => {
           </div>
         </div>
       </section>
+
+      {/* Panda Miti Initiative - 45,000 Trees Around Kibwezi */}
+      <PandaMitiSection />
 
       {/* Signup Form */}
       <section className="py-24 bg-background">

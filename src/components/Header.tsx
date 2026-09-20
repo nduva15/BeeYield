@@ -149,11 +149,10 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger 
                 className="p-1.5 sm:p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 text-beeyield-green outline-none flex items-center gap-1"
-                aria-label="Navigation Pages Dropdown"
-                title="Navigation & Pages"
+                aria-label="Navigation Menu"
+                title="Navigation Menu"
               >
                 <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
-                <span className="text-[11px] font-bold text-beeyield-green hidden md:inline">Pages</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64 flex flex-col p-4 bg-gradient-to-br from-beeyield-gold to-beeyield-green border-none rounded-2xl shadow-2xl z-[100] gap-1 max-h-[85vh] overflow-y-auto">
                 <div className="px-4 py-1.5 mb-1">
@@ -186,6 +185,7 @@ const Header = () => {
                     { label: 'Blogs', to: '/blogs' },
                     { label: 'Careers', to: '/careers' },
                     { label: 'Commitment', to: '/commitment' },
+                    { label: 'Panda Miti Initiative', to: '/commitment#panda-miti' },
                     { label: 'Contact', to: '/contact' },
                     { label: 'ESG', to: '/esg' },
 
