@@ -307,48 +307,8 @@ const PollinationServices = () => {
 
 
             {/* Verified Paths Section */}
-            <section className="py-24 sm:py-32 bg-neutral-900 overflow-hidden relative">
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-                <div className="container mx-auto px-4 sm:px-6 relative z-10">
-                    <div className="text-center mb-24 space-y-4">
-                        <Badge className="bg-[#F4D03F] text-neutral-900 border-none px-6 py-1.5 font-black text-xs">
-                            Direct Records
-                        </Badge>
-                        <h2 className="text-4xl md:text-6xl font-black text-[#1A1A1A] tracking-tighter leading-[0.9]">
-                            Three Ways to <br /> <span className="text-[#F4D03F]">Track Your Results</span>
-                        </h2>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                        {[
-                            { title: "In-Hive Sensors", desc: "Reliable sensors inside every hive monitor colony strength and activity levels 24/7.", icon: Cpu, color: "bg-[#F4D03F]", link: "/precision-pollination" },
-                            { title: "Field Activity", desc: "Measure actual bee activity across your crops. Identify pollination gaps in real-time.", icon: Eye, color: "bg-green-500", link: "/in-land-pollination" },
-                            { title: "Apiary Health", desc: "Early threat detection and safety monitoring to keep your hives strong.", icon: Shield, color: "bg-red-500", link: "/diseases" }
-                        ].map((item, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                                className="bg-[#F9F7F2] backdrop-blur-md p-10 rounded-[3rem] border border-[#F4D03F]/20 group hover:border-[#F4D03F]/40 transition-all"
-                            >
-                                <div className={`h-16 w-16 mb-8 rounded-2xl ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                                    <item.icon className="h-8 w-8 text-neutral-900" />
-                                </div>
-                                <h3 className="text-2xl font-black text-[#1A1A1A] mb-4 italic tracking-tighter">{item.title}</h3>
-                                <p className="text-neutral-400 font-medium mb-8 leading-relaxed">{item.desc}</p>
-                                <Button variant="link" className="text-[#F4D03F] font-black p-0 h-auto text-[10px] group" asChild>
-                                    <Link to={item.link}>Explore Module <ArrowRight className="ml-2 h-3 w-3 group-hover:translate-x-1 transition-transform" /></Link>
-                                </Button>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* The BeeYield Difference */}
+{/* The BeeYield Difference */}
             <section className="py-32 bg-background relative overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-24 space-y-4">
