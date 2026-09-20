@@ -687,7 +687,7 @@ export default function Index() {
             <select
               value={promptVariant}
               onChange={(e) => setPromptVariant(e.target.value as typeof promptVariant)}
-              className="bg-background border border-border rounded-lg px-2 py-1.5 text-xs text-foreground hover:border-primary/50"
+              className="bg-white border border-border rounded-lg px-2 py-1.5 text-xs text-foreground hover:border-primary/50 shadow-sm"
               title="BeeGPT prompt variant"
             >
               <option value="baseline">AI: Baseline</option>
