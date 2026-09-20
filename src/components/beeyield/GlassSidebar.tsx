@@ -264,6 +264,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(244, 208, 63, 0.3); }
             `}</style>
         </div>
+      </>
     );
 };
 

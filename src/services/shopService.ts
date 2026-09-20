@@ -995,14 +995,14 @@ export const getOrderTracking = async (orderId: string): Promise<TrackingInfo> =
             if (!sbError && data && data.events && data.events.length > 0) {
                 return normalizeTrackingInfo(data);
             }
-        } catch (_) {}
+        } catch { /* ignore fallback errors */ }
 
         // Retrieve order details to calibrate realistic milestones
         let orderObj: any = null;
         try {
             const localOrders = JSON.parse(localStorage.getItem('beeyield_customer_orders') || '[]');
             orderObj = localOrders.find((o: any) => o.id === orderId || o.order_number === orderId);
-        } catch (_) {}
+        } catch { /* ignore fallback errors */ }
 
         const orderCreatedTime = orderObj?.created_at ? new Date(orderObj.created_at).getTime() : Date.now() - 3600000;
         const customerCity = orderObj?.shipping_address?.city || 'Nairobi';
@@ -1072,16 +1072,16 @@ export const getOrder = async (orderId: string): Promise<Order> => {
                 .single();
 
             if (!sbError && data) return normalizeOrder(data);
-        } catch (_) {}
+        } catch { /* ignore fallback errors */ }
 
         // Fallback to locally stored customer orders
         try {
             const localOrders = JSON.parse(localStorage.getItem('beeyield_customer_orders') || '[]');
             const found = localOrders.find((o: any) => o.id === orderId || o.order_number === orderId);
             if (found) return normalizeOrder(found);
-        } catch (_) {}
+        } catch { /* ignore fallback errors */ }
 
-        throw new Error(`Order ${orderId} could not be retrieved.`);
+        throw new Error(`Order ${orderId} could not be retrieved.`, { cause: error });
     }
 };
 

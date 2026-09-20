@@ -64,7 +64,8 @@ const DEFAULT_MEASUREMENTS: Measurement[] = [
 /* ------------------------------------------------------------------ QR scanner */
 
 function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; onCancel: () => void }) {
-  const elId = useRef(`qr-${Math.random().toString(36).slice(2)}`);
+  const scannerId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const elId = useRef(`qr-${scannerId}`);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -569,7 +570,10 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   const ingestSerialLine = async (line: string) => {
     // Accept "T=24.5;H=61;W=38.2;B=88" or JSON payloads from the hub.
     if (!user) return;
-    let temp: number | null = null, hum: number | null = null, wt: number | null = null, bat: number | null = null;
+    let temp: number | null;
+    let hum: number | null;
+    let wt: number | null;
+    let bat: number | null;
     try {
       const j = JSON.parse(line);
       temp = j.t ?? j.temperature ?? null; hum = j.h ?? j.humidity ?? null;

@@ -24,7 +24,18 @@ export default function KnowledgeSearch({ isOpen, onClose }: { isOpen: boolean; 
     const { data } = await supabase.from("knowledge_facts").select("*").order("confidence", { ascending: false });
     setFacts((data ?? []) as Fact[]);
   };
-  useEffect(() => { if (isOpen) load(); }, [isOpen]);
+  useEffect(() => {
+    if (!isOpen) return;
+    let active = true;
+    const fetchFacts = async () => {
+      const { data } = await supabase.from("knowledge_facts").select("*").order("confidence", { ascending: false });
+      if (active) {
+        setFacts((data ?? []) as Fact[]);
+      }
+    };
+    void fetchFacts();
+    return () => { active = false; };
+  }, [isOpen]);
 
   const filtered = useMemo(() => {
     const ql = q.toLowerCase().trim();

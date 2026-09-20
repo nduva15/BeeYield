@@ -363,11 +363,13 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
     }
   };
 
+  const sendRef = useRef(send);
+  sendRef.current = send;
   const initialConsumedRef = useRef(false);
   useEffect(() => {
     if (initialMessage && initialMessage.trim() && !initialConsumedRef.current) {
       initialConsumedRef.current = true;
-      send(initialMessage);
+      sendRef.current(initialMessage);
       onInitialMessageConsumed?.();
     }
   }, [initialMessage, onInitialMessageConsumed]);

@@ -154,6 +154,9 @@ const ShopDashboard = () => {
     });
 
 
+    const handleTrackOrderRef = useRef(handleTrackOrder);
+    handleTrackOrderRef.current = handleTrackOrder;
+
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const tab = params.get('tab');
@@ -161,7 +164,7 @@ const ShopDashboard = () => {
         if (tab) setActiveTab(tab);
         if (trackId) {
             setActiveTab('orders');
-            handleTrackOrder({ id: trackId, order_number: trackId } as any);
+            handleTrackOrderRef.current({ id: trackId, order_number: trackId } as any);
         }
     }, [location.search]);
 

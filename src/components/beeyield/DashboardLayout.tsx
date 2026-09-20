@@ -48,7 +48,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         setDeviceMode(mode);
         try {
             localStorage.setItem('beeyield_device_mode', mode);
-        } catch (_) {}
+        } catch {
+            // Ignore localStorage quota or access errors
+        }
     };
 
     return (

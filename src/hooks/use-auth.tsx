@@ -56,7 +56,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    if (session?.user?.id) void loadProfile(session.user.id);
+    const uid = session?.user?.id;
+    if (!uid) return;
+    let active = true;
+    const fetchProfile = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id,email,full_name,phone,country")
+        .eq("id", uid)
+        .maybeSingle();
+      if (active) {
+        setProfile((data as Profile) ?? null);
+      }
+    };
+    void fetchProfile();
+    return () => { active = false; };
   }, [session?.user?.id]);
 
   return (
@@ -80,7 +94,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(Ctx);
 }
