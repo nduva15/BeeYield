@@ -263,14 +263,14 @@ const TIMELINE: YearMilestone[] = [
   {
     year: "2026",
     title: "The Technology Year",
-    subtitle: "22 IoT devices, 95 and counting acres pollinated, global partnerships",
+    subtitle: "22 IoT devices, 105 and counting acres pollinated, global partnerships",
     image: "/images/story/2025-iot-pivot.jpg",
     imageAlt:
       "2026 — IoT devices deployed, global partnerships with Apisense and Intelligent Hives",
     color: "from-violet-600 to-purple-500",
     stats: [
       { label: "IoT Devices", value: "22" },
-      { label: "Acres Pollinated", value: "95+ & Counting" },
+      { label: "Acres Pollinated", value: "105 & Counting" },
       { label: "Data Points/Day", value: "2,000+ & Growing" },
       { label: "Honey to Date", value: "988 kg" },
     ],
@@ -283,7 +283,7 @@ const TIMELINE: YearMilestone[] = [
       "Also detect Asian hornets — proven incredibly useful for colony protection",
       "Collecting over 2,000 data points daily and growing across all sensor categories — unprecedented for a Kenyan operation",
       "3 farmers enrolled in IoT device program with 22 devices working in hives right now",
-      "Pollinated 95 and counting acres — started with a goal of 15 acres, exceeded by 6x",
+      "Pollinated 105 and counting acres — started with a goal of 15 acres, exceeded by 7x",
       "Mango bloom season in Makueni, Kenya — targeting 150 acres before year-end",
       "9–18% average yield increase for pollinated farms",
       "Built Bee LLM and bee sound analysis — trained on 350K+ bee sounds via Kaggle for disease detection",
@@ -309,7 +309,7 @@ const IMPACT_STATS = [
   { icon: Hexagon, label: "Hives Owned", value: 184, suffix: "" },
   { icon: Scale, label: "Honey Sold (kg)", value: 988, suffix: " kg" },
   { icon: Users, label: "Partner Farmers", value: 40, suffix: "" },
-  { icon: MapPin, label: "Acres Pollinated & Counting", value: 95, suffix: "+" },
+  { icon: MapPin, label: "Acres Pollinated & Counting", value: 105, suffix: "+" },
   { icon: Wifi, label: "IoT Devices Active", value: 22, suffix: "" },
   { icon: TreePine, label: "Trees Planted", value: 1500, suffix: "+" },
   { icon: Leaf, label: "CO₂ Offset", value: 3, suffix: " tons" },
@@ -532,7 +532,7 @@ export default function About() {
                     <span className="font-semibold text-foreground">
                       Pollination Revenue: $550 USD
                     </span>{" "}
-                    — 95+ acres pollinated since July 2025. 18% average yield increase. Mango bloom
+                    — 105 acres and counting pollinated since July 2025. 18% average yield increase. Mango bloom
                     season ongoing — targeting 150 acres and 25%+ yield improvement.
                   </div>
                 </div>
@@ -785,7 +785,7 @@ export default function About() {
                   <p>
                     Our pollination journey started with traditional methods — physically moving
                     hives to client farms and letting nature do its work. We successfully pollinated{" "}
-                    <strong className="text-foreground">95+ acres</strong> of farmland, proving the
+                    <strong className="text-foreground">105 acres and counting</strong> of farmland, proving the
                     value of managed pollination services in Kenya.
                   </p>
                   <p>
@@ -1082,7 +1082,7 @@ export default function About() {
               This Is Just The Beginning
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-              988 kg of honey. 95 and counting acres pollinated. 1,500 trees planted. 3 tons of CO₂ offset. 40
+              988 kg of honey. 105 and counting acres pollinated. 1,500 trees planted. 3 tons of CO₂ offset. 40
               partner farmers. 22 IoT devices. 2 global partnerships. Zero external funding.
               <br />
               <br />

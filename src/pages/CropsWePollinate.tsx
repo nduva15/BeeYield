@@ -148,7 +148,7 @@ const CropsWePollinate = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">95+</p>
+                <p className="text-4xl font-bold text-primary mb-2">105+</p>
                 <p className="text-muted-foreground font-medium">Acres Pollinated & Counting</p>
               </CardContent>
             </Card>
