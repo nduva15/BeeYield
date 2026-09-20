@@ -447,7 +447,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
                 <span className="text-xs font-medium hidden sm:inline">Tools</span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 bg-popover border-border z-50">
+            <DropdownMenuContent align="end" className="w-64 bg-white border border-neutral-200 text-neutral-900 shadow-2xl z-50">
               <DropdownMenuLabel className="text-honey">Knowledge & Reference</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setGalleryOpen(true)} className="cursor-pointer">
                 <Bug className="w-4 h-4 mr-2" /> Bee Species Gallery

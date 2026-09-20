@@ -67,22 +67,22 @@ const Header = () => {
               Pollination Solutions
               <ChevronDown className="h-3.5 w-3.5" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-64 flex flex-col p-4 bg-gradient-to-br from-beeyield-gold to-beeyield-green border-none rounded-2xl shadow-2xl z-[100] gap-1">
+            <DropdownMenuContent align="center" className="w-64 flex flex-col p-4 bg-white border border-neutral-200 rounded-2xl shadow-2xl z-[100] gap-1">
               <div className="px-4 py-1.5 mb-1">
-                <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Services</span>
+                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">Services</span>
               </div>
-              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
-                <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
+              <DropdownMenuItem asChild className="focus:bg-neutral-100 focus:text-neutral-900 rounded-xl transition-all">
+                <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-neutral-800 hover:text-neutral-950 hover:bg-neutral-100 rounded-xl transition-all">
                   In Land Pollination
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
-                <Link to="/precision-pollination" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
+              <DropdownMenuItem asChild className="focus:bg-neutral-100 focus:text-neutral-900 rounded-xl transition-all">
+                <Link to="/precision-pollination" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-neutral-800 hover:text-neutral-950 hover:bg-neutral-100 rounded-xl transition-all">
                   In Hive Pollination
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
-                <Link to="/diseases" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
+              <DropdownMenuItem asChild className="focus:bg-neutral-100 focus:text-neutral-900 rounded-xl transition-all">
+                <Link to="/diseases" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-neutral-800 hover:text-neutral-950 hover:bg-neutral-100 rounded-xl transition-all">
                   Diseases
                 </Link>
               </DropdownMenuItem>
@@ -154,9 +154,9 @@ const Header = () => {
               >
                 <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 flex flex-col p-4 bg-gradient-to-br from-beeyield-gold to-beeyield-green border-none rounded-2xl shadow-2xl z-[100] gap-1 max-h-[85vh] overflow-y-auto">
+              <DropdownMenuContent align="end" className="w-64 flex flex-col p-4 bg-white border border-neutral-200 rounded-2xl shadow-2xl z-[100] gap-1 max-h-[85vh] overflow-y-auto">
                 <div className="px-4 py-1.5 mb-1">
-                  <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Main Navigation</span>
+                  <span className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">Main Navigation</span>
                 </div>
                 <div className="flex flex-col gap-1">
                   {[
@@ -167,16 +167,16 @@ const Header = () => {
                     { label: 'Beekeeping Network', to: '/pollination-solutions' },
                     { label: 'Shop', to: '/shop' },
                   ].map((item) => (
-                    <DropdownMenuItem key={item.to} asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
-                      <Link to={item.to} className="w-full cursor-pointer px-3 py-2.5 text-[13px] font-bold text-white hover:text-white transition-all">
+                    <DropdownMenuItem key={item.to} asChild className="focus:bg-neutral-100 focus:text-neutral-900 rounded-xl transition-all">
+                      <Link to={item.to} className="w-full cursor-pointer px-3 py-2.5 text-[13px] font-bold text-neutral-800 hover:text-neutral-950 hover:bg-neutral-100 transition-all">
                         {item.label}
                       </Link>
                     </DropdownMenuItem>
                   ))}
                 </div>
 
-                <div className="px-4 py-1.5 mt-3 mb-1 border-t border-white/10 pt-4">
-                  <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Company</span>
+                <div className="px-4 py-1.5 mt-3 mb-1 border-t border-neutral-100 pt-4">
+                  <span className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">Company</span>
                 </div>
                 <div className="flex flex-col gap-1">
                   {[
@@ -193,8 +193,8 @@ const Header = () => {
                     { label: 'Media', to: '/media' },
                     { label: 'Team', to: '/team' },
                   ].map((item) => (
-                    <DropdownMenuItem key={item.to} asChild className="focus:bg-white/20 focus:text-white rounded-xl transition-all">
-                      <Link to={item.to} className="w-full cursor-pointer px-3 py-2 text-[12px] font-bold text-white/80 hover:text-white transition-all">
+                    <DropdownMenuItem key={item.to} asChild className="focus:bg-neutral-100 focus:text-neutral-900 rounded-xl transition-all">
+                      <Link to={item.to} className="w-full cursor-pointer px-3 py-2 text-[12px] font-bold text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-all">
                         {item.label}
                       </Link>
                     </DropdownMenuItem>

@@ -171,7 +171,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button
-                            className="flex items-center gap-2 px-3 py-1.5 bg-muted/40 hover:bg-[#F4D03F]/15 border border-border/80 hover:border-[#F4D03F]/40 rounded-xl transition-all group outline-none shrink-0"
+                            className="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-neutral-50 border border-neutral-200/90 rounded-xl transition-all group outline-none shrink-0 shadow-sm"
                             title="Switch Dashboard View"
                         >
                             <div className="w-5 h-5 rounded-lg bg-[#F4D03F]/15 flex items-center justify-center text-[#B78103] dark:text-[#F4D03F] shrink-0">
@@ -186,18 +186,18 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuContent
                         align="start"
                         sideOffset={8}
-                        className="w-80 max-h-[82vh] overflow-y-auto rounded-2xl border border-border/80 p-2.5 shadow-2xl bg-card/95 backdrop-blur-2xl z-50 custom-scrollbar"
+                        className="w-80 max-h-[82vh] overflow-y-auto rounded-2xl border border-neutral-200/90 p-2.5 shadow-2xl bg-white text-neutral-900 z-50 custom-scrollbar"
                     >
-                        <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-[#F4D03F] flex items-center justify-between border-b border-border/40 mb-2">
+                        <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-amber-700 flex items-center justify-between border-b border-neutral-100 mb-2">
                             <span>BeeYield Expert Views</span>
-                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#F4D03F]/10 border border-[#F4D03F]/25 text-[#F4D03F] font-bold">Harvests Grade</span>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-bold">Harvests Grade</span>
                         </DropdownMenuLabel>
                         <div className="space-y-3">
                             {navCategories.map((category) => (
                                 <div key={category.title} className="space-y-1">
                                     <div className="flex items-center gap-1.5 px-3 py-1">
-                                        <Layers className="w-3 h-3 text-[#F4D03F]" />
-                                        <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-wider">{category.title}</p>
+                                        <Layers className="w-3 h-3 text-amber-600" />
+                                        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">{category.title}</p>
                                     </div>
                                     <div className="space-y-0.5">
                                         {category.items.map((item) => {
@@ -210,8 +210,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                     className={cn(
                                                         "px-2.5 py-2 text-xs rounded-xl cursor-pointer flex items-center justify-between transition-all border my-0.5",
                                                         isActive 
-                                                            ? "bg-[#F4D03F]/15 border-[#F4D03F]/40 text-foreground font-bold shadow-sm" 
-                                                            : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40 hover:border-border/60"
+                                                            ? "bg-amber-50 border-amber-300 text-neutral-950 font-bold shadow-sm" 
+                                                            : "border-transparent text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 hover:border-neutral-200"
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-2.5 min-w-0">
@@ -284,7 +284,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuContent
                         align="end"
                         sideOffset={8}
-                        className="w-80 rounded-xl border border-border p-2 shadow-xl bg-card/95 backdrop-blur-xl"
+                        className="w-80 rounded-2xl border border-neutral-200 p-2 shadow-2xl bg-white text-neutral-900 z-50"
                     >
                         <div className="px-4 py-3 bg-[#F4D03F]/5 rounded-lg mb-2 border border-border/50">
                             <div className="flex items-center gap-3">
@@ -344,7 +344,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuContent
                         align="end"
                         sideOffset={8}
-                        className="w-56 rounded-xl border border-border p-2 shadow-xl bg-card/95 backdrop-blur-xl"
+                        className="w-56 rounded-2xl border border-neutral-200 p-2 shadow-2xl bg-white text-neutral-900 z-50"
                     >
                         <DropdownMenuLabel className="px-3 py-2 text-[11px] font-medium text-muted-foreground tracking-wider">
                             Account
