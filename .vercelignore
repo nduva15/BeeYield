@@ -1,0 +1,45 @@
+# Submodules & Repositories
+.gitmodules
+beeyield-companion
+
+# Backend Services & Microservices
+backend
+backend/**
+services
+services/**
+
+# Cloud & DevOps Infrastructure
+k8s
+k8s/**
+terraform
+terraform/**
+Dockerfile*
+docker-compose*
+deploy.sh
+Makefile
+render.yaml
+
+# Research, Data & Large Artifacts
+bee_research_10k.csv
+*.sql
+output
+output/**
+scratch
+scratch/**
+tools
+tools/**
+tests
+tests/**
+.docs
+docs
+repo-sync-temp
+
+# Build Caches & Python
+*.tsbuildinfo
+__pycache__
+*.pyc
+.pytest_cache
+
+# Temporary & Local Scratch Dirs
+.cache
+.output
