@@ -72,6 +72,8 @@ const Layout = ({ children }: LayoutProps) => {
   // Pages where Panda Miti Initiative should NOT be displayed
   // (Shop, In Land Pollination, In Hive Pollination, Contact, Careers, Checkout)
   const isExcludedFromPandaMiti =
+    pathname === '/' ||
+    pathname === '/pollination-services' ||
     pathname === '/shop' ||
     pathname.startsWith('/shop/') ||
     pathname === '/checkout' ||

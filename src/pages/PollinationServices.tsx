@@ -4,8 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
 import {
+    Quote, MapPin, CheckCircle2, Sparkles,
     Check, TrendingUp, Shield, BarChart3, ArrowRight,
     Cpu, Eye, Zap, Target, Leaf, Award, Clock, Users,
     Activity, Database, Radio, Smartphone, ChevronRight, Globe
