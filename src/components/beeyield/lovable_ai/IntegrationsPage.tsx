@@ -133,58 +133,6 @@ const PROVIDERS: {
   },
 ];
 
-const DEFAULT_CONNECTIONS: Connection[] = [
-  {
-    provider: "shopify",
-    status: "connected",
-    config: {
-      storeUrl: "beeyield-honey.myshopify.com",
-      apiVersion: "2024-10",
-      locationName: "Kiambu Central Apiary",
-      serviceOrderPrice: "2450.00",
-      orderEmail: "orders@beeyield.com",
-    },
-    last_error: null,
-    last_sync_at: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-    sync_enabled: true,
-  },
-  {
-    provider: "quickbooks",
-    status: "connected",
-    config: {
-      realmId: "4620816365928174",
-      environment: "production",
-      incomeAccount: "Commercial Honey & Wax Sales",
-      expenseAccount: "Apiary Supplies & Hive Hardware",
-      accountName: "BeeYield Commercial Operations",
-      accountType: "Expense",
-    },
-    last_error: null,
-    last_sync_at: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-    sync_enabled: true,
-  },
-  {
-    provider: "etims",
-    status: "connected",
-    config: {
-      tin: "P051928374Z",
-      branchId: "00",
-      baseUrl: "https://etims.kra.go.ke/etims-api",
-      lastRequestDate: "20250917120000",
-    },
-    last_error: null,
-    last_sync_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-    sync_enabled: true,
-  },
-];
-
-const DEFAULT_LOGS: SyncLog[] = [
-  { id: "log-1", provider: "shopify", event: "Order sync & inventory audit", status: "ok", detail: "Synchronized 24 honey jars and 4 nuc colonies", created_at: new Date(Date.now() - 1000 * 60 * 35).toISOString() },
-  { id: "log-2", provider: "quickbooks", event: "Journal entry posted", status: "ok", detail: "KES 145,000 credited to Honey Sales account", created_at: new Date(Date.now() - 1000 * 60 * 120).toISOString() },
-  { id: "log-3", provider: "etims", event: "selectInitOsdcInfo verification", status: "ok", detail: "Device serial BEEYIELD001 active on KRA portal", created_at: new Date(Date.now() - 1000 * 60 * 180).toISOString() },
-  { id: "log-4", provider: "shopify", event: "Catalog price update", status: "ok", detail: "Updated Acacia and Multifloral raw honey pricing", created_at: new Date(Date.now() - 1000 * 60 * 360).toISOString() },
-  { id: "log-5", provider: "quickbooks", event: "Invoice batch sync", status: "ok", detail: "Bulk reconciliation completed with 0 errors", created_at: new Date(Date.now() - 1000 * 60 * 540).toISOString() },
-];
 
 function statusPill(status: string) {
   if (status === "connected") return { label: "Connected", cls: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10", Icon: CheckCircle2 };
@@ -196,8 +144,8 @@ function statusPill(status: string) {
 export default function IntegrationsPage({ isOpen = true, onClose, embedded = false }: { isOpen?: boolean; onClose?: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [active, setActive] = useState<Provider>("shopify");
-  const [connections, setConnections] = useState<Connection[]>(DEFAULT_CONNECTIONS);
-  const [logs, setLogs] = useState<SyncLog[]>(DEFAULT_LOGS);
+  const [connections, setConnections] = useState<Connection[]>([]);
+  const [logs, setLogs] = useState<SyncLog[]>([]);
   const [config, setConfig] = useState<Record<string, string>>({});
   const [secrets, setSecrets] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<"" | "save" | "test" | "sync" | "disconnect">("");
@@ -214,8 +162,8 @@ export default function IntegrationsPage({ isOpen = true, onClose, embedded = fa
     ]);
     const fetchedConnections = (c as Connection[]) ?? [];
     const fetchedLogs = (l as SyncLog[]) ?? [];
-    setConnections(fetchedConnections.length > 0 ? fetchedConnections : DEFAULT_CONNECTIONS);
-    setLogs(fetchedLogs.length > 0 ? fetchedLogs : DEFAULT_LOGS);
+    setConnections(fetchedConnections);
+    setLogs(fetchedLogs);
   }, [deviceId]);
 
   useEffect(() => { if (isOpen || embedded) void load(); }, [isOpen, embedded, load]);
