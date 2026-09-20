@@ -329,7 +329,8 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
                                                         doc.text('BeeYield Receipt', 14, 18);
                                                         doc.setFontSize(10);
                                                         doc.text(`Date: ${new Date().toLocaleString()}`, 14, 28);
-                                                        doc.text(`Reference: ${ref}`, 14, 34);
+                                                        doc.text(`Farmer / Provider: Timothy Nduva`, 14, 34);
+                                                        doc.text(`Reference: ${ref}`, 14, 40);
                                                         doc.text(`Item: ${item?.name || 'BeeYield Hub'}`, 14, 42);
                                                         doc.text(`Amount: ${item?.price} ${item?.currency}`, 14, 48);
                                                         doc.text(`Method: ${currentMethod?.type || 'payment'}`, 14, 54);

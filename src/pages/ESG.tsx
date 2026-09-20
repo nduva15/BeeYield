@@ -68,7 +68,7 @@ const ESG = () => {
         doc.setFontSize(10);
         doc.setTextColor(107, 114, 128);
         doc.text('Ecological ESG Report 2026', 50, 32);
-        doc.text('Provenance: Kibwezi Apiary, Kenya', 50, 38);
+        doc.text('Provenance: Kibwezi Apiary, Kenya · Lead Farmer & Steward: Timothy Nduva', 50, 38);
 
         doc.setFontSize(22);
         doc.setTextColor(15, 23, 42);
@@ -82,7 +82,7 @@ const ESG = () => {
 
         doc.setFontSize(12);
         doc.setTextColor(75, 85, 99);
-        const introText = "BeeYield delivers measurable environmental, social, and governance outcomes: 22 IoT devices monitoring 95 and counting acres pollinated, 3 tons of carbon offset, and verifiable bio-data across Kenyan apiaries.";
+        const introText = "BeeYield delivers measurable environmental, social, and governance outcomes: 22 IoT devices monitoring 105 acres and counting pollinated, 3 tons of carbon offset, and verifiable bio-data across Kenyan apiaries.";
         const introLines = doc.splitTextToSize(introText, pageWidth - 28);
         doc.text(introLines, 14, yPos);
         yPos += introLines.length * 7 + 10;
@@ -100,7 +100,7 @@ const ESG = () => {
 
         const stats = [
           `IoT Devices Deployed: 22 Live Telemetry Nodes`,
-          `Precision Pollination: 95+ Verified Acres (and counting)`,
+          `Precision Pollination: 105 acres and counting (Verified)`,
           `Carbon Sequestration: 3.0 Tons CO₂ Offset`,
           `Indigenous Flora Restored: 2,500+ Native Trees`,
           `Managed Inventory: ${liveStats?.hive_count || "184"} Intelligent Hives`,
@@ -125,7 +125,7 @@ const ESG = () => {
           "1. Hive Health - Continuous acoustic & temperature telemetry from 22 deployed IoT nodes",
           "2. Traceability - Verifiable honey batch provenance and weight gain telemetry",
           "3. The 50/50 Anchor - 50% harvest reserved for colony climate resilience",
-          "4. Precision Pollination - Real-time bloom telemetry across 95 and counting client acres",
+          "4. Precision Pollination - Real-time bloom telemetry across 105 acres and counting client acres",
           "5. Women-Led Engineering - 66% diversity in founding leadership (Agatha, Carole, Timothy)",
           "6. Circular Ecosystems - Zero-waste, chemical-free operations with 2,500+ trees",
         ];

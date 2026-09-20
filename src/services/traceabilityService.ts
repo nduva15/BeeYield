@@ -709,6 +709,19 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
 
         if (data && data.timeline && data.timeline.length > 0) {
             console.log(`[Trace] ✓ Backend returned data for ${normalizedCode}`);
+            if (!data.farmer || !data.farmer.name) {
+                data.farmer = {
+                    ...(data.farmer || {}),
+                    farmer_id: data.farmer?.farmer_id || "F-NDUVA-01",
+                    name: data.farmer?.name || "Timothy Nduva",
+                    experience_years: data.farmer?.experience_years ?? 12,
+                    story: data.farmer?.story || "A pioneer in integrated IoT beekeeping with over a decade of experience in precision honey production.",
+                    location_name: data.farmer?.location_name || "Kibwezi Central",
+                    region: data.farmer?.region || "Makueni",
+                    county: data.farmer?.county || "Makueni",
+                    photo_url: data.farmer?.photo_url || "/timothy-nduva.png",
+                } as any;
+            }
             return data;
         }
 

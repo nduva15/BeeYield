@@ -219,7 +219,7 @@ Required sections:
       pdf.rect(0, 0, pageW, 14, "F");
       pdf.setTextColor(20, 20, 20);
       pdf.setFontSize(13); pdf.setFont("helvetica", "bold");
-      pdf.text(`Beeyield · MOA Export · ${run?.crop || ""} · ${run?.region || ""}`, 8, 9);
+      pdf.text(`Beeyield · MOA Export · Farmer: Timothy Nduva · ${run?.crop || ""} · ${run?.region || ""}`, 8, 9);
       pdf.setFontSize(9); pdf.setFont("helvetica", "normal");
       pdf.text(`Version: ${activeVersion?.version_label || "—"}  |  ${new Date().toLocaleString()}`, pageW - 8, 9, { align: "right" });
 

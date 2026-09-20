@@ -395,6 +395,7 @@ function inspectionPdf(r: Inspection) {
         type: "kv",
         heading: "Colony summary",
         rows: [
+          ["Lead Farmer / Apiarist", "Timothy Nduva"],
           ["Hive", r.hive_label],
           ["Batch", r.batch],
           ["Inspected on", r.inspected_on],

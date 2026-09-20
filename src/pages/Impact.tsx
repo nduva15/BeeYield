@@ -65,7 +65,7 @@ const Impact = () => {
       doc.setFontSize(9);
       doc.setTextColor(107, 114, 128);
       doc.text('Ecological Impact & Provenance Dossier • Official Record 2026', 42, 26);
-      doc.text('Provenance: BeeYield Apiary, Kibwezi & Makueni County, Kenya', 42, 31);
+      doc.text('Provenance: BeeYield Apiary, Kibwezi & Makueni County, Kenya • Lead Farmer: Timothy Nduva', 42, 31);
 
       doc.setDrawColor(27, 145, 87);
       doc.setLineWidth(0.8);
@@ -80,7 +80,7 @@ const Impact = () => {
       doc.setFontSize(9.5);
       doc.setTextColor(75, 85, 99);
       const summaryText =
-        'BeeYield supports healthier hives, stronger pollination, and traceable harvests. With 22 IoT devices deployed across 95 and counting acres of pollinated farmland across 1 county (Makueni & counting) with 9+ crops & counting, we deliver precision agriculture through real-time telemetry while offsetting 3 tons of carbon through native tree restoration. Our data-informed stocking protocols increase crop yields by 9–18% while safeguarding wild and managed pollinators.';
+        'BeeYield supports healthier hives, stronger pollination, and traceable harvests. With 22 IoT devices deployed across 105 acres and counting of pollinated farmland (Lead Farmer: Timothy Nduva) across 1 county (Makueni & counting) with 9+ crops & counting, we deliver precision agriculture through real-time telemetry while offsetting 3 tons of carbon through native tree restoration. Our data-informed stocking protocols increase crop yields by 9–18% while safeguarding wild and managed pollinators.';
       const summaryLines = doc.splitTextToSize(summaryText, pageWidth - 28);
       doc.text(summaryLines, 14, yPos);
       yPos += summaryLines.length * 5 + 6;
@@ -100,7 +100,7 @@ const Impact = () => {
       const kpis = [
         `• Intelligent Hives: ${liveStats?.hive_count || "184"} Smart Hives in Active Deployment`,
         '• IoT Telemetry Nodes: 22 Live Nodes (Apisense & Intelligent Hives)',
-        '• Land Under Pollination: 95+ Verified Acres (and counting)',
+        '• Land Under Pollination: 105 acres and counting (Verified • Lead Farmer: Timothy Nduva)',
         '• Counties Served: 1 County (Makueni & Counting)',
         '• Crop Varieties Covered: 9+ Crops & Counting (Mango, Avocado, Macadamia, Coffee, Sunflower, etc.)',
         '• Telemetry Ingestion: Over 2,000 data points daily & growing',
@@ -225,7 +225,7 @@ const Impact = () => {
         '• 2020: Founded by siblings Timothy, Agatha, and Carole Nduva with 4 hives on ¼ acre in Kibwezi.',
         '• 2021–2023: Scaled to 75 hives, planted first 113 indigenous trees, initiated pollination trials.',
         '• 2024–2025: Surpassed 150 hives, enrolled 40 partner beekeepers, established BeeYield traceability.',
-        '• 2026 (The Tech Year): 184 hives, 22 IoT devices deployed with global partners (Apisense & Intelligent Hives Poland), 95 and counting acres precision-pollinated across 1 county (Makueni & counting) for 9+ crops & counting, over 2,000 data points daily & growing, 988 kg lifetime honey, 100% reinvested with zero external capital.',
+        '• 2026 (The Tech Year): 184 hives, 22 IoT devices deployed with global partners (Apisense & Intelligent Hives Poland), 105 acres and counting precision-pollinated across 1 county (Makueni & counting) for 9+ crops & counting, over 2,000 data points daily & growing, 988 kg lifetime honey, 100% reinvested with zero external capital.',
       ];
 
       doc.setFontSize(9);
@@ -263,7 +263,7 @@ const Impact = () => {
 
       const sdgs = [
         '• SDG 1 - No Poverty: Trained 50+ local smallholders in modern beekeeping and disease prevention.',
-        '• SDG 2 - Zero Hunger: 95 and counting acres pollinated across 1 county (Makueni & counting) for 9+ crops & counting, increasing crop yields by 9–18%.',
+        '• SDG 2 - Zero Hunger: 105 acres and counting pollinated across 1 county (Makueni & counting) for 9+ crops & counting, increasing crop yields by 9–18%.',
         '• SDG 6 - Clean Water: 2,500+ indigenous trees planted, stabilizing catchment soil and protecting groundwater.',
         '• SDG 7 - Clean Energy: 100% solar-powered IoT micro-grids and low-power telemetry nodes.',
         '• SDG 8 - Decent Work: Fair-trade farmer pricing; 66% women leadership in founding engineering.',
@@ -316,7 +316,7 @@ const Impact = () => {
       doc.setTextColor(100, 116, 139);
       doc.text('Issued by BeeYield Engineering & Agronomy Directorate • Nairobi & Makueni, Kenya', 14, yPos);
       yPos += 5;
-      doc.text('Directors: Timothy Nduva (CEO) • Agatha Nduva (CTO) • Carole Nduva (COO)', 14, yPos);
+      doc.text('Directors & Lead Farmer: Timothy Nduva (CEO & Lead Farmer) • Agatha Nduva (CTO) • Carole Nduva (COO)', 14, yPos);
 
       // Page 3 Footer
       doc.setFontSize(8);

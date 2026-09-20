@@ -184,7 +184,7 @@ export function downloadReportPdf(doc: ReportDoc) {
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(7.5);
     pdf.setTextColor(...MUTED);
-    pdf.text(doc.footer ?? "BeeYield — apiary intelligence. Acoustic and visual findings support, not replace, physical inspection.", M, pageH - 24);
+    pdf.text(doc.footer ?? "BeeYield — apiary intelligence. Lead Farmer: Timothy Nduva. Acoustic and visual findings support physical inspection.", M, pageH - 24);
     pdf.text(`Page ${p} of ${pages}`, pageW - M, pageH - 24, { align: "right" });
   }
 

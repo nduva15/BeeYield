@@ -197,6 +197,7 @@ function harvestPdf(r: Harvest) {
         type: "kv",
         heading: "Extraction & quality batch parameters",
         rows: [
+          ["Farmer / Apiarist", "Timothy Nduva"],
           ["Batch lot code", r.batch],
           ["Traceability seal", r.traceability_code],
           ["Harvest date", r.harvested_on],

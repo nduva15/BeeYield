@@ -693,7 +693,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
             doc.text(`BeeYield Pollination Export: ${type}`, 14, 18);
             doc.setFontSize(10);
             doc.text(`Date: ${today}`, 14, 26);
-            doc.text(`Apiary: ${selectedApiary?.name || '—'}`, 14, 32);
+            doc.text(`Farmer: Timothy Nduva`, 14, 32);
+            doc.text(`Apiary: ${selectedApiary?.name || '—'}`, 14, 38);
             doc.text(`Acres: ${selectedApiary?.size_acres ?? calcInputs.totalAcres}`, 14, 38);
             doc.text(`Deployments: ${rows.length}`, 14, 44);
             doc.save(`BeeYield_Pollination_${safeType}_${today}.pdf`);

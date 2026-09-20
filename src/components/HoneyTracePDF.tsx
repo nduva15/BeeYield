@@ -228,6 +228,7 @@ const HoneyTracePDF = ({ traceData, weatherSummary }: HoneyTracePDFProps) => {
   const sensorFacts = buildSensorFacts(traceData);
   const weatherFacts = buildWeatherFacts(traceData, weatherSummary);
   const beekeeperPhoto = traceData.farmer?.photo_url || TIMOTHY_PHOTO;
+  const farmerName = traceData.farmer?.name || "Timothy Nduva";
 
   return (
     <Document>
@@ -272,7 +273,7 @@ const HoneyTracePDF = ({ traceData, weatherSummary }: HoneyTracePDFProps) => {
               <View style={styles.beekeeperWrap}>
                 <Image src={beekeeperPhoto} style={styles.beekeeperPhoto} />
                 <View>
-                  <Text style={styles.beekeeperName}>{formatTraceText(traceData.farmer?.name, "Timothy Nduva")}</Text>
+                  <Text style={styles.beekeeperName}>{formatTraceText(farmerName, "Timothy Nduva")}</Text>
                   <Text style={styles.beekeeperMeta}>
                     Apiary: {formatTraceText(traceData.apiary?.name)}
                   </Text>
@@ -285,7 +286,7 @@ const HoneyTracePDF = ({ traceData, weatherSummary }: HoneyTracePDFProps) => {
                 </View>
               </View>
               <Text style={styles.darkParagraph}>
-                {formatTraceText(traceData.farmer?.story || traceData.story_content)}
+                {formatTraceText(traceData.farmer?.story || traceData.story_content, "Smallholder farmer and dedicated bee steward in Kibwezi, Makueni County, practicing regenerative precision apiculture with BeeYield.")}
               </Text>
             </View>
 
@@ -339,7 +340,7 @@ const HoneyTracePDF = ({ traceData, weatherSummary }: HoneyTracePDFProps) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Specific Traceability Notes</Text>
           <Text style={styles.paragraph}>
-            Farmer: {formatTraceText(traceData.farmer?.name)}. Apiary: {formatTraceText(traceData.apiary?.name)}. Hive: {formatTraceText(traceData.hive?.hive_code)}. Harvest date: {formatTraceDate(traceData.harvest_date)}.
+            Farmer: {formatTraceText(farmerName, "Timothy Nduva")}. Apiary: {formatTraceText(traceData.apiary?.name)}. Hive: {formatTraceText(traceData.hive?.hive_code)}. Harvest date: {formatTraceDate(traceData.harvest_date)}.
           </Text>
           <Text style={styles.paragraph}>
             Florage: {formatTraceText(traceData.apiary?.flora_types?.join(", ") || traceData.florage_type)}. Verification status: {formatTraceText(traceData.verification_status)}. Completeness: {formatTraceText(traceData.completeness?.status)}.

@@ -397,7 +397,7 @@ export default function HivePlacementMap({ isOpen, onClose, embedded = false,
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
-      doc.text("BeeYield MOA Map Export", margin, 30);
+      doc.text("BeeYield MOA Map Export · Farmer: Timothy Nduva", margin, 30);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       const versionLabel = selectedVersion === "current"
@@ -418,7 +418,7 @@ export default function HivePlacementMap({ isOpen, onClose, embedded = false,
       doc.text("Coverage summary", margin, footerY);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.text(`Field area: ${stats.acres.toFixed(2)} ac (${stats.areaM2.toFixed(0)} m²)`, margin, footerY + 16);
+      doc.text(`Farmer: Timothy Nduva · Field area: ${stats.acres.toFixed(2)} ac (${stats.areaM2.toFixed(0)} m²)`, margin, footerY + 16);
       doc.text(`Hives: ${hives.length} · Frames/hive: ${framesPerHive} · Frames/acre: ${stats.framesPerAcre.toFixed(2)}`, margin, footerY + 30);
       doc.text(`Coverage: ${stats.coveragePct.toFixed(1)}% · Bloom records: ${filteredBlooms.length} · Flight records: ${filteredFlights.length}`, margin, footerY + 44);
       doc.text(`MOA filters: ${moaFilters.crop} · ${moaFilters.dateFrom || "open"} to ${moaFilters.dateTo || "open"}`, margin, footerY + 58);

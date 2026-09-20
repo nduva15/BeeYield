@@ -42,6 +42,7 @@ export function buildHarvestCSV(p: ExportPayload): string {
     ["Field", "Value"],
     ["Generated", new Date().toISOString()],
     ["Version", p.versionLabel || "current"],
+    ["Farmer", "Timothy Nduva"],
     ["Hives", p.hives],
     ["Crop", p.crop],
     ["Acres", p.acres],
@@ -116,6 +117,7 @@ export function downloadPDF(p: ExportPayload) {
   y = 100;
 
   writeLine("Inputs", 14, true, [180, 100, 0]);
+  writeLine("Lead Farmer / Apiarist: Timothy Nduva");
   writeLine(`Hives: ${p.hives}    Crop: ${p.crop}    Acres: ${p.acres}`);
   writeLine(`Frame type: ${p.frame_type} (${p.kgPerFrame} kg/frame)    Frames/hive: ${p.framesPerHive}`);
   writeLine(`Fill: ${p.fillPct}%    HHI: ${p.hhi}    Region: ${p.region}`);

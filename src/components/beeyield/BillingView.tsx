@@ -249,7 +249,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
     const [newDocAmount, setNewDocAmount] = React.useState(0);
     const [newDocDate, setNewDocDate] = React.useState(new Date().toISOString().split('T')[0]);
     const [newDocDescription, setNewDocDescription] = React.useState('');
-    const [sellerName, setSellerName] = React.useState('BeeYield Platform');
+    const [sellerName, setSellerName] = React.useState('BeeYield · Timothy Nduva');
     const [buyerName, setBuyerName] = React.useState('');
 
     const [transactions, setTransactions] = React.useState<any[]>([]);
@@ -267,7 +267,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
         setNewDocAmount(0);
         setNewDocDate(new Date().toISOString().split('T')[0]);
         setNewDocDescription('');
-        setSellerName('BeeYield Platform');
+        setSellerName('BeeYield · Timothy Nduva');
         setBuyerName('');
     }, []);
 
@@ -395,7 +395,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
             
             doc.setTextColor(26, 26, 26);
             doc.setFontSize(10);
-            doc.text(`Origin: ${sellerName}`, 20, 50);
+            doc.text(`Origin: ${sellerName} (Farmer / Steward: Timothy Nduva)`, 20, 50);
             doc.text(`Target: ${buyerName}`, 20, 58);
             
             autoTable(doc, {

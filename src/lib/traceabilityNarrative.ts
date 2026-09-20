@@ -69,7 +69,7 @@ export const buildHarvestFacts = (traceData: TraceResponse | null) => [
   { label: "Harvest date", value: formatTraceDate(traceData?.harvest_date || traceData?.timeline?.find((item) => item.title === "Harvest Day")?.date) },
   { label: "Apiary", value: formatTraceText(traceData?.apiary?.name) },
   { label: "Hive", value: formatTraceText(traceData?.hive?.hive_code) },
-  { label: "Farmer", value: formatTraceText(traceData?.farmer?.name) },
+  { label: "Farmer", value: formatTraceText(traceData?.farmer?.name, "Timothy Nduva") },
   { label: "Florage", value: traceData?.apiary?.flora_types?.length ? traceData?.apiary?.flora_types?.join(", ") ?? formatTraceText(traceData?.florage_type) : formatTraceText(traceData?.florage_type) },
 ];
 

@@ -132,7 +132,7 @@ const Traceability = () => {
       adminService.logTrace({
         batch_code: code,
         honey_type: data.product_name || 'Unknown Honey',
-        farmer_name: data.farmer?.name || 'Unknown Farmer',
+        farmer_name: data.farmer?.name || 'Timothy Nduva',
         trace_source: 'website_scan',
         is_authenticated: true
       }).catch(err => console.error("Failed to log trace:", err));
@@ -634,7 +634,7 @@ const Traceability = () => {
                         <div className="absolute -inset-3 bg-gradient-to-r from-amber-400 to-green-500 rounded-full blur-xl opacity-20"></div>
                         <img
                           src={traceData?.farmer?.photo_url || TIMOTHY_PHOTO || PLACEHOLDER_SVG}
-                          alt={traceData?.farmer?.name || "Beekeeper image unavailable"}
+                          alt={traceData?.farmer?.name || "Timothy Nduva"}
                           className="h-32 w-32 md:h-40 md:w-40 rounded-full object-cover border-4 border-white relative z-10 shadow-2xl bg-white"
                         />
                       </div>
@@ -1095,7 +1095,7 @@ const Traceability = () => {
                           <div className="flex items-center gap-8">
                             <div className="relative group">
                               <div className="absolute -inset-2 bg-gradient-to-tr from-amber-400 to-green-500 rounded-[1.8rem] blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                              <img src={traceData?.farmer?.photo_url || TIMOTHY_PHOTO || PLACEHOLDER_SVG} alt={traceData?.farmer?.name || "Beekeeper"} className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-[#F4D03F]/40 shadow-2xl relative z-10" />
+                              <img src={traceData?.farmer?.photo_url || TIMOTHY_PHOTO || PLACEHOLDER_SVG} alt={traceData?.farmer?.name || "Timothy Nduva"} className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-[#F4D03F]/40 shadow-2xl relative z-10" />
                             </div>
                             <div className="relative flex flex-col items-center gap-2 group">
                               <img src={LOGO} alt="BeeYield" className="h-20 w-20 md:h-24 md:w-24 object-contain transition-transform group-hover:scale-110 duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
@@ -1230,7 +1230,7 @@ const Traceability = () => {
                       </div>
                       <div className="space-y-4 text-sm text-slate-700">
                         <p>
-                          Farmer <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.farmer?.name)}</span> harvested batch <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.batch_code)}</span> from hive <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.hive?.hive_code)}</span> at apiary <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.name)}</span> on <span className="font-black text-[#1A1A1A]">{dateOrMissing(traceData?.harvest_date || traceData?.timeline?.find(s => s.title === "Harvest Day")?.date)}</span>.
+                          Farmer <span className="font-black text-[#1A1A1A]">{traceData?.farmer?.name || "Timothy Nduva"}</span> harvested batch <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.batch_code)}</span> from hive <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.hive?.hive_code)}</span> at apiary <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.name)}</span> on <span className="font-black text-[#1A1A1A]">{dateOrMissing(traceData?.harvest_date || traceData?.timeline?.find(s => s.title === "Harvest Day")?.date)}</span>.
                         </p>
                         <p>
                           Florage recorded for this lot: <span className="font-black text-[#1A1A1A]">{traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : textOrMissing(traceData?.florage_type)}</span>.
