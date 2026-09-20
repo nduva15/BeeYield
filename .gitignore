@@ -127,3 +127,6 @@ beeyield-sound-analysis/
 # Temporary & Local Scratch Dirs
 repo-sync-temp/
 scratch/
+
+output/
+*.tsbuildinfo
