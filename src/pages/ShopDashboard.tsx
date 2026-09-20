@@ -154,6 +154,22 @@ const ShopDashboard = () => {
     });
 
 
+    // Local state
+    const [addresses, setAddresses] = useState<Address[]>([]);
+    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [suggestions, setSuggestions] = useState<Product[]>([]);
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [profileForm, setProfileForm] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: ''
+    });
+    const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string | null>(null);
+
     const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
     const [isTrackingOpen, setIsTrackingOpen] = useState(false);
     const [trackingInfo, setTrackingInfo] = useState<{
@@ -224,21 +240,7 @@ const ShopDashboard = () => {
         }
     }, [addresses, user]);
 
-    // Local state
-    const [addresses, setAddresses] = useState<Address[]>([]);
-    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-    const [suggestions, setSuggestions] = useState<Product[]>([]);
-    const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const [profileForm, setProfileForm] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: ''
-    });
-    const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string | null>(null);
+
 
     const loadSuggestions = async () => {
         try {

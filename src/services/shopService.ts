@@ -1091,14 +1091,10 @@ export const cancelOrder = async (orderId: string): Promise<Order> => {
 };
 
 export const getWishlist = async (): Promise<WishlistItem[]> => {
+    // 1. Try Supabase first (direct & authenticated)
     try {
-        const data = await apiGet<any[]>("/shop/wishlist");
-        return toArray<any>(data).map(normalizeWishlistItem);
-    } catch (error) {
-        console.warn("API /shop/wishlist unavailable, falling back to Supabase:", error);
-        try {
-            const client = supabaseShop || supabaseBeeYield || supabaseCEBA;
-            if (!client) return [];
+        const client = supabaseShop || supabaseBeeYield || supabaseCEBA;
+        if (client) {
             const { data: { user } } = await client.auth.getUser();
             if (!user?.id) return [];
 
@@ -1107,43 +1103,62 @@ export const getWishlist = async (): Promise<WishlistItem[]> => {
                 .select("*, product:products(*, variants:product_variants(*))")
                 .eq("user_id", user.id);
 
-            if (sbError) return [];
-            return toArray<any>(data).map(normalizeWishlistItem);
-        } catch (fallbackError) {
-            return [];
+            if (!sbError && data) {
+                return toArray<any>(data).map(normalizeWishlistItem);
+            }
         }
+    } catch {
+        // Fall back to API
+    }
+
+    // 2. Fall back to API
+    try {
+        const data = await apiGet<any[]>("/shop/wishlist");
+        return toArray<any>(data).map(normalizeWishlistItem);
+    } catch {
+        return [];
     }
 };
 
 export const toggleWishlist = async (productId: string): Promise<{ status: string; action: "added" | "removed" }> => {
+    // 1. Try Supabase first
+    try {
+        const client = supabaseShop || supabaseBeeYield || supabaseCEBA;
+        if (client) {
+            const { data: { user } } = await client.auth.getUser();
+            if (user?.id) {
+                const { data: existing } = await client
+                    .from("wishlists")
+                    .select("*")
+                    .eq("user_id", user.id)
+                    .eq("product_id", productId)
+                    .maybeSingle();
+
+                if (existing) {
+                    await client
+                        .from("wishlists")
+                        .delete()
+                        .eq("user_id", user.id)
+                        .eq("product_id", productId);
+                    return { status: "success", action: "removed" };
+                }
+
+                await client.from("wishlists").insert({ user_id: user.id, product_id: productId });
+                return { status: "success", action: "added" };
+            }
+        }
+    } catch {
+        // Fall back to API
+    }
+
+    // 2. Fall back to API
     try {
         const data = await apiPost<any>(`/shop/wishlist/${productId}`, {});
         return {
             status: toString(data?.status, "success"),
             action: toString(data?.action, "added") === "removed" ? "removed" : "added",
         };
-    } catch (error) {
-        console.error("Error toggling wishlist via API, falling back to Supabase:", error);
-        const { data: { user } } = await supabaseShop.auth.getUser();
-        if (!user) throw error;
-
-        const { data: existing } = await supabaseShop
-            .from("wishlists")
-            .select("*")
-            .eq("user_id", user.id)
-            .eq("product_id", productId)
-            .maybeSingle();
-
-        if (existing) {
-            await supabaseShop
-                .from("wishlists")
-                .delete()
-                .eq("user_id", user.id)
-                .eq("product_id", productId);
-            return { status: "success", action: "removed" };
-        }
-
-        await supabaseShop.from("wishlists").insert({ user_id: user.id, product_id: productId });
+    } catch {
         return { status: "success", action: "added" };
     }
 };
