@@ -19,11 +19,9 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import SEO from "@/components/SEO";
-import { beePollinationData } from "@/data/beePollinationData";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
 const PollinationServices = () => {
-    const pollinationCrops = Object.values(beePollinationData);
 
     const differences = [
         {
@@ -388,56 +386,6 @@ const PollinationServices = () => {
                             <strong className="font-bold">Summary</strong>: While traditional methods rely on hope, BeeYield turns pollination into a predictable, measurable engine for growth.
                             <br /><span className="text-xs">*Results may vary depending on crop type, climate, and field conditions.</span>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Crops Section - Compact & Premium */}
-            <section className="py-24 bg-muted/20">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16 space-y-3">
-                        <Badge variant="outline" className="text-[#F4D03F] border-amber-200 bg-amber-50/50 px-4 py-1">Our Expertise</Badge>
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter">Crops We <span className="text-[#F4D03F]">Pollinate</span></h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto font-medium">Selected crops where we monitor bloom conditions and pollination activity.</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 max-w-7xl mx-auto">
-                        {pollinationCrops.map((crop, index) => (
-                            <Link
-                                key={index}
-                                to="/crops-we-pollinate#crops"
-                                className="group relative overflow-hidden rounded-[2rem] aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 bg-[#FFF9F0]"
-                            >
-                                <img
-                                    src={crop.image}
-                                    alt={crop.cropName}
-                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                                    loading="lazy"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-neutral-900/10 to-transparent" />
-
-                                <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-3 group-hover:translate-y-0 transition-transform duration-500">
-                                    <Badge className="mb-2 bg-[#F4D03F] text-neutral-900 text-[9px] font-black border-none px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                                        {crop.beeDependence.split('(')[0].trim()}
-                                    </Badge>
-                                    <h3 className="font-black text-lg text-[#1A1A1A] leading-tight tracking-tighter">
-                                        {crop.cropName}
-                                    </h3>
-                                    <div className="h-0.5 w-0 group-hover:w-12 bg-[#F4D03F] transition-all duration-700 mt-2 rounded-full" />
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-
-                    <div className="mt-16 text-center flex flex-wrap justify-center gap-4">
-                        <Button size="lg" className="bg-[#1B9157] hover:bg-[#157746] text-white font-black rounded-2xl px-10 h-14 shadow-xl text-xs transition-all hover:scale-105 active:scale-95" asChild>
-                            <Link to="/crops-we-pollinate#crops">
-                                Explore All Crops We Pollinate <ArrowRight className="ml-2 h-4 w-4 inline" />
-                            </Link>
-                        </Button>
-                        <Button size="lg" variant="outline" className="border-2 border-neutral-300 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
-                            <Link to="/contact">Start Pollination Project</Link>
-                        </Button>
                     </div>
                 </div>
             </section>

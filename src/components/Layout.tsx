@@ -69,7 +69,25 @@ const Layout = ({ children }: LayoutProps) => {
     '/team',
   ]);
 
-  const shouldRenderPandaMitiInLayout = !pagesWithCustomPandaMiti.has(pathname);
+  // Pages where Panda Miti Initiative should NOT be displayed
+  // (Shop, In Land Pollination, In Hive Pollination, Contact, Careers, Checkout)
+  const isExcludedFromPandaMiti =
+    pathname === '/shop' ||
+    pathname.startsWith('/shop/') ||
+    pathname === '/checkout' ||
+    pathname === '/in-land-pollination' ||
+    pathname.startsWith('/in-land') ||
+    pathname.startsWith('/inland') ||
+    pathname === '/precision-pollination' ||
+    pathname.startsWith('/precision-pollination') ||
+    pathname.includes('hive') ||
+    pathname === '/contact' ||
+    pathname.startsWith('/contact') ||
+    pathname === '/careers' ||
+    pathname.startsWith('/career');
+
+  const shouldRenderPandaMitiInLayout =
+    !pagesWithCustomPandaMiti.has(pathname) && !isExcludedFromPandaMiti;
 
   return (
     <div className="flex min-h-screen flex-col">
