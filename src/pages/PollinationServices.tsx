@@ -596,6 +596,9 @@ const PollinationServices = () => {
                 </div>
             </section>
 
+            {/* Panda Miti Initiative - 45,000 Trees Around Kibwezi */}
+            <PandaMitiSection />
+
             {/* FAQ Section */}
             <section className="py-24 bg-background relative overflow-hidden">
                 <div className="container mx-auto px-4">
@@ -681,8 +684,6 @@ const PollinationServices = () => {
             </section>
 
             {/* Final CTA Section */}
-            {/* Panda Miti Initiative - 45,000 Trees Around Kibwezi */}
-            <PandaMitiSection />
 
             <section className="py-32 relative overflow-hidden bg-[#F0F7F0] text-neutral-900 rounded-[5rem] mx-4 mb-8 border border-green-100">
                 <div className="absolute inset-0 opacity-10">
