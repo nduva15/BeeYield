@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import {
+    Layers,
     Search,
     Bell,
     Settings,
@@ -189,39 +190,52 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuContent
                         align="start"
                         sideOffset={8}
-                        className="w-72 max-h-[82vh] overflow-y-auto rounded-2xl border border-border p-2 shadow-2xl bg-card/95 backdrop-blur-2xl z-50 custom-scrollbar"
+                        className="w-80 max-h-[82vh] overflow-y-auto rounded-2xl border border-border/80 p-2.5 shadow-2xl bg-card/95 backdrop-blur-2xl z-50 custom-scrollbar"
                     >
-                        <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-[#B78103] dark:text-[#F4D03F]">
-                            BeeYield Expert Views
+                        <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-[#F4D03F] flex items-center justify-between border-b border-border/40 mb-2">
+                            <span>BeeYield Expert Views</span>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#F4D03F]/10 border border-[#F4D03F]/25 text-[#F4D03F] font-bold">Harvests Grade</span>
                         </DropdownMenuLabel>
                         <div className="space-y-3">
                             {navCategories.map((category) => (
-                                <div key={category.title} className="space-y-0.5">
-                                    <p className="px-3 text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider">{category.title}</p>
-                                    {category.items.map((item) => {
-                                        const ItemIcon = item.icon;
-                                        const isActive = activeTab === item.id;
-                                        return (
-                                            <DropdownMenuItem
-                                                key={item.id}
-                                                onClick={() => onTabChange(item.id)}
-                                                className={cn(
-                                                    "px-3 py-2 text-xs rounded-xl cursor-pointer flex items-center justify-between transition-colors",
-                                                    isActive 
-                                                        ? "bg-[#F4D03F]/20 text-foreground font-bold" 
-                                                        : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
-                                                )}
-                                            >
-                                                <div className="flex items-center gap-2.5 min-w-0">
-                                                    <ItemIcon className={cn("w-4 h-4 shrink-0", isActive ? "text-[#F4D03F]" : "text-muted-foreground/70")} />
-                                                    <span className="truncate">{item.label}</span>
-                                                </div>
-                                                {isActive && (
-                                                    <span className="w-2 h-2 rounded-full bg-[#F4D03F] shrink-0" />
-                                                )}
-                                            </DropdownMenuItem>
-                                        );
-                                    })}
+                                <div key={category.title} className="space-y-1">
+                                    <div className="flex items-center gap-1.5 px-3 py-1">
+                                        <Layers className="w-3 h-3 text-[#F4D03F]" />
+                                        <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-wider">{category.title}</p>
+                                    </div>
+                                    <div className="space-y-0.5">
+                                        {category.items.map((item) => {
+                                            const ItemIcon = item.icon;
+                                            const isActive = activeTab === item.id;
+                                            return (
+                                                <DropdownMenuItem
+                                                    key={item.id}
+                                                    onClick={() => onTabChange(item.id)}
+                                                    className={cn(
+                                                        "px-2.5 py-2 text-xs rounded-xl cursor-pointer flex items-center justify-between transition-all border my-0.5",
+                                                        isActive 
+                                                            ? "bg-[#F4D03F]/15 border-[#F4D03F]/40 text-foreground font-bold shadow-sm" 
+                                                            : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40 hover:border-border/60"
+                                                    )}
+                                                >
+                                                    <div className="flex items-center gap-2.5 min-w-0">
+                                                        <div className={cn(
+                                                            "w-6 h-6 rounded-md flex items-center justify-center shrink-0 border transition-all",
+                                                            isActive
+                                                                ? "bg-[#F4D03F] text-neutral-900 border-[#F4D03F]"
+                                                                : "bg-[#F4D03F]/10 border-[#F4D03F]/20 text-[#F4D03F]"
+                                                        )}>
+                                                            <ItemIcon className="w-3.5 h-3.5 shrink-0" />
+                                                        </div>
+                                                        <span className="truncate font-semibold">{item.label}</span>
+                                                    </div>
+                                                    {isActive && (
+                                                        <span className="w-2 h-2 rounded-full bg-[#F4D03F] shrink-0" />
+                                                    )}
+                                                </DropdownMenuItem>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             ))}
                         </div>
