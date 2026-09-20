@@ -1,60 +1,70 @@
-# Submodules & Repositories
-.gitmodules
-beeyield-companion
+# Whitelist frontend application and build essentials
+!/src/**
+!/public/**
+!index.html
+!package.json
+!pnpm-lock.yaml
+!vite.config.ts
+!tsconfig*.json
+!tailwind.config.*
+!postcss.config.*
+!components.json
+!eslint.config.js
 
-# Backend Services & Microservices
-backend
-backend/**
-services
-services/**
+# Exclude root-level backend services & microservices
+/backend
+/backend/**
+/services
+/services/**
 
-# Cloud & DevOps Infrastructure
-k8s
-k8s/**
-terraform
-terraform/**
-Dockerfile*
-docker-compose*
-deploy.sh
-Makefile
-render.yaml
+# Exclude Cloud, DevOps & Container configs
+/k8s
+/k8s/**
+/terraform
+/terraform/**
+/supabase
+/supabase/**
+/Dockerfile*
+/docker-compose*
+/deploy.sh
+/Makefile
+/render.yaml
 *.ps1
 
-# Supabase Local Migrations & Dumps
-supabase
-supabase/**
+# Exclude Submodules & Sync temps
+/beeyield-companion
+/repo-sync-temp
+.gitmodules
 
-# Developer & Agent Tooling
-.github
-.github/**
-.claude
-.claude/**
-scripts
-scripts/**
-tools
-tools/**
-tests
-tests/**
-.docs
-docs
-repo-sync-temp
+# Exclude Developer & Agent Tooling
+/.github
+/.github/**
+/.claude
+/.claude/**
+/scripts
+/scripts/**
+/tools
+/tools/**
+/tests
+/tests/**
+/docs
+/docs/**
+/.docs
+/.docs/**
 
-# Research, Data & Large Artifacts
-bee_research_10k.csv
+# Exclude Research Data, Large PDFs & Scratch
+/output
+/output/**
+/scratch
+/scratch/**
 *.csv
 *.sql
-output
-output/**
-scratch
-scratch/**
 
-# Build Caches & Python
+# Build Caches & Python artifacts
 *.tsbuildinfo
 __pycache__
 *.pyc
 .pytest_cache
-
-# Temporary & Local Scratch Dirs
 .cache
 .output
 .vercel
