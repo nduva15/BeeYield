@@ -103,7 +103,7 @@ export default function BeeSpeciesPage({ isOpen = true, onClose, embedded = fals
   };
 
   const importCSV = async (file: File) => {
-    const parsed = fromCSV<Record<string, string>>(await file.text());
+    const parsed = fromCSV(await file.text());
     if (parsed.length === 0) return toast.error("Empty CSV");
     const payload = parsed.map((p) => ({
       device_id: deviceId, is_default: false,

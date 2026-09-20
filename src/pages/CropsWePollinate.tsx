@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
+import { PandaMitiSection } from "@/components/PandaMitiSection";
 
 const CropsWePollinate = () => {
   const pollinationCrops = dashboardPollinationCropDetails;

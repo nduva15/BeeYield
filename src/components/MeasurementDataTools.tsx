@@ -65,6 +65,7 @@ const DEFAULT_MEASUREMENTS: Measurement[] = [
 
 function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; onCancel: () => void }) {
   const elId = useRef(`qr-${Math.random().toString(36).slice(2)}`);
+  const containerId = elId.current;
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [err, setErr] = useState<string | null>(null);
 

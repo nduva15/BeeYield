@@ -395,7 +395,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & ferme
   const remove = async (id: string) => {
     if (!confirm("Delete this harvest record?")) return;
     try {
-      await supabase.from("harvests" as any).delete().eq("id" as any, id as any);
+      await (supabase as any).from("harvests").delete().eq("id", id);
     } catch {
       // Ignored
     }

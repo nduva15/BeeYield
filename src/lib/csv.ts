@@ -10,7 +10,7 @@ export function toCSV(rows: Record<string, unknown>[], cols?: string[]): string 
   return [headers.join(","), ...rows.map((r) => headers.map((h) => esc(r[h])).join(","))].join("\n");
 }
 
-export function fromCSV(text: string): Record<string, string>[] {
+export function fromCSV<T = Record<string, string>>(text: string): T[] {
   const lines = text.replace(/\r/g, "").split("\n").filter((l) => l.trim().length);
   if (lines.length < 2) return [];
   const parseLine = (line: string) => {
@@ -36,7 +36,7 @@ export function fromCSV(text: string): Record<string, string>[] {
     const cells = parseLine(l);
     const o: Record<string, string> = {};
     headers.forEach((h, i) => (o[h] = cells[i] ?? ""));
-    return o;
+    return o as unknown as T;
   });
 }
 
