@@ -37,7 +37,6 @@ import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 import LovableBeeYieldAI from '@/components/beeyield/lovable_ai/LovableIndex';
 import PollinationEngine from '@/components/beeyield/PollinationEngine';
 import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
-import SpatialCoverageView from '@/components/beeyield/SpatialCoverageView';
 import HpaOptimizer from '@/components/beeyield/HpaOptimizer';
 import MasterMapView from '@/pages/MasterMapView';
 import OrchardMapper from '@/components/beeyield/OrchardMapper';
@@ -255,7 +254,6 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'beeyield-calculators', label: 'Calculator Hub', icon: Calculator },
                         { id: 'varroa-simulator', label: 'Varroa Simulator', icon: TrendingUp },
                         { id: 'pollination-engine', label: 'Pollination planning', icon: Cpu },
-                        { id: 'saturation-math', label: 'Coverage area', icon: Scale },
                         { id: 'hpa-optimizer', label: 'Performance planning', icon: Cpu },
                     ]
                 },
@@ -402,7 +400,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'site-map': return renderEmbedded(<HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'pollination-planning-ai': return renderEmbedded(<PollinationPlanning isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'pollination-planning': return <PollinationEngine onTabChange={handleTabChange} embedded={true} />;
-            case 'saturation-math': return <SpatialCoverageView embedded={true} />;
             case 'hpa-optimizer': return <HpaOptimizer embedded={true} />;
             case 'pollination-lookup': return renderEmbedded(<PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'pollination-analytics': return renderEmbedded(<PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
