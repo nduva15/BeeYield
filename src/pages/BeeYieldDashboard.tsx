@@ -102,6 +102,7 @@ import HiveHealthDashboard from '@/components/beeyield/lovable_ai/HiveHealthDash
 import SupportPageModal from '@/components/beeyield/lovable_ai/SupportPageModal';
 import SettingsPage from '@/components/beeyield/lovable_ai/SettingsPage';
 import InspectionsPage from '@/components/beeyield/lovable_ai/InspectionsPage';
+import TasksPage from '@/components/beeyield/lovable_ai/TasksPage';
 import HarvestsPage from '@/components/beeyield/lovable_ai/HarvestsPage';
 import IntegrationsPage from '@/components/beeyield/lovable_ai/IntegrationsPage';
 
@@ -440,7 +441,8 @@ const BeeYieldDashboard: React.FC = () => {
             case 'measurement-tools': return renderEmbedded(<MeasurementDataTools isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'notes': return <MyNotesView onTabChange={handleTabChange} />;
             case 'requests': return <MyRequestsView onTabChange={handleTabChange} />;
-            case 'task': return <MyTaskView onTabChange={handleTabChange} />;
+            case 'tasks':
+            case 'task': return renderEmbedded(<TasksPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'buy': return <BuyBeeYieldHubView onTabChange={handleTabChange} />;
             case 'meters': 
             case 'meters-dashboard':

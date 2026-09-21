@@ -6,7 +6,7 @@ from app.api.api_v1.endpoints import (
     company, auth, traceability, contact,
     forms, shop, blog, careers, media,
     services, jobs, notes, admin, iot,
-    admin_extended, meters, beeyield, pollination, inspections, reports, harvests,
+    admin_extended, meters, beeyield, pollination, inspections, reports, harvests, tasks,
     settings, payments, labels, bluetooth, measurements,
     requests, image_analysis, acoustic, routing, forage, ai, integrations, usb_hub, reference_library,
     yield_forecast
@@ -31,6 +31,10 @@ api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield D
 # Harvests endpoints (Full CRUD for all users)
 api_router.include_router(harvests.router, prefix="/harvests", tags=["Harvests"])
 api_router.include_router(harvests.router, prefix="/beeyield/harvests", tags=["Harvests"])
+# Tasks endpoints (Full CRUD for all users)
+api_router.include_router(tasks.router, prefix="/tasks", tags=["Tasks"])
+api_router.include_router(tasks.router, prefix="/beeyield/tasks", tags=["Tasks"])
+
 
 api_router.include_router(reference_library.public_router, prefix="/beeyield/health", tags=["BeeYield Health Guide"])
 api_router.include_router(yield_forecast.router, prefix="/beeyield/yield-forecast", tags=["Yield Forecast"])

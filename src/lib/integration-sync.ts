@@ -3,14 +3,14 @@ import { syncRecordToIntegrations } from "@/lib/integrations.functions";
 
 type SyncInput = {
   deviceId: string;
-  kind: "inspection" | "acoustic";
+  kind: "inspection" | "acoustic" | "task" | "harvest";
   recordId: string;
   hiveLabel: string;
   title: string;
   summary: string;
   status: string;
   occurredAt: string;
-  metrics: Record<string, string | number | boolean>;
+  metrics?: Record<string, string | number | boolean>;
 };
 
 /**
