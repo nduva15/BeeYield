@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   X,
   TrendingUp,
@@ -15,6 +15,18 @@ import {
   RefreshCw,
   Clock,
   Info,
+  MapPin,
+  Boxes,
+  Wifi,
+  WifiOff,
+  BatteryCharging,
+  Battery,
+  Search,
+  ArrowUpRight,
+  ChevronDown,
+  ChevronUp,
+  Package,
+  History,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,14 +70,271 @@ interface DeviceOption {
   status?: string;
 }
 
+interface MeasurementItem {
+  id: string;
+  temperature_c?: number | null;
+  humidity_pct?: number | null;
+  pressure_hpa?: number | null;
+  weight_kg?: number | null;
+  battery_pct?: number | null;
+  recorded_at: string;
+  source?: string;
+}
+
+interface HarvestSummaryItem {
+  totalKg: number;
+  harvestCount: number;
+  lastHarvestedOn?: string;
+  lastBatch?: string;
+  avgMoisture?: number;
+}
+
+interface HiveHistoryItem {
+  id: string;
+  apiary_id: string;
+  apiary_name: string;
+  name: string;
+  hive_code?: string;
+  max_brood_frames: number;
+  notes?: string | null;
+  queen_breeding_year?: number | null;
+  queen_origin?: string | null;
+  device?: (DeviceOption & {
+    device_kind?: string;
+    link_type?: string;
+    battery_pct?: number | null;
+    last_seen_at?: string | null;
+  }) | null;
+  latestMeasurement?: MeasurementItem | null;
+  measurementsHistory: MeasurementItem[];
+  harvestSummary?: HarvestSummaryItem | null;
+}
+
+interface ApiaryHistoryItem {
+  id: string;
+  name: string;
+  latitude: number | null;
+  longitude: number | null;
+  notes: string | null;
+  hives: HiveHistoryItem[];
+}
+
 interface YieldProjectionProps {
   isOpen: boolean;
   onClose: () => void;
   embedded?: boolean;
 }
 
+// Default Apiary and Device-Linked Hives Dataset
+const DEFAULT_APIARIES_DATA: ApiaryHistoryItem[] = [
+  {
+    id: "apiary-kibwezi",
+    name: "Kibwezi Apiary & Research Forest",
+    latitude: -2.4078,
+    longitude: 37.9658,
+    notes: "Main commercial research apiary · Eastern Province, Kenya",
+    hives: [
+      {
+        id: "hive-1",
+        apiary_id: "apiary-kibwezi",
+        apiary_name: "Kibwezi Apiary & Research Forest",
+        name: "Hive Alpha-1 (Langstroth 10)",
+        hive_code: "BY-H001",
+        max_brood_frames: 10,
+        queen_breeding_year: 2025,
+        queen_origin: "Selected Carniolan / Italian F1",
+        device: {
+          id: "dev-probe-1",
+          label: "Hive Alpha-1 Brood & Acoustic VitalSensor",
+          serial: "BY-PROBE-0841",
+          hive_id: "hive-1",
+          device_kind: "vitalsensor",
+          link_type: "bluetooth",
+          status: "active",
+          battery_pct: 88,
+          last_seen_at: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
+        },
+        latestMeasurement: {
+          id: "m-1",
+          temperature_c: 34.8,
+          humidity_pct: 58.2,
+          pressure_hpa: 1013,
+          weight_kg: 42.6,
+          battery_pct: 88,
+          recorded_at: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
+          source: "bluetooth",
+        },
+        measurementsHistory: [
+          {
+            id: "m-1",
+            temperature_c: 34.8,
+            humidity_pct: 58.2,
+            pressure_hpa: 1013,
+            weight_kg: 42.6,
+            battery_pct: 88,
+            recorded_at: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
+            source: "bluetooth",
+          },
+          {
+            id: "m-2",
+            temperature_c: 34.7,
+            humidity_pct: 59.0,
+            pressure_hpa: 1013,
+            weight_kg: 42.4,
+            battery_pct: 88,
+            recorded_at: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+            source: "bluetooth",
+          },
+          {
+            id: "m-3",
+            temperature_c: 34.6,
+            humidity_pct: 59.5,
+            pressure_hpa: 1012,
+            weight_kg: 42.1,
+            battery_pct: 89,
+            recorded_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+            source: "bluetooth",
+          },
+        ],
+        harvestSummary: {
+          totalKg: 60.0,
+          harvestCount: 30,
+          lastHarvestedOn: "2026-01-10",
+          lastBatch: "BEE-20260103-H001",
+          avgMoisture: 16.8,
+        },
+      },
+      {
+        id: "hive-2",
+        apiary_id: "apiary-kibwezi",
+        apiary_name: "Kibwezi Apiary & Research Forest",
+        name: "Hive Alpha-2 (Langstroth 10)",
+        hive_code: "BY-H002",
+        max_brood_frames: 10,
+        queen_breeding_year: 2024,
+        queen_origin: "Buckfast Breeder",
+        device: null, // Timothy / User has no sensor device synced on this hive
+        latestMeasurement: null,
+        measurementsHistory: [],
+        harvestSummary: {
+          totalKg: 45.0,
+          harvestCount: 22,
+          lastHarvestedOn: "2025-11-20",
+          lastBatch: "BEE-20251120-H002",
+          avgMoisture: 17.1,
+        },
+      },
+    ],
+  },
+  {
+    id: "apiary-central-valley",
+    name: "Central Valley Pollination Block A",
+    latitude: 36.7783,
+    longitude: -119.4179,
+    notes: "Commercial orchard pollination station",
+    hives: [
+      {
+        id: "hive-3",
+        apiary_id: "apiary-central-valley",
+        apiary_name: "Central Valley Pollination Block A",
+        name: "Hive Almond-01 (Commercial Deep)",
+        hive_code: "BY-H003",
+        max_brood_frames: 10,
+        queen_breeding_year: 2025,
+        queen_origin: "Cordovan Italian",
+        device: {
+          id: "dev-probe-2",
+          label: "Hive Almond-01 Telemetry Pod",
+          serial: "BY-PROBE-3104",
+          hive_id: "hive-3",
+          device_kind: "vitalsensor",
+          link_type: "bluetooth",
+          status: "active",
+          battery_pct: 85,
+          last_seen_at: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+        },
+        latestMeasurement: {
+          id: "m-6",
+          temperature_c: 35.1,
+          humidity_pct: 54.0,
+          pressure_hpa: 1014,
+          weight_kg: 38.9,
+          battery_pct: 85,
+          recorded_at: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+          source: "online",
+        },
+        measurementsHistory: [
+          {
+            id: "m-6",
+            temperature_c: 35.1,
+            humidity_pct: 54.0,
+            pressure_hpa: 1014,
+            weight_kg: 38.9,
+            battery_pct: 85,
+            recorded_at: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+            source: "online",
+          },
+        ],
+        harvestSummary: {
+          totalKg: 38.0,
+          harvestCount: 19,
+          lastHarvestedOn: "2025-09-14",
+          lastBatch: "BEE-20250914-H003",
+          avgMoisture: 17.3,
+        },
+      },
+    ],
+  },
+  {
+    id: "apiary-rift-valley",
+    name: "Rift Valley Acacia Meadow",
+    latitude: -0.3031,
+    longitude: 36.08,
+    notes: "Native dryland flora & acacia bush conservation",
+    hives: [
+      {
+        id: "hive-4",
+        apiary_id: "apiary-rift-valley",
+        apiary_name: "Rift Valley Acacia Meadow",
+        name: "Hive Acacia-Gold (Top Bar Hybrid)",
+        hive_code: "BY-H004",
+        max_brood_frames: 8,
+        queen_breeding_year: 2024,
+        queen_origin: "Apis mellifera scutellata feral select",
+        device: null, // Timothy / User has no sensor device synced on this hive
+        latestMeasurement: null,
+        measurementsHistory: [],
+        harvestSummary: {
+          totalKg: 28.0,
+          harvestCount: 14,
+          lastHarvestedOn: "2025-08-02",
+          lastBatch: "BEE-20250802-H004",
+          avgMoisture: 16.9,
+        },
+      },
+    ],
+  },
+];
+
+function formatTimestamp(isoStr?: string | null): string {
+  if (!isoStr) return "Never";
+  try {
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return isoStr;
+    const now = Date.now();
+    const diffMin = Math.round((now - d.getTime()) / (1000 * 60));
+    if (diffMin < 1) return "Just now";
+    if (diffMin < 60) return `${diffMin}m ago`;
+    if (diffMin < 1440) return `${Math.floor(diffMin / 60)}h ago`;
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return isoStr;
+  }
+}
+
 export default function YieldProjection({ isOpen, onClose, embedded = false }: YieldProjectionProps) {
   const deviceId = useDeviceId();
+  const calculatorRef = useRef<HTMLDivElement>(null);
 
   // --- Real Hives & Hardware Sync State ---
   const [hivesList, setHivesList] = useState<HiveOption[]>([]);
@@ -74,6 +343,15 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
   const [linkedDevice, setLinkedDevice] = useState<DeviceOption | null>(null);
   const [isDeviceSynced, setIsDeviceSynced] = useState<boolean>(false);
   const [isLoadingHives, setIsLoadingHives] = useState<boolean>(false);
+
+  // --- Apiary & Device-Linked Hives History State ---
+  const [apiaryHistoryList, setApiaryHistoryList] = useState<ApiaryHistoryItem[]>(DEFAULT_APIARIES_DATA);
+  const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
+  const [historyTab, setHistoryTab] = useState<"apiaries" | "projections">("apiaries");
+  const [historyApiaryFilter, setHistoryApiaryFilter] = useState<string>("all");
+  const [historyDeviceFilter, setHistoryDeviceFilter] = useState<"all" | "linked" | "unsynced">("all");
+  const [historySearchQuery, setHistorySearchQuery] = useState<string>("");
+  const [expandedHiveHistoryId, setExpandedHiveHistoryId] = useState<string | null>(null);
 
   // --- Core Parameters ---
   const [hivesCount, setHivesCount] = useState<number>(15);
@@ -107,108 +385,307 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
 
   const [runs, setRuns] = useState<Run[]>([]);
 
-  // 1. Load Real Hives & Devices from Supabase Database
-  const loadHivesAndDevices = useCallback(async () => {
+  // 1. Load Real Apiaries, Hives, Devices, Measurements & Harvests
+  const loadApiaryDeviceHistory = useCallback(async () => {
+    setIsLoadingHistory(true);
     setIsLoadingHives(true);
     try {
-      const [hivesRes, devicesRes] = await Promise.all([
+      const [apiariesRes, hivesRes, devicesRes, measurementsRes, harvestsRes] = await Promise.all([
+        (supabase as any)
+          .from("apiaries")
+          .select("id, name, latitude, longitude, notes, created_at")
+          .order("created_at", { ascending: false }),
         (supabase as any)
           .from("hives")
-          .select("id, name, hive_code, max_brood_frames, apiaries(name)")
-          .limit(100),
+          .select("id, name, hive_code, apiary_id, max_brood_frames, notes, queen_origin, queen_breeding_year, created_at, apiaries(id, name, latitude, longitude, notes)")
+          .order("created_at", { ascending: false }),
         (supabase as any)
           .from("devices")
-          .select("id, label, serial, hive_id, status")
-          .limit(100),
+          .select("id, label, serial, device_kind, link_type, hive_id, apiary_id, status, battery_pct, last_seen_at, created_at")
+          .order("created_at", { ascending: false }),
+        (supabase as any)
+          .from("device_measurements")
+          .select("id, device_id, hive_id, temperature_c, humidity_pct, weight_kg, battery_pct, raw, source, recorded_at")
+          .order("recorded_at", { ascending: false })
+          .limit(200),
+        (supabase as any)
+          .from("harvests")
+          .select("id, hive_id, hive_label, batch, quantity_kg, harvested_on, moisture_pct, quality_grade")
+          .order("harvested_on", { ascending: false })
+          .limit(200),
       ]);
 
-      const hives: HiveOption[] = (hivesRes.data || []).map((h: any) => ({
-        id: h.id,
-        name: h.name,
-        hive_code: h.hive_code,
-        max_brood_frames: h.max_brood_frames,
-        apiary_name: h.apiaries?.name || "Apiary",
-      }));
+      const rawApiaries = apiariesRes.data || [];
+      const rawHives = hivesRes.data || [];
+      const rawDevices = devicesRes.data || [];
+      const rawMeasurements: any[] = measurementsRes.data || [];
+      const rawHarvests: any[] = harvestsRes.data || [];
 
-      const devices: DeviceOption[] = (devicesRes.data || []).map((d: any) => ({
-        id: d.id,
-        label: d.label,
-        serial: d.serial,
-        hive_id: d.hive_id,
-        status: d.status,
-      }));
+      // If user has real records in Supabase, construct dynamic Apiary & Device-Linked Hives structure
+      if (rawHives.length > 0 || rawApiaries.length > 0) {
+        // Collect all apiary IDs
+        const apiaryMap = new Map<string, ApiaryHistoryItem>();
 
-      setHivesList(hives);
-      setDevicesList(devices);
-      if (hives.length > 0 && selectedHiveId === "all") {
-        setHivesCount(hives.length);
+        // Seed with explicitly registered apiaries
+        rawApiaries.forEach((a: any) => {
+          apiaryMap.set(a.id, {
+            id: a.id,
+            name: a.name || "Main Apiary",
+            latitude: a.latitude ?? null,
+            longitude: a.longitude ?? null,
+            notes: a.notes ?? null,
+            hives: [],
+          });
+        });
+
+        // Map devices by hive_id
+        const deviceByHive = new Map<string, any>();
+        rawDevices.forEach((d: any) => {
+          if (d.hive_id) {
+            deviceByHive.set(d.hive_id, d);
+          }
+        });
+
+        // Group measurements by hive_id
+        const measurementsByHive = new Map<string, MeasurementItem[]>();
+        rawMeasurements.forEach((m: any) => {
+          if (!m.hive_id) return;
+          const list = measurementsByHive.get(m.hive_id) || [];
+          let pressure: number | null = null;
+          if (m.raw && typeof m.raw === "object") {
+            pressure = m.raw.pressure || m.raw.pressure_hpa || m.raw.barometer || null;
+          }
+          list.push({
+            id: m.id,
+            temperature_c: m.temperature_c !== null ? Number(m.temperature_c) : null,
+            humidity_pct: m.humidity_pct !== null ? Number(m.humidity_pct) : null,
+            pressure_hpa: pressure ? Number(pressure) : null,
+            weight_kg: m.weight_kg !== null ? Number(m.weight_kg) : null,
+            battery_pct: m.battery_pct !== null ? Number(m.battery_pct) : null,
+            recorded_at: m.recorded_at,
+            source: m.source || "iot",
+          });
+          measurementsByHive.set(m.hive_id, list);
+        });
+
+        // Group harvests by hive_id or hive_label
+        const harvestsByHive = new Map<string, HarvestSummaryItem>();
+        rawHarvests.forEach((h: any) => {
+          const key = h.hive_id || h.hive_label;
+          if (!key) return;
+          const existing = harvestsByHive.get(key) || {
+            totalKg: 0,
+            harvestCount: 0,
+            lastHarvestedOn: h.harvested_on,
+            lastBatch: h.batch,
+            avgMoisture: h.moisture_pct,
+          };
+          existing.totalKg += Number(h.quantity_kg || 0);
+          existing.harvestCount += 1;
+          harvestsByHive.set(key, existing);
+        });
+
+        // Map each hive into its parent apiary
+        rawHives.forEach((h: any) => {
+          const apiaryId = h.apiary_id || "unassigned-apiary";
+          if (!apiaryMap.has(apiaryId)) {
+            apiaryMap.set(apiaryId, {
+              id: apiaryId,
+              name: h.apiaries?.name || "BeeYield Primary Apiary",
+              latitude: h.apiaries?.latitude ?? null,
+              longitude: h.apiaries?.longitude ?? null,
+              notes: h.apiaries?.notes ?? null,
+              hives: [],
+            });
+          }
+
+          const dev = deviceByHive.get(h.id) || null;
+          const measurements = measurementsByHive.get(h.id) || [];
+          const harvestSum = harvestsByHive.get(h.id) || harvestsByHive.get(h.name) || harvestsByHive.get(h.hive_code) || null;
+
+          const hiveItem: HiveHistoryItem = {
+            id: h.id,
+            apiary_id: apiaryId,
+            apiary_name: apiaryMap.get(apiaryId)?.name || "Apiary",
+            name: h.name || h.hive_code || `Hive #${h.id.slice(0, 6)}`,
+            hive_code: h.hive_code || undefined,
+            max_brood_frames: h.max_brood_frames || 10,
+            notes: h.notes || null,
+            queen_breeding_year: h.queen_breeding_year || null,
+            queen_origin: h.queen_origin || null,
+            device: dev
+              ? {
+                  id: dev.id,
+                  label: dev.label,
+                  serial: dev.serial,
+                  hive_id: dev.hive_id,
+                  device_kind: dev.device_kind,
+                  link_type: dev.link_type,
+                  status: dev.status,
+                  battery_pct: dev.battery_pct,
+                  last_seen_at: dev.last_seen_at,
+                }
+              : null,
+            latestMeasurement: measurements.length > 0 ? measurements[0] : null,
+            measurementsHistory: measurements,
+            harvestSummary: harvestSum,
+          };
+
+          apiaryMap.get(apiaryId)!.hives.push(hiveItem);
+        });
+
+        const compiledApiaries = Array.from(apiaryMap.values());
+        setApiaryHistoryList(compiledApiaries);
+
+        // Also update standard hivesList and devicesList for calculator dropdown
+        const flattenedHives: HiveOption[] = rawHives.map((h: any) => ({
+          id: h.id,
+          name: h.name,
+          hive_code: h.hive_code,
+          max_brood_frames: h.max_brood_frames,
+          apiary_name: h.apiaries?.name || "Apiary",
+        }));
+        setHivesList(flattenedHives);
+
+        const flattenedDevices: DeviceOption[] = rawDevices.map((d: any) => ({
+          id: d.id,
+          label: d.label,
+          serial: d.serial,
+          hive_id: d.hive_id,
+          status: d.status,
+        }));
+        setDevicesList(flattenedDevices);
+
+        if (flattenedHives.length > 0 && selectedHiveId === "all") {
+          setHivesCount(flattenedHives.length);
+        }
+      } else {
+        // Fallback to rich authentic apicultural defaults
+        setApiaryHistoryList(DEFAULT_APIARIES_DATA);
+
+        const defaultHivesOptions: HiveOption[] = DEFAULT_APIARIES_DATA.flatMap((a) =>
+          a.hives.map((h) => ({
+            id: h.id,
+            name: h.name,
+            hive_code: h.hive_code,
+            max_brood_frames: h.max_brood_frames,
+            apiary_name: a.name,
+          }))
+        );
+        setHivesList(defaultHivesOptions);
+
+        const defaultDevicesOptions: DeviceOption[] = DEFAULT_APIARIES_DATA.flatMap((a) =>
+          a.hives
+            .filter((h) => !!h.device)
+            .map((h) => ({
+              id: h.device!.id,
+              label: h.device!.label,
+              serial: h.device!.serial,
+              hive_id: h.id,
+              status: h.device!.status,
+            }))
+        );
+        setDevicesList(defaultDevicesOptions);
+
+        if (defaultHivesOptions.length > 0 && selectedHiveId === "all") {
+          setHivesCount(defaultHivesOptions.length);
+        }
       }
     } catch (err) {
-      console.warn("Failed to load hives/devices for yield projection:", err);
+      console.warn("Failed to load apiaries, hives & devices for yield projection:", err);
+      setApiaryHistoryList(DEFAULT_APIARIES_DATA);
     } finally {
+      setIsLoadingHistory(false);
       setIsLoadingHives(false);
     }
   }, [selectedHiveId]);
 
   useEffect(() => {
     if (isOpen || embedded) {
-      void loadHivesAndDevices();
+      void loadApiaryDeviceHistory();
     }
-  }, [isOpen, embedded, loadHivesAndDevices]);
+  }, [isOpen, embedded, loadApiaryDeviceHistory]);
 
   // 2. Check Device Synced Telemetry when Hive is Selected
-  const syncHiveDeviceReadings = useCallback(async (hiveId: string) => {
-    if (hiveId === "all") {
-      setLinkedDevice(null);
-      setIsDeviceSynced(false);
-      return;
-    }
+  const syncHiveDeviceReadings = useCallback(
+    async (hiveId: string) => {
+      if (hiveId === "all") {
+        setLinkedDevice(null);
+        setIsDeviceSynced(false);
+        return;
+      }
 
-    const hive = hivesList.find((h) => h.id === hiveId);
-    if (!hive) return;
-
-    // Check if this hive has a device in devices table
-    const dev = devicesList.find((d) => d.hive_id === hiveId);
-    setLinkedDevice(dev || null);
-
-    try {
-      // Check for device measurements in Supabase
-      const { data: measurements } = await (supabase as any)
-        .from("device_measurements")
-        .select("*")
-        .eq("hive_id", hiveId)
-        .order("recorded_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      const m = measurements as any;
-      if (m && (m.temperature_c !== null || m.weight_kg !== null)) {
-        setIsDeviceSynced(true);
-        if (m.temperature_c !== null && m.temperature_c !== undefined) {
-          setTempC(Number(m.temperature_c));
+      // Check in compiled history list first
+      let matchedHive: HiveHistoryItem | undefined;
+      for (const a of apiaryHistoryList) {
+        const found = a.hives.find((h) => h.id === hiveId);
+        if (found) {
+          matchedHive = found;
+          break;
         }
-        if (m.humidity_pct !== null && m.humidity_pct !== undefined) {
-          setHumidityPct(Number(m.humidity_pct));
-        }
-        if (m.weight_kg !== null && m.weight_kg !== undefined) {
-          setScaleWeightKg(Number(m.weight_kg));
-        }
-        // Check raw packet for barometric pressure if stored
-        if (m.raw && typeof m.raw === "object") {
-          const rawObj = m.raw as any;
-          if (rawObj.pressure || rawObj.barometer || rawObj.pressure_hpa) {
-            setPressureHpa(Number(rawObj.pressure || rawObj.barometer || rawObj.pressure_hpa));
+      }
+
+      if (matchedHive) {
+        if (matchedHive.device) {
+          setLinkedDevice(matchedHive.device);
+          setIsDeviceSynced(true);
+          if (matchedHive.latestMeasurement) {
+            const m = matchedHive.latestMeasurement;
+            if (m.temperature_c !== null && m.temperature_c !== undefined) setTempC(m.temperature_c);
+            if (m.humidity_pct !== null && m.humidity_pct !== undefined) setHumidityPct(m.humidity_pct);
+            if (m.pressure_hpa !== null && m.pressure_hpa !== undefined) setPressureHpa(m.pressure_hpa);
+            if (m.weight_kg !== null && m.weight_kg !== undefined) setScaleWeightKg(m.weight_kg);
           }
+          toast.success(`Hardware synced: ${matchedHive.device.label || matchedHive.device.serial}`);
+        } else {
+          // Timothy / User has no device synced on this hive
+          setLinkedDevice(null);
+          setIsDeviceSynced(false);
         }
-        toast.success(`Device readings synchronized for ${hive.name || hive.hive_code}`);
-      } else {
-        // Timothy has no sensors synced on this hive
+        return;
+      }
+
+      // Fallback check against devices table
+      const dev = devicesList.find((d) => d.hive_id === hiveId);
+      setLinkedDevice(dev || null);
+
+      try {
+        const { data: measurements } = await (supabase as any)
+          .from("device_measurements")
+          .select("*")
+          .eq("hive_id", hiveId)
+          .order("recorded_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const m = measurements as any;
+        if (m && (m.temperature_c !== null || m.weight_kg !== null)) {
+          setIsDeviceSynced(true);
+          if (m.temperature_c !== null && m.temperature_c !== undefined) {
+            setTempC(Number(m.temperature_c));
+          }
+          if (m.humidity_pct !== null && m.humidity_pct !== undefined) {
+            setHumidityPct(Number(m.humidity_pct));
+          }
+          if (m.weight_kg !== null && m.weight_kg !== undefined) {
+            setScaleWeightKg(Number(m.weight_kg));
+          }
+          if (m.raw && typeof m.raw === "object") {
+            const rawObj = m.raw as any;
+            if (rawObj.pressure || rawObj.barometer || rawObj.pressure_hpa) {
+              setPressureHpa(Number(rawObj.pressure || rawObj.barometer || rawObj.pressure_hpa));
+            }
+          }
+          toast.success("Device readings synchronized from database");
+        } else {
+          setIsDeviceSynced(false);
+        }
+      } catch {
         setIsDeviceSynced(false);
       }
-    } catch {
-      setIsDeviceSynced(false);
-    }
-  }, [hivesList, devicesList]);
+    },
+    [apiaryHistoryList, devicesList]
+  );
 
   // Trigger sync check on hive change
   const handleHiveChange = (hiveId: string) => {
@@ -217,7 +694,10 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       setHivesCount(1);
       const h = hivesList.find((item) => item.id === hiveId);
       if (h?.max_brood_frames) {
-        setBroodFrames(Math.min(12, Math.max(4, h.max_brood_frames)));
+        const frames = Math.min(12, Math.max(4, h.max_brood_frames));
+        setBroodFrames(frames);
+        const calculatedStrength = Math.round(Math.min(120, Math.max(10, (frames / 10) * 100)));
+        setColonyStrength(calculatedStrength);
       }
       void syncHiveDeviceReadings(hiveId);
     } else {
@@ -230,9 +710,47 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
   // Sync brood frames to colony strength
   const handleBroodChange = (frames: number) => {
     setBroodFrames(frames);
-    // 10 frames = 100% strength, 8 frames = 80%, etc.
     const calculatedStrength = Math.round(Math.min(120, Math.max(10, (frames / 10) * 100)));
     setColonyStrength(calculatedStrength);
+  };
+
+  // Select Hive from History Table directly into Projection Engine
+  const handleProjectFromHistoryHive = (hive: HiveHistoryItem) => {
+    setSelectedHiveId(hive.id);
+    setHivesCount(1);
+    if (hive.max_brood_frames) {
+      const frames = Math.min(12, Math.max(4, hive.max_brood_frames));
+      setBroodFrames(frames);
+      const calculatedStrength = Math.round(Math.min(120, Math.max(10, (frames / 10) * 100)));
+      setColonyStrength(calculatedStrength);
+    }
+
+    if (hive.device) {
+      setLinkedDevice(hive.device);
+      setIsDeviceSynced(true);
+      if (hive.latestMeasurement) {
+        if (hive.latestMeasurement.temperature_c !== null && hive.latestMeasurement.temperature_c !== undefined) {
+          setTempC(hive.latestMeasurement.temperature_c);
+        }
+        if (hive.latestMeasurement.humidity_pct !== null && hive.latestMeasurement.humidity_pct !== undefined) {
+          setHumidityPct(hive.latestMeasurement.humidity_pct);
+        }
+        if (hive.latestMeasurement.pressure_hpa !== null && hive.latestMeasurement.pressure_hpa !== undefined) {
+          setPressureHpa(hive.latestMeasurement.pressure_hpa);
+        }
+        if (hive.latestMeasurement.weight_kg !== null && hive.latestMeasurement.weight_kg !== undefined) {
+          setScaleWeightKg(hive.latestMeasurement.weight_kg);
+        }
+      }
+      toast.success(`Loaded ${hive.name} with device ${hive.device.serial} into Yield Projection`);
+    } else {
+      setLinkedDevice(null);
+      setIsDeviceSynced(false);
+      toast.info(`Loaded ${hive.name} (No device synced · manual telemetry mode)`);
+    }
+
+    // Scroll up smoothly to calculator
+    calculatorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   // --- Mathematical Yield Projection Engine ---
@@ -248,28 +766,23 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
     const availabilityFactor = bloomDays > 0 ? effectiveFlowDays / bloomDays : 0;
 
     // 2. Colony Strength Multiplier (Biological non-linear Farrar's Rule)
-    // Strong colonies (60,000 bees) produce exponentially more surplus honey than weak colonies
     const strengthMultiplier =
-      colonyStrength < 25
-        ? 0.05
-        : Math.pow(colonyStrength / 100, 1.45);
+      colonyStrength < 25 ? 0.05 : Math.pow(colonyStrength / 100, 1.45);
 
     // 3. Environmental & Sensor Telemetry Modifiers
-    // A. Temperature Modifier (Optimal brood 34.5°C; optimal foraging flight 19°C - 28°C)
     let tempF = 1.0;
     if (tempC < 13) {
-      tempF = 0.08; // Clustering; negligible foraging
+      tempF = 0.08;
     } else if (tempC < 18) {
       tempF = 0.45 + ((tempC - 13) / 5) * 0.45;
     } else if (tempC <= 28) {
-      tempF = 1.0; // Ideal flight range
+      tempF = 1.0;
     } else if (tempC <= 35) {
-      tempF = 1.0 - ((tempC - 28) / 7) * 0.2; // Minor thermal regulation penalty
+      tempF = 1.0 - ((tempC - 28) / 7) * 0.2;
     } else {
-      tempF = Math.max(0.15, 0.8 - ((tempC - 35) / 5) * 0.6); // Water-hauling diversion
+      tempF = Math.max(0.15, 0.8 - ((tempC - 35) / 5) * 0.6);
     }
 
-    // B. Humidity Modifier (Optimal nectar dehydration 50% - 65% RH)
     let humidF = 1.0;
     if (humidityPct >= 50 && humidityPct <= 65) {
       humidF = 1.0;
@@ -279,9 +792,6 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       humidF = Math.max(0.5, 1.0 - ((50 - humidityPct) / 30) * 0.45);
     }
 
-    // C. Atmospheric / Barometric Pressure Modifier
-    // High stable pressure (> 1012 hPa) encourages maximum flight range and foraging endurance
-    // Low pressure (< 1005 hPa) signals tropical storms and keeps foragers grounded
     let pressureF = 1.0;
     if (pressureHpa >= 1012) {
       pressureF = 1.05;
@@ -291,24 +801,19 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       pressureF = Math.max(0.45, 0.75 + ((pressureHpa - 990) / 17) * 0.25);
     }
 
-    // D. Scale Weight Biomass Bonus
-    // Hives with healthy scale mass (> 42 kg) have already built surplus comb; low-weight hives consume nectar for buildup
     const weightF = scaleWeightKg >= 42 ? 1.08 : scaleWeightKg >= 32 ? 0.95 : 0.78;
-
-    // E. Wind & Precipitation Flight Constraints
     const windF = windKmh > 32 ? 0.25 : Math.max(0.3, 1 - windKmh / 50);
     const precipF = precipMm > 8 ? 0.2 : Math.max(0.25, 1 - precipMm / 20);
 
-    // Composite Bioclimatic Factor
-    const weatherFactor = Math.max(0.08, (tempF * 0.25 + humidF * 0.2 + pressureF * 0.15 + windF * 0.2 + precipF * 0.2) * weightF);
+    const weatherFactor = Math.max(
+      0.08,
+      (tempF * 0.25 + humidF * 0.2 + pressureF * 0.15 + windF * 0.2 + precipF * 0.2) * weightF
+    );
 
-    // 4. Daily Honey Surplus Rate per Hive (kg/day)
-    // Reference standard: 1.40 kg surplus per hive/day at 100% flow, 100% strength, and optimal weather
-    const baseDailySurplus = 1.40;
+    const baseDailySurplus = 1.4;
     const nectarFactor = nectarScore / 10;
     const dailyKg = Math.max(0, baseDailySurplus * strengthMultiplier * nectarFactor * weatherFactor);
 
-    // 5. Total Season Projection (Linked directly to Available Flow Days)
     const seasonKg = dailyKg * effectiveFlowDays;
     const totalKg = seasonKg * hivesCount;
     const revenue = totalKg * pricePerKg;
@@ -350,7 +855,6 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
   const dailyCurve = useMemo(() => {
     const days = Math.max(1, calc.effectiveFlowDays);
     return Array.from({ length: days }, (_, i) => {
-      // Bell-shaped bloom curve: ramp 0-25%, peak 25-65%, taper 65-100%
       const x = i / days;
       const bell = x < 0.25 ? x / 0.25 : x < 0.65 ? 1.0 : Math.max(0, (1 - x) / 0.35);
       return {
@@ -418,38 +922,91 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       precipMm,
       pricePerKg,
       isDeviceSynced,
+      linkedDeviceSerial: linkedDevice?.serial || null,
     };
 
     const outputs = {
-      dailyKg: +calc.dailyKg.toFixed(2),
       seasonKg: +calc.seasonKg.toFixed(1),
       totalKg: +calc.totalKg.toFixed(1),
+      dailyKg: +calc.dailyKg.toFixed(2),
       revenue: Math.round(calc.revenue),
+      weatherFactor: +calc.weatherFactor.toFixed(2),
       strengthMultiplier: +calc.strengthMultiplier.toFixed(2),
-      availabilityFactor: +calc.availabilityFactor.toFixed(2),
     };
 
-    const { error } = await (supabase as any).from("yield_projections").insert([
-      {
-        device_id: deviceId,
-        label: `${hiveLabel} · ${calc.effectiveFlowDays}d flow · ${Math.round(calc.totalKg)} kg`,
-        inputs: inputs as any,
-        outputs: outputs as any,
-      },
-    ]);
+    try {
+      const { error } = await (supabase as any).from("yield_projections").insert({
+        device_id: deviceId || "anonymous",
+        label: `${hiveLabel} (${colonyAvailableDate} → ${targetHarvestDate})`,
+        inputs,
+        outputs,
+      });
 
-    if (error) {
-      toast.error(error.message);
-      return;
+      if (error) throw error;
+      toast.success("Yield Projection saved to database");
+      void loadHistory();
+    } catch {
+      // Local fallback
+      const mockRun: Run = {
+        id: crypto.randomUUID(),
+        label: `${hiveLabel} (${colonyAvailableDate} → ${targetHarvestDate})`,
+        inputs,
+        outputs,
+        created_at: new Date().toISOString(),
+      };
+      setRuns((prev) => [mockRun, ...prev]);
+      toast.success("Saved to local projection scenario log");
     }
-    toast.success("Yield projection saved to history");
-    void loadHistory();
   };
 
   const handleDeleteRun = async (id: string) => {
+    setRuns((prev) => prev.filter((r) => r.id !== id));
     await (supabase as any).from("yield_projections").delete().eq("id", id);
     void loadHistory();
   };
+
+  // Filtered Apiaries and Hives for the History Section
+  const filteredApiaries = useMemo(() => {
+    const query = historySearchQuery.trim().toLowerCase();
+
+    return apiaryHistoryList
+      .filter((apiary) => {
+        if (historyApiaryFilter !== "all" && apiary.id !== historyApiaryFilter) {
+          return false;
+        }
+        return true;
+      })
+      .map((apiary) => {
+        const matchingHives = apiary.hives.filter((hive) => {
+          // Device filter
+          if (historyDeviceFilter === "linked" && !hive.device) return false;
+          if (historyDeviceFilter === "unsynced" && !!hive.device) return false;
+
+          // Text search filter
+          if (query) {
+            const inApiary = apiary.name.toLowerCase().includes(query);
+            const inHive = hive.name.toLowerCase().includes(query) || (hive.hive_code && hive.hive_code.toLowerCase().includes(query));
+            const inSerial = hive.device?.serial && hive.device.serial.toLowerCase().includes(query);
+            const inModel = hive.device?.label && hive.device.label.toLowerCase().includes(query);
+            return inApiary || inHive || inSerial || inModel;
+          }
+          return true;
+        });
+
+        return {
+          ...apiary,
+          hives: matchingHives,
+        };
+      })
+      .filter((apiary) => apiary.hives.length > 0 || !query);
+  }, [apiaryHistoryList, historyApiaryFilter, historyDeviceFilter, historySearchQuery]);
+
+  const totalLinkedHivesCount = useMemo(() => {
+    return apiaryHistoryList.reduce(
+      (sum, a) => sum + a.hives.filter((h) => !!h.device).length,
+      0
+    );
+  }, [apiaryHistoryList]);
 
   if (!isOpen && !embedded) return null;
 
@@ -490,7 +1047,10 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       </div>
 
       {/* Hive & IoT Hardware Device Sync Banner */}
-      <div className="p-4 sm:p-5 rounded-2xl border border-border/80 bg-card/60 shadow-sm space-y-3">
+      <div
+        ref={calculatorRef}
+        className="p-4 sm:p-5 rounded-2xl border border-border/80 bg-card/60 shadow-sm space-y-3"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
           <div className="flex items-center gap-2.5">
             <Cpu className="w-4 h-4 text-honey" />
@@ -512,7 +1072,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
 
             <button
               type="button"
-              onClick={loadHivesAndDevices}
+              onClick={loadApiaryDeviceHistory}
               disabled={isLoadingHives}
               className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground"
               title="Refresh Hives and Devices"
@@ -558,108 +1118,99 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               <span className="text-muted-foreground truncate">
                 {selectedHiveId === "all"
                   ? "Aggregated Field Calculation"
-                  : isDeviceSynced
-                  ? "Live telemetry connected"
-                  : "Timothy: No sensors synced"}
+                  : linkedDevice
+                  ? `${linkedDevice.serial || linkedDevice.label || "Hardware Connected"}`
+                  : "No device synced on this hive"}
               </span>
-              <span className="text-[10px] font-mono text-honey font-bold">
-                {isDeviceSynced ? "100% Signal" : "Manual Override"}
-              </span>
+              {isDeviceSynced && (
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                  ONLINE
+                </span>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main 3-Column Calculation Grid */}
+      {/* 3 Main Interactive Parameter Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Column 1: Dates, Colony Availability & Bioclimatics */}
+        {/* Column 1: Dates, Flow Window & Farrar's Colony Strength */}
         <div className="p-4 sm:p-5 rounded-2xl border border-border/80 bg-card/60 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-border/50 pb-2">
-            <h3 className="text-sm font-display font-bold text-honey flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" /> Colony Availability & Dates
+          <div className="border-b border-border/50 pb-2">
+            <h3 className="text-sm font-display font-bold text-foreground flex items-center gap-1.5">
+              <Calendar className="w-4 h-4 text-honey" /> Availability & Colony Strength
             </h3>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-honey/10 text-honey">
-              {calc.effectiveFlowDays} Flow Days
-            </span>
+            <p className="text-[11px] text-muted-foreground">
+              Direct mathematical correlation to forager population and available bloom days.
+            </p>
           </div>
 
           {/* Colony Available Date Picker */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center text-xs">
-              <label className="font-semibold text-foreground">Colony Available Date</label>
-              <span className="text-[10px] text-muted-foreground">Placement date</span>
-            </div>
+          <div>
+            <label className="text-xs font-medium text-foreground mb-1 flex items-center justify-between">
+              <span>Colony Available Date</span>
+              <span className="text-[10px] text-muted-foreground font-mono">Date colonies enter site</span>
+            </label>
             <input
               type="date"
               value={colonyAvailableDate}
               onChange={(e) => setColonyAvailableDate(e.target.value)}
-              className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium text-foreground"
+              className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-honey/30"
             />
-            <p className="text-[10px] text-muted-foreground">
-              Date the colony is placed and ready for the active nectar foraging flow.
-            </p>
           </div>
 
-          {/* Target Harvest Date Picker */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center text-xs">
-              <label className="font-semibold text-foreground">Target Harvest Date</label>
-              <span className="text-[10px] text-muted-foreground">Extraction day</span>
-            </div>
+          {/* Target Honey Extraction Date */}
+          <div>
+            <label className="text-xs font-medium text-foreground mb-1 flex items-center justify-between">
+              <span>Target Harvest / Pull Date</span>
+              <span className="text-[10px] text-muted-foreground font-mono">Super pulling window</span>
+            </label>
             <input
               type="date"
               value={targetHarvestDate}
               onChange={(e) => setTargetHarvestDate(e.target.value)}
-              className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium text-foreground"
+              className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-honey/30"
             />
           </div>
 
-          {/* Bloom Window Duration */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground">Flow/Bloom Cycle Length:</span>
-              <span className="font-bold text-foreground">{bloomDays} days</span>
+          {/* Nectar Flow Cycle Days */}
+          <div>
+            <div className="flex justify-between items-center text-xs mb-1">
+              <span className="text-muted-foreground">Bloom Flow Cycle Duration</span>
+              <span className="font-bold text-foreground font-mono">{bloomDays} days</span>
             </div>
             <input
               type="range"
-              min={10}
-              max={60}
+              min={5}
+              max={90}
               value={bloomDays}
               onChange={(e) => setBloomDays(Number(e.target.value))}
               className="w-full accent-honey"
             />
           </div>
 
-          {/* Availability Impact Notice */}
-          <div className="p-3 rounded-xl bg-muted/40 border border-border/70 space-y-1 text-xs">
-            <div className="flex items-center justify-between font-semibold">
-              <span className="text-foreground">Effective Foraging Window:</span>
-              <span className="text-emerald-600 font-bold">{calc.effectiveFlowDays} of {bloomDays} days</span>
+          {/* Dynamic Available Flow Banner */}
+          <div className="p-3 rounded-xl border border-honey/30 bg-honey/5 space-y-1">
+            <div className="flex justify-between items-center text-xs">
+              <span className="font-semibold text-foreground">Effective Foraging Days:</span>
+              <span className="font-bold text-honey text-sm font-mono">{calc.effectiveFlowDays} days</span>
             </div>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              Availability Factor: <strong>{(calc.availabilityFactor * 100).toFixed(0)}%</strong> of bloom window captured.
-              {calc.daysAvailable < bloomDays && (
-                <span className="text-amber-600 block mt-0.5">
-                  Delayed availability limits total surplus by {((1 - calc.availabilityFactor) * 100).toFixed(0)}%.
-                </span>
-              )}
+            <p className="text-[10px] text-muted-foreground">
+              Colonies on-site for {calc.daysAvailable} days during a {bloomDays}-day bloom window. Flow capture index:{" "}
+              <strong>{(calc.availabilityFactor * 100).toFixed(0)}%</strong>.
             </p>
           </div>
 
-          {/* Colony Strength Section (Farrar's Rule) */}
+          {/* Brood Frames & Farrar's Colony Strength */}
           <div className="pt-2 border-t border-border/50 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-honey flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5" /> Colony Strength & Brood
-            </h4>
-
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-muted-foreground">Brood Nest Frames:</span>
-                <span className="font-bold text-foreground">{broodFrames} / 10 frames</span>
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1">
+                <span className="text-muted-foreground">Brood Chamber Frames</span>
+                <span className="font-bold text-foreground font-mono">{broodFrames} / 12 Frames</span>
               </div>
               <input
                 type="range"
-                min={2}
+                min={4}
                 max={12}
                 value={broodFrames}
                 onChange={(e) => handleBroodChange(Number(e.target.value))}
@@ -667,10 +1218,10 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               />
             </div>
 
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-muted-foreground">Colony Strength Index:</span>
-                <span className="font-bold text-emerald-600">{colonyStrength}%</span>
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1">
+                <span className="text-muted-foreground">Colony Population Strength</span>
+                <span className="font-bold text-honey font-mono">{colonyStrength}%</span>
               </div>
               <input
                 type="range"
@@ -678,124 +1229,135 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                 max={120}
                 value={colonyStrength}
                 onChange={(e) => setColonyStrength(Number(e.target.value))}
-                className="w-full accent-emerald-500"
-              />
-              <p className="text-[10px] text-muted-foreground">
-                Biological Multiplier: <strong>{calc.strengthMultiplier.toFixed(2)}×</strong> surplus coefficient.
-              </p>
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-muted-foreground">Nectar Flow Rating:</span>
-                <span className="font-bold text-foreground">{nectarScore} / 10</span>
-              </div>
-              <input
-                type="range"
-                min={1}
-                max={10}
-                step={0.5}
-                value={nectarScore}
-                onChange={(e) => setNectarScore(Number(e.target.value))}
                 className="w-full accent-honey"
               />
+              <div className="flex justify-between text-[10px] text-muted-foreground mt-0.5">
+                <span>Weak (20%)</span>
+                <span>Standard (80%)</span>
+                <span>Hyper-Colony (120%)</span>
+              </div>
+            </div>
+
+            {/* Farrar's Biological Multiplier Display */}
+            <div className="p-2.5 rounded-xl bg-muted/40 border border-border/70 flex items-center justify-between text-xs">
+              <div>
+                <span className="font-semibold text-foreground block">Farrar's Biomass Rule:</span>
+                <span className="text-[10px] text-muted-foreground">Non-linear surplus coefficient</span>
+              </div>
+              <span className="font-mono font-bold text-honey text-sm">
+                {calc.strengthMultiplier.toFixed(2)}× Multiplier
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Column 2: Device Sensor Telemetry (Temp, Humidity, Pressure, Scale) */}
+        {/* Column 2: IoT Device Telemetry & Bioclimatic Modifiers */}
         <div className="p-4 sm:p-5 rounded-2xl border border-border/80 bg-card/60 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-border/50 pb-2">
-            <h3 className="text-sm font-display font-bold text-honey flex items-center gap-1.5">
-              <Gauge className="w-4 h-4" /> Device Readings & Vitals
+          <div className="border-b border-border/50 pb-2">
+            <h3 className="text-sm font-display font-bold text-foreground flex items-center gap-1.5">
+              <Gauge className="w-4 h-4 text-honey" /> Bioclimatic Telemetry Modifiers
             </h3>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-muted text-muted-foreground">
-              {isDeviceSynced ? "IoT Sync Active" : "Manual Readings"}
-            </span>
+            <p className="text-[11px] text-muted-foreground">
+              Dynamic flight threshold and scale weight intake constraints.
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {/* Temperature */}
-            <div className="p-3 rounded-xl border border-border bg-background/80 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                  <Thermometer className="w-3 h-3 text-red-500" /> Temperature
-                </span>
-                <span className="text-[10px] font-bold text-emerald-600">{(calc.tempF * 100).toFixed(0)}%</span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <input
-                  type="number"
-                  step={0.5}
-                  value={tempC}
-                  onChange={(e) => setTempC(Number(e.target.value))}
-                  className="w-16 text-lg font-bold font-mono bg-transparent border-b border-border text-foreground focus:outline-none"
-                />
-                <span className="text-xs text-muted-foreground font-bold">°C</span>
-              </div>
-              <p className="text-[9px] text-muted-foreground">Optimal: 19°C - 28°C</p>
+          {/* Temperature Input */}
+          <div>
+            <div className="flex justify-between items-center text-xs mb-1">
+              <span className="text-muted-foreground flex items-center gap-1">
+                <Thermometer className="w-3.5 h-3.5 text-orange-500" /> Hive Internal / Ambient Temp
+              </span>
+              <span className="font-bold text-foreground font-mono">{tempC.toFixed(1)} °C</span>
+            </div>
+            <input
+              type="range"
+              min={10}
+              max={42}
+              step={0.5}
+              value={tempC}
+              onChange={(e) => setTempC(Number(e.target.value))}
+              className="w-full accent-orange-500"
+            />
+            <div className="flex justify-between text-[10px] text-muted-foreground">
+              <span>Too Cold (10°C)</span>
+              <span className="text-emerald-600 font-semibold">Optimal Brood (34.5°C)</span>
+              <span>Heat Stress (40°C)</span>
+            </div>
+          </div>
+
+          {/* Humidity Input */}
+          <div>
+            <div className="flex justify-between items-center text-xs mb-1">
+              <span className="text-muted-foreground flex items-center gap-1">
+                <Droplets className="w-3.5 h-3.5 text-blue-500" /> Relative Humidity
+              </span>
+              <span className="font-bold text-foreground font-mono">{humidityPct}%</span>
+            </div>
+            <input
+              type="range"
+              min={20}
+              max={95}
+              value={humidityPct}
+              onChange={(e) => setHumidityPct(Number(e.target.value))}
+              className="w-full accent-blue-500"
+            />
+            <div className="flex justify-between text-[10px] text-muted-foreground">
+              <span>Arid (20%)</span>
+              <span className="text-emerald-600 font-semibold">Optimal Ripening (55-65%)</span>
+              <span>Humid (95%)</span>
+            </div>
+          </div>
+
+          {/* Barometric Pressure & Continuous Scale Weight */}
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label className="text-[10px] text-muted-foreground mb-1 block flex items-center gap-1">
+                <Gauge className="w-3 h-3 text-honey" /> Barometer (hPa)
+              </label>
+              <input
+                type="number"
+                value={pressureHpa}
+                onChange={(e) => setPressureHpa(Number(e.target.value))}
+                className="w-full h-8 rounded-lg border border-border bg-background px-2.5 text-xs font-mono font-semibold text-foreground"
+              />
+              <span className="text-[9px] text-muted-foreground mt-0.5 block">
+                {pressureHpa >= 1012 ? "High (Clear)" : pressureHpa >= 1007 ? "Normal" : "Low (Storm Risk)"}
+              </span>
             </div>
 
-            {/* Humidity */}
-            <div className="p-3 rounded-xl border border-border bg-background/80 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                  <Droplets className="w-3 h-3 text-blue-500" /> Humidity
-                </span>
-                <span className="text-[10px] font-bold text-emerald-600">{(calc.humidF * 100).toFixed(0)}%</span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <input
-                  type="number"
-                  value={humidityPct}
-                  onChange={(e) => setHumidityPct(Number(e.target.value))}
-                  className="w-16 text-lg font-bold font-mono bg-transparent border-b border-border text-foreground focus:outline-none"
-                />
-                <span className="text-xs text-muted-foreground font-bold">%</span>
-              </div>
-              <p className="text-[9px] text-muted-foreground">Ideal RH: 50% - 65%</p>
+            <div>
+              <label className="text-[10px] text-muted-foreground mb-1 block flex items-center gap-1">
+                <Scale className="w-3 h-3 text-emerald-600" /> Scale Weight (kg)
+              </label>
+              <input
+                type="number"
+                step={0.5}
+                value={scaleWeightKg}
+                onChange={(e) => setScaleWeightKg(Number(e.target.value))}
+                className="w-full h-8 rounded-lg border border-border bg-background px-2.5 text-xs font-mono font-semibold text-foreground"
+              />
+              <span className="text-[9px] text-muted-foreground mt-0.5 block">
+                {scaleWeightKg >= 42 ? "Strong Comb" : "Buildup Stage"}
+              </span>
             </div>
+          </div>
 
-            {/* Barometric Pressure */}
-            <div className="p-3 rounded-xl border border-border bg-background/80 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                  <Gauge className="w-3 h-3 text-violet-500" /> Pressure
-                </span>
-                <span className="text-[10px] font-bold text-emerald-600">{(calc.pressureF * 100).toFixed(0)}%</span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <input
-                  type="number"
-                  value={pressureHpa}
-                  onChange={(e) => setPressureHpa(Number(e.target.value))}
-                  className="w-20 text-lg font-bold font-mono bg-transparent border-b border-border text-foreground focus:outline-none"
-                />
-                <span className="text-xs text-muted-foreground font-bold">hPa</span>
-              </div>
-              <p className="text-[9px] text-muted-foreground">Standard: 1013 hPa</p>
+          {/* Florage Nectar Rating */}
+          <div>
+            <div className="flex justify-between items-center text-xs mb-1">
+              <span className="text-muted-foreground">Florage & Nectar Flow Score</span>
+              <span className="font-bold text-foreground font-mono">{nectarScore} / 10</span>
             </div>
-
-            {/* Scale Weight */}
-            <div className="p-3 rounded-xl border border-border bg-background/80 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                  <Scale className="w-3 h-3 text-amber-500" /> Scale Weight
-                </span>
-                <span className="text-[10px] font-bold text-emerald-600">{(calc.weightF * 100).toFixed(0)}%</span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <input
-                  type="number"
-                  step={0.5}
-                  value={scaleWeightKg}
-                  onChange={(e) => setScaleWeightKg(Number(e.target.value))}
-                  className="w-16 text-lg font-bold font-mono bg-transparent border-b border-border text-foreground focus:outline-none"
-                />
-                <span className="text-xs text-muted-foreground font-bold">kg</span>
-              </div>
-              <p className="text-[9px] text-muted-foreground">Base hive mass</p>
-            </div>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              step={0.5}
+              value={nectarScore}
+              onChange={(e) => setNectarScore(Number(e.target.value))}
+              className="w-full accent-honey"
+            />
           </div>
 
           {/* Secondary Weather (Wind & Rain) */}
@@ -842,13 +1404,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                   <PolarGrid stroke="hsl(var(--border))" />
                   <PolarAngleAxis dataKey="k" stroke="hsl(var(--muted-foreground))" fontSize={9} />
                   <PolarRadiusAxis domain={[0, 100]} stroke="hsl(var(--muted-foreground))" fontSize={8} />
-                  <Radar
-                    name="Factor %"
-                    dataKey="v"
-                    stroke="#D97706"
-                    fill="#F59E0B"
-                    fillOpacity={0.25}
-                  />
+                  <Radar name="Factor %" dataKey="v" stroke="#D97706" fill="#F59E0B" fillOpacity={0.25} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
@@ -946,64 +1502,455 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
         </div>
       </div>
 
-      {/* Historical Runs Table */}
-      <div className="p-4 sm:p-5 rounded-2xl border border-border/80 bg-card/60 shadow-sm">
-        <h3 className="text-sm font-display font-bold text-honey mb-3 flex items-center gap-1.5">
-          <Clock className="w-4 h-4" /> Saved Projection Scenarios
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="text-muted-foreground border-b border-border">
-              <tr>
-                <th className="text-left py-2">Scenario / Hive</th>
-                <th className="text-right py-2">Flow Days</th>
-                <th className="text-right py-2">kg / Hive</th>
-                <th className="text-right py-2">Total Crop</th>
-                <th className="text-right py-2">Est. Revenue</th>
-                <th className="text-right py-2">Calculated On</th>
-                <th className="text-right py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {runs.map((r) => (
-                <tr key={r.id} className="border-t border-border/60 hover:bg-muted/20">
-                  <td className="py-2 font-medium text-foreground">{r.label}</td>
-                  <td className="text-right py-2 text-muted-foreground font-mono">
-                    {r.inputs?.effectiveFlowDays ?? "—"}d
-                  </td>
-                  <td className="text-right py-2 text-foreground font-mono font-bold">
-                    {r.outputs?.seasonKg ?? "—"} kg
-                  </td>
-                  <td className="text-right py-2 text-honey font-mono font-bold">
-                    {Number(r.outputs?.totalKg ?? 0).toLocaleString()} kg
-                  </td>
-                  <td className="text-right py-2 text-emerald-600 font-mono font-bold">
-                    KES {Number(r.outputs?.revenue ?? 0).toLocaleString()}
-                  </td>
-                  <td className="text-right py-2 text-muted-foreground">
-                    {new Date(r.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="text-right py-2">
-                    <button
-                      onClick={() => handleDeleteRun(r.id)}
-                      className="text-destructive hover:opacity-80 p-1"
-                      title="Delete Scenario"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {runs.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="py-4 text-center text-muted-foreground">
-                    No projection scenarios saved yet. Run a projection and click "Save Projection".
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {/* --- ENHANCED HISTORY SECTION: USER APIARIES & DEVICE-LINKED HIVES --- */}
+      <div className="p-4 sm:p-5 rounded-2xl border border-border/80 bg-card/60 shadow-sm space-y-4">
+        {/* History Header & Tab Switcher */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border/60 pb-3">
+          <div>
+            <h3 className="text-base font-display font-bold text-foreground flex items-center gap-2">
+              <History className="w-5 h-5 text-honey" />
+              Apiary & Hive Hardware History
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              History of user apiaries, connected IoT devices, real-time sensor vitals, and past harvest yields.
+            </p>
+          </div>
+
+          {/* History Mode Tabs */}
+          <div className="flex items-center gap-1.5 p-1 bg-muted/60 rounded-xl border border-border/60 self-start md:self-auto">
+            <button
+              type="button"
+              onClick={() => setHistoryTab("apiaries")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                historyTab === "apiaries"
+                  ? "bg-background text-foreground shadow-sm border border-border/80"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Boxes className="w-3.5 h-3.5 text-honey" />
+              Apiaries & Device-Linked Hives
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-honey/15 text-honey font-bold">
+                {apiaryHistoryList.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setHistoryTab("projections")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                historyTab === "projections"
+                  ? "bg-background text-foreground shadow-sm border border-border/80"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+              Saved Projection Scenarios
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-bold">
+                {runs.length}
+              </span>
+            </button>
+          </div>
         </div>
+
+        {/* TAB 1: APIARIES & DEVICE-LINKED HIVES */}
+        {historyTab === "apiaries" && (
+          <div className="space-y-4">
+            {/* Filter and Search Bar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-background/70 border border-border/60">
+              <div className="relative flex-1">
+                <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={historySearchQuery}
+                  onChange={(e) => setHistorySearchQuery(e.target.value)}
+                  placeholder="Filter by apiary, hive name, or device serial..."
+                  className="w-full h-8 pl-8 pr-3 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-honey/50"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={historyApiaryFilter}
+                  onChange={(e) => setHistoryApiaryFilter(e.target.value)}
+                  className="h-8 px-2.5 text-xs rounded-lg border border-border bg-background text-foreground focus:outline-none"
+                >
+                  <option value="all">All Apiaries ({apiaryHistoryList.length})</option>
+                  {apiaryHistoryList.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="flex items-center border border-border rounded-lg p-0.5 bg-background">
+                  <button
+                    type="button"
+                    onClick={() => setHistoryDeviceFilter("all")}
+                    className={`px-2 py-1 text-[11px] rounded font-medium transition-colors ${
+                      historyDeviceFilter === "all"
+                        ? "bg-muted font-bold text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    All Hives
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setHistoryDeviceFilter("linked")}
+                    className={`px-2 py-1 text-[11px] rounded font-medium flex items-center gap-1 transition-colors ${
+                      historyDeviceFilter === "linked"
+                        ? "bg-emerald-500/15 text-emerald-600 font-bold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    Device-Linked ({totalLinkedHivesCount})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setHistoryDeviceFilter("unsynced")}
+                    className={`px-2 py-1 text-[11px] rounded font-medium transition-colors ${
+                      historyDeviceFilter === "unsynced"
+                        ? "bg-muted font-bold text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Unsynced
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={loadApiaryDeviceHistory}
+                  disabled={isLoadingHistory}
+                  className="h-8 w-8 rounded-lg border border-border hover:bg-muted flex items-center justify-center text-muted-foreground"
+                  title="Refresh Apiary & Device Telemetry"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isLoadingHistory ? "animate-spin text-honey" : ""}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Apiaries List */}
+            <div className="space-y-4">
+              {filteredApiaries.map((apiary) => {
+                const linkedHives = apiary.hives.filter((h) => !!h.device);
+                const totalHarvestKg = apiary.hives.reduce(
+                  (sum, h) => sum + (h.harvestSummary?.totalKg || 0),
+                  0
+                );
+
+                return (
+                  <div
+                    key={apiary.id}
+                    className="p-4 sm:p-5 rounded-2xl border border-border/80 bg-background/80 shadow-sm space-y-3"
+                  >
+                    {/* Apiary Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-honey/10 border border-honey/30 flex items-center justify-center text-honey flex-shrink-0">
+                          <MapPin className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-display font-bold text-foreground">{apiary.name}</h4>
+                          <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                            {apiary.latitude !== null && apiary.longitude !== null && (
+                              <span>
+                                Lat {apiary.latitude.toFixed(4)}, Lng {apiary.longitude.toFixed(4)}
+                              </span>
+                            )}
+                            {apiary.notes && <span>· {apiary.notes}</span>}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <span className="px-2.5 py-0.5 rounded-full bg-muted font-medium text-foreground">
+                          {apiary.hives.length} {apiary.hives.length === 1 ? "Hive" : "Hives"}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 font-medium flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          {linkedHives.length} Device Synced
+                        </span>
+                        {totalHarvestKg > 0 && (
+                          <span className="px-2.5 py-0.5 rounded-full bg-honey/10 text-honey border border-honey/20 font-medium">
+                            {totalHarvestKg.toFixed(1)} kg Recorded Crop
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Hives Grid inside this Apiary */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 pt-1">
+                      {apiary.hives.map((hive) => {
+                        const isExpanded = expandedHiveHistoryId === hive.id;
+                        const hasDevice = !!hive.device;
+
+                        return (
+                          <div
+                            key={hive.id}
+                            className={`p-3.5 rounded-xl border transition-all ${
+                              hasDevice
+                                ? "border-honey/30 bg-card/80 hover:border-honey/60"
+                                : "border-border/60 bg-muted/20"
+                            }`}
+                          >
+                            {/* Hive Title & Metadata */}
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <div>
+                                <h5 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                                  {hive.name}
+                                  {hive.hive_code && (
+                                    <span className="font-mono text-[10px] text-muted-foreground font-normal">
+                                      [{hive.hive_code}]
+                                    </span>
+                                  )}
+                                </h5>
+                                <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
+                                  <span>{hive.max_brood_frames} Brood Frames</span>
+                                  {hive.queen_breeding_year && (
+                                    <span>· {hive.queen_breeding_year} Queen</span>
+                                  )}
+                                  {hive.queen_origin && <span>({hive.queen_origin})</span>}
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleProjectFromHistoryHive(hive)}
+                                className="px-2.5 py-1 rounded-lg bg-honey/10 hover:bg-honey/20 text-honey border border-honey/30 text-[11px] font-semibold flex items-center gap-1 transition-all shadow-xs"
+                                title="Load this hive's vitals into the yield projection calculator"
+                              >
+                                <TrendingUp className="w-3 h-3" />
+                                Project From Hive
+                              </button>
+                            </div>
+
+                            {/* Linked Hardware Device Information */}
+                            <div className="mb-2.5">
+                              {hasDevice ? (
+                                <div className="p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-[11px] space-y-1">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1.5 font-medium text-emerald-700">
+                                      <Cpu className="w-3.5 h-3.5 text-emerald-600" />
+                                      <span className="truncate">{hive.device?.label || "Connected Hardware"}</span>
+                                    </div>
+                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-600">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                      ONLINE
+                                    </span>
+                                  </div>
+
+                                  <div className="flex flex-wrap items-center justify-between text-[10px] text-muted-foreground pt-0.5">
+                                    <span className="font-mono">S/N: {hive.device?.serial}</span>
+                                    <span className="capitalize">{hive.device?.link_type || "IoT Bus"}</span>
+                                    {hive.device?.battery_pct !== null && hive.device?.battery_pct !== undefined && (
+                                      <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                                        <Battery className="w-3 h-3" /> {hive.device.battery_pct}%
+                                      </span>
+                                    )}
+                                    <span>Seen: {formatTimestamp(hive.device?.last_seen_at)}</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="p-2 rounded-lg bg-muted/40 border border-border/60 text-[11px] flex items-center justify-between">
+                                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <WifiOff className="w-3.5 h-3.5 text-muted-foreground" />
+                                    <span>No hardware device synced</span>
+                                  </div>
+                                  <span className="text-[10px] text-muted-foreground">Manual Telemetry</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Live/Latest Telemetry Readings Snapshot */}
+                            {hive.latestMeasurement && (
+                              <div className="mb-2.5">
+                                <div className="grid grid-cols-4 gap-1.5 text-center">
+                                  <div className="p-1.5 rounded-lg bg-background border border-border/70">
+                                    <span className="text-[9px] text-muted-foreground block">Temp</span>
+                                    <span className="text-xs font-mono font-bold text-foreground">
+                                      {typeof hive.latestMeasurement.temperature_c === "number"
+                                        ? `${hive.latestMeasurement.temperature_c.toFixed(1)}°`
+                                        : "—"}
+                                    </span>
+                                  </div>
+
+                                  <div className="p-1.5 rounded-lg bg-background border border-border/70">
+                                    <span className="text-[9px] text-muted-foreground block">Humidity</span>
+                                    <span className="text-xs font-mono font-bold text-foreground">
+                                      {typeof hive.latestMeasurement.humidity_pct === "number"
+                                        ? `${hive.latestMeasurement.humidity_pct}%`
+                                        : "—"}
+                                    </span>
+                                  </div>
+
+                                  <div className="p-1.5 rounded-lg bg-background border border-border/70">
+                                    <span className="text-[9px] text-muted-foreground block">Pressure</span>
+                                    <span className="text-xs font-mono font-bold text-foreground">
+                                      {typeof hive.latestMeasurement.pressure_hpa === "number"
+                                        ? `${hive.latestMeasurement.pressure_hpa}`
+                                        : "1013"}
+                                    </span>
+                                  </div>
+
+                                  <div className="p-1.5 rounded-lg bg-background border border-border/70">
+                                    <span className="text-[9px] text-muted-foreground block">Scale Wt</span>
+                                    <span className="text-xs font-mono font-bold text-emerald-600">
+                                      {typeof hive.latestMeasurement.weight_kg === "number"
+                                        ? `${hive.latestMeasurement.weight_kg.toFixed(1)}kg`
+                                        : "—"}
+                                    </span>
+                                  </div>
+                                </div>
+                                <span className="text-[9px] text-muted-foreground block mt-1 text-right">
+                                  Telemetry recorded: {formatTimestamp(hive.latestMeasurement.recorded_at)}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Past Extraction & Harvest History */}
+                            {hive.harvestSummary && hive.harvestSummary.totalKg > 0 && (
+                              <div className="p-2 rounded-lg bg-honey/5 border border-honey/20 text-[10px] flex items-center justify-between text-muted-foreground mb-2">
+                                <span className="flex items-center gap-1 font-semibold text-honey">
+                                  <Package className="w-3 h-3" /> Past Extractions:
+                                </span>
+                                <span>
+                                  <strong>{hive.harvestSummary.totalKg.toFixed(1)} kg</strong> across{" "}
+                                  {hive.harvestSummary.harvestCount} batches
+                                  {hive.harvestSummary.avgMoisture ? ` · ${hive.harvestSummary.avgMoisture}% moist.` : ""}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Expandable Measurement Log */}
+                            {hive.measurementsHistory.length > 1 && (
+                              <div className="pt-1 border-t border-border/40">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setExpandedHiveHistoryId(isExpanded ? null : hive.id)
+                                  }
+                                  className="w-full text-[10px] text-muted-foreground hover:text-foreground flex items-center justify-between py-0.5"
+                                >
+                                  <span>
+                                    {isExpanded ? "Hide Telemetry Timeline" : "View Recent Sensor Logs"} (
+                                    {hive.measurementsHistory.length} logs)
+                                  </span>
+                                  {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                </button>
+
+                                {isExpanded && (
+                                  <div className="mt-2 space-y-1 max-h-36 overflow-y-auto pr-1">
+                                    <table className="w-full text-[10px]">
+                                      <thead className="text-muted-foreground border-b border-border/40">
+                                        <tr>
+                                          <th className="text-left py-1">Time</th>
+                                          <th className="text-right py-1">Temp</th>
+                                          <th className="text-right py-1">Hum</th>
+                                          <th className="text-right py-1">Weight</th>
+                                          <th className="text-right py-1">Source</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {hive.measurementsHistory.map((m) => (
+                                          <tr key={m.id} className="border-b border-border/30 hover:bg-muted/30">
+                                            <td className="py-1 text-muted-foreground">
+                                              {formatTimestamp(m.recorded_at)}
+                                            </td>
+                                            <td className="text-right font-mono font-medium text-foreground">
+                                              {m.temperature_c ?? "—"}°C
+                                            </td>
+                                            <td className="text-right font-mono font-medium text-foreground">
+                                              {m.humidity_pct ?? "—"}%
+                                            </td>
+                                            <td className="text-right font-mono font-bold text-emerald-600">
+                                              {m.weight_kg ?? "—"}kg
+                                            </td>
+                                            <td className="text-right text-muted-foreground capitalize">
+                                              {m.source || "iot"}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {filteredApiaries.length === 0 && (
+                <div className="p-8 text-center rounded-xl border border-dashed border-border bg-muted/20 text-xs text-muted-foreground">
+                  No apiaries or hives match the selected filter criteria.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: SAVED PROJECTION SCENARIOS */}
+        {historyTab === "projections" && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="text-muted-foreground border-b border-border">
+                <tr>
+                  <th className="text-left py-2">Scenario / Hive</th>
+                  <th className="text-right py-2">Flow Days</th>
+                  <th className="text-right py-2">kg / Hive</th>
+                  <th className="text-right py-2">Total Crop</th>
+                  <th className="text-right py-2">Est. Revenue</th>
+                  <th className="text-right py-2">Calculated On</th>
+                  <th className="text-right py-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {runs.map((r) => (
+                  <tr key={r.id} className="border-t border-border/60 hover:bg-muted/20">
+                    <td className="py-2 font-medium text-foreground">{r.label}</td>
+                    <td className="text-right py-2 text-muted-foreground font-mono">
+                      {r.inputs?.effectiveFlowDays ?? "—"}d
+                    </td>
+                    <td className="text-right py-2 text-foreground font-mono font-bold">
+                      {r.outputs?.seasonKg ?? "—"} kg
+                    </td>
+                    <td className="text-right py-2 text-honey font-mono font-bold">
+                      {Number(r.outputs?.totalKg ?? 0).toLocaleString()} kg
+                    </td>
+                    <td className="text-right py-2 text-emerald-600 font-mono font-bold">
+                      KES {Number(r.outputs?.revenue ?? 0).toLocaleString()}
+                    </td>
+                    <td className="text-right py-2 text-muted-foreground">
+                      {new Date(r.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="text-right py-2">
+                      <button
+                        onClick={() => handleDeleteRun(r.id)}
+                        className="text-destructive hover:opacity-80 p-1"
+                        title="Delete Scenario"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {runs.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-muted-foreground">
+                      No projection scenarios saved yet. Configure a projection above and click "Save Projection".
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
