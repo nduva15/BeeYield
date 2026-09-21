@@ -48,7 +48,6 @@ import SensorAlertsView from '@/components/beeyield/SensorAlertsView';
 import BloomPhenology from '@/pages/BloomPhenology';
 import AcousticMoodTransformer from '@/components/beeyield/AcousticMoodTransformer';
 import BeeCalculatorSuite from '@/pages/BeeCalculatorSuite';
-import ForagingOptimizer from '@/components/beeyield/ForagingOptimizer';
 import VpmAutoCounter from '@/components/beeyield/VpmAutoCounter';
 import BeeFlightHoursForecast from '@/components/beeyield/BeeFlightHoursForecast';
 import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
@@ -273,7 +272,6 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'acoustic-transformer', label: 'Sound analysis', icon: Volume2 },
                         { id: 'pollination-lookup', label: 'PSI Lookup', icon: Search },
                         { id: 'pollination-analytics', label: 'Pollination Data', icon: BarChart3 },
-                        { id: 'foraging-optimizer', label: 'Foraging guide', icon: Crosshair },
                         { id: 'vpm-counter', label: 'Activity counter', icon: Camera },
                         { id: 'bfh-forecast', label: 'Activity forecast', icon: Zap },
                         { id: 'yield-predict', label: 'Production estimate', icon: BarChart3 },
@@ -390,7 +388,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'hpa-optimizer': return <HpaOptimizer embedded={true} />;
             case 'pollination-lookup': return renderEmbedded(<PollinationLookup isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'pollination-analytics': return renderEmbedded(<PollinationCharts isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'foraging-optimizer': return <ForagingOptimizer onTabChange={handleTabChange} />;
             case 'bloom-tracking':
             case 'bloom-phenology': return renderEmbedded(<BloomPhenologyEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'flight-mapping-tactical':
