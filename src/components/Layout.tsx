@@ -4,7 +4,6 @@ import Header from "./Header";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
 import { PartnersMarquee } from "./PartnersMarquee";
-import { PandaMitiSection } from "./beeyield/PandaMitiSection";
 
 interface LayoutProps {
   children: ReactNode;
@@ -56,44 +55,6 @@ const Layout = ({ children }: LayoutProps) => {
     );
   }
 
-  // Frontend marketing pages that have their own inline placement for PandaMitiSection
-  // (e.g. Home page has it placed directly above the FAQ section)
-  const pagesWithCustomPandaMiti = new Set([
-    '/',
-    '/pollination-services',
-    '/commitment',
-    '/sdg',
-    '/crops-we-pollinate',
-    '/honey',
-    '/pollination-solutions',
-  ]);
-
-  // Pages where Panda Miti Initiative should NOT be displayed
-  // (Shop, In Land Pollination, In Hive Pollination, Contact, Careers, Checkout)
-  const isExcludedFromPandaMiti =
-    pathname === '/' ||
-    pathname === '/pollination-services' ||
-    pathname === '/shop' ||
-    pathname.startsWith('/shop/') ||
-    pathname === '/checkout' ||
-    pathname === '/in-land-pollination' ||
-    pathname.startsWith('/in-land') ||
-    pathname.startsWith('/inland') ||
-    pathname === '/precision-pollination' ||
-    pathname.startsWith('/precision-pollination') ||
-    pathname.includes('hive') ||
-    pathname === '/contact' ||
-    pathname.startsWith('/contact') ||
-    pathname === '/careers' ||
-    pathname.startsWith('/career') ||
-    pathname === '/team' ||
-    pathname.startsWith('/team') ||
-    pathname === '/media' ||
-    pathname.startsWith('/media');
-
-  const shouldRenderPandaMitiInLayout =
-    !pagesWithCustomPandaMiti.has(pathname) && !isExcludedFromPandaMiti;
-
   return (
     <div className="flex min-h-screen flex-col">
       <CartDrawer />
@@ -103,11 +64,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
 
-      {shouldRenderPandaMitiInLayout && (
-        <section id="panda-miti" className="border-t border-border/40">
-          <PandaMitiSection />
-        </section>
-      )}
+
 
       <PartnersMarquee />
       <Footer />

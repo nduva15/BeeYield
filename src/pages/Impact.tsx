@@ -13,7 +13,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
 /* ── Authentic Field Photos (Zero AI Renders) ─────────────────── */

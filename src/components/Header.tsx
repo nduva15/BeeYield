@@ -185,7 +185,7 @@ const Header = () => {
                     { label: 'Blogs', to: '/blogs' },
                     { label: 'Careers', to: '/careers' },
                     { label: 'Commitment', to: '/commitment' },
-                    { label: 'Panda Miti Initiative', to: '/commitment#panda-miti' },
+                    
                     { label: 'Contact', to: '/contact' },
                     { label: 'ESG', to: '/esg' },
 

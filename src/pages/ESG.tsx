@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
 import beeyieldService from "@/services/beeyieldService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
 /* ── Authentic Field Photos (Zero AI Renders) ─────────────────── */

@@ -11,7 +11,6 @@ import { Link } from "react-router-dom";
 import Logo from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { PandaMitiSection } from "@/components/beeyield/PandaMitiSection";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 

@@ -191,6 +191,8 @@ root.render(
                                                         <Route path="/about" element={<OurStory />} />
 
                                                         <Route path="/traceability" element={<Traceability />} />
+                                                        <Route path="/verify" element={<Traceability />} />
+                                                        <Route path="/verify/:code" element={<Traceability />} />
                                                         <Route path="/precision-pollination" element={<PrecisionPollination />} />
                                                         <Route path="/pollination-solutions" element={<PollinationSolutions />} />
                                                         <Route path="/in-land-pollination" element={<InLandPollination />} />

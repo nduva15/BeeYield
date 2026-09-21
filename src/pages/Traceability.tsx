@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import HoneyTracePDF from "@/components/HoneyTracePDF";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -156,15 +156,18 @@ const Traceability = () => {
     }
   }, [toast]);
 
-  // Handle direct trace from URL params
+  const { code: routeCode } = useParams<{ code?: string }>();
+
+  // Handle direct trace from route params or URL query params
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const code = params.get("code");
-    if (code) {
-      setQrCode(code);
-      handleTrace(code);
+    const rawCode = routeCode || params.get("code") || (location.pathname.startsWith('/verify/') ? location.pathname.split('/verify/')[1] : null);
+    if (rawCode) {
+      const cleanCode = decodeURIComponent(rawCode).trim();
+      setQrCode(cleanCode);
+      handleTrace(cleanCode);
     }
-  }, [location.search, handleTrace]);
+  }, [location.search, location.pathname, routeCode, handleTrace]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -321,8 +324,8 @@ const Traceability = () => {
   return (
     <BeeYieldPageShell className="bg-background">
       <SEO 
-        title="Honey Traceability & Origin Verification | BeeYield"
-        description="Verify the journey of your BeeYield honey jar. Use BeeYield to trace origin, harvest dates, and hive health from Makueni County, Kenya."
+        title="Verify Honey Origin & Purity | BeeYield Traceability"
+        description="Verify the journey and purity of your BeeYield honey jar with tamper-proof batch verification, hive GPS origin, and harvest inspection records."
         keywords="honey traceability, verify honey purity, BeeYield, Kenyan honey origin, food safety Kenya, blockchain honey, Kibwezi honey records"
         url="/traceability"
         image="/og-image.png"
@@ -361,7 +364,7 @@ const Traceability = () => {
               className="h-24 md:h-36 w-auto mb-12 drop-shadow-2xl"
             />
             <Badge className="mb-6 bg-amber-500/10 text-amber-700 border-amber-200 px-5 py-2 font-semibold text-[10px] rounded-full backdrop-blur-sm">
-              Verified Harvest Operations
+              Official Origin & Authenticity Verification
             </Badge>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -369,8 +372,8 @@ const Traceability = () => {
               transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl font-bold mb-8 tracking-tight text-neutral-900"
             >
-              Verified Honey. <br />
-              <span className="text-beeyield-green">Traced</span> from Hive.
+              Verify Honey <br />
+              <span className="text-beeyield-green">Origin & Purity</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -378,7 +381,7 @@ const Traceability = () => {
               transition={{ delay: 0.2 }}
               className="text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto"
             >
-              BeeYield delivers GPS-verified honey provenance, timestamped harvest entries, and audit-ready compliance in one platform — designed for real field conditions, not paperwork.
+              Audit the complete lifecycle of your BeeYield honey jar. Enter your batch code or scan the QR seal to verify GPS apiary origins, forage flora, colony health, and certified harvest records.
             </motion.p>
 
             {/* Stats Bar */}
@@ -431,9 +434,9 @@ const Traceability = () => {
                 ) : (
                   <div className="grid md:grid-cols-2">
                     <div className="p-10 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-100">
-                      <h2 className="mb-4 text-3xl font-black tracking-tight">Find Your Honey</h2>
+                      <h2 className="mb-4 text-3xl font-black tracking-tight">Verify Your Honey</h2>
                       <p className="mb-8 text-muted-foreground">
-                        Enter the unique batch code found on the bottom or side of your honey jar.
+                        Enter the unique batch code found on your jar label to inspect authenticated harvest records.
                       </p>
 
                       <form onSubmit={handleSubmit} className="space-y-4">
@@ -454,12 +457,12 @@ const Traceability = () => {
                           disabled={loading || !qrCode.trim()}
                           className="w-full h-16 bg-amber-600 hover:bg-amber-700 text-[#1A1A1A] text-lg font-black rounded-2xl shadow-xl hover:shadow-amber-500/20 transition-all"
                         >
-                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Search"}
+                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Verify Batch"}
                         </Button>
                       </form>
 
                       <div className="mt-8 pt-8 border-t border-slate-100">
-                        <p className="text-xs font-black text-slate-400 mb-4">Latest verified Timothy batches</p>
+                        <p className="text-xs font-black text-slate-400 mb-4">Latest verified harvest batches</p>
                         <div className="flex flex-wrap gap-2">
                           {exampleCodes.map(code => (
                             <Button
@@ -659,13 +662,13 @@ const Traceability = () => {
 
                     <div className="hidden space-y-4 text-lg text-neutral-800 leading-relaxed font-medium">
                       <p>
-                        In 2020, Timothy Nduva saw an opportunity in the quiet of rural Makueni. With just <span className="text-[#1B9157] font-black">4 beehives on half an acre</span>, BeeYield was born as a family mission for sustainable pollination.
+                        Founded with a mission for sustainable apiculture in rural Makueni, BeeYield connects ethical beekeeping directly with verifiable biological data and modern IoT technology.
                       </p>
                       <p>
-                        Today, we've grown to <span className="text-[#1B9157] font-black">184 hives across a thriving 5-acre apiary</span>. Our commitment remains radical: we only harvest 50% of the honey our bees produce.
+                        Today, our operations span thriving Kenyan apiary networks adhering to our radical commitment: we harvest only surplus honey, leaving ample nourishment in every hive for colony health and vitality.
                       </p>
                       <p className="text-neutral-600 font-normal">
-                        Timothy, along with his sisters Agatha and Carole, has turned a modest family venture into a modern beekeeping operation — using intelligent hives to ensure transparency, protect the African honey bee, and restore biodiversity in their native Kenya.
+                        Our apiculture and engineering teams pair traditional beekeeping stewardship with in-hive sensor intelligence — ensuring end-to-end transparency, protecting the African honeybee, and safeguarding biodiversity across Kenya.
                       </p>
                     </div>
 
@@ -688,9 +691,9 @@ const Traceability = () => {
                         </p>
                       </div>
                       <div className="rounded-3xl border border-amber-200 bg-white/80 p-5">
-                        <p className="text-[10px] font-black tracking-[0.18em] text-[#A16207] uppercase mb-2">Tree Planting</p>
-                        <p className="text-2xl font-black text-[#1A1A1A]">{treeMetric?.stat_value || conservationFacts.find((item) => item.label === "Trees planted")?.value || missingDataLabel}</p>
-                        <p className="text-xs font-semibold text-slate-500">{treeMetric?.stat_label || "Tree restoration metric"}</p>
+                        <p className="text-[10px] font-black tracking-[0.18em] text-[#A16207] uppercase mb-2">Flora Stewardship</p>
+                        <p className="text-2xl font-black text-[#1A1A1A]">Protected</p>
+                        <p className="text-xs font-semibold text-slate-500">Indigenous acacia & wild flowering forage corridor</p>
                       </div>
                       <div className="rounded-3xl border border-sky-200 bg-white/80 p-5">
                         <p className="text-[10px] font-black tracking-[0.18em] text-sky-700 uppercase mb-2">ESG Commitment</p>
