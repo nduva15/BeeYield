@@ -55,7 +55,6 @@ import ChatHistory, { type Conversation } from "@/components/ChatHistory";
 import AboutModal from "@/components/AboutModal";
 import MessageActions from "@/components/MessageActions";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
-import BeeGallery from "@/components/BeeGallery";
 import BeeDiseasesPage from "@/components/BeeDiseasesPage";
 import PollinationCharts from "@/components/PollinationCharts";
 import PollinationLookup from "@/components/PollinationLookup";
@@ -74,7 +73,6 @@ import PollinationPlanning from "@/components/PollinationPlanning";
 import PollinationCalcs from "@/components/PollinationCalcs";
 import AlertsPage from "@/components/AlertsPage";
 import MOACompare from "@/components/MOACompare";
-import BeeSpeciesPage from "@/components/BeeSpeciesPage";
 import BeeyieldCalculators from "@/components/BeeyieldCalculators";
 import VarroaSimulator from "@/components/VarroaSimulator";
 import DatasetImport from "@/components/DatasetImport";
@@ -204,7 +202,6 @@ export default function Index() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [galleryOpen, setGalleryOpen] = useState(false);
   const [diseasesOpen, setDiseasesOpen] = useState(false);
   const [pollinationOpen, setPollinationOpen] = useState(false);
   const [lookupOpen, setLookupOpen] = useState(false);
@@ -223,7 +220,6 @@ export default function Index() {
   const [pollinationCalcsOpen, setPollinationCalcsOpen] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [moaCompareOpen, setMoaCompareOpen] = useState(false);
-  const [speciesEditOpen, setSpeciesEditOpen] = useState(false);
   const [calculatorsOpen, setCalculatorsOpen] = useState(false);
   const [varroaSimOpen, setVarroaSimOpen] = useState(false);
   const [datasetImportOpen, setDatasetImportOpen] = useState(false);
@@ -560,8 +556,6 @@ export default function Index() {
     {
       label: "Knowledge & reference",
       items: [
-        { label: "Bee Species Gallery", icon: Bug, onClick: () => setGalleryOpen(true) },
-        { label: "Bee Species (Editable)", icon: Bug, onClick: () => setSpeciesEditOpen(true) },
         {
           label: "Bee Diseases (Editable)",
           icon: HeartPulse,
@@ -986,7 +980,6 @@ export default function Index() {
 
       {/* About Modal */}
       <AboutModal open={aboutOpen} onOpenChange={setAboutOpen} />
-      <BeeGallery isOpen={galleryOpen} onClose={() => setGalleryOpen(false)} />
       <BeeDiseasesPage isOpen={diseasesOpen} onClose={() => setDiseasesOpen(false)} />
       <PollinationCharts isOpen={pollinationOpen} onClose={() => setPollinationOpen(false)} />
       <PollinationLookup isOpen={lookupOpen} onClose={() => setLookupOpen(false)} />
@@ -1024,7 +1017,6 @@ export default function Index() {
       />
       <AlertsPage isOpen={alertsOpen} onClose={() => setAlertsOpen(false)} />
       <MOACompare isOpen={moaCompareOpen} onClose={() => setMoaCompareOpen(false)} />
-      <BeeSpeciesPage isOpen={speciesEditOpen} onClose={() => setSpeciesEditOpen(false)} />
       <BeeyieldCalculators isOpen={calculatorsOpen} onClose={() => setCalculatorsOpen(false)} />
       <VarroaSimulator isOpen={varroaSimOpen} onClose={() => setVarroaSimOpen(false)} />
       <DatasetImport isOpen={datasetImportOpen} onClose={() => setDatasetImportOpen(false)} />

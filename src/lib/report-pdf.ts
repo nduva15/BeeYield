@@ -17,11 +17,13 @@ export type ReportSection =
   | { type: "list"; heading: string; items: string[] };
 
 export type ReportDoc = {
-  kind: string;
+  kind?: string;
   title: string;
   subtitle: string;
-  badge: string;
-  fileName: string;
+  badge?: string;
+  fileName?: string;
+  filename?: string;
+  meta?: Array<{ label: string; value: string }>;
   sections: ReportSection[];
   footer?: string;
 };
@@ -57,10 +59,12 @@ export function createReportPdf(doc: ReportDoc): jsPDF {
   pdf.setTextColor(215, 205, 190);
   pdf.text(doc.subtitle, M, 78);
 
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(10);
-  pdf.setTextColor(...HONEY);
-  pdf.text(doc.badge, pageW - M, 40, { align: "right" });
+  if (doc.badge) {
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.setTextColor(...HONEY);
+    pdf.text(doc.badge, pageW - M, 40, { align: "right" });
+  }
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(8);
   pdf.setTextColor(215, 205, 190);
@@ -193,7 +197,7 @@ export function createReportPdf(doc: ReportDoc): jsPDF {
 
 export function downloadReportPdf(doc: ReportDoc): jsPDF {
   const pdf = createReportPdf(doc);
-  pdf.save(doc.fileName);
+  pdf.save(doc.fileName || doc.filename || "beeyield-report.pdf");
   return pdf;
 }
 

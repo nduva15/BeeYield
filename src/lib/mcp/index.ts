@@ -1,5 +1,4 @@
 import { auth, defineMcp } from "@lovable.dev/mcp-js";
-import searchBeeSpecies from "./tools/search-bee-species";
 import searchBeeDiseases from "./tools/search-bee-diseases";
 import searchFloragePlants from "./tools/search-florage-plants";
 import searchKnowledgeFacts from "./tools/search-knowledge-facts";
@@ -14,7 +13,7 @@ export default defineMcp({
   title: "BeeYield Apiary Tools",
   version: "0.1.0",
   instructions:
-    "BeeYield tools for AI assistants: search bee species, diseases, florage plants, " +
+    "BeeYield tools for AI assistants: search diseases, florage plants, " +
     "and the knowledge base; compute recommended pollination stocking density (PSI) and " +
     "quick honey harvest estimates. All data is read-only and covers Kenyan/EA apiaries.",
   auth: auth.oauth.issuer({
@@ -22,7 +21,6 @@ export default defineMcp({
     acceptedAudiences: "authenticated",
   }),
   tools: [
-    searchBeeSpecies,
     searchBeeDiseases,
     searchFloragePlants,
     searchKnowledgeFacts,

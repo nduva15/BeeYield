@@ -205,12 +205,12 @@ function harvestPdf(r: Harvest) {
       {
         type: "kv",
         heading: "Commercial Compliance & Laboratory Specifications",
-        items: [
-          { label: "Moisture Content (Max 20%)", value: `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade" : "Standard"})` },
-          { label: "Sucrose Content (Max 5g/100g)", value: "< 1.8g / 100g (Pure Blossom Verified)" },
-          { label: "HMF (Hydroxymethylfurfural)", value: "< 10 mg/kg (Zero heat damage)" },
-          { label: "Diastase Enzyme Activity", value: "> 12 Schade units (Raw unpasteurized)" },
-          { label: "Filtration Protocol", value: r.actions.join("; ") || "Cold extracted, double strained" },
+        rows: [
+          ["Moisture Content (Max 20%)", `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade" : "Standard"})`],
+          ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
+          ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
+          ["Diastase Enzyme Activity", "> 12 Schade units (Raw unpasteurized)"],
+          ["Filtration Protocol", r.actions.join("; ") || "Cold extracted, double strained"],
         ],
       },
       ...(r.notes ? [{ type: "text" as const, heading: "Beekeeper Extraction Notes", body: r.notes }] : []),

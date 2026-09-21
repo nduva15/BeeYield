@@ -179,7 +179,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
     // 2. Fetch from Supabase
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("payment_methods")
         .select("*")
         .order("is_default", { ascending: false });
@@ -199,8 +199,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
           created_at: d.created_at || new Date().toISOString(),
         }));
         const map = new Map<string, PaymentCard>();
-        loaded.forEach((c) => map.set(c.id, c));
-        sbCards.forEach((c) => map.set(c.id, c));
+        loaded.forEach((c: PaymentCard) => map.set(c.id, c));
+        sbCards.forEach((c: any) => map.set(c.id, c));
         loaded = Array.from(map.values());
       }
     } catch (e) {
@@ -353,9 +353,9 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       // 3. Mirror to Supabase payment_methods
       try {
         if (newCard.is_default) {
-          await supabase.from("payment_methods").update({ is_default: false }).eq("status", "active");
+          await supabase.from('payment_methods' as any).update({ is_default: false }).eq("status", "active");
         }
-        await supabase.from("payment_methods").insert({
+        await supabase.from('payment_methods' as any).insert({
           id: newCard.id,
           card_holder_name: newCard.card_holder_name,
           provider: newCard.provider,
@@ -407,7 +407,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     } catch {}
 
     try {
-      await supabase.from("payment_methods").delete().eq("id", cardId);
+      await supabase.from('payment_methods' as any).delete().eq("id", cardId);
     } catch {}
 
     try {
@@ -429,8 +429,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     } catch {}
 
     try {
-      await supabase.from("payment_methods").update({ is_default: false }).neq("id", cardId);
-      await supabase.from("payment_methods").update({ is_default: true }).eq("id", cardId);
+      await supabase.from('payment_methods' as any).update({ is_default: false }).neq("id", cardId);
+      await supabase.from('payment_methods' as any).update({ is_default: true }).eq("id", cardId);
     } catch {}
 
     try {
@@ -548,20 +548,21 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         .eq("device_id", deviceId)
         .maybeSingle();
       if (!error && data) {
-        if (data.modules) setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...data.modules }));
-        if (data.alert_prefs) setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...data.alert_prefs }));
+        const d = data as any;
+        if (d.modules && typeof d.modules === "object") setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...d.modules }));
+        if (d.alert_prefs && typeof d.alert_prefs === "object") setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...d.alert_prefs }));
       }
     } catch {}
   }, [deviceId]);
 
   const loadRevenue = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("harvest_projections")
         .select("projected_revenue, projected_cost");
       if (!error && data && data.length > 0) {
-        const rev = data.reduce((acc, row: any) => acc + (Number(row.projected_revenue) || 0), 0);
-        const costs = data.reduce((acc, row: any) => acc + (Number(row.projected_cost) || 0), 0);
+        const rev = data.reduce((acc: number, row: any) => acc + (Number(row.projected_revenue) || 0), 0);
+        const costs = data.reduce((acc: number, row: any) => acc + (Number(row.projected_cost) || 0), 0);
         if (rev > 0) setRevenue({ revenue: rev, costs });
       }
     } catch {}
@@ -609,7 +610,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         JSON.stringify({ modules: nextModules, alert_prefs: nextAlerts })
       );
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("app_settings")
         .upsert(
           {
