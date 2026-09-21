@@ -5091,7 +5091,7 @@ async function generateClientReportPdf(input: ReportCreateInput): Promise<Genera
     },
 
     // ========== HEALTH KNOWLEDGE BASE ==========
-    async getHealthGuide(kind: 'diseases' | 'species', q?: string): Promise<any[]> {
+    async getHealthGuide(kind: 'diseases' = 'diseases', q?: string): Promise<any[]> {
         try {
             const resp = await apiGet<{ items: any[] }>(
                 "/beeyield/health/knowledge",

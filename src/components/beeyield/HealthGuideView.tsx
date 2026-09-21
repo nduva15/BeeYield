@@ -5,10 +5,13 @@ import { glass } from './GlassTheme';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import beeyieldService from '@/services/beeyieldService';
-import { BeeSpeciesGallery } from './BeeSpeciesGallery';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getGuideFallbackImage, getGuideImage } from '@/lib/beeGuideImages';
+const getGuideImage = (entry: any): string | null => {
+    if (!entry) return null;
+    return entry.image_url || entry.imageUrl || entry.photo_url || entry.thumbnail_url || null;
+};
+const getGuideFallbackImage = (_entry: any): string | null => null;
 
 interface HealthGuideViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -78,19 +81,13 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
     const [activeTab, setActiveTab] = React.useState<'diseases' | 'species'>('diseases');
     const [diseaseData, setDiseaseData] = React.useState<any[]>([]);
-    const [speciesData, setSpeciesData] = React.useState<any[]>([]);
-    const [loading, setLoading] = React.useState(true);
+        const [loading, setLoading] = React.useState(true);
     const [search, setSearch] = React.useState('');
     const [diseaseTypeFilter, setDiseaseTypeFilter] = React.useState('all');
-    const [speciesCategoryFilter, setSpeciesCategoryFilter] = React.useState('all');
-
+    
     React.useEffect(() => {
-        Promise.all([
-            beeyieldService.getHealthGuide('diseases'),
-            beeyieldService.getHealthGuide('species'),
-        ]).then(([diseases, species]) => {
+        beeyieldService.getHealthGuide('diseases').then((diseases) => {
             setDiseaseData(diseases || []);
-            setSpeciesData(species || []);
             setLoading(false);
         });
     }, []);
@@ -101,11 +98,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
         () => ['all', ...Array.from(new Set(diseaseData.map((entry) => entry.type).filter(Boolean)))],
         [diseaseData],
     );
-    const speciesCategoryOptions = React.useMemo(
-        () => ['all', ...Array.from(new Set(speciesData.map((entry) => entry.category).filter(Boolean)))],
-        [speciesData],
-    );
-
+    
     const filteredDiseaseData = React.useMemo(() => {
         const needle = search.trim().toLowerCase();
         return diseaseData.filter((entry) => {
@@ -120,24 +113,10 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
         });
     }, [diseaseData, diseaseTypeFilter, search]);
 
-    const filteredSpeciesData = React.useMemo(() => {
-        const needle = search.trim().toLowerCase();
-        return speciesData.filter((entry) => {
-            const matchesSearch = !needle || [
-                entry.name,
-                entry.commonName,
-                entry.scientificName,
-                entry.category,
-                entry.location,
-            ].some((value) => String(value || '').toLowerCase().includes(needle));
-            const matchesCategory = speciesCategoryFilter === 'all' || entry.category === speciesCategoryFilter;
-            return matchesSearch && matchesCategory;
-        });
-    }, [search, speciesCategoryFilter, speciesData]);
-
+    
     React.useEffect(() => {
         if (!selectedItem) return;
-        const pool = activeTab === 'diseases' ? diseaseData : speciesData;
+        const pool = diseaseData;
         if (!pool.some((entry) => entry.id === selectedItem.id)) {
             setSelectedItem(null);
         }
@@ -169,7 +148,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
                 icon={Microscope}
                 label="Health Guide"
                 title={<>Health <span className="text-[#F4D03F]">Protocol</span></>}
-                subtitle="Curated pathology database and species reference gallery."
+                subtitle="Curated pathology database and health reference guide."
                 onBack={() => onTabChange('home')}
             />
 
@@ -189,69 +168,33 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
                 {/* Search & Filter */}
                 <div className="lg:col-span-4 space-y-6">
                     <div className={cn(glass.section, "p-6 space-y-6")}>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">Reference Mode</label>
-                            <div className="grid grid-cols-2 gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('diseases')}
-                                    className={cn(
-                                        "rounded-2xl border px-4 py-3 text-xs font-black uppercase tracking-wider transition-colors",
-                                        activeTab === 'diseases'
-                                            ? "border-[#F4D03F] bg-[#F4D03F] text-foreground"
-                                            : "border-border/ bg-card text-muted-foreground hover:text-foreground",
-                                    )}
-                                >
-                                    Diseases
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('species')}
-                                    className={cn(
-                                        "rounded-2xl border px-4 py-3 text-xs font-black uppercase tracking-wider transition-colors",
-                                        activeTab === 'species'
-                                            ? "border-[#F4D03F] bg-[#F4D03F] text-foreground"
-                                            : "border-border/ bg-card text-muted-foreground hover:text-foreground",
-                                    )}
-                                >
-                                    Species
-                                </button>
-                            </div>
-                        </div>
+                        
 
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">Search Reference</label>
                             <Input
                                 value={search}
                                 onChange={(event) => setSearch(event.target.value)}
-                                placeholder={activeTab === 'diseases' ? 'Search diseases, causes, risk...' : 'Search species, taxonomy, range...'}
+                                placeholder='Search diseases, causes, risk...'
                                 className={cn(glass.input, "h-12 text-sm font-semibold")}
                             />
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider pl-1">
-                                {activeTab === 'diseases' ? 'Disease Type' : 'Species Category'}
+                                'Disease Type'
                             </label>
                             <Select
-                                value={activeTab === 'diseases' ? diseaseTypeFilter : speciesCategoryFilter}
-                                onValueChange={(value) => {
-                                    if (activeTab === 'diseases') {
-                                        setDiseaseTypeFilter(value);
-                                    } else {
-                                        setSpeciesCategoryFilter(value);
-                                    }
-                                }}
+                                value={diseaseTypeFilter}
+                                onValueChange={setDiseaseTypeFilter}
                             >
                                 <SelectTrigger className={cn(glass.input, "h-12")}>
-                                    <SelectValue placeholder={activeTab === 'diseases' ? 'Filter disease types...' : 'Filter species categories...'} />
+                                    <SelectValue placeholder='Filter disease types...' />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-border/ bg-muted/ backdrop-blur-xl">
-                                    {(activeTab === 'diseases' ? diseaseTypeOptions : speciesCategoryOptions).map((option) => (
+                                    {diseaseTypeOptions.map((option) => (
                                         <SelectItem key={option} value={option} className="text-xs font-bold">
-                                            {option === 'all'
-                                                ? (activeTab === 'diseases' ? 'All disease types' : 'All species categories')
-                                                : option}
+                                            {option === 'all' ? 'All disease types' : option}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -386,7 +329,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
                                                 {activeTab === 'diseases' ? 'Causes & Signs' : 'Species Profile'}
                                             </h4>
                                             <p className="text-sm font-semibold text-foreground/80 leading-relaxed">
-                                                {activeTab === 'diseases' ? selectedItem.causes : (selectedItem.suitability || selectedItem.description || 'No species profile is stored for this record yet.')}
+                                                selectedItem.causes
                                             </p>
                                         </div>
                                         <div className="space-y-4">
@@ -395,7 +338,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
                                                 {activeTab === 'diseases' ? 'Treatment & Management' : 'Health & Management'}
                                             </h4>
                                             <p className="text-sm font-semibold text-foreground/80 leading-relaxed">
-                                                {activeTab === 'diseases' ? selectedItem.treatment : (selectedItem.healthProfile || selectedItem.notes || 'Health management notes are not available for this species yet.')}
+                                                selectedItem.treatment
                                             </p>
                                         </div>
                                     </div>
@@ -482,11 +425,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
                                     </div>
                                 </div>
 
-                                {activeTab === 'species' && (
-                                    <div className={cn(glass.card, "p-0 overflow-hidden rounded-[2.5rem]")}>
-                                        <BeeSpeciesGallery species={speciesData} />
-                                    </div>
-                                )}
+                                
                             </motion.div>
                         ) : (
                             <div className={cn(glass.card, "h-[400px] flex flex-col items-center justify-center text-center p-12 opacity-60")}>

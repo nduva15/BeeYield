@@ -20,7 +20,6 @@ import ChatHistory, { type Conversation } from "./ChatHistory";
 import AboutModal from "./AboutModal";
 import MessageActions from "./MessageActions";
 import MarkdownRenderer from "./MarkdownRenderer";
-import BeeGallery from "./BeeGallery";
 import BeeDiseasesPage from "./BeeDiseasesPage";
 import PollinationCharts from "./PollinationCharts";
 import PollinationLookup from "./PollinationLookup";
@@ -38,7 +37,6 @@ import PollinationPlanning from "./PollinationPlanning";
 import PollinationCalcs from "./PollinationCalcs";
 import AlertsPage from "./AlertsPage";
 import MOACompare from "./MOACompare";
-import BeeSpeciesPage from "./BeeSpeciesPage";
 import BeeyieldCalculators from "./BeeyieldCalculators";
 import VarroaSimulator from "./VarroaSimulator";
 import DatasetImport from "./DatasetImport";
@@ -178,7 +176,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [galleryOpen, setGalleryOpen] = useState(false);
   const [diseasesOpen, setDiseasesOpen] = useState(false);
   const [pollinationOpen, setPollinationOpen] = useState(false);
   const [lookupOpen, setLookupOpen] = useState(false);
@@ -196,7 +193,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [pollinationCalcsOpen, setPollinationCalcsOpen] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [moaCompareOpen, setMoaCompareOpen] = useState(false);
-  const [speciesEditOpen, setSpeciesEditOpen] = useState(false);
   const [calculatorsOpen, setCalculatorsOpen] = useState(false);
   const [varroaSimOpen, setVarroaSimOpen] = useState(false);
   const [datasetImportOpen, setDatasetImportOpen] = useState(false);
@@ -467,14 +463,8 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 bg-white border border-neutral-200 text-neutral-900 shadow-2xl z-50">
               <DropdownMenuLabel className="text-honey">Knowledge & Reference</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setGalleryOpen(true)} className="cursor-pointer">
-                <Bug className="w-4 h-4 mr-2" /> Bee Species Gallery
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setDiseasesOpen(true)} className="cursor-pointer">
                 <HeartPulse className="w-4 h-4 mr-2" /> Bee Diseases (Editable)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSpeciesEditOpen(true)} className="cursor-pointer">
-                <Bug className="w-4 h-4 mr-2" /> Bee Species (Editable)
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setCalculatorsOpen(true)} className="cursor-pointer">
                 <Calculator className="w-4 h-4 mr-2" /> Beeyield Calculators
@@ -888,7 +878,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
 
       {/* About Modal */}
       <AboutModal open={aboutOpen} onOpenChange={setAboutOpen} />
-      <BeeGallery isOpen={galleryOpen} onClose={() => setGalleryOpen(false)} />
       <BeeDiseasesPage isOpen={diseasesOpen} onClose={() => setDiseasesOpen(false)} />
       <PollinationCharts isOpen={pollinationOpen} onClose={() => setPollinationOpen(false)} />
       <PollinationLookup isOpen={lookupOpen} onClose={() => setLookupOpen(false)} />
@@ -906,7 +895,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
       <PollinationCalcs isOpen={pollinationCalcsOpen} onClose={() => setPollinationCalcsOpen(false)} />
       <AlertsPage isOpen={alertsOpen} onClose={() => setAlertsOpen(false)} />
       <MOACompare isOpen={moaCompareOpen} onClose={() => setMoaCompareOpen(false)} />
-      <BeeSpeciesPage isOpen={speciesEditOpen} onClose={() => setSpeciesEditOpen(false)} />
       <BeeyieldCalculators isOpen={calculatorsOpen} onClose={() => setCalculatorsOpen(false)} />
       <VarroaSimulator isOpen={varroaSimOpen} onClose={() => setVarroaSimOpen(false)} />
       <DatasetImport isOpen={datasetImportOpen} onClose={() => setDatasetImportOpen(false)} />

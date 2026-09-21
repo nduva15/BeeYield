@@ -15,7 +15,6 @@ import {
     type ChatMessage as IntelligenceChatMessage,
 } from "@/services/intelligenceService";
 import { AboutBeeYield } from "./AboutBeeYield";
-import { BeeSpeciesGallery } from "./BeeSpeciesGallery";
 import { AnimatePresence, motion } from "framer-motion";
 import { glass } from "./GlassTheme";
 import ReactMarkdown from 'react-markdown';
@@ -74,7 +73,6 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
     });
     const [historyOpen, setHistoryOpen] = useState(false);
     const [aboutOpen, setAboutOpen] = useState(false);
-    const [galleryOpen, setGalleryOpen] = useState(false);
 
     // Media state
     const [attachedImage, setAttachedImage] = useState<File | null>(null);
@@ -370,14 +368,6 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                 <span className="text-[10px] font-bold">History</span>
                             </button>
                             <button
-                                onClick={() => setGalleryOpen(true)}
-                                className={cn(glass.btnSecondary, "px-3 py-1.5 h-9")}
-                                title="Species ID"
-                            >
-                                <Bug className="w-4 h-4 mr-2" />
-                                <span className="text-[10px] font-bold">Species ID</span>
-                            </button>
-                            <button
                                 onClick={handleNewChat}
                                 className={cn(glass.btnPrimary, "px-4 py-1.5 h-9 text-[10px]")}
                             >
@@ -622,30 +612,6 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                             className="absolute inset-0 bg-card/ backdrop-blur-md"
                         />
                         <AboutBeeYield onClose={() => setAboutOpen(false)} />
-                    </div>
-                )}
-                {galleryOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-12">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setGalleryOpen(false)}
-                            className="absolute inset-0 bg-card/ backdrop-blur-md"
-                        />
-                        <div className="relative w-full h-full bg-background rounded-[3rem] overflow-hidden shadow-3xl border border-border z-10">
-                            <button 
-                                onClick={() => setGalleryOpen(false)}
-                                className="absolute top-8 right-8 w-12 h-12 rounded-full bg-muted/50 hover:bg-[#F4D03F] transition-all flex items-center justify-center text-foreground hover:text-foreground z-[110]"
-                                aria-label="Close species gallery"
-                                title="Close"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                            <div className="w-full h-full overflow-y-auto">
-                                <BeeSpeciesGallery />
-                            </div>
-                        </div>
                     </div>
                 )}
             </AnimatePresence>

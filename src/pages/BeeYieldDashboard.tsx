@@ -83,7 +83,6 @@ import PollinationPlanning from '@/components/beeyield/lovable_ai/PollinationPla
 import PollinationLookup from '@/components/beeyield/lovable_ai/PollinationLookup';
 import PollinationCharts from '@/components/beeyield/lovable_ai/PollinationCharts';
 import BeeDiseasesPage from '@/components/beeyield/lovable_ai/BeeDiseasesPage';
-import BeeGallery from '@/components/beeyield/lovable_ai/BeeGallery';
 import BloomPhenologyEmbed from '@/components/beeyield/lovable_ai/BloomPhenology';
 import FlightTrackerEmbed from '@/components/beeyield/lovable_ai/BeeFlightTracker';
 import AlertsPage from '@/components/beeyield/lovable_ai/AlertsPage';
@@ -94,7 +93,6 @@ import HivePlacementMap from '@/components/beeyield/lovable_ai/HivePlacementMap'
 import PrecisionDrilldown from '@/components/beeyield/lovable_ai/PrecisionDrilldown';
 import MOAView from '@/components/beeyield/lovable_ai/MOAView';
 import FloragePage from '@/components/beeyield/lovable_ai/FloragePage';
-import BeeSpeciesPage from '@/components/beeyield/lovable_ai/BeeSpeciesPage';
 import BeeyieldCalculators from '@/components/beeyield/lovable_ai/BeeyieldCalculators';
 import VarroaSimulator from '@/components/beeyield/lovable_ai/VarroaSimulator';
 import DatasetImport from '@/components/beeyield/lovable_ai/DatasetImport';
@@ -307,8 +305,6 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'sensor-vitals', label: 'Hive Health', icon: Heart },
                         { id: 'continuous-monitor', label: 'Live Stream', icon: Activity },
                         { id: 'bee-diseases', label: 'Pathogen Database', icon: AlertTriangle },
-                        { id: 'bee-gallery', label: 'Bee Species', icon: Bug },
-                        { id: 'bee-species-edit', label: 'Manage Species', icon: Settings },
                     ]
                 },
             ]
@@ -409,8 +405,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'flight-mapping-tactical':
             case 'flight-tracker': return renderEmbedded(<FlightTrackerEmbed isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'bee-diseases': return renderEmbedded(<BeeDiseasesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'bee-gallery': return renderEmbedded(<BeeGallery isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'bee-species-edit': return renderEmbedded(<BeeSpeciesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'beeyield-calculators': return renderEmbedded(<BeeyieldCalculators isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'varroa-simulator': return renderEmbedded(<VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'dataset-import': return renderEmbedded(<DatasetImport isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
