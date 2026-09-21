@@ -34,6 +34,7 @@ import {
   Settings as SettingsIcon,
   Package,
   Trees,
+  CheckSquare,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -81,6 +82,7 @@ import KnowledgeSearch from "@/components/KnowledgeSearch";
 import ApiarySizing from "@/components/ApiarySizing";
 import YieldProjection from "@/components/YieldProjection";
 import InspectionsPage from "@/components/InspectionsPage";
+import TasksPage from "@/components/TasksPage";
 import HarvestsPage from "@/components/HarvestsPage";
 import SoundAnalysis from "@/components/SoundAnalysis";
 import IntegrationsPage from "@/components/IntegrationsPage";
@@ -228,6 +230,7 @@ export default function Index() {
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [inspectionsOpen, setInspectionsOpen] = useState(false);
+  const [tasksOpen, setTasksOpen] = useState(false);
   const [harvestsOpen, setHarvestsOpen] = useState(false);
   const [soundAnalysisOpen, setSoundAnalysisOpen] = useState(false);
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
@@ -476,6 +479,11 @@ export default function Index() {
           label: "Inspections & Diagnostics",
           icon: ClipboardList,
           onClick: () => setInspectionsOpen(true),
+        },
+        {
+          label: "My Tasks & Schedules",
+          icon: CheckSquare,
+          onClick: () => setTasksOpen(true),
         },
         {
           label: "Acoustic Audit (Sound Analysis)",
@@ -1025,6 +1033,7 @@ export default function Index() {
       <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
       <InspectionsPage isOpen={inspectionsOpen} onClose={() => setInspectionsOpen(false)} />
+      <TasksPage isOpen={tasksOpen} onClose={() => setTasksOpen(false)} />
       <HarvestsPage isOpen={harvestsOpen} onClose={() => setHarvestsOpen(false)} />
       <SoundAnalysis isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />
       <IntegrationsPage isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />
