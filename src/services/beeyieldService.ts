@@ -533,19 +533,6 @@ export interface PublicFlightMapPayload {
     };
 }
 
-export interface Orchard {
-    id: string;
-    grower_id: string;
-    apiary_id?: string | null;
-    name: string;
-    location_name?: string | null;
-    crop_type?: string | null;
-    boundary_geojson?: any;
-    acreage?: number | null;
-    notes?: string | null;
-    created_at: string;
-    updated_at?: string | null;
-}
 
 export interface TelemetryGateway {
     id: string;
@@ -4772,68 +4759,6 @@ async function generateClientReportPdf(input: ReportCreateInput): Promise<Genera
         } catch (error) {
             console.error('deleteForageZone:', error);
             toast.error('Failed to delete forage zone');
-            return { success: false, error };
-        }
-    },
-
-    async getOrchards(apiaryId?: string): Promise<Orchard[]> {
-        try {
-            return await apiGet<Orchard[]>('/forage/orchards', apiaryId ? { apiary_id: apiaryId } : undefined);
-        } catch (error) {
-            console.error('getOrchards:', error);
-            return [];
-        }
-    },
-
-    async getOrchard(id: string): Promise<Orchard | null> {
-        try {
-            return await apiGet<Orchard>(`/forage/orchards/${id}`);
-        } catch (error) {
-            console.error('getOrchard:', error);
-            return null;
-        }
-    },
-
-    async createOrchard(input: {
-        name: string;
-        apiary_id?: string;
-        location_name?: string;
-        boundary_geojson?: any;
-        acreage?: number;
-        crop_type?: string;
-        notes?: string;
-    }): Promise<{ data: Orchard | null; error: any }> {
-        try {
-            const data = await apiPost<Orchard>('/forage/orchards', input as any);
-            toast.success('Orchard saved');
-            return { data, error: null };
-        } catch (error) {
-            console.error('createOrchard:', error);
-            toast.error('Failed to save orchard');
-            return { data: null, error };
-        }
-    },
-
-    async updateOrchard(id: string, patch: Partial<Orchard>): Promise<{ data: Orchard | null; error: any }> {
-        try {
-            const data = await apiPatch<Orchard>(`/forage/orchards/${id}`, patch as any);
-            toast.success('Orchard updated');
-            return { data, error: null };
-        } catch (error) {
-            console.error('updateOrchard:', error);
-            toast.error('Failed to update orchard');
-            return { data: null, error };
-        }
-    },
-
-    async deleteOrchard(id: string): Promise<{ success: boolean; error: any }> {
-        try {
-            await apiDelete<void>(`/forage/orchards/${id}`);
-            toast.success('Orchard deleted');
-            return { success: true, error: null };
-        } catch (error) {
-            console.error('deleteOrchard:', error);
-            toast.error('Failed to delete orchard');
             return { success: false, error };
         }
     },

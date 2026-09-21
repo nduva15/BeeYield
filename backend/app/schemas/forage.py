@@ -43,40 +43,6 @@ class ForageZone(ForageZoneBase):
         from_attributes = True
 
 
-class OrchardBase(BaseModel):
-    name: str
-    apiary_id: Optional[UUID] = None
-    location_name: Optional[str] = None
-    boundary_geojson: Optional[Any] = None
-    acreage: Optional[float] = None
-    crop_type: Optional[str] = None
-    notes: Optional[str] = None
-
-
-class OrchardCreate(OrchardBase):
-    pass
-
-
-class OrchardUpdate(BaseModel):
-    name: Optional[str] = None
-    apiary_id: Optional[UUID] = None
-    location_name: Optional[str] = None
-    boundary_geojson: Optional[Any] = None
-    acreage: Optional[float] = None
-    crop_type: Optional[str] = None
-    notes: Optional[str] = None
-
-
-class Orchard(OrchardBase):
-    id: UUID
-    grower_id: UUID
-    created_at: datetime
-    updated_at: Optional[datetime] = None
-
-    class Config:
-        from_attributes = True
-
-
 class GeofenceBase(BaseModel):
     name: str
     apiary_id: Optional[UUID] = None
