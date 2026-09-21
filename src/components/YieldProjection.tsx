@@ -1031,9 +1031,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             onClick={handleSave}
-            className="px-3.5 py-2 rounded-xl border border-honey/40 bg-honey/10 text-honey hover:bg-honey/20 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
           >
-            <Save className="w-3.5 h-3.5" /> Save Projection
+            <Save className="w-4 h-4 text-white" /> <span className="text-white">Save Projection</span>
           </button>
           {!embedded && onClose && (
             <button
