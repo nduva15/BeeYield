@@ -26,7 +26,7 @@ export type ReportDoc = {
   footer?: string;
 };
 
-export function downloadReportPdf(doc: ReportDoc) {
+export function createReportPdf(doc: ReportDoc): jsPDF {
   const pdf = new jsPDF({ unit: "pt", format: "a4" });
   const pageW = pdf.internal.pageSize.getWidth();
   const pageH = pdf.internal.pageSize.getHeight();
@@ -184,11 +184,24 @@ export function downloadReportPdf(doc: ReportDoc) {
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(7.5);
     pdf.setTextColor(...MUTED);
-    pdf.text(doc.footer ?? "BeeYield — apiary intelligence. Lead Farmer: Timothy Nduva. Acoustic and visual findings support physical inspection.", M, pageH - 24);
+    pdf.text(doc.footer ?? "BeeYield — Apiary Intelligence & Yield Management Platform. Acoustic and visual findings support physical inspection.", M, pageH - 24);
     pdf.text(`Page ${p} of ${pages}`, pageW - M, pageH - 24, { align: "right" });
   }
 
+  return pdf;
+}
+
+export function downloadReportPdf(doc: ReportDoc): jsPDF {
+  const pdf = createReportPdf(doc);
   pdf.save(doc.fileName);
+  return pdf;
+}
+
+export function buildReportPdf(doc: ReportDoc): { pdf: jsPDF; blob: Blob; url: string } {
+  const pdf = createReportPdf(doc);
+  const blob = pdf.output("blob");
+  const url = URL.createObjectURL(blob);
+  return { pdf, blob, url };
 }
 
 export const safeName = (s: string) => s.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
