@@ -12,6 +12,7 @@ from datetime import datetime
 import io
 
 from app.core import security
+from app.core.security import get_optional_current_user
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.services.report_worker import DataAggregator, PDFReportGenerator, ExcelReportGenerator
 

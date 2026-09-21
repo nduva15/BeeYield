@@ -20,6 +20,8 @@ const OPTIONAL_TABLES = new Set([
   "integration_sync_logs",
   "sound_analyses",
   "payment_methods",
+  "generated_reports",
+  "scheduled_reports",
   "billing_ledger",
 ]);
 

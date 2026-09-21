@@ -102,6 +102,7 @@ api_router.include_router(forage.router, prefix="/forage", tags=["Forage Analysi
 
 # Reports Engine (PRD API spec: /api/v1/reports/generate)
 api_router.include_router(reports.router, prefix="/reports", tags=["Reports Engine"])
+api_router.include_router(reports.router, prefix="/beeyield/reports", tags=["Reports Engine"])
 
 # Notes
 api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])
