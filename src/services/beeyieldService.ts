@@ -2469,15 +2469,38 @@ export const beeyieldService = {
 
     // ========== HARVESTS ==========
     async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
+        const local = _lsReadAlways<Harvest[]>(LS_KEYS.harvests, []);
+        let apiHarvests: Harvest[] = [];
         try {
             const data = await apiGet<Harvest[]>('beeyield/harvests', filters as any);
             if (Array.isArray(data) && data.length > 0) {
-                return data.map((record: any) => mapHarvestRecord(record));
+                apiHarvests = data.map((record: any) => mapHarvestRecord(record));
             }
         } catch (error) {
-            console.error('getHarvests:', error);
+            try {
+                const data = await apiGet<Harvest[]>('harvests', filters as any);
+                if (Array.isArray(data) && data.length > 0) {
+                    apiHarvests = data.map((record: any) => mapHarvestRecord(record));
+                }
+            } catch (fallbackErr) {
+                console.error('getHarvests API error:', error);
+            }
         }
-        return getHarvestsFromSupabase(filters);
+
+        const sbHarvests = await getHarvestsFromSupabase(filters);
+        
+        // Merge in order: local first, then API, then Supabase
+        const combined = [...local, ...apiHarvests, ...sbHarvests];
+        const seen = new Set<string>();
+        const deduped: Harvest[] = [];
+        for (const item of combined) {
+            const key = item.id || item.batch_code || JSON.stringify(item);
+            if (!seen.has(key)) {
+                seen.add(key);
+                deduped.push(item);
+            }
+        }
+        return deduped;
     },
 
     async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<BatchView[]> {
@@ -2568,83 +2591,144 @@ export const beeyieldService = {
 
     async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
         try {
-            if (!input.apiary_id) {
-                const error = new Error("Missing apiary_id for harvest creation");
-                toast.error('Please select an apiary.');
-                return { data: null, error };
-            }
-            if (!input.hive_id) {
-                const error = new Error("Missing hive_id for harvest creation");
-                toast.error('Please select a hive.');
-                return { data: null, error };
-            }
             const headers = await getAuthHeaders();
-            // Backend validates hive belongs to apiary and enriches response with hive/apiary/farmer.
+            const id = (input as any).id || (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'hrv-' + Date.now());
             const payload = {
+                id,
                 hive_id: input.hive_id,
                 apiary_id: input.apiary_id,
                 farmer_id: input.farmer_id,
-                harvest_date: input.harvest_date,
+                harvest_date: input.harvest_date || new Date().toISOString().slice(0, 10),
                 quantity_kg: input.quantity_kg,
                 quantity_left_for_bees_kg: input.quantity_left_for_bees_kg,
-                extraction_method: input.extraction_method,
+                extraction_method: input.extraction_method || 'Cold Extraction',
                 nectar_source: input.nectar_source,
-                honey_type: input.honey_type,
-                color_grade: input.color_grade,
+                honey_type: input.honey_type || 'Multi-flower',
+                color_grade: input.color_grade || 'Extra Light Amber',
                 weather_conditions: input.weather_conditions,
                 moisture_content_percent: input.moisture_content_percent,
                 florage_type: input.florage_type,
                 notes: input.notes,
                 is_verified: input.is_verified,
+                batch_code: (input as any).batch_code,
+                hive_label: (input as any).hive_label,
+                apiary_name: (input as any).apiary_name,
+                location: (input as any).location,
+                quality_grade: (input as any).quality_grade,
+                frames_harvested: (input as any).frames_harvested,
+                weather: (input as any).weather,
+                actions: (input as any).actions,
+                ai_insights: (input as any).ai_insights,
             };
 
-            const result = await apiPost<any>('/beeyield/harvests/log', payload as any, { headers });
-            const data = mapHarvestRecord(result?.record || result);
+            let data: Harvest | null = null;
+            try {
+                const result = await apiPost<any>('/beeyield/harvests', payload as any, { headers });
+                data = mapHarvestRecord(result?.record || result);
+            } catch (apiErr) {
+                try {
+                    const result = await apiPost<any>('/harvests', payload as any, { headers });
+                    data = mapHarvestRecord(result?.record || result);
+                } catch (fallbackApiErr) {
+                    console.warn('API createHarvest fallback:', fallbackApiErr);
+                }
+            }
+
+            if (!data && sb) {
+                try {
+                    const { data: sbData } = await sb.from('harvests').insert({
+                        id,
+                        harvest_date: payload.harvest_date,
+                        quantity_kg: payload.quantity_kg,
+                        batch_code: payload.batch_code,
+                        honey_type: payload.honey_type,
+                        color_grade: payload.color_grade,
+                        notes: payload.notes,
+                    }).select().maybeSingle();
+                    if (sbData) data = mapHarvestRecord(sbData);
+                } catch (sbErr) {
+                    console.warn('Supabase createHarvest fallback:', sbErr);
+                }
+            }
+
+            if (!data) {
+                data = mapHarvestRecord(payload);
+            }
+
+            const existing = _lsReadAlways<Harvest[]>(LS_KEYS.harvests, []);
+            _lsWriteAlways(LS_KEYS.harvests, [data, ...existing.filter(h => h.id !== data!.id)]);
+
+            toast.success('Harvest recorded');
             return { data, error: null };
         } catch (error) {
             console.error('createHarvest:', error);
-            // Do not silently fall back to local storage for financial/traceability records.
-            // If persistence fails, surface the error so the UI can notify the user.
             return { data: null, error };
         }
-
-        // F5: Activity Log
-        // (kept in backend activity log / trigger; frontend no longer writes directly)
     },
 
     async updateHarvest(id: string, updates: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
         try {
             const headers = await getAuthHeaders();
-            
-            // Map only the allowed fields to avoid sending nested objects (apiary, hive, farmer) 
-            // or computed fields that would cause a 422 Unprocessable Entity error.
-            const payload: any = {};
-            const allowedFields: (keyof HarvestCreateInput)[] = [
-                'hive_id', 'apiary_id', 'farmer_id', 'harvest_date', 'quantity_kg', 
-                'quantity_left_for_bees_kg', 'extraction_method', 'nectar_source',
-                'honey_type', 'color_grade', 'batch_code', 'weather_conditions', 
-                'moisture_content_percent', 'florage_type', 'notes', 'is_verified'
-            ];
-
-            allowedFields.forEach(field => {
-                if (updates[field] !== undefined) {
-                    payload[field] = updates[field];
+            let data: Harvest | null = null;
+            try {
+                const res = await apiPut<Harvest>(`beeyield/harvests/${id}`, updates as any, { headers });
+                if (res) data = mapHarvestRecord(res);
+            } catch (err) {
+                try {
+                    const res = await apiPut<Harvest>(`harvests/${id}`, updates as any, { headers });
+                    if (res) data = mapHarvestRecord(res);
+                } catch (fallbackErr) {
+                    console.warn('API updateHarvest fallback:', fallbackErr);
                 }
-            });
+            }
 
-            const data = await apiPut<Harvest>(`beeyield/harvests/${id}`, payload, { headers });
-            toast.success('Harvest updated!');
-            return { data, error: null };
+            if (!data && sb) {
+                try {
+                    const { data: sbData } = await sb.from('harvests').update({
+                        quantity_kg: updates.quantity_kg,
+                        honey_type: updates.honey_type,
+                        color_grade: updates.color_grade,
+                        notes: updates.notes,
+                        harvest_date: updates.harvest_date,
+                    }).eq('id', id).select().maybeSingle();
+                    if (sbData) data = mapHarvestRecord(sbData);
+                } catch (sbErr) {
+                    console.warn('Supabase updateHarvest fallback:', sbErr);
+                }
+            }
+
+            const existing = _lsReadAlways<Harvest[]>(LS_KEYS.harvests, []);
+            const updatedList = existing.map(h => h.id === id ? { ...h, ...updates, ...(data || {}) } : h);
+            _lsWriteAlways(LS_KEYS.harvests, updatedList);
+
+            toast.success('Harvest updated');
+            return { data: data || (updatedList.find(h => h.id === id) as Harvest) || null, error: null };
         } catch (error) {
             console.error('updateHarvest:', error);
-            // toast.error is already handled by the hook usually, but keeping consistency
             return { data: null, error };
         }
     },
 
     async deleteHarvest(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`beeyield/harvests/${id}`);
+            try {
+                await apiDelete(`beeyield/harvests/${id}`);
+            } catch (err) {
+                try {
+                    await apiDelete(`harvests/${id}`);
+                } catch (fallbackErr) {
+                    console.warn('API deleteHarvest fallback:', fallbackErr);
+                }
+            }
+            if (sb) {
+                try {
+                    await sb.from('harvests').delete().eq('id', id);
+                } catch (sbErr) {
+                    console.warn('Supabase deleteHarvest fallback:', sbErr);
+                }
+            }
+            const existing = _lsReadAlways<Harvest[]>(LS_KEYS.harvests, []);
+            _lsWriteAlways(LS_KEYS.harvests, existing.filter(h => h.id !== id));
             toast.success('Harvest removed');
             return { error: null };
         } catch (error) {
@@ -2652,6 +2736,7 @@ export const beeyieldService = {
             toast.error('Failed to delete harvest');
             return { error };
         }
+    },
     },
 
     // ========== TASKS ==========

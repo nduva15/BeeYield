@@ -27,6 +27,10 @@ api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 
 # BeeYield Dashboard (User-specific data)
 api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
+# Harvests endpoints (Full CRUD for all users)
+api_router.include_router(harvests.router, prefix="/harvests", tags=["Harvests"])
+api_router.include_router(harvests.router, prefix="/beeyield/harvests", tags=["Harvests"])
+
 api_router.include_router(reference_library.public_router, prefix="/beeyield/health", tags=["BeeYield Health Guide"])
 api_router.include_router(yield_forecast.router, prefix="/beeyield/yield-forecast", tags=["Yield Forecast"])
 api_router.include_router(bluetooth.router, prefix="/beeyield/bluetooth", tags=["Bluetooth"])
