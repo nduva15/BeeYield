@@ -105,6 +105,7 @@ api_router.include_router(routing.router, prefix="/routing", tags=["Routing"])
 
 # Forage & Weather Intelligence
 api_router.include_router(forage.router, prefix="/forage", tags=["Forage Analysis"])
+api_router.include_router(forage.router, prefix="/beeyield/forage", tags=["BeeYield Forage Analysis"])
 
 # Reports Engine (PRD API spec: /api/v1/reports/generate)
 api_router.include_router(reports.router, prefix="/reports", tags=["Reports Engine"])

@@ -407,7 +407,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'apiary-sizing': return renderEmbedded(<ApiarySizing isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'yield-projection': return renderEmbedded(<YieldProjection isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'master-map': return <MasterMapView />;
-            case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} />;
+            case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} embedded={true} />;
             case 'site-reports-tactical': return <PollinationReports />;
             case 'precision-drilldown': return renderEmbedded(<PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
