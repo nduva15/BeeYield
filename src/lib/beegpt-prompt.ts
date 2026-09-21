@@ -849,7 +849,6 @@ Other Pages:
 - BeeLearn (beeyield.com/learn): Educational resources including video courses and downloadable guides.
 - Bloom Phenology (beeyield.com/bloom-phenology): Tracking flowering seasons and bloom cycles for optimal honey production.
 - Global Hive Network (beeyield.com/global-hive-network): Map of BeeYield's worldwide hive network and partner beekeepers.
-- Master Map View (beeyield.com/master-map): Geospatial overview of all hive locations with health indicators.
 - Measurement Data (beeyield.com/measurement-data): Raw sensor data views including temperature, humidity, weight, and acoustic readings.
 - Account Settings: User profile and preference management.
 - Receipt Page: Order confirmation and receipt display after purchase.

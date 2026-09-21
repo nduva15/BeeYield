@@ -38,7 +38,6 @@ import LovableBeeYieldAI from '@/components/beeyield/lovable_ai/LovableIndex';
 import PollinationEngine from '@/components/beeyield/PollinationEngine';
 import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
 import HpaOptimizer from '@/components/beeyield/HpaOptimizer';
-import MasterMapView from '@/pages/MasterMapView';
 import ForageZonesView from '@/components/beeyield/ForageZonesView';
 import HiveLogisticsSecurity from '@/components/beeyield/HiveLogisticsSecurity';
 import FlightMapping from '@/pages/pollination/FlightMapping';
@@ -252,7 +251,6 @@ const BeeYieldDashboard: React.FC = () => {
                 {
                     title: 'Field Logistics',
                     items: [
-                        { id: 'master-map', label: 'Master Map', icon: Map },
                         { id: 'forage-zones', label: 'Forage zones', icon: MapPin },
                         { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
                         { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
@@ -397,7 +395,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'feeding-schedule': return renderEmbedded(<FeedingSchedule isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'apiary-sizing': return renderEmbedded(<ApiarySizing isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'yield-projection': return renderEmbedded(<YieldProjection isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'master-map': return <MasterMapView />;
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} embedded={true} />;
             case 'site-reports-tactical': return <PollinationReports />;
             case 'precision-drilldown': return renderEmbedded(<PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
