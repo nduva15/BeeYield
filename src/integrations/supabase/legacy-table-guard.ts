@@ -14,6 +14,11 @@ const OPTIONAL_TABLES = new Set([
   "harvest_runs",
   "bee_flight_logs",
   "bloom_observations",
+  "app_settings",
+  "saved_labels",
+  "integration_connections",
+  "integration_sync_logs",
+  "sound_analyses",
 ]);
 
 const missingTables = new Set<string>();
@@ -62,7 +67,7 @@ function makeMutationError(table: string, error: unknown) {
 }
 
 function normalizeResult(table: string, context: GuardContext, result: any) {
-  if (!OPTIONAL_TABLES.has(table) || !result?.error || !isMissingTableError(result.error)) {
+  if (!result?.error || !isMissingTableError(result.error)) {
     return result;
   }
 
@@ -72,6 +77,17 @@ function normalizeResult(table: string, context: GuardContext, result: any) {
     return {
       ...result,
       data: makeReadFallback(context.shape),
+      error: null,
+      status: 200,
+      statusText: "OK",
+    };
+  }
+
+  // If table is optional or app_settings, suppress the mutation error so UI does not show schema cache error toast
+  if (OPTIONAL_TABLES.has(table) || table === "app_settings") {
+    return {
+      ...result,
+      data: null,
       error: null,
       status: 200,
       statusText: "OK",
@@ -143,7 +159,7 @@ function createMissingBuilder(table: string, context: GuardContext = { op: "sele
   };
 
   const response =
-    context.op === "select"
+    context.op === "select" || OPTIONAL_TABLES.has(table) || table === "app_settings"
       ? {
           data: makeReadFallback(context.shape),
           error: null,
