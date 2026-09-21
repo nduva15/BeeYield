@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, ClipboardList, Plus, Search, Trash2, HeartPulse, AlertTriangle, Activity,
-  Sparkles, Loader2, Save, CalendarDays, MapPin, Crown, Bug, FileDown, Layers,
+  Sparkles, Loader2, Save, CalendarDays, MapPin, Crown, Bug, FileDown, Layers, Pencil,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -366,7 +366,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       onClick={onClick}
       className={`px-2.5 py-1 rounded-full text-[11px] border transition-colors ${
         active
-          ? "bg-honey/20 border-honey text-honey"
+          ? "bg-honey/20 border-honey text-honey font-semibold"
           : "bg-card border-border text-muted-foreground hover:border-honey/40"
       }`}
     >
@@ -425,6 +425,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
   const [query, setQuery] = useState("");
   const [frameFilter, setFrameFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -435,21 +436,111 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("inspections" as any)
-        .select("*")
-        .order("inspected_on" as any, { ascending: false } as any)
-        .limit(300);
+      const userInspections: Inspection[] = [];
+      const userIds = new Set<string>();
 
-      if (!error && data && data.length >= 10) {
-        const mapped: Inspection[] = data.map((d: any) => ({
-          ...d,
-          total_frames: Number(d.total_frames) || (Number(d.brood_frames || 6) + Number(d.honey_frames || 4)),
-        }));
-        setRows(mapped);
-      } else {
-        setRows(DEFAULT_INSPECTIONS);
+      // 1. Fetch from Backend API
+      try {
+        const res = await fetch("/api/v1/inspections");
+        if (res.ok) {
+          const apiData = await res.json();
+          if (Array.isArray(apiData) && apiData.length > 0) {
+            apiData.forEach((d: any) => {
+              const item: Inspection = {
+                id: String(d.id || crypto.randomUUID()),
+                inspected_on: d.inspected_on || d.inspection_date || d.created_at?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+                location: d.location || d.apiary_name || "BeeYield Apiary — Kibwezi",
+                hive_label: d.hive_label || d.hive_code || "BY-H001 (Langstroth 10)",
+                batch: d.batch || d.batch_code || "Batch Alpha",
+                colony_health: d.colony_health || (d.health_status ? String(d.health_status).charAt(0).toUpperCase() + String(d.health_status).slice(1) : "Healthy"),
+                temperament: d.temperament || "Calm",
+                queen_seen: Boolean(d.queen_seen),
+                queen_cells: Number(d.queen_cells) || (d.queen_cells_seen ? 1 : 0),
+                total_frames: Number(d.total_frames) || (Number(d.brood_frames || 6) + Number(d.honey_frames || 4)),
+                brood_frames: Number(d.brood_frames) || 6,
+                honey_frames: Number(d.honey_frames) || 4,
+                varroa_count: Number(d.varroa_count || d.varroa_mite_count) || 0,
+                issues: Array.isArray(d.issues) ? d.issues : [],
+                actions: Array.isArray(d.actions) ? d.actions : [],
+                weather: d.weather || d.weather_condition || "28 °C, calm winds",
+                notes: d.notes || null,
+                ai_insights: d.ai_insights || null,
+                created_at: d.created_at || new Date().toISOString(),
+              };
+              if (!userIds.has(item.id)) {
+                userIds.add(item.id);
+                userInspections.push(item);
+              }
+            });
+          }
+        }
+      } catch (err) {
+        // Backend offline fallback
       }
+
+      // 2. Fetch from Supabase
+      try {
+        const { data, error } = await supabase
+          .from("inspections" as any)
+          .select("*")
+          .order("inspected_on" as any, { ascending: false } as any)
+          .limit(300);
+
+        if (!error && data && data.length > 0) {
+          data.forEach((d: any) => {
+            const item: Inspection = {
+              id: String(d.id),
+              inspected_on: d.inspected_on || d.inspection_date || d.created_at?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+              location: d.location || d.apiary_name || "BeeYield Apiary — Kibwezi",
+              hive_label: d.hive_label || d.hive_code || "BY-H001 (Langstroth 10)",
+              batch: d.batch || d.batch_code || "Batch Alpha",
+              colony_health: d.colony_health || "Healthy",
+              temperament: d.temperament || "Calm",
+              queen_seen: Boolean(d.queen_seen),
+              queen_cells: Number(d.queen_cells) || 0,
+              total_frames: Number(d.total_frames) || (Number(d.brood_frames || 6) + Number(d.honey_frames || 4)),
+              brood_frames: Number(d.brood_frames) || 6,
+              honey_frames: Number(d.honey_frames) || 4,
+              varroa_count: Number(d.varroa_count || d.varroa_mite_count) || 0,
+              issues: Array.isArray(d.issues) ? d.issues : [],
+              actions: Array.isArray(d.actions) ? d.actions : [],
+              weather: d.weather || null,
+              notes: d.notes || null,
+              ai_insights: d.ai_insights || null,
+              created_at: d.created_at || new Date().toISOString(),
+            };
+            if (!userIds.has(item.id)) {
+              userIds.add(item.id);
+              userInspections.push(item);
+            }
+          });
+        }
+      } catch (err) {
+        // Supabase offline fallback
+      }
+
+      // 3. Merge with LocalStorage (beeyield_local_inspections_v1)
+      try {
+        const raw = localStorage.getItem("beeyield_local_inspections_v1");
+        if (raw) {
+          const localItems: Inspection[] = JSON.parse(raw);
+          localItems.forEach((item) => {
+            if (!userIds.has(item.id)) {
+              userIds.add(item.id);
+              userInspections.unshift(item);
+            }
+          });
+        }
+      } catch {}
+
+      // 4. Combine user records with DEFAULT_INSPECTIONS so authentic reference baseline is present,
+      // but user records are ALWAYS at the top and never discarded!
+      const merged = [
+        ...userInspections,
+        ...DEFAULT_INSPECTIONS.filter((d) => !userIds.has(d.id)),
+      ];
+
+      setRows(merged);
     } catch {
       setRows(DEFAULT_INSPECTIONS);
     } finally {
@@ -493,6 +584,31 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
       [key]: d[key].includes(value) ? d[key].filter((v) => v !== value) : [...d[key], value],
     }));
 
+  const startEdit = (r: Inspection) => {
+    setEditingId(r.id);
+    setDraft({
+      inspected_on: r.inspected_on,
+      location: r.location,
+      hive_label: r.hive_label,
+      batch: r.batch,
+      colony_health: r.colony_health,
+      temperament: r.temperament,
+      queen_seen: r.queen_seen,
+      queen_cells: r.queen_cells,
+      total_frames: r.total_frames,
+      brood_frames: r.brood_frames,
+      honey_frames: r.honey_frames,
+      varroa_count: r.varroa_count,
+      issues: r.issues || [],
+      actions: r.actions || [],
+      weather: r.weather || "",
+      notes: r.notes || "",
+    });
+    setAiText(r.ai_insights || "");
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const runAi = async () => {
     setAiLoading(true);
     setAiText("");
@@ -501,13 +617,12 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
 
 Inspection Date: ${draft.inspected_on}
 Hive Label: ${draft.hive_label} (${draft.batch}) at ${draft.location || "East African Commercial Stand"}
-Hive Frame Capacity: ${draft.total_frames} frames (8 – 12 frame standard hive setup)
-Brood Frames: ${draft.brood_frames} of ${draft.total_frames} frames · Honey Frames: ${draft.honey_frames} of ${draft.total_frames} frames
+Frame Setup: ${draft.total_frames}-frame architecture (${draft.brood_frames} brood frames, ${draft.honey_frames} honey frames)
 Colony Health: ${draft.colony_health} · Temperament: ${draft.temperament}
-Queen Sighted: ${draft.queen_seen ? "Yes" : "No"} (${draft.queen_cells} queen cells)
-Varroa Load (Alcohol Wash / 300 bees): ${draft.varroa_count}
-Observed Issues: ${draft.issues.join(", ") || "None"}
-Actions Taken: ${draft.actions.join(", ") || "None"}
+Queen Status: ${draft.queen_seen ? "Queen verified active" : "Queen not sighted"} · Queen cells detected: ${draft.queen_cells}
+Varroa Load: ${draft.varroa_count} mites per 300-bee alcohol wash sample
+Issues Flagged: ${draft.issues.join(", ") || "None observed"}
+Actions Taken: ${draft.actions.join(", ") || "Standard inspection routine"}
 Weather Conditions: ${draft.weather || "Calm ambient conditions"}
 Beekeeper Field Notes: ${draft.notes || "None"}
 
@@ -529,49 +644,127 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
     if (!draft.hive_label.trim()) { toast.error("Hive label is required"); return; }
     setSaving(true);
 
-    const newRecord: Inspection = {
-      id: crypto.randomUUID(),
+    const recordId = editingId || crypto.randomUUID();
+    const currentRecord: Inspection = {
       ...draft,
+      id: recordId,
       weather: draft.weather || null,
       notes: draft.notes || null,
       ai_insights: aiText || null,
-      created_at: new Date().toISOString(),
+      created_at: editingId ? (rows.find((r) => r.id === editingId)?.created_at || new Date().toISOString()) : new Date().toISOString(),
     };
 
+    // 1. Backend API Sync (POST for create, PATCH/PUT for update)
     try {
-      await supabase.from("inspections" as any).insert({
-        id: newRecord.id,
-        device_id: deviceId,
-        inspected_on: draft.inspected_on,
-        location: draft.location,
-        hive_label: draft.hive_label,
-        batch: draft.batch,
-        colony_health: draft.colony_health,
-        temperament: draft.temperament,
-        queen_seen: draft.queen_seen,
-        queen_cells: draft.queen_cells,
-        brood_frames: draft.brood_frames,
-        honey_frames: draft.honey_frames,
-        total_frames: draft.total_frames,
-        varroa_count: draft.varroa_count,
-        issues: draft.issues,
-        actions: draft.actions,
-        weather: draft.weather,
-        notes: draft.notes,
-        ai_insights: aiText || null,
-      } as any);
-    } catch {
-      // Offline fallback
+      const endpoint = editingId ? `/api/v1/inspections/${editingId}` : "/api/v1/inspections";
+      const method = editingId ? "PATCH" : "POST";
+      await fetch(endpoint, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: recordId,
+          inspected_on: draft.inspected_on,
+          inspection_date: draft.inspected_on,
+          location: draft.location,
+          hive_label: draft.hive_label,
+          batch: draft.batch,
+          colony_health: draft.colony_health,
+          temperament: draft.temperament,
+          total_frames: draft.total_frames,
+          brood_frames: draft.brood_frames,
+          honey_frames: draft.honey_frames,
+          queen_seen: draft.queen_seen,
+          queen_cells: draft.queen_cells,
+          varroa_count: draft.varroa_count,
+          issues: draft.issues,
+          actions: draft.actions,
+          weather: draft.weather,
+          notes: draft.notes,
+          ai_insights: aiText || currentRecord.ai_insights,
+        }),
+      });
+    } catch (e) {
+      console.warn("Backend inspection sync fallback:", e);
     }
 
-    setRows((prev) => [newRecord, ...prev]);
-    setSaving(false);
-    toast.success("Inspection diagnostic recorded");
+    // 2. Supabase Sync
+    try {
+      if (editingId) {
+        await (supabase as any).from("inspections").update({
+          inspected_on: draft.inspected_on,
+          location: draft.location,
+          hive_label: draft.hive_label,
+          batch: draft.batch,
+          colony_health: draft.colony_health,
+          temperament: draft.temperament,
+          queen_seen: draft.queen_seen,
+          queen_cells: draft.queen_cells,
+          brood_frames: draft.brood_frames,
+          honey_frames: draft.honey_frames,
+          total_frames: draft.total_frames,
+          varroa_count: draft.varroa_count,
+          issues: draft.issues,
+          actions: draft.actions,
+          weather: draft.weather,
+          notes: draft.notes,
+          ai_insights: aiText || null,
+        }).eq("id", editingId);
+      } else {
+        await (supabase as any).from("inspections").insert({
+          id: recordId,
+          device_id: deviceId,
+          inspected_on: draft.inspected_on,
+          location: draft.location,
+          hive_label: draft.hive_label,
+          batch: draft.batch,
+          colony_health: draft.colony_health,
+          temperament: draft.temperament,
+          queen_seen: draft.queen_seen,
+          queen_cells: draft.queen_cells,
+          brood_frames: draft.brood_frames,
+          honey_frames: draft.honey_frames,
+          total_frames: draft.total_frames,
+          varroa_count: draft.varroa_count,
+          issues: draft.issues,
+          actions: draft.actions,
+          weather: draft.weather,
+          notes: draft.notes,
+          ai_insights: aiText || null,
+        });
+      }
+    } catch (e) {
+      console.warn("Supabase inspection sync fallback:", e);
+    }
 
+    // 3. LocalStorage Sync
+    try {
+      const stored: Inspection[] = JSON.parse(localStorage.getItem("beeyield_local_inspections_v1") || "[]");
+      let nextLocal: Inspection[];
+      if (editingId) {
+        nextLocal = stored.map((h) => (h.id === editingId ? currentRecord : h));
+        if (!nextLocal.some((h) => h.id === editingId)) {
+          nextLocal.unshift(currentRecord);
+        }
+      } else {
+        nextLocal = [currentRecord, ...stored.filter((h) => h.id !== recordId)];
+      }
+      localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(nextLocal));
+    } catch {}
+
+    // 4. Update UI State
+    if (editingId) {
+      setRows((prev) => prev.map((r) => (r.id === editingId ? currentRecord : r)));
+      toast.success("Inspection diagnostic updated successfully");
+    } else {
+      setRows((prev) => [currentRecord, ...prev]);
+      toast.success("Inspection diagnostic recorded successfully");
+    }
+
+    // 5. Offline Auto-sync Integration
     void autoSyncRecord({
       deviceId,
       kind: "inspection",
-      recordId: newRecord.id,
+      recordId: currentRecord.id,
       hiveLabel: draft.hive_label,
       title: `Inspection: ${draft.colony_health} (${draft.hive_label})`,
       summary: draft.notes || `Health: ${draft.colony_health}, ${draft.total_frames} frames (${draft.brood_frames} brood / ${draft.honey_frames} honey).`,
@@ -588,20 +781,40 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
       },
     });
 
+    setSaving(false);
     setShowForm(false);
+    setEditingId(null);
     setDraft(EMPTY);
     setAiText("");
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this inspection record?")) return;
+    if (!confirm("Are you sure you want to delete this inspection record?")) return;
+    
+    // 1. Backend API Delete
     try {
-      await supabase.from("inspections" as any).delete().eq("id" as any, id as any);
-    } catch {
-      // Ignored
+      await fetch(`/api/v1/inspections/${id}`, { method: "DELETE" });
+    } catch (e) {
+      console.warn("Backend inspection delete fallback:", e);
     }
+
+    // 2. Supabase Delete
+    try {
+      await (supabase as any).from("inspections").delete().eq("id", id);
+    } catch (e) {
+      console.warn("Supabase inspection delete fallback:", e);
+    }
+
+    // 3. LocalStorage Delete
+    try {
+      const stored: Inspection[] = JSON.parse(localStorage.getItem("beeyield_local_inspections_v1") || "[]");
+      const nextLocal = stored.filter((h) => h.id !== id);
+      localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(nextLocal));
+    } catch {}
+
+    // 4. Update UI
     setRows((prev) => prev.filter((r) => r.id !== id));
-    toast.success("Deleted");
+    toast.success("Inspection record deleted");
   };
 
   if (!isOpen && !embedded) return null;
@@ -616,13 +829,18 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
           <div>
             <h1 className="font-display text-2xl font-bold text-foreground">Inspection <span className="text-honey">History</span></h1>
             <p className="text-xs text-muted-foreground">
-              Log hive diagnostics across 8 – 12 frame hives, track colony health and get AI-assisted disease interpretation
+              Log hive diagnostics across 8 – 12 frame hives, track colony health with full CRUD management and AI-assisted interpretation
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowForm((s) => !s)}
+            onClick={() => {
+              setEditingId(null);
+              setDraft(EMPTY);
+              setAiText("");
+              setShowForm((s) => !s);
+            }}
             className="px-3.5 py-2 rounded-xl bg-honey text-background text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:bg-honey/90 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" /> Log Diagnostic
@@ -708,33 +926,54 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
         </div>
       </div>
 
-      {/* New inspection form */}
+      {/* Inspection form (Create or Edit) */}
       {showForm && (
-        <div className="rounded-xl border border-honey/30 bg-card p-5 space-y-4 shadow-sm">
-          <h2 className="font-display text-lg text-honey flex items-center gap-2">
-            <Plus className="w-4 h-4" /> New diagnostic entry (8 – 12 Frame Hive)
-          </h2>
+        <div className="rounded-xl border border-honey/40 bg-card p-5 space-y-4 shadow-md transition-all">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg text-honey flex items-center gap-2">
+              {editingId ? (
+                <>
+                  <Pencil className="w-4 h-4 text-honey" /> Edit diagnostic record: <span className="font-mono text-sm text-foreground">{draft.hive_label} ({draft.batch})</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 text-honey" /> New diagnostic entry (8 – 12 Frame Hive)
+                </>
+              )}
+            </h2>
+            <button
+              onClick={() => {
+                setShowForm(false);
+                setEditingId(null);
+                setDraft(EMPTY);
+                setAiText("");
+              }}
+              className="p-1 rounded-lg hover:bg-background border border-border text-muted-foreground"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
 
           <div className="grid md:grid-cols-4 gap-3">
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground flex items-center gap-1"><CalendarDays className="w-3 h-3" /> Date</span>
               <input type="date" value={draft.inspected_on} onChange={(e) => setDraft({ ...draft, inspected_on: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground flex items-center gap-1"><MapPin className="w-3 h-3" /> Location / apiary</span>
               <input value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })}
-                placeholder="BeeYield Apiary — Kibwezi" className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+                placeholder="BeeYield Apiary — Kibwezi" className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Hive label</span>
               <input value={draft.hive_label} onChange={(e) => setDraft({ ...draft, hive_label: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Batch / group</span>
               <input value={draft.batch} onChange={(e) => setDraft({ ...draft, batch: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
             </label>
           </div>
 
@@ -742,123 +981,160 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Colony health</span>
               <select value={draft.colony_health} onChange={(e) => setDraft({ ...draft, colony_health: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5">
+                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5">
                 {HEALTH.map((h) => <option key={h}>{h}</option>)}
               </select>
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Temperament</span>
               <select value={draft.temperament} onChange={(e) => setDraft({ ...draft, temperament: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5">
+                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5">
                 {TEMPERAMENT.map((t) => <option key={t}>{t}</option>)}
               </select>
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Weather</span>
-              <input value={draft.weather} onChange={(e) => setDraft({ ...draft, weather: e.target.value })}
-                placeholder="28 °C, dry weather" className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+              <input value={draft.weather || ""} onChange={(e) => setDraft({ ...draft, weather: e.target.value })}
+                placeholder="28 °C, calm winds" className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
             </label>
-            <label className="text-xs space-y-1 flex flex-col justify-end">
-              <span className="text-muted-foreground flex items-center gap-1"><Crown className="w-3 h-3" /> Queen sighted</span>
-              <button type="button" onClick={() => setDraft({ ...draft, queen_seen: !draft.queen_seen })}
-                className={`w-full rounded-lg px-2 py-1.5 border text-left ${draft.queen_seen ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10" : "border-border text-muted-foreground"}`}>
-                {draft.queen_seen ? "Yes — queen seen" : "No — not seen"}
-              </button>
+            <label className="text-xs space-y-1">
+              <span className="text-muted-foreground">Varroa count (per 300 bees)</span>
+              <input type="number" min={0} value={draft.varroa_count}
+                onChange={(e) => setDraft({ ...draft, varroa_count: Number(e.target.value) })}
+                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
             </label>
           </div>
 
-          <div className="grid md:grid-cols-5 gap-3">
-            <label className="text-xs space-y-1">
-              <span className="text-muted-foreground font-semibold text-honey">Total frames (8 – 12)</span>
-              <select
-                value={draft.total_frames}
-                onChange={(e) => {
-                  const tf = Number(e.target.value);
-                  const bf = Math.min(draft.brood_frames, tf - 1);
-                  const hf = Math.min(draft.honey_frames, tf - bf);
-                  setDraft({ ...draft, total_frames: tf, brood_frames: bf, honey_frames: hf });
-                }}
-                className="w-full bg-background border border-honey/40 rounded-lg px-2 py-1.5 font-bold text-foreground"
-              >
-                <option value={8}>8 Frames (Langstroth 8 / Top Bar)</option>
-                <option value={9}>9 Frames (Specialized 9-Frame)</option>
-                <option value={10}>10 Frames (Langstroth 10 Standard)</option>
-                <option value={11}>11 Frames (11-Frame Modified)</option>
-                <option value={12}>12 Frames (Commercial Deep / Dadant)</option>
-              </select>
-            </label>
+          {/* Frame Architecture Selector */}
+          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-2">
+              <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-honey" /> Hive Frame Configuration (8 – 12 Frame Standard Architecture)
+              </span>
+              <span className="text-[11px] text-muted-foreground">
+                Configured: <strong className="text-honey">{draft.total_frames} frames</strong> ({draft.brood_frames} brood + {draft.honey_frames} honey)
+              </span>
+            </div>
 
-            <label className="text-xs space-y-1">
-              <span className="text-muted-foreground">Brood frames</span>
-              <input type="number" min={0} max={draft.total_frames} value={draft.brood_frames}
-                onChange={(e) => setDraft({ ...draft, brood_frames: Math.min(Number(e.target.value), draft.total_frames) })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
-            </label>
+            <div className="grid md:grid-cols-3 gap-3">
+              <label className="text-xs space-y-1">
+                <span className="text-muted-foreground font-medium">Hive frame size</span>
+                <select
+                  value={draft.total_frames}
+                  onChange={(e) => {
+                    const total = Number(e.target.value);
+                    const defaultBrood = total === 8 ? 5 : total === 10 ? 6 : 7;
+                    const defaultHoney = total - defaultBrood;
+                    setDraft({ ...draft, total_frames: total, brood_frames: defaultBrood, honey_frames: defaultHoney });
+                  }}
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-honey"
+                >
+                  <option value={8}>8 Frame Standard (Top Bar / L-8)</option>
+                  <option value={10}>10 Frame Standard (Langstroth 10)</option>
+                  <option value={12}>12 Frame Standard (Commercial Deep)</option>
+                </select>
+              </label>
 
-            <label className="text-xs space-y-1">
-              <span className="text-muted-foreground">Honey frames</span>
-              <input type="number" min={0} max={draft.total_frames} value={draft.honey_frames}
-                onChange={(e) => setDraft({ ...draft, honey_frames: Math.min(Number(e.target.value), draft.total_frames) })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
-            </label>
+              <label className="text-xs space-y-1">
+                <span className="text-muted-foreground font-medium">Brood frames (1 to {draft.total_frames})</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={draft.total_frames}
+                  value={draft.brood_frames}
+                  onChange={(e) => {
+                    const bf = Math.min(Math.max(1, Number(e.target.value)), draft.total_frames);
+                    const hf = Math.max(0, draft.total_frames - bf);
+                    setDraft({ ...draft, brood_frames: bf, honey_frames: hf });
+                  }}
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5"
+                />
+              </label>
 
-            <label className="text-xs space-y-1">
-              <span className="text-muted-foreground">Queen cells</span>
+              <label className="text-xs space-y-1">
+                <span className="text-muted-foreground font-medium">Honey frames (0 to {draft.total_frames})</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={draft.total_frames}
+                  value={draft.honey_frames}
+                  onChange={(e) => {
+                    const hf = Math.min(Math.max(0, Number(e.target.value)), draft.total_frames);
+                    const bf = Math.max(1, draft.total_frames - hf);
+                    setDraft({ ...draft, honey_frames: hf, brood_frames: bf });
+                  }}
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-3">
+            <label className="flex items-center gap-2 text-xs cursor-pointer p-2.5 rounded-lg border border-border bg-background">
+              <input type="checkbox" checked={draft.queen_seen} onChange={(e) => setDraft({ ...draft, queen_seen: e.target.checked })}
+                className="rounded accent-honey" />
+              <Crown className="w-3.5 h-3.5 text-honey" />
+              <span>Queen sighted & verified laying active eggs</span>
+            </label>
+            <label className="flex items-center gap-2 text-xs p-2.5 rounded-lg border border-border bg-background">
+              <span>Queen cells counted:</span>
               <input type="number" min={0} value={draft.queen_cells}
                 onChange={(e) => setDraft({ ...draft, queen_cells: Number(e.target.value) })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
-            </label>
-
-            <label className="text-xs space-y-1">
-              <span className="text-muted-foreground">Varroa count (/300 bees)</span>
-              <input type="number" min={0} value={draft.varroa_count}
-                onChange={(e) => setDraft({ ...draft, varroa_count: Number(e.target.value) })}
-                className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+                className="w-20 bg-card border border-border rounded px-2 py-0.5" />
             </label>
           </div>
 
           <div className="space-y-2">
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Observed issues</p>
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Issues identified</p>
             <div className="flex flex-wrap gap-1.5">
-              {ISSUE_OPTIONS.map((i) => (
-                <Chip key={i} active={draft.issues.includes(i)} onClick={() => toggle("issues", i)}>{i}</Chip>
+              {ISSUE_OPTIONS.map((iss) => (
+                <Chip key={iss} active={draft.issues.includes(iss)} onClick={() => toggle("issues", iss)}>{iss}</Chip>
               ))}
             </div>
           </div>
 
           <div className="space-y-2">
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Actions taken</p>
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Actions applied</p>
             <div className="flex flex-wrap gap-1.5">
-              {ACTION_OPTIONS.map((a) => (
-                <Chip key={a} active={draft.actions.includes(a)} onClick={() => toggle("actions", a)}>{a}</Chip>
+              {ACTION_OPTIONS.map((act) => (
+                <Chip key={act} active={draft.actions.includes(act)} onClick={() => toggle("actions", act)}>{act}</Chip>
               ))}
             </div>
           </div>
 
           <label className="text-xs space-y-1 block">
-            <span className="text-muted-foreground">Notes</span>
-            <textarea value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} rows={3}
-              placeholder="10-frame Langstroth: solid brood on frames 3-7, golden honey cap on frames 8-10…"
-              className="w-full bg-background border border-border rounded-lg px-2 py-1.5" />
+            <span className="text-muted-foreground">Beekeeper notes & observations</span>
+            <textarea value={draft.notes || ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} rows={3}
+              placeholder="Queen laying compact pattern, calm worker temperament, 4 capped honey frames ready for extraction…"
+              className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
           </label>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 pt-2">
             <button onClick={runAi} disabled={aiLoading}
-              className="px-3 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5 disabled:opacity-50">
+              className="px-3.5 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5 disabled:opacity-50 hover:bg-honey/10 transition-colors">
               {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-              AI diagnosis
+              AI Diagnostic Audit
             </button>
             <button onClick={save} disabled={saving}
-              className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
-              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save inspection
+              className="px-4 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 hover:bg-honey/90 shadow-sm transition-colors">
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+              {editingId ? "Update Diagnostic" : "Save Diagnostic"}
             </button>
-            <button onClick={() => { setShowForm(false); setAiText(""); }} className="px-3 py-2 rounded-lg border border-border text-xs">
+            <button
+              onClick={() => {
+                setShowForm(false);
+                setEditingId(null);
+                setDraft(EMPTY);
+                setAiText("");
+              }}
+              className="px-3.5 py-2 rounded-lg border border-border text-xs text-muted-foreground hover:bg-background transition-colors"
+            >
               Cancel
             </button>
           </div>
 
           {aiText && (
-            <div className="rounded-lg border border-honey/20 bg-background p-4">
+            <div className="rounded-lg border border-honey/20 bg-background p-4 mt-3">
               <MarkdownRenderer content={aiText} />
             </div>
           )}
@@ -876,13 +1152,20 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
       {/* List */}
       {loading ? (
         <div className="py-16 text-center text-muted-foreground text-sm flex items-center justify-center gap-2">
-          <Loader2 className="w-4 h-4 animate-spin" /> Loading inspections…
+          <Loader2 className="w-4 h-4 animate-spin text-honey" /> Loading inspections…
         </div>
       ) : filtered.length === 0 ? (
         <div className="py-16 text-center">
           <Activity className="w-10 h-10 mx-auto text-muted-foreground/40" />
           <p className="mt-3 text-sm text-muted-foreground">No inspections found matching your criteria.</p>
-          <button onClick={() => setShowForm(true)} className="mt-4 px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold">
+          <button
+            onClick={() => {
+              setEditingId(null);
+              setDraft(EMPTY);
+              setShowForm(true);
+            }}
+            className="mt-4 px-3.5 py-2 rounded-lg bg-honey text-background text-xs font-semibold hover:bg-honey/90"
+          >
             Log a diagnostic
           </button>
         </div>
@@ -892,24 +1175,46 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             const frameTotal = r.total_frames || (r.brood_frames + r.honey_frames);
             return (
               <div key={r.id} className="rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-honey/30">
-                <button onClick={() => setExpanded(expanded === r.id ? null : r.id)}
-                  className="w-full text-left p-4 flex flex-wrap items-center gap-3">
-                  <span className={`px-2 py-0.5 rounded-full border text-[11px] ${healthTone(r.colony_health)}`}>{r.colony_health}</span>
-                  <span className="font-semibold text-sm text-foreground">{r.hive_label}</span>
-                  <span className="text-xs text-muted-foreground">{r.location || "—"}</span>
-                  <span className="text-xs text-muted-foreground">{r.inspected_on}</span>
-                  <span className="text-xs text-muted-foreground">Varroa {r.varroa_count}</span>
-                  <span className="text-xs text-honey font-medium">{frameTotal} frames ({r.brood_frames} brood · {r.honey_frames} honey)</span>
-                  {(r.issues ?? []).length > 0 && (
-                    <span className="text-[11px] text-orange-400">{(r.issues ?? []).length} issue{(r.issues ?? []).length > 1 ? "s" : ""}</span>
-                  )}
-                  <span className="ml-auto text-[11px] text-muted-foreground">{expanded === r.id ? "Hide" : "Details"}</span>
-                </button>
+                <div className="w-full p-4 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(expanded === r.id ? null : r.id)}
+                    className="flex flex-wrap items-center gap-3 text-left flex-1 min-w-0"
+                  >
+                    <span className={`px-2 py-0.5 rounded-full border text-[11px] font-medium ${healthTone(r.colony_health)}`}>{r.colony_health}</span>
+                    <span className="font-semibold text-sm text-foreground">{r.hive_label}</span>
+                    <span className="text-xs text-muted-foreground">{r.location || "—"}</span>
+                    <span className="text-xs text-muted-foreground">{r.inspected_on}</span>
+                    <span className="text-xs text-muted-foreground">Varroa {r.varroa_count}</span>
+                    <span className="text-xs text-honey font-medium">{frameTotal} frames ({r.brood_frames} brood · {r.honey_frames} honey)</span>
+                    {(r.issues ?? []).length > 0 && (
+                      <span className="text-[11px] text-orange-400">{(r.issues ?? []).length} issue{(r.issues ?? []).length > 1 ? "s" : ""}</span>
+                    )}
+                  </button>
+                  <div className="flex items-center gap-2 ml-auto">
+                    <button
+                      type="button"
+                      onClick={() => startEdit(r)}
+                      className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
+                      title="Edit Inspection"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline text-[11px]">Edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExpanded(expanded === r.id ? null : r.id)}
+                      className="text-[11px] text-muted-foreground hover:text-foreground px-2 py-1"
+                    >
+                      {expanded === r.id ? "Hide" : "Details"}
+                    </button>
+                  </div>
+                </div>
                 {expanded === r.id && (
-                  <div className="border-t border-border p-4 space-y-3 text-xs">
+                  <div className="border-t border-border p-4 space-y-3 text-xs bg-background/50">
                     <div className="grid md:grid-cols-4 gap-3">
                       <p><span className="text-muted-foreground">Hive frames:</span> {frameTotal} frames (8 – 12 standard)</p>
-                      <p><span className="text-muted-foreground">Batch:</span> {r.batch}</p>
+                      <p><span className="text-muted-foreground">Batch:</span> <span className="font-mono">{r.batch}</span></p>
                       <p><span className="text-muted-foreground">Temperament:</span> {r.temperament}</p>
                       <p><span className="text-muted-foreground">Queen seen:</span> {r.queen_seen ? "Yes" : "No"} ({r.queen_cells} cells)</p>
                     </div>
@@ -929,12 +1234,16 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                         <MarkdownRenderer content={r.ai_insights} />
                       </div>
                     )}
-                    <div className="flex flex-wrap items-center gap-3 pt-1">
+                    <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border/50">
                       <button onClick={() => inspectionPdf(r)}
                         className="px-3 py-1.5 rounded-lg border border-honey/50 text-honey flex items-center gap-1.5 hover:bg-honey/10 transition-colors">
                         <FileDown className="w-3.5 h-3.5" /> Download PDF report
                       </button>
-                      <button onClick={() => remove(r.id)} className="text-red-400 flex items-center gap-1 hover:underline">
+                      <button onClick={() => startEdit(r)}
+                        className="px-3 py-1.5 rounded-lg border border-honey/40 bg-honey/10 text-honey flex items-center gap-1.5 hover:bg-honey/20 transition-colors font-medium">
+                        <Pencil className="w-3.5 h-3.5" /> Edit diagnostic
+                      </button>
+                      <button onClick={() => remove(r.id)} className="text-red-400 flex items-center gap-1 hover:underline ml-auto">
                         <Trash2 className="w-3.5 h-3.5" /> Delete record
                       </button>
                     </div>

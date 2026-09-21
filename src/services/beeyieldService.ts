@@ -2787,90 +2787,174 @@ export const beeyieldService = {
 
     // ========== INSPECTIONS ==========
     async getInspections(hiveId?: string): Promise<Inspection[]> {
+        const local = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+        let remote: Inspection[] = [];
         try {
             const rows = await apiGet<any[]>('inspections', hiveId ? { hive_id: hiveId } : undefined);
-            const remote = (rows || []).map(normalizeInspection);
-            // Merge any locally-stored inspections (from offline creates)
-            const local = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
-            if (local.length > 0) {
-                const remoteIds = new Set(remote.map(r => r.id));
-                const localOnly = local.filter(l => !remoteIds.has(l.id));
-                return [...localOnly, ...remote].sort((a, b) =>
-                    new Date(b.inspection_date).getTime() - new Date(a.inspection_date).getTime()
-                );
+            if (Array.isArray(rows)) {
+                remote = rows.map(normalizeInspection);
             }
-            return remote;
         } catch (error) {
-            console.error('getInspections (API failed, using local fallback):', error);
-            // Fallback: return locally-stored inspections
-            const local = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
-            if (hiveId) return local.filter(i => i.hive_id === hiveId);
-            return local;
+            try {
+                const rows = await apiGet<any[]>('beeyield/inspections', hiveId ? { hive_id: hiveId } : undefined);
+                if (Array.isArray(rows)) {
+                    remote = rows.map(normalizeInspection);
+                }
+            } catch (err2) {
+                console.warn('getInspections API fallback:', error);
+            }
         }
+
+        let sbRows: Inspection[] = [];
+        if (sb) {
+            try {
+                let query = sb.from('inspections').select('*').order('inspection_date', { ascending: false }).limit(300);
+                if (hiveId) query = query.eq('hive_id', hiveId);
+                const { data } = await query;
+                if (Array.isArray(data)) {
+                    sbRows = data.map(normalizeInspection);
+                }
+            } catch (sbErr) {
+                console.warn('Supabase getInspections fallback:', sbErr);
+            }
+        }
+
+        const combined = [...local, ...remote, ...sbRows];
+        const seen = new Set<string>();
+        const deduped: Inspection[] = [];
+        for (const item of combined) {
+            const key = item.id || JSON.stringify(item);
+            if (!seen.has(key)) {
+                seen.add(key);
+                deduped.push(item);
+            }
+        }
+        return deduped.sort((a, b) =>
+            new Date(b.inspection_date || (b as any).inspected_on || 0).getTime() - new Date(a.inspection_date || (a as any).inspected_on || 0).getTime()
+        );
     },
 
     async getInspectionById(id: string): Promise<Inspection | null> {
         try {
             return normalizeInspection(await apiGet<any>(`inspections/${id}`));
         } catch (error) {
-            console.error('getInspectionById:', error);
-            // Fallback: find in localStorage
+            try {
+                return normalizeInspection(await apiGet<any>(`beeyield/inspections/${id}`));
+            } catch (err2) {
+                console.error('getInspectionById:', error);
+            }
             const local = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
             return local.find(i => i.id === id) || null;
         }
     },
 
     async createInspection(inspection: InspectionCreateInput): Promise<{ data: Inspection | null; error: any }> {
+        const id = (inspection as any).id || _uuid();
+        const payload = { ...inspection, id };
+        let data: Inspection | null = null;
+        
         try {
-            const data = normalizeInspection(await apiPost<any>('inspections', inspection));
-            toast.success('Inspection saved successfully');
-            // Remove from local if it was synced
-            return { data, error: null };
+            data = normalizeInspection(await apiPost<any>('inspections', payload));
         } catch (error) {
-            console.warn('createInspection API failed, saving locally:', error);
-            // Fallback: persist to localStorage so it shows in the list
+            try {
+                data = normalizeInspection(await apiPost<any>('beeyield/inspections', payload));
+            } catch (err2) {
+                console.warn('createInspection API failed:', error);
+            }
+        }
+
+        if (!data && sb) {
+            try {
+                const { data: sbData } = await sb.from('inspections').insert({
+                    id,
+                    inspection_date: (payload as any).inspection_date || (payload as any).inspected_on,
+                    hive_label: (payload as any).hive_label,
+                    colony_health: (payload as any).colony_health,
+                    notes: (payload as any).notes,
+                }).select().maybeSingle();
+                if (sbData) data = normalizeInspection(sbData);
+            } catch (sbErr) {
+                console.warn('Supabase createInspection fallback:', sbErr);
+            }
+        }
+
+        if (!data) {
             const now = _nowIso();
-            const localRecord = normalizeInspection({
-                ...inspection,
-                id: _uuid(),
+            data = normalizeInspection({
+                ...payload,
+                id,
                 created_at: now,
                 updated_at: now,
             });
-            const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
-            existing.unshift(localRecord);
-            _lsWriteAlways(LS_KEYS.inspections, existing);
-            toast.success('Inspection saved locally');
-            return { data: localRecord, error: null };
         }
+
+        const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+        _lsWriteAlways(LS_KEYS.inspections, [data, ...existing.filter(i => i.id !== id)]);
+        toast.success('Inspection diagnostic saved');
+        return { data, error: null };
     },
 
     async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
+        let data: Inspection | null = null;
         try {
-            const data = normalizeInspection(await apiPut<any>(`inspections/${id}`, updates));
-            toast.success('Inspection updated successfully');
-            return { data, error: null };
+            data = normalizeInspection(await apiPut<any>(`inspections/${id}`, updates));
         } catch (error) {
-            console.warn('updateInspection API failed, updating locally:', error);
-            // Fallback: update in localStorage
-            const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
-            const idx = existing.findIndex(i => i.id === id);
-            if (idx >= 0) {
-                existing[idx] = normalizeInspection({ ...existing[idx], ...updates, updated_at: _nowIso() });
-                _lsWriteAlways(LS_KEYS.inspections, existing);
-                toast.success('Inspection updated locally');
-                return { data: existing[idx], error: null };
+            try {
+                data = normalizeInspection(await apiPut<any>(`beeyield/inspections/${id}`, updates));
+            } catch (err2) {
+                console.warn('updateInspection API failed:', error);
             }
-            toast.error('Failed to update inspection');
-            return { data: null, error };
         }
+
+        if (!data && sb) {
+            try {
+                const { data: sbData } = await sb.from('inspections').update({
+                    inspection_date: (updates as any).inspection_date || (updates as any).inspected_on,
+                    colony_health: (updates as any).colony_health,
+                    notes: (updates as any).notes,
+                }).eq('id', id).select().maybeSingle();
+                if (sbData) data = normalizeInspection(sbData);
+            } catch (sbErr) {
+                console.warn('Supabase updateInspection fallback:', sbErr);
+            }
+        }
+
+        const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+        const idx = existing.findIndex(i => i.id === id);
+        if (idx >= 0) {
+            existing[idx] = normalizeInspection({ ...existing[idx], ...updates, ...(data || {}), updated_at: _nowIso() });
+            _lsWriteAlways(LS_KEYS.inspections, existing);
+        } else if (data) {
+            existing.unshift(data);
+            _lsWriteAlways(LS_KEYS.inspections, existing);
+        }
+
+        toast.success('Inspection updated successfully');
+        return { data: data || (existing.find(i => i.id === id) as Inspection) || null, error: null };
     },
 
     async deleteInspection(id: string): Promise<{ error: any }> {
         try {
             await apiDelete(`inspections/${id}`);
-            toast.success('Inspection deleted');
-            // Also remove from local store
-            const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+        } catch (error) {
+            try {
+                await apiDelete(`beeyield/inspections/${id}`);
+            } catch (err2) {
+                console.warn('deleteInspection API failed:', error);
+            }
+        }
+        if (sb) {
+            try {
+                await sb.from('inspections').delete().eq('id', id);
+            } catch (sbErr) {
+                console.warn('Supabase deleteInspection fallback:', sbErr);
+            }
+        }
+        const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+        _lsWriteAlways(LS_KEYS.inspections, existing.filter(i => i.id !== id));
+        toast.success('Inspection deleted');
+        return { error: null };
+    },
             _lsWriteAlways(LS_KEYS.inspections, existing.filter(i => i.id !== id));
             return { error: null };
         } catch (error) {

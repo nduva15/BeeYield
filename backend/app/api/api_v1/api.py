@@ -51,6 +51,7 @@ api_router.include_router(pollination.router, prefix="/pollination", tags=["Prec
 
 # Inspections endpoint
 api_router.include_router(inspections.router, prefix="/inspections", tags=["Inspections"])
+api_router.include_router(inspections.router, prefix="/beeyield/inspections", tags=["Inspections"])
 
 # Intelligence endpoint (PRD: Neural Hive)
 api_router.include_router(intelligence.router, prefix="/intelligence", tags=["Intelligence"])
