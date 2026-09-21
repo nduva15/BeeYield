@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
-  X, Settings as SettingsIcon, User, Blocks, BellRing, ShieldCheck, CreditCard,
+  X, Settings as SettingsIcon, User, Blocks, BellRing, ShieldCheck, CreditCard, Wifi,
   Loader2, Save, Link2, Trash2, Copy, Plus, TrendingUp, TrendingDown, Wallet,
   Lock, Download, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw
 } from "lucide-react";
@@ -179,7 +180,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
     // 2. Fetch from Supabase
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("payment_methods")
         .select("*")
         .order("is_default", { ascending: false });
@@ -199,8 +200,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
           created_at: d.created_at || new Date().toISOString(),
         }));
         const map = new Map<string, PaymentCard>();
-        loaded.forEach((c) => map.set(c.id, c));
-        sbCards.forEach((c) => map.set(c.id, c));
+        loaded.forEach((c: PaymentCard) => map.set(c.id, c));
+        sbCards.forEach((c: any) => map.set(c.id, c));
         loaded = Array.from(map.values());
       }
     } catch (e) {
@@ -353,9 +354,9 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       // 3. Mirror to Supabase payment_methods
       try {
         if (newCard.is_default) {
-          await supabase.from("payment_methods").update({ is_default: false }).eq("status", "active");
+          await supabase.from('payment_methods' as any).update({ is_default: false }).eq("status", "active");
         }
-        await supabase.from("payment_methods").insert({
+        await supabase.from('payment_methods' as any).insert({
           id: newCard.id,
           card_holder_name: newCard.card_holder_name,
           provider: newCard.provider,
@@ -407,7 +408,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     } catch {}
 
     try {
-      await supabase.from("payment_methods").delete().eq("id", cardId);
+      await supabase.from('payment_methods' as any).delete().eq("id", cardId);
     } catch {}
 
     try {
@@ -429,8 +430,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     } catch {}
 
     try {
-      await supabase.from("payment_methods").update({ is_default: false }).neq("id", cardId);
-      await supabase.from("payment_methods").update({ is_default: true }).eq("id", cardId);
+      await supabase.from('payment_methods' as any).update({ is_default: false }).neq("id", cardId);
+      await supabase.from('payment_methods' as any).update({ is_default: true }).eq("id", cardId);
     } catch {}
 
     try {
@@ -548,20 +549,21 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         .eq("device_id", deviceId)
         .maybeSingle();
       if (!error && data) {
-        if (data.modules) setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...data.modules }));
-        if (data.alert_prefs) setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...data.alert_prefs }));
+        const d = data as any;
+        if (d.modules && typeof d.modules === "object") setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...d.modules }));
+        if (d.alert_prefs && typeof d.alert_prefs === "object") setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...d.alert_prefs }));
       }
     } catch {}
   }, [deviceId]);
 
   const loadRevenue = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("harvest_projections")
         .select("projected_revenue, projected_cost");
       if (!error && data && data.length > 0) {
-        const rev = data.reduce((acc, row: any) => acc + (Number(row.projected_revenue) || 0), 0);
-        const costs = data.reduce((acc, row: any) => acc + (Number(row.projected_cost) || 0), 0);
+        const rev = data.reduce((acc: number, row: any) => acc + (Number(row.projected_revenue) || 0), 0);
+        const costs = data.reduce((acc: number, row: any) => acc + (Number(row.projected_cost) || 0), 0);
         if (rev > 0) setRevenue({ revenue: rev, costs });
       }
     } catch {}
@@ -609,7 +611,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         JSON.stringify({ modules: nextModules, alert_prefs: nextAlerts })
       );
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("app_settings")
         .upsert(
           {
@@ -963,7 +965,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                     setNewCardName(fullName || "Timothy Nduva");
                     setShowAddCardModal(true);
                   }}
-                  className="px-3.5 py-2 rounded-lg bg-honey text-background font-semibold text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-colors shadow-sm self-start sm:self-auto"
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs flex items-center gap-2 hover:shadow-lg transition-all shadow-md border border-emerald-500/40 self-start sm:self-auto"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add payment card
                 </button>
@@ -1108,72 +1110,114 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         )}
       </div>
 
-      {/* Add Payment Card Modal with Interactive 3D Preview & Stripe Vaulting */}
-      {showAddCardModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-honey/15 text-honey">
+            {/* Add Payment Card Modal with Interactive 3D Preview & Stripe Vaulting */}
+      {showAddCardModal && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAddCardModal(false);
+          }}
+        >
+          <div className="relative w-full max-w-lg rounded-3xl border border-white/15 bg-card/95 backdrop-blur-2xl p-6 sm:p-7 shadow-2xl space-y-5 my-auto animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-border/60">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shadow-sm">
                   <CreditCard className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-display text-lg font-bold text-foreground">Add Payment Card</h3>
-                  <p className="text-xs text-muted-foreground">Secured with Stripe 256-bit encryption</p>
+                  <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
+                    Add Payment Card
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#635BFF]/15 text-[#818cf8] border border-[#635BFF]/30 font-sans">
+                      Stripe Verified
+                    </span>
+                  </h3>
+                  <p className="text-xs text-muted-foreground">Secured via Stripe Tier-1 PCI-DSS Level 1 tokenized enclave</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddCardModal(false)}
-                className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                className="p-2 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
+                aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Interactive Visual Credit Card Preview */}
-            <div className={`rounded-xl p-4 text-white bg-gradient-to-br ${cardBrand.bgGradient} border border-white/10 shadow-lg relative overflow-hidden transition-all duration-300`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {/* EMV Chip Visual */}
-                  <div className="w-8 h-6 rounded-md bg-gradient-to-tr from-amber-400 to-amber-200 border border-amber-500/40 relative overflow-hidden">
-                    <div className="absolute inset-1 border border-amber-600/40 rounded-sm" />
+            {/* Authentic Visual Stripe Credit Card Preview */}
+            <div 
+              className="relative w-full rounded-2xl p-5 sm:p-6 text-white shadow-2xl overflow-hidden border border-white/20 transition-all duration-300 select-none aspect-[1.586/1] flex flex-col justify-between"
+              style={{
+                background: 'radial-gradient(circle at 10% 20%, rgba(99, 91, 255, 0.95) 0%, rgba(79, 70, 229, 0.8) 40%, transparent 80%), radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.7) 0%, rgba(168, 85, 247, 0.5) 50%, transparent 80%), radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.3) 0%, transparent 60%), linear-gradient(135deg, #0a2540 0%, #1e1b4b 50%, #030712 100%)',
+                boxShadow: '0 20px 40px -15px rgba(99, 91, 255, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
+              }}
+            >
+              {/* Card Holographic Reflection Highlight */}
+              <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-white/20 via-white/5 to-transparent rounded-full -mr-24 -mt-24 blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-cyan-400/20 rounded-full blur-2xl pointer-events-none" />
+
+              {/* Top Row: Chip, Contactless, & Stripe Logo */}
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-3">
+                  {/* Real Metallic Golden EMV Chip */}
+                  <div className="w-11 h-8 rounded-md bg-gradient-to-br from-[#FFE082] via-[#FFD54F] to-[#FFA000] border border-[#FFB300]/80 p-1 relative shadow-inner overflow-hidden">
+                    <div className="absolute inset-0 grid grid-cols-2 border border-[#FF8F00]/50 rounded-sm">
+                      <div className="border-r border-b border-[#FF8F00]/40" />
+                      <div className="border-b border-[#FF8F00]/40" />
+                      <div className="border-r border-[#FF8F00]/40" />
+                      <div />
+                    </div>
+                    <div className="absolute inset-1.5 border border-[#FF6F00]/50 rounded-sm" />
                   </div>
-                  {/* Contactless waves */}
-                  <svg className="w-4 h-4 text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+
+                  {/* Contactless RFID Wave Icon */}
+                  <svg className="w-5 h-5 text-white/80 rotate-90 drop-shadow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                     <path d="M8.5 16.5a5 5 0 0 1 0-9" />
                     <path d="M12 19a8.5 8.5 0 0 0 0-14" />
+                    <path d="M15.5 21.5a12 12 0 0 0 0-19" />
                   </svg>
                 </div>
-                <span className="font-bold tracking-widest text-xs px-2 py-0.5 rounded bg-white/10 text-white/90">
-                  {cardBrand.icon}
-                </span>
+
+                {/* Iconic Stripe Wordmark & Network Badge */}
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 shadow-sm flex items-center gap-1.5">
+                    <span className="font-sans font-black tracking-tight text-white text-sm lowercase drop-shadow-sm">stripe</span>
+                  </div>
+                  <span className="font-mono font-bold tracking-widest text-[10px] px-2 py-1 rounded bg-black/30 backdrop-blur-sm text-white/90 border border-white/10 uppercase">
+                    {cardBrand.icon || "CARD"}
+                  </span>
+                </div>
               </div>
 
-              <div className="mt-4">
-                <p className="font-mono text-lg font-bold tracking-wider text-white">
+              {/* Middle: Card Number with authentic monospaced spacing */}
+              <div className="my-auto py-2 relative z-10">
+                <p className="font-mono text-xl sm:text-2xl font-black tracking-[0.22em] text-white drop-shadow-lg text-shadow-sm">
                   {newCardNumber.padEnd(19, "•").replace(/(\d{4}|\•{4})(?=\S)/g, "$1 ")}
                 </p>
               </div>
 
-              <div className="mt-3 flex items-center justify-between text-xs text-white/80 font-mono">
-                <div>
-                  <span className="text-[9px] uppercase tracking-wider text-white/50 block">Cardholder</span>
-                  <span className="font-medium truncate max-w-[170px] block">
-                    {newCardName.trim() || "CARDHOLDER NAME"}
+              {/* Bottom Row: Cardholder, Expiry, and Security Seal */}
+              <div className="relative z-10 pt-2 border-t border-white/15 flex items-end justify-between">
+                <div className="space-y-0.5">
+                  <span className="text-[9px] uppercase tracking-wider text-white/60 font-mono block">Cardholder</span>
+                  <span className="font-mono font-bold text-xs sm:text-sm text-white tracking-wider truncate max-w-[200px] block drop-shadow-sm">
+                    {(newCardName.trim() || "CARDHOLDER NAME").toUpperCase()}
                   </span>
                 </div>
-                <div>
-                  <span className="text-[9px] uppercase tracking-wider text-white/50 block">Expires</span>
-                  <span className="font-medium">{newCardExpiry || "MM/YY"}</span>
-                </div>
-              </div>
 
-              <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] text-white/50">
-                <span className="flex items-center gap-1 font-sans">
-                  <Lock className="w-2.5 h-2.5 text-emerald-400" /> Stripe Tokenized Vault
-                </span>
-                <span className="uppercase tracking-widest font-sans">PCI-DSS Level 1</span>
+                <div className="flex items-center gap-4">
+                  <div className="space-y-0.5 text-right">
+                    <span className="text-[8px] uppercase tracking-wider text-white/60 font-mono block">Expires</span>
+                    <span className="font-mono font-bold text-xs sm:text-sm text-white tracking-wider block drop-shadow-sm">
+                      {newCardExpiry || "MM/YY"}
+                    </span>
+                  </div>
+
+                  {/* Iridescent Hologram Security Seal */}
+                  <div className="w-8 h-6 rounded-md bg-gradient-to-tr from-rose-400/40 via-cyan-300/40 to-amber-300/40 border border-white/40 shadow-inner flex items-center justify-center backdrop-blur-sm">
+                    <div className="w-3 h-3 rounded-full bg-white/30 animate-pulse" />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1279,7 +1323,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 <button
                   type="submit"
                   disabled={savingCard}
-                  className="px-4 py-2 rounded-lg bg-honey text-background font-semibold text-xs flex items-center gap-1.5 hover:bg-honey/90 disabled:opacity-50 shadow-md"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs flex items-center gap-2 disabled:opacity-50 shadow-md transition-all border border-emerald-500/40"
                 >
                   {savingCard ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Lock className="w-3.5 h-3.5" />}
                   Save Card Securely
@@ -1287,7 +1331,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

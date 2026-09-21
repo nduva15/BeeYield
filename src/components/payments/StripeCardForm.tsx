@@ -174,6 +174,51 @@ const DirectSecureCardForm: React.FC<StripeCardFormProps> = ({
                 </span>
             </div>
 
+            {/* Visual Stripe Card Preview */}
+            <div 
+                className="relative w-full rounded-2xl p-5 text-white shadow-xl overflow-hidden border border-white/20 transition-all duration-300 select-none aspect-[1.65/1] flex flex-col justify-between mb-4"
+                style={{
+                    background: 'radial-gradient(circle at 10% 20%, rgba(99, 91, 255, 0.95) 0%, rgba(79, 70, 229, 0.8) 40%, transparent 80%), radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.7) 0%, rgba(168, 85, 247, 0.5) 50%, transparent 80%), radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.3) 0%, transparent 60%), linear-gradient(135deg, #0a2540 0%, #1e1b4b 50%, #030712 100%)',
+                    boxShadow: '0 16px 32px -10px rgba(99, 91, 255, 0.4)'
+                }}
+            >
+                <div className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-white/20 via-white/5 to-transparent rounded-full -mr-20 -mt-20 blur-2xl pointer-events-none" />
+                <div className="flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-7 rounded-md bg-gradient-to-br from-[#FFE082] via-[#FFD54F] to-[#FFA000] border border-[#FFB300]/80 p-0.5 relative shadow-inner overflow-hidden">
+                            <div className="absolute inset-0 grid grid-cols-2 border border-[#FF8F00]/50 rounded-sm" />
+                        </div>
+                        <svg className="w-4 h-4 text-white/80 rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                            <path d="M8.5 16.5a5 5 0 0 1 0-9" />
+                            <path d="M12 19a8.5 8.5 0 0 0 0-14" />
+                        </svg>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="font-sans font-black tracking-tight text-white text-xs lowercase px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20">stripe</span>
+                        <span className="font-mono font-bold text-[9px] px-1.5 py-0.5 rounded bg-black/40 text-white/90 uppercase border border-white/10">{brand}</span>
+                    </div>
+                </div>
+                <div className="my-auto py-1 relative z-10">
+                    <p className="font-mono text-lg sm:text-xl font-black tracking-[0.2em] text-white drop-shadow">
+                        {cardNumber ? cardNumber.padEnd(19, "•") : "•••• •••• •••• ••••"}
+                    </p>
+                </div>
+                <div className="relative z-10 pt-1.5 border-t border-white/15 flex items-end justify-between">
+                    <div>
+                        <span className="text-[8px] uppercase tracking-wider text-white/60 font-mono block">Cardholder</span>
+                        <span className="font-mono font-bold text-xs text-white tracking-wider truncate max-w-[170px] block">
+                            {(cardName.trim() || "CARDHOLDER NAME").toUpperCase()}
+                        </span>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-[8px] uppercase tracking-wider text-white/60 font-mono block">Expires</span>
+                        <span className="font-mono font-bold text-xs text-white tracking-wider block">
+                            {expiry || "MM/YY"}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             {showCardholderName && (
                 <div className="space-y-1.5">
                     <Label className="text-xs font-bold">Cardholder Name</Label>
@@ -238,7 +283,7 @@ const DirectSecureCardForm: React.FC<StripeCardFormProps> = ({
             <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-xl bg-[#F4D03F] hover:bg-[#e4be25] text-neutral-900 font-bold shadow-md flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md flex items-center justify-center gap-2"
             >
                 {loading ? (
                     <>
