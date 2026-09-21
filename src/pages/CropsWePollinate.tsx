@@ -11,7 +11,6 @@ import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/data/beePollinationData";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import { PandaMitiSection } from "@/components/PandaMitiSection";
 
 const CropsWePollinate = () => {
   const pollinationCrops = dashboardPollinationCropDetails;
@@ -338,9 +337,6 @@ const CropsWePollinate = () => {
           </div>
         </div>
       </section>
-
-      {/* Panda Miti Initiative - 45,000 Trees */}
-      <PandaMitiSection />
 
       {/* Missing Crop CTA */}
       <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">

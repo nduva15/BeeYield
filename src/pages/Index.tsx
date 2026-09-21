@@ -730,30 +730,6 @@ export default function Index() {
                 and global industry research. Ask anything.
               </p>
 
-              {/* Panda Miti Initiative Banner */}
-              <div className="w-full max-w-2xl mb-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-teal-500/10 border border-emerald-500/30 text-left shadow-sm">
-                <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                    <Trees className="w-4 h-4 text-emerald-500" />
-                    <span>Panda Miti Initiative • Kibwezi Reforestation</span>
-                  </div>
-                  <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                    2,500 / 45,000 Trees Planted
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                  Our direct ecological mission to plant <strong className="text-foreground">45,000 indigenous and bee-forage trees</strong> across the semi-arid landscape around <strong className="text-emerald-600 dark:text-emerald-400">Kibwezi, Makueni County</strong>. Reviving natural water catchments, preventing desertification, and creating flowering acacia forage for 184+ bee colonies.
-                </p>
-                <div className="h-2 w-full bg-muted rounded-full overflow-hidden mb-2">
-                  <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 rounded-full" style={{ width: '5.6%' }} />
-                </div>
-                <div className="flex justify-between items-center text-[11px] text-muted-foreground">
-                  <span>Planted: <strong className="text-foreground">2,500</strong> (5.6%) • Target: <strong className="text-foreground">45,000</strong></span>
-                  <a href="/about" className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
-                    Explore Kibwezi Story →
-                  </a>
-                </div>
-              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-2xl">
                 {SUGGESTIONS.map((s) => (
                   <button
