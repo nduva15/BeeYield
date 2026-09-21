@@ -11,7 +11,7 @@ export const useNotes = () => {
         queryFn: async () => {
             const data = await beeyieldService.getNotes();
             if (!userId) return data;
-            return data.filter(n => !n.user_id || n.user_id === userId);
+            return data.filter(n => !n.user_id || n.user_id === userId || n.user_id === 'local-user');
         },
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
@@ -22,7 +22,7 @@ export const useCreateNote = () => {
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
     return useMutation({
-        mutationFn: (input: NoteCreateInput) => beeyieldService.createNote(input),
+        mutationFn: (input: NoteCreateInput) => beeyieldService.createNote(input, userId),
         onSuccess: (result) => {
             if (!result.data) return;
             queryClient.setQueryData<Note[]>(['notes', userId], (current = []) => [

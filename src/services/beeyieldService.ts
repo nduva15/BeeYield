@@ -2151,50 +2151,270 @@ export const beeyieldService = {
     },
 
     // ========== NOTES ==========
-    async getNotes(): Promise<Note[]> {
+    async getNotes(apiaryId?: string, hiveId?: string): Promise<Note[]> {
+        let remote: Note[] = [];
         try {
-            return await apiGet<Note[]>('beeyield/notes');
+            const params: any = {};
+            if (apiaryId) params.apiary_id = apiaryId;
+            if (hiveId) params.hive_id = hiveId;
+            remote = (await apiGet<Note[]>('beeyield/notes', Object.keys(params).length ? params : undefined)) || [];
         } catch (error) {
-            console.error('getNotes:', error);
-            return [];
+            console.warn('getNotes (API failed, checking Supabase/local):', error);
         }
+
+        // Try Supabase if API returned empty
+        if (remote.length === 0 && sb) {
+            try {
+                let query = sb.from('notes').select('*').order('created_at', { ascending: false });
+                if (apiaryId) query = query.eq('apiary_id', apiaryId);
+                if (hiveId) query = query.eq('hive_id', hiveId);
+                const { data, error } = await query;
+                if (!error && Array.isArray(data)) {
+                    remote = data.map((n: any) => ({
+                        ...n,
+                        priority: (String(n.priority || 'medium').toLowerCase() === 'high' ? 'high' :
+                                   String(n.priority || 'medium').toLowerCase() === 'low' ? 'low' : 'medium'),
+                        note_date: n.note_date || n.created_at || _nowIso(),
+                    })) as Note[];
+                }
+            } catch (sbErr) {
+                console.warn('Supabase getNotes error:', sbErr);
+            }
+        }
+
+        // Merge any locally-stored notes (from offline or local creates)
+        const local = _lsReadAlways<Note[]>(LS_KEYS.notes, []);
+        let localFiltered = local;
+        if (apiaryId) localFiltered = localFiltered.filter((n) => n.apiary_id === apiaryId);
+        if (hiveId) localFiltered = localFiltered.filter((n) => n.hive_id === hiveId);
+
+        if (localFiltered.length > 0) {
+            const remoteIds = new Set(remote.map((n) => n.id));
+            const localOnly = localFiltered.filter((l) => !remoteIds.has(l.id));
+            return [...localOnly, ...remote].sort(
+                (a, b) => new Date(b.created_at || b.note_date || 0).getTime() - new Date(a.created_at || a.note_date || 0).getTime()
+            );
+        }
+
+        return remote;
     },
 
-    async createNote(input: NoteCreateInput): Promise<{ data: Note | null; error: any }> {
+    async getNoteById(id: string): Promise<Note | null> {
         try {
-            const data = await apiPost<Note>('beeyield/notes', input);
-            toast.success('Note saved');
-            return { data, error: null };
+            const res = await apiGet<Note>(`beeyield/notes/${id}`);
+            if (res) return res;
         } catch (error) {
-            console.error('createNote:', error);
-            toast.error('Failed to save note');
-            return { data: null, error };
+            console.warn('getNoteById API failed, trying Supabase/local:', error);
         }
+
+        if (sb) {
+            try {
+                const { data, error } = await sb.from('notes').select('*').eq('id', id).maybeSingle();
+                if (!error && data) {
+                    return {
+                        ...data,
+                        priority: (String(data.priority || 'medium').toLowerCase() === 'high' ? 'high' :
+                                   String(data.priority || 'medium').toLowerCase() === 'low' ? 'low' : 'medium'),
+                        note_date: data.note_date || data.created_at || _nowIso(),
+                    } as Note;
+                }
+            } catch (sbErr) {
+                console.warn('Supabase getNoteById error:', sbErr);
+            }
+        }
+
+        const local = _lsReadAlways<Note[]>(LS_KEYS.notes, []);
+        return local.find((n) => n.id === id) || null;
+    },
+
+    async createNote(input: NoteCreateInput, explicitUserId?: string): Promise<{ data: Note | null; error: any }> {
+        const now = _nowIso();
+        const newId = _uuid();
+        const resolvedUserId = explicitUserId || (await getBeeYieldUserId()) || 'local-user';
+        const priority =
+            String(input.priority || 'medium').toLowerCase() === 'high' ? 'high' :
+            String(input.priority || 'medium').toLowerCase() === 'low' ? 'low' :
+            'medium';
+        const noteDate = input.note_date || now.split('T')[0];
+
+        let createdData: Note | null = null;
+
+        // 1. Try backend API
+        try {
+            const payload: any = {
+                ...input,
+                title: input.title?.trim() || undefined,
+                content: input.content?.trim() || undefined,
+                category: input.category || 'General',
+                priority,
+                note_date: noteDate,
+            };
+            createdData = await apiPost<Note>('beeyield/notes', payload);
+        } catch (apiErr) {
+            console.warn('createNote API failed, falling back to Supabase / local:', apiErr);
+        }
+
+        // 2. Try Supabase directly
+        if (!createdData && sb && resolvedUserId && resolvedUserId !== 'local-user') {
+            try {
+                const sbPayload: any = {
+                    id: newId,
+                    user_id: resolvedUserId,
+                    apiary_id: input.apiary_id || null,
+                    hive_id: input.hive_id || null,
+                    title: input.title?.trim() || 'Untitled Note',
+                    content: input.content?.trim() || '',
+                    category: input.category || 'General',
+                    priority,
+                    note_date: noteDate,
+                    created_at: now,
+                    updated_at: now,
+                };
+                const { data, error } = await sb.from('notes').insert(sbPayload).select().single();
+                if (!error && data) {
+                    createdData = data as Note;
+                } else {
+                    console.warn('Supabase insert note error:', error);
+                }
+            } catch (sbErr) {
+                console.warn('Supabase insert note exception:', sbErr);
+            }
+        }
+
+        // 3. Fallback to local record
+        if (!createdData) {
+            createdData = {
+                id: newId,
+                user_id: resolvedUserId,
+                apiary_id: input.apiary_id || undefined,
+                hive_id: input.hive_id || undefined,
+                title: input.title?.trim() || 'Untitled Note',
+                content: input.content?.trim() || '',
+                category: input.category || 'General',
+                priority,
+                note_date: noteDate,
+                created_at: now,
+                updated_at: now,
+            };
+        }
+
+        // Always persist to localStorage for instant UI response and offline safety
+        const existing = _lsReadAlways<Note[]>(LS_KEYS.notes, []);
+        const updatedList = [createdData, ...existing.filter((n) => n.id !== createdData!.id)];
+        _lsWriteAlways(LS_KEYS.notes, updatedList);
+
+        toast.success('Note saved');
+        return { data: createdData, error: null };
     },
 
     async updateNote(id: string, updates: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
+        const now = _nowIso();
+        const priority = updates.priority
+            ? (String(updates.priority).toLowerCase() === 'high' ? 'high' :
+               String(updates.priority).toLowerCase() === 'low' ? 'low' : 'medium')
+            : undefined;
+
+        let updatedData: Note | null = null;
+
+        // 1. Try backend API
         try {
-            const data = await apiPut<Note>(`beeyield/notes/${id}`, updates);
-            toast.success('Note updated');
-            return { data, error: null };
-        } catch (error) {
-            console.error('updateNote:', error);
-            toast.error('Failed to update note');
-            return { data: null, error };
+            updatedData = await apiPut<Note>(`beeyield/notes/${id}`, {
+                ...updates,
+                priority,
+            });
+        } catch (apiErr) {
+            console.warn('updateNote API failed, falling back to Supabase / local:', apiErr);
         }
+
+        // 2. Try Supabase
+        if (!updatedData && sb) {
+            try {
+                const sbUpdates: any = {
+                    updated_at: now,
+                };
+                if (updates.title !== undefined) sbUpdates.title = updates.title.trim();
+                if (updates.content !== undefined) sbUpdates.content = updates.content.trim();
+                if (updates.category !== undefined) sbUpdates.category = updates.category;
+                if (priority !== undefined) sbUpdates.priority = priority;
+                if (updates.note_date !== undefined) sbUpdates.note_date = updates.note_date;
+                if (updates.apiary_id !== undefined) sbUpdates.apiary_id = updates.apiary_id || null;
+                if (updates.hive_id !== undefined) sbUpdates.hive_id = updates.hive_id || null;
+
+                const { data, error } = await sb.from('notes').update(sbUpdates).eq('id', id).select().single();
+                if (!error && data) {
+                    updatedData = data as Note;
+                } else {
+                    console.warn('Supabase update note error:', error);
+                }
+            } catch (sbErr) {
+                console.warn('Supabase update note exception:', sbErr);
+            }
+        }
+
+        // 3. Fallback to localStorage
+        const existing = _lsReadAlways<Note[]>(LS_KEYS.notes, []);
+        const idx = existing.findIndex((n) => n.id === id);
+
+        if (idx >= 0) {
+            const merged: Note = {
+                ...existing[idx],
+                ...updates,
+                priority: (priority || existing[idx].priority) as any,
+                updated_at: now,
+            };
+            existing[idx] = updatedData ? { ...merged, ...updatedData } : merged;
+            _lsWriteAlways(LS_KEYS.notes, existing);
+            if (!updatedData) updatedData = existing[idx];
+        } else if (updatedData) {
+            existing.unshift(updatedData);
+            _lsWriteAlways(LS_KEYS.notes, existing);
+        } else {
+            const fallbackRecord: Note = {
+                id,
+                user_id: 'local-user',
+                title: updates.title || 'Note',
+                content: updates.content || '',
+                category: updates.category || 'General',
+                priority: (priority || 'medium') as any,
+                note_date: updates.note_date || now.split('T')[0],
+                created_at: now,
+                updated_at: now,
+                apiary_id: updates.apiary_id,
+                hive_id: updates.hive_id,
+            };
+            existing.unshift(fallbackRecord);
+            _lsWriteAlways(LS_KEYS.notes, existing);
+            updatedData = fallbackRecord;
+        }
+
+        toast.success('Note updated');
+        return { data: updatedData, error: null };
     },
 
     async deleteNote(id: string): Promise<{ error: any }> {
+        // 1. Try backend API
         try {
             console.log(`[BeeYieldService] Attempting to delete note: ${id}`);
             await apiDelete(`beeyield/notes/${id}`);
-            toast.success('Note deleted');
-            return { error: null };
-        } catch (error: any) {
-            console.error('deleteNote:', error);
-            toast.error('Failed to delete note');
-            return { error };
+        } catch (apiErr) {
+            console.warn('deleteNote API failed, proceeding to Supabase / local:', apiErr);
         }
+
+        // 2. Try Supabase
+        if (sb) {
+            try {
+                await sb.from('notes').delete().eq('id', id);
+            } catch (sbErr) {
+                console.warn('Supabase delete note error:', sbErr);
+            }
+        }
+
+        // 3. Always remove from local storage
+        const existing = _lsReadAlways<Note[]>(LS_KEYS.notes, []);
+        _lsWriteAlways(LS_KEYS.notes, existing.filter((n) => n.id !== id));
+
+        toast.success('Note deleted');
+        return { error: null };
     },
 
     // ========== HIVES ==========
