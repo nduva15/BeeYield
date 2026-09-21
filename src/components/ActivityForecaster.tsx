@@ -143,7 +143,7 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "flight" }),
       });
-      if (!resp.ok || !resp.body) { toast.error("AI failed"); setAiLoading(false); return; }
+      if (!resp.ok || !resp.body) { toast.error("AI generation failed. Please try again."); setAiLoading(false); return; }
       const reader = resp.body.getReader(); const decoder = new TextDecoder();
       let buf = ""; let acc = ""; let done = false;
       while (!done) {
@@ -160,7 +160,7 @@ Provide: (1) best foraging day & why; (2) weakest day & cause (cold/wind/rain); 
           try { const p = JSON.parse(j); const c = p.choices?.[0]?.delta?.content; if (c) { acc += c; setAiText(acc); } } catch { /* partial */ }
         }
       }
-    } catch { toast.error("AI failed"); }
+    } catch { toast.error("AI generation failed. Please try again."); }
     finally { setAiLoading(false); }
   };
 
