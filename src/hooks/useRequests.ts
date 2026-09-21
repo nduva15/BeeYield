@@ -24,7 +24,7 @@ export function useRequests() {
         queryFn: async () => {
             const data = await beeyieldService.getRequests();
             if (!userId) return data;
-            return data.filter((request) => !request.user_id || request.user_id === userId);
+            return data.filter((request) => !request.user_id || request.user_id === userId || request.user_id === 'local-user');
         },
         staleTime: 1000 * 30,
     });
@@ -45,7 +45,7 @@ export function useCreateRequest() {
     const userId = useRequestUserId();
 
     return useMutation({
-        mutationFn: (input: RequestCreateInput) => beeyieldService.createRequest(input),
+        mutationFn: (input: RequestCreateInput) => beeyieldService.createRequest(input, userId),
         onSuccess: (result) => {
             if (!result.data) return;
             queryClient.setQueryData<SupportRequest[]>(requestKeys.list(userId), (current = []) => [
@@ -70,6 +70,7 @@ export function useUpdateRequest() {
                 )
             );
             queryClient.setQueryData(requestKeys.detail(variables.id, userId), response.data);
+            queryClient.invalidateQueries({ queryKey: requestKeys.lists() });
         },
     });
 }

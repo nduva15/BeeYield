@@ -202,6 +202,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                 priority: form.priority,
                 apiary_id: form.apiary_id || undefined,
                 hive_id: form.hive_id || undefined,
+                status: form.status,
             });
             if (response.error || !response.data) return;
             setSelectedRequestId(response.data.id);
@@ -438,7 +439,7 @@ const MyRequestsView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTa
                                     <Button className={glass.btnSecondary} onClick={() => openEditForm(selectedRequest)} disabled={!canEdit}>
                                         Edit
                                     </Button>
-                                    <Button className={glass.btnSecondary} onClick={() => setRequestToDelete(selectedRequest)} disabled={!canEdit}>
+                                    <Button className={glass.btnSecondary} onClick={() => setRequestToDelete(selectedRequest)}>
                                         <Trash2 className="w-4 h-4" />
                                         Delete
                                     </Button>

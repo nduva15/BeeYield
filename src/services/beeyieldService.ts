@@ -22,6 +22,7 @@ const LS_KEYS = {
     hives: 'beeyield_local_hives_v1',
     harvests: 'beeyield_local_harvests_v1',
     requests: 'beeyield_local_requests_v1',
+    request_comments: 'beeyield_local_request_comments_v1',
     inspections: 'beeyield_local_inspections_v1',
     notes: 'beeyield_local_notes_v1',
 } as const;
@@ -2723,33 +2724,89 @@ export const beeyieldService = {
     },
 
     async getRequests(): Promise<SupportRequest[]> {
+        let remote: SupportRequest[] = [];
         try {
-            return await apiGet<SupportRequest[]>('beeyield/requests');
+            remote = (await apiGet<SupportRequest[]>('beeyield/requests')) || [];
         } catch (error) {
-            console.error('getRequests:', error);
-            return [];
+            console.warn('getRequests (API failed, checking Supabase/local):', error);
         }
+
+        // Try Supabase if API returned empty
+        if (remote.length === 0 && sb) {
+            try {
+                const { data, error } = await sb
+                    .from('requests')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                if (!error && Array.isArray(data)) {
+                    remote = data.map((r: any) => ({
+                        ...r,
+                        priority: r.priority ? (String(r.priority)[0].toUpperCase() + String(r.priority).slice(1)) : 'Medium',
+                        status: r.status ? (String(r.status)[0].toUpperCase() + String(r.status).slice(1)) : 'Open',
+                    })) as SupportRequest[];
+                }
+            } catch (sbErr) {
+                console.warn('Supabase getRequests error:', sbErr);
+            }
+        }
+
+        // Merge any locally stored requests (from offline or local creates)
+        const local = _lsReadAlways<SupportRequest[]>(LS_KEYS.requests, []);
+        if (local.length > 0) {
+            const remoteIds = new Set(remote.map((r) => r.id));
+            const localOnly = local.filter((l) => !remoteIds.has(l.id));
+            return [...localOnly, ...remote].sort(
+                (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+            );
+        }
+
+        return remote;
     },
 
     async getRequestById(id: string): Promise<SupportRequest | null> {
         try {
-            return await apiGet<SupportRequest>(`beeyield/requests/${id}`);
+            const res = await apiGet<SupportRequest>(`beeyield/requests/${id}`);
+            if (res) return res;
         } catch (error) {
-            console.error('getRequestById:', error);
-            return null;
+            console.warn('getRequestById API failed, trying Supabase/local:', error);
         }
+
+        if (sb) {
+            try {
+                const { data, error } = await sb.from('requests').select('*').eq('id', id).maybeSingle();
+                if (!error && data) {
+                    return {
+                        ...data,
+                        priority: data.priority ? (String(data.priority)[0].toUpperCase() + String(data.priority).slice(1)) : 'Medium',
+                        status: data.status ? (String(data.status)[0].toUpperCase() + String(data.status).slice(1)) : 'Open',
+                    } as SupportRequest;
+                }
+            } catch (sbErr) {
+                console.warn('Supabase getRequestById error:', sbErr);
+            }
+        }
+
+        const local = _lsReadAlways<SupportRequest[]>(LS_KEYS.requests, []);
+        return local.find((r) => r.id === id) || null;
     },
 
-    async createRequest(input: RequestCreateInput): Promise<{ data: SupportRequest | null; error: any }> {
+    async createRequest(input: RequestCreateInput, explicitUserId?: string): Promise<{ data: SupportRequest | null; error: any }> {
+        const pRaw = String(input.priority || 'Medium').trim().toLowerCase();
+        const priority =
+            pRaw === 'low' ? 'Low' :
+            pRaw === 'high' ? 'High' :
+            pRaw === 'critical' ? 'Critical' :
+            'Medium';
+        const statusRaw = String(input.status || 'Open').trim().toLowerCase();
+        const requestStatus = statusRaw === 'draft' ? 'Draft' : 'Open';
+        const now = _nowIso();
+        const newId = _uuid();
+        const resolvedUserId = explicitUserId || (await getBeeYieldUserId()) || 'local-user';
+
+        let createdData: SupportRequest | null = null;
+
+        // 1. Try backend API
         try {
-            const pRaw = String(input.priority || 'Medium').trim().toLowerCase();
-            const priority =
-                pRaw === 'low' ? 'Low' :
-                pRaw === 'high' ? 'High' :
-                pRaw === 'critical' ? 'Critical' :
-                'Medium';
-            const statusRaw = String(input.status || 'Open').trim().toLowerCase();
-            const requestStatus = statusRaw === 'draft' ? 'Draft' : 'Open';
             const payload: any = {
                 subject: input.subject.trim(),
                 description: input.description.trim(),
@@ -2760,36 +2817,94 @@ export const beeyieldService = {
                 priority,
                 status: requestStatus,
             };
-            const data = await apiPost<SupportRequest>('beeyield/requests', payload);
-            toast.success('Request submitted');
-            return { data, error: null };
-        } catch (error) {
-            console.error('createRequest:', error);
-            toast.error('Failed to submit request');
-            return { data: null, error };
+            createdData = await apiPost<SupportRequest>('beeyield/requests', payload);
+        } catch (apiErr) {
+            console.warn('createRequest API failed, falling back to Supabase / local:', apiErr);
         }
+
+        // 2. Try Supabase directly
+        if (!createdData && sb && resolvedUserId && resolvedUserId !== 'local-user') {
+            try {
+                const sbPayload: any = {
+                    id: newId,
+                    user_id: resolvedUserId,
+                    subject: input.subject.trim(),
+                    description: input.description.trim(),
+                    type: input.type || 'support',
+                    category: input.category || input.type || 'General',
+                    priority: priority.toLowerCase(),
+                    status: requestStatus.toLowerCase(),
+                    apiary_id: input.apiary_id || null,
+                    hive_id: input.hive_id || null,
+                    created_at: now,
+                    updated_at: now,
+                };
+                const { data, error } = await sb.from('requests').insert(sbPayload).select().single();
+                if (!error && data) {
+                    createdData = {
+                        ...data,
+                        priority,
+                        status: requestStatus,
+                    } as SupportRequest;
+                } else {
+                    console.warn('Supabase insert request error:', error);
+                }
+            } catch (sbErr) {
+                console.warn('Supabase insert request exception:', sbErr);
+            }
+        }
+
+        // 3. Fallback to local record
+        if (!createdData) {
+            createdData = {
+                id: newId,
+                user_id: resolvedUserId,
+                subject: input.subject.trim(),
+                description: input.description.trim(),
+                type: input.type || 'support',
+                category: input.category || input.type || 'General',
+                priority,
+                status: requestStatus,
+                apiary_id: input.apiary_id || undefined,
+                hive_id: input.hive_id || undefined,
+                created_at: now,
+                updated_at: now,
+            };
+        }
+
+        // Always save to localStorage so the UI updates immediately and offline persistence is assured
+        const existing = _lsReadAlways<SupportRequest[]>(LS_KEYS.requests, []);
+        const updatedList = [createdData, ...existing.filter((r) => r.id !== createdData!.id)];
+        _lsWriteAlways(LS_KEYS.requests, updatedList);
+
+        toast.success('Request submitted');
+        return { data: createdData, error: null };
     },
 
     async updateRequest(
         id: string,
         patch: Partial<{ subject: string; description: string; type: string; apiary_id: string; hive_id: string; category: string; priority: string; status: string }>
     ): Promise<{ data: SupportRequest | null; error: any }> {
+        const priorityRaw = patch.priority ? String(patch.priority).trim().toLowerCase() : undefined;
+        const normalizedPriority =
+            priorityRaw === undefined ? undefined :
+            priorityRaw === 'low' ? 'Low' :
+            priorityRaw === 'high' ? 'High' :
+            priorityRaw === 'critical' ? 'Critical' :
+            'Medium';
+        const statusRaw = patch.status ? String(patch.status).trim().toLowerCase() : undefined;
+        const normalizedStatus =
+            statusRaw === undefined ? undefined :
+            statusRaw === 'draft' ? 'Draft' :
+            statusRaw === 'resolved' ? 'Resolved' :
+            statusRaw === 'in progress' || statusRaw === 'in_progress' ? 'In Progress' :
+            'Open';
+
+        let updatedData: SupportRequest | null = null;
+
+        // 1. Try backend API
         try {
-            const priorityRaw = patch.priority ? String(patch.priority).trim().toLowerCase() : undefined;
-            const normalizedPriority =
-                priorityRaw === undefined ? undefined :
-                priorityRaw === 'low' ? 'Low' :
-                priorityRaw === 'high' ? 'High' :
-                priorityRaw === 'critical' ? 'Critical' :
-                'Medium';
-            const statusRaw = patch.status ? String(patch.status).trim().toLowerCase() : undefined;
-            const normalizedStatus =
-                statusRaw === undefined ? undefined :
-                statusRaw === 'draft' ? 'Draft' :
-                statusRaw === 'resolved' ? 'Resolved' :
-                statusRaw === 'in progress' || statusRaw === 'in_progress' ? 'In Progress' :
-                'Open';
-            const data = await apiPatch<SupportRequest>(`beeyield/requests/${id}`, {
+            updatedData = await apiPatch<SupportRequest>(`beeyield/requests/${id}`, {
                 ...patch,
                 subject: patch.subject?.trim(),
                 description: patch.description?.trim(),
@@ -2798,44 +2913,199 @@ export const beeyieldService = {
                 priority: normalizedPriority,
                 status: normalizedStatus,
             } as any);
-            toast.success('Request updated');
-            return { data, error: null };
-        } catch (error) {
-            console.error('updateRequest:', error);
-            toast.error('Failed to update request');
-            return { data: null, error };
+        } catch (apiErr) {
+            console.warn('updateRequest API failed, falling back to Supabase / local:', apiErr);
         }
+
+        // 2. Try Supabase
+        if (!updatedData && sb) {
+            try {
+                const sbPatch: any = {
+                    updated_at: _nowIso(),
+                };
+                if (patch.subject !== undefined) sbPatch.subject = patch.subject.trim();
+                if (patch.description !== undefined) sbPatch.description = patch.description.trim();
+                if (patch.type !== undefined) sbPatch.type = patch.type;
+                if (patch.category !== undefined) sbPatch.category = patch.category;
+                if (normalizedPriority !== undefined) sbPatch.priority = normalizedPriority.toLowerCase();
+                if (normalizedStatus !== undefined) sbPatch.status = normalizedStatus.toLowerCase();
+                if (patch.apiary_id !== undefined) sbPatch.apiary_id = patch.apiary_id || null;
+                if (patch.hive_id !== undefined) sbPatch.hive_id = patch.hive_id || null;
+
+                const { data, error } = await sb.from('requests').update(sbPatch).eq('id', id).select().single();
+                if (!error && data) {
+                    updatedData = {
+                        ...data,
+                        priority: normalizedPriority || data.priority,
+                        status: normalizedStatus || data.status,
+                    } as SupportRequest;
+                }
+            } catch (sbErr) {
+                console.warn('Supabase update request error:', sbErr);
+            }
+        }
+
+        // 3. Fallback to localStorage
+        const existing = _lsReadAlways<SupportRequest[]>(LS_KEYS.requests, []);
+        const idx = existing.findIndex((r) => r.id === id);
+        const now = _nowIso();
+
+        if (idx >= 0) {
+            const merged: SupportRequest = {
+                ...existing[idx],
+                ...patch,
+                priority: (normalizedPriority || existing[idx].priority) as any,
+                status: (normalizedStatus || existing[idx].status) as any,
+                updated_at: now,
+            };
+            existing[idx] = updatedData ? { ...merged, ...updatedData } : merged;
+            _lsWriteAlways(LS_KEYS.requests, existing);
+            if (!updatedData) updatedData = existing[idx];
+        } else if (updatedData) {
+            existing.unshift(updatedData);
+            _lsWriteAlways(LS_KEYS.requests, existing);
+        } else {
+            const fallbackRecord: SupportRequest = {
+                id,
+                user_id: 'local-user',
+                subject: patch.subject || 'Support Request',
+                description: patch.description || '',
+                type: patch.type || 'support',
+                category: patch.category || 'General',
+                priority: (normalizedPriority || 'Medium') as any,
+                status: (normalizedStatus || 'Open') as any,
+                apiary_id: patch.apiary_id,
+                hive_id: patch.hive_id,
+                created_at: now,
+                updated_at: now,
+                ...patch,
+            };
+            existing.unshift(fallbackRecord);
+            _lsWriteAlways(LS_KEYS.requests, existing);
+            updatedData = fallbackRecord;
+        }
+
+        toast.success('Request updated');
+        return { data: updatedData, error: null };
     },
 
     async deleteRequest(id: string): Promise<{ success: boolean; error: any }> {
         try {
             await apiDelete<void>(`beeyield/requests/${id}`);
-            toast.success('Request deleted');
-            return { success: true, error: null };
-        } catch (error) {
-            console.error('deleteRequest:', error);
-            toast.error('Failed to delete request');
-            return { success: false, error };
+        } catch (apiErr) {
+            console.warn('deleteRequest API failed, proceeding to Supabase / local:', apiErr);
         }
+
+        if (sb) {
+            try {
+                await sb.from('requests').delete().eq('id', id);
+            } catch (sbErr) {
+                console.warn('Supabase delete request error:', sbErr);
+            }
+        }
+
+        const existing = _lsReadAlways<SupportRequest[]>(LS_KEYS.requests, []);
+        _lsWriteAlways(LS_KEYS.requests, existing.filter((r) => r.id !== id));
+
+        // Also clean up local comments for this request
+        const allComments = _lsReadAlways<Record<string, RequestComment[]>>(LS_KEYS.request_comments, {});
+        if (allComments[id]) {
+            delete allComments[id];
+            _lsWriteAlways(LS_KEYS.request_comments, allComments);
+        }
+
+        toast.success('Request deleted');
+        return { success: true, error: null };
     },
 
     async getRequestComments(requestId: string): Promise<RequestComment[]> {
+        let remote: RequestComment[] = [];
         try {
-            return await apiGet<RequestComment[]>(`beeyield/requests/${requestId}/comments`);
+            remote = (await apiGet<RequestComment[]>(`beeyield/requests/${requestId}/comments`)) || [];
         } catch (error) {
-            console.error('getRequestComments:', error);
-            return [];
+            console.warn('getRequestComments API failed, checking Supabase / local:', error);
         }
+
+        if (remote.length === 0 && sb) {
+            try {
+                const { data, error } = await sb
+                    .from('request_comments')
+                    .select('*')
+                    .eq('request_id', requestId)
+                    .order('created_at', { ascending: true });
+                if (!error && Array.isArray(data)) {
+                    remote = data as RequestComment[];
+                }
+            } catch (sbErr) {
+                console.warn('Supabase getRequestComments error:', sbErr);
+            }
+        }
+
+        const allComments = _lsReadAlways<Record<string, RequestComment[]>>(LS_KEYS.request_comments, {});
+        const localList = allComments[requestId] || [];
+        if (localList.length > 0) {
+            const remoteIds = new Set(remote.map((c) => c.id));
+            const localOnly = localList.filter((l) => !remoteIds.has(l.id));
+            return [...remote, ...localOnly].sort(
+                (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+            );
+        }
+
+        return remote;
     },
 
     async addRequestComment(requestId: string, message: string): Promise<{ data: RequestComment | null; error: any }> {
+        const now = _nowIso();
+        const commentId = _uuid();
+        const userId = await getBeeYieldUserId();
+
+        let created: RequestComment | null = null;
+
         try {
-            const data = await apiPost<RequestComment>(`beeyield/requests/${requestId}/comments`, { message } as any);
-            return { data, error: null };
+            created = await apiPost<RequestComment>(`beeyield/requests/${requestId}/comments`, { message } as any);
         } catch (error) {
-            console.error('addRequestComment:', error);
-            return { data: null, error };
+            console.warn('addRequestComment API failed, trying Supabase / local:', error);
         }
+
+        if (!created && sb && userId) {
+            try {
+                const { data, error } = await sb
+                    .from('request_comments')
+                    .insert({
+                        id: commentId,
+                        request_id: requestId,
+                        author_id: userId,
+                        message: message.trim(),
+                        created_at: now,
+                    })
+                    .select()
+                    .single();
+                if (!error && data) {
+                    created = data as RequestComment;
+                }
+            } catch (sbErr) {
+                console.warn('Supabase addRequestComment error:', sbErr);
+            }
+        }
+
+        if (!created) {
+            created = {
+                id: commentId,
+                request_id: requestId,
+                author_id: userId || 'local-user',
+                message: message.trim(),
+                created_at: now,
+            };
+        }
+
+        const allComments = _lsReadAlways<Record<string, RequestComment[]>>(LS_KEYS.request_comments, {});
+        const list = allComments[requestId] || [];
+        list.push(created);
+        allComments[requestId] = list;
+        _lsWriteAlways(LS_KEYS.request_comments, allComments);
+
+        toast.success('Comment added');
+        return { data: created, error: null };
     },
 
     // ========== ACTIVITY LOGS ==========
