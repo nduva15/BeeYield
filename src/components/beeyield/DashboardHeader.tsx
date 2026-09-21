@@ -116,8 +116,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             title: "Intelligence & Neural Hive",
             items: [
                 { id: 'assistant', label: 'BeeYield AI Assistant', icon: Bot },
-                { id: 'pollination-intelligence', label: 'Pollination Intelligence', icon: Brain },
-                { id: 'hive-health', label: 'Hive Health Monitor', icon: Heart },
+                                { id: 'hive-health', label: 'Hive Health Monitor', icon: Heart },
                 { id: 'acoustic-transformer', label: 'Acoustic Mood Transformer', icon: Volume2 },
                 { id: 'sound-analysis', label: 'Sound Spectrogram', icon: Activity },
                 { id: 'bee-diseases', label: 'Pathogen & Disease Guide', icon: Bug },

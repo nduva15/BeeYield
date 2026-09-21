@@ -117,12 +117,7 @@ const KNOWLEDGE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.me
  * Fetches the user's Company Brain context from the Intelligence backend.
  */
 async function fetchUserContext(): Promise<string | null> {
-    try {
-        const res = await apiGet<{ context: string }>('/intelligence/context');
-        return res.context || null;
-    } catch {
-        return null;
-    }
+    return null;
 }
 
 export const intelligenceService = {

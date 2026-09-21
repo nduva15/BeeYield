@@ -4876,16 +4876,7 @@ async function generateClientReportPdf(input: ReportCreateInput): Promise<Genera
 
     // ========== MODELS (Python backend) ==========
     async getIntelligenceModels(): Promise<any[]> {
-        try {
-            const apiUrl = import.meta.env.VITE_API_URL || '';
-            const headers = await getAuthHeaders();
-            const response = await fetch(`${apiUrl}/api/v1/intelligence/models`, { headers });
-            if (!response.ok) return [];
-            return response.json();
-        } catch (error) {
-            console.error('Error fetching intelligence models:', error);
-            return [];
-        }
+        return [];
     },
 
     // ========== ACOUSTIC ANALYSIS (Python backend) ==========

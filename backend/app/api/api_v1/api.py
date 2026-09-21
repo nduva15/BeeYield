@@ -8,7 +8,7 @@ from app.api.api_v1.endpoints import (
     services, jobs, notes, admin, iot,
     admin_extended, meters, beeyield, pollination, inspections, reports, billing,
     settings, payments, labels, bluetooth, measurements,
-    requests, image_analysis, acoustic, routing, forage, intelligence, ai, integrations, usb_hub, reference_library,
+    requests, image_analysis, acoustic, routing, forage, ai, integrations, usb_hub, reference_library,
     yield_forecast
 )
 
@@ -53,8 +53,6 @@ api_router.include_router(pollination.router, prefix="/pollination", tags=["Prec
 api_router.include_router(inspections.router, prefix="/inspections", tags=["Inspections"])
 api_router.include_router(inspections.router, prefix="/beeyield/inspections", tags=["Inspections"])
 
-# Intelligence endpoint (PRD: Neural Hive)
-api_router.include_router(intelligence.router, prefix="/intelligence", tags=["Intelligence"])
 
 
 

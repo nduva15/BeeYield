@@ -35,7 +35,6 @@ import {
 // View Imports
 import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 import LovableBeeYieldAI from '@/components/beeyield/lovable_ai/LovableIndex';
-import PollinationIntelligence from '@/components/beeyield/PollinationIntelligence';
 import PollinationEngine from '@/components/beeyield/PollinationEngine';
 import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
 import SpatialCoverageView from '@/components/beeyield/SpatialCoverageView';
@@ -250,8 +249,7 @@ const BeeYieldDashboard: React.FC = () => {
                 {
                     title: 'Strategy & Ops',
                     items: [
-                        { id: 'intelligence', label: 'Insights', icon: Brain },
-                        { id: 'pollination-grid', label: 'Precision Pollination', icon: LayoutGrid },
+                                                { id: 'pollination-grid', label: 'Precision Pollination', icon: LayoutGrid },
                         { id: 'pollination-calcs', label: 'Pollination Calcs', icon: Calculator },
                         { id: 'pollination-planning-ai', label: 'AI Pollination Plan', icon: Sparkles },
                         { id: 'beeyield-calculators', label: 'Calculator Hub', icon: Calculator },
@@ -389,8 +387,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
             case 'pollination-grid':
             case 'precision-pollination-grid': return renderEmbedded(<PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'pollination-intelligence':
-            case 'intelligence': return <PollinationIntelligence onTabChange={handleTabChange} />;
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
             case 'pollination-calcs': return renderEmbedded(<PollinationCalcs isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'bee-calculator':
