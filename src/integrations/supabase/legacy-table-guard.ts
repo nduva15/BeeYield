@@ -19,6 +19,8 @@ const OPTIONAL_TABLES = new Set([
   "integration_connections",
   "integration_sync_logs",
   "sound_analyses",
+  "payment_methods",
+  "billing_ledger",
 ]);
 
 const missingTables = new Set<string>();

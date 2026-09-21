@@ -33,6 +33,7 @@ api_router.include_router(bluetooth.router, prefix="/beeyield/bluetooth", tags=[
 api_router.include_router(requests.router, prefix="/beeyield/requests", tags=["Support Requests"])
 api_router.include_router(notes.router, prefix="/beeyield/notes", tags=["Notes"])
 api_router.include_router(billing.router, prefix="/beeyield/billing", tags=["Billing"])
+api_router.include_router(billing.router, prefix="/billing", tags=["Billing"])
 
 # OAuth integrations (QuickBooks / Shopify)
 api_router.include_router(integrations.router, prefix="/integrations", tags=["Integrations"])
