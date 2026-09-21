@@ -2,9 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, ClipboardList, Plus, Search, Trash2, HeartPulse, AlertTriangle, Activity,
   Sparkles, Loader2, Save, CalendarDays, MapPin, Crown, Bug, FileDown, Layers, Pencil,
+  User, RefreshCw,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
+import { useAuth } from "@/hooks/use-auth";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
@@ -46,305 +48,11 @@ const ACTION_OPTIONS = [
   "Cleaned floor", "Replaced comb", "Narrowed entrance", "Scheduled follow-up",
 ];
 
-const DEFAULT_INSPECTIONS: Inspection[] = [
-  {
-    id: "insp-001",
-    inspected_on: "2026-01-04",
-    location: "Kibwezi Apiary — Research Stand A",
-    hive_label: "BY-H001 (Langstroth 10)",
-    batch: "Batch Alpha-26",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 6,
-    honey_frames: 4,
-    varroa_count: 1,
-    issues: [],
-    actions: ["Added super", "Scheduled follow-up"],
-    weather: "28 °C, calm winds, sunny bloom",
-    notes: "10-frame Langstroth hive: compact brood pattern across frames 3-8 (6 brood frames), 4 honey frames in upper chamber. Strong nectar intake from Acacia blossom.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Robust Colony Equilibrium (99% confidence)**.
-- **Frame Architecture:** 10-frame Langstroth configuration properly balanced with 6 brood frames and 4 honey frames.
-- **Varroa Load Evaluation:** 1 mite per sample represents **0.3% infestation** — well below the 2% threshold.
-- **Recommended Action:** Super addition verified appropriate. Colony ready for Jan harvest extraction.`,
-    created_at: "2026-01-04T08:30:00.000Z",
-  },
-  {
-    id: "insp-002",
-    inspected_on: "2026-01-02",
-    location: "BeeYield Apiary — Kibwezi",
-    hive_label: "BEE-001 (Langstroth 10)",
-    batch: "BEE-20260103-E001",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 6,
-    honey_frames: 4,
-    varroa_count: 0,
-    issues: [],
-    actions: ["Pre-harvest inspection", "Scheduled follow-up"],
-    weather: "27 °C, clear dry extraction conditions",
-    notes: "10-frame standard hive: 4 capped honey frames ready for 2kg batch extraction, 6 solid brood frames with healthy capped worker pupae.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Prime Harvest Readiness (98% confidence)**.
-- **Moisture Prediction:** Low relative humidity (40%) confirms honey capping completion with estimated moisture <17.0%.`,
-    created_at: "2026-01-02T09:15:00.000Z",
-  },
-  {
-    id: "insp-003",
-    inspected_on: "2026-01-02",
-    location: "BeeYield Apiary — Kibwezi",
-    hive_label: "BEE-002 (Langstroth 10)",
-    batch: "BEE-20260103-E002",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 7,
-    honey_frames: 3,
-    varroa_count: 1,
-    issues: [],
-    actions: ["Pre-harvest inspection", "Cleaned floor"],
-    weather: "28 °C, gentle breeze",
-    notes: "10-frame Langstroth: 7 frames brood with active queen, 3 honey frames 85% capped. Harvest batch scheduled.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Thriving Brood Nest & Harvest Super (96% confidence)**.`,
-    created_at: "2026-01-02T10:00:00.000Z",
-  },
-  {
-    id: "insp-004",
-    inspected_on: "2025-12-10",
-    location: "Makueni Outpost — Dryland Acacia",
-    hive_label: "BY-H002 (Langstroth 10)",
-    batch: "Batch Alpha-25",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 6,
-    honey_frames: 4,
-    varroa_count: 1,
-    issues: [],
-    actions: ["Scheduled follow-up"],
-    weather: "29 °C, clear sunny day",
-    notes: "10-frame Langstroth: 6 dense brood frames, 4 honey frames. Excellent Acacia nectar storage.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Healthy Dryland Acacia Colony (97% confidence)**.`,
-    created_at: "2025-12-10T08:00:00.000Z",
-  },
-  {
-    id: "insp-005",
-    inspected_on: "2025-11-20",
-    location: "Central Valley — Almond Block B",
-    hive_label: "BY-H003 (Commercial Deep 12)",
-    batch: "Commercial F1",
-    colony_health: "Watch",
-    temperament: "Nervous",
-    queen_seen: false,
-    queen_cells: 2,
-    total_frames: 12,
-    brood_frames: 7,
-    honey_frames: 5,
-    varroa_count: 4,
-    issues: ["Swarm cells", "Varroa mites"],
-    actions: ["Removed swarm cells", "Treated for varroa", "Narrowed entrance"],
-    weather: "24 °C, intermittent cloud cover",
-    notes: "12-frame Commercial Deep: 7 brood frames, 5 honey frames. Two swarm cells removed on lower margin. Congestion relieved.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Pre-Swarm Congestion in 12-Frame Deep (93% confidence)**.
-- **Intervention:** Swarm cells neutralized. 12-frame volume provides ample room once supers are rotated.`,
-    created_at: "2025-11-20T11:20:00.000Z",
-  },
-  {
-    id: "insp-006",
-    inspected_on: "2025-11-15",
-    location: "Rift Valley — Acacia Forest Stand 4",
-    hive_label: "BY-H004 (Top Bar Hybrid 8)",
-    batch: "Indigenous Select",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 8,
-    brood_frames: 5,
-    honey_frames: 3,
-    varroa_count: 0,
-    issues: [],
-    actions: ["Cleaned floor", "Scheduled follow-up"],
-    weather: "22 °C, high humidity morning",
-    notes: "8-frame Top Bar Hybrid: 5 brood comb frames, 3 honey storage frames. Zero varroa detected. Hygienic board immaculate.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Prime Breeding Candidate in 8-Frame Hybrid (98% confidence)**.`,
-    created_at: "2025-11-15T09:00:00.000Z",
-  },
-  {
-    id: "insp-007",
-    inspected_on: "2025-10-18",
-    location: "Kibwezi Apiary & Research Forest",
-    hive_label: "Hive Alpha-1 (Langstroth 10)",
-    batch: "Research Select",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 6,
-    honey_frames: 4,
-    varroa_count: 1,
-    issues: [],
-    actions: ["Added super"],
-    weather: "26 °C, sunny calm afternoon",
-    notes: "10-frame Langstroth: 6 frames of compact brood, 4 honey frames. Queen seen and marked.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Optimal Research Stand Health (99% confidence)**.`,
-    created_at: "2025-10-18T14:30:00.000Z",
-  },
-  {
-    id: "insp-008",
-    inspected_on: "2025-09-24",
-    location: "Kibwezi Apiary & Research Forest",
-    hive_label: "Hive Alpha-2 (Langstroth 10)",
-    batch: "Research Select",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 6,
-    honey_frames: 4,
-    varroa_count: 1,
-    issues: [],
-    actions: ["Scheduled follow-up"],
-    weather: "27 °C, dry weather",
-    notes: "10-frame Langstroth: 6 frames worker brood, 4 frames honey. Consistent thermoregulation.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Healthy Standard 10-Frame Colony (98% confidence)**.`,
-    created_at: "2025-09-24T10:15:00.000Z",
-  },
-  {
-    id: "insp-009",
-    inspected_on: "2025-08-14",
-    location: "Central Valley Pollination Block A",
-    hive_label: "Hive Almond-01 (Commercial Deep 10)",
-    batch: "Pollination Block",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 6,
-    honey_frames: 4,
-    varroa_count: 2,
-    issues: [],
-    actions: ["Scheduled follow-up"],
-    weather: "30 °C, high foraging flight",
-    notes: "10-frame Deep: 6 brood frames actively expanding, 4 honey frames. Active pollen and nectar foraging.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Active Pollination Status (97% confidence)**.`,
-    created_at: "2025-08-14T11:45:00.000Z",
-  },
-  {
-    id: "insp-010",
-    inspected_on: "2025-07-28",
-    location: "Rift Valley Acacia Meadow",
-    hive_label: "Hive Acacia-Gold (Top Bar Hybrid 8)",
-    batch: "Meadow Select",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 8,
-    brood_frames: 5,
-    honey_frames: 3,
-    varroa_count: 0,
-    issues: [],
-    actions: ["Cleaned floor"],
-    weather: "25 °C, mild breeze",
-    notes: "8-frame Top Bar setup: 5 brood comb frames, 3 honey frames. Strong hygienic grooming behavior.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Hygienic Resistance Confirmed (98% confidence)**.`,
-    created_at: "2025-07-28T13:00:00.000Z",
-  },
-  {
-    id: "insp-011",
-    inspected_on: "2025-06-30",
-    location: "Kibwezi Apiary Centre",
-    hive_label: "Hive KBZ-01 (Langstroth 10)",
-    batch: "Kibwezi Core",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 6,
-    honey_frames: 4,
-    varroa_count: 1,
-    issues: [],
-    actions: ["Added super", "Scheduled follow-up"],
-    weather: "27 °C, clear sky",
-    notes: "10-frame Langstroth: 6 frames brood with compact pattern, 4 honey frames. Queen active.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Solid Colony Equilibrium (98% confidence)**.`,
-    created_at: "2025-06-30T09:30:00.000Z",
-  },
-  {
-    id: "insp-012",
-    inspected_on: "2025-06-25",
-    location: "Kibwezi Apiary Centre",
-    hive_label: "Hive KBZ-02 (Langstroth 10)",
-    batch: "Kibwezi Core",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 6,
-    honey_frames: 4,
-    varroa_count: 1,
-    issues: [],
-    actions: ["Scheduled follow-up"],
-    weather: "26 °C, calm winds",
-    notes: "10-frame Langstroth: 6 brood frames, 4 honey frames 80% capped. Calm temperament.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Optimal Health Index (97% confidence)**.`,
-    created_at: "2025-06-25T10:00:00.000Z",
-  },
-  {
-    id: "insp-013",
-    inspected_on: "2025-06-20",
-    location: "Kibwezi Forage Plot",
-    hive_label: "Hive AP-04 (Langstroth 10)",
-    batch: "Kibwezi Core",
-    colony_health: "Healthy",
-    temperament: "Calm",
-    queen_seen: true,
-    queen_cells: 0,
-    total_frames: 10,
-    brood_frames: 7,
-    honey_frames: 3,
-    varroa_count: 1,
-    issues: [],
-    actions: ["Scheduled follow-up"],
-    weather: "28 °C, dry weather",
-    notes: "10-frame Langstroth: 7 brood frames, 3 honey frames. Steady nectar foraging.",
-    ai_insights: `### BeeYield AI Diagnostic Assessment
-- **Primary Diagnosis:** **Active Foraging Colony (96% confidence)**.`,
-    created_at: "2025-06-20T11:15:00.000Z",
-  }
-];
-
 const EMPTY = {
   inspected_on: new Date().toISOString().slice(0, 10),
-  location: "BeeYield Apiary — Kibwezi",
-  hive_label: "BY-H001 (Langstroth 10)",
-  batch: "Batch Alpha",
+  location: "",
+  hive_label: "",
+  batch: "",
   colony_health: "Healthy",
   temperament: "Calm",
   queen_seen: true,
@@ -355,7 +63,7 @@ const EMPTY = {
   varroa_count: 0,
   issues: [] as string[],
   actions: [] as string[],
-  weather: "28 °C, dry extraction conditions",
+  weather: "",
   notes: "",
 };
 
@@ -382,7 +90,7 @@ function healthTone(h: string) {
   return "text-red-400 bg-red-500/10 border-red-500/30";
 }
 
-function inspectionPdf(r: Inspection) {
+function inspectionPdf(r: Inspection, userName?: string | null) {
   const frameCount = r.total_frames || (r.brood_frames + r.honey_frames);
   downloadReportPdf({
     kind: "inspection",
@@ -395,9 +103,9 @@ function inspectionPdf(r: Inspection) {
         type: "kv",
         heading: "Colony summary",
         rows: [
-          ["Lead Farmer / Apiarist", "Timothy Nduva"],
+          ["Lead Farmer / Apiarist", userName || "Account Owner"],
           ["Hive", r.hive_label],
-          ["Batch", r.batch],
+          ["Batch", r.batch || "—"],
           ["Inspected on", r.inspected_on],
           ["Location", r.location || "—"],
           ["Colony health", r.colony_health],
@@ -421,7 +129,8 @@ function inspectionPdf(r: Inspection) {
 
 export default function InspectionsPage({ isOpen = true, onClose, embedded = false }: { isOpen?: boolean; onClose?: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
-  const [rows, setRows] = useState<Inspection[]>(DEFAULT_INSPECTIONS);
+  const { user } = useAuth();
+  const [rows, setRows] = useState<Inspection[]>([]);
   const [query, setQuery] = useState("");
   const [frameFilter, setFrameFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
@@ -433,25 +142,54 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
   const [aiLoading, setAiLoading] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  // Real user hives and apiaries for dropdowns
+  const [userHives, setUserHives] = useState<Array<{ id: string; name: string; hive_code?: string; apiary_name?: string }>>([]);
+  const [userApiaries, setUserApiaries] = useState<Array<{ id: string; name: string }>>([]);
+
+  const loadUserHivesAndApiaries = useCallback(async () => {
+    try {
+      const [hivesRes, apiariesRes] = await Promise.all([
+        (supabase as any).from("hives").select("id, name, hive_code, apiary_id, apiaries(name)").limit(100),
+        (supabase as any).from("apiaries").select("id, name").limit(100),
+      ]);
+      if (hivesRes.data) {
+        setUserHives(
+          hivesRes.data.map((h: any) => ({
+            id: h.id,
+            name: h.name,
+            hive_code: h.hive_code,
+            apiary_name: h.apiaries?.name || "Apiary",
+          }))
+        );
+      }
+      if (apiariesRes.data) {
+        setUserApiaries(apiariesRes.data.map((a: any) => ({ id: a.id, name: a.name })));
+      }
+    } catch {
+      // non-blocking
+    }
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const userInspections: Inspection[] = [];
       const userIds = new Set<string>();
 
-      // 1. Fetch from Backend API
+      // 1. Fetch from Backend API (real logged inspections)
       try {
         const res = await fetch("/api/v1/inspections");
         if (res.ok) {
           const apiData = await res.json();
           if (Array.isArray(apiData) && apiData.length > 0) {
             apiData.forEach((d: any) => {
+              if (String(d.id).startsWith("insp-0")) return; // purge mock IDs
               const item: Inspection = {
                 id: String(d.id || crypto.randomUUID()),
                 inspected_on: d.inspected_on || d.inspection_date || d.created_at?.slice(0, 10) || new Date().toISOString().slice(0, 10),
-                location: d.location || d.apiary_name || "BeeYield Apiary — Kibwezi",
-                hive_label: d.hive_label || d.hive_code || "BY-H001 (Langstroth 10)",
-                batch: d.batch || d.batch_code || "Batch Alpha",
+                location: d.location || d.apiary_name || "",
+                hive_label: d.hive_label || d.hive_code || "Hive",
+                batch: d.batch || d.batch_code || "",
                 colony_health: d.colony_health || (d.health_status ? String(d.health_status).charAt(0).toUpperCase() + String(d.health_status).slice(1) : "Healthy"),
                 temperament: d.temperament || "Calm",
                 queen_seen: Boolean(d.queen_seen),
@@ -462,7 +200,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
                 varroa_count: Number(d.varroa_count || d.varroa_mite_count) || 0,
                 issues: Array.isArray(d.issues) ? d.issues : [],
                 actions: Array.isArray(d.actions) ? d.actions : [],
-                weather: d.weather || d.weather_condition || "28 °C, calm winds",
+                weather: d.weather || d.weather_condition || "",
                 notes: d.notes || null,
                 ai_insights: d.ai_insights || null,
                 created_at: d.created_at || new Date().toISOString(),
@@ -478,22 +216,23 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
         // Backend offline fallback
       }
 
-      // 2. Fetch from Supabase
+      // 2. Fetch from Supabase (real logged inspections)
       try {
-        const { data, error } = await supabase
-          .from("inspections" as any)
+        const { data, error } = await (supabase as any)
+          .from("inspections")
           .select("*")
-          .order("inspected_on" as any, { ascending: false } as any)
+          .order("inspected_on", { ascending: false })
           .limit(300);
 
         if (!error && data && data.length > 0) {
           data.forEach((d: any) => {
+            if (String(d.id).startsWith("insp-0")) return; // purge mock IDs
             const item: Inspection = {
               id: String(d.id),
               inspected_on: d.inspected_on || d.inspection_date || d.created_at?.slice(0, 10) || new Date().toISOString().slice(0, 10),
-              location: d.location || d.apiary_name || "BeeYield Apiary — Kibwezi",
-              hive_label: d.hive_label || d.hive_code || "BY-H001 (Langstroth 10)",
-              batch: d.batch || d.batch_code || "Batch Alpha",
+              location: d.location || d.apiary_name || "",
+              hive_label: d.hive_label || d.hive_code || "Hive",
+              batch: d.batch || d.batch_code || "",
               colony_health: d.colony_health || "Healthy",
               temperament: d.temperament || "Calm",
               queen_seen: Boolean(d.queen_seen),
@@ -519,36 +258,42 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
         // Supabase offline fallback
       }
 
-      // 3. Merge with LocalStorage (beeyield_local_inspections_v1)
+      // 3. Merge with LocalStorage (clean out any legacy mock data)
       try {
         const raw = localStorage.getItem("beeyield_local_inspections_v1");
         if (raw) {
           const localItems: Inspection[] = JSON.parse(raw);
-          localItems.forEach((item) => {
+          const cleanLocal = localItems.filter((item) => !item.id?.startsWith("insp-0"));
+          cleanLocal.forEach((item) => {
             if (!userIds.has(item.id)) {
               userIds.add(item.id);
-              userInspections.unshift(item);
+              userInspections.push(item);
             }
           });
+          if (cleanLocal.length !== localItems.length) {
+            localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(cleanLocal));
+          }
         }
       } catch {}
 
-      // 4. Combine user records with DEFAULT_INSPECTIONS so authentic reference baseline is present,
-      // but user records are ALWAYS at the top and never discarded!
-      const merged = [
-        ...userInspections,
-        ...DEFAULT_INSPECTIONS.filter((d) => !userIds.has(d.id)),
-      ];
+      // Sort inspections strictly descending
+      userInspections.sort((a, b) => b.inspected_on.localeCompare(a.inspected_on));
 
-      setRows(merged);
+      // Strictly personal user logged inspections - zero fake data
+      setRows(userInspections);
     } catch {
-      setRows(DEFAULT_INSPECTIONS);
+      setRows([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { if (isOpen || embedded) void load(); }, [isOpen, embedded, load]);
+  useEffect(() => {
+    if (isOpen || embedded) {
+      void load();
+      void loadUserHivesAndApiaries();
+    }
+  }, [isOpen, embedded, load, loadUserHivesAndApiaries]);
 
   const stats = useMemo(() => {
     const total = rows.length;
@@ -616,7 +361,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
       const prompt = `Act as BeeYield's certified Master Apiculturist and Colony Health Auditor. Analyze this hive diagnostic evaluation and provide a clinical verification report.
 
 Inspection Date: ${draft.inspected_on}
-Hive Label: ${draft.hive_label} (${draft.batch}) at ${draft.location || "East African Commercial Stand"}
+Hive Label: ${draft.hive_label} (${draft.batch}) at ${draft.location || "Apiary"}
 Frame Setup: ${draft.total_frames}-frame architecture (${draft.brood_frames} brood frames, ${draft.honey_frames} honey frames)
 Colony Health: ${draft.colony_health} · Temperament: ${draft.temperament}
 Queen Status: ${draft.queen_seen ? "Queen verified active" : "Queen not sighted"} · Queen cells detected: ${draft.queen_cells}
@@ -654,7 +399,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
       created_at: editingId ? (rows.find((r) => r.id === editingId)?.created_at || new Date().toISOString()) : new Date().toISOString(),
     };
 
-    // 1. Backend API Sync (POST for create, PATCH/PUT for update)
+    // 1. Backend API Sync
     try {
       const endpoint = editingId ? `/api/v1/inspections/${editingId}` : "/api/v1/inspections";
       const method = editingId ? "PATCH" : "POST";
@@ -663,6 +408,8 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: recordId,
+          user_id: user?.id || null,
+          device_id: deviceId,
           inspected_on: draft.inspected_on,
           inspection_date: draft.inspected_on,
           location: draft.location,
@@ -710,9 +457,9 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
           ai_insights: aiText || null,
         }).eq("id", editingId);
       } else {
-        await (supabase as any).from("inspections").insert({
+        const payload: any = {
           id: recordId,
-          device_id: deviceId,
+          device_id: deviceId || user?.id || "anonymous",
           inspected_on: draft.inspected_on,
           location: draft.location,
           hive_label: draft.hive_label,
@@ -730,7 +477,14 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
           weather: draft.weather,
           notes: draft.notes,
           ai_insights: aiText || null,
-        });
+        };
+        if (user?.id) payload.user_id = user.id;
+
+        const res = await (supabase as any).from("inspections").insert(payload);
+        if (res.error && res.error.message?.includes("user_id")) {
+          delete payload.user_id;
+          await (supabase as any).from("inspections").insert(payload);
+        }
       }
     } catch (e) {
       console.warn("Supabase inspection sync fallback:", e);
@@ -821,19 +575,32 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
 
   const mainContent = (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center shrink-0">
-            <ClipboardList className="w-5 h-5 text-honey" />
+          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey flex-shrink-0">
+            <ClipboardList className="w-5 h-5" />
           </div>
           <div>
             <h1 className="font-display text-2xl font-bold text-foreground">Inspection <span className="text-honey">History</span></h1>
-            <p className="text-xs text-muted-foreground">
-              Log hive diagnostics across 8 – 12 frame hives, track colony health with full CRUD management and AI-assisted interpretation
+            <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+              <span>Personal account inspection ledger</span>
+              {user?.email && (
+                <span className="font-mono text-honey">· {user.email}</span>
+              )}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void load()}
+            disabled={loading}
+            className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors"
+            title="Refresh Inspections"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-honey" : ""}`} />
+          </button>
           <button
             onClick={() => {
               setEditingId(null);
@@ -876,7 +643,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-honey" />
           <span className="font-bold text-foreground">Hive Setup (8 – 12 Frames):</span>
-          <span className="text-muted-foreground text-[11px]">All hives configured for 8 to 12 frame standard architectures</span>
+          <span className="text-muted-foreground text-[11px]">Filtered by frame architecture</span>
         </div>
         <div className="flex items-center gap-1.5 overflow-x-auto">
           <button
@@ -933,7 +700,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             <h2 className="font-display text-lg text-honey flex items-center gap-2">
               {editingId ? (
                 <>
-                  <Pencil className="w-4 h-4 text-honey" /> Edit diagnostic record: <span className="font-mono text-sm text-foreground">{draft.hive_label} ({draft.batch})</span>
+                  <Pencil className="w-4 h-4 text-honey" /> Edit diagnostic record: <span className="font-mono text-sm text-foreground">{draft.hive_label} ({draft.batch || "No Batch"})</span>
                 </>
               ) : (
                 <>
@@ -962,18 +729,38 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground flex items-center gap-1"><MapPin className="w-3 h-3" /> Location / apiary</span>
-              <input value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })}
-                placeholder="BeeYield Apiary — Kibwezi" className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
+              <input
+                list="apiaries-datalist"
+                value={draft.location}
+                onChange={(e) => setDraft({ ...draft, location: e.target.value })}
+                placeholder="Select or enter apiary..."
+                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5"
+              />
+              <datalist id="apiaries-datalist">
+                {userApiaries.map((a) => (
+                  <option key={a.id} value={a.name} />
+                ))}
+              </datalist>
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Hive label</span>
-              <input value={draft.hive_label} onChange={(e) => setDraft({ ...draft, hive_label: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
+              <input
+                list="hives-datalist"
+                value={draft.hive_label}
+                onChange={(e) => setDraft({ ...draft, hive_label: e.target.value })}
+                placeholder="Select or enter hive..."
+                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5"
+              />
+              <datalist id="hives-datalist">
+                {userHives.map((h) => (
+                  <option key={h.id} value={h.name || h.hive_code} />
+                ))}
+              </datalist>
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Batch / group</span>
               <input value={draft.batch} onChange={(e) => setDraft({ ...draft, batch: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
+                placeholder="e.g. Batch Alpha, Spring 2026..." className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
             </label>
           </div>
 
@@ -995,7 +782,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Weather</span>
               <input value={draft.weather || ""} onChange={(e) => setDraft({ ...draft, weather: e.target.value })}
-                placeholder="28 °C, calm winds" className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
+                placeholder="e.g. 28 °C, calm winds..." className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
             </label>
             <label className="text-xs space-y-1">
               <span className="text-muted-foreground">Varroa count (per 300 bees)</span>
@@ -1018,126 +805,136 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
 
             <div className="grid md:grid-cols-3 gap-3">
               <label className="text-xs space-y-1">
-                <span className="text-muted-foreground font-medium">Hive frame size</span>
+                <span className="text-muted-foreground">Total Hive Frame Capacity</span>
                 <select
                   value={draft.total_frames}
                   onChange={(e) => {
                     const total = Number(e.target.value);
-                    const defaultBrood = total === 8 ? 5 : total === 10 ? 6 : 7;
-                    const defaultHoney = total - defaultBrood;
-                    setDraft({ ...draft, total_frames: total, brood_frames: defaultBrood, honey_frames: defaultHoney });
+                    const brood = Math.min(draft.brood_frames, total);
+                    const honey = Math.min(draft.honey_frames, total - brood);
+                    setDraft({ ...draft, total_frames: total, brood_frames: brood, honey_frames: honey });
                   }}
-                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-honey"
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
                 >
-                  <option value={8}>8 Frame Standard (Top Bar / L-8)</option>
-                  <option value={10}>10 Frame Standard (Langstroth 10)</option>
-                  <option value={12}>12 Frame Standard (Commercial Deep)</option>
+                  <option value={8}>8 Frames (Top Bar / 8-Frame Langstroth)</option>
+                  <option value={10}>10 Frames (Standard Langstroth 10)</option>
+                  <option value={12}>12 Frames (Commercial Deep 12)</option>
                 </select>
               </label>
 
               <label className="text-xs space-y-1">
-                <span className="text-muted-foreground font-medium">Brood frames (1 to {draft.total_frames})</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={draft.total_frames}
-                  value={draft.brood_frames}
-                  onChange={(e) => {
-                    const bf = Math.min(Math.max(1, Number(e.target.value)), draft.total_frames);
-                    const hf = Math.max(0, draft.total_frames - bf);
-                    setDraft({ ...draft, brood_frames: bf, honey_frames: hf });
-                  }}
-                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5"
-                />
-              </label>
-
-              <label className="text-xs space-y-1">
-                <span className="text-muted-foreground font-medium">Honey frames (0 to {draft.total_frames})</span>
+                <span className="text-muted-foreground">Brood Chamber Frames</span>
                 <input
                   type="number"
                   min={0}
                   max={draft.total_frames}
+                  value={draft.brood_frames}
+                  onChange={(e) => {
+                    const brood = Math.min(draft.total_frames, Math.max(0, Number(e.target.value)));
+                    const honey = Math.min(draft.honey_frames, draft.total_frames - brood);
+                    setDraft({ ...draft, brood_frames: brood, honey_frames: honey });
+                  }}
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
+                />
+              </label>
+
+              <label className="text-xs space-y-1">
+                <span className="text-muted-foreground">Honey Super Frames</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={draft.total_frames - draft.brood_frames}
                   value={draft.honey_frames}
                   onChange={(e) => {
-                    const hf = Math.min(Math.max(0, Number(e.target.value)), draft.total_frames);
-                    const bf = Math.max(1, draft.total_frames - hf);
-                    setDraft({ ...draft, honey_frames: hf, brood_frames: bf });
+                    const maxHoney = draft.total_frames - draft.brood_frames;
+                    const honey = Math.min(maxHoney, Math.max(0, Number(e.target.value)));
+                    setDraft({ ...draft, honey_frames: honey });
                   }}
-                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5"
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
                 />
               </label>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-3">
-            <label className="flex items-center gap-2 text-xs cursor-pointer p-2.5 rounded-lg border border-border bg-background">
-              <input type="checkbox" checked={draft.queen_seen} onChange={(e) => setDraft({ ...draft, queen_seen: e.target.checked })}
-                className="rounded accent-honey" />
-              <Crown className="w-3.5 h-3.5 text-honey" />
-              <span>Queen sighted & verified laying active eggs</span>
+          {/* Queen assessment */}
+          <div className="p-3.5 rounded-xl border border-border bg-background flex flex-wrap items-center gap-6 text-xs">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={draft.queen_seen}
+                onChange={(e) => setDraft({ ...draft, queen_seen: e.target.checked })}
+                className="w-4 h-4 rounded text-honey focus:ring-honey" />
+              <span className="flex items-center gap-1 font-medium"><Crown className="w-3.5 h-3.5 text-honey" /> Queen sighted</span>
             </label>
-            <label className="flex items-center gap-2 text-xs p-2.5 rounded-lg border border-border bg-background">
-              <span>Queen cells counted:</span>
+            <label className="flex items-center gap-2">
+              <span className="text-muted-foreground">Queen cells:</span>
               <input type="number" min={0} value={draft.queen_cells}
                 onChange={(e) => setDraft({ ...draft, queen_cells: Number(e.target.value) })}
-                className="w-20 bg-card border border-border rounded px-2 py-0.5" />
+                className="w-16 bg-card border border-border rounded px-2 py-1" />
             </label>
           </div>
 
-          <div className="space-y-2">
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Issues identified</p>
+          {/* Issues */}
+          <div>
+            <span className="text-xs text-muted-foreground block mb-1.5">Issues detected</span>
             <div className="flex flex-wrap gap-1.5">
               {ISSUE_OPTIONS.map((iss) => (
-                <Chip key={iss} active={draft.issues.includes(iss)} onClick={() => toggle("issues", iss)}>{iss}</Chip>
+                <Chip key={iss} active={draft.issues.includes(iss)} onClick={() => toggle("issues", iss)}>
+                  {iss}
+                </Chip>
               ))}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Actions applied</p>
+          {/* Actions */}
+          <div>
+            <span className="text-xs text-muted-foreground block mb-1.5">Actions taken</span>
             <div className="flex flex-wrap gap-1.5">
               {ACTION_OPTIONS.map((act) => (
-                <Chip key={act} active={draft.actions.includes(act)} onClick={() => toggle("actions", act)}>{act}</Chip>
+                <Chip key={act} active={draft.actions.includes(act)} onClick={() => toggle("actions", act)}>
+                  {act}
+                </Chip>
               ))}
             </div>
           </div>
 
+          {/* Notes */}
           <label className="text-xs space-y-1 block">
-            <span className="text-muted-foreground">Beekeeper notes & observations</span>
-            <textarea value={draft.notes || ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} rows={3}
-              placeholder="Queen laying compact pattern, calm worker temperament, 4 capped honey frames ready for extraction…"
-              className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5" />
+            <span className="text-muted-foreground">Beekeeper field notes</span>
+            <textarea value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
+              rows={2} placeholder="Observations on brood density, honey storage, nectar intake, or queen performance..."
+              className="w-full bg-background border border-border rounded-lg p-2.5 text-xs" />
           </label>
 
-          <div className="flex flex-wrap gap-2 pt-2">
-            <button onClick={runAi} disabled={aiLoading}
-              className="px-3.5 py-2 rounded-lg border border-honey/50 text-honey text-xs flex items-center gap-1.5 disabled:opacity-50 hover:bg-honey/10 transition-colors">
-              {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-              AI Diagnostic Audit
-            </button>
-            <button onClick={save} disabled={saving}
-              className="px-4 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 hover:bg-honey/90 shadow-sm transition-colors">
-              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              {editingId ? "Update Diagnostic" : "Save Diagnostic"}
-            </button>
-            <button
-              onClick={() => {
-                setShowForm(false);
-                setEditingId(null);
-                setDraft(EMPTY);
-                setAiText("");
-              }}
-              className="px-3.5 py-2 rounded-lg border border-border text-xs text-muted-foreground hover:bg-background transition-colors"
-            >
-              Cancel
-            </button>
+          {/* AI interpretation */}
+          <div className="border-t border-border pt-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-honey flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5" /> AI Diagnostic Assistant
+              </span>
+              <button onClick={runAi} disabled={aiLoading}
+                className="px-3 py-1 rounded-lg bg-honey/10 text-honey hover:bg-honey/20 text-xs font-semibold flex items-center gap-1 disabled:opacity-50">
+                {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                Run clinical diagnosis
+              </button>
+            </div>
+            {aiText && (
+              <div className="rounded-lg border border-honey/30 bg-background/50 p-3 text-xs">
+                <MarkdownRenderer content={aiText} />
+              </div>
+            )}
           </div>
 
-          {aiText && (
-            <div className="rounded-lg border border-honey/20 bg-background p-4 mt-3">
-              <MarkdownRenderer content={aiText} />
-            </div>
-          )}
+          {/* Save / Cancel */}
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+            <button onClick={() => { setShowForm(false); setEditingId(null); setDraft(EMPTY); setAiText(""); }}
+              className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-background">
+              Cancel
+            </button>
+            <button onClick={save} disabled={saving}
+              className="px-4 py-1.5 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+              {editingId ? "Update Diagnostic Record" : "Save Diagnostic Record"}
+            </button>
+          </div>
         </div>
       )}
 
@@ -1155,18 +952,28 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
           <Loader2 className="w-4 h-4 animate-spin text-honey" /> Loading inspections…
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-16 text-center">
-          <Activity className="w-10 h-10 mx-auto text-muted-foreground/40" />
-          <p className="mt-3 text-sm text-muted-foreground">No inspections found matching your criteria.</p>
+        <div className="py-16 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 p-8">
+          <div className="w-12 h-12 rounded-2xl bg-honey/10 border border-honey/30 flex items-center justify-center text-honey mx-auto mb-3">
+            <ClipboardList className="w-6 h-6" />
+          </div>
+          <h3 className="font-display text-base font-bold text-foreground">
+            {rows.length === 0 ? "No Inspections Logged Yet" : "No Inspections Match Your Filter"}
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground max-w-md mx-auto">
+            {rows.length === 0
+              ? "There are no inspection records logged for this account. Log your first colony diagnostic to track queen status, brood distribution, and varroa thresholds."
+              : "Try clearing your search query or selecting 'All Frame Sizes' above."}
+          </p>
           <button
             onClick={() => {
               setEditingId(null);
               setDraft(EMPTY);
+              setAiText("");
               setShowForm(true);
             }}
-            className="mt-4 px-3.5 py-2 rounded-lg bg-honey text-background text-xs font-semibold hover:bg-honey/90"
+            className="mt-4 px-4 py-2 rounded-xl bg-honey text-background text-xs font-semibold hover:bg-honey/90 inline-flex items-center gap-1.5 shadow-sm transition-all"
           >
-            Log a diagnostic
+            <Plus className="w-3.5 h-3.5" /> Log First Diagnostic
           </button>
         </div>
       ) : (
@@ -1214,7 +1021,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                   <div className="border-t border-border p-4 space-y-3 text-xs bg-background/50">
                     <div className="grid md:grid-cols-4 gap-3">
                       <p><span className="text-muted-foreground">Hive frames:</span> {frameTotal} frames (8 – 12 standard)</p>
-                      <p><span className="text-muted-foreground">Batch:</span> <span className="font-mono">{r.batch}</span></p>
+                      <p><span className="text-muted-foreground">Batch:</span> <span className="font-mono">{r.batch || "—"}</span></p>
                       <p><span className="text-muted-foreground">Temperament:</span> {r.temperament}</p>
                       <p><span className="text-muted-foreground">Queen seen:</span> {r.queen_seen ? "Yes" : "No"} ({r.queen_cells} cells)</p>
                     </div>
@@ -1235,7 +1042,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                       </div>
                     )}
                     <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border/50">
-                      <button onClick={() => inspectionPdf(r)}
+                      <button onClick={() => inspectionPdf(r, user?.user_metadata?.full_name || user?.email)}
                         className="px-3 py-1.5 rounded-lg border border-honey/50 text-honey flex items-center gap-1.5 hover:bg-honey/10 transition-colors">
                         <FileDown className="w-3.5 h-3.5" /> Download PDF report
                       </button>
