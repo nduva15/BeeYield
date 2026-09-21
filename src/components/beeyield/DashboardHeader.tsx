@@ -33,7 +33,6 @@ import {
     Scale,
     Zap,
     Puzzle,
-    Banknote,
     LifeBuoy
 } from 'lucide-react';
 import { NavItem } from './DashboardSidebar';
@@ -137,7 +136,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             items: [
                 { id: 'settings', label: 'Dashboard Settings', icon: Settings },
                 { id: 'integrations', label: 'Connected Integrations', icon: Puzzle },
-                { id: 'billing', label: 'Billing & Subscriptions', icon: Banknote },
                 { id: 'support', label: 'Support & Help Desk', icon: LifeBuoy },
             ]
         }

@@ -10,7 +10,7 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   Hexagon, Globe, Cpu, Activity, Bell, Smartphone,
-  CreditCard, Receipt, ArrowUpRight, ArrowDownRight,
+  Receipt, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react';
 
 /* ── Settings Tab Definitions ──────────────────────────────────── */
@@ -29,7 +29,6 @@ export const SETTINGS_TABS: SettingsTab[] = [
   { value: 'modules', label: 'Modules', icon: Layers },
   { value: 'alerts', label: 'Alerting', icon: Bell },
   { value: 'security', label: 'Security', icon: ShieldCheck },
-  { value: 'billing', label: 'Billing', icon: CreditCard },
 ];
 
 /* ── Module Toggles ────────────────────────────────────────────── */

@@ -4326,15 +4326,7 @@ async function generateClientReportPdf(input: ReportCreateInput): Promise<Genera
         }
     },
 
-    // ========== BILLING & SUBSCRIPTIONS ==========
-    async getBillingOverview(): Promise<BillingOverview | null> {
-        try {
-            return await apiGet<BillingOverview>('/beeyield/billing/overview');
-        } catch (error) {
-            console.error('getBillingOverview:', error);
-            return null;
-        }
-    },
+    // ========== SUBSCRIPTIONS & CHECKOUT ==========
 
     async getSubscriptionPlans(): Promise<any[]> {
         return [
@@ -4375,119 +4367,7 @@ async function generateClientReportPdf(input: ReportCreateInput): Promise<Genera
         }
     },
 
-    async getTransactions(): Promise<Transaction[]> {
-        try {
-            const data = await apiGet<any[]>('/beeyield/billing/ledger', { limit: 50 });
-            return (data || []).map((t: any) => ({
-                ...t,
-                type: t.transaction_type,
-                category: t.module_type,
-                status: t.etims_status === 'synced' ? 'completed' : 'pending',
-                etims_qr_url: t.metadata?.etims_qr_url || null
-            })) as Transaction[];
-        } catch (error) {
-            console.error('getTransactions:', error);
-            return [];
-        }
-    },
-
-    async createTransaction(input: {
-        type: 'income' | 'expense';
-        amount: number;
-        currency: string;
-        category: string;
-        date: string;
-        description: string;
-        status: string;
-        entity_id?: string;
-    }): Promise<{ data: any; error: any }> {
-        try {
-            const data = await apiPost<any>('/beeyield/billing/ledger', {
-                transaction_type: input.type,
-                module_type: input.category,
-                description: input.description,
-                amount: input.amount,
-                currency: input.currency,
-                date: input.date,
-                etims_status: 'pending',
-            });
-
-            await this.logActivity({
-                event_type: 'transaction_created',
-                entity_type: 'transaction',
-                entity_id: data?.id,
-                title: input.type === 'income' ? 'Revenue Captured' : 'Expense Recorded',
-                subtitle: `${input.currency} ${input.amount.toLocaleString()} - ${input.category}`,
-                metadata: { amount: input.amount, type: input.type }
-            });
-
-            return { data, error: null };
-        } catch (error) {
-            console.error('createTransaction:', error);
-            return { data: null, error };
-        }
-    },
-
-    async updateTransaction(id: string, input: {
-        type?: 'income' | 'expense';
-        amount?: number;
-        currency?: string;
-        category?: string;
-        date?: string;
-        description?: string;
-        status?: string;
-        metadata?: any;
-    }): Promise<{ data: Transaction | null; error: any }> {
-        try {
-            const data = await apiPatch<Transaction>(`/beeyield/billing/ledger/${id}`, {
-                transaction_type: input.type,
-                amount: input.amount,
-                currency: input.currency,
-                module_type: input.category,
-                date: input.date,
-                description: input.description,
-                etims_status: input.status,
-                metadata: input.metadata,
-            } as any);
-            toast.success('Transaction updated');
-            return { data, error: null };
-        } catch (error) {
-            console.error('updateTransaction:', error);
-            toast.error('Failed to update transaction');
-            return { data: null, error };
-        }
-    },
-
-    async deleteTransaction(id: string): Promise<{ success: boolean; error: any }> {
-        try {
-            await apiDelete<void>(`/beeyield/billing/ledger/${id}`);
-
-            await this.logActivity({
-                event_type: 'transaction_deleted',
-                entity_type: 'transaction',
-                entity_id: id,
-                title: 'Financial Ledger Corrected',
-                subtitle: `Transaction #${id.slice(0, 8)} removed from records.`,
-            });
-
-            toast.success('Transaction removed');
-            return { success: true, error: null };
-        } catch (error: any) {
-            console.error('deleteTransaction:', error);
-            toast.error(error?.message || 'Failed to remove transaction');
-            return { success: false, error };
-        }
-    },
-
-    async submitToETIMS(id: string): Promise<{ success: boolean; etims_id?: string; error?: any }> {
-        try {
-            const result = await apiPost<any>(`/beeyield/billing/sync-etims/${id}`, {});
-            return result;
-        } catch (error) {
-            console.error('submitToETIMS error:', error);
-            return { success: false, error };
-        }
-    },
+    
 
     async getFinancialAggregate(groupBy: 'month' | 'category' = 'month'): Promise<any[]> {
         const txs = await this.getTransactions();

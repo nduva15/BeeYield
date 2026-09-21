@@ -10,7 +10,7 @@ import { useSensorAlerts } from '@/hooks/useSensorAlerts';
 import { 
     LayoutGrid, MessageSquare, Box, LineChart, Signal, Bluetooth, Cpu, Usb, FileText, HelpCircle,
     Plus, Filter, SlidersHorizontal, MoreHorizontal, Battery, Wifi, Clock, AlertTriangle, CheckCircle2,
-    X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
+    X, ChevronDown, MapPin, Search, ClipboardList, Calculator, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
     LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock as LockIcon, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
@@ -68,7 +68,6 @@ import MyRequestsView from '@/components/beeyield/MyRequestsView';
 import MyTaskView from '@/components/beeyield/MyTaskView';
 import BuyBeeYieldHubView from '@/components/beeyield/BuyBeeYieldHubView';
 import MetersView from '@/components/beeyield/MetersView';
-import BillingView from '@/components/beeyield/BillingView';
 import IntegrationsView from '@/components/beeyield/IntegrationsView';
 import SupportCenterView from '@/components/beeyield/SupportCenterView';
 import SettingsView from '@/components/beeyield/SettingsView';
@@ -343,7 +342,6 @@ const BeeYieldDashboard: React.FC = () => {
                 { id: 'meters-settings', label: 'Settings', icon: Settings },
             ]
         },
-        { id: 'billing', label: 'Billing', icon: Receipt },
         { id: 'integrations', label: 'Integrations', icon: Puzzle },
         { id: 'support', label: 'Support', icon: LifeBuoy },
         { id: 'settings', label: 'Settings', icon: Settings },
@@ -451,7 +449,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-payments':
             case 'meters-reports':
             case 'meters-settings': return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
-            case 'billing': return <BillingView onTabChange={handleTabChange} />;
             case 'integrations': return renderEmbedded(<IntegrationsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'support': return <SupportCenterView onTabChange={handleTabChange} />;
             case 'settings': return renderEmbedded(<SettingsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
