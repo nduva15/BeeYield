@@ -184,7 +184,7 @@ Required sections:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "bloom_flight" }),
       });
-      if (!resp.ok || !resp.body) { toast.error("AI failed"); setDiagLoading(false); return; }
+      if (!resp.ok || !resp.body) { toast.error("AI generation failed. Please try again."); setDiagLoading(false); return; }
       const reader = resp.body.getReader(); const decoder = new TextDecoder();
       let buf = ""; let acc = ""; let done = false;
       while (!done) {
@@ -201,7 +201,7 @@ Required sections:
           try { const p = JSON.parse(j); const c = p.choices?.[0]?.delta?.content; if (c) { acc += c; setDiagnostics(acc); } } catch { /* partial */ }
         }
       }
-    } catch { toast.error("AI failed"); }
+    } catch { toast.error("AI generation failed. Please try again."); }
     finally { setDiagLoading(false); }
   };
 

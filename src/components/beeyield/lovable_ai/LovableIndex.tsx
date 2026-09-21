@@ -87,14 +87,32 @@ async function streamBeeyield(
   onDone: () => void,
   onError: (err: string) => void
 ) {
-  const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-    },
-    body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType, promptVariant }),
-  });
+  let resp: Response;
+  try {
+    resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/beegpt`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType, promptVariant }),
+    });
+    if (!resp.ok) {
+      // Fallback to /api/public/beegpt
+      resp = await fetch("/api/public/beegpt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType, promptVariant }),
+      });
+    }
+  } catch {
+    // Fallback to /api/public/beegpt
+    resp = await fetch("/api/public/beegpt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages, imageBase64, imageType, audioBase64, audioType, promptVariant }),
+    });
+  }
 
   if (!resp.ok) {
     const data = await resp.json().catch(() => ({}));

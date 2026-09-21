@@ -89,7 +89,7 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: prompt }], promptVariant: "baseline" }),
       });
-      if (!resp.ok || !resp.body) { toast.error("AI failed"); setLoadingAi(false); return; }
+      if (!resp.ok || !resp.body) { toast.error("AI generation failed. Please try again."); setLoadingAi(false); return; }
       const reader = resp.body.getReader(); const dec = new TextDecoder(); let buf = "";
       while (true) {
         const { value, done } = await reader.read(); if (done) break;
