@@ -3104,12 +3104,22 @@ export const beeyieldService = {
 
     // ========== REPORTS ==========
     async getGeneratedReports(): Promise<GeneratedReport[]> {
+        const local = _lsReadAlways<GeneratedReport[]>('beeyield_local_reports_v1', []);
         try {
-            return await apiGet<GeneratedReport[]>("/reports");
+            let remote: GeneratedReport[] = [];
+            try {
+                remote = await apiGet<GeneratedReport[]>('/reports');
+            } catch {
+                remote = await apiGet<GeneratedReport[]>('/beeyield/reports');
+            }
+            if (Array.isArray(remote) && remote.length > 0) {
+                const remoteIds = new Set(remote.map((r) => r.id));
+                return [...remote, ...local.filter((l) => !remoteIds.has(l.id))];
+            }
         } catch (error) {
-            console.error("getGeneratedReports:", error);
-            return [];
+            console.warn('getGeneratedReports fallback to local:', error);
         }
+        return local;
     },
 
     async getRequests(): Promise<SupportRequest[]> {

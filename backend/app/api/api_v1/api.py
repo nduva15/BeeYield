@@ -6,7 +6,7 @@ from app.api.api_v1.endpoints import (
     company, auth, traceability, contact,
     forms, shop, blog, careers, media,
     services, jobs, notes, admin, iot,
-    admin_extended, meters, beeyield, pollination, inspections, reports, billing,
+    admin_extended, meters, beeyield, pollination, inspections, reports, billing, harvests,
     settings, payments, labels, bluetooth, measurements,
     requests, image_analysis, acoustic, routing, forage, ai, integrations, usb_hub, reference_library,
     yield_forecast

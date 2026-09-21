@@ -11,7 +11,9 @@ import { glass } from './GlassTheme';
 import beeyieldService from '@/services/beeyieldService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
+import { useQueryClient } from '@tanstack/react-query';
 import {
+    reportKeys,
     useCreateScheduledReport,
     useDeleteScheduledReport,
     useGeneratedReports,
@@ -34,6 +36,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
     const createSchedule = useCreateScheduledReport();
     const updateSchedule = useUpdateScheduledReport();
     const deleteSchedule = useDeleteScheduledReport();
+    const queryClient = useQueryClient();
 
     const [reportScope, setReportScope] = React.useState('30');
     const [selectedFormat, setSelectedFormat] = React.useState<'PDF' | 'XLSX'>('PDF');
@@ -101,6 +104,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
             }
 
             await beeyieldService.downloadReport({ file_url: result.file_url, file_name: result.file_name });
+            queryClient.invalidateQueries({ queryKey: reportKeys.generated() });
             toast.success(successLabel, { id: toastId });
         } catch (error: any) {
             console.error(error);
