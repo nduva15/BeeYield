@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import {
   X, Settings as SettingsIcon, User, Blocks, BellRing, ShieldCheck, CreditCard, Wifi,
   Loader2, Save, Link2, Trash2, Copy, Plus, TrendingUp, TrendingDown, Wallet,
-  Lock, Download, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw
+  Lock, Download, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw, FileText
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { supabase } from "@/integrations/supabase/client";
@@ -140,9 +140,9 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   const { user, profile, refreshProfile, signOut } = useAuth();
   const [tab, setTab] = useState<Tab>("profile");
 
-  const [fullName, setFullName] = useState(profile?.full_name ?? "Timothy Nduva");
-  const [phone, setPhone] = useState(profile?.phone ?? "+254 712 345 678");
-  const [country, setCountry] = useState(profile?.country ?? "Kenya — Kiambu");
+  const [fullName, setFullName] = useState(profile?.full_name ?? "");
+  const [phone, setPhone] = useState(profile?.phone ?? "");
+  const [country, setCountry] = useState(profile?.country ?? "");
   const [savingProfile, setSavingProfile] = useState(false);
 
   const [modules, setModules] = useState<Record<string, boolean>>(DEFAULT_MODULES);
@@ -150,13 +150,23 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   const [savingPrefs, setSavingPrefs] = useState(false);
 
   const [accessLink, setAccessLink] = useState<string | null>(null);
-  const [revenue, setRevenue] = useState<{ revenue: number; costs: number }>({ revenue: 1480000, costs: 620000 });
+  const [revenue, setRevenue] = useState<{ revenue: number; costs: number }>({ revenue: 0, costs: 0 });
+
+  // Real Invoices & eTIMS tax reports state
+  const [invoices, setInvoices] = useState<{
+    id: string;
+    title: string;
+    amount: string;
+    date: string;
+    etims?: string;
+    status?: string;
+  }[]>([]);
 
   // Payment Cards & Stripe state
   const [cards, setCards] = useState<PaymentCard[]>([]);
   const [showAddCardModal, setShowAddCardModal] = useState(false);
   const [savingCard, setSavingCard] = useState(false);
-  const [newCardName, setNewCardName] = useState(profile?.full_name ?? "Timothy Nduva");
+  const [newCardName, setNewCardName] = useState(profile?.full_name ?? "");
   const [newCardNumber, setNewCardNumber] = useState("");
   const [newCardExpiry, setNewCardExpiry] = useState("");
   const [newCardCvc, setNewCardCvc] = useState("");
@@ -238,28 +248,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       }
     } catch {}
 
-    // 4. Default card fallback if no cards on file
-    if (loaded.length === 0) {
-      loaded = [
-        {
-          id: "card_default_commercial",
-          card_holder_name: "Timothy Nduva",
-          provider: "Visa",
-          brand: "visa",
-          last4: "4242",
-          expiry_month: 11,
-          expiry_year: 2028,
-          is_default: true,
-          status: "active",
-          stripe_payment_method_id: "pm_vault_default_4242",
-          created_at: new Date().toISOString(),
-        },
-      ];
-      try {
-        localStorage.setItem("beeyield_vaulted_cards", JSON.stringify(loaded));
-        localStorage.setItem("beeyield_payment_cards_v1", JSON.stringify(loaded));
-      } catch {}
-    }
+    // Clean legacy mock cards if present
+    loaded = loaded.filter(c => c.id !== "card_default_commercial" && c.card_holder_name !== "Timothy Nduva");
 
     setCards(loaded);
   }, []);
@@ -478,17 +468,20 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       doc.setFont("helvetica", "bold");
       doc.text("Billed To:", 14, 38);
       doc.setFont("helvetica", "normal");
-      doc.text("Timothy Nduva (Commercial Apiary Director)", 14, 45);
-      doc.text("BeeYield Workspace ID: WS-KEN-2026-BY", 14, 51);
-      doc.text("Location: Kiambu / Kibwezi Apiary Centre, Kenya", 14, 57);
-      doc.text("KRA PIN: P051239847Z", 14, 63);
+      doc.text(fullName || profile?.full_name || user?.email || "Account Administrator", 14, 45);
+      doc.text(`Account ID: ${user?.id ? user.id.slice(0, 12) : deviceId.slice(0, 12)}`, 14, 51);
+      if (country || profile?.country) {
+        doc.text(`Location: ${country || profile?.country}`, 14, 57);
+      }
 
       doc.setFont("helvetica", "bold");
       doc.text("Invoice Details:", 130, 38);
       doc.setFont("helvetica", "normal");
       doc.text(`Invoice No: ${invoiceId}`, 130, 45);
       doc.text(`Date: ${new Date().toLocaleDateString()}`, 130, 51);
-      doc.text(`eTIMS Ref: ${etims}`, 130, 57);
+      if (etims) {
+        doc.text(`eTIMS Ref: ${etims}`, 130, 57);
+      }
       doc.text("Payment Status: PAID IN FULL", 130, 63);
 
       doc.setDrawColor(200, 200, 200);
@@ -511,8 +504,10 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       doc.text("Total Paid:", 145, 112);
       doc.text(amount, 175, 112);
 
-      doc.setTextColor(34, 197, 94);
-      doc.text("✓ VERIFIED KRA eTIMS CRYPTOGRAPHIC RECEIPT", 14, 126);
+      if (etims) {
+        doc.setTextColor(34, 197, 94);
+        doc.text("✓ VERIFIED KRA eTIMS CRYPTOGRAPHIC RECEIPT", 14, 126);
+      }
 
       doc.setTextColor(100, 100, 100);
       doc.setFontSize(8);
@@ -556,6 +551,30 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     } catch {}
   }, [deviceId]);
 
+  const loadInvoices = useCallback(async () => {
+    try {
+      const stored = localStorage.getItem("beeyield_billing_invoices");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const real = parsed.filter(
+            (inv: any) =>
+              inv &&
+              inv.id &&
+              !inv.id.startsWith("INV-2026-00") &&
+              inv.etims !== "KRA-2026-BY0912" &&
+              inv.etims !== "KRA-2026-BY0843"
+          );
+          setInvoices(real);
+          return;
+        }
+      }
+      setInvoices([]);
+    } catch {
+      setInvoices([]);
+    }
+  }, []);
+
   const loadRevenue = useCallback(async () => {
     try {
       const { data, error } = await (supabase as any)
@@ -574,7 +593,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     void loadPrefs();
     void loadRevenue();
     void loadCards();
-  }, [isOpen, loadPrefs, loadRevenue, loadCards]);
+    void loadInvoices();
+  }, [isOpen, loadPrefs, loadRevenue, loadCards, loadInvoices]);
 
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -909,7 +929,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               <div className="mt-4 pt-4 border-t border-emerald-500/20 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div>
                   <span className="text-muted-foreground block text-[11px]">Workspace ID</span>
-                  <span className="font-medium text-foreground">WS-KEN-2026-BY</span>
+                  <span className="font-mono text-foreground font-medium">{user?.id ? `WS-${user.id.slice(0, 8).toUpperCase()}` : `DEV-${deviceId.slice(0, 8).toUpperCase()}`}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground block text-[11px]">Billing Cycle</span>
@@ -962,7 +982,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 <button
                   type="button"
                   onClick={() => {
-                    setNewCardName(fullName || "Timothy Nduva");
+                    setNewCardName(fullName || profile?.full_name || "");
                     setShowAddCardModal(true);
                   }}
                   className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs flex items-center gap-2 hover:shadow-lg transition-all shadow-md border border-emerald-500/40 self-start sm:self-auto"
@@ -1056,54 +1076,55 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
               {/* Invoices and Billing History */}
               <div className="pt-4 border-t border-border space-y-3">
-                <div>
-                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
-                    Billing Invoices & eTIMS Tax Receipts
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Cryptographically stamped receipts for commercial tax deductible write-offs.
-                  </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">
+                      Billing Invoices & eTIMS Tax Receipts
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Cryptographically stamped receipts for commercial tax deductible write-offs.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  {[
-                    {
-                      id: "INV-2026-001",
-                      title: "Commercial Enterprise Annual Plan",
-                      amount: "KES 30,000",
-                      date: "15 Jan 2026",
-                      etims: "KRA-2026-BY0912",
-                    },
-                    {
-                      id: "INV-2026-002",
-                      title: "IoT Apiary Sensor Telemetry & Acoustic Cloud",
-                      amount: "KES 4,500",
-                      date: "01 Mar 2026",
-                      etims: "KRA-2026-BY0843",
-                    },
-                  ].map((inv) => (
-                    <div key={inv.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card/40 hover:bg-card text-xs transition-colors">
-                      <div className="space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono font-semibold text-foreground">{inv.id}</span>
-                          <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-medium">PAID</span>
-                        </div>
-                        <p className="text-muted-foreground">{inv.title} • {inv.date}</p>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono font-bold text-foreground">{inv.amount}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleDownloadInvoice(inv.id, inv.title, inv.amount, inv.etims)}
-                          className="px-2.5 py-1.5 rounded border border-border hover:border-honey hover:text-honey text-[11px] flex items-center gap-1 transition-colors"
-                        >
-                          <Download className="w-3 h-3" /> PDF
-                        </button>
-                      </div>
+                {invoices.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-border/80 p-8 text-center bg-card/20 space-y-2">
+                    <div className="w-10 h-10 rounded-full bg-muted/50 text-muted-foreground flex items-center justify-center mx-auto">
+                      <FileText className="w-5 h-5 opacity-70" />
                     </div>
-                  ))}
-                </div>
+                    <p className="text-sm font-medium text-foreground">No Invoices or Tax Receipts Yet</p>
+                    <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                      Official invoices and cryptographically stamped eTIMS receipts will automatically appear here when subscriptions or commercial apiary services are billed.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {invoices.map((inv) => (
+                      <div key={inv.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card/40 hover:bg-card text-xs transition-colors">
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-semibold text-foreground">{inv.id}</span>
+                            <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-medium">
+                              {inv.status || "PAID"}
+                            </span>
+                          </div>
+                          <p className="text-muted-foreground">{inv.title} • {inv.date}</p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <span className="font-mono font-bold text-foreground">{inv.amount}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadInvoice(inv.id, inv.title, inv.amount, inv.etims || "")}
+                            className="px-2.5 py-1.5 rounded border border-border hover:border-amber-500 hover:text-amber-400 text-[11px] flex items-center gap-1 transition-colors"
+                          >
+                            <Download className="w-3 h-3" /> PDF
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
