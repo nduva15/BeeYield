@@ -83,6 +83,7 @@ import ApiarySizing from "@/components/ApiarySizing";
 import YieldProjection from "@/components/YieldProjection";
 import InspectionsPage from "@/components/InspectionsPage";
 import TasksPage from "@/components/TasksPage";
+import ForageZonesPage from "@/components/ForageZonesPage";
 import HarvestsPage from "@/components/HarvestsPage";
 import SoundAnalysis from "@/components/SoundAnalysis";
 import IntegrationsPage from "@/components/IntegrationsPage";
@@ -231,6 +232,7 @@ export default function Index() {
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [inspectionsOpen, setInspectionsOpen] = useState(false);
   const [tasksOpen, setTasksOpen] = useState(false);
+  const [forageZonesOpen, setForageZonesOpen] = useState(false);
   const [harvestsOpen, setHarvestsOpen] = useState(false);
   const [soundAnalysisOpen, setSoundAnalysisOpen] = useState(false);
   const [integrationsOpen, setIntegrationsOpen] = useState(false);
@@ -559,6 +561,7 @@ export default function Index() {
           onClick: () => setActivityForecasterOpen(true),
         },
         { label: "Florage Database", icon: Sprout, onClick: () => setFloragePageOpen(true) },
+        { label: "Forage Zones & Floral Resources", icon: Flower2, onClick: () => setForageZonesOpen(true) },
       ],
     },
     {
@@ -1034,6 +1037,7 @@ export default function Index() {
       <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
       <InspectionsPage isOpen={inspectionsOpen} onClose={() => setInspectionsOpen(false)} />
       <TasksPage isOpen={tasksOpen} onClose={() => setTasksOpen(false)} />
+      <ForageZonesPage isOpen={forageZonesOpen} onClose={() => setForageZonesOpen(false)} />
       <HarvestsPage isOpen={harvestsOpen} onClose={() => setHarvestsOpen(false)} />
       <SoundAnalysis isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />
       <IntegrationsPage isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />
