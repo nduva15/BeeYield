@@ -368,7 +368,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
     setNewRecordOpen(false);
     setRecordNotes("");
-    toast.success("Hive record saved to live stream");
+    toast.success("Hive record saved successfully");
   };
 
   const filteredRecords = selectedHive === "all" ? records : records.filter((r) => r.hive_name === selectedHive);

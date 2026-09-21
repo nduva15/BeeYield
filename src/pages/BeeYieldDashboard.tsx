@@ -56,7 +56,6 @@ import VpmAutoCounter from '@/components/beeyield/VpmAutoCounter';
 import BeeFlightHoursForecast from '@/components/beeyield/BeeFlightHoursForecast';
 import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
 import SensorHealthView from '@/components/beeyield/SensorHealthView';
-import ContinuousMonitor from '@/components/beeyield/ContinuousMonitor';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
 import InspectionsView from '@/components/beeyield/InspectionsView';
@@ -303,7 +302,6 @@ const BeeYieldDashboard: React.FC = () => {
                     title: 'System View',
                     items: [
                         { id: 'sensor-vitals', label: 'Hive Health', icon: Heart },
-                        { id: 'continuous-monitor', label: 'Live Stream', icon: Activity },
                         { id: 'bee-diseases', label: 'Pathogen Database', icon: AlertTriangle },
                     ]
                 },
@@ -421,7 +419,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'sensor-alerts': return renderEmbedded(<AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'hive-health':
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
-            case 'continuous-monitor': return <ContinuousMonitor onTabChange={handleTabChange} />;
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
             case 'inspections': return renderEmbedded(<InspectionsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);

@@ -127,7 +127,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             title: "IoT Hardware & Sensors",
             items: [
                 { id: 'sensor-alerts', label: 'Sensor Real-Time Alerts', icon: Bell },
-                { id: 'continuous-monitor', label: 'Continuous Telemetry', icon: Gauge },
                 { id: 'devices', label: 'Hardware & IoT Nodes', icon: Cpu },
                 { id: 'measurement-tools', label: 'Measurement Data Tools', icon: Scale },
                 { id: 'meters', label: 'IoT Flow & Smart Meters', icon: Zap },
