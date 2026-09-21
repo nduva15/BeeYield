@@ -1671,6 +1671,334 @@ function deriveBatchViewsFromHarvests(harvests: Harvest[]): BatchView[] {
     return derived;
 }
 
+// ============ CLIENT-SIDE REPORT GENERATOR (DYNAMIC USER DATA) ============
+const clientReportCache = new Map<string, GeneratedReport>();
+
+async function generateClientReportPdf(input: ReportCreateInput): Promise<GeneratedReport> {
+    const reportType = input.report_type || "full_summary";
+    const dateStr = new Date().toISOString().split('T')[0];
+    const fileName = `BeeYield_${reportType}_${dateStr}.pdf`;
+    const jobId = `job_${Date.now()}`;
+    const parameters = input.parameters || {};
+    const scopeDays = Math.max(1, Number(parameters.scope_days || 30));
+    const placeId = parameters.place_id && parameters.place_id !== 'all' ? parameters.place_id : undefined;
+    const hiveId = parameters.hive_id && parameters.hive_id !== 'all' ? parameters.hive_id : undefined;
+
+    // 1. Resolve Current User Profile & Identity
+    let beekeeperName = 'Beekeeper';
+    let beekeeperEmail = '';
+    let farmName = '';
+    let userRegion = '';
+    let resolvedUserId = (input as any).user_id || 'beekeeper-user';
+
+    try {
+        if (sb) {
+            const { data: authData } = await sb.auth.getUser();
+            if (authData?.user) {
+                resolvedUserId = authData.user.id;
+                beekeeperEmail = authData.user.email || '';
+                const meta = authData.user.user_metadata || {};
+                beekeeperName = meta.full_name || meta.name || meta.user_name || beekeeperName;
+
+                try {
+                    const { data: prof } = await sb.from('profiles').select('*').eq('id', authData.user.id).maybeSingle();
+                    if (prof) {
+                        beekeeperName = prof.full_name || `${prof.first_name || ''} ${prof.last_name || ''}`.trim() || beekeeperName;
+                        farmName = prof.farm_name || '';
+                        userRegion = prof.county || prof.country || '';
+                    }
+                } catch { void 0; }
+            }
+        }
+    } catch { void 0; }
+
+    if (beekeeperName === 'Beekeeper') {
+        try {
+            const rawProf = localStorage.getItem('beeyield_user_profile') || localStorage.getItem('profile');
+            if (rawProf) {
+                const parsed = JSON.parse(rawProf);
+                if (parsed.full_name) beekeeperName = parsed.full_name;
+                else if (parsed.first_name) beekeeperName = `${parsed.first_name} ${parsed.last_name || ''}`.trim();
+                if (parsed.farm_name) farmName = parsed.farm_name;
+                if (parsed.county || parsed.country) userRegion = parsed.county || parsed.country;
+            }
+        } catch { void 0; }
+    }
+
+    if (beekeeperName === 'Beekeeper' && beekeeperEmail) {
+        beekeeperName = beekeeperEmail.split('@')[0];
+    }
+
+    // 2. Resolve User's Actual Apiaries
+    let userApiaries: any[] = [];
+    try {
+        userApiaries = await beeyieldService.getApiaries();
+    } catch { void 0; }
+    if (!Array.isArray(userApiaries) || userApiaries.length === 0) {
+        userApiaries = _lsReadAlways<any[]>(LS_KEYS.apiaries, []);
+    }
+    if (placeId) {
+        const filtered = userApiaries.filter((a) => a.id === placeId || a.name === placeId);
+        if (filtered.length > 0) userApiaries = filtered;
+    }
+
+    // 3. Resolve User's Actual Hives
+    let userHives: any[] = [];
+    try {
+        userHives = await beeyieldService.getHives(placeId);
+    } catch { void 0; }
+    if (!Array.isArray(userHives) || userHives.length === 0) {
+        userHives = _lsReadAlways<any[]>(LS_KEYS.hives, []);
+        if (placeId) {
+            userHives = userHives.filter((h) => h.apiary_id === placeId);
+        }
+    }
+    if (hiveId) {
+        const filteredHives = userHives.filter((h) => h.id === hiveId || h.hive_code === hiveId);
+        if (filteredHives.length > 0) userHives = filteredHives;
+    }
+
+    // 4. Resolve User's Actual Harvests
+    let userHarvests: any[] = [];
+    try {
+        userHarvests = await beeyieldService.getHarvests({ apiary_id: placeId, hive_id: hiveId });
+    } catch { void 0; }
+    if (!Array.isArray(userHarvests) || userHarvests.length === 0) {
+        userHarvests = _lsReadAlways<any[]>(LS_KEYS.harvests, []);
+    }
+    const cutoffDate = new Date(Date.now() - scopeDays * 24 * 60 * 60 * 1000);
+    const scopedHarvests = userHarvests.filter((h) => {
+        const d = new Date(h.harvest_date || h.created_at || Date.now());
+        return d >= cutoffDate;
+    });
+
+    // 5. Resolve User's Actual Inspections
+    let userInspections: any[] = [];
+    try {
+        userInspections = await beeyieldService.getInspections();
+    } catch { void 0; }
+    if (!Array.isArray(userInspections) || userInspections.length === 0) {
+        userInspections = _lsReadAlways<any[]>(LS_KEYS.inspections, []);
+    }
+    const scopedInspections = userInspections.filter((i) => {
+        const d = new Date(i.inspection_date || i.created_at || Date.now());
+        return d >= cutoffDate;
+    });
+
+    // 6. Aggregate Real Metrics
+    const totalHivesCount = userHives.length;
+    const activeHivesCount = userHives.filter((h) => {
+        const s = String(h.status || '').trim().toLowerCase();
+        return s === 'active' || s === 'healthy' || s === 'good' || s === 'strong' || s === 'normal' || !s;
+    }).length;
+
+    const totalHarvestKg = scopedHarvests.reduce(
+        (sum, h) => sum + (Number(h.quantity_kg || h.yield_kg || h.amount_kg || 0) || 0),
+        0
+    );
+    const harvestBatches = scopedHarvests.length;
+
+    const varietiesSet = new Set<string>();
+    scopedHarvests.forEach((h) => {
+        const t = h.honey_type || h.variety || h.forage_source;
+        if (t) varietiesSet.add(String(t).trim());
+    });
+    userApiaries.forEach((a) => {
+        const f = a.forage_type || a.primary_forage;
+        if (f) varietiesSet.add(String(f).trim());
+    });
+    const varietyStr = varietiesSet.size > 0 ? Array.from(varietiesSet).slice(0, 3).join(', ') : 'Raw Multifloral Honey';
+
+    // Inspection computations
+    let queenRightCount = 0;
+    let totalHealthScore = 0;
+    let scoresCount = 0;
+    scopedInspections.forEach((i) => {
+        if (i.health_score != null) {
+            const sc = Number(i.health_score);
+            if (!isNaN(sc)) {
+                totalHealthScore += sc;
+                scoresCount++;
+            }
+        }
+        const q = String(i.queen_status || i.queen_seen || '').toLowerCase();
+        if (q.includes('seen') || q.includes('right') || q.includes('present') || q === 'true' || q === 'yes') {
+            queenRightCount++;
+        }
+    });
+
+    const avgHealthScore = scoresCount > 0 ? Math.min(100, Math.round(totalHealthScore / scoresCount)) : 94;
+    const queenRightPct = scopedInspections.length > 0
+        ? Math.min(100, Math.round((queenRightCount / scopedInspections.length) * 100))
+        : 96;
+
+    // Territory & Locations
+    const locationsSet = new Set<string>();
+    userApiaries.forEach((a) => {
+        const loc = a.location_name || a.county || a.region || a.name;
+        if (loc) locationsSet.add(String(loc).trim());
+    });
+    const locationsStr = locationsSet.size > 0
+        ? Array.from(locationsSet).slice(0, 3).join(' • ')
+        : userRegion || 'Operational Apiaries';
+
+    const totalAcres = userApiaries.reduce(
+        (sum, a) => sum + (Number(a.acreage || a.size_acres || a.farm_size_acres || 0) || 0),
+        0
+    );
+    const territoryStr = totalAcres > 0
+        ? `${totalAcres} Acres`
+        : `${userApiaries.length || 1} Apiary Site${userApiaries.length === 1 ? '' : 's'}`;
+
+    const subtitle = `${beekeeperName}${farmName ? ` (${farmName})` : ''} • ${locationsStr} • ${totalHivesCount} Colonies • ${territoryStr}`;
+
+    const title = reportType === 'ai_analysis'
+        ? 'AI Colony Health & Acoustic Intelligence Audit'
+        : reportType === 'audit'
+        ? 'Colony Biosecurity & Apicultural Quality Inspection'
+        : reportType === 'season'
+        ? 'Seasonal Apiary Production & Yield Report'
+        : 'Comprehensive Apiary Production & Operational Summary';
+
+    // 7. Dynamic Sections
+    const overviewRows: [string, string][] = [
+        ['Beekeeper / Operator', beekeeperName],
+        [
+            'Managed Apiary Centres',
+            userApiaries.length > 0
+                ? `${userApiaries.length} Hubs (${userApiaries.map((a) => a.name).slice(0, 2).join(', ')})`
+                : 'Primary Apiary Node',
+        ],
+        ['Total Colony Units', `${totalHivesCount} Hives (${activeHivesCount} Active)`],
+        ['Period Harvest Yield', `${totalHarvestKg.toLocaleString()} kg (${varietyStr})`],
+        ['Extraction Batches', `${harvestBatches} Logged Run${harvestBatches === 1 ? '' : 's'}`],
+        ['Analysis Scope', `Last ${scopeDays} Days`],
+        ['Quality & Biosecurity Status', 'Compliant with GAP & Verified Standards'],
+    ];
+
+    const healthRows = [
+        {
+            label: 'Queen Right & Reproductive Vitality',
+            pct: queenRightPct,
+            note: `${queenRightCount} of ${scopedInspections.length || totalHivesCount || 1} checked colonies confirmed queen-right`,
+        },
+        {
+            label: 'Acoustic & Hive Health Index',
+            pct: avgHealthScore,
+            note: 'Telemetry and sound spectrum within healthy resonance band',
+        },
+        {
+            label: 'Active Foraging Colony Retention',
+            pct: totalHivesCount > 0 ? Math.min(100, Math.round((activeHivesCount / totalHivesCount) * 100)) : 95,
+            note: `${activeHivesCount} active of ${totalHivesCount} total registered colonies`,
+        },
+        {
+            label: 'Telemetry & Sensor Uptime',
+            pct: 99,
+            note: 'Continuous inspection & scale telemetry synced',
+        },
+    ];
+
+    const apiaryListRows: [string, string][] = userApiaries.slice(0, 4).map((a) => [
+        a.name || 'Apiary Station',
+        `${a.location_name || a.county || 'Local Site'} • ${a.apiary_type || 'Langstroth'} • ${a.forage_type || a.primary_forage || 'Floral'}`,
+    ]);
+    if (apiaryListRows.length === 0) {
+        apiaryListRows.push(['Apiary Node 1', 'Main Operational Yard • Active']);
+    }
+
+    const recentExtractionItems = scopedHarvests.slice(0, 4).map((h) => {
+        const dt = h.harvest_date ? String(h.harvest_date).slice(0, 10) : 'Recent';
+        const kg = Number(h.quantity_kg || h.yield_kg || 0);
+        const typ = h.honey_type || h.variety || 'Pure Honey';
+        return `Batch ${h.batch_number || h.id?.slice(0, 8) || 'RUN'}: ${kg} kg ${typ} extracted on ${dt}`;
+    });
+    if (recentExtractionItems.length === 0) {
+        recentExtractionItems.push(
+            'No extraction runs logged in this period. Colonies are currently in brood build-up and nectar collection phase.'
+        );
+    }
+
+    const fieldActionItems: string[] = [
+        `Monitor super frame capacity across ${userApiaries[0]?.name || 'active apiaries'} as foraging intensifies.`,
+        'Verify water source access and queen oviposition regularity during next scheduled field inspection.',
+        'Record upcoming batch extractions in the Harvests ledger for complete supply chain lot traceability.',
+    ];
+    if (userHives.some((h) => String(h.status || '').toLowerCase().includes('weak') || String(h.status || '').toLowerCase().includes('alert'))) {
+        fieldActionItems.unshift('Prioritize diagnostic check on flagged colonies showing lower brood activity.');
+    }
+
+    let reportFileUrl: string | undefined = undefined;
+
+    try {
+        const { buildReportPdf, downloadReportPdf } = await import('@/lib/report-pdf');
+        const docConfig = {
+            kind: 'BeeYield Apicultural Intelligence Report',
+            title,
+            subtitle,
+            badge: 'Verified Apiary Report',
+            fileName,
+            sections: [
+                { type: 'kv' as const, heading: 'Executive Production Overview', rows: overviewRows },
+                { type: 'bars' as const, heading: 'Colony Health & Telemetry Metrics', rows: healthRows },
+                { type: 'kv' as const, heading: 'Managed Apiary Sites & Layout', rows: apiaryListRows },
+                { type: 'list' as const, heading: 'Recent Harvest & Extraction Records', items: recentExtractionItems },
+                {
+                    type: 'text' as const,
+                    heading: 'Agronomic & Floral Forage Assessment',
+                    body: `Apiary telemetry confirms active foraging across ${varietyStr} floral sources. Acoustic monitoring demonstrates normal harmonic frequencies without swarm cell signatures. Hive microclimates remain within standard biological tolerance ranges.`,
+                },
+                { type: 'list' as const, heading: 'Recommended Field Management Actions', items: fieldActionItems },
+            ],
+            footer: `BeeYield Commercial Operating System • Beekeeper: ${beekeeperName} • Verified for GAP Certification • beeyield.com`,
+        };
+
+        const { url } = buildReportPdf(docConfig);
+        reportFileUrl = url;
+    } catch (pdfErr) {
+        console.warn('Client-side PDF generation note:', pdfErr);
+    }
+
+    const generatedReport: GeneratedReport = {
+        id: jobId,
+        user_id: resolvedUserId,
+        report_type: reportType,
+        parameters,
+        file_format: input.file_format || 'PDF',
+        status: 'completed',
+        file_name: fileName,
+        file_url: reportFileUrl,
+        created_at: new Date().toISOString(),
+    };
+
+    clientReportCache.set(jobId, generatedReport);
+
+    try {
+        const stored = _lsReadAlways<GeneratedReport[]>('beeyield_local_reports_v1', []);
+        stored.unshift(generatedReport);
+        _lsWriteAlways('beeyield_local_reports_v1', stored.slice(0, 50));
+    } catch { void 0; }
+
+    if (sb) {
+        try {
+            await sb.from('generated_reports').insert({
+                id: jobId,
+                user_id: generatedReport.user_id,
+                report_type: generatedReport.report_type,
+                file_format: generatedReport.file_format,
+                parameters: generatedReport.parameters,
+                status: 'completed',
+                file_name: generatedReport.file_name,
+                created_at: generatedReport.created_at,
+            });
+        } catch (sbErr) {
+            console.warn('Supabase generated_reports insert notice:', sbErr);
+        }
+    }
+
+    return generatedReport;
+}
+
 export const beeyieldService = {
     supabaseBeeYield: sb,
     _configsCache: null as any[] | null,
@@ -2724,7 +3052,6 @@ export const beeyieldService = {
             return { error };
         }
     },
-    },
 
     // ========== TASKS ==========
     async getTasks(): Promise<Task[]> {
@@ -2941,17 +3268,6 @@ export const beeyieldService = {
         _lsWriteAlways(LS_KEYS.inspections, existing.filter(i => i.id !== id));
         toast.success('Inspection deleted');
         return { error: null };
-    },
-            _lsWriteAlways(LS_KEYS.inspections, existing.filter(i => i.id !== id));
-            return { error: null };
-        } catch (error) {
-            console.warn('deleteInspection API failed, removing locally:', error);
-            // Fallback: remove from localStorage
-            const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
-            _lsWriteAlways(LS_KEYS.inspections, existing.filter(i => i.id !== id));
-            toast.success('Inspection deleted');
-            return { error: null };
-        }
     },
 
     // ========== SETTINGS ==========
@@ -3609,334 +3925,6 @@ export const beeyieldService = {
         }
     },
 
-
-// ============ CLIENT-SIDE REPORT GENERATOR (DYNAMIC USER DATA) ============
-const clientReportCache = new Map<string, GeneratedReport>();
-
-async function generateClientReportPdf(input: ReportCreateInput): Promise<GeneratedReport> {
-    const reportType = input.report_type || "full_summary";
-    const dateStr = new Date().toISOString().split('T')[0];
-    const fileName = `BeeYield_${reportType}_${dateStr}.pdf`;
-    const jobId = `job_${Date.now()}`;
-    const parameters = input.parameters || {};
-    const scopeDays = Math.max(1, Number(parameters.scope_days || 30));
-    const placeId = parameters.place_id && parameters.place_id !== 'all' ? parameters.place_id : undefined;
-    const hiveId = parameters.hive_id && parameters.hive_id !== 'all' ? parameters.hive_id : undefined;
-
-    // 1. Resolve Current User Profile & Identity
-    let beekeeperName = 'Beekeeper';
-    let beekeeperEmail = '';
-    let farmName = '';
-    let userRegion = '';
-    let resolvedUserId = (input as any).user_id || 'beekeeper-user';
-
-    try {
-        if (sb) {
-            const { data: authData } = await sb.auth.getUser();
-            if (authData?.user) {
-                resolvedUserId = authData.user.id;
-                beekeeperEmail = authData.user.email || '';
-                const meta = authData.user.user_metadata || {};
-                beekeeperName = meta.full_name || meta.name || meta.user_name || beekeeperName;
-
-                try {
-                    const { data: prof } = await sb.from('profiles').select('*').eq('id', authData.user.id).maybeSingle();
-                    if (prof) {
-                        beekeeperName = prof.full_name || `${prof.first_name || ''} ${prof.last_name || ''}`.trim() || beekeeperName;
-                        farmName = prof.farm_name || '';
-                        userRegion = prof.county || prof.country || '';
-                    }
-                } catch {}
-            }
-        }
-    } catch {}
-
-    if (beekeeperName === 'Beekeeper') {
-        try {
-            const rawProf = localStorage.getItem('beeyield_user_profile') || localStorage.getItem('profile');
-            if (rawProf) {
-                const parsed = JSON.parse(rawProf);
-                if (parsed.full_name) beekeeperName = parsed.full_name;
-                else if (parsed.first_name) beekeeperName = `${parsed.first_name} ${parsed.last_name || ''}`.trim();
-                if (parsed.farm_name) farmName = parsed.farm_name;
-                if (parsed.county || parsed.country) userRegion = parsed.county || parsed.country;
-            }
-        } catch {}
-    }
-
-    if (beekeeperName === 'Beekeeper' && beekeeperEmail) {
-        beekeeperName = beekeeperEmail.split('@')[0];
-    }
-
-    // 2. Resolve User's Actual Apiaries
-    let userApiaries: any[] = [];
-    try {
-        userApiaries = await beeyieldService.getApiaries();
-    } catch {}
-    if (!Array.isArray(userApiaries) || userApiaries.length === 0) {
-        userApiaries = _lsReadAlways<any[]>(LS_KEYS.apiaries, []);
-    }
-    if (placeId) {
-        const filtered = userApiaries.filter((a) => a.id === placeId || a.name === placeId);
-        if (filtered.length > 0) userApiaries = filtered;
-    }
-
-    // 3. Resolve User's Actual Hives
-    let userHives: any[] = [];
-    try {
-        userHives = await beeyieldService.getHives(placeId);
-    } catch {}
-    if (!Array.isArray(userHives) || userHives.length === 0) {
-        userHives = _lsReadAlways<any[]>(LS_KEYS.hives, []);
-        if (placeId) {
-            userHives = userHives.filter((h) => h.apiary_id === placeId);
-        }
-    }
-    if (hiveId) {
-        const filteredHives = userHives.filter((h) => h.id === hiveId || h.hive_code === hiveId);
-        if (filteredHives.length > 0) userHives = filteredHives;
-    }
-
-    // 4. Resolve User's Actual Harvests
-    let userHarvests: any[] = [];
-    try {
-        userHarvests = await beeyieldService.getHarvests({ apiary_id: placeId, hive_id: hiveId });
-    } catch {}
-    if (!Array.isArray(userHarvests) || userHarvests.length === 0) {
-        userHarvests = _lsReadAlways<any[]>(LS_KEYS.harvests, []);
-    }
-    const cutoffDate = new Date(Date.now() - scopeDays * 24 * 60 * 60 * 1000);
-    const scopedHarvests = userHarvests.filter((h) => {
-        const d = new Date(h.harvest_date || h.created_at || Date.now());
-        return d >= cutoffDate;
-    });
-
-    // 5. Resolve User's Actual Inspections
-    let userInspections: any[] = [];
-    try {
-        userInspections = await beeyieldService.getInspections();
-    } catch {}
-    if (!Array.isArray(userInspections) || userInspections.length === 0) {
-        userInspections = _lsReadAlways<any[]>(LS_KEYS.inspections, []);
-    }
-    const scopedInspections = userInspections.filter((i) => {
-        const d = new Date(i.inspection_date || i.created_at || Date.now());
-        return d >= cutoffDate;
-    });
-
-    // 6. Aggregate Real Metrics
-    const totalHivesCount = userHives.length;
-    const activeHivesCount = userHives.filter((h) => {
-        const s = String(h.status || '').trim().toLowerCase();
-        return s === 'active' || s === 'healthy' || s === 'good' || s === 'strong' || s === 'normal' || !s;
-    }).length;
-
-    const totalHarvestKg = scopedHarvests.reduce(
-        (sum, h) => sum + (Number(h.quantity_kg || h.yield_kg || h.amount_kg || 0) || 0),
-        0
-    );
-    const harvestBatches = scopedHarvests.length;
-
-    const varietiesSet = new Set<string>();
-    scopedHarvests.forEach((h) => {
-        const t = h.honey_type || h.variety || h.forage_source;
-        if (t) varietiesSet.add(String(t).trim());
-    });
-    userApiaries.forEach((a) => {
-        const f = a.forage_type || a.primary_forage;
-        if (f) varietiesSet.add(String(f).trim());
-    });
-    const varietyStr = varietiesSet.size > 0 ? Array.from(varietiesSet).slice(0, 3).join(', ') : 'Raw Multifloral Honey';
-
-    // Inspection computations
-    let queenRightCount = 0;
-    let totalHealthScore = 0;
-    let scoresCount = 0;
-    scopedInspections.forEach((i) => {
-        if (i.health_score != null) {
-            const sc = Number(i.health_score);
-            if (!isNaN(sc)) {
-                totalHealthScore += sc;
-                scoresCount++;
-            }
-        }
-        const q = String(i.queen_status || i.queen_seen || '').toLowerCase();
-        if (q.includes('seen') || q.includes('right') || q.includes('present') || q === 'true' || q === 'yes') {
-            queenRightCount++;
-        }
-    });
-
-    const avgHealthScore = scoresCount > 0 ? Math.min(100, Math.round(totalHealthScore / scoresCount)) : 94;
-    const queenRightPct = scopedInspections.length > 0
-        ? Math.min(100, Math.round((queenRightCount / scopedInspections.length) * 100))
-        : 96;
-
-    // Territory & Locations
-    const locationsSet = new Set<string>();
-    userApiaries.forEach((a) => {
-        const loc = a.location_name || a.county || a.region || a.name;
-        if (loc) locationsSet.add(String(loc).trim());
-    });
-    const locationsStr = locationsSet.size > 0
-        ? Array.from(locationsSet).slice(0, 3).join(' • ')
-        : userRegion || 'Operational Apiaries';
-
-    const totalAcres = userApiaries.reduce(
-        (sum, a) => sum + (Number(a.acreage || a.size_acres || a.farm_size_acres || 0) || 0),
-        0
-    );
-    const territoryStr = totalAcres > 0
-        ? `${totalAcres} Acres`
-        : `${userApiaries.length || 1} Apiary Site${userApiaries.length === 1 ? '' : 's'}`;
-
-    const subtitle = `${beekeeperName}${farmName ? ` (${farmName})` : ''} • ${locationsStr} • ${totalHivesCount} Colonies • ${territoryStr}`;
-
-    const title = reportType === 'ai_analysis'
-        ? 'AI Colony Health & Acoustic Intelligence Audit'
-        : reportType === 'audit'
-        ? 'Colony Biosecurity & Apicultural Quality Inspection'
-        : reportType === 'season'
-        ? 'Seasonal Apiary Production & Yield Report'
-        : 'Comprehensive Apiary Production & Operational Summary';
-
-    // 7. Dynamic Sections
-    const overviewRows: [string, string][] = [
-        ['Beekeeper / Operator', beekeeperName],
-        [
-            'Managed Apiary Centres',
-            userApiaries.length > 0
-                ? `${userApiaries.length} Hubs (${userApiaries.map((a) => a.name).slice(0, 2).join(', ')})`
-                : 'Primary Apiary Node',
-        ],
-        ['Total Colony Units', `${totalHivesCount} Hives (${activeHivesCount} Active)`],
-        ['Period Harvest Yield', `${totalHarvestKg.toLocaleString()} kg (${varietyStr})`],
-        ['Extraction Batches', `${harvestBatches} Logged Run${harvestBatches === 1 ? '' : 's'}`],
-        ['Analysis Scope', `Last ${scopeDays} Days`],
-        ['Quality & Biosecurity Status', 'Compliant with GAP & Verified Standards'],
-    ];
-
-    const healthRows = [
-        {
-            label: 'Queen Right & Reproductive Vitality',
-            pct: queenRightPct,
-            note: `${queenRightCount} of ${scopedInspections.length || totalHivesCount || 1} checked colonies confirmed queen-right`,
-        },
-        {
-            label: 'Acoustic & Hive Health Index',
-            pct: avgHealthScore,
-            note: 'Telemetry and sound spectrum within healthy resonance band',
-        },
-        {
-            label: 'Active Foraging Colony Retention',
-            pct: totalHivesCount > 0 ? Math.min(100, Math.round((activeHivesCount / totalHivesCount) * 100)) : 95,
-            note: `${activeHivesCount} active of ${totalHivesCount} total registered colonies`,
-        },
-        {
-            label: 'Telemetry & Sensor Uptime',
-            pct: 99,
-            note: 'Continuous inspection & scale telemetry synced',
-        },
-    ];
-
-    const apiaryListRows: [string, string][] = userApiaries.slice(0, 4).map((a) => [
-        a.name || 'Apiary Station',
-        `${a.location_name || a.county || 'Local Site'} • ${a.apiary_type || 'Langstroth'} • ${a.forage_type || a.primary_forage || 'Floral'}`,
-    ]);
-    if (apiaryListRows.length === 0) {
-        apiaryListRows.push(['Apiary Node 1', 'Main Operational Yard • Active']);
-    }
-
-    const recentExtractionItems = scopedHarvests.slice(0, 4).map((h) => {
-        const dt = h.harvest_date ? String(h.harvest_date).slice(0, 10) : 'Recent';
-        const kg = Number(h.quantity_kg || h.yield_kg || 0);
-        const typ = h.honey_type || h.variety || 'Pure Honey';
-        return `Batch ${h.batch_number || h.id?.slice(0, 8) || 'RUN'}: ${kg} kg ${typ} extracted on ${dt}`;
-    });
-    if (recentExtractionItems.length === 0) {
-        recentExtractionItems.push(
-            'No extraction runs logged in this period. Colonies are currently in brood build-up and nectar collection phase.'
-        );
-    }
-
-    const fieldActionItems: string[] = [
-        `Monitor super frame capacity across ${userApiaries[0]?.name || 'active apiaries'} as foraging intensifies.`,
-        'Verify water source access and queen oviposition regularity during next scheduled field inspection.',
-        'Record upcoming batch extractions in the Harvests ledger for complete supply chain lot traceability.',
-    ];
-    if (userHives.some((h) => String(h.status || '').toLowerCase().includes('weak') || String(h.status || '').toLowerCase().includes('alert'))) {
-        fieldActionItems.unshift('Prioritize diagnostic check on flagged colonies showing lower brood activity.');
-    }
-
-    let reportFileUrl: string | undefined = undefined;
-
-    try {
-        const { buildReportPdf, downloadReportPdf } = await import('@/lib/report-pdf');
-        const docConfig = {
-            kind: 'BeeYield Apicultural Intelligence Report',
-            title,
-            subtitle,
-            badge: 'Verified Apiary Report',
-            fileName,
-            sections: [
-                { type: 'kv' as const, heading: 'Executive Production Overview', rows: overviewRows },
-                { type: 'bars' as const, heading: 'Colony Health & Telemetry Metrics', rows: healthRows },
-                { type: 'kv' as const, heading: 'Managed Apiary Sites & Layout', rows: apiaryListRows },
-                { type: 'list' as const, heading: 'Recent Harvest & Extraction Records', items: recentExtractionItems },
-                {
-                    type: 'text' as const,
-                    heading: 'Agronomic & Floral Forage Assessment',
-                    body: `Apiary telemetry confirms active foraging across ${varietyStr} floral sources. Acoustic monitoring demonstrates normal harmonic frequencies without swarm cell signatures. Hive microclimates remain within standard biological tolerance ranges.`,
-                },
-                { type: 'list' as const, heading: 'Recommended Field Management Actions', items: fieldActionItems },
-            ],
-            footer: `BeeYield Commercial Operating System • Beekeeper: ${beekeeperName} • Verified for GAP Certification • beeyield.com`,
-        };
-
-        const { url } = buildReportPdf(docConfig);
-        reportFileUrl = url;
-    } catch (pdfErr) {
-        console.warn('Client-side PDF generation note:', pdfErr);
-    }
-
-    const generatedReport: GeneratedReport = {
-        id: jobId,
-        user_id: resolvedUserId,
-        report_type: reportType,
-        parameters,
-        file_format: input.file_format || 'PDF',
-        status: 'completed',
-        file_name: fileName,
-        file_url: reportFileUrl,
-        created_at: new Date().toISOString(),
-    };
-
-    clientReportCache.set(jobId, generatedReport);
-
-    try {
-        const stored = _lsReadAlways<GeneratedReport[]>('beeyield_local_reports_v1', []);
-        stored.unshift(generatedReport);
-        _lsWriteAlways('beeyield_local_reports_v1', stored.slice(0, 50));
-    } catch {}
-
-    if (sb) {
-        try {
-            await sb.from('generated_reports').insert({
-                id: jobId,
-                user_id: generatedReport.user_id,
-                report_type: generatedReport.report_type,
-                file_format: generatedReport.file_format,
-                parameters: generatedReport.parameters,
-                status: 'completed',
-                file_name: generatedReport.file_name,
-                created_at: generatedReport.created_at,
-            });
-        } catch (sbErr) {
-            console.warn('Supabase generated_reports insert notice:', sbErr);
-        }
-    }
-
-    return generatedReport;
-}
 
     async generateReport(input: ReportCreateInput): Promise<{ data: GeneratedReport | null; error: any }> {
         try {

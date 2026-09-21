@@ -120,7 +120,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
         if (!pool.some((entry) => entry.id === selectedItem.id)) {
             setSelectedItem(null);
         }
-    }, [activeTab, diseaseData, selectedItem, speciesData]);
+    }, [activeTab, diseaseData, selectedItem]);
 
     React.useEffect(() => {
         if (loading) return;

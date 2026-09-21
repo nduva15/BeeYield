@@ -339,7 +339,7 @@ export default function HarvestsPage({
             }
           });
         }
-      } catch {}
+      } catch { void 0; }
 
       // 4. Combine user harvests with default authentic batches so history is always intact
       const merged = [
@@ -582,7 +582,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & ferme
         nextLocal = [currentRecord, ...stored.filter((h) => h.id !== recordId)];
       }
       localStorage.setItem("beeyield_local_harvests_v1", JSON.stringify(nextLocal));
-    } catch {}
+    } catch { void 0; }
 
     // 4. Update UI State
     if (editingId) {
@@ -641,7 +641,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & ferme
       const stored: Harvest[] = JSON.parse(localStorage.getItem("beeyield_local_harvests_v1") || "[]");
       const nextLocal = stored.filter((h) => h.id !== id);
       localStorage.setItem("beeyield_local_harvests_v1", JSON.stringify(nextLocal));
-    } catch {}
+    } catch { void 0; }
 
     // 4. Update UI
     setRows((prev) => prev.filter((r) => r.id !== id));

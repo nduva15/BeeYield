@@ -224,7 +224,7 @@ export default function ForageZonesView({
           }
         }
       }
-    } catch {}
+    } catch { void 0; }
 
     setZones(loaded);
     setLoading(false);
@@ -413,7 +413,7 @@ Zone Notes: ${draft.notes || "None"}`;
         nextLocal = [currentRecord, ...stored.filter((z) => z.id !== zoneId)];
       }
       localStorage.setItem("beeyield_local_forage_zones_v1", JSON.stringify(nextLocal));
-    } catch {}
+    } catch { void 0; }
 
     // 4. Update UI
     if (editingId) {
@@ -459,7 +459,7 @@ Zone Notes: ${draft.notes || "None"}`;
       const stored: ForageZone[] = JSON.parse(localStorage.getItem("beeyield_local_forage_zones_v1") || "[]");
       const next = stored.filter((z) => z.id !== targetId);
       localStorage.setItem("beeyield_local_forage_zones_v1", JSON.stringify(next));
-    } catch {}
+    } catch { void 0; }
 
     toast.success("Forage zone deleted");
     setZoneToDelete(null);

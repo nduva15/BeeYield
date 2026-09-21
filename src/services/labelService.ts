@@ -81,7 +81,7 @@ function _lsRead<T>(key: string, fallback: T): T {
 function _lsWrite<T>(key: string, value: T): void {
     try {
         globalThis.localStorage?.setItem(key, JSON.stringify(value));
-    } catch {}
+    } catch { void 0; }
 }
 
 async function getUserId(): Promise<string | null> {

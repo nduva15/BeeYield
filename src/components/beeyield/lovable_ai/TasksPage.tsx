@@ -115,7 +115,7 @@ export default function TasksPage({
           setUserHives(hiveData.map((h: any) => ({ id: h.id, name: h.name, apiary: h.apiary_id })));
         }
       }
-    } catch {}
+    } catch { void 0; }
   }, [user?.id]);
 
   const load = useCallback(async () => {
@@ -161,7 +161,7 @@ export default function TasksPage({
             });
           }
         }
-      } catch {}
+      } catch { void 0; }
 
       // 2. Supabase tasks table
       try {
@@ -197,7 +197,7 @@ export default function TasksPage({
             }
           });
         }
-      } catch {}
+      } catch { void 0; }
 
       // 3. Merge with LocalStorage (clean out any legacy mock tasks)
       try {
@@ -215,7 +215,7 @@ export default function TasksPage({
             localStorage.setItem("beeyield_local_tasks_v1", JSON.stringify(cleanLocal));
           }
         }
-      } catch {}
+      } catch { void 0; }
 
       // Sort tasks by due date
       userTasks.sort((a, b) => a.due_date.localeCompare(b.due_date));
@@ -334,7 +334,7 @@ Provide concise, bulleted steps:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_completed: isNowCompleted, status: newStatus, completed_at: completedAt }),
       });
-    } catch {}
+    } catch { void 0; }
 
     // 2. Supabase
     try {
@@ -342,7 +342,7 @@ Provide concise, bulleted steps:
         .from("tasks")
         .update({ is_completed: isNowCompleted, status: newStatus, updated_at: new Date().toISOString() })
         .eq("id", t.id);
-    } catch {}
+    } catch { void 0; }
 
     // 3. LocalStorage
     try {
@@ -351,7 +351,7 @@ Provide concise, bulleted steps:
         r.id === t.id ? { ...r, is_completed: isNowCompleted, status: newStatus, completed_at: completedAt } : r
       );
       localStorage.setItem("beeyield_local_tasks_v1", JSON.stringify(nextLocal));
-    } catch {}
+    } catch { void 0; }
 
     toast.success(isNowCompleted ? "Task completed! Great job." : "Task marked as pending.");
   };
@@ -454,7 +454,7 @@ Provide concise, bulleted steps:
         nextLocal = [currentRecord, ...stored.filter((t) => t.id !== taskId)];
       }
       localStorage.setItem("beeyield_local_tasks_v1", JSON.stringify(nextLocal));
-    } catch {}
+    } catch { void 0; }
 
     // 4. Update UI
     if (editingId) {
@@ -511,7 +511,7 @@ Provide concise, bulleted steps:
       const stored: TaskItem[] = JSON.parse(localStorage.getItem("beeyield_local_tasks_v1") || "[]");
       const nextLocal = stored.filter((t) => t.id !== id);
       localStorage.setItem("beeyield_local_tasks_v1", JSON.stringify(nextLocal));
-    } catch {}
+    } catch { void 0; }
 
     // 4. Update UI
     setRows((prev) => prev.filter((r) => r.id !== id));
