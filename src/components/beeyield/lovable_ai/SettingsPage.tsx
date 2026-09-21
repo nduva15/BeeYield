@@ -69,11 +69,35 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   }, [profile]);
 
   const loadPrefs = useCallback(async () => {
-    const { data } = await supabase
-      .from("app_settings").select("modules,alert_prefs").eq("device_id", deviceId).maybeSingle();
-    if (data) {
-      setModules({ ...DEFAULT_MODULES, ...((data.modules ?? {}) as Record<string, boolean>) });
-      setAlerts({ ...DEFAULT_ALERTS, ...((data.alert_prefs ?? {}) as Record<string, boolean>) });
+    // 1. Immediately load from localStorage so preferences are instantly responsive and resilient
+    try {
+      const raw = localStorage.getItem(`beeyield_app_settings_${deviceId}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.modules) setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...parsed.modules }));
+        if (parsed.alert_prefs) setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...parsed.alert_prefs }));
+      }
+    } catch {}
+
+    // 2. Try Supabase app_settings if available
+    try {
+      const { data, error } = await supabase
+        .from("app_settings").select("modules,alert_prefs").eq("device_id", deviceId).maybeSingle();
+      if (!error && data) {
+        const nextMod = { ...DEFAULT_MODULES, ...((data.modules ?? {}) as Record<string, boolean>) };
+        const nextAlr = { ...DEFAULT_ALERTS, ...((data.alert_prefs ?? {}) as Record<string, boolean>) };
+        setModules(nextMod);
+        setAlerts(nextAlr);
+        try {
+          localStorage.setItem(`beeyield_app_settings_${deviceId}`, JSON.stringify({
+            modules: nextMod,
+            alert_prefs: nextAlr,
+            updated_at: new Date().toISOString()
+          }));
+        } catch {}
+      }
+    } catch (e) {
+      console.warn("loadPrefs Supabase error:", e);
     }
   }, [deviceId]);
 
@@ -104,13 +128,29 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
   const savePrefs = async (nextModules = modules, nextAlerts = alerts) => {
     setSavingPrefs(true);
-    const { error } = await supabase.from("app_settings").upsert(
-      { device_id: deviceId, modules: nextModules, alert_prefs: nextAlerts, updated_at: new Date().toISOString() },
-      { onConflict: "device_id" },
-    );
+    // 1. Always save to local storage immediately
+    try {
+      localStorage.setItem(`beeyield_app_settings_${deviceId}`, JSON.stringify({
+        modules: nextModules,
+        alert_prefs: nextAlerts,
+        updated_at: new Date().toISOString()
+      }));
+    } catch {}
+
+    // 2. Try Supabase app_settings
+    try {
+      const { error } = await supabase.from("app_settings").upsert(
+        { device_id: deviceId, modules: nextModules, alert_prefs: nextAlerts, updated_at: new Date().toISOString() },
+        { onConflict: "device_id" },
+      );
+      if (error) {
+        console.warn("Supabase app_settings table unavailable (falling back to local):", error.message);
+      }
+    } catch (err) {
+      console.warn("Supabase app_settings exception:", err);
+    }
     setSavingPrefs(false);
-    if (error) toast.error(error.message);
-    else toast.success("Preferences saved");
+    toast.success("Preferences saved");
   };
 
   const saveProfile = async () => {
@@ -303,7 +343,16 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               onClick={async () => {
                 if (!confirm("Delete all local apiary records for this device? This cannot be undone.")) return;
                 const tables = ["inspections", "sound_analyses", "app_settings", "integration_connections", "integration_sync_logs"] as const;
-                for (const t of tables) await supabase.from(t).delete().eq("device_id", deviceId);
+                for (const t of tables) {
+                  try {
+                    await supabase.from(t).delete().eq("device_id", deviceId);
+                  } catch (e) {
+                    console.warn(`Failed to delete from ${t}:`, e);
+                  }
+                }
+                try {
+                  localStorage.removeItem(`beeyield_app_settings_${deviceId}`);
+                } catch {}
                 toast.success("Device records deleted. Contact support to erase the auth account.");
               }}
               className="px-3 py-2 rounded-lg border border-red-500/40 text-red-400 text-xs flex items-center gap-1.5">
