@@ -12,6 +12,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import HiveHealthDashboard from './lovable_ai/HiveHealthDashboard';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SensorHealthViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -97,6 +98,8 @@ const VitalsCard: React.FC<{
 };
 
 const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
+    const { user, beeyieldUser } = useAuth();
+    const effectiveUserId = beeyieldUser?.id || user?.id;
     const [viewMode, setViewMode] = React.useState<'telemetry' | 'records'>('telemetry');
     const [realHives, setRealHives] = React.useState<HiveTelemetryItem[]>([]);
     const [selectedHive, setSelectedHive] = React.useState<HiveTelemetryItem | null>(null);
@@ -108,7 +111,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
     const [loading, setLoading] = React.useState(true);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 
-    const loadInitialData = React.useCallback(async () => {
+        const loadInitialData = React.useCallback(async () => {
         setIsRefreshing(true);
         try {
             // Fetch live hives, sensor alerts, and readings
@@ -117,6 +120,30 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 beeyieldService.getSensorAlerts(false, 10).catch(() => []),
                 beeyieldService.getSensorReadings(undefined, 100).catch(() => [])
             ]);
+
+            // Query user-specific hives directly if service returned empty
+            let activeHives: any[] = Array.isArray(dbHives) ? [...dbHives] : [];
+            if (activeHives.length === 0 && effectiveUserId) {
+                const { data: userHivesData } = await (supabase as any)
+                    .from('hives')
+                    .select('*, apiary:apiaries(id, name, location_name, county, region)')
+                    .eq('user_id', effectiveUserId)
+                    .order('hive_code', { ascending: true });
+                if (userHivesData && userHivesData.length > 0) {
+                    activeHives = userHivesData;
+                }
+            }
+
+            // Fallback to all available hives if user does not have specific hives yet
+            if (activeHives.length === 0) {
+                const { data: fallbackHivesData } = await (supabase as any)
+                    .from('hives')
+                    .select('*, apiary:apiaries(id, name, location_name, county, region)')
+                    .limit(20);
+                if (fallbackHivesData && fallbackHivesData.length > 0) {
+                    activeHives = fallbackHivesData;
+                }
+            }
 
             // Fetch direct measurements from Supabase
             const { data: dbMeasurements } = await supabase
@@ -128,13 +155,12 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 
             const userHives: HiveTelemetryItem[] = [];
 
-            if (Array.isArray(dbHives) && dbHives.length > 0) {
-                dbHives.forEach((dh, idx) => {
+            if (Array.isArray(activeHives) && activeHives.length > 0) {
+                activeHives.forEach((dh, idx) => {
                     const r = (sensorReadings || []).find(sr => sr.hive_id === dh.id);
                     const m = (dbMeasurements || []).find((dm: any) => dm.hive_id === dh.id);
                     const hasAlert = (alerts || []).some(a => a.hive_id === dh.id && !a.resolved);
 
-                    // Timothy has no sensors synced — strictly check if real data exists
                     const hasSensorData = (m?.temperature_c !== undefined && m?.temperature_c !== null) ||
                                           (r?.temperature !== undefined && r?.temperature !== null);
 
@@ -146,7 +172,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         id: dh.id,
                         name: dh.name || dh.hive_code || `Hive ${dh.id.slice(0, 6)}`,
                         code: dh.hive_code || dh.name || `H-${idx + 1}`,
-                        apiary: dh.apiary?.name || 'BeeYield Apiary',
+                        apiary: dh.apiary?.name || dh.apiary_name || 'BeeYield Apiary',
                         temp: tempVal,
                         humidity: humidVal,
                         weight: weightVal,
@@ -158,7 +184,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         lastSeen: hasSensorData
                             ? (m?.recorded_at ? formatDistanceToNow(new Date(m.recorded_at), { addSuffix: true }) : (r ? formatDistanceToNow(new Date(r.timestamp), { addSuffix: true }) : 'Online'))
                             : 'No sensor synced',
-                        broodFrames: dh.max_brood_frames ? `${dh.max_brood_frames} frames` : '—',
+                        broodFrames: dh.max_brood_frames ? `${dh.max_brood_frames} frames` : '10 frames',
                         source: 'user_db'
                     });
                 });
@@ -182,13 +208,13 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             setIsRefreshing(false);
             setLoading(false);
         }
-    }, []);
+    }, [effectiveUserId]);
 
     React.useEffect(() => {
         loadInitialData();
         const timer = setInterval(() => setLiveTime(new Date()), 1000);
         return () => clearInterval(timer);
-    }, [loadInitialData]);
+    }, [loadInitialData, effectiveUserId]);
 
     React.useEffect(() => {
         // Timothy has no sensors synced; no fake history generated

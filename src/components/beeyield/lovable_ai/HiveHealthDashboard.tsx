@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,6 +52,7 @@ export const BEE_KNOWLEDGE_HIVES: Array<{ id: string; name: string; apiary?: str
 const DEFAULT_RECORDS: HiveRecord[] = [];
 
 export default function HiveHealthDashboard({ isOpen, onClose, embedded = false }: HiveHealthDashboardProps) {
+  const { user } = useAuth();
   const [selectedHive, setSelectedHive] = useState<string>("all");
   const [coords, setCoords] = useState<string>("-1.286, 36.817");
   const [isLocating, setIsLocating] = useState<boolean>(false);
@@ -69,31 +71,62 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     setIsRefreshing(true);
     try {
       // 1. Pull hives from Supabase (matching Bee Knowledge schema)
-      const { data: hiveData } = await supabase
-        .from("hives" as any)
-        .select("*")
-        .limit(100);
+      let pulledHives: Array<{ id: string; name: string; apiary?: string }> = [];
 
-      const pulledHives: Array<{ id: string; name: string; apiary?: string }> = [];
-      if (hiveData && hiveData.length > 0) {
-        hiveData.forEach((h: any) => {
-          pulledHives.push({
+      if (user?.id) {
+        const { data: userHives } = await (supabase as any)
+          .from("hives")
+          .select("id, name, hive_code, nickname, hive_label, apiary_name, apiaries(name)")
+          .eq("user_id", user.id)
+          .limit(100);
+
+        if (userHives && userHives.length > 0) {
+          pulledHives = userHives.map((h: any) => ({
             id: h.id,
             name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${h.id.slice(0, 5)}`,
-            apiary: h.apiary_name || "BeeYield Apiary",
-          });
-        });
+            apiary: h.apiaries?.name || h.apiary_name || "BeeYield Apiary",
+          }));
+        }
+      }
+
+      if (pulledHives.length === 0) {
+        const { data: hiveData } = await (supabase as any)
+          .from("hives")
+          .select("id, name, hive_code, nickname, hive_label, apiary_name, apiaries(name)")
+          .limit(100);
+
+        if (hiveData && hiveData.length > 0) {
+          pulledHives = hiveData.map((h: any) => ({
+            id: h.id,
+            name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${h.id.slice(0, 5)}`,
+            apiary: h.apiaries?.name || h.apiary_name || "BeeYield Apiary",
+          }));
+        }
       }
 
       const allHives = [...pulledHives];
       setHivesList(allHives);
 
-      // 2. Pull live inspections from Supabase
-      const { data: inspData } = await supabase
-        .from("inspections" as any)
-        .select("id, hive_label, colony_health, varroa_count, inspected_on, notes")
-        .order("inspected_on" as any, { ascending: false } as any)
-        .limit(50);
+      // 2. Pull live inspections from Supabase (scoped to user if signed in)
+      let inspData: any[] | null = null;
+      if (user?.id) {
+        const { data: userInspections } = await (supabase as any)
+          .from("inspections")
+          .select("id, hive_label, colony_health, varroa_count, inspected_on, notes")
+          .eq("user_id", user.id)
+          .order("inspected_on", { ascending: false })
+          .limit(50);
+        inspData = userInspections;
+      }
+
+      if (!inspData || inspData.length === 0) {
+        const { data: allInspections } = await supabase
+          .from("inspections" as any)
+          .select("id, hive_label, colony_health, varroa_count, inspected_on, notes")
+          .order("inspected_on" as any, { ascending: false } as any)
+          .limit(50);
+        inspData = allInspections;
+      }
 
       const dbRecords: HiveRecord[] = [];
       if (inspData && inspData.length > 0) {
@@ -157,13 +190,13 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     } finally {
       setIsRefreshing(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen || embedded) {
       void loadData();
     }
-  }, [isOpen, loadData]);
+  }, [isOpen, embedded, user?.id, loadData]);
 
   if (!isOpen && !embedded) return null;
 

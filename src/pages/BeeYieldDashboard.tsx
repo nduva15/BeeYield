@@ -447,7 +447,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     if (authLoading) return <BeeYieldPageShell className="bg-background flex flex-col items-center justify-center gap-4 p-0 md:p-0 -m-4 md:-m-6"><img src="/logo.png" alt="Loading..." className="h-16 w-auto animate-pulse" /></BeeYieldPageShell>;
 
-    const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || ['timothynduva349@gmail.com', SUPER_ADMIN_EMAIL.toLowerCase()].includes(effectiveEmail?.toLowerCase() || '') || !!beeyieldUser;
+    const isBeeYieldActive = Boolean(effectiveUser) || !!user?.user_metadata?.beeyield_active || ['timothynduva349@gmail.com', SUPER_ADMIN_EMAIL.toLowerCase()].includes(effectiveEmail?.toLowerCase() || '') || !!beeyieldUser;
 
     if (!effectiveUser || !isBeeYieldActive) {
         return (

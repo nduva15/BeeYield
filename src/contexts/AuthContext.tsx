@@ -154,6 +154,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const canBootstrapMissingProfile = (user: User, backend: AuthBackend) => {
         if (backend === 'shop') return true;
+        if (backend === 'beeyield') return true;
         if (userWasCreatedForBackend(user, backend)) return true;
 
         if (backend === 'ceba') {
