@@ -103,11 +103,32 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = ({ onTabChange }) 
                 throw new Error('Report generation failed');
             }
 
-            await beeyieldService.downloadReport({ file_url: result.file_url, file_name: result.file_name });
+            if (result.file_url || result.file_name) {
+                await beeyieldService.downloadReport({ file_url: result.file_url, file_name: result.file_name });
+            }
             queryClient.invalidateQueries({ queryKey: reportKeys.generated() });
             toast.success(successLabel, { id: toastId });
         } catch (error: any) {
-            console.error(error);
+            console.error('handleGenerate caught error:', error);
+            try {
+                const fallback = await beeyieldService.generateReport({
+                    report_type: reportType,
+                    user_id: userId || undefined,
+                    parameters: reportParameters,
+                    file_format: reportType === 'ai_analysis' ? 'PDF' : selectedFormat,
+                } as any);
+                if (fallback?.data) {
+                    await beeyieldService.downloadReport({
+                        file_url: fallback.data.file_url,
+                        file_name: fallback.data.file_name,
+                    });
+                    queryClient.invalidateQueries({ queryKey: reportKeys.generated() });
+                    toast.success(successLabel, { id: toastId });
+                    return;
+                }
+            } catch (fallbackErr) {
+                console.error('Fallback report generation error:', fallbackErr);
+            }
             toast.error(error?.message || 'Report generation failed', { id: toastId });
         } finally {
             setBusy(false);
