@@ -106,52 +106,58 @@ const normalizeLabelDesign = (item: LabelRecord | LabelDesign | any): LabelDesig
         ...(design as LabelDesign),
         id: normalizedId,
         name: (design as LabelDesign).name || ('name' in item ? item.name : undefined) || (design as LabelDesign).productName || 'Untitled Label',
+        productName: (design as LabelDesign).productName || ('name' in item ? item.name : undefined) || 'BeeYield Pure Honey',
     };
 };
 
 export const labelService = {
     getLabels: async (): Promise<LabelDesign[]> => {
         let remote: LabelDesign[] = [];
-        // 1. Try API
+        // 1. Try FastAPI backend API
         try {
             const response: LabelRecord[] | { data?: LabelRecord[] } = await apiGet('/labels');
             const data = Array.isArray(response) ? response : (response.data || []);
             remote = data.map(normalizeLabelDesign);
         } catch (e) {
-            console.warn('getLabels API failed, checking Supabase / local:', e);
+            console.warn('[labelService] getLabels API error:', e);
         }
 
-        // 2. Try Supabase
+        // 2. Try Supabase if API returned empty
         if (remote.length === 0 && sb) {
             try {
                 const { data, error } = await sb.from('saved_labels').select('*').order('created_at', { ascending: false });
-                if (!error && Array.isArray(data)) {
+                if (!error && Array.isArray(data) && data.length > 0) {
                     remote = data.map(normalizeLabelDesign);
                 }
             } catch (sbErr) {
-                console.warn('Supabase getLabels error:', sbErr);
+                // Table might not exist, silently ignore
             }
         }
 
-        // 3. Local fallback merge
+        // 3. Merge with local storage
         const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
-        if (local.length > 0) {
-            const remoteIds = new Set(remote.map((r) => r.id));
-            const localOnly = local.filter((l) => !remoteIds.has(l.id));
-            return [...localOnly, ...remote];
+        if (remote.length > 0) {
+            const remoteMap = new Map(remote.map(r => [r.id, r]));
+            for (const loc of local) {
+                if (!remoteMap.has(loc.id)) {
+                    remote.push(loc);
+                }
+            }
+            _lsWrite(LS_KEY_LABELS, remote);
+            return remote;
         }
 
-        return remote;
+        return local;
     },
 
     getLabel: async (id: string): Promise<LabelDesign> => {
-        // 1. Try API
+        // 1. Try backend API
         try {
             const response: LabelRecord | { data?: LabelRecord } = await apiGet(`/labels/${id}`);
             const data = 'data' in response && response.data ? response.data : response;
-            if (data) return normalizeLabelDesign(data as LabelRecord);
+            if (data && (data as any).id) return normalizeLabelDesign(data as LabelRecord);
         } catch (e) {
-            console.warn('getLabel API failed, checking Supabase / local:', e);
+            console.warn('[labelService] getLabel API error:', e);
         }
 
         // 2. Try Supabase
@@ -162,20 +168,19 @@ export const labelService = {
                     return normalizeLabelDesign(data);
                 }
             } catch (sbErr) {
-                console.warn('Supabase getLabel error:', sbErr);
+                // table might not exist
             }
         }
 
-        // 3. Check local
+        // 3. Check local storage
         const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
         const found = local.find((l) => l.id === id);
         if (found) return found;
 
-        throw new Error('Label not found');
+        throw new Error('Label design not found');
     },
 
     createLabel: async (design: LabelDesign): Promise<LabelDesign> => {
-        const now = new Date().toISOString();
         const id = design.id && design.id.length > 10 ? design.id : (globalThis.crypto as any)?.randomUUID?.() || `label-${Date.now()}`;
         const normalizedDesign: LabelDesign = {
             ...design,
@@ -183,19 +188,25 @@ export const labelService = {
             name: (design.name || design.productName || 'Untitled Label').trim(),
         };
 
-        // 1. Try backend API
+        // 1. Immediate local write to guarantee persistence
+        const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
+        _lsWrite(LS_KEY_LABELS, [normalizedDesign, ...local.filter((l) => l.id !== normalizedDesign.id)]);
+
+        // 2. Backend API POST
         try {
             const response: LabelRecord | { data?: LabelRecord } = await apiPost('/labels', normalizedDesign);
             const data = 'data' in response && response.data ? response.data : response;
-            const created = normalizeLabelDesign(data as LabelRecord);
-            const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
-            _lsWrite(LS_KEY_LABELS, [created, ...local.filter((l) => l.id !== created.id)]);
-            return created;
+            if (data && (data as any).id) {
+                const created = normalizeLabelDesign(data as LabelRecord);
+                const currentLocal = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
+                _lsWrite(LS_KEY_LABELS, [created, ...currentLocal.filter((l) => l.id !== created.id)]);
+                return created;
+            }
         } catch (apiErr) {
-            console.warn('createLabel API failed, falling back to Supabase / local:', apiErr);
+            console.warn('[labelService] createLabel API failed, local copy preserved:', apiErr);
         }
 
-        // 2. Try Supabase directly
+        // 3. Mirror to Supabase if table exists
         const userId = await getUserId();
         if (sb && userId) {
             try {
@@ -206,24 +217,14 @@ export const labelService = {
                     custom_text: normalizedDesign.marketingNote || null,
                     include_qr: Boolean(normalizedDesign.showQRCode),
                     design_json: normalizedDesign,
-                    created_at: now,
+                    created_at: new Date().toISOString(),
                 };
-                const { data, error } = await sb.from('saved_labels').insert(sbPayload).select().single();
-                if (!error && data) {
-                    const saved = normalizeLabelDesign(data);
-                    const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
-                    _lsWrite(LS_KEY_LABELS, [saved, ...local.filter((l) => l.id !== saved.id)]);
-                    return saved;
-                }
-                console.warn('Supabase insert saved_label error:', error);
+                await sb.from('saved_labels').insert(sbPayload);
             } catch (sbErr) {
-                console.warn('Supabase insert saved_label exception:', sbErr);
+                // Table might not exist, silently ignore
             }
         }
 
-        // 3. Fallback to localStorage
-        const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
-        _lsWrite(LS_KEY_LABELS, [normalizedDesign, ...local.filter((l) => l.id !== normalizedDesign.id)]);
         return normalizedDesign;
     },
 
@@ -234,22 +235,31 @@ export const labelService = {
             name: (design.name || design.productName || 'Untitled Label').trim(),
         };
 
-        // 1. Try backend API
+        // 1. Immediate local update
+        const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
+        const idx = local.findIndex((l) => l.id === id);
+        if (idx >= 0) local[idx] = normalizedDesign;
+        else local.unshift(normalizedDesign);
+        _lsWrite(LS_KEY_LABELS, local);
+
+        // 2. Backend API PUT
         try {
             const response: LabelRecord | { data?: LabelRecord } = await apiPut(`/labels/${id}`, normalizedDesign);
             const data = 'data' in response && response.data ? response.data : response;
-            const updated = normalizeLabelDesign(data as LabelRecord);
-            const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
-            const idx = local.findIndex((l) => l.id === id);
-            if (idx >= 0) local[idx] = updated;
-            else local.unshift(updated);
-            _lsWrite(LS_KEY_LABELS, local);
-            return updated;
+            if (data && (data as any).id) {
+                const updated = normalizeLabelDesign(data as LabelRecord);
+                const currentLocal = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
+                const cIdx = currentLocal.findIndex((l) => l.id === id);
+                if (cIdx >= 0) currentLocal[cIdx] = updated;
+                else currentLocal.unshift(updated);
+                _lsWrite(LS_KEY_LABELS, currentLocal);
+                return updated;
+            }
         } catch (apiErr) {
-            console.warn('updateLabel API failed, falling back to Supabase / local:', apiErr);
+            console.warn('[labelService] updateLabel API failed, local copy preserved:', apiErr);
         }
 
-        // 2. Try Supabase
+        // 3. Mirror to Supabase if table exists
         if (sb) {
             try {
                 const sbPayload = {
@@ -257,63 +267,47 @@ export const labelService = {
                     custom_text: normalizedDesign.marketingNote || null,
                     include_qr: Boolean(normalizedDesign.showQRCode),
                     design_json: normalizedDesign,
+                    updated_at: new Date().toISOString(),
                 };
-                const { data, error } = await sb.from('saved_labels').update(sbPayload).eq('id', id).select().single();
-                if (!error && data) {
-                    const updated = normalizeLabelDesign(data);
-                    const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
-                    const idx = local.findIndex((l) => l.id === id);
-                    if (idx >= 0) local[idx] = updated;
-                    else local.unshift(updated);
-                    _lsWrite(LS_KEY_LABELS, local);
-                    return updated;
-                }
-                console.warn('Supabase update saved_label error:', error);
+                await sb.from('saved_labels').update(sbPayload).eq('id', id);
             } catch (sbErr) {
-                console.warn('Supabase update saved_label exception:', sbErr);
+                // Table might not exist, silently ignore
             }
         }
 
-        // 3. Fallback to localStorage
-        const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
-        const idx = local.findIndex((l) => l.id === id);
-        if (idx >= 0) local[idx] = normalizedDesign;
-        else local.unshift(normalizedDesign);
-        _lsWrite(LS_KEY_LABELS, local);
         return normalizedDesign;
     },
 
     saveLabel: async (design: LabelDesign): Promise<LabelDesign> => {
-        try {
-            return design.id
-                ? await labelService.updateLabel(design.id, design)
-                : await labelService.createLabel(design);
-        } catch (error) {
-            console.error('[LabelService] Save failed:', error);
-            throw error;
+        const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
+        const exists = design.id && local.some((l) => l.id === design.id);
+        if (exists) {
+            return await labelService.updateLabel(design.id, design);
+        } else {
+            return await labelService.createLabel(design);
         }
     },
 
     deleteLabel: async (id: string): Promise<void> => {
-        // 1. Try API
+        // 1. Immediately remove from local storage
+        const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
+        _lsWrite(LS_KEY_LABELS, local.filter((l) => l.id !== id));
+
+        // 2. Call backend API DELETE
         try {
             await apiDelete(`/labels/${id}`);
         } catch (apiErr) {
-            console.warn('deleteLabel API failed, proceeding to Supabase / local:', apiErr);
+            console.warn('[labelService] deleteLabel API error:', apiErr);
         }
 
-        // 2. Try Supabase
+        // 3. Mirror delete to Supabase if table exists
         if (sb) {
             try {
                 await sb.from('saved_labels').delete().eq('id', id);
             } catch (sbErr) {
-                console.warn('Supabase delete saved_label error:', sbErr);
+                // Table might not exist, silently ignore
             }
         }
-
-        // 3. Always remove from local storage
-        const local = _lsRead<LabelDesign[]>(LS_KEY_LABELS, []);
-        _lsWrite(LS_KEY_LABELS, local.filter((l) => l.id !== id));
     },
 
     exportPdf: async (design: LabelDesign, filename?: string): Promise<Blob> => {

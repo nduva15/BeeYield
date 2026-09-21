@@ -359,10 +359,31 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
             upsertSavedDesign(saved as LabelDesign);
             setDesign(saved as LabelDesign);
-            toast.success(isPersistedDesign ? 'Label design updated successfully!' : 'Label design saved successfully!');
-        } catch (error) {
+            toast.success(isPersistedDesign ? `Updated "${saved.name}" successfully!` : `Saved "${saved.name}" successfully!`);
+        } catch (error: any) {
             console.error('Save failed:', error);
-            toast.error('Failed to save design');
+            toast.error(error?.message || 'Failed to save design');
+        } finally {
+            setIsSavingDesign(false);
+        }
+    };
+
+    const saveAsNewCopy = async () => {
+        setIsSavingDesign(true);
+        try {
+            const newId = (globalThis.crypto as any)?.randomUUID?.() || `label-${Date.now()}`;
+            const payload: LabelDesign = {
+                ...design,
+                id: newId,
+                name: `${normalizedDesignName} (Copy)`,
+            };
+            const saved = await labelService.createLabel(payload);
+            upsertSavedDesign(saved as LabelDesign);
+            setDesign(saved as LabelDesign);
+            toast.success(`Saved copy as "${saved.name}"`);
+        } catch (error: any) {
+            console.error('Save copy failed:', error);
+            toast.error(error?.message || 'Failed to duplicate design');
         } finally {
             setIsSavingDesign(false);
         }
@@ -376,35 +397,39 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
             setSelectedHiveId(latestDesign.hiveId || '');
             setSelectedHarvestId(latestDesign.harvestId || '');
             upsertSavedDesign(latestDesign as LabelDesign);
-            toast.success('Design loaded');
+            toast.success(`Loaded "${latestDesign.name}"`);
         } catch (error) {
             console.error('Load failed:', error);
             setDesign(savedDesign);
             setSelectedApiaryId(savedDesign.apiaryId || '');
             setSelectedHiveId(savedDesign.hiveId || '');
             setSelectedHarvestId(savedDesign.harvestId || '');
-            toast.error('Could not refresh the saved design. Loaded cached version instead.');
+            toast.info(`Loaded "${savedDesign.name}"`);
         }
     };
 
     const createNewDesign = () => {
-        setDesign({ ...defaultDesign, id: crypto.randomUUID() });
+        setDesign({ ...defaultDesign, id: (globalThis.crypto as any)?.randomUUID?.() || `label-${Date.now()}` });
         setSelectedApiaryId('');
         setSelectedHiveId('');
         setSelectedHarvestId('');
         setLabelPack(null);
-        toast.info('Created new design');
+        toast.info('Created new design template');
     };
 
     const deleteDesign = async (designId: string) => {
+        if (!window.confirm('Are you sure you want to delete this saved label design?')) {
+            return;
+        }
         try {
             await labelService.deleteLabel(designId);
             setSavedDesigns(prev => prev.filter(d => d.id !== designId));
             if (design.id === designId) {
                 createNewDesign();
             }
-            toast.success('Design deleted');
-        } catch (error) {
+            toast.success('Label design deleted successfully');
+        } catch (error: any) {
+            console.error('Delete failed:', error);
             toast.error('Failed to delete design');
         }
     };
@@ -637,10 +662,22 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             onClick={saveDesign}
                             disabled={isSavingDesign}
                             className={cn(glass.btnSecondary, "h-9 px-4 rounded-xl")}
+                            title={isPersistedDesign ? "Update existing design" : "Save as new design"}
                         >
                             {isSavingDesign ? <Loader2 className="w-3.5 h-3.5 animate-spin text-[#F4D03F]" /> : <Save className="w-3.5 h-3.5 text-[#F4D03F]" />}
-                            <span>{isSavingDesign ? 'Saving…' : 'Save design'}</span>
+                            <span>{isSavingDesign ? 'Saving…' : (isPersistedDesign ? 'Update design' : 'Save design')}</span>
                         </button>
+                        {isPersistedDesign && (
+                            <button
+                                onClick={saveAsNewCopy}
+                                disabled={isSavingDesign}
+                                className={cn(glass.btnSecondary, "h-9 px-4 rounded-xl")}
+                                title="Duplicate this design as a new entry"
+                            >
+                                <Copy className="w-3.5 h-3.5 text-[#F4D03F]" />
+                                <span>Save copy</span>
+                            </button>
+                        )}
                         <button
                             onClick={handleGeneratePDF}
                             disabled={isGenerating}
@@ -1281,6 +1318,23 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     className="p-1.5 rounded-md hover:bg-[#F4D03F]/10 text-muted-foreground hover:text-[#F4D03F]"
                                                 >
                                                     <Eye className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button
+                                                    onClick={async () => {
+                                                        const copyPayload = {
+                                                            ...saved,
+                                                            id: (globalThis.crypto as any)?.randomUUID?.() || `label-${Date.now()}`,
+                                                            name: `${saved.name || saved.productName || 'Label'} (Copy)`,
+                                                        };
+                                                        const created = await labelService.createLabel(copyPayload);
+                                                        upsertSavedDesign(created);
+                                                        toast.success(`Duplicated: "${created.name}"`);
+                                                    }}
+                                                    aria-label="Duplicate saved label design"
+                                                    title="Duplicate"
+                                                    className="p-1.5 rounded-md hover:bg-[#F4D03F]/10 text-muted-foreground hover:text-[#F4D03F]"
+                                                >
+                                                    <Copy className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
                                                     onClick={() => deleteDesign(saved.id)}

@@ -18,6 +18,7 @@ api_router = APIRouter()
 
 # Labels endpoint
 api_router.include_router(labels.router, prefix="/labels", tags=["Labels"])
+api_router.include_router(labels.router, prefix="/beeyield/labels", tags=["Labels"])
 
 # AI endpoints (Label Generator, etc.)
 api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
