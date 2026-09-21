@@ -200,10 +200,10 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({
                         {result?.label === 'Warning' && onTabChange && (
                             <button
                                 type="button"
-                                onClick={() => onTabChange('digital-audit')}
+                                onClick={() => onTabChange('inspection')}
                                 className={glass.btnSecondary}
                             >
-                                Health check
+                                Record inspection
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                         )}

@@ -9,7 +9,7 @@ import pandas as pd
 from app.db.supabase_db import db_select, db_update
 
 # Report types and file formats
-REPORT_TYPES = ("harvest_yield", "health_audit", "sensor_logs", "pollination_cert", "financial")
+REPORT_TYPES = ("harvest_yield", "sensor_logs", "pollination_cert", "financial")
 FILE_FORMATS = ("pdf", "csv", "xlsx")
 BUCKET = "user-reports"
 
@@ -87,12 +87,6 @@ def _build_yield_summary_df(harvests: list) -> pd.DataFrame:
     agg.columns = ["honey_type", "quantity_kg", "harvest_count"]
     return agg
 
-
-def _build_health_audit_df(inspections: list) -> pd.DataFrame:
-    if not inspections:
-        return pd.DataFrame()
-    df = pd.DataFrame(inspections)
-    return df
 
 
 def _upload_to_storage(user_id: str, report_id: str, file_ext: str, file_bytes: bytes, content_type: str) -> str:
@@ -220,37 +214,6 @@ def _generate_yield_pdf(df: pd.DataFrame, params: dict, output_buffer: io.BytesI
     doc.build(elements)
 
 
-def _generate_health_audit_pdf(df: pd.DataFrame, params: dict, output_buffer: io.BytesIO) -> None:
-    from reportlab.lib.pagesizes import letter
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.lib import colors
-
-    doc = SimpleDocTemplate(output_buffer, pagesize=letter)
-    styles = getSampleStyleSheet()
-    dark_green = colors.HexColor("#1B9157")
-    elements = []
-    elements.append(Paragraph("Apiary Health Audit", ParagraphStyle("Title", parent=styles["Heading1"], fontSize=18, textColor=dark_green)))
-    elements.append(Paragraph(f"Period: {params.get('start', 'N/A')} to {params.get('end', 'N/A')}", styles["Normal"]))
-    elements.append(Spacer(1, 0.2 * inch))
-
-    if df.empty:
-        elements.append(Paragraph("No inspection data in the selected period.", styles["Normal"]))
-    else:
-        cols = [c for c in ["inspection_date", "hive_code", "queen_seen", "diagnosis", "notes"] if c in df.columns][:5]
-        if not cols:
-            cols = list(df.columns)[:5]
-        table_data = [cols] + [[str(row.get(c, ""))[:30] for c in cols] for _, row in df.head(50).iterrows()]
-        col_width = 1.4 * inch
-        t = Table(table_data, colWidths=[col_width] * len(cols))
-        t.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), dark_green), ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-            ("FONTSIZE", (0, 0), (-1, -1), 8), ("GRID", (0, 0), (-1, -1), 0.5, colors.lightgrey),
-        ]))
-        elements.append(t)
-    doc.build(elements)
-
 
 def _generate_sensor_logs_pdf(df: pd.DataFrame, params: dict, output_buffer: io.BytesIO) -> None:
     from reportlab.lib.pagesizes import letter
@@ -343,8 +306,6 @@ def process_report_logic(report_id: str, user_id: str, params: dict) -> None:
             buf = io.BytesIO()
             if report_type == "harvest_yield":
                 _generate_yield_pdf(df, params, buf)
-            elif report_type == "health_audit":
-                _generate_health_audit_pdf(df, params, buf)
             elif report_type == "sensor_logs":
                 _generate_sensor_logs_pdf(df, params, buf)
             else:

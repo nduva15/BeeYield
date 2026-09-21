@@ -44,8 +44,6 @@ import HiveLogisticsSecurity from '@/components/beeyield/HiveLogisticsSecurity';
 import FlightMapping from '@/pages/pollination/FlightMapping';
 import PollinationReports from '@/pages/pollination/PollinationReports';
 import PollinationCalcs from '@/components/beeyield/lovable_ai/PollinationCalcs';
-import DigitalHealthAudit from '@/components/beeyield/DigitalHealthAudit';
-import ComplianceReport from '@/components/beeyield/ComplianceReport';
 import SensorAlertsView from '@/components/beeyield/SensorAlertsView';
 import BloomPhenology from '@/pages/BloomPhenology';
 import AcousticMoodTransformer from '@/components/beeyield/AcousticMoodTransformer';
@@ -263,10 +261,8 @@ const BeeYieldDashboard: React.FC = () => {
                     ]
                 },
                 {
-                    title: 'Health & Compliance',
+                    title: 'Alerts & Phenology',
                     items: [
-                        { id: 'digital-audit', label: 'Health check', icon: FileCheck },
-                        { id: 'compliance-report', label: 'Compliance Report', icon: Award },
                         { id: 'sensor-alerts', label: 'Sensor Alerts', icon: Bell },
                         { id: 'bloom-tracking', label: 'Bloom Phenology', icon: Zap },
                     ]
@@ -410,8 +406,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} embedded={true} />;
             case 'site-reports-tactical': return <PollinationReports />;
             case 'precision-drilldown': return renderEmbedded(<PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'digital-audit': return <DigitalHealthAudit onTabChange={handleTabChange} />;
-            case 'compliance-report': return <ComplianceReport onTabChange={handleTabChange} />;
             case 'sensor-alerts': return renderEmbedded(<AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'hive-health':
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
