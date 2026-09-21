@@ -116,7 +116,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             items: [
                 { id: 'assistant', label: 'BeeYield AI Assistant', icon: Bot },
                                 { id: 'hive-health', label: 'Hive Health Monitor', icon: Heart },
-                { id: 'acoustic-transformer', label: 'Acoustic Mood Transformer', icon: Volume2 },
                 { id: 'sound-analysis', label: 'Sound Spectrogram', icon: Activity },
                 { id: 'bee-diseases', label: 'Pathogen & Disease Guide', icon: Bug },
                 { id: 'varroa-simulator', label: 'Varroa Mite Simulator', icon: Sparkles },

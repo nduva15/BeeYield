@@ -46,7 +46,6 @@ import PollinationReports from '@/pages/pollination/PollinationReports';
 import PollinationCalcs from '@/components/beeyield/lovable_ai/PollinationCalcs';
 import SensorAlertsView from '@/components/beeyield/SensorAlertsView';
 import BloomPhenology from '@/pages/BloomPhenology';
-import AcousticMoodTransformer from '@/components/beeyield/AcousticMoodTransformer';
 import BeeCalculatorSuite from '@/pages/BeeCalculatorSuite';
 import VpmAutoCounter from '@/components/beeyield/VpmAutoCounter';
 import BeeFlightHoursForecast from '@/components/beeyield/BeeFlightHoursForecast';
@@ -269,7 +268,6 @@ const BeeYieldDashboard: React.FC = () => {
                 {
                     title: 'Analysis & Yield',
                     items: [
-                        { id: 'acoustic-transformer', label: 'Sound analysis', icon: Volume2 },
                         { id: 'pollination-lookup', label: 'PSI Lookup', icon: Search },
                         { id: 'pollination-analytics', label: 'Pollination Data', icon: BarChart3 },
                         { id: 'vpm-counter', label: 'Activity counter', icon: Camera },
@@ -413,7 +411,6 @@ const BeeYieldDashboard: React.FC = () => {
             case 'flight-map': return <FlightMapView />;
 
             case 'varroa': return renderEmbedded(<VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'acoustic-transformer': return <AcousticMoodTransformer onTabChange={handleTabChange} embedded={true} />;
             case 'acoustic-spectral': return <AcousticSpectralView onTabChange={handleTabChange} embedded={true} />;
             case 'sound-analysis':
             case 'sound': return <SoundAnalysisView onTabChange={handleTabChange} embedded={true} />;
