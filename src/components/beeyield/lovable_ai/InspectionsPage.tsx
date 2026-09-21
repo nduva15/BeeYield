@@ -608,9 +608,11 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
               setAiText("");
               setShowForm((s) => !s);
             }}
-            className="px-3.5 py-2 rounded-xl bg-honey text-background text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:bg-honey/90 transition-colors"
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
+            title="Add Diagnostic"
           >
-            <Plus className="w-3.5 h-3.5" /> Log Diagnostic
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="text-white">Add Diagnostic</span>
           </button>
           {!embedded && onClose && (
             <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
@@ -619,6 +621,37 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
           )}
         </div>
       </div>
+
+      {/* Prominent Add Diagnostic Banner */}
+      {!showForm && (
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+              <Plus className="w-5 h-5 text-white stroke-[2.5]" />
+            </div>
+            <div>
+              <h3 className="font-display text-sm sm:text-base font-bold text-white">
+                Add Diagnostic & Inspection Record
+              </h3>
+              <p className="text-xs text-emerald-200/90 mt-0.5">
+                Record colony health, queen presence, brood frames, Varroa count, and pest telemetry.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              setEditingId(null);
+              setDraft(EMPTY);
+              setAiText("");
+              setShowForm(true);
+            }}
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-400/50 whitespace-nowrap shrink-0"
+          >
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="text-white">Add Diagnostic</span>
+          </button>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -695,19 +728,21 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
 
       {/* Inspection form (Create or Edit) */}
       {showForm && (
-        <div className="rounded-xl border border-honey/40 bg-card p-5 space-y-4 shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg text-honey flex items-center gap-2">
-              {editingId ? (
-                <>
-                  <Pencil className="w-4 h-4 text-honey" /> Edit diagnostic record: <span className="font-mono text-sm text-foreground">{draft.hive_label} ({draft.batch || "No Batch"})</span>
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4 text-honey" /> New diagnostic entry (8 – 12 Frame Hive)
-                </>
-              )}
-            </h2>
+        <div className="rounded-xl border border-emerald-500/50 bg-card overflow-hidden shadow-lg transition-all">
+          <div className="bg-emerald-600 px-5 py-3.5 flex items-center justify-between text-white">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                {editingId ? <Pencil className="w-4 h-4 text-white" /> : <Plus className="w-4 h-4 text-white stroke-[2.5]" />}
+              </div>
+              <div>
+                <h2 className="font-display text-sm sm:text-base font-bold text-white tracking-wide">
+                  {editingId ? "Edit Hive Diagnostic" : "Add Diagnostic Record"}
+                </h2>
+                <p className="text-[11px] text-emerald-100">
+                  {editingId ? `Hive: ${draft.hive_label} (${draft.batch || "No Batch"})` : "Record new hive diagnostic & colony telemetry"}
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => {
                 setShowForm(false);
@@ -715,11 +750,14 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                 setDraft(EMPTY);
                 setAiText("");
               }}
-              className="p-1 rounded-lg hover:bg-background border border-border text-muted-foreground"
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/25 text-white transition-colors"
+              aria-label="Close form"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 text-white" />
             </button>
           </div>
+
+          <div className="p-5 space-y-4">
 
           <div className="grid md:grid-cols-4 gap-3">
             <label className="text-xs space-y-1">
@@ -930,10 +968,11 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
               Cancel
             </button>
             <button onClick={save} disabled={saving}
-              className="px-4 py-1.5 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
-              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              {editingId ? "Update Diagnostic Record" : "Save Diagnostic Record"}
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 disabled:opacity-50 shadow-md hover:shadow-lg transition-all border border-emerald-400/40">
+              {saving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Save className="w-4 h-4 text-white" />}
+              <span className="text-white">{editingId ? "Update Diagnostic Record" : "Save Diagnostic Record"}</span>
             </button>
+          </div>
           </div>
         </div>
       )}
@@ -971,9 +1010,10 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
               setAiText("");
               setShowForm(true);
             }}
-            className="mt-4 px-4 py-2 rounded-xl bg-honey text-background text-xs font-semibold hover:bg-honey/90 inline-flex items-center gap-1.5 shadow-sm transition-all"
+            className="mt-4 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border border-emerald-400/40 inline-flex items-center gap-2"
           >
-            <Plus className="w-3.5 h-3.5" /> Log First Diagnostic
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="text-white">Add First Diagnostic</span>
           </button>
         </div>
       ) : (

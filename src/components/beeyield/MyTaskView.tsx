@@ -740,7 +740,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
           setEditingTask(null);
           setIsTaskModalOpen(true);
         }}
-        className="fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-[#F4D03F] text-foreground border-4 border-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 lg:hidden"
+        className="fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-emerald-600 text-white border-4 border-white shadow-2xl flex items-center justify-center hover:bg-emerald-500 hover:scale-110 active:scale-95 transition-all z-40 lg:hidden"
       >
         <Plus className="w-6 h-6" />
       </button>
