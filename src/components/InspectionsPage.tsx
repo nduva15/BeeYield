@@ -274,7 +274,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
             localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(cleanLocal));
           }
         }
-      } catch {}
+      } catch { void 0; }
 
       // Sort inspections strictly descending
       userInspections.sort((a, b) => b.inspected_on.localeCompare(a.inspected_on));
@@ -503,7 +503,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
         nextLocal = [currentRecord, ...stored.filter((h) => h.id !== recordId)];
       }
       localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(nextLocal));
-    } catch {}
+    } catch { void 0; }
 
     // 4. Update UI State
     if (editingId) {
@@ -564,7 +564,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
       const stored: Inspection[] = JSON.parse(localStorage.getItem("beeyield_local_inspections_v1") || "[]");
       const nextLocal = stored.filter((h) => h.id !== id);
       localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(nextLocal));
-    } catch {}
+    } catch { void 0; }
 
     // 4. Update UI
     setRows((prev) => prev.filter((r) => r.id !== id));

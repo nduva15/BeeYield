@@ -76,7 +76,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         if (parsed.modules) setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...parsed.modules }));
         if (parsed.alert_prefs) setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...parsed.alert_prefs }));
       }
-    } catch {}
+    } catch { void 0; }
 
     try {
       const { data, error } = await supabase
@@ -89,7 +89,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         if (d.modules && typeof d.modules === "object") setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...d.modules }));
         if (d.alert_prefs && typeof d.alert_prefs === "object") setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...d.alert_prefs }));
       }
-    } catch {}
+    } catch { void 0; }
   }, [deviceId]);
 
       useEffect(() => {
@@ -374,7 +374,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                   }
                   try {
                     localStorage.removeItem(`beeyield_app_settings_${deviceId}`);
-                  } catch {}
+                  } catch { void 0; }
                   toast.success("Device records deleted. Contact support to erase the auth account.");
                 }}
                 className="px-3 py-2 rounded-lg border border-red-500/40 text-red-400 text-xs flex items-center gap-1.5"
