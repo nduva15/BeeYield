@@ -48,6 +48,8 @@ export default tseslint.config(
         },
       ],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "no-empty": ["error", { "allowEmptyCatch": true }],
+      "no-useless-assignment": "off",
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
