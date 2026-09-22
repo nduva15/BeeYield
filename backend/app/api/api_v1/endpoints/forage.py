@@ -1,5 +1,9 @@
+import json
+import logging
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Optional
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
@@ -8,14 +12,11 @@ from app.db.supabase_db import db_delete, db_insert, db_select, db_update
 from app.schemas import forage as schemas
 from app.services.weather_summary_service import fetch_provider_weather, get_weather_summary_for_apiary
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
-import uuid
-import json
-import logging
-from pathlib import Path
 
-logger = logging.getLogger(__name__)
 
 FORAGE_ZONES_FILE = Path(__file__).resolve().parent.parent.parent / "data" / "user_forage_zones.json"
 
@@ -821,11 +822,9 @@ async def create_forage_zone(
         payload["created_at"] = now_iso
     payload["updated_at"] = now_iso
 
-    saved_remote = False
     try:
         res = await db_insert("forage_zones", payload, token=token)
         if res.get("success"):
-            saved_remote = True
             rows = res.get("data") or []
             if isinstance(rows, list) and rows:
                 payload = rows[0]

@@ -73,6 +73,14 @@ def _fetch_sensor_readings(user_id: str, apiary_id: Optional[str], start: Option
     return _apply_date_filter(readings, start, end, "recorded_at")
 
 
+def _build_health_audit_df(inspections: list) -> pd.DataFrame:
+    if not inspections:
+        return pd.DataFrame(columns=["hive_id", "queen_seen", "pest_status", "inspection_date"])
+    df = pd.DataFrame(inspections)
+    cols = [c for c in ["hive_id", "queen_seen", "pest_status", "inspection_date"] if c in df.columns]
+    return df[cols] if cols else df
+
+
 def _build_yield_summary_df(harvests: list) -> pd.DataFrame:
     if not harvests:
         return pd.DataFrame(columns=["honey_type", "quantity_kg", "harvest_count"])

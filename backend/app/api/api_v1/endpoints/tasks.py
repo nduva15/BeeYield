@@ -261,7 +261,7 @@ async def update_task(
     """
     Update an existing task.
     """
-    user_id = resolve_user_id(current_user, request, body.user_id)
+    _ = resolve_user_id(current_user, request, body.user_id)
     patch_data = body.model_dump(exclude_unset=True)
     if not patch_data:
         existing = await get_task(task_id, request, current_user, token)

@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
-from typing import List, Optional, Any, Dict
+from typing import List, Optional, Any
 from pydantic import BaseModel, Field, ConfigDict
-from uuid import UUID, uuid4
+from uuid import uuid4
 import datetime
 import json
 from pathlib import Path
 
 from app.core import security
-from app.core.config import settings
 from app.db.supabase_db import db_select, db_delete, db_insert, db_update
 from app.services import label_studio_service
 
@@ -209,7 +208,7 @@ async def get_user_labels(
             for row in sb_rows:
                 if row.get("id") not in seen_ids:
                     user_rows.append(row)
-    except Exception as e:
+    except Exception:
         pass
 
     user_rows.sort(key=lambda r: str(r.get("updated_at") or r.get("created_at") or ""), reverse=True)
@@ -306,7 +305,7 @@ async def create_label_design(
             "custom_text": record["custom_text"],
         }
         await db_insert("saved_labels", sb_payload, token=_clean_token(token))
-    except Exception as e:
+    except Exception:
         pass
 
     return _normalize_saved_label(record)
@@ -361,7 +360,7 @@ async def update_label_design(
             "custom_text": record["custom_text"],
         }
         await db_update("saved_labels", sb_payload, {"id": label_id}, token=_clean_token(token))
-    except Exception as e:
+    except Exception:
         pass
 
     return _normalize_saved_label(record)
@@ -384,7 +383,7 @@ async def delete_label_design(
     # Mirror delete to Supabase if table exists
     try:
         await db_delete("saved_labels", {"id": label_id}, token=_clean_token(token))
-    except Exception as e:
+    except Exception:
         pass
 
     return {"success": True, "deleted_id": label_id}

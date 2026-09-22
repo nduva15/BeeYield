@@ -8,7 +8,7 @@ Durable local JSON and file caching ensures seamless operation even offline.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Request, BackgroundTasks
 from fastapi.responses import StreamingResponse
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 from pathlib import Path
@@ -16,7 +16,6 @@ import io
 import uuid
 import json
 
-from app.core import security
 from app.core.security import get_optional_current_user
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.services.report_worker import DataAggregator, PDFReportGenerator, ExcelReportGenerator
@@ -436,7 +435,7 @@ async def update_scheduled_report(
     token: Optional[str] = Depends(get_token)
 ):
     """Update an existing scheduled report."""
-    user_id = resolve_user_id(current_user, request)
+    _ = resolve_user_id(current_user, request)
     patch = schedule_in.model_dump(exclude_unset=True)
     try:
         result = await db_update("scheduled_reports", patch, {"id": schedule_id}, token=token)
@@ -457,7 +456,7 @@ async def delete_scheduled_report(
     token: Optional[str] = Depends(get_token)
 ):
     """Delete a schedule"""
-    user_id = resolve_user_id(current_user, request)
+    _ = resolve_user_id(current_user, request)
     try:
         await db_delete("scheduled_reports", {"id": schedule_id}, token=token)
     except Exception:

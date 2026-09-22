@@ -3,13 +3,12 @@ Inspections Endpoint — Full CRUD API with Multi-User & Auto-Provisioning Suppo
 Allows every user to add, save, edit, and delete hive inspections seamlessly.
 """
 
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
-from app.schemas.inspections import Inspection, InspectionCreate, InspectionUpdate
+from app.schemas.inspections import InspectionCreate, InspectionUpdate
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core import security
 from datetime import date, datetime
-from uuid import UUID
 import uuid
 import logging
 

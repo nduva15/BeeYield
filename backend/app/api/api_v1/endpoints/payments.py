@@ -2,8 +2,8 @@
 Stripe Payment Endpoints
 Secure card management and checkout with Stripe
 """
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from typing import Optional, Dict, Any, List
+from fastapi import APIRouter, Depends, HTTPException, Request
+from typing import Optional, List
 from pydantic import BaseModel, ConfigDict
 from uuid import uuid4
 from app.core.config import settings
