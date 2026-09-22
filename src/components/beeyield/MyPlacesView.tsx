@@ -1,3 +1,4 @@
+import ApiariesPage from './ApiariesPage';
 import React from 'react';
 import {
     Plus,
@@ -476,219 +477,26 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
     }
 
     return (
-        <BeeYieldPageShell className={cn("p-4 lg:p-6 space-y-6 pb-20")}>
-            {/* Header */}
-            <BeeYieldPageHeader
-                icon={MapPin}
-                label="Apiaries"
-                onBack={() => onTabChange?.('home')}
-                title={<>Apiary <span className="text-[#F4D03F]">Network</span></>}
-                subtitle="Manage your apiary records."
-                actions={
-                    <button
-                        onClick={() => setIsAddingPlace(true)}
-                        className={glass.btnPrimary}
-                    >
-                        <Plus className="w-4 h-4" />
-                        Add location
-                    </button>
-                }
+        <div className="w-full pb-20">
+            <ApiariesPage
+                embedded={true}
+                onSelectApiary={(ap) => {
+                    const matchedApiary = apiaries.find(a => a.id === ap.id) || {
+                        id: ap.id,
+                        name: ap.name,
+                        location_name: ap.location_name,
+                        latitude: ap.latitude,
+                        longitude: ap.longitude,
+                        type: ap.type,
+                        forage_type: ap.forage_type,
+                        size_acres: ap.size_acres,
+                        hive_count: ap.active_hives,
+                    };
+                    setViewingApiary(matchedApiary as any);
+                }}
+                onClose={() => onTabChange?.('home')}
             />
-            <div className={cn(glass.card, "p-4 bg-muted/ border-border/ backdrop-blur-md")}>
-                <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-black text-muted-foreground/70">Total Apiaries</span>
-                    <div className="h-6 w-6 rounded-lg bg-[#F4D03F]/10 flex items-center justify-center border border-border/ shadow-sm">
-                        <MapPin className="w-3.5 h-3.5 text-[#F4D03F]" />
-                    </div>
-                </div>
-                <div className="text-xl font-black tracking-tight text-foreground tabular-nums mt-2">{apiaries.length}</div>
-                <p className="text-[8px] font-bold text-muted-foreground/70 mt-1">Records</p>
-            </div>
-
-            {apiaries.length > 0 && (
-                <>
-                    <div className={cn(glass.card, "p-4 bg-muted/ border-border/ backdrop-blur-md")}>
-                        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-                            <div className="space-y-1">
-                                <span className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground/70">Weather focus</span>
-                                <h3 className="text-lg font-black tracking-tight text-foreground">
-                                    {weatherApiary?.name || 'Select an apiary'}
-                                </h3>
-                                <p className="text-xs font-semibold text-muted-foreground">
-                                    Weather cards follow the selected apiary across your dashboard views.
-                                </p>
-                            </div>
-                            <div className="w-full lg:w-[320px]">
-                                <Label className={cn(glass.microLabel, "mb-2 block")}>Apiary weather source</Label>
-                                <Select value={weatherApiaryId} onValueChange={setSelectedApiaryId}>
-                                    <SelectTrigger className={cn(glass.select, "h-11 border-border/ bg-muted/")}>
-                                        <SelectValue placeholder="Choose an apiary" />
-                                    </SelectTrigger>
-                                    <SelectContent className={glass.selectContent}>
-                                        {apiaries.map((apiary) => (
-                                            <SelectItem key={apiary.id} value={apiary.id}>
-                                                {apiary.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <WeatherTelemetryPanel
-                        summary={weatherSummary}
-                        isLoading={weatherLoading}
-                        title={weatherApiary ? `${weatherApiary.name} weather telemetry` : 'Apiary weather telemetry'}
-                        compact
-                    />
-                </>
-            )}
-
-            {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className={cn(glass.skeleton, "aspect-video rounded-xl")} />
-                    ))}
-                </div>
-            ) : apiaries.length === 0 ? (
-                <motion.div
-                    initial={{ scale: 0.98, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className={glass.emptyState}
-                >
-                    <div className="w-16 h-16 rounded-2xl bg-[#F4D03F]/5 border border-border/ flex items-center justify-center mb-6 shadow-sm">
-                        <SearchX className="w-6 h-6 text-[#F4D03F] opacity-40" />
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground tracking-tight opacity-40">No Locations Found</h3>
-                    <p className="text-[10px] font-bold opacity-30 italic max-w-xs mx-auto text-center mt-2">Add your first location to start tracking.</p>
-                    <button onClick={() => setIsAddingPlace(true)} className={cn(glass.btnPrimary, "mt-6 px-6")}>
-                        <Plus className="w-4 h-4 mr-2" /> Add location
-                    </button>
-                </motion.div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <AnimatePresence>
-                        {apiaries.map((apiary, index) => (
-                            <motion.div
-                                key={apiary.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: index * 0.05 }}
-                                className="h-full"
-                            >
-                                <div
-                                    className={cn(
-                                        glass.card,
-                                        "p-0 cursor-pointer shadow-sm hover:border-border/ transition-all duration-300 relative flex flex-col h-full group bg-muted/ backdrop-blur-md rounded-xl overflow-hidden"
-                                    )}
-                                    onClick={() => {
-                                        setSelectedApiaryId(apiary.id);
-                                        setViewingApiary(apiary);
-                                    }}
-                                >
-                                    <div className="p-4 flex flex-col h-full relative z-10">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div className="px-2.5 py-1 bg-[#1A1A1A]/5 rounded-lg border border-border/ text-xs font-semibold text-muted-foreground group-hover:bg-[#F4D03F] group-hover:text-foreground group-hover:border-[#F4D03F] transition-all">
-                                                {apiary.type || 'Permanent'}
-                                            </div>
-                                            <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleEdit(apiary); }}
-                                                    className="w-7 h-7 rounded-lg bg-muted/ border border-gray-100 flex items-center justify-center text-muted-foreground/70 hover:text-foreground hover:border-gray-200 transition-all"
-                                                    aria-label="Edit location"
-                                                    title="Edit location"
-                                                >
-                                                    <Edit className="w-3.5 h-3.5" />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDelete(apiary.id, e); }}
-                                                    className="w-7 h-7 rounded-lg bg-red-50/50 border border-red-100 flex items-center justify-center text-red-300 hover:text-red-500 hover:border-red-200 transition-all"
-                                                    aria-label="Delete location"
-                                                    title="Delete location"
-                                                >
-                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1 mb-6">
-                                            <h3 className="text-base font-black text-foreground group-hover:text-[#F4D03F] transition-colors tracking-tight truncate">{apiary.name}</h3>
-                                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                                                <MapPin className="w-3.5 h-3.5 text-muted-foreground/70" />
-                                                <span className="text-xs font-bold truncate">{apiary.location_name || 'Location not set'}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-3 mt-auto">
-                                            <div className={cn("px-3 py-2.5 rounded-xl border space-y-1", (apiary.hive_count || 0) > 0 ? "bg-[#1B9157]/5 border-[#1B9157]/10" : "bg-gray-50/50 border-gray-100")}>
-                                                <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider">Total Hives</p>
-                                                <div className="flex items-baseline gap-1.5">
-                                                    <span className={cn("text-lg font-black tracking-tight tabular-nums", (apiary.hive_count || 0) > 0 ? "text-[#1B9157]" : "text-gray-300")}>{apiary.hive_count || 0}</span>
-                                                    <span className="text-[10px] font-bold text-muted-foreground/70">Hub</span>
-                                                </div>
-                                            </div>
-                                            <div className="px-3 py-2.5 rounded-xl bg-gray-50/50 border border-gray-100 space-y-1">
-                                                <p className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-wider">Acres</p>
-                                                <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-lg font-black tracking-tight text-foreground tabular-nums">{apiary.size_acres || 0}</span>
-                                                    <span className="text-[10px] font-bold text-muted-foreground/70">Ac</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <button className="mt-5 w-full h-10 rounded-xl bg-[#F4D03F]/5 border border-border/ text-xs font-black text-foreground hover:bg-[#F4D03F] hover:text-white hover:border-[#F4D03F] transition-all duration-300 flex items-center justify-center gap-2 shadow-sm group-hover:shadow-md">
-                                            View Details
-                                            <ArrowRight className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity group-hover:translate-x-1 duration-300" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
-                </div>
-            )}
-
-            <style>{`
-                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.1); border-radius: 20px; }
-            `}</style>
-            <GlassConfirmModal
-                isOpen={!!deletingApiaryId}
-                onClose={() => setDeletingApiaryId(null)}
-                onConfirm={confirmDelete}
-                title="Delete Location"
-                message="Are you sure you want to delete this location? All hive records for this place will be moved to the general registry."
-                confirmLabel="Delete Location"
-                isLoading={deleteApiary.isPending}
-            />
-
-            {/* Addition/Edit Modal */}
-            <GlassModal
-                isOpen={isAddingPlace || !!editingApiary}
-                onClose={resetForm}
-                title={editingApiary ? 'Edit Location' : 'Add New Location'}
-                subtitle="Configure deployment site parameters and GIS coordinates."
-                maxWidth="max-w-4xl"
-            >
-                <ApiaryForm
-                    apiary={editingApiary}
-                    onSuccess={(newApiary) => {
-                        resetForm();
-                        if (!editingApiary && newApiary?.id) {
-                            setBeeYieldPendingOnboarding({
-                                step: 'hive',
-                                email: user?.email || undefined,
-                                apiaryId: newApiary.id,
-                            });
-                            onTabChange('beeyield', undefined, `onboarding:add-hive:${newApiary.id}`);
-                        }
-                    }}
-                    onCancel={resetForm}
-                />
-            </GlassModal>
-        </BeeYieldPageShell>
+        </div>
     );
 };
 
