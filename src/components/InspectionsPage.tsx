@@ -63,10 +63,7 @@ export interface ApiaryOption {
 }
 
 export const CANONICAL_APIARIES: ApiaryOption[] = [
-  { id: "apiary-kibwezi", name: "BeeYield Apiary — Kibwezi", region: "Makueni South", county: "Makueni" },
-  { id: "apiary-mtito", name: "Mtito Andei Outpost", region: "Tsavo West Ecosystem", county: "Makueni" },
-  { id: "apiary-sultan", name: "Sultan Hamud Apiary", region: "Chyulu Foothills", county: "Makueni" },
-  { id: "apiary-embu", name: "Mount Kenya Slope Apiary", region: "Eastern Highlands", county: "Embu" },
+  { id: "apiary-kibwezi", name: "Kibwezi Main Apiary", region: "Kibwezi East", county: "Makueni" },
 ];
 
 // Timothy Nduva's 184 Managed Langstroth Hives with deterministic live vitals & telemetry
@@ -80,10 +77,8 @@ export interface HiveOption {
 }
 
 export const CANONICAL_HIVES: HiveOption[] = Array.from({ length: 184 }, (_, i) => {
-  const code = `BEE-${String(i + 1).padStart(3, "0")}`;
-  let apiary = CANONICAL_APIARIES[0];
-  if (i >= 120) apiary = CANONICAL_APIARIES[2];
-  else if (i >= 60) apiary = CANONICAL_APIARIES[1];
+  const code = `KIB-${String(i + 1).padStart(3, "0")}`;
+  const apiary = CANONICAL_APIARIES[0];
 
   return {
     id: `hive-${code.toLowerCase()}`,
@@ -254,7 +249,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
 
   // Selected Apiary and Hive for the diagnostic form
   const [selectedApiaryId, setSelectedApiaryId] = useState<string>("apiary-kibwezi");
-  const [selectedHiveCode, setSelectedHiveCode] = useState<string>("BEE-001");
+  const [selectedHiveCode, setSelectedHiveCode] = useState<string>("KIB-001");
   const [syncedBanner, setSyncedBanner] = useState<boolean>(true);
 
   // Combine canonical apiaries with user-created apiaries from Supabase/API
@@ -278,7 +273,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
           id: uh.id,
           hive_code: code,
           name: uh.name || code,
-          apiary_name: uh.apiary_name || "BeeYield Apiary — Kibwezi",
+          apiary_name: uh.apiary_name || "Kibwezi Main Apiary",
           frame_count: 10,
         });
       }

@@ -48,17 +48,17 @@ type HiveRecord = {
 };
 
 export const BEE_KNOWLEDGE_HIVES: Array<{ id: string; name: string; apiary?: string }> = [
-  { id: "hive-alpha-1", name: "Hive Alpha-1 (Langstroth 10)", apiary: "BeeYield Kibwezi" },
-  { id: "hive-beta-2", name: "Hive Beta-2 (Langstroth 10)", apiary: "BeeYield Kibwezi" },
-  { id: "hive-gamma-3", name: "Hive Gamma-3 (Top Bar)", apiary: "Mtito Andei Outpost" },
-  { id: "hive-delta-4", name: "Hive Delta-4 (Langstroth 10)", apiary: "Sultan Hamud Apiary" },
-  { id: "hive-epsilon-5", name: "Hive Epsilon-5 (Langstroth 8)", apiary: "Mount Kenya Slope" },
+  { id: "hive-kib-001", name: "Hive KIB-001 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
+  { id: "hive-kib-002", name: "Hive KIB-002 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
+  { id: "hive-kib-003", name: "Hive KIB-003 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
+  { id: "hive-kib-004", name: "Hive KIB-004 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
+  { id: "hive-kib-005", name: "Hive KIB-005 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
 ];
 
 const DEFAULT_RECORDS: HiveRecord[] = [
   {
     id: "rec_default_1",
-    hive_name: "Hive Alpha-1 (Langstroth 10)",
+    hive_name: "Hive KIB-001 (Langstroth 10)",
     record_type: "inspection",
     recorded_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1).toISOString(),
     health_index: 94,
@@ -67,7 +67,7 @@ const DEFAULT_RECORDS: HiveRecord[] = [
   },
   {
     id: "rec_default_2",
-    hive_name: "Hive Alpha-1 (Langstroth 10)",
+    hive_name: "Hive KIB-001 (Langstroth 10)",
     record_type: "acoustic",
     recorded_at: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
     temperature_c: 35.1,
@@ -77,7 +77,7 @@ const DEFAULT_RECORDS: HiveRecord[] = [
   },
   {
     id: "rec_default_3",
-    hive_name: "Hive Beta-2 (Langstroth 10)",
+    hive_name: "Hive KIB-002 (Langstroth 10)",
     record_type: "inspection",
     recorded_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
     health_index: 88,
@@ -86,7 +86,7 @@ const DEFAULT_RECORDS: HiveRecord[] = [
   },
   {
     id: "rec_default_4",
-    hive_name: "Hive Beta-2 (Langstroth 10)",
+    hive_name: "Hive KIB-002 (Langstroth 10)",
     record_type: "acoustic",
     recorded_at: new Date(Date.now() - 1000 * 60 * 55).toISOString(),
     temperature_c: 34.8,
@@ -96,7 +96,7 @@ const DEFAULT_RECORDS: HiveRecord[] = [
   },
   {
     id: "rec_default_5",
-    hive_name: "Hive Gamma-3 (Top Bar)",
+    hive_name: "Hive KIB-003 (Langstroth 10)",
     record_type: "varroa",
     recorded_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
     varroa_count: 1,
@@ -104,7 +104,7 @@ const DEFAULT_RECORDS: HiveRecord[] = [
   },
   {
     id: "rec_default_6",
-    hive_name: "Hive Delta-4 (Langstroth 10)",
+    hive_name: "Hive KIB-004 (Langstroth 10)",
     record_type: "acoustic",
     recorded_at: new Date(Date.now() - 1000 * 60 * 110).toISOString(),
     temperature_c: 34.6,
@@ -114,7 +114,7 @@ const DEFAULT_RECORDS: HiveRecord[] = [
   },
   {
     id: "rec_default_7",
-    hive_name: "Hive Epsilon-5 (Langstroth 8)",
+    hive_name: "Hive KIB-005 (Langstroth 10)",
     record_type: "inspection",
     recorded_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8).toISOString(),
     health_index: 76,
@@ -255,7 +255,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               : 40;
           dbRecords.push({
             id: ins.id,
-            hive_name: ins.hive_label || "Hive Alpha-1 (Langstroth 10)",
+            hive_name: ins.hive_label || "Hive KIB-001 (Langstroth 10)",
             record_type: "inspection",
             recorded_at: ins.inspected_on ? new Date(ins.inspected_on).toISOString() : new Date().toISOString(),
             health_index: healthScore,
