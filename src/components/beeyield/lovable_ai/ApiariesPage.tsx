@@ -152,7 +152,7 @@ export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 18
   };
 });
 
-// Canonical Harvests for Kibwezi Main Apiary (943 kg total)
+// Canonical Harvests for Kibwezi Main Apiary (843 kg total)
 export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   {
     id: "harv-kib-2026-01",
@@ -201,6 +201,26 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
     honey_type: "Forest Acacia Blossom",
     quantity_kg: 55.0,
     moisture_pct: 17.5,
+    color_grade: "Amber",
+    quality_grade: "Export Grade A Raw (<18% moisture)",
+  },
+  {
+    id: "harv-kib-2021-01",
+    batch: "KBZ-2021-01",
+    harvested_on: "2021-11-14",
+    honey_type: "Wildflower & Bush Blossom",
+    quantity_kg: 60.0,
+    moisture_pct: 17.1,
+    color_grade: "Light Amber",
+    quality_grade: "Export Grade A Raw (<18% moisture)",
+  },
+  {
+    id: "harv-kib-2020-01",
+    batch: "KBZ-2020-01",
+    harvested_on: "2020-11-10",
+    honey_type: "Wildflower Pioneer Harvest",
+    quantity_kg: 13.0,
+    moisture_pct: 17.4,
     color_grade: "Amber",
     quality_grade: "Export Grade A Raw (<18% moisture)",
   },
@@ -658,7 +678,7 @@ function ApiaryDetailModal({
             }`}
           >
             <Scale className="w-4 h-4" />
-            Harvests & Honey Yields (943 kg)
+            Harvests & Honey Yields (843 kg)
           </button>
           <button
             type="button"
@@ -878,8 +898,8 @@ function ApiaryDetailModal({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-4 rounded-2xl border border-border bg-background space-y-1">
                   <span className="text-[10px] font-bold uppercase text-muted-foreground">Total Honey Harvested</span>
-                  <p className="text-2xl font-black text-amber-600">943.0 kg</p>
-                  <p className="text-[10px] text-emerald-600 font-semibold">Across 5 Verified Harvest Cycles</p>
+                  <p className="text-2xl font-black text-amber-600">843.0 kg</p>
+                  <p className="text-[10px] text-emerald-600 font-semibold">Across 7 Verified Harvest Cycles</p>
                 </div>
                 <div className="p-4 rounded-2xl border border-border bg-background space-y-1">
                   <span className="text-[10px] font-bold uppercase text-muted-foreground">Average Moisture Content</span>
