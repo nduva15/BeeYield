@@ -141,7 +141,7 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
           ) : (
             <span className="px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-500 text-xs flex items-center gap-1.5"><Check className="w-3.5 h-3.5" />Push active</span>
           )}
-          <button onClick={() => setShowNew(true)} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5 shadow-sm"><Plus className="w-3.5 h-3.5" />New rule</button>
+          <button onClick={() => setShowNew(true)} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 shadow-sm"><Plus className="w-3.5 h-3.5" />New rule</button>
           {!embedded && (
             <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border hover:border-primary/50 flex items-center justify-center"><X className="w-4 h-4" /></button>
           )}
@@ -175,7 +175,7 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
             </label>
           </div>
           <div className="flex gap-2 mt-3">
-            <button onClick={addRule} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold">Save rule</button>
+            <button onClick={addRule} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold">Save rule</button>
             <button onClick={() => { setShowNew(false); setDraft(EMPTY_RULE); }} className="px-3 py-2 rounded-lg border border-border text-xs">Cancel</button>
           </div>
         </div>

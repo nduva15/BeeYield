@@ -106,7 +106,7 @@ export default function FeedingSchedule({ isOpen, onClose, embedded = false }: {
               })}
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={save} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-medium flex items-center gap-1"><Save className="w-3 h-3" />Save plan</button>
+              <button onClick={save} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-medium flex items-center gap-1"><Save className="w-3 h-3" />Save plan</button>
               <button onClick={() => setActive({ hive_label: "Hive 1", plan_label: "Season plan", plan: defaultPlan() })} className="px-3 py-2 rounded-lg border border-border text-xs">Reset to default</button>
             </div>
           </div>

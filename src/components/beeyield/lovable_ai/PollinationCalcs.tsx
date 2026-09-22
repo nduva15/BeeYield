@@ -454,7 +454,7 @@ In ≤200 words, give a tactical action plan: (1) gap fill strategy if hives sho
             <button
               onClick={askAi}
               disabled={loadingAi}
-              className="px-3 py-1.5 rounded-lg bg-honey text-honey-foreground text-xs font-semibold disabled:opacity-50 flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold disabled:opacity-50 flex items-center gap-1.5"
             >
               {loadingAi ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />

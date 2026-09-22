@@ -434,7 +434,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
           <div className="flex flex-wrap gap-2">
             {!recording ? (
               <button onClick={startRecording} disabled={analyzing}
-                className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
+                className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
                 <Mic className="w-3.5 h-3.5" /> Record sample
               </button>
             ) : (
@@ -556,7 +556,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                 {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />} AI pathology report
               </button>
               <button onClick={save} disabled={saving}
-                className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
+                className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Archive scan
               </button>
               <button

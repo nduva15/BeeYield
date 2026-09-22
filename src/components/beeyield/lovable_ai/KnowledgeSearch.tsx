@@ -116,7 +116,7 @@ export default function KnowledgeSearch({ isOpen, onClose }: { isOpen: boolean; 
               <input placeholder="Source URL" value={draft.source_url ?? ""} onChange={(e) => setDraft({ ...draft, source_url: e.target.value })} className="bg-background border border-border rounded-lg px-3 py-2 text-sm" />
               <input placeholder="tags (comma-separated)" value={(draft.tags ?? []).join(",")} onChange={(e) => setDraft({ ...draft, tags: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })} className="bg-background border border-border rounded-lg px-3 py-2 text-sm" />
             </div>
-            <button onClick={addFact} className="mt-2 px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs flex items-center gap-1"><Save className="w-3 h-3" />Save fact</button>
+            <button onClick={addFact} className="mt-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs flex items-center gap-1"><Save className="w-3 h-3" />Save fact</button>
           </div>
         )}
 

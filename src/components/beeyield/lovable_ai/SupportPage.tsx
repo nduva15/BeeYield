@@ -154,7 +154,7 @@ export default function SupportPage({ isOpen, onClose }: { isOpen: boolean; onCl
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowForm((v) => !v)}
-              className="px-4 py-2 rounded-lg bg-honey text-honey-foreground font-semibold text-sm flex items-center gap-2 hover:opacity-90">
+              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-semibold text-sm flex items-center gap-2 hover:opacity-90">
               {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />} New Ticket <ChevronRight className="w-4 h-4" />
             </button>
             <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg hover:bg-muted">
@@ -234,7 +234,7 @@ export default function SupportPage({ isOpen, onClose }: { isOpen: boolean; onCl
                 placeholder="What happened, when it started, and what you have already tried." className="input-base" />
             </Field>
             <button onClick={submit} disabled={saving}
-              className="px-4 py-2 rounded-lg bg-honey text-honey-foreground font-semibold text-sm flex items-center gap-2 disabled:opacity-60">
+              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-semibold text-sm flex items-center gap-2 disabled:opacity-60">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />} Submit ticket
             </button>
           </div>

@@ -368,7 +368,7 @@ export default function IntegrationsPage({ isOpen = true, onClose, embedded = fa
             {busy === "save" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save parameters
           </button>
           <button onClick={doTest} disabled={busy !== ""}
-            className="px-3 py-2 rounded-lg bg-honey text-background text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
+            className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50">
             {busy === "test" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />} Test connection
           </button>
           <button onClick={doSync} disabled={busy !== "" || conn?.status !== "connected"}

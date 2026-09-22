@@ -187,7 +187,7 @@ export default function SyncTimeline({ deviceId }: { deviceId: string }) {
           </button>
           {failedCount > 0 && (
             <button onClick={retryAllFailed} disabled={busy !== ""}
-              className="px-2.5 py-1 rounded-full text-[11px] bg-honey text-background font-semibold flex items-center gap-1 disabled:opacity-50">
+              className="px-2.5 py-1 rounded-full text-[11px] bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-semibold flex items-center gap-1 disabled:opacity-50">
               {busy === "all" ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />} Re-sync all failures
             </button>
           )}

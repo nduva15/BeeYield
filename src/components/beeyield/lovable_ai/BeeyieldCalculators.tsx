@@ -49,7 +49,7 @@ export default function BeeyieldCalculators({ isOpen, onClose, embedded = false 
 
       <div className="flex flex-wrap gap-2">
         {TABS.map(({ key, label, Icon }) => (
-          <button key={key} onClick={() => setTab(key)} className={`px-3 py-2 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition ${tab === key ? "bg-honey text-honey-foreground border-honey shadow-sm" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}>
+          <button key={key} onClick={() => setTab(key)} className={`px-3 py-2 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition ${tab === key ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}>
             <Icon className="w-3.5 h-3.5" />{label}
           </button>
         ))}
@@ -224,7 +224,7 @@ function BeekeeperStyleQuiz() {
         <div key={i} className="mb-2">
           <div className="text-xs font-semibold text-foreground mb-1">{item.q}</div>
           <div className="flex gap-1.5 flex-wrap">{item.opts.map(([label, val]) => (
-            <button key={label} onClick={() => setAns(ans.map((a, j) => (j === i ? (val as number) : a)))} className={`text-xs px-3 py-1.5 rounded-full border ${ans[i] === val ? "bg-honey text-honey-foreground border-honey" : "border-border text-muted-foreground"}`}>{label}</button>
+            <button key={label} onClick={() => setAns(ans.map((a, j) => (j === i ? (val as number) : a)))} className={`text-xs px-3 py-1.5 rounded-full border ${ans[i] === val ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey" : "border-border text-muted-foreground"}`}>{label}</button>
           ))}</div>
         </div>
       ))}

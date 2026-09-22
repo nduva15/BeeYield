@@ -145,7 +145,7 @@ export default function VarroaSimulator({
             onClick={() => setMode(m.k as typeof mode)}
             className={`px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
               mode === m.k
-                ? "bg-honey text-honey-foreground shadow-sm"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-background/60"
             }`}
           >
@@ -183,7 +183,7 @@ export default function VarroaSimulator({
               {mode === "sto" && (
                 <button
                   onClick={() => setRunStamp(runStamp + 1)}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-honey text-honey-foreground flex items-center gap-1.5 font-medium shadow-sm"
+                  className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 flex items-center gap-1.5 font-medium shadow-sm"
                 >
                   <Play className="w-3 h-3" /> Re-roll
                 </button>

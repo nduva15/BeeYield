@@ -98,7 +98,7 @@ export default function ApiarySizing({ isOpen, onClose, embedded = false }: { is
               <Field label="Transport km"><input type="number" value={transportKm} onChange={(e) => setTransportKm(+e.target.value)} className={inp} /></Field>
             </div>
             <Field label="Cost / km (KES)"><input type="number" value={costPerKm} onChange={(e) => setCostPerKm(+e.target.value)} className={inp} /></Field>
-            <button onClick={save} className="w-full px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs flex items-center justify-center gap-1"><Save className="w-3 h-3" />Save sizing run</button>
+            <button onClick={save} className="w-full px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs flex items-center justify-center gap-1"><Save className="w-3 h-3" />Save sizing run</button>
           </div>
 
           <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-2">
