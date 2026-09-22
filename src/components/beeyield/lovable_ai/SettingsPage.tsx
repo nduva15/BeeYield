@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, Settings as SettingsIcon, User, Blocks, BellRing, ShieldCheck, Wifi,
   Loader2, Save, Link2, Trash2, Copy, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw,
-  CreditCard, Plus, Lock, Calendar, FileText, Download, CheckCircle, ArrowUpRight, TrendingUp,
+  CreditCard, Clock, Plus, Lock, Calendar, FileText, Download, CheckCircle, ArrowUpRight, TrendingUp,
   TrendingDown, Wallet, ExternalLink, ShieldAlert
 } from "lucide-react";
 import {
@@ -71,26 +71,17 @@ interface PaymentCard {
   addedAt: string;
 }
 
-const DEFAULT_CARDS: PaymentCard[] = [
-  {
-    id: "card_default_1",
-    cardholderName: "Commercial Operations",
-    brand: "visa",
-    last4: "4242",
-    expMonth: "12",
-    expYear: "28",
-    isDefault: true,
-    postalCode: "90137",
-    addedAt: "2026-01-15",
-  },
-];
+const DEFAULT_CARDS: PaymentCard[] = [];
 
-const INVOICES = [
-  { id: "INV-2026-009", date: "Sep 01, 2026", description: "BeeYield Pro Monthly - 18 IoT Nodes Telemetry", amount: "$49.00", status: "Paid" },
-  { id: "INV-2026-008", date: "Aug 01, 2026", description: "BeeYield Pro Monthly - 18 IoT Nodes Telemetry", amount: "$49.00", status: "Paid" },
-  { id: "INV-2026-007", date: "Jul 01, 2026", description: "BeeYield Pro Monthly - 18 IoT Nodes Telemetry", amount: "$49.00", status: "Paid" },
-  { id: "INV-2026-006", date: "Jun 01, 2026", description: "BeeYield Pro Monthly - 18 IoT Nodes Telemetry", amount: "$49.00", status: "Paid" },
-];
+type Invoice = {
+  id: string;
+  date: string;
+  description: string;
+  amount: string;
+  status: string;
+};
+
+const INVOICES: Invoice[] = [];
 
 function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -129,13 +120,19 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
   const [accessLink, setAccessLink] = useState<string | null>(null);
 
-  // Billing Cards State
+    // Billing Cards State (Clean Real Storage - No Mock Data)
   const [cards, setCards] = useState<PaymentCard[]>(() => {
     try {
       const saved = localStorage.getItem(`beeyield_billing_cards_${deviceId}`);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // Remove any legacy mock card (such as 4242)
+          return parsed.filter((c: PaymentCard) => c.last4 !== "4242" && c.id !== "card_default_1");
+        }
+      }
     } catch { void 0; }
-    return DEFAULT_CARDS;
+    return [];
   });
 
   // Card Modal State
@@ -339,11 +336,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     toast.success("Default payment method updated");
   };
 
-  const handleDeleteCard = (id: string) => {
-    if (cards.length <= 1) {
-      toast.error("At least one payment card is required for active telemetry subscriptions");
-      return;
-    }
+    const handleDeleteCard = (id: string) => {
     const updated = cards.filter(c => c.id !== id);
     if (!updated.some(c => c.isDefault) && updated.length > 0) {
       updated[0].isDefault = true;
@@ -595,45 +588,30 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
           </div>
         )}
 
-        {tab === "billing" && (
+                {tab === "billing" && (
           <div className="space-y-6">
-            {/* Active Subscription Banner */}
-            <div className="rounded-2xl border border-honey/30 bg-gradient-to-br from-honey/10 via-background to-card p-5 sm:p-6 shadow-sm">
+            {/* Subscriptions Management Section */}
+            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-honey flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5" /> Active Plan
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-honey" /> Subscription Tier
                     </span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse mr-1" />
-                      Active & Synced
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-honey/10 text-honey border border-honey/20">
+                      Standard Access
                     </span>
                   </div>
-                  <h2 className="text-xl font-bold font-display text-foreground">Commercial Apiary Pro</h2>
+                  <h2 className="text-xl font-bold font-display text-foreground">Subscriptions & Commercial Billing</h2>
                   <p className="text-xs text-muted-foreground max-w-xl">
-                    Full satellite & GSM IoT telemetry, automatic queen-failure acoustics, multi-user access, and Bloom Phenology intelligence models.
+                    Recurring subscription plans and commercial telemetry tiers will be configured here. All core apicultural tools, inspections, and harvest tracking modules are currently unlocked.
                   </p>
                 </div>
                 <div className="sm:text-right shrink-0">
-                  <p className="text-2xl font-black font-display text-foreground">$49.00 <span className="text-xs font-normal text-muted-foreground">/ month</span></p>
-                  <p className="text-[11px] text-muted-foreground">Renews on Oct 01, 2026</p>
+                  <span className="px-3 py-1.5 rounded-xl bg-muted text-muted-foreground text-xs font-medium border border-border inline-flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5" /> Coming Soon
+                  </span>
                 </div>
-              </div>
-
-              <div className="mt-5 pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-4 text-muted-foreground">
-                  <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> 18 IoT Sensor Nodes</span>
-                  <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Daily Hive Acoustic AI</span>
-                  <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Unlimited Export PDF</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => toast.info("Your subscription is active and managed via the BeeYield operator ledger.")}
-                  className="text-xs font-semibold text-honey hover:underline flex items-center gap-1"
-                >
-                  Manage Subscription Plan <ArrowUpRight className="w-3.5 h-3.5" />
-                </button>
               </div>
             </div>
 
@@ -645,7 +623,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                     <CreditCard className="w-4 h-4 text-honey" /> Payment Cards
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    Manage credit and debit cards on file for automated telemetry and device renewal.
+                    Manage credit and debit cards on file for future billing and commercial purchases.
                   </p>
                 </div>
                 <button
@@ -657,117 +635,137 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 </button>
               </div>
 
-              {/* Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                {cards.map((c) => (
-                  <div
-                    key={c.id}
-                    className={`relative rounded-xl border p-4 transition-all ${
-                      c.isDefault
-                        ? "border-honey/60 bg-gradient-to-br from-honey/5 to-card shadow-sm"
-                        : "border-border bg-background/50 hover:bg-background"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-10 h-7 rounded bg-neutral-900 text-white font-black text-[10px] flex items-center justify-center tracking-wider border border-white/10 uppercase">
-                          {c.brand}
+              {/* Cards Grid / Empty State */}
+              {cards.length === 0 ? (
+                <div className="py-10 text-center rounded-xl border border-dashed border-border bg-background/50">
+                  <CreditCard className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-xs font-medium text-foreground">No payment cards on file</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 max-w-sm mx-auto">
+                    You can add a payment card whenever you wish to purchase supplies or activate advanced services.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  {cards.map((c) => (
+                    <div
+                      key={c.id}
+                      className={`relative rounded-xl border p-4 transition-all ${
+                        c.isDefault
+                          ? "border-honey/60 bg-gradient-to-br from-honey/5 to-card shadow-sm"
+                          : "border-border bg-background/50 hover:bg-background"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-10 h-7 rounded bg-neutral-900 text-white font-black text-[10px] flex items-center justify-center tracking-wider border border-white/10 uppercase">
+                            {c.brand}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold font-mono text-foreground">
+                              •••• •••• •••• {c.last4}
+                            </p>
+                            <p className="text-[11px] text-muted-foreground uppercase">
+                              {c.cardholderName} • Exp {c.expMonth}/{c.expYear}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-bold font-mono text-foreground">
-                            •••• •••• •••• {c.last4}
-                          </p>
-                          <p className="text-[11px] text-muted-foreground uppercase">
-                            {c.cardholderName} • Exp {c.expMonth}/{c.expYear}
-                          </p>
-                        </div>
+                        {c.isDefault && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
+                            Default
+                          </span>
+                        )}
                       </div>
-                      {c.isDefault && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
-                          Default
-                        </span>
-                      )}
-                    </div>
 
-                    <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs">
-                      {!c.isDefault ? (
+                      <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs">
+                        {!c.isDefault ? (
+                          <button
+                            type="button"
+                            onClick={() => handleSetDefaultCard(c.id)}
+                            className="text-xs text-muted-foreground hover:text-honey font-medium transition-colors"
+                          >
+                            Set as Default
+                          </button>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                            <Check className="w-3 h-3 text-honey" /> Primary method
+                          </span>
+                        )}
+
                         <button
                           type="button"
-                          onClick={() => handleSetDefaultCard(c.id)}
-                          className="text-xs text-muted-foreground hover:text-honey font-medium transition-colors"
+                          onClick={() => handleDeleteCard(c.id)}
+                          className="text-muted-foreground hover:text-red-400 p-1 rounded transition-colors"
+                          title="Remove Card"
+                          aria-label="Remove card"
                         >
-                          Set as Default
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
-                      ) : (
-                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                          <Check className="w-3 h-3 text-honey" /> Primary method
-                        </span>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteCard(c.id)}
-                        className="text-muted-foreground hover:text-red-400 p-1 rounded transition-colors"
-                        title="Remove Card"
-                        aria-label="Remove card"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Invoices Table */}
+            {/* Invoices Table / Empty State */}
             <div className="rounded-xl border border-border bg-card p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold font-display text-foreground flex items-center gap-2">
                     <FileText className="w-4 h-4 text-honey" /> Invoices & Receipts
                   </h3>
-                  <p className="text-xs text-muted-foreground">Download past monthly billing statements and tax invoices.</p>
+                  <p className="text-xs text-muted-foreground">Download past billing statements and official tax invoices.</p>
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
-                  <thead className="text-[11px] uppercase tracking-wider text-muted-foreground border-b border-border">
-                    <tr>
-                      <th className="py-2.5 px-3">Date</th>
-                      <th className="py-2.5 px-3">Invoice ID</th>
-                      <th className="py-2.5 px-3">Description</th>
-                      <th className="py-2.5 px-3">Amount</th>
-                      <th className="py-2.5 px-3">Status</th>
-                      <th className="py-2.5 px-3 text-right">Receipt</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60 font-medium">
-                    {INVOICES.map((inv) => (
-                      <tr key={inv.id} className="hover:bg-muted/30 transition-colors">
-                        <td className="py-3 px-3 text-muted-foreground">{inv.date}</td>
-                        <td className="py-3 px-3 font-mono font-bold text-foreground">{inv.id}</td>
-                        <td className="py-3 px-3 text-foreground">{inv.description}</td>
-                        <td className="py-3 px-3 font-bold text-foreground">{inv.amount}</td>
-                        <td className="py-3 px-3">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
-                            {inv.status}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 text-right">
-                          <button
-                            type="button"
-                            onClick={() => toast.success(`Receipt ${inv.id} downloaded`)}
-                            className="inline-flex items-center gap-1 text-honey hover:underline font-semibold"
-                          >
-                            <Download className="w-3 h-3" /> PDF
-                          </button>
-                        </td>
+              {INVOICES.length === 0 ? (
+                <div className="py-10 text-center rounded-xl border border-dashed border-border bg-background/50">
+                  <FileText className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-xs font-medium text-foreground">No invoices or receipts yet</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 max-w-sm mx-auto">
+                    Statements, tax invoices, and payment receipts will be generated and archived here after commercial transactions.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="text-[11px] uppercase tracking-wider text-muted-foreground border-b border-border">
+                      <tr>
+                        <th className="py-2.5 px-3">Date</th>
+                        <th className="py-2.5 px-3">Invoice ID</th>
+                        <th className="py-2.5 px-3">Description</th>
+                        <th className="py-2.5 px-3">Amount</th>
+                        <th className="py-2.5 px-3">Status</th>
+                        <th className="py-2.5 px-3 text-right">Receipt</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-border/60 font-medium">
+                      {INVOICES.map((inv) => (
+                        <tr key={inv.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-3 text-muted-foreground">{inv.date}</td>
+                          <td className="py-3 px-3 font-mono font-bold text-foreground">{inv.id}</td>
+                          <td className="py-3 px-3 text-foreground">{inv.description}</td>
+                          <td className="py-3 px-3 font-bold text-foreground">{inv.amount}</td>
+                          <td className="py-3 px-3">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                              {inv.status}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => toast.success(`Receipt ${inv.id} downloaded`)}
+                              className="inline-flex items-center gap-1 text-honey hover:underline font-semibold"
+                            >
+                              <Download className="w-3 h-3" /> PDF
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         )}
