@@ -640,7 +640,7 @@ Provide concise, bulleted steps:
                 onClick={() => setStatusFilter(st)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize whitespace-nowrap transition-colors border ${
                   statusFilter === st
-                    ? "bg-honey text-background border-honey font-semibold"
+                    ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey font-semibold"
                     : "border-border text-muted-foreground hover:text-foreground hover:bg-card"
                 }`}
               >
@@ -994,7 +994,7 @@ Provide concise, bulleted steps:
                         onClick={() => setExpandedAiTaskId((prev) => (prev === t.id ? null : t.id))}
                         className={`p-1.5 rounded-lg border text-xs flex items-center gap-1 transition-colors ${
                           expandedAiTaskId === t.id
-                            ? "bg-honey text-background border-honey font-bold"
+                            ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey font-bold"
                             : "border-border text-honey hover:bg-honey/10"
                         }`}
                         title="View AI Instructions"

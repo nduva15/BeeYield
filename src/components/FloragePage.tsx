@@ -226,7 +226,7 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={startNew} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5 hover:opacity-90"><Plus className="w-3.5 h-3.5" />New plant</button>
+            <button onClick={startNew} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 hover:opacity-90"><Plus className="w-3.5 h-3.5" />New plant</button>
             <button onClick={() => setShowImport((s) => !s)} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Upload className="w-3.5 h-3.5" />Import CSV</button>
             <button onClick={exportCsv} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Download className="w-3.5 h-3.5" />Export</button>
             {!embedded && (
@@ -253,7 +253,7 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
             {csvPreview.length > 0 && csvErrors.length === 0 && (
               <div className="mt-2 text-xs text-muted-foreground">✓ {csvPreview.length} rows ready to import</div>
             )}
-            <button onClick={importCsv} disabled={csvErrors.length > 0 || csvPreview.length === 0} className="mt-3 px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold disabled:opacity-40">Import {csvPreview.length} plants</button>
+            <button onClick={importCsv} disabled={csvErrors.length > 0 || csvPreview.length === 0} className="mt-3 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold disabled:opacity-40">Import {csvPreview.length} plants</button>
           </div>
         )}
 
@@ -270,7 +270,7 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
               <input value={draft.notes ?? ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} placeholder="Notes" className="md:col-span-2 px-3 py-2 rounded-lg bg-background border border-border text-xs" />
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={save} className="px-3 py-2 rounded-lg bg-honey text-honey-foreground text-xs font-semibold flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save</button>
+              <button onClick={save} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save</button>
               <button onClick={cancel} className="px-3 py-2 rounded-lg border border-border text-xs">Cancel</button>
             </div>
           </div>

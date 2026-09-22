@@ -674,7 +674,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
             onClick={() => setActiveView("batches")}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               activeView === "batches"
-                ? "bg-honey text-background shadow-sm"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
             }`}
           >
@@ -686,7 +686,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
             onClick={() => setActiveView("hives")}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               activeView === "hives"
-                ? "bg-honey text-background shadow-sm"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
             }`}
           >
@@ -698,7 +698,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
             onClick={() => setActiveView("analytics")}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               activeView === "analytics"
-                ? "bg-honey text-background shadow-sm"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
             }`}
           >
@@ -982,7 +982,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                 onClick={() => setSelectedYear("all")}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all border ${
                   selectedYear === "all"
-                    ? "bg-honey text-background border-honey shadow-sm"
+                    ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
                     : "bg-background border-border text-muted-foreground hover:border-honey/40"
                 }`}
               >
@@ -995,7 +995,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                   onClick={() => setSelectedYear(String(item.year))}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all border ${
                     selectedYear === String(item.year)
-                      ? "bg-honey text-background border-honey shadow-sm"
+                      ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
                       : "bg-background border-border text-muted-foreground hover:border-honey/40"
                   }`}
                 >

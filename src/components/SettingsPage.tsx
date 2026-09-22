@@ -393,7 +393,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               onClick={() => setTab(t.id)}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 active
-                  ? "bg-honey text-background shadow-sm"
+                  ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 shadow-sm"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
               }`}
             >
@@ -455,7 +455,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="px-4 py-2 rounded-lg bg-honey text-background font-bold text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-colors shadow-sm disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-bold text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-colors shadow-sm disabled:opacity-50"
               >
                 {savingProfile ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                 Save Changes
@@ -536,7 +536,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 <button
                   type="button"
                   onClick={createAccessLink}
-                  className="px-3.5 py-2 rounded-lg bg-honey text-background font-medium text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-colors shadow-sm self-start"
+                  className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-medium text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-colors shadow-sm self-start"
                 >
                   <Link2 className="w-3.5 h-3.5" /> Generate Access Link
                 </button>
@@ -629,7 +629,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 <button
                   type="button"
                   onClick={handleOpenAddCard}
-                  className="px-4 py-2 rounded-xl bg-honey text-background font-bold text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-all shadow-md shadow-honey/10 self-start sm:self-auto"
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-bold text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-all shadow-md shadow-honey/10 self-start sm:self-auto"
                 >
                   <Plus className="w-4 h-4" /> Add Payment Card
                 </button>
@@ -921,7 +921,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 <button
                   type="submit"
                   disabled={savingCard}
-                  className="px-4 py-2 text-xs font-bold rounded-xl bg-honey text-background hover:bg-honey/90 transition-all shadow-md shadow-honey/15 flex items-center gap-1.5 disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 hover:bg-honey/90 transition-all shadow-md shadow-honey/15 flex items-center gap-1.5 disabled:opacity-50"
                 >
                   {savingCard ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                   Save Card

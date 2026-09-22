@@ -684,7 +684,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             onClick={() => setFrameFilter("all")}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
               frameFilter === "all"
-                ? "bg-honey text-background border-honey shadow-sm"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
                 : "bg-background border-border text-muted-foreground hover:border-honey/40"
             }`}
           >
@@ -695,7 +695,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             onClick={() => setFrameFilter("8")}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
               frameFilter === "8"
-                ? "bg-honey text-background border-honey shadow-sm"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
                 : "bg-background border-border text-muted-foreground hover:border-honey/40"
             }`}
           >
@@ -706,7 +706,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             onClick={() => setFrameFilter("10")}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
               frameFilter === "10"
-                ? "bg-honey text-background border-honey shadow-sm"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
                 : "bg-background border-border text-muted-foreground hover:border-honey/40"
             }`}
           >
@@ -717,7 +717,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
             onClick={() => setFrameFilter("12")}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
               frameFilter === "12"
-                ? "bg-honey text-background border-honey shadow-sm"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
                 : "bg-background border-border text-muted-foreground hover:border-honey/40"
             }`}
           >
