@@ -36,16 +36,44 @@ const Footer = () => {
               Your partner in pollination.
             </p>
             <div className="flex space-x-4 justify-center sm:justify-start pt-4">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+              <a
+                href="https://www.facebook.com/share/1LghmZd2Jb/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Facebook"
+                aria-label="Visit BeeYield on Facebook"
+                className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2"
+              >
                 <FacebookIcon className="h-5 w-5" />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+              <a
+                href="https://www.instagram.com/beeyield_?igsi=MWF3azdqNWxoOGswOQ%3D%3D"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Instagram (@beeyield_)"
+                aria-label="Visit BeeYield on Instagram"
+                className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2"
+              >
                 <InstagramIcon className="h-5 w-5" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="Twitter" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+              <a
+                href="https://www.threads.com/@beeyield_"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Twitter / Threads (@beeyield_)"
+                aria-label="Visit BeeYield on Threads and Twitter"
+                className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2"
+              >
                 <TwitterIcon className="h-5 w-5" />
               </a>
-              <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+              <a
+                href="https://www.linkedin.com/company/beeyield/"
+                title="LinkedIn"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit BeeYield on LinkedIn"
+                className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2"
+              >
                 <LinkedinIcon className="h-5 w-5" />
               </a>
             </div>
