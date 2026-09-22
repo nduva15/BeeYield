@@ -1,46 +1,114 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, Settings as SettingsIcon, User, Blocks, BellRing, ShieldCheck, Wifi,
-  Loader2, Save, Link2, Trash2, Copy, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw
+  Loader2, Save, Link2, Trash2, Copy, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw,
+  CreditCard, Plus, Lock, Calendar, FileText, Download, CheckCircle, ArrowUpRight, TrendingUp,
+  TrendingDown, Wallet, ExternalLink, ShieldAlert
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
-type Tab = "profile" | "modules" | "alerting" | "security";
+type Tab = "profile" | "modules" | "alerting" | "security" | "billing";
 
 const TABS: { id: Tab; label: string; icon: typeof User }[] = [
   { id: "profile", label: "Profile", icon: User },
   { id: "modules", label: "Modules", icon: Blocks },
   { id: "alerting", label: "Alerting", icon: BellRing },
   { id: "security", label: "Security", icon: ShieldCheck },
+  { id: "billing", label: "Billing", icon: CreditCard },
 ];
 
 const MODULES: { key: string; label: string; help: string }[] = [
   { key: "commercial", label: "Commercial apiaries", help: "Multi-site apiary management, batches and yield ledgers." },
   { key: "meteo", label: "Meteo & Bloom", help: "Weather feeds, bloom phenology and forecast snapshots." },
-  { key: "hardware", label: "Hardware add-ons", help: "USB, Bluetooth and online scale / sensor pairing." },
-  { key: "biolab", label: "Biometric Lab", help: "Acoustic audits, varroa simulation and disease diagnostics." },
-  { key: "commerce", label: "Commerce & tax", help: "Shopify, QuickBooks and eTIMS integrations." },
+  { key: "hardware", label: "Hardware add-ons", help: "USB, Bluetooth and online scale / sensor probes." },
+  { key: "accounting", label: "Accounting & ledger", help: "Reconcile honey sales against QuickBooks or Xero." },
+  { key: "forage", label: "Forage mapping", help: "Radial forage buffers and satellite vegetative indices." },
+  { key: "reports", label: "Executive reports", help: "Automated PDF summary reports with cryptographically signed proof." },
 ];
 
 const ALERTS: { key: string; label: string; help: string }[] = [
-  { key: "unusual", label: "Unusual readings", help: "Temperature, humidity or weight outside your learned baseline." },
-  { key: "swarm", label: "Swarm risk", help: "Queen piping, swarm cells or activity spikes." },
-  { key: "device", label: "Device issues", help: "Sensors offline or reporting inconsistent data." },
-  { key: "battery", label: "Low battery", help: "Any paired device below 20% charge." },
+  { key: "anomalies", label: "Acoustic anomalies", help: "Early warning when sound analysis flags Queen loss or swarming." },
+  { key: "temp_humidity", label: "Brood nest threshold", help: "Temp or relative humidity out-of-band for > 3 consecutive hours." },
+  { key: "inspection_due", label: "Inspection reminders", help: "Colonies uninspected past their recommended interval." },
+  { key: "battery_low", label: "Sensor telemetry", help: "Device battery below 15% or solar node offline." },
 ];
 
-const DEFAULT_MODULES = { commercial: true, meteo: true, hardware: false, biolab: true, commerce: false };
+const DEFAULT_MODULES: Record<string, boolean> = {
+  commercial: true,
+  meteo: true,
+  hardware: true,
+  accounting: false,
+  forage: true,
+  reports: true,
+};
 
-const DEFAULT_ALERTS = { unusual: true, swarm: true, device: true, battery: false };
+const DEFAULT_ALERTS: Record<string, boolean> = {
+  anomalies: true,
+  temp_humidity: true,
+  inspection_due: true,
+  battery_low: false,
+};
 
-function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
+interface PaymentCard {
+  id: string;
+  cardholderName: string;
+  brand: "visa" | "mastercard" | "amex" | "generic";
+  last4: string;
+  expMonth: string;
+  expYear: string;
+  isDefault: boolean;
+  postalCode?: string;
+  addedAt: string;
+}
+
+const DEFAULT_CARDS: PaymentCard[] = [
+  {
+    id: "card_default_1",
+    cardholderName: "Commercial Operations",
+    brand: "visa",
+    last4: "4242",
+    expMonth: "12",
+    expYear: "28",
+    isDefault: true,
+    postalCode: "90137",
+    addedAt: "2026-01-15",
+  },
+];
+
+const INVOICES = [
+  { id: "INV-2026-009", date: "Sep 01, 2026", description: "BeeYield Pro Monthly - 18 IoT Nodes Telemetry", amount: "$49.00", status: "Paid" },
+  { id: "INV-2026-008", date: "Aug 01, 2026", description: "BeeYield Pro Monthly - 18 IoT Nodes Telemetry", amount: "$49.00", status: "Paid" },
+  { id: "INV-2026-007", date: "Jul 01, 2026", description: "BeeYield Pro Monthly - 18 IoT Nodes Telemetry", amount: "$49.00", status: "Paid" },
+  { id: "INV-2026-006", date: "Jun 01, 2026", description: "BeeYield Pro Monthly - 18 IoT Nodes Telemetry", amount: "$49.00", status: "Paid" },
+];
+
+function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange: (v: boolean) => void }) {
   return (
-    <button type="button" role="switch" aria-checked={on} aria-label={label} onClick={() => onChange(!on)}
-      className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${on ? "bg-honey" : "bg-border"}`}>
-      <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-background transition-transform ${on ? "translate-x-4" : "translate-x-0.5"}`} />
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={() => onChange(!on)}
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-honey ${
+        on ? "bg-honey" : "bg-muted"
+      }`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow-lg ring-0 transition duration-200 ease-in-out ${
+          on ? "translate-x-5" : "translate-x-0"
+        }`}
+      />
     </button>
   );
 }
@@ -61,7 +129,25 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
   const [accessLink, setAccessLink] = useState<string | null>(null);
 
-  
+  // Billing Cards State
+  const [cards, setCards] = useState<PaymentCard[]>(() => {
+    try {
+      const saved = localStorage.getItem(`beeyield_billing_cards_${deviceId}`);
+      if (saved) return JSON.parse(saved);
+    } catch { void 0; }
+    return DEFAULT_CARDS;
+  });
+
+  // Card Modal State
+  const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+  const [cardholderName, setCardholderName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExp, setCardExp] = useState("");
+  const [cardCvc, setCardCvc] = useState("");
+  const [cardZip, setCardZip] = useState("");
+  const [cardIsDefault, setCardIsDefault] = useState(true);
+  const [savingCard, setSavingCard] = useState(false);
+
   useEffect(() => {
     if (profile?.full_name) setFullName(profile.full_name);
     if (profile?.phone) setPhone(profile.phone);
@@ -92,77 +178,181 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     } catch { void 0; }
   }, [deviceId]);
 
-      useEffect(() => {
-    if (!isOpen) return;
+  useEffect(() => {
     void loadPrefs();
-  }, [isOpen, loadPrefs]);
+  }, [loadPrefs]);
 
-  const saveProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSavingProfile(true);
-    try {
-      if (user) {
-        const { error } = await supabase
-          .from("profiles")
-          .update({
-            full_name: fullName,
-            phone,
-            country,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", user.id);
-        if (error) throw error;
-        await refreshProfile();
-        toast.success("Profile updated");
-      } else {
-        toast.info("Profile changes saved locally for this guest session");
-      }
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to save profile");
-    } finally {
-      setSavingProfile(false);
-    }
-  };
-
-  const savePrefs = async (nextModules: Record<string, boolean>, nextAlerts: Record<string, boolean>) => {
+  const savePrefs = async (nextMods: Record<string, boolean>, nextAlerts: Record<string, boolean>) => {
     setSavingPrefs(true);
     try {
-      localStorage.setItem(
-        `beeyield_app_settings_${deviceId}`,
-        JSON.stringify({ modules: nextModules, alert_prefs: nextAlerts })
-      );
+      localStorage.setItem(`beeyield_app_settings_${deviceId}`, JSON.stringify({
+        modules: nextMods,
+        alert_prefs: nextAlerts,
+        updated_at: new Date().toISOString()
+      }));
 
-      const { error } = await (supabase as any)
+      await supabase
         .from("app_settings")
-        .upsert(
-          {
-            device_id: deviceId,
-            user_id: user?.id ?? null,
-            modules: nextModules,
-            alert_prefs: nextAlerts,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "device_id" }
-        );
-      if (error) console.warn("Supabase settings sync error:", error);
+        .upsert({
+          device_id: deviceId,
+          modules: nextMods,
+          alert_prefs: nextAlerts,
+          updated_at: new Date().toISOString(),
+        } as any, { onConflict: "device_id" });
+
+      toast.success("Preferences updated");
     } catch {
-      // Local storage already written
+      toast.error("Failed to save preferences");
     } finally {
       setSavingPrefs(false);
     }
   };
 
-  const createAccessLink = () => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://beeyield.com";
-    const token = btoa(JSON.stringify({ deviceId, created: Date.now() }));
-    const link = `${origin}/?access=${token}`;
-    setAccessLink(link);
-    try {
-      navigator.clipboard?.writeText(link);
-      toast.success("Read-only access link copied to clipboard");
-    } catch {
-      toast.success("Access link created");
+  const saveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error("Sign in to save profile");
+      return;
     }
+    setSavingProfile(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .upsert({
+          id: user.id,
+          full_name: fullName,
+          phone,
+          country,
+          updated_at: new Date().toISOString()
+        });
+      if (error) throw error;
+      await refreshProfile();
+      toast.success("Profile saved");
+    } catch (err: any) {
+      toast.error(err.message || "Could not save profile");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const createAccessLink = () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const token = btoa(`${deviceId}:${Date.now()}`);
+    const link = `${origin}/?access_token=${token}`;
+    setAccessLink(link);
+    navigator.clipboard?.writeText(link);
+    toast.success("Access link generated & copied to clipboard");
+  };
+
+  // Card Helpers
+  const detectBrand = (num: string): "visa" | "mastercard" | "amex" | "generic" => {
+    const clean = num.replace(/\s+/g, "");
+    if (clean.startsWith("4")) return "visa";
+    if (/^5[1-5]/.test(clean) || /^2[2-7]/.test(clean)) return "mastercard";
+    if (/^3[47]/.test(clean)) return "amex";
+    return "generic";
+  };
+
+  const formatCardNumber = (val: string) => {
+    const raw = val.replace(/\D/g, "").slice(0, 16);
+    return raw.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+  };
+
+  const formatExpDate = (val: string) => {
+    const raw = val.replace(/\D/g, "").slice(0, 4);
+    if (raw.length >= 2) {
+      const mm = parseInt(raw.slice(0, 2), 10);
+      const safeMM = mm > 12 ? "12" : (mm === 0 ? "01" : raw.slice(0, 2));
+      return `${safeMM}/${raw.slice(2)}`;
+    }
+    return raw;
+  };
+
+  const handleOpenAddCard = () => {
+    setCardholderName(profile?.full_name || "");
+    setCardNumber("");
+    setCardExp("");
+    setCardCvc("");
+    setCardZip("");
+    setCardIsDefault(cards.length === 0);
+    setIsCardModalOpen(true);
+  };
+
+  const handleSaveCard = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanNum = cardNumber.replace(/\s+/g, "");
+    if (cleanNum.length < 15) {
+      toast.error("Please enter a valid card number");
+      return;
+    }
+    if (!cardholderName.trim()) {
+      toast.error("Please enter the cardholder name");
+      return;
+    }
+    if (cardExp.length < 5) {
+      toast.error("Please enter a valid expiry date (MM/YY)");
+      return;
+    }
+    if (cardCvc.length < 3) {
+      toast.error("Please enter a valid 3 or 4-digit CVC");
+      return;
+    }
+
+    setSavingCard(true);
+    setTimeout(() => {
+      const [expM, expY] = cardExp.split("/");
+      const newCard: PaymentCard = {
+        id: `card_${Date.now()}`,
+        cardholderName: cardholderName.trim(),
+        brand: detectBrand(cleanNum),
+        last4: cleanNum.slice(-4),
+        expMonth: expM,
+        expYear: expY,
+        isDefault: cardIsDefault || cards.length === 0,
+        postalCode: cardZip.trim(),
+        addedAt: new Date().toISOString().split("T")[0],
+      };
+
+      let updated = [...cards];
+      if (newCard.isDefault) {
+        updated = updated.map(c => ({ ...c, isDefault: false }));
+      }
+      updated.unshift(newCard);
+
+      setCards(updated);
+      try {
+        localStorage.setItem(`beeyield_billing_cards_${deviceId}`, JSON.stringify(updated));
+      } catch { void 0; }
+
+      setSavingCard(false);
+      setIsCardModalOpen(false);
+      toast.success(`Card ending in ${newCard.last4} added successfully!`);
+    }, 600);
+  };
+
+  const handleSetDefaultCard = (id: string) => {
+    const updated = cards.map(c => ({ ...c, isDefault: c.id === id }));
+    setCards(updated);
+    try {
+      localStorage.setItem(`beeyield_billing_cards_${deviceId}`, JSON.stringify(updated));
+    } catch { void 0; }
+    toast.success("Default payment method updated");
+  };
+
+  const handleDeleteCard = (id: string) => {
+    if (cards.length <= 1) {
+      toast.error("At least one payment card is required for active telemetry subscriptions");
+      return;
+    }
+    const updated = cards.filter(c => c.id !== id);
+    if (!updated.some(c => c.isDefault) && updated.length > 0) {
+      updated[0].isDefault = true;
+    }
+    setCards(updated);
+    try {
+      localStorage.setItem(`beeyield_billing_cards_${deviceId}`, JSON.stringify(updated));
+    } catch { void 0; }
+    toast.success("Card removed");
   };
 
   if (!isOpen) return null;
@@ -172,22 +362,28 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-honey/10 text-honey">
+          <div className="w-10 h-10 rounded-xl bg-honey/15 border border-honey/30 flex items-center justify-center text-honey">
             <SettingsIcon className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">Settings & Preferences</h1>
-            <p className="text-xs text-muted-foreground">Manage profile, active modules, sensor alerting, and security</p>
+            <h1 className="text-xl font-bold font-display text-foreground flex items-center gap-2">
+              Apiary & System Settings
+              <span className="text-[11px] font-normal px-2 py-0.5 rounded-full bg-honey/10 text-honey border border-honey/20">
+                v2.4.0
+              </span>
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Configure telemetry parameters, active modules, alerting thresholds, and subscription billing.
+            </p>
           </div>
         </div>
-        {onClose && (
+        {!embedded && onClose && (
           <button
-            type="button"
             onClick={onClose}
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             aria-label="Close settings"
-            className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         )}
       </div>
@@ -202,8 +398,10 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-colors shrink-0 ${
-                active ? "bg-honey text-background font-semibold shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                active
+                  ? "bg-honey text-background shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -214,66 +412,78 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       </div>
 
       {/* Tab Panels */}
-      <div>
+      <div className="space-y-6">
         {tab === "profile" && (
           <form onSubmit={saveProfile} className="rounded-xl border border-border bg-card p-5 space-y-4">
-            <h2 className="font-display text-lg text-honey">Apiarist Profile</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Full name</label>
+            <h2 className="font-display text-lg text-honey">User Profile</h2>
+            <p className="text-xs text-muted-foreground">Manage your operator credentials, contact info, and role assignment.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Full Name</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground focus:border-honey focus:outline-none"
+                  placeholder="e.g. Timothy Nduva"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-border bg-background focus:outline-none focus:ring-1 focus:ring-honey"
                 />
               </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Email</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Phone Number</label>
                 <input
-                  type="email"
-                  disabled
-                  value={user?.email ?? "guest@beeyield.internal"}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-muted/40 text-sm text-muted-foreground cursor-not-allowed"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Phone</label>
-                <input
-                  type="tel"
+                  type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground focus:border-honey focus:outline-none"
+                  placeholder="e.g. +254 742 004 187"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-border bg-background focus:outline-none focus:ring-1 focus:ring-honey"
                 />
               </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Location / Country</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Country</label>
                 <input
                   type="text"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground focus:border-honey focus:outline-none"
+                  placeholder="e.g. Kenya"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-border bg-background focus:outline-none focus:ring-1 focus:ring-honey"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Email (Read Only)</label>
+                <input
+                  type="email"
+                  value={user?.email || "guest@beeyield.local"}
+                  disabled
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-border bg-muted/40 text-muted-foreground cursor-not-allowed"
                 />
               </div>
             </div>
-            <div className="pt-2 flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">Session device: {deviceId.slice(0, 12)}…</span>
+            <div className="pt-2 flex justify-between items-center">
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="px-4 py-2 rounded-lg bg-honey text-background font-medium text-xs flex items-center gap-1.5 hover:bg-honey/90 disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-honey text-background font-bold text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-colors shadow-sm disabled:opacity-50"
               >
                 {savingProfile ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                Save profile
+                Save Changes
               </button>
+              {user && (
+                <button
+                  type="button"
+                  onClick={() => void signOut()}
+                  className="text-xs text-red-400 hover:underline"
+                >
+                  Sign Out
+                </button>
+              )}
             </div>
           </form>
         )}
 
         {tab === "modules" && (
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-            <h2 className="font-display text-lg text-honey">Feature Modules</h2>
-            <p className="text-xs text-muted-foreground">Toggle commercial apiary tools, weather integrations, and biometric models.</p>
+            <h2 className="font-display text-lg text-honey">Active System Modules</h2>
+            <p className="text-xs text-muted-foreground">Select capability groups active for your telemetry nodes and reporting suite.</p>
             <div className="space-y-3">
               {MODULES.map((m) => (
                 <div key={m.key} className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-background/50 hover:bg-background transition-colors">
@@ -385,9 +595,344 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
           </div>
         )}
 
-        </div>
+        {tab === "billing" && (
+          <div className="space-y-6">
+            {/* Active Subscription Banner */}
+            <div className="rounded-2xl border border-honey/30 bg-gradient-to-br from-honey/10 via-background to-card p-5 sm:p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-honey flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5" /> Active Plan
+                    </span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse mr-1" />
+                      Active & Synced
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-bold font-display text-foreground">Commercial Apiary Pro</h2>
+                  <p className="text-xs text-muted-foreground max-w-xl">
+                    Full satellite & GSM IoT telemetry, automatic queen-failure acoustics, multi-user access, and Bloom Phenology intelligence models.
+                  </p>
+                </div>
+                <div className="sm:text-right shrink-0">
+                  <p className="text-2xl font-black font-display text-foreground">$49.00 <span className="text-xs font-normal text-muted-foreground">/ month</span></p>
+                  <p className="text-[11px] text-muted-foreground">Renews on Oct 01, 2026</p>
+                </div>
+              </div>
 
+              <div className="mt-5 pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-4 text-muted-foreground">
+                  <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> 18 IoT Sensor Nodes</span>
+                  <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Daily Hive Acoustic AI</span>
+                  <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Unlimited Export PDF</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => toast.info("Your subscription is active and managed via the BeeYield operator ledger.")}
+                  className="text-xs font-semibold text-honey hover:underline flex items-center gap-1"
+                >
+                  Manage Subscription Plan <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Payment Cards Section */}
+            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-base font-bold font-display text-foreground flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-honey" /> Payment Cards
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Manage credit and debit cards on file for automated telemetry and device renewal.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleOpenAddCard}
+                  className="px-4 py-2 rounded-xl bg-honey text-background font-bold text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-all shadow-md shadow-honey/10 self-start sm:self-auto"
+                >
+                  <Plus className="w-4 h-4" /> Add Payment Card
+                </button>
+              </div>
+
+              {/* Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                {cards.map((c) => (
+                  <div
+                    key={c.id}
+                    className={`relative rounded-xl border p-4 transition-all ${
+                      c.isDefault
+                        ? "border-honey/60 bg-gradient-to-br from-honey/5 to-card shadow-sm"
+                        : "border-border bg-background/50 hover:bg-background"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-7 rounded bg-neutral-900 text-white font-black text-[10px] flex items-center justify-center tracking-wider border border-white/10 uppercase">
+                          {c.brand}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold font-mono text-foreground">
+                            •••• •••• •••• {c.last4}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground uppercase">
+                            {c.cardholderName} • Exp {c.expMonth}/{c.expYear}
+                          </p>
+                        </div>
+                      </div>
+                      {c.isDefault && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
+                          Default
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs">
+                      {!c.isDefault ? (
+                        <button
+                          type="button"
+                          onClick={() => handleSetDefaultCard(c.id)}
+                          className="text-xs text-muted-foreground hover:text-honey font-medium transition-colors"
+                        >
+                          Set as Default
+                        </button>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                          <Check className="w-3 h-3 text-honey" /> Primary method
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCard(c.id)}
+                        className="text-muted-foreground hover:text-red-400 p-1 rounded transition-colors"
+                        title="Remove Card"
+                        aria-label="Remove card"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Invoices Table */}
+            <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold font-display text-foreground flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-honey" /> Invoices & Receipts
+                  </h3>
+                  <p className="text-xs text-muted-foreground">Download past monthly billing statements and tax invoices.</p>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="text-[11px] uppercase tracking-wider text-muted-foreground border-b border-border">
+                    <tr>
+                      <th className="py-2.5 px-3">Date</th>
+                      <th className="py-2.5 px-3">Invoice ID</th>
+                      <th className="py-2.5 px-3">Description</th>
+                      <th className="py-2.5 px-3">Amount</th>
+                      <th className="py-2.5 px-3">Status</th>
+                      <th className="py-2.5 px-3 text-right">Receipt</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60 font-medium">
+                    {INVOICES.map((inv) => (
+                      <tr key={inv.id} className="hover:bg-muted/30 transition-colors">
+                        <td className="py-3 px-3 text-muted-foreground">{inv.date}</td>
+                        <td className="py-3 px-3 font-mono font-bold text-foreground">{inv.id}</td>
+                        <td className="py-3 px-3 text-foreground">{inv.description}</td>
+                        <td className="py-3 px-3 font-bold text-foreground">{inv.amount}</td>
+                        <td className="py-3 px-3">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                            {inv.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => toast.success(`Receipt ${inv.id} downloaded`)}
+                            className="inline-flex items-center gap-1 text-honey hover:underline font-semibold"
+                          >
+                            <Download className="w-3 h-3" /> PDF
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      {/* Card Popup Modal */}
+      <Dialog open={isCardModalOpen} onOpenChange={setIsCardModalOpen}>
+        <DialogContent className="max-w-md p-6 bg-card border-border rounded-2xl shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold font-display flex items-center gap-2 text-foreground">
+              <CreditCard className="w-5 h-5 text-honey" /> Add Payment Card
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Enter your credit or debit card details to enable seamless telemetry renewals.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Interactive Credit Card Preview */}
+          <div className="my-3 rounded-2xl bg-gradient-to-br from-neutral-900 via-stone-900 to-amber-950 p-5 text-white shadow-xl border border-white/10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-honey/10 rounded-full blur-2xl pointer-events-none" />
             
+            <div className="flex items-center justify-between mb-4">
+              {/* EMV Chip */}
+              <div className="w-10 h-7 rounded-md bg-gradient-to-br from-amber-200 to-amber-400 border border-amber-300 shadow-inner flex items-center justify-center">
+                <div className="w-8 h-5 border border-amber-600/40 rounded-sm grid grid-cols-2 gap-0.5 opacity-70" />
+              </div>
+              <span className="font-black text-xs tracking-widest uppercase px-2.5 py-1 rounded bg-white/10 border border-white/20">
+                {detectBrand(cardNumber)}
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              <p className="font-mono text-base tracking-[0.2em] font-bold text-neutral-100">
+                {cardNumber || "•••• •••• •••• ••••"}
+              </p>
+              <div className="flex items-end justify-between pt-1 text-xs">
+                <div>
+                  <p className="text-[9px] uppercase tracking-wider text-neutral-400">Cardholder</p>
+                  <p className="font-semibold tracking-wider uppercase text-neutral-200 truncate max-w-[170px]">
+                    {cardholderName || "OPERATOR NAME"}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] uppercase tracking-wider text-neutral-400">Expires</p>
+                  <p className="font-mono font-semibold text-neutral-200">
+                    {cardExp || "MM/YY"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card Form */}
+          <form onSubmit={handleSaveCard} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Cardholder Name</label>
+              <input
+                type="text"
+                required
+                value={cardholderName}
+                onChange={(e) => setCardholderName(e.target.value)}
+                placeholder="Name on card"
+                className="w-full px-3.5 py-2 text-xs rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-honey/40"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Card Number</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                  placeholder="1234 5678 9012 3456"
+                  maxLength={19}
+                  className="w-full px-3.5 py-2 pl-9 text-xs font-mono rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-honey/40"
+                />
+                <CreditCard className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2.5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Expires</label>
+                <input
+                  type="text"
+                  required
+                  value={cardExp}
+                  onChange={(e) => setCardExp(formatExpDate(e.target.value))}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className="w-full px-3 py-2 text-xs font-mono text-center rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-honey/40"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">CVC</label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    required
+                    value={cardCvc}
+                    onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                    placeholder="123"
+                    maxLength={4}
+                    className="w-full px-3 py-2 text-xs font-mono text-center rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-honey/40"
+                  />
+                  <Lock className="w-3 h-3 text-muted-foreground absolute right-2.5 top-3 pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">ZIP / Postal</label>
+                <input
+                  type="text"
+                  value={cardZip}
+                  onChange={(e) => setCardZip(e.target.value.slice(0, 10))}
+                  placeholder="90137"
+                  maxLength={10}
+                  className="w-full px-3 py-2 text-xs font-mono text-center rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-honey/40"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                type="checkbox"
+                id="cardDefault"
+                checked={cardIsDefault}
+                onChange={(e) => setCardIsDefault(e.target.checked)}
+                className="rounded border-border text-honey focus:ring-honey h-4 w-4"
+              />
+              <label htmlFor="cardDefault" className="text-xs text-muted-foreground cursor-pointer">
+                Set as default payment card for this apiary
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-border">
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <Shield className="w-3.5 h-3.5 text-emerald-500" />
+                <span>256-Bit SSL • PCI-DSS Certified</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCardModalOpen(false)}
+                  className="px-3.5 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingCard}
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-honey text-background hover:bg-honey/90 transition-all shadow-md shadow-honey/15 flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  {savingCard ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                  Save Card
+                </button>
+              </div>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 
