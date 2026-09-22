@@ -403,6 +403,45 @@ export const labelService = {
                 doc.text(splitNote, 50, 50, { align: 'center' });
             }
 
+            // Prominent QR Code with Traceability Batch for Verification
+            if (design.showQRCode !== false) {
+                try {
+                    const QRCode = (await import('qrcode')).default;
+                    const batch = (design.batchNumber || 'BEE-20260105-001').trim();
+                    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.beeyield.com';
+                    const traceUrl = design.traceUrl?.trim()?.startsWith('http')
+                        ? design.traceUrl.trim()
+                        : `${origin}/traceability?code=${encodeURIComponent(batch)}`;
+
+                    const qrUrl = await QRCode.toDataURL(traceUrl, {
+                        errorCorrectionLevel: 'H',
+                        margin: 1,
+                        width: 400,
+                        color: { dark: '#000000', light: '#FFFFFF' }
+                    });
+
+                    // Traceability QR Card on right side of PDF
+                    doc.setFillColor(255, 255, 255);
+                    doc.setDrawColor(212, 160, 23);
+                    doc.setLineWidth(0.4);
+                    doc.roundedRect(69, 36, 23, 23, 1.5, 1.5, 'FD');
+
+                    // Big, clear QR code (18mm x 18mm)
+                    doc.addImage(qrUrl, 'PNG', 71.5, 37.5, 18, 18);
+
+                    // Batch and verification text below QR
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(4);
+                    doc.setTextColor(30, 30, 30);
+                    doc.text(`BATCH: ${batch}`, 80.5, 57.2, { align: 'center' });
+                    doc.setFontSize(3.2);
+                    doc.setTextColor(180, 130, 15);
+                    doc.text('SCAN TO VERIFY', 80.5, 58.6, { align: 'center' });
+                } catch (qrErr) {
+                    console.warn('Could not render QR code in PDF:', qrErr);
+                }
+            }
+
             // Footer
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(5.5);

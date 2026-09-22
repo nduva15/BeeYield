@@ -198,7 +198,7 @@ const defaultDesign: LabelDesign = {
     storageConditions: 'Store in a cool, dry place away from direct sunlight.',
     showContact: true,
     contactInfo: 'www.beeyield.com • hello@beeyield.com',
-    showQRCode: false,
+    showQRCode: true,
     showFooter: true,
     showLogo: true,
     logoUrl: '',
@@ -308,7 +308,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
         }
     };
 
-    // Modern QR: generate a high-quality PNG data URL for preview
+    // Modern QR: generate a high-quality PNG data URL for preview with traceability batch
     React.useEffect(() => {
         let cancelled = false;
         const run = async () => {
@@ -316,21 +316,21 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                 setQrDataUrl('');
                 return;
             }
-            const batch = (design.batchNumber || '').trim();
-            if (!batch) {
-                setQrDataUrl('');
-                return;
-            }
-            const traceUrl = design.traceUrl?.trim() || `/traceability?code=${encodeURIComponent(batch)}`;
+            const batch = (design.batchNumber || 'BEE-20260105-001').trim();
+            const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.beeyield.com';
+            const traceUrl = design.traceUrl?.trim()?.startsWith('http')
+                ? design.traceUrl.trim()
+                : `${origin}/traceability?code=${encodeURIComponent(batch)}`;
+            
             // Persist for save/load consistency
             if (traceUrl !== design.traceUrl) updateDesign({ traceUrl });
             try {
                 const url = await QRCode.toDataURL(traceUrl, {
-                    errorCorrectionLevel: 'M',
+                    errorCorrectionLevel: 'H',
                     margin: 1,
-                    width: 256,
+                    width: 512,
                     color: {
-                        dark: '#0B0F19',
+                        dark: '#000000',
                         light: '#FFFFFF',
                     },
                 });
@@ -344,7 +344,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
             cancelled = true;
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [design.showQRCode, design.batchNumber]);
+    }, [design.showQRCode, design.batchNumber, design.traceUrl]);
 
     const saveDesign = async () => {
         setIsSavingDesign(true);
@@ -495,7 +495,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
             apiaryId,
             hiveId: '',
             harvestId: '',
-            batchNumber: '',
+            batchNumber: 'BEE-20260105-001',
             traceUrl: '',
         });
 
@@ -588,7 +588,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
             if (nextApiaryId && nextApiaryId !== selectedApiaryId) setSelectedApiaryId(nextApiaryId);
             setSelectedHiveId(hive.id);
             setSelectedHarvestId('');
-            updateDesign({ harvestId: '', batchNumber: '', traceUrl: '' });
+            updateDesign({ harvestId: '', batchNumber: 'BEE-20260105-001', traceUrl: '' });
 
             toast.success(`Linked to Hive ${hive.hive_code}`);
         }
@@ -1243,27 +1243,43 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     )}
 
                                     {design.showQRCode && (
-                                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[35%] w-32 h-32 rounded-[2rem] bg-muted/ backdrop-blur-md border border-border/ p-2 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
-                                            <div className="relative w-full h-full rounded-3xl bg-white overflow-hidden">
+                                        <div className="absolute right-4 bottom-4 z-20 w-40 sm:w-44 rounded-2xl bg-white border-2 border-amber-500/80 p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-center transition-transform hover:scale-105">
+                                            {/* Traceability Header */}
+                                            <div className="mb-1.5 flex flex-col items-center">
+                                                <span className="text-[7.5px] font-black uppercase tracking-wider text-amber-800 flex items-center gap-1">
+                                                    <ShieldCheck className="w-3 h-3 text-emerald-600 inline" /> Traceability Verified
+                                                </span>
+                                                <div className="mt-0.5 px-2 py-0.5 rounded bg-neutral-900 text-amber-300 font-mono font-black text-[8.5px] tracking-wide max-w-full truncate border border-amber-500/40">
+                                                    BATCH: {design.batchNumber || 'BEE-20260105-001'}
+                                                </div>
+                                            </div>
+
+                                            {/* Large, High-Contrast QR Code */}
+                                            <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto rounded-xl bg-white p-1 border border-neutral-200 shadow-inner flex items-center justify-center overflow-hidden">
                                                 {qrDataUrl ? (
-                                                    <>
-                                                        <img
-                                                            src={qrDataUrl}
-                                                            alt="Traceability QR"
-                                                            className="w-full h-full object-cover"
-                                                        />
-                                                        {/* Modern center badge */}
-                                                        <div className="absolute inset-0 grid place-items-center pointer-events-none">
-                                                            <div className="w-7 h-7 rounded-2xl bg-white shadow-md grid place-items-center">
-                                                                <Hexagon className="w-4 h-4 text-[#FF9100]" />
-                                                            </div>
-                                                        </div>
-                                                    </>
+                                                    <img
+                                                        src={qrDataUrl}
+                                                        alt={`Traceability QR for batch ${design.batchNumber || 'BEE-20260105-001'}`}
+                                                        className="w-full h-full object-contain"
+                                                    />
                                                 ) : (
-                                                    <div className="w-full h-full grid place-items-center text-black/40">
+                                                    <div className="w-full h-full grid place-items-center text-neutral-400">
                                                         <Grid className="w-8 h-8" />
                                                     </div>
                                                 )}
+                                            </div>
+
+                                            {/* Scan Callout */}
+                                            <div className="mt-1.5 space-y-0.5">
+                                                <div className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-950 font-black text-[7.5px] tracking-wider uppercase border border-amber-500/30">
+                                                    📷 Scan To Verify Harvest
+                                                </div>
+                                                <p className="text-[6.5px] font-mono text-neutral-500 truncate">
+                                                    beeyield.com/traceability
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
                                             </div>
                                             <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
                                                 <div className="px-2.5 py-1 rounded-full bg-muted/ backdrop-blur border border-border/ text-[7px] font-black opacity-80">

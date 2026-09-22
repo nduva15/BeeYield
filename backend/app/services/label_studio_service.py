@@ -324,26 +324,36 @@ def generate_advanced_label_pdf(payload: dict) -> bytes:
                 bio.seek(0)
                 qr_img = ImageReader(bio)
 
-                qr_size = 16 * mm
-                qr_x = width - qr_size - 8 * mm
-                qr_y = 18 * mm
+                # Big, prominent QR Code with Traceability Batch
+                qr_size = 23 * mm
+                qr_x = width - qr_size - 6 * mm
+                qr_y = 16 * mm
 
-                # Modern QR card (rounded + subtle border)
-                card_pad = 1.2 * mm
+                # High-contrast solid white verification card
+                card_pad = 2.0 * mm
                 c.setFillColor(colors.white)
                 c.setStrokeColor(accent_color)
-                c.setLineWidth(0.6)
+                c.setLineWidth(0.8)
                 c.roundRect(
                     qr_x - card_pad,
-                    qr_y - card_pad,
+                    qr_y - card_pad - 4.5 * mm,
                     qr_size + 2 * card_pad,
-                    qr_size + 2 * card_pad,
-                    radius=2.5 * mm,
+                    qr_size + 2 * card_pad + 4.5 * mm,
+                    radius=2.0 * mm,
                     stroke=1,
                     fill=1,
                 )
 
                 c.drawImage(qr_img, qr_x, qr_y, width=qr_size, height=qr_size, mask="auto")
+
+                # Traceability Batch in crisp monospace font
+                batch_text = (batch or "BEE-20260105-001").strip()
+                c.setFont("Helvetica-Bold", 4.5)
+                c.setFillColor(colors.HexColor("#1A1A1A"))
+                c.drawCentredString(qr_x + (qr_size / 2.0), qr_y - 2.2 * mm, f"BATCH: {batch_text}")
+                c.setFont("Helvetica-Bold", 3.8)
+                c.setFillColor(colors.HexColor("#D97706"))
+                c.drawCentredString(qr_x + (qr_size / 2.0), qr_y - 3.8 * mm, "SCAN TO VERIFY ORIGIN")
             except Exception as e:
                 # QR is optional; never fail PDF generation because of it.
                 print(f"QR generation failed: {e}")
