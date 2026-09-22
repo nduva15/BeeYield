@@ -1280,14 +1280,6 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             </div>
                                         </div>
                                     )}
-                                            </div>
-                                            <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
-                                                <div className="px-2.5 py-1 rounded-full bg-muted/ backdrop-blur border border-border/ text-[7px] font-black opacity-80">
-                                                    SCAN TO VERIFY
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                              </motion.div>
                         </div>
