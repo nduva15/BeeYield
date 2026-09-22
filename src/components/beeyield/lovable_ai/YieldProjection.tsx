@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Clock,
   Info,
+  AlertCircle,
   MapPin,
   Boxes,
   Wifi,
@@ -31,6 +32,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
+import { useAuth } from "@/hooks/use-auth";
 import {
   AreaChart,
   Area,
@@ -99,12 +101,14 @@ interface HiveHistoryItem {
   notes?: string | null;
   queen_breeding_year?: number | null;
   queen_origin?: string | null;
-  device?: (DeviceOption & {
-    device_kind?: string;
-    link_type?: string;
-    battery_pct?: number | null;
-    last_seen_at?: string | null;
-  }) | null;
+  device?:
+    | (DeviceOption & {
+        device_kind?: string;
+        link_type?: string;
+        battery_pct?: number | null;
+        last_seen_at?: string | null;
+      })
+    | null;
   latestMeasurement?: MeasurementItem | null;
   measurementsHistory: MeasurementItem[];
   harvestSummary?: HarvestSummaryItem | null;
@@ -125,196 +129,62 @@ interface YieldProjectionProps {
   embedded?: boolean;
 }
 
-// Default Apiary and Device-Linked Hives Dataset
-const DEFAULT_APIARIES_DATA: ApiaryHistoryItem[] = [
-  {
-    id: "apiary-kibwezi",
-    name: "Kibwezi Apiary & Research Forest",
-    latitude: -2.4078,
-    longitude: 37.9658,
-    notes: "Main commercial research apiary · Eastern Province, Kenya",
-    hives: [
-      {
-        id: "hive-1",
-        apiary_id: "apiary-kibwezi",
-        apiary_name: "Kibwezi Apiary & Research Forest",
-        name: "Hive Alpha-1 (Langstroth 10)",
-        hive_code: "BY-H001",
-        max_brood_frames: 10,
-        queen_breeding_year: 2025,
-        queen_origin: "Selected Carniolan / Italian F1",
-        device: {
-          id: "dev-probe-1",
-          label: "Hive Alpha-1 Brood & Acoustic VitalSensor",
-          serial: "BY-PROBE-0841",
-          hive_id: "hive-1",
-          device_kind: "vitalsensor",
-          link_type: "bluetooth",
-          status: "active",
-          battery_pct: 88,
-          last_seen_at: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
-        },
-        latestMeasurement: {
-          id: "m-1",
-          temperature_c: 34.8,
-          humidity_pct: 58.2,
-          pressure_hpa: 1013,
-          weight_kg: 42.6,
-          battery_pct: 88,
-          recorded_at: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
-          source: "bluetooth",
-        },
-        measurementsHistory: [
-          {
-            id: "m-1",
-            temperature_c: 34.8,
-            humidity_pct: 58.2,
-            pressure_hpa: 1013,
-            weight_kg: 42.6,
-            battery_pct: 88,
-            recorded_at: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
-            source: "bluetooth",
-          },
-          {
-            id: "m-2",
-            temperature_c: 34.7,
-            humidity_pct: 59.0,
-            pressure_hpa: 1013,
-            weight_kg: 42.4,
-            battery_pct: 88,
-            recorded_at: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
-            source: "bluetooth",
-          },
-          {
-            id: "m-3",
-            temperature_c: 34.6,
-            humidity_pct: 59.5,
-            pressure_hpa: 1012,
-            weight_kg: 42.1,
-            battery_pct: 89,
-            recorded_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-            source: "bluetooth",
-          },
-        ],
-        harvestSummary: {
-          totalKg: 60.0,
-          harvestCount: 30,
-          lastHarvestedOn: "2026-01-10",
-          lastBatch: "BEE-20260103-H001",
-          avgMoisture: 16.8,
-        },
-      },
-      {
-        id: "hive-2",
-        apiary_id: "apiary-kibwezi",
-        apiary_name: "Kibwezi Apiary & Research Forest",
-        name: "Hive Alpha-2 (Langstroth 10)",
-        hive_code: "BY-H002",
-        max_brood_frames: 10,
-        queen_breeding_year: 2024,
-        queen_origin: "Buckfast Breeder",
-        device: null, // Timothy / User has no sensor device synced on this hive
-        latestMeasurement: null,
-        measurementsHistory: [],
-        harvestSummary: {
-          totalKg: 45.0,
-          harvestCount: 22,
-          lastHarvestedOn: "2025-11-20",
-          lastBatch: "BEE-20251120-H002",
-          avgMoisture: 17.1,
-        },
-      },
-    ],
-  },
-  {
-    id: "apiary-central-valley",
-    name: "Central Valley Pollination Block A",
-    latitude: 36.7783,
-    longitude: -119.4179,
-    notes: "Commercial orchard pollination station",
-    hives: [
-      {
-        id: "hive-3",
-        apiary_id: "apiary-central-valley",
-        apiary_name: "Central Valley Pollination Block A",
-        name: "Hive Almond-01 (Commercial Deep)",
-        hive_code: "BY-H003",
-        max_brood_frames: 10,
-        queen_breeding_year: 2025,
-        queen_origin: "Cordovan Italian",
-        device: {
-          id: "dev-probe-2",
-          label: "Hive Almond-01 Telemetry Pod",
-          serial: "BY-PROBE-3104",
-          hive_id: "hive-3",
-          device_kind: "vitalsensor",
-          link_type: "bluetooth",
-          status: "active",
-          battery_pct: 85,
-          last_seen_at: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-        },
-        latestMeasurement: {
-          id: "m-6",
-          temperature_c: 35.1,
-          humidity_pct: 54.0,
-          pressure_hpa: 1014,
-          weight_kg: 38.9,
-          battery_pct: 85,
-          recorded_at: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-          source: "online",
-        },
-        measurementsHistory: [
-          {
-            id: "m-6",
-            temperature_c: 35.1,
-            humidity_pct: 54.0,
-            pressure_hpa: 1014,
-            weight_kg: 38.9,
-            battery_pct: 85,
-            recorded_at: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-            source: "online",
-          },
-        ],
-        harvestSummary: {
-          totalKg: 38.0,
-          harvestCount: 19,
-          lastHarvestedOn: "2025-09-14",
-          lastBatch: "BEE-20250914-H003",
-          avgMoisture: 17.3,
-        },
-      },
-    ],
-  },
-  {
-    id: "apiary-rift-valley",
-    name: "Rift Valley Acacia Meadow",
-    latitude: -0.3031,
-    longitude: 36.08,
-    notes: "Native dryland flora & acacia bush conservation",
-    hives: [
-      {
-        id: "hive-4",
-        apiary_id: "apiary-rift-valley",
-        apiary_name: "Rift Valley Acacia Meadow",
-        name: "Hive Acacia-Gold (Top Bar Hybrid)",
-        hive_code: "BY-H004",
-        max_brood_frames: 8,
-        queen_breeding_year: 2024,
-        queen_origin: "Apis mellifera scutellata feral select",
-        device: null, // Timothy / User has no sensor device synced on this hive
-        latestMeasurement: null,
-        measurementsHistory: [],
-        harvestSummary: {
-          totalKg: 28.0,
-          harvestCount: 14,
-          lastHarvestedOn: "2025-08-02",
-          lastBatch: "BEE-20250802-H004",
-          avgMoisture: 16.9,
-        },
-      },
-    ],
-  },
-];
+// User-Logged Data Cache Accessors
+function getCachedUserApiaries(): any[] {
+  const keys = [
+    "beeyield_apiaries_cache_v1",
+    "beeyield_local_apiaries_v1",
+    "beeyield_cached_apiaries",
+    "beeyield_apiaries",
+  ];
+  for (const k of keys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+  }
+  return [];
+}
+
+function getCachedUserHives(): any[] {
+  const keys = [
+    "beeyield_hives_cache_v1",
+    "beeyield_local_hives_v1",
+    "beeyield_cached_hives",
+    "beeyield_sensor_health_hives",
+  ];
+  for (const k of keys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+  }
+  return [];
+}
+
+function getCachedUserHarvests(): any[] {
+  const keys = [
+    "beeyield_user_custom_harvests_v1",
+    "beeyield_local_harvests_v1",
+    "beeyield_harvests",
+  ];
+  for (const k of keys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+  }
+  return [];
+}
 
 function formatTimestamp(isoStr?: string | null): string {
   if (!isoStr) return "Never";
@@ -326,13 +196,23 @@ function formatTimestamp(isoStr?: string | null): string {
     if (diffMin < 1) return "Just now";
     if (diffMin < 60) return `${diffMin}m ago`;
     if (diffMin < 1440) return `${Math.floor(diffMin / 60)}h ago`;
-    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   } catch {
     return isoStr;
   }
 }
 
-export default function YieldProjection({ isOpen, onClose, embedded = false }: YieldProjectionProps) {
+export default function YieldProjection({
+  isOpen,
+  onClose,
+  embedded = false,
+}: YieldProjectionProps) {
+  const { user } = useAuth();
   const deviceId = useDeviceId();
   const calculatorRef = useRef<HTMLDivElement>(null);
 
@@ -345,11 +225,13 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
   const [isLoadingHives, setIsLoadingHives] = useState<boolean>(false);
 
   // --- Apiary & Device-Linked Hives History State ---
-  const [apiaryHistoryList, setApiaryHistoryList] = useState<ApiaryHistoryItem[]>(DEFAULT_APIARIES_DATA);
+  const [apiaryHistoryList, setApiaryHistoryList] = useState<ApiaryHistoryItem[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [historyTab, setHistoryTab] = useState<"apiaries" | "projections">("apiaries");
   const [historyApiaryFilter, setHistoryApiaryFilter] = useState<string>("all");
-  const [historyDeviceFilter, setHistoryDeviceFilter] = useState<"all" | "linked" | "unsynced">("all");
+  const [historyDeviceFilter, setHistoryDeviceFilter] = useState<"all" | "linked" | "unsynced">(
+    "all",
+  );
   const [historySearchQuery, setHistorySearchQuery] = useState<string>("");
   const [expandedHiveHistoryId, setExpandedHiveHistoryId] = useState<string | null>(null);
 
@@ -385,52 +267,154 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
 
   const [runs, setRuns] = useState<Run[]>([]);
 
-  // 1. Load Real Apiaries, Hives, Devices, Measurements & Harvests
+  // 1. Load Real Apiaries, Hives, Devices, Measurements & Harvests from User Data
   const loadApiaryDeviceHistory = useCallback(async () => {
     setIsLoadingHistory(true);
     setIsLoadingHives(true);
     try {
-      const [apiariesRes, hivesRes, devicesRes, measurementsRes, harvestsRes] = await Promise.all([
-        (supabase as any)
-          .from("apiaries")
-          .select("id, name, latitude, longitude, notes, created_at")
-          .order("created_at", { ascending: false }),
-        (supabase as any)
-          .from("hives")
-          .select("id, name, hive_code, apiary_id, max_brood_frames, notes, queen_origin, queen_breeding_year, created_at, apiaries(id, name, latitude, longitude, notes)")
-          .order("created_at", { ascending: false }),
-        (supabase as any)
-          .from("devices")
-          .select("id, label, serial, device_kind, link_type, hive_id, apiary_id, status, battery_pct, last_seen_at, created_at")
-          .order("created_at", { ascending: false }),
-        (supabase as any)
-          .from("device_measurements")
-          .select("id, device_id, hive_id, temperature_c, humidity_pct, weight_kg, battery_pct, raw, source, recorded_at")
-          .order("recorded_at", { ascending: false })
-          .limit(200),
-        (supabase as any)
-          .from("harvests")
-          .select("id, hive_id, hive_label, batch, quantity_kg, harvested_on, moisture_pct, quality_grade")
-          .order("harvested_on", { ascending: false })
-          .limit(200),
-      ]);
+      // 1. Query Supabase for User's actual records
+      let apiariesRes: any = { data: [] };
+      let hivesRes: any = { data: [] };
+      let devicesRes: any = { data: [] };
+      let measurementsRes: any = { data: [] };
+      let harvestsRes: any = { data: [] };
 
-      const rawApiaries = apiariesRes.data || [];
-      const rawHives = hivesRes.data || [];
-      const rawDevices = devicesRes.data || [];
+      if (user?.id) {
+        [apiariesRes, hivesRes, devicesRes, measurementsRes, harvestsRes] = await Promise.all([
+          (supabase as any)
+            .from("apiaries")
+            .select(
+              "id, name, location_name, county, region, latitude, longitude, notes, created_at",
+            )
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false }),
+          (supabase as any)
+            .from("hives")
+            .select(
+              "id, name, hive_code, nickname, apiary_id, max_brood_frames, notes, queen_origin, queen_breeding_year, created_at, apiaries(id, name, latitude, longitude, notes)",
+            )
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false }),
+          (supabase as any)
+            .from("devices")
+            .select(
+              "id, label, serial, device_kind, link_type, hive_id, apiary_id, status, battery_pct, last_seen_at, created_at",
+            )
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false }),
+          (supabase as any)
+            .from("device_measurements")
+            .select(
+              "id, device_id, hive_id, temperature_c, humidity_pct, weight_kg, battery_pct, raw, source, recorded_at",
+            )
+            .order("recorded_at", { ascending: false })
+            .limit(200),
+          (supabase as any)
+            .from("harvests")
+            .select(
+              "id, hive_id, hive_label, batch, quantity_kg, harvested_on, moisture_pct, quality_grade",
+            )
+            .eq("user_id", user.id)
+            .order("harvested_on", { ascending: false })
+            .limit(200),
+        ]);
+      }
+
+      // If user query returned nothing or user is not logged in, attempt general read
+      if (
+        (!hivesRes.data || hivesRes.data.length === 0) &&
+        (!apiariesRes.data || apiariesRes.data.length === 0)
+      ) {
+        const [genApiaries, genHives, genDevices, genMeasurements, genHarvests] = await Promise.all(
+          [
+            (supabase as any)
+              .from("apiaries")
+              .select(
+                "id, name, location_name, county, region, latitude, longitude, notes, created_at",
+              )
+              .order("created_at", { ascending: false }),
+            (supabase as any)
+              .from("hives")
+              .select(
+                "id, name, hive_code, nickname, apiary_id, max_brood_frames, notes, queen_origin, queen_breeding_year, created_at, apiaries(id, name, latitude, longitude, notes)",
+              )
+              .order("created_at", { ascending: false }),
+            (supabase as any)
+              .from("devices")
+              .select(
+                "id, label, serial, device_kind, link_type, hive_id, apiary_id, status, battery_pct, last_seen_at, created_at",
+              )
+              .order("created_at", { ascending: false }),
+            (supabase as any)
+              .from("device_measurements")
+              .select(
+                "id, device_id, hive_id, temperature_c, humidity_pct, weight_kg, battery_pct, raw, source, recorded_at",
+              )
+              .order("recorded_at", { ascending: false })
+              .limit(200),
+            (supabase as any)
+              .from("harvests")
+              .select(
+                "id, hive_id, hive_label, batch, quantity_kg, harvested_on, moisture_pct, quality_grade",
+              )
+              .order("harvested_on", { ascending: false })
+              .limit(200),
+          ],
+        );
+        if (genApiaries.data && genApiaries.data.length > 0) apiariesRes = genApiaries;
+        if (genHives.data && genHives.data.length > 0) hivesRes = genHives;
+        if (genDevices.data && genDevices.data.length > 0) devicesRes = genDevices;
+        if (genMeasurements.data && genMeasurements.data.length > 0)
+          measurementsRes = genMeasurements;
+        if (genHarvests.data && genHarvests.data.length > 0) harvestsRes = genHarvests;
+      }
+
+      // 2. Merge with locally cached user data from browser storage
+      const cachedApiaries = getCachedUserApiaries();
+      const cachedHives = getCachedUserHives();
+      const cachedHarvests = getCachedUserHarvests();
+
+      const rawApiaries: any[] = [...(apiariesRes.data || [])];
+      cachedApiaries.forEach((ca: any) => {
+        if (
+          ca &&
+          ca.id &&
+          !rawApiaries.some(
+            (a) =>
+              a.id === ca.id ||
+              (a.name && ca.name && a.name.toLowerCase() === ca.name.toLowerCase()),
+          )
+        ) {
+          rawApiaries.push(ca);
+        }
+      });
+
+      const rawHives: any[] = [...(hivesRes.data || [])];
+      cachedHives.forEach((ch: any) => {
+        if (
+          ch &&
+          ch.id &&
+          !rawHives.some(
+            (h) => h.id === ch.id || (h.hive_code && ch.hive_code && h.hive_code === ch.hive_code),
+          )
+        ) {
+          rawHives.push(ch);
+        }
+      });
+
+      const rawDevices: any[] = devicesRes.data || [];
       const rawMeasurements: any[] = measurementsRes.data || [];
-      const rawHarvests: any[] = harvestsRes.data || [];
+      const rawHarvests: any[] = [...(harvestsRes.data || []), ...cachedHarvests];
 
-      // If user has real records in Supabase, construct dynamic Apiary & Device-Linked Hives structure
+      // 3. If user has real logged records, compile their actual data
       if (rawHives.length > 0 || rawApiaries.length > 0) {
-        // Collect all apiary IDs
         const apiaryMap = new Map<string, ApiaryHistoryItem>();
 
-        // Seed with explicitly registered apiaries
+        // Seed with registered apiaries
         rawApiaries.forEach((a: any) => {
           apiaryMap.set(a.id, {
             id: a.id,
-            name: a.name || "Main Apiary",
+            name: a.name || a.location_name || "User Apiary",
             latitude: a.latitude ?? null,
             longitude: a.longitude ?? null,
             notes: a.notes ?? null,
@@ -457,11 +441,19 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           }
           list.push({
             id: m.id,
-            temperature_c: m.temperature_c !== null ? Number(m.temperature_c) : null,
-            humidity_pct: m.humidity_pct !== null ? Number(m.humidity_pct) : null,
+            temperature_c:
+              m.temperature_c !== null && m.temperature_c !== undefined
+                ? Number(m.temperature_c)
+                : null,
+            humidity_pct:
+              m.humidity_pct !== null && m.humidity_pct !== undefined
+                ? Number(m.humidity_pct)
+                : null,
             pressure_hpa: pressure ? Number(pressure) : null,
-            weight_kg: m.weight_kg !== null ? Number(m.weight_kg) : null,
-            battery_pct: m.battery_pct !== null ? Number(m.battery_pct) : null,
+            weight_kg:
+              m.weight_kg !== null && m.weight_kg !== undefined ? Number(m.weight_kg) : null,
+            battery_pct:
+              m.battery_pct !== null && m.battery_pct !== undefined ? Number(m.battery_pct) : null,
             recorded_at: m.recorded_at,
             source: m.source || "iot",
           });
@@ -476,8 +468,8 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           const existing = harvestsByHive.get(key) || {
             totalKg: 0,
             harvestCount: 0,
-            lastHarvestedOn: h.harvested_on,
-            lastBatch: h.batch,
+            lastHarvestedOn: h.harvested_on || h.harvest_date,
+            lastBatch: h.batch || h.batch_code,
             avgMoisture: h.moisture_pct,
           };
           existing.totalKg += Number(h.quantity_kg || 0);
@@ -491,7 +483,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           if (!apiaryMap.has(apiaryId)) {
             apiaryMap.set(apiaryId, {
               id: apiaryId,
-              name: h.apiaries?.name || "BeeYield Primary Apiary",
+              name: h.apiaries?.name || h.apiary_name || "Main Apiary",
               latitude: h.apiaries?.latitude ?? null,
               longitude: h.apiaries?.longitude ?? null,
               notes: h.apiaries?.notes ?? null,
@@ -501,15 +493,19 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
 
           const dev = deviceByHive.get(h.id) || null;
           const measurements = measurementsByHive.get(h.id) || [];
-          const harvestSum = harvestsByHive.get(h.id) || harvestsByHive.get(h.name) || harvestsByHive.get(h.hive_code) || null;
+          const harvestSum =
+            harvestsByHive.get(h.id) ||
+            harvestsByHive.get(h.name) ||
+            harvestsByHive.get(h.hive_code) ||
+            null;
 
           const hiveItem: HiveHistoryItem = {
             id: h.id,
             apiary_id: apiaryId,
             apiary_name: apiaryMap.get(apiaryId)?.name || "Apiary",
-            name: h.name || h.hive_code || `Hive #${h.id.slice(0, 6)}`,
+            name: h.name || h.nickname || h.hive_code || `Hive #${h.id.slice(0, 6)}`,
             hive_code: h.hive_code || undefined,
-            max_brood_frames: h.max_brood_frames || 10,
+            max_brood_frames: Number(h.max_brood_frames || h.frame_count || 10),
             notes: h.notes || null,
             queen_breeding_year: h.queen_breeding_year || null,
             queen_origin: h.queen_origin || null,
@@ -534,16 +530,19 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           apiaryMap.get(apiaryId)!.hives.push(hiveItem);
         });
 
-        const compiledApiaries = Array.from(apiaryMap.values());
+        const compiledApiaries = Array.from(apiaryMap.values()).filter(
+          (a) => a.hives.length > 0 || rawApiaries.some((ra) => ra.id === a.id),
+        );
         setApiaryHistoryList(compiledApiaries);
 
-        // Also update standard hivesList and devicesList for calculator dropdown
+        // Update flattened hives list for Target Colony dropdown
         const flattenedHives: HiveOption[] = rawHives.map((h: any) => ({
           id: h.id,
-          name: h.name,
+          name: h.name || h.nickname || h.hive_code || `Hive #${h.id.slice(0, 6)}`,
           hive_code: h.hive_code,
-          max_brood_frames: h.max_brood_frames,
-          apiary_name: h.apiaries?.name || "Apiary",
+          max_brood_frames: Number(h.max_brood_frames || h.frame_count || 10),
+          apiary_name:
+            apiaryMap.get(h.apiary_id)?.name || h.apiaries?.name || h.apiary_name || "Apiary",
         }));
         setHivesList(flattenedHives);
 
@@ -560,45 +559,25 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           setHivesCount(flattenedHives.length);
         }
       } else {
-        // Fallback to rich authentic apicultural defaults
-        setApiaryHistoryList(DEFAULT_APIARIES_DATA);
-
-        const defaultHivesOptions: HiveOption[] = DEFAULT_APIARIES_DATA.flatMap((a) =>
-          a.hives.map((h) => ({
-            id: h.id,
-            name: h.name,
-            hive_code: h.hive_code,
-            max_brood_frames: h.max_brood_frames,
-            apiary_name: a.name,
-          }))
-        );
-        setHivesList(defaultHivesOptions);
-
-        const defaultDevicesOptions: DeviceOption[] = DEFAULT_APIARIES_DATA.flatMap((a) =>
-          a.hives
-            .filter((h) => !!h.device)
-            .map((h) => ({
-              id: h.device!.id,
-              label: h.device!.label,
-              serial: h.device!.serial,
-              hive_id: h.id,
-              status: h.device!.status,
-            }))
-        );
-        setDevicesList(defaultDevicesOptions);
-
-        if (defaultHivesOptions.length > 0 && selectedHiveId === "all") {
-          setHivesCount(defaultHivesOptions.length);
-        }
+        // DO NOT GUESS! If user has no logged records, leave empty with clean manual defaults
+        setApiaryHistoryList([]);
+        setHivesList([]);
+        setDevicesList([]);
+        setSelectedHiveId("all");
+        setLinkedDevice(null);
+        setIsDeviceSynced(false);
       }
     } catch (err) {
-      console.warn("Failed to load apiaries, hives & devices for yield projection:", err);
-      setApiaryHistoryList(DEFAULT_APIARIES_DATA);
+      console.warn("Failed to load user apiaries and hives:", err);
+      // Do not guess or populate fake records on error
+      setApiaryHistoryList([]);
+      setHivesList([]);
+      setDevicesList([]);
     } finally {
       setIsLoadingHistory(false);
       setIsLoadingHives(false);
     }
-  }, [selectedHiveId]);
+  }, [user?.id, selectedHiveId]);
 
   useEffect(() => {
     if (isOpen || embedded) {
@@ -631,12 +610,17 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           setIsDeviceSynced(true);
           if (matchedHive.latestMeasurement) {
             const m = matchedHive.latestMeasurement;
-            if (m.temperature_c !== null && m.temperature_c !== undefined) setTempC(m.temperature_c);
-            if (m.humidity_pct !== null && m.humidity_pct !== undefined) setHumidityPct(m.humidity_pct);
-            if (m.pressure_hpa !== null && m.pressure_hpa !== undefined) setPressureHpa(m.pressure_hpa);
+            if (m.temperature_c !== null && m.temperature_c !== undefined)
+              setTempC(m.temperature_c);
+            if (m.humidity_pct !== null && m.humidity_pct !== undefined)
+              setHumidityPct(m.humidity_pct);
+            if (m.pressure_hpa !== null && m.pressure_hpa !== undefined)
+              setPressureHpa(m.pressure_hpa);
             if (m.weight_kg !== null && m.weight_kg !== undefined) setScaleWeightKg(m.weight_kg);
           }
-          toast.success(`Hardware synced: ${matchedHive.device.label || matchedHive.device.serial}`);
+          toast.success(
+            `Hardware synced: ${matchedHive.device.label || matchedHive.device.serial}`,
+          );
         } else {
           // Timothy / User has no device synced on this hive
           setLinkedDevice(null);
@@ -684,7 +668,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
         setIsDeviceSynced(false);
       }
     },
-    [apiaryHistoryList, devicesList]
+    [apiaryHistoryList, devicesList],
   );
 
   // Trigger sync check on hive change
@@ -729,16 +713,28 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       setLinkedDevice(hive.device);
       setIsDeviceSynced(true);
       if (hive.latestMeasurement) {
-        if (hive.latestMeasurement.temperature_c !== null && hive.latestMeasurement.temperature_c !== undefined) {
+        if (
+          hive.latestMeasurement.temperature_c !== null &&
+          hive.latestMeasurement.temperature_c !== undefined
+        ) {
           setTempC(hive.latestMeasurement.temperature_c);
         }
-        if (hive.latestMeasurement.humidity_pct !== null && hive.latestMeasurement.humidity_pct !== undefined) {
+        if (
+          hive.latestMeasurement.humidity_pct !== null &&
+          hive.latestMeasurement.humidity_pct !== undefined
+        ) {
           setHumidityPct(hive.latestMeasurement.humidity_pct);
         }
-        if (hive.latestMeasurement.pressure_hpa !== null && hive.latestMeasurement.pressure_hpa !== undefined) {
+        if (
+          hive.latestMeasurement.pressure_hpa !== null &&
+          hive.latestMeasurement.pressure_hpa !== undefined
+        ) {
           setPressureHpa(hive.latestMeasurement.pressure_hpa);
         }
-        if (hive.latestMeasurement.weight_kg !== null && hive.latestMeasurement.weight_kg !== undefined) {
+        if (
+          hive.latestMeasurement.weight_kg !== null &&
+          hive.latestMeasurement.weight_kg !== undefined
+        ) {
           setScaleWeightKg(hive.latestMeasurement.weight_kg);
         }
       }
@@ -766,8 +762,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
     const availabilityFactor = bloomDays > 0 ? effectiveFlowDays / bloomDays : 0;
 
     // 2. Colony Strength Multiplier (Biological non-linear Farrar's Rule)
-    const strengthMultiplier =
-      colonyStrength < 25 ? 0.05 : Math.pow(colonyStrength / 100, 1.45);
+    const strengthMultiplier = colonyStrength < 25 ? 0.05 : Math.pow(colonyStrength / 100, 1.45);
 
     // 3. Environmental & Sensor Telemetry Modifiers
     let tempF: number;
@@ -807,12 +802,15 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
 
     const weatherFactor = Math.max(
       0.08,
-      (tempF * 0.25 + humidF * 0.2 + pressureF * 0.15 + windF * 0.2 + precipF * 0.2) * weightF
+      (tempF * 0.25 + humidF * 0.2 + pressureF * 0.15 + windF * 0.2 + precipF * 0.2) * weightF,
     );
 
     const baseDailySurplus = 1.4;
     const nectarFactor = nectarScore / 10;
-    const dailyKg = Math.max(0, baseDailySurplus * strengthMultiplier * nectarFactor * weatherFactor);
+    const dailyKg = Math.max(
+      0,
+      baseDailySurplus * strengthMultiplier * nectarFactor * weatherFactor,
+    );
 
     const seasonKg = dailyKg * effectiveFlowDays;
     const totalKg = seasonKg * hivesCount;
@@ -863,7 +861,10 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
         cum: 0,
       };
     }).map((d, i, arr) => {
-      d.cum = +arr.slice(0, i + 1).reduce((sum, item) => sum + item.kg, 0).toFixed(1);
+      d.cum = +arr
+        .slice(0, i + 1)
+        .reduce((sum, item) => sum + item.kg, 0)
+        .toFixed(1);
       return d;
     });
   }, [calc.dailyKg, calc.effectiveFlowDays]);
@@ -902,7 +903,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
 
   const handleSave = async () => {
     const selectedHiveObj = hivesList.find((h) => h.id === selectedHiveId);
-    const hiveLabel = selectedHiveObj ? selectedHiveObj.name || selectedHiveObj.hive_code : "All Apiaries";
+    const hiveLabel = selectedHiveObj
+      ? selectedHiveObj.name || selectedHiveObj.hive_code
+      : "All Apiaries";
 
     const inputs = {
       hivesCount,
@@ -985,8 +988,11 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           // Text search filter
           if (query) {
             const inApiary = apiary.name.toLowerCase().includes(query);
-            const inHive = hive.name.toLowerCase().includes(query) || (hive.hive_code && hive.hive_code.toLowerCase().includes(query));
-            const inSerial = hive.device?.serial && hive.device.serial.toLowerCase().includes(query);
+            const inHive =
+              hive.name.toLowerCase().includes(query) ||
+              (hive.hive_code && hive.hive_code.toLowerCase().includes(query));
+            const inSerial =
+              hive.device?.serial && hive.device.serial.toLowerCase().includes(query);
             const inModel = hive.device?.label && hive.device.label.toLowerCase().includes(query);
             return inApiary || inHive || inSerial || inModel;
           }
@@ -1002,10 +1008,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
   }, [apiaryHistoryList, historyApiaryFilter, historyDeviceFilter, historySearchQuery]);
 
   const totalLinkedHivesCount = useMemo(() => {
-    return apiaryHistoryList.reduce(
-      (sum, a) => sum + a.hives.filter((h) => !!h.device).length,
-      0
-    );
+    return apiaryHistoryList.reduce((sum, a) => sum + a.hives.filter((h) => !!h.device).length, 0);
   }, [apiaryHistoryList]);
 
   if (!isOpen && !embedded) return null;
@@ -1033,7 +1036,8 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
             onClick={handleSave}
             className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
           >
-            <Save className="w-4 h-4 text-white" /> <span className="text-white">Save Projection</span>
+            <Save className="w-4 h-4 text-white" />{" "}
+            <span className="text-white">Save Projection</span>
           </button>
           {!embedded && onClose && (
             <button
@@ -1054,7 +1058,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
           <div className="flex items-center gap-2.5">
             <Cpu className="w-4 h-4 text-honey" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Hive & IoT Device Telemetry</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+              Hive & IoT Device Telemetry
+            </h3>
           </div>
 
           <div className="flex items-center gap-2">
@@ -1077,10 +1083,34 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground"
               title="Refresh Hives and Devices"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoadingHives ? "animate-spin text-honey" : ""}`} />
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${isLoadingHives ? "animate-spin text-honey" : ""}`}
+              />
             </button>
           </div>
         </div>
+
+        {hivesList.length === 0 && !isLoadingHives && (
+          <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-start gap-2.5 text-xs text-amber-900 dark:text-amber-200">
+            <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <span className="font-bold">No registered hives logged in your account yet.</span>{" "}
+              Operating in manual estimation mode. Go to the{" "}
+              <span
+                className="font-semibold underline cursor-pointer hover:text-amber-800 dark:hover:text-amber-100"
+                onClick={() => {
+                  window.dispatchEvent(
+                    new CustomEvent("beeyield-navigate-tab", { detail: "hives" }),
+                  );
+                  onClose();
+                }}
+              >
+                Apiaries & Hives manager
+              </span>{" "}
+              to log your colonies and sync telemetry hardware.
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
@@ -1090,17 +1120,30 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               onChange={(e) => handleHiveChange(e.target.value)}
               className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-honey/30"
             >
-              <option value="all">All Hives (Batch Apiary Estimation)</option>
-              {hivesList.map((h) => (
-                <option key={h.id} value={h.id}>
-                  {h.name || h.hive_code} {h.apiary_name ? `(${h.apiary_name})` : ""}
-                </option>
-              ))}
+              {hivesList.length > 0 ? (
+                <>
+                  <option value="all">All Logged Hives ({hivesList.length} Total Colonies)</option>
+                  {hivesList.map((h) => (
+                    <option key={h.id} value={h.id}>
+                      {h.name || h.hive_code} {h.apiary_name ? `(${h.apiary_name})` : ""}
+                    </option>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <option value="all">Manual Simulation Mode (No Logged Hives)</option>
+                  <option value="none" disabled>
+                    No hives logged yet — Add in Apiaries & Hives
+                  </option>
+                </>
+              )}
             </select>
           </div>
 
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Hives Included in Flow</label>
+            <label className="text-xs text-muted-foreground mb-1 block">
+              Hives Included in Flow
+            </label>
             <input
               type="number"
               min={1}
@@ -1117,10 +1160,12 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
             <div className="h-9 px-3 rounded-xl border border-border bg-muted/30 flex items-center justify-between text-xs">
               <span className="text-muted-foreground truncate">
                 {selectedHiveId === "all"
-                  ? "Aggregated Field Calculation"
+                  ? hivesList.length > 0
+                    ? `Aggregated Fleet (${hivesList.length} Colonies)`
+                    : "Manual Telemetry Mode"
                   : linkedDevice
-                  ? `${linkedDevice.serial || linkedDevice.label || "Hardware Connected"}`
-                  : "No device synced on this hive"}
+                    ? `${linkedDevice.serial || linkedDevice.label || "Hardware Connected"}`
+                    : "No device synced on this hive"}
               </span>
               {isDeviceSynced && (
                 <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
@@ -1149,7 +1194,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           <div>
             <label className="text-xs font-medium text-foreground mb-1 flex items-center justify-between">
               <span>Colony Available Date</span>
-              <span className="text-[10px] text-muted-foreground font-mono">Date colonies enter site</span>
+              <span className="text-[10px] text-muted-foreground font-mono">
+                Date colonies enter site
+              </span>
             </label>
             <input
               type="date"
@@ -1163,7 +1210,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           <div>
             <label className="text-xs font-medium text-foreground mb-1 flex items-center justify-between">
               <span>Target Harvest / Pull Date</span>
-              <span className="text-[10px] text-muted-foreground font-mono">Super pulling window</span>
+              <span className="text-[10px] text-muted-foreground font-mono">
+                Super pulling window
+              </span>
             </label>
             <input
               type="date"
@@ -1193,11 +1242,13 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           <div className="p-3 rounded-xl border border-honey/30 bg-honey/5 space-y-1">
             <div className="flex justify-between items-center text-xs">
               <span className="font-semibold text-foreground">Effective Foraging Days:</span>
-              <span className="font-bold text-honey text-sm font-mono">{calc.effectiveFlowDays} days</span>
+              <span className="font-bold text-honey text-sm font-mono">
+                {calc.effectiveFlowDays} days
+              </span>
             </div>
             <p className="text-[10px] text-muted-foreground">
-              Colonies on-site for {calc.daysAvailable} days during a {bloomDays}-day bloom window. Flow capture index:{" "}
-              <strong>{(calc.availabilityFactor * 100).toFixed(0)}%</strong>.
+              Colonies on-site for {calc.daysAvailable} days during a {bloomDays}-day bloom window.
+              Flow capture index: <strong>{(calc.availabilityFactor * 100).toFixed(0)}%</strong>.
             </p>
           </div>
 
@@ -1206,7 +1257,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
             <div>
               <div className="flex justify-between items-center text-xs mb-1">
                 <span className="text-muted-foreground">Brood Chamber Frames</span>
-                <span className="font-bold text-foreground font-mono">{broodFrames} / 12 Frames</span>
+                <span className="font-bold text-foreground font-mono">
+                  {broodFrames} / 12 Frames
+                </span>
               </div>
               <input
                 type="range"
@@ -1242,7 +1295,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
             <div className="p-2.5 rounded-xl bg-muted/40 border border-border/70 flex items-center justify-between text-xs">
               <div>
                 <span className="font-semibold text-foreground block">Farrar's Biomass Rule:</span>
-                <span className="text-[10px] text-muted-foreground">Non-linear surplus coefficient</span>
+                <span className="text-[10px] text-muted-foreground">
+                  Non-linear surplus coefficient
+                </span>
               </div>
               <span className="font-mono font-bold text-honey text-sm">
                 {calc.strengthMultiplier.toFixed(2)}× Multiplier
@@ -1322,7 +1377,11 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                 className="w-full h-8 rounded-lg border border-border bg-background px-2.5 text-xs font-mono font-semibold text-foreground"
               />
               <span className="text-[9px] text-muted-foreground mt-0.5 block">
-                {pressureHpa >= 1012 ? "High (Clear)" : pressureHpa >= 1007 ? "Normal" : "Low (Storm Risk)"}
+                {pressureHpa >= 1012
+                  ? "High (Clear)"
+                  : pressureHpa >= 1007
+                    ? "Normal"
+                    : "Low (Storm Risk)"}
               </span>
             </div>
 
@@ -1363,7 +1422,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
           {/* Secondary Weather (Wind & Rain) */}
           <div className="grid grid-cols-2 gap-3 pt-2">
             <div>
-              <label className="text-[10px] text-muted-foreground mb-1 block">Wind Velocity (km/h)</label>
+              <label className="text-[10px] text-muted-foreground mb-1 block">
+                Wind Velocity (km/h)
+              </label>
               <input
                 type="number"
                 value={windKmh}
@@ -1372,7 +1433,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               />
             </div>
             <div>
-              <label className="text-[10px] text-muted-foreground mb-1 block">Precipitation (mm/d)</label>
+              <label className="text-[10px] text-muted-foreground mb-1 block">
+                Precipitation (mm/d)
+              </label>
               <input
                 type="number"
                 value={precipMm}
@@ -1384,7 +1447,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
 
           {/* Honey Market Value */}
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Bulk Honey Price / kg (KES)</label>
+            <label className="text-xs text-muted-foreground mb-1 block">
+              Bulk Honey Price / kg (KES)
+            </label>
             <input
               type="number"
               value={pricePerKg}
@@ -1403,8 +1468,18 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="hsl(var(--border))" />
                   <PolarAngleAxis dataKey="k" stroke="hsl(var(--muted-foreground))" fontSize={9} />
-                  <PolarRadiusAxis domain={[0, 100]} stroke="hsl(var(--muted-foreground))" fontSize={8} />
-                  <Radar name="Factor %" dataKey="v" stroke="#D97706" fill="#F59E0B" fillOpacity={0.25} />
+                  <PolarRadiusAxis
+                    domain={[0, 100]}
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={8}
+                  />
+                  <Radar
+                    name="Factor %"
+                    dataKey="v"
+                    stroke="#D97706"
+                    fill="#F59E0B"
+                    fillOpacity={0.25}
+                  />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
@@ -1426,23 +1501,32 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
             {/* 4 Stat Cards */}
             <div className="grid grid-cols-2 gap-2.5 mb-4">
               <div className="p-3.5 rounded-xl border border-border bg-background/90 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Harvest per Hive</span>
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                  Harvest per Hive
+                </span>
                 <span className="text-2xl font-display font-bold text-emerald-600 block my-0.5">
                   {calc.seasonKg.toFixed(1)} <span className="text-xs font-bold">kg</span>
                 </span>
-                <span className="text-[10px] text-muted-foreground">Over {calc.effectiveFlowDays} active days</span>
+                <span className="text-[10px] text-muted-foreground">
+                  Over {calc.effectiveFlowDays} active days
+                </span>
               </div>
 
               <div className="p-3.5 rounded-xl border border-border bg-background/90 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Total Apiary Crop</span>
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                  Total Apiary Crop
+                </span>
                 <span className="text-2xl font-display font-bold text-honey block my-0.5">
-                  {Math.round(calc.totalKg).toLocaleString()} <span className="text-xs font-bold">kg</span>
+                  {Math.round(calc.totalKg).toLocaleString()}{" "}
+                  <span className="text-xs font-bold">kg</span>
                 </span>
                 <span className="text-[10px] text-muted-foreground">{hivesCount} hives total</span>
               </div>
 
               <div className="p-3.5 rounded-xl border border-border bg-background/90 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Daily Intake Rate</span>
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                  Daily Intake Rate
+                </span>
                 <span className="text-xl font-display font-bold text-foreground block my-0.5">
                   {calc.dailyKg.toFixed(2)} <span className="text-xs font-bold">kg/d</span>
                 </span>
@@ -1450,7 +1534,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               </div>
 
               <div className="p-3.5 rounded-xl border border-border bg-background/90 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Gross Revenue</span>
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                  Gross Revenue
+                </span>
                 <span className="text-xl font-display font-bold text-emerald-600 block my-0.5">
                   KES {Math.round(calc.revenue).toLocaleString()}
                 </span>
@@ -1461,8 +1547,12 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
             {/* Daily Cumulative Extraction Curve */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-foreground">Cumulative Harvest Accumulation (kg)</span>
-                <span className="text-[10px] text-muted-foreground font-mono">D1 → D{calc.effectiveFlowDays}</span>
+                <span className="font-semibold text-foreground">
+                  Cumulative Harvest Accumulation (kg)
+                </span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  D1 → D{calc.effectiveFlowDays}
+                </span>
               </div>
               <div className="h-36 w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1483,7 +1573,13 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                         name === "cum" ? "Total Accumulated" : "Daily Inflow",
                       ]}
                     />
-                    <Area type="monotone" dataKey="cum" stroke="#D97706" strokeWidth={2.5} fill="url(#honeyGrad)" />
+                    <Area
+                      type="monotone"
+                      dataKey="cum"
+                      stroke="#D97706"
+                      strokeWidth={2.5}
+                      fill="url(#honeyGrad)"
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -1496,7 +1592,11 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               <Info className="w-3.5 h-3.5 text-honey" /> Mathematical Relationship Verified
             </span>
             <p className="leading-relaxed">
-              <strong>Yield (kg)</strong> = 1.40 kg/d × <strong>Strength</strong> ({calc.strengthMultiplier.toFixed(2)}×) × <strong>Availability</strong> ({calc.effectiveFlowDays}d / {(calc.availabilityFactor * 100).toFixed(0)}%) × <strong>Bioclimatic Factor</strong> ({calc.weatherFactor.toFixed(2)}) × <strong>{hivesCount} Hives</strong>.
+              <strong>Yield (kg)</strong> = 1.40 kg/d × <strong>Strength</strong> (
+              {calc.strengthMultiplier.toFixed(2)}×) × <strong>Availability</strong> (
+              {calc.effectiveFlowDays}d / {(calc.availabilityFactor * 100).toFixed(0)}%) ×{" "}
+              <strong>Bioclimatic Factor</strong> ({calc.weatherFactor.toFixed(2)}) ×{" "}
+              <strong>{hivesCount} Hives</strong>.
             </p>
           </div>
         </div>
@@ -1512,7 +1612,8 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               Apiary & Hive Hardware History
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              History of user apiaries, connected IoT devices, real-time sensor vitals, and past harvest yields.
+              History of user apiaries, connected IoT devices, real-time sensor vitals, and past
+              harvest yields.
             </p>
           </div>
 
@@ -1626,7 +1727,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                   className="h-8 w-8 rounded-lg border border-border hover:bg-muted flex items-center justify-center text-muted-foreground"
                   title="Refresh Apiary & Device Telemetry"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isLoadingHistory ? "animate-spin text-honey" : ""}`} />
+                  <RefreshCw
+                    className={`w-3.5 h-3.5 ${isLoadingHistory ? "animate-spin text-honey" : ""}`}
+                  />
                 </button>
               </div>
             </div>
@@ -1637,7 +1740,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                 const linkedHives = apiary.hives.filter((h) => !!h.device);
                 const totalHarvestKg = apiary.hives.reduce(
                   (sum, h) => sum + (h.harvestSummary?.totalKg || 0),
-                  0
+                  0,
                 );
 
                 return (
@@ -1652,7 +1755,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                           <MapPin className="w-4 h-4" />
                         </div>
                         <div>
-                          <h4 className="text-sm font-display font-bold text-foreground">{apiary.name}</h4>
+                          <h4 className="text-sm font-display font-bold text-foreground">
+                            {apiary.name}
+                          </h4>
                           <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
                             {apiary.latitude !== null && apiary.longitude !== null && (
                               <span>
@@ -1733,7 +1838,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-1.5 font-medium text-emerald-700">
                                       <Cpu className="w-3.5 h-3.5 text-emerald-600" />
-                                      <span className="truncate">{hive.device?.label || "Connected Hardware"}</span>
+                                      <span className="truncate">
+                                        {hive.device?.label || "Connected Hardware"}
+                                      </span>
                                     </div>
                                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-600">
                                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -1743,12 +1850,15 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
 
                                   <div className="flex flex-wrap items-center justify-between text-[10px] text-muted-foreground pt-0.5">
                                     <span className="font-mono">S/N: {hive.device?.serial}</span>
-                                    <span className="capitalize">{hive.device?.link_type || "IoT Bus"}</span>
-                                    {hive.device?.battery_pct !== null && hive.device?.battery_pct !== undefined && (
-                                      <span className="flex items-center gap-1 text-emerald-600 font-semibold">
-                                        <Battery className="w-3 h-3" /> {hive.device.battery_pct}%
-                                      </span>
-                                    )}
+                                    <span className="capitalize">
+                                      {hive.device?.link_type || "IoT Bus"}
+                                    </span>
+                                    {hive.device?.battery_pct !== null &&
+                                      hive.device?.battery_pct !== undefined && (
+                                        <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                                          <Battery className="w-3 h-3" /> {hive.device.battery_pct}%
+                                        </span>
+                                      )}
                                     <span>Seen: {formatTimestamp(hive.device?.last_seen_at)}</span>
                                   </div>
                                 </div>
@@ -1758,7 +1868,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                     <WifiOff className="w-3.5 h-3.5 text-muted-foreground" />
                                     <span>No hardware device synced</span>
                                   </div>
-                                  <span className="text-[10px] text-muted-foreground">Manual Telemetry</span>
+                                  <span className="text-[10px] text-muted-foreground">
+                                    Manual Telemetry
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -1768,7 +1880,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                               <div className="mb-2.5">
                                 <div className="grid grid-cols-4 gap-1.5 text-center">
                                   <div className="p-1.5 rounded-lg bg-background border border-border/70">
-                                    <span className="text-[9px] text-muted-foreground block">Temp</span>
+                                    <span className="text-[9px] text-muted-foreground block">
+                                      Temp
+                                    </span>
                                     <span className="text-xs font-mono font-bold text-foreground">
                                       {typeof hive.latestMeasurement.temperature_c === "number"
                                         ? `${hive.latestMeasurement.temperature_c.toFixed(1)}°`
@@ -1777,7 +1891,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                   </div>
 
                                   <div className="p-1.5 rounded-lg bg-background border border-border/70">
-                                    <span className="text-[9px] text-muted-foreground block">Humidity</span>
+                                    <span className="text-[9px] text-muted-foreground block">
+                                      Humidity
+                                    </span>
                                     <span className="text-xs font-mono font-bold text-foreground">
                                       {typeof hive.latestMeasurement.humidity_pct === "number"
                                         ? `${hive.latestMeasurement.humidity_pct}%`
@@ -1786,7 +1902,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                   </div>
 
                                   <div className="p-1.5 rounded-lg bg-background border border-border/70">
-                                    <span className="text-[9px] text-muted-foreground block">Pressure</span>
+                                    <span className="text-[9px] text-muted-foreground block">
+                                      Pressure
+                                    </span>
                                     <span className="text-xs font-mono font-bold text-foreground">
                                       {typeof hive.latestMeasurement.pressure_hpa === "number"
                                         ? `${hive.latestMeasurement.pressure_hpa}`
@@ -1795,7 +1913,9 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                   </div>
 
                                   <div className="p-1.5 rounded-lg bg-background border border-border/70">
-                                    <span className="text-[9px] text-muted-foreground block">Scale Wt</span>
+                                    <span className="text-[9px] text-muted-foreground block">
+                                      Scale Wt
+                                    </span>
                                     <span className="text-xs font-mono font-bold text-emerald-600">
                                       {typeof hive.latestMeasurement.weight_kg === "number"
                                         ? `${hive.latestMeasurement.weight_kg.toFixed(1)}kg`
@@ -1804,7 +1924,8 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                   </div>
                                 </div>
                                 <span className="text-[9px] text-muted-foreground block mt-1 text-right">
-                                  Telemetry recorded: {formatTimestamp(hive.latestMeasurement.recorded_at)}
+                                  Telemetry recorded:{" "}
+                                  {formatTimestamp(hive.latestMeasurement.recorded_at)}
                                 </span>
                               </div>
                             )}
@@ -1816,9 +1937,11 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                   <Package className="w-3 h-3" /> Past Extractions:
                                 </span>
                                 <span>
-                                  <strong>{hive.harvestSummary.totalKg.toFixed(1)} kg</strong> across{" "}
-                                  {hive.harvestSummary.harvestCount} batches
-                                  {hive.harvestSummary.avgMoisture ? ` · ${hive.harvestSummary.avgMoisture}% moist.` : ""}
+                                  <strong>{hive.harvestSummary.totalKg.toFixed(1)} kg</strong>{" "}
+                                  across {hive.harvestSummary.harvestCount} batches
+                                  {hive.harvestSummary.avgMoisture
+                                    ? ` · ${hive.harvestSummary.avgMoisture}% moist.`
+                                    : ""}
                                 </span>
                               </div>
                             )}
@@ -1834,10 +1957,16 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                   className="w-full text-[10px] text-muted-foreground hover:text-foreground flex items-center justify-between py-0.5"
                                 >
                                   <span>
-                                    {isExpanded ? "Hide Telemetry Timeline" : "View Recent Sensor Logs"} (
-                                    {hive.measurementsHistory.length} logs)
+                                    {isExpanded
+                                      ? "Hide Telemetry Timeline"
+                                      : "View Recent Sensor Logs"}{" "}
+                                    ({hive.measurementsHistory.length} logs)
                                   </span>
-                                  {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                  {isExpanded ? (
+                                    <ChevronUp className="w-3 h-3" />
+                                  ) : (
+                                    <ChevronDown className="w-3 h-3" />
+                                  )}
                                 </button>
 
                                 {isExpanded && (
@@ -1854,7 +1983,10 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                                       </thead>
                                       <tbody>
                                         {hive.measurementsHistory.map((m) => (
-                                          <tr key={m.id} className="border-b border-border/30 hover:bg-muted/30">
+                                          <tr
+                                            key={m.id}
+                                            className="border-b border-border/30 hover:bg-muted/30"
+                                          >
                                             <td className="py-1 text-muted-foreground">
                                               {formatTimestamp(m.recorded_at)}
                                             </td>
@@ -1887,8 +2019,12 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
               })}
 
               {filteredApiaries.length === 0 && (
-                <div className="p-8 text-center rounded-xl border border-dashed border-border bg-muted/20 text-xs text-muted-foreground">
-                  No apiaries or hives match the selected filter criteria.
+                <div className="p-8 text-center rounded-xl border border-dashed border-border bg-muted/20 text-xs text-muted-foreground space-y-2">
+                  <p className="font-medium text-foreground">No user apiaries or hives found.</p>
+                  <p>
+                    Log your colonies in the Apiaries & Hives section to track real-time telemetry,
+                    IoT sensors, and historical harvest yields.
+                  </p>
                 </div>
               )}
             </div>
@@ -1943,7 +2079,8 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
                 {runs.length === 0 && (
                   <tr>
                     <td colSpan={7} className="py-8 text-center text-muted-foreground">
-                      No projection scenarios saved yet. Configure a projection above and click "Save Projection".
+                      No projection scenarios saved yet. Configure a projection above and click
+                      "Save Projection".
                     </td>
                   </tr>
                 )}
