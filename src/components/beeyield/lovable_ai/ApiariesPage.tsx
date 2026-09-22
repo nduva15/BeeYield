@@ -96,113 +96,31 @@ export interface LiveWeatherData {
   source: string;
 }
 
-// Canonical Apiary Sites (BeeYield Network)
+// Canonical Apiary Sites (Timothy Nduva • BeeYield Network)
 export const DEFAULT_APIARIES: ApiarySite[] = [
   {
     id: "apiary-kibwezi",
-    name: "BeeYield Kibwezi",
+    name: "Kibwezi Main Apiary",
     location_name: "Kiunduani, Kibwezi",
     county: "Makueni",
-    region: "Makueni South",
+    region: "Kibwezi East",
     latitude: -2.409,
     longitude: 37.967,
     type: "Commercial Apiary",
-    status: "Threatened",
-    active_hives: 13,
-    total_hives: 14,
+    status: "Optimal",
+    active_hives: 184,
+    total_hives: 184,
     size_acres: 18,
-    forage_type: "Citrus Orchard & Acacia Bloom",
-    threat_alert: {
-      type: "Asian Hornet Alert",
-      message: "Asian hornet nearby! Report a new observation",
-      date: "06 Sep",
-      severity: "warning",
-    },
-    hub_status: {
-      online: true,
-      signal: "LTE",
-      battery_pct: 94,
-      last_reading: "21.09.2026, 21:31",
-    },
-    notes: "Lead farmer: Ngumbau. Prime citrus pollination contract.",
-    created_at: "2020-04-12T08:00:00Z",
-  },
-  {
-    id: "apiary-mtito",
-    name: "Mtito Andei Outpost",
-    location_name: "Tsavo West Boundary",
-    county: "Makueni",
-    region: "Tsavo West Ecosystem",
-    latitude: -2.689,
-    longitude: 38.167,
-    type: "Forest Reserve",
-    status: "Optimal",
-    active_hives: 60,
-    total_hives: 60,
-    size_acres: 45,
-    forage_type: "Riverine Acacia & Wildflower",
+    forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
     threat_alert: null,
     hub_status: {
       online: true,
       signal: "LTE",
-      battery_pct: 88,
-      last_reading: "Just now",
-    },
-    notes: "Riverine floral sanctuary with low human disturbance.",
-    created_at: "2022-06-15T09:30:00Z",
-  },
-  {
-    id: "apiary-sultan",
-    name: "Sultan Hamud Apiary",
-    location_name: "Chyulu Foothills",
-    county: "Makueni",
-    region: "Chyulu Hills",
-    latitude: -2.017,
-    longitude: 37.367,
-    type: "Ranch Apiary",
-    status: "Optimal",
-    active_hives: 64,
-    total_hives: 64,
-    size_acres: 50,
-    forage_type: "Acacia Tortilis & Savanna Wildflower",
-    threat_alert: null,
-    hub_status: {
-      online: true,
-      signal: "5G",
       battery_pct: 98,
       last_reading: "Just now",
     },
-    notes: "High nectar flow during acacia blooming cycles.",
-    created_at: "2023-01-20T10:00:00Z",
-  },
-  {
-    id: "apiary-embu",
-    name: "Mount Kenya Slope",
-    location_name: "Runyenjes, Embu",
-    county: "Embu",
-    region: "Eastern Highlands",
-    latitude: -0.428,
-    longitude: 37.558,
-    type: "Highland Apiary",
-    status: "Watch",
-    active_hives: 46,
-    total_hives: 46,
-    size_acres: 32,
-    forage_type: "Macadamia, Coffee & Mountain Blossom",
-    threat_alert: {
-      type: "Excess Moisture",
-      message: "High relative humidity detected inside supers (>72% RH)",
-      date: "14 Sep",
-      severity: "warning",
-    },
-    hub_status: {
-      online: true,
-      signal: "LTE",
-      battery_pct: 82,
-      last_reading: "Just now",
-    },
-    notes: "Macadamia orchard partnership for pollination services.",
-    created_at: "2024-03-10T11:15:00Z",
+    notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives under live IoT monitoring in Kibwezi ecosystem.",
+    created_at: "2020-01-01T08:00:00Z",
   },
 ];
 
@@ -601,9 +519,9 @@ export default function ApiariesPage({
     latitude: -2.409,
     longitude: 37.967,
     type: "Commercial Apiary",
-    active_hives: 10,
-    total_hives: 10,
-    size_acres: 5,
+    active_hives: 184,
+    total_hives: 184,
+    size_acres: 18,
     forage_type: "Acacia & Wildflower",
     status: "Optimal" as "Optimal" | "Threatened" | "Watch" | "Maintenance",
     notes: "",
@@ -613,48 +531,47 @@ export default function ApiariesPage({
   useEffect(() => {
     const loadApiaries = async () => {
       try {
-        const { data, error } = await (supabase as any).from("apiaries").select("*").limit(50);
+        let query = (supabase as any).from("apiaries").select("*");
+        if (user?.id) {
+          query = query.eq("user_id", user.id);
+        }
+        const { data, error } = await query.limit(50);
         if (!error && data && data.length > 0) {
           const mapped: ApiarySite[] = data.map((d: any) => ({
             id: String(d.id),
-            name: d.name || "Apiary Site",
-            location_name: d.location_name || d.region || "Kenya",
+            name: d.name || "Kibwezi Main Apiary",
+            location_name: d.location_name || d.region || "Kiunduani, Kibwezi",
             county: d.county || "Makueni",
-            region: d.region || "",
+            region: d.region || "Kibwezi East",
             latitude: Number(d.latitude) || -2.409,
             longitude: Number(d.longitude) || 37.967,
-            type: d.type || "Commercial Apiary",
+            type: d.type || d.apiary_type || "Commercial Apiary",
             status: d.status === "Threatened" ? "Threatened" : "Optimal",
-            active_hives: Number(d.hive_count || d.expected_hives || 10),
-            total_hives: Number(d.expected_hives || 10),
-            size_acres: Number(d.size_acres || 5),
-            forage_type: d.forage_type || "Acacia & Wildflower",
+            active_hives: Number(d.hive_count || d.active_hives || d.expected_hives || 184),
+            total_hives: Number(d.expected_hives || d.total_hives || 184),
+            size_acres: Number(d.size_acres || 18),
+            forage_type: d.forage_type || d.primary_forage || "Acacia Tortilis, Desert Date & Citrus Blossom",
             threat_alert: null,
             hub_status: {
               online: true,
               signal: "LTE",
-              battery_pct: 95,
+              battery_pct: 98,
               last_reading: "Just now",
             },
-            notes: d.notes || "",
+            notes: d.notes || "Lead Beekeeper: Timothy Nduva.",
             created_at: d.created_at || new Date().toISOString(),
           }));
 
-          // Merge with canonical defaults
-          setApiaries((prev) => {
-            const combined = [...prev];
-            mapped.forEach((m) => {
-              if (!combined.some((c) => c.id === m.id)) combined.push(m);
-            });
-            return combined;
-          });
+          setApiaries(mapped);
+        } else {
+          setApiaries(DEFAULT_APIARIES);
         }
       } catch {
-        // Fallback to defaults
+        setApiaries(DEFAULT_APIARIES);
       }
     };
     loadApiaries();
-  }, []);
+  }, [user?.id]);
 
   // Fetch real-time live weather for all apiary sites
   const refreshAllWeather = useCallback(async () => {
@@ -953,7 +870,7 @@ export default function ApiariesPage({
               <p className="text-2xl font-black text-rose-600 dark:text-rose-400">
                 {stats.threatenedCount > 0 ? `${stats.threatenedCount} Alert` : "All Safe"}
               </p>
-              <p className="text-[10px] text-muted-foreground">Asian hornet & Varroa</p>
+              <p className="text-[10px] text-muted-foreground">Varroa & Hive Pests</p>
             </div>
           </div>
 
