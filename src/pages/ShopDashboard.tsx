@@ -530,14 +530,14 @@ const ShopDashboard = () => {
                             }
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
                             {[
                                 { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-[#F4D03F]' },
                                 { label: 'In Transit', value: orders.filter(o => o.status === 'shipped').length, icon: Truck, color: 'text-[#F4D03F]' },
                                 { label: 'Locations', value: addresses.length, icon: MapPin, color: 'text-[#F4D03F]' },
                                 { label: 'Wishlist', value: wishlistItems.length, icon: Heart, color: 'text-[#F4D03F]' },
                             ].map((stat, i) => (
-                                <div key={i} className={cn(glass.section, "p-5 flex items-center justify-between")}>
+                                <div key={i} className={cn(glass.section, "p-3.5 sm:p-5 flex items-center justify-between")}>
                                     <div>
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">{stat.label}</p>
                                         <p className="text-2xl font-black text-[#1A1A1A]">{stat.value}</p>
@@ -549,11 +549,11 @@ const ShopDashboard = () => {
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
                             {/* Recent Activity */}
                             <div className="lg:col-span-8">
                                 <div className={cn(glass.section, "overflow-hidden")}>
-                                    <div className="px-6 py-4 border-b border-[#F4D03F]/10 flex items-center justify-between bg-white/30">
+                                    <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#F4D03F]/10 flex items-center justify-between bg-white/30">
                                         <div>
                                             <h3 className="text-sm font-bold text-[#1A1A1A]">Recent Activity</h3>
                                             <p className="text-[11px] text-gray-500">Your latest shop interactions</p>
@@ -743,7 +743,7 @@ const ShopDashboard = () => {
                             }
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
                             {addresses.map((addr) => (
                                 <div key={addr.id} className={cn(glass.section, "p-0 overflow-hidden group hover:border-[#F4D03F]/30 transition-all")}>
                                     <div className="p-6 flex flex-col h-full bg-white/40">
@@ -887,7 +887,7 @@ const ShopDashboard = () => {
                                     <Button onClick={() => setIsPaymentModalOpen(true)} className={glass.btnPrimary}>
                                         <Plus className="h-4 w-4 mr-2" /> Link New Card
                                     </Button>
-                                    <DialogContent className="max-w-md rounded-3xl p-8 border-none shadow-premium">
+                                    <DialogContent className="w-[94vw] max-w-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border-none shadow-premium">
                                         <DialogHeader className="mb-6">
                                             <DialogTitle className="text-2xl font-black text-[#1A1A1A]">Secure <span className="text-[#F4D03F] italic">Enclave</span></DialogTitle>
                                             <DialogDescription className="text-gray-500 font-medium pt-1">Linking a card allows for 1-tap checkout next time.</DialogDescription>
@@ -1053,7 +1053,7 @@ const ShopDashboard = () => {
                             subtitle="Update your contact info and security credentials."
                         />
 
-                        <div className={cn(glass.section, "p-8 space-y-8 bg-white/40")}>
+                        <div className={cn(glass.section, "p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 bg-white/40")}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">First Name</Label>
@@ -1128,7 +1128,7 @@ const ShopDashboard = () => {
                                 <Button onClick={() => navigate('/shop')} className={glass.btnPrimary}>Start Exploring</Button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
                                 {wishlistItems.map((item) => (
                                     item && (
                                         <div key={item.id} className={cn(glass.section, "p-0 overflow-hidden group relative hover:border-[#F4D03F]/30 transition-all shadow-sm")}>
@@ -1192,21 +1192,21 @@ const ShopDashboard = () => {
                             title={<>Help <span className="text-[#F4D03F] italic">Center</span></>}
                             subtitle="Expert assistance for your apiculture commerce journey."
                         />
-                        <div className="grid md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                             {[
                                 { title: 'Order Support', desc: 'Questions about delivery or returns', icon: Package },
                                 { title: 'Account Issues', desc: 'Can\'t log in or change details', icon: Shield },
                                 { title: 'Technical Help', desc: 'Trouble with the BeeYield platform', icon: Settings },
                             ].map((item, i) => (
-                                <div key={i} className={cn(glass.section, "p-10 text-center group hover:border-[#F4D03F]/30 transition-all bg-white/40 shadow-sm")}>
-                                    <div className="w-20 h-20 rounded-2xl bg-[#F4D03F]/5 mx-auto mb-8 flex items-center justify-center group-hover:bg-[#F4D03F]/10 transition-colors border border-[#F4D03F]/10">
-                                        <item.icon className="w-8 h-8 text-[#F4D03F]" />
+                                <div key={i} className={cn(glass.section, "p-5 sm:p-8 md:p-10 text-center group hover:border-[#F4D03F]/30 transition-all bg-white/40 shadow-xs")}>
+                                    <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-2xl bg-[#F4D03F]/10 mx-auto mb-4 sm:mb-6 flex items-center justify-center group-hover:bg-[#F4D03F]/15 transition-colors border border-[#F4D03F]/15">
+                                        <item.icon className="w-6 h-6 sm:w-8 sm:h-8 text-[#B78103]" />
                                     </div>
-                                    <h3 className="text-xl font-black text-[#1A1A1A] mb-3 tracking-tight">{item.title}</h3>
-                                    <p className="text-[12px] text-gray-500 mb-8 leading-relaxed px-2">{item.desc}</p>
+                                    <h3 className="text-base sm:text-xl font-black text-[#1A1A1A] mb-1.5 sm:mb-3 tracking-tight">{item.title}</h3>
+                                    <p className="text-xs sm:text-[12px] text-gray-500 mb-5 sm:mb-8 leading-relaxed px-1 sm:px-2">{item.desc}</p>
                                     <Button 
                                         onClick={() => window.location.href = `/beeyield-dashboard?tab=assistant&message=${encodeURIComponent(`I need help with ${item.title.toLowerCase()}`)}`}
-                                        className={cn(glass.btnSecondary, "w-full py-6")}
+                                        className={cn(glass.btnSecondary, "w-full py-2.5 sm:py-3.5 md:py-6 h-auto min-h-[42px] text-xs sm:text-sm font-bold")}
                                     >
                                         Contact Specialist
                                     </Button>
@@ -1214,13 +1214,13 @@ const ShopDashboard = () => {
                             ))}
                         </div>
                         
-                        <div className={cn(glass.section, "p-10 flex flex-col md:flex-row items-center justify-between gap-8 bg-[#1A1A1A] text-white overflow-hidden relative")}>
+                        <div className={cn(glass.section, "p-5 sm:p-8 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-8 bg-[#1A1A1A] text-white overflow-hidden relative")}>
                              <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4D03F]/10 rounded-full -mr-32 -mt-32 blur-3xl opacity-20" />
-                             <div>
-                                <h3 className="text-xl font-black mb-1">Direct AI Assistance</h3>
-                                <p className="text-white/40 text-xs">Our Librarian agent is ready to analyze your shop queries instantly.</p>
+                             <div className="relative z-10">
+                                <h3 className="text-base sm:text-xl font-black mb-1 text-white">Direct AI Assistance</h3>
+                                <p className="text-white/60 text-xs leading-relaxed">Our Librarian agent is ready to analyze your shop queries instantly.</p>
                              </div>
-                              <Button onClick={() => navigate('/beeyield-dashboard?tab=assistant')} className={cn(glass.btnPrimary, "px-10 h-14 bg-[#F4D03F] text-[#1A1A1A] hover:bg-white")}>
+                              <Button onClick={() => navigate('/beeyield-dashboard?tab=assistant')} className={cn(glass.btnPrimary, "w-full sm:w-auto px-6 sm:px-10 h-11 sm:h-14 bg-[#F4D03F] text-[#1A1A1A] hover:bg-white relative z-10 text-xs sm:text-sm font-black shrink-0")}>
                                 Launch BeeYield AI
                               </Button>
                         </div>
