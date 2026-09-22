@@ -29,36 +29,6 @@ const QUEEN_YEAR_COLORS: Record<number, string> = { 0: "#f5f5f5", 1: "#f6c945", 
 const queenYears = Array.from({ length: 8 }, (_, i) => new Date().getFullYear() - i);
 const yearColor = (y: number) => QUEEN_YEAR_COLORS[y % 5] ?? "#d8d3c8";
 
-const DEFAULT_APIARIES: Apiary[] = [
-  { id: "apiary-kibwezi", name: "Kibwezi Apiary & Research Forest", add_mode: "with_devices", latitude: -2.4078, longitude: 37.9658 },
-  { id: "apiary-central-valley", name: "Central Valley Pollination Block A", add_mode: "with_devices", latitude: 36.7783, longitude: -119.4179 },
-  { id: "apiary-rift-valley", name: "Rift Valley Acacia Meadow", add_mode: "with_devices", latitude: -0.3031, longitude: 36.0800 },
-];
-
-const DEFAULT_HIVES: Hive[] = [
-  { id: "hive-1", apiary_id: "apiary-kibwezi", name: "Hive Alpha-1 (Langstroth 10)", max_brood_frames: 10, hygienic_bottom_board: true, queen_breeding_year: 2025, queen_origin: "Selected Carniolan / Italian F1", queen_insemination: "Natural" },
-  { id: "hive-2", apiary_id: "apiary-kibwezi", name: "Hive Alpha-2 (Langstroth 10)", max_brood_frames: 10, hygienic_bottom_board: true, queen_breeding_year: 2024, queen_origin: "Buckfast Breeder", queen_insemination: "Artificial" },
-  { id: "hive-3", apiary_id: "apiary-central-valley", name: "Hive Almond-01 (Commercial Deep)", max_brood_frames: 10, hygienic_bottom_board: true, queen_breeding_year: 2025, queen_origin: "Cordovan Italian", queen_insemination: "Natural" },
-  { id: "hive-4", apiary_id: "apiary-rift-valley", name: "Hive Acacia-Gold (Top Bar Hybrid)", max_brood_frames: 8, hygienic_bottom_board: true, queen_breeding_year: 2024, queen_origin: "Apis mellifera scutellata feral select", queen_insemination: "Natural" },
-];
-
-const DEFAULT_DEVICES: Device[] = [
-  { id: "dev-hub-1", apiary_id: "apiary-kibwezi", hive_id: "hive-1", device_kind: "hub", link_type: "online", serial: "BY-HUB-9482-KW", label: "Kibwezi Master IoT Gateway (4G/LTE)", status: "active", battery_pct: 94, last_seen_at: new Date().toISOString() },
-  { id: "dev-probe-1", apiary_id: "apiary-kibwezi", hive_id: "hive-1", device_kind: "vitalsensor", link_type: "bluetooth", serial: "BY-PROBE-0841", label: "Hive Alpha-1 Brood & Acoustic VitalSensor", status: "active", battery_pct: 88, last_seen_at: new Date(Date.now() - 1000 * 60 * 3).toISOString() },
-  { id: "dev-scale-1", apiary_id: "apiary-kibwezi", hive_id: "hive-1", device_kind: "scale", link_type: "usb", serial: "BY-SCALE-910", label: "Hive Alpha-1 Continuous Load Cell Scale", status: "active", battery_pct: 100, last_seen_at: new Date().toISOString() },
-  { id: "dev-hub-2", apiary_id: "apiary-central-valley", hive_id: "hive-3", device_kind: "hub", link_type: "online", serial: "BY-HUB-7201-CV", label: "Central Valley Orchard Station Hub", status: "active", battery_pct: 91, last_seen_at: new Date(Date.now() - 1000 * 60 * 7).toISOString() },
-  { id: "dev-probe-2", apiary_id: "apiary-central-valley", hive_id: "hive-3", device_kind: "vitalsensor", link_type: "bluetooth", serial: "BY-PROBE-3104", label: "Hive Almond-01 Telemetry Pod", status: "active", battery_pct: 85, last_seen_at: new Date(Date.now() - 1000 * 60 * 12).toISOString() },
-];
-
-const DEFAULT_MEASUREMENTS: Measurement[] = [
-  { id: "m-1", device_id: "dev-probe-1", hive_id: "hive-1", recorded_at: new Date(Date.now() - 1000 * 60 * 2).toISOString(), source: "bluetooth", temperature_c: 34.8, humidity_pct: 58.2, weight_kg: 42.6, battery_pct: 88 },
-  { id: "m-2", device_id: "dev-probe-1", hive_id: "hive-1", recorded_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(), source: "bluetooth", temperature_c: 34.7, humidity_pct: 59.0, weight_kg: 42.4, battery_pct: 88 },
-  { id: "m-3", device_id: "dev-probe-1", hive_id: "hive-1", recorded_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(), source: "bluetooth", temperature_c: 34.6, humidity_pct: 59.5, weight_kg: 42.1, battery_pct: 89 },
-  { id: "m-4", device_id: "dev-scale-1", hive_id: "hive-1", recorded_at: new Date(Date.now() - 1000 * 60 * 75).toISOString(), source: "usb", temperature_c: 34.5, humidity_pct: 60.1, weight_kg: 41.8, battery_pct: 100 },
-  { id: "m-5", device_id: "dev-hub-1", hive_id: "hive-1", recorded_at: new Date(Date.now() - 1000 * 60 * 120).toISOString(), source: "online", temperature_c: 34.4, humidity_pct: 60.8, weight_kg: 41.5, battery_pct: 94 },
-  { id: "m-6", device_id: "dev-probe-2", hive_id: "hive-3", recorded_at: new Date(Date.now() - 1000 * 60 * 10).toISOString(), source: "online", temperature_c: 35.1, humidity_pct: 54.0, weight_kg: 38.9, battery_pct: 85 },
-  { id: "m-7", device_id: "dev-probe-2", hive_id: "hive-3", recorded_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(), source: "online", temperature_c: 34.9, humidity_pct: 55.2, weight_kg: 38.6, battery_pct: 85 },
-];
 
 
 /* ------------------------------------------------------------------ QR scanner */
