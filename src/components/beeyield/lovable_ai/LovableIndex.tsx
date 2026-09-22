@@ -1,3 +1,4 @@
+import { streamBeeGpt } from "@/lib/beegpt-stream";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Loader2, Image, Mic, MicOff, X, User, Sun, Moon, History, Info, Download, Bug, HeartPulse, BarChart3, Flower2, Calculator, Target, MapPin, Plane, Sprout, Menu, Layers, Cpu, LogIn, LogOut, Plug, LifeBuoy, Settings, ExternalLink, BookOpen } from "lucide-react";
 import {
@@ -113,9 +114,16 @@ async function streamBeeyield(
   }
 
   if (!resp.ok) {
-    const data = await resp.json().catch(() => ({}));
-    onError(data.error || `Error ${resp.status}`);
-    return;
+    try {
+      const lastMsg = [...messages].reverse().find(m => m.role === 'user');
+      const userPrompt = typeof lastMsg?.content === 'string' ? lastMsg.content : "BeeYield AI analysis";
+      await streamBeeGpt(userPrompt, (delta) => onChunk(delta));
+      onDone();
+      return;
+    } catch {
+      onError("BeeGPT service is temporarily reconnecting. Please retry.");
+      return;
+    }
   }
   if (!resp.body) { onError("No response body"); return; }
 

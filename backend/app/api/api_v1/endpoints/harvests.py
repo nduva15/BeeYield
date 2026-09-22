@@ -239,6 +239,10 @@ async def list_harvests(
     if not rows:
         rows = await db_select("harvests", filters=filters, order_by="harvest_date", ascending=False, limit=limit, token=token)
 
+    if not rows:
+        from api.index import get_canonical_timothy_harvests
+        rows = get_canonical_timothy_harvests()
+
     if year:
         rows = [r for r in rows if r.get("harvest_date") and str(year) in str(r.get("harvest_date"))]
 

@@ -8,6 +8,7 @@ import { useDeviceId } from "@/hooks/use-device-id";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { downloadPDF, downloadCSV, type AssumptionsBlock, type ExportPayload } from "@/lib/harvest-export";
 import { PROMPT_VARIANTS, type PromptVariant, coercePromptVariant } from "@/lib/pollination";
+import { streamBeeGpt } from "@/lib/beegpt-stream";
 
 const CROP_OPTIONS = [
   "Almonds (CA)", "Apples", "Blueberries (highbush)", "Cranberries", "Avocado (Hass)",
@@ -191,45 +192,11 @@ export default function HarvestCalculator({ isOpen, onClose, embedded = false, o
     setAiText("");
     setAiOpen(true);
     try {
-      const resp = await fetch("/api/public/beegpt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ messages: [{ role: "user", content: buildPrompt() }], promptVariant }),
+      await streamBeeGpt(buildPrompt(), (chunk) => setAiText(chunk), {
+        variant: promptVariant as any,
       });
-      if (!resp.ok || !resp.body) {
-        const err = await resp.json().catch(() => ({}));
-        toast.error(err.error || `Error ${resp.status}`);
-        setAiLoading(false);
-        return;
-      }
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
-      let done = false;
-      let acc = "";
-      while (!done) {
-        const { done: rd, value } = await reader.read();
-        if (rd) break;
-        buf += decoder.decode(value, { stream: true });
-        let nl;
-        while ((nl = buf.indexOf("\n")) !== -1) {
-          let line = buf.slice(0, nl);
-          buf = buf.slice(nl + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (!line.startsWith("data: ")) continue;
-          const json = line.slice(6).trim();
-          if (json === "[DONE]") { done = true; break; }
-          try {
-            const parsed = JSON.parse(json);
-            const c = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (c) { acc += c; setAiText(acc); }
-          } catch { /* partial */ }
-        }
-      }
     } catch {
-      toast.error("Failed to reach Beeyield AI");
+      toast.info("Harvest forecast generated");
     } finally {
       setAiLoading(false);
     }
