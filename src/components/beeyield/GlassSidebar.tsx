@@ -128,22 +128,22 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                     className={cn(
                                         "w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-bold transition-all group relative border",
                                         isActive || (isFolder && isExpanded)
-                                            ? "bg-card border-[#F4D03F]/40 text-foreground shadow-sm"
-                                            : "bg-transparent border-transparent text-muted-foreground hover:text-foreground hover:bg-card/60 hover:border-border/70"
+                                            ? "bg-white border-amber-300/80 text-neutral-950 shadow-sm"
+                                            : "bg-white/95 border-neutral-200/80 text-neutral-800 hover:text-neutral-950 hover:bg-white hover:border-amber-300/60 shadow-xs"
                                     )}
                                 >
                                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
                                         <div className={cn(
-                                            "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-all",
+                                            "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-all shadow-xs",
                                             isActive || (isFolder && isExpanded)
-                                                ? "bg-[#F4D03F]/15 border-[#F4D03F]/30 text-[#F4D03F]"
-                                                : "bg-muted/40 border-border/60 text-muted-foreground group-hover:text-[#F4D03F] group-hover:border-[#F4D03F]/25"
+                                                ? "bg-[#F4D03F]/20 border-[#F4D03F]/40 text-amber-700"
+                                                : "bg-neutral-50 border-neutral-200 text-neutral-600 group-hover:text-amber-700 group-hover:border-amber-300/60"
                                         )}>
                                             <ItemIcon className="w-3.5 h-3.5" />
                                         </div>
                                         <span className={cn(
                                             "font-bold truncate text-xs",
-                                            isActive || (isFolder && isExpanded) ? "text-foreground" : ""
+                                            isActive || (isFolder && isExpanded) ? "text-neutral-950" : "text-neutral-800"
                                         )}>
                                             {item.label}
                                         </span>
@@ -151,14 +151,14 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
 
                                     <div className="flex items-center gap-1.5 shrink-0 ml-2">
                                         {isFolder && subCount > 0 && (
-                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-muted/50 border border-border/60 text-muted-foreground group-hover:border-[#F4D03F]/20">
+                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-neutral-100 border border-neutral-200 text-neutral-700 group-hover:border-amber-300/40">
                                                 {subCount}
                                             </span>
                                         )}
                                         {isFolder && (
                                             <ChevronDown className={cn(
                                                 "w-3.5 h-3.5 transition-transform duration-200",
-                                                isExpanded ? "rotate-180 text-[#F4D03F]" : "text-muted-foreground/60 group-hover:text-[#F4D03F]"
+                                                isExpanded ? "rotate-180 text-amber-600" : "text-neutral-400 group-hover:text-amber-600"
                                             )} />
                                         )}
                                         {!isFolder && isActive && (
@@ -167,24 +167,24 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                     </div>
                                 </button>
 
-                                {/* Submenu Dropdown Container - Matching Harvests Page Sub-panels */}
+                                {/* Submenu Dropdown Container - Clean Pure White Cards */}
                                 <AnimatePresence mode="popLayout">
                                     {isFolder && isExpanded && (
                                         <motion.div
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={{ opacity: 0, height: 0 }}
-                                            className="mt-1.5 mb-2 p-2 rounded-xl border border-border/80 bg-card/60 backdrop-blur-sm space-y-1 shadow-inner overflow-hidden"
+                                            className="mt-1.5 mb-2.5 p-2 rounded-2xl border border-neutral-200/90 bg-white shadow-md space-y-1.5 overflow-hidden"
                                         >
                                             {item.submenuItems?.map((sub: any, idx: number) => {
                                                 if ('title' in sub) {
                                                     return (
                                                         <div key={idx} className="space-y-1 pt-1.5 first:pt-0">
-                                                            <div className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold text-[#F4D03F] uppercase tracking-wider border-b border-border/40">
-                                                                <Layers className="w-3 h-3 text-[#F4D03F]/80" />
+                                                            <div className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold text-amber-700 uppercase tracking-wider border-b border-neutral-100">
+                                                                <Layers className="w-3 h-3 text-amber-600" />
                                                                 <span>{sub.title}</span>
                                                             </div>
-                                                            <div className="space-y-0.5">
+                                                            <div className="space-y-1">
                                                                 {sub.items.map((subItem: any) => {
                                                                     const SubIcon = subItem.icon || Sparkles;
                                                                     const isSubActive = activeTab === subItem.id;
@@ -193,25 +193,25 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                                             key={subItem.id}
                                                                             onClick={() => { onTabChange(subItem.id); onMobileClose?.(); }}
                                                                             className={cn(
-                                                                                "w-full text-left p-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-between group/sub border",
+                                                                                "w-full text-left p-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between group/sub border my-0.5 shadow-xs",
                                                                                 isSubActive
-                                                                                    ? "bg-[#F4D03F]/20 border-[#F4D03F]/40 text-foreground font-bold shadow-sm"
-                                                                                    : "bg-background/40 border-border/30 text-muted-foreground hover:text-foreground hover:border-[#F4D03F]/30 hover:bg-background"
+                                                                                    ? "bg-amber-50 border-amber-300 text-neutral-950 font-bold shadow-sm"
+                                                                                    : "bg-white border-neutral-200/80 text-neutral-800 hover:text-neutral-950 hover:bg-neutral-50 hover:border-amber-300/80"
                                                                             )}
                                                                         >
-                                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                            <div className="flex items-center gap-2.5 min-w-0">
                                                                                 <div className={cn(
-                                                                                    "w-6 h-6 rounded-md flex items-center justify-center shrink-0 border transition-all",
+                                                                                    "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-all shadow-xs",
                                                                                     isSubActive
                                                                                         ? "bg-[#F4D03F] text-neutral-900 border-[#F4D03F]"
-                                                                                        : "bg-muted/40 border-border/50 text-muted-foreground group-hover/sub:text-[#F4D03F] group-hover/sub:border-[#F4D03F]/30"
+                                                                                        : "bg-neutral-50 border-neutral-200 text-neutral-700 group-hover/sub:bg-amber-50 group-hover/sub:text-amber-800 group-hover/sub:border-amber-300"
                                                                                 )}>
-                                                                                    <SubIcon className="w-3 h-3" />
+                                                                                    <SubIcon className="w-3.5 h-3.5" />
                                                                                 </div>
-                                                                                <span className="truncate">{subItem.label}</span>
+                                                                                <span className="truncate font-semibold">{subItem.label}</span>
                                                                             </div>
                                                                             {isSubActive && (
-                                                                                <span className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
+                                                                                <span className="w-2 h-2 rounded-full bg-[#F4D03F] shrink-0" />
                                                                             )}
                                                                         </button>
                                                                     );
@@ -227,25 +227,25 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                         key={sub.id}
                                                         onClick={() => { onTabChange(sub.id); onMobileClose?.(); }}
                                                         className={cn(
-                                                            "w-full text-left p-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-between group/sub border",
+                                                            "w-full text-left p-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between group/sub border my-0.5 shadow-xs",
                                                             isSubActive
-                                                                ? "bg-[#F4D03F]/20 border-[#F4D03F]/40 text-foreground font-bold shadow-sm"
-                                                                : "bg-background/40 border-border/30 text-muted-foreground hover:text-foreground hover:border-[#F4D03F]/30 hover:bg-background"
+                                                                ? "bg-amber-50 border-amber-300 text-neutral-950 font-bold shadow-sm"
+                                                                : "bg-white border-neutral-200/80 text-neutral-800 hover:text-neutral-950 hover:bg-neutral-50 hover:border-amber-300/80"
                                                         )}
                                                     >
-                                                        <div className="flex items-center gap-2 min-w-0">
+                                                        <div className="flex items-center gap-2.5 min-w-0">
                                                             <div className={cn(
-                                                                "w-6 h-6 rounded-md flex items-center justify-center shrink-0 border transition-all",
+                                                                "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border transition-all shadow-xs",
                                                                 isSubActive
                                                                     ? "bg-[#F4D03F] text-neutral-900 border-[#F4D03F]"
-                                                                    : "bg-muted/40 border-border/50 text-muted-foreground group-hover/sub:text-[#F4D03F] group-hover/sub:border-[#F4D03F]/30"
+                                                                    : "bg-neutral-50 border-neutral-200 text-neutral-700 group-hover/sub:bg-amber-50 group-hover/sub:text-amber-800 group-hover/sub:border-amber-300"
                                                             )}>
-                                                                <SubIcon className="w-3 h-3" />
+                                                                <SubIcon className="w-3.5 h-3.5" />
                                                             </div>
-                                                            <span className="truncate">{sub.label}</span>
+                                                            <span className="truncate font-semibold">{sub.label}</span>
                                                         </div>
                                                         {isSubActive && (
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
+                                                            <span className="w-2 h-2 rounded-full bg-[#F4D03F] shrink-0" />
                                                         )}
                                                     </button>
                                                 );

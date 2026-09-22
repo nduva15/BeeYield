@@ -247,7 +247,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             {/* Right: Controls */}
             <div className="flex items-center gap-2 md:gap-3">
                 {/* Search */}
-                <div className="hidden lg:flex items-center h-10 px-4 bg-muted/30 rounded-xl border border-border focus-within:border-border/ transition-all gap-2 w-64 group/search">
+                <div className="hidden lg:flex items-center h-10 px-4 bg-white rounded-xl border border-neutral-200 focus-within:border-amber-400 transition-all gap-2 w-64 group/search shadow-sm">
                     <Search className="w-4 h-4 text-muted-foreground/70 group-focus-within/search:text-[#F4D03F] transition-colors" />
                     <input
                         type="text"
@@ -269,7 +269,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {/* Notifications */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="relative h-10 w-10 bg-muted/30 border border-border rounded-xl flex items-center justify-center hover:border-border/ hover:bg-[#F4D03F]/10 transition-all group">
+                        <button className="relative h-10 w-10 bg-white border border-neutral-200/90 rounded-xl flex items-center justify-center hover:border-amber-300 hover:bg-neutral-50 transition-all group shadow-sm">
                             <Bell className="w-4 h-4 text-muted-foreground group-hover:text-foreground/90 transition-colors" />
                             {alerts.length > 0 && (
                                 <div className="absolute top-2 right-2 w-2 h-2 bg-[#F4D03F] rounded-full shadow-[0_0_8px_rgba(255,107,0,0.6)] animate-pulse" />
@@ -319,7 +319,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {/* Profile */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="flex items-center gap-3 h-10 pl-1.5 pr-3 bg-muted/30 border border-border rounded-xl hover:border-border/ hover:bg-[#F4D03F]/10 transition-all group">
+                        <button className="flex items-center gap-3 h-10 pl-1.5 pr-3 bg-white border border-neutral-200/90 rounded-xl hover:border-amber-300 hover:bg-neutral-50 transition-all group shadow-sm">
                             <div className="w-7 h-7 rounded-lg bg-card border border-border/50 flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
                                 {avatarUrl ? (
                                     <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
