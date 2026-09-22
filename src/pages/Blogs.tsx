@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { BLOG_POSTS, type BlogPost } from "@/data/blogPosts";
+import { PandaMitiSmallContainer } from "@/components/PandaMitiSection";
 
 export default function BlogsPage() {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);

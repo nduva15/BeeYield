@@ -13,7 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BlogsRouteImport } from './routes/blogs'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CropsWePollinateRouteImport } from './routes/crops-we-pollinate'
 import { Route as OurStoryRouteImport } from './routes/our-story'
+import { Route as PandaMitiRouteImport } from './routes/panda-miti'
 import { Route as SharedRunIdRouteImport } from './routes/shared-run.$id'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicBeegptRouteImport } from './routes/api/public/beegpt'
@@ -38,9 +41,24 @@ const BlogsRoute = BlogsRouteImport.update({
   path: '/blogs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CropsWePollinateRoute = CropsWePollinateRouteImport.update({
+  id: '/crops-we-pollinate',
+  path: '/crops-we-pollinate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OurStoryRoute = OurStoryRouteImport.update({
   id: '/our-story',
   path: '/our-story',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PandaMitiRoute = PandaMitiRouteImport.update({
+  id: '/panda-miti',
+  path: '/panda-miti',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SharedRunIdRoute = SharedRunIdRouteImport.update({
@@ -64,7 +82,10 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/blogs': typeof BlogsRoute
+  '/careers': typeof CareersRoute
+  '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
+  '/panda-miti': typeof PandaMitiRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
@@ -74,7 +95,10 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/blogs': typeof BlogsRoute
+  '/careers': typeof CareersRoute
+  '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
+  '/panda-miti': typeof PandaMitiRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
@@ -85,7 +109,10 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/blogs': typeof BlogsRoute
+  '/careers': typeof CareersRoute
+  '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
+  '/panda-miti': typeof PandaMitiRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
@@ -97,7 +124,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/blogs'
+    | '/careers'
+    | '/crops-we-pollinate'
     | '/our-story'
+    | '/panda-miti'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
@@ -107,7 +137,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/blogs'
+    | '/careers'
+    | '/crops-we-pollinate'
     | '/our-story'
+    | '/panda-miti'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
@@ -117,7 +150,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/blogs'
+    | '/careers'
+    | '/crops-we-pollinate'
     | '/our-story'
+    | '/panda-miti'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
@@ -128,7 +164,10 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   BlogsRoute: typeof BlogsRoute
+  CareersRoute: typeof CareersRoute
+  CropsWePollinateRoute: typeof CropsWePollinateRoute
   OurStoryRoute: typeof OurStoryRoute
+  PandaMitiRoute: typeof PandaMitiRoute
   SharedRunIdRoute: typeof SharedRunIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicBeegptRoute: typeof ApiPublicBeegptRoute
@@ -164,11 +203,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crops-we-pollinate': {
+      id: '/crops-we-pollinate'
+      path: '/crops-we-pollinate'
+      fullPath: '/crops-we-pollinate'
+      preLoaderRoute: typeof CropsWePollinateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/our-story': {
       id: '/our-story'
       path: '/our-story'
       fullPath: '/our-story'
       preLoaderRoute: typeof OurStoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panda-miti': {
+      id: '/panda-miti'
+      path: '/panda-miti'
+      fullPath: '/panda-miti'
+      preLoaderRoute: typeof PandaMitiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shared-run/$id': {
@@ -200,7 +260,10 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   BlogsRoute: BlogsRoute,
+  CareersRoute: CareersRoute,
+  CropsWePollinateRoute: CropsWePollinateRoute,
   OurStoryRoute: OurStoryRoute,
+  PandaMitiRoute: PandaMitiRoute,
   SharedRunIdRoute: SharedRunIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicBeegptRoute: ApiPublicBeegptRoute,
