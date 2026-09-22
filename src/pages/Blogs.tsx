@@ -343,6 +343,9 @@ export default function BlogsPage() {
             </div>
           </footer>
 
+          {/* Panda Miti Ecological Initiative Banner */}
+          <PandaMitiSmallContainer variant="banner" className="my-8" />
+
           {/* Related Articles */}
           <section className="my-12 pt-8 border-t border-border/40">
             <div className="flex items-center justify-between mb-6">
@@ -562,6 +565,9 @@ export default function BlogsPage() {
               ))}
             </div>
           </div>
+
+          {/* Panda Miti Ecological Initiative Banner */}
+          <PandaMitiSmallContainer variant="banner" className="my-8" />
 
           {/* Farmer Consultation CTA Section */}
           <section className="rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-emerald-950/40 via-emerald-900/20 to-amber-950/30 border border-emerald-500/30 shadow-2xl relative overflow-hidden text-center space-y-6">
