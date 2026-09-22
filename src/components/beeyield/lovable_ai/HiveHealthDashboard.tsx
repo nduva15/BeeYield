@@ -126,7 +126,7 @@ const DEFAULT_RECORDS: HiveRecord[] = [
 export default function HiveHealthDashboard({ isOpen, onClose, embedded = false }: HiveHealthDashboardProps) {
   const { user } = useAuth();
   const [selectedHive, setSelectedHive] = useState<string>("all");
-  const [coords, setCoords] = useState<string>("-1.286, 36.817");
+  const [coords, setCoords] = useState<string>("-2.409, 37.967");
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [hivesList, setHivesList] = useState<Array<{ id: string; name: string; apiary?: string }>>(() => {
@@ -386,7 +386,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                 Hive Health <span className="text-amber-500">Dashboard</span>
               </h1>
               <p className="text-xs text-muted-foreground">
-                Inspections, acoustic audits and live weather in one trend view.
+                Certified physical inspections and real-time Open-Meteo API microclimate trend view.
               </p>
             </div>
           </div>
@@ -528,7 +528,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               <div>
                 <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block">Brood Chamber</span>
                 <span className="text-base font-bold font-mono text-foreground">{currentTemp !== undefined ? `${currentTemp} °C` : "—"}</span>
-                <span className="text-[10px] text-muted-foreground font-medium block">{currentTemp !== undefined ? "Optimal range" : "No sensor synced"}</span>
+                <span className="text-[10px] text-muted-foreground font-medium block">{currentTemp !== undefined ? "Open-Meteo Live API" : "Live Weather Sync"}</span>
               </div>
             </div>
 
@@ -539,7 +539,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               <div>
                 <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block">In-Hive Humidity</span>
                 <span className="text-base font-bold font-mono text-foreground">{currentHumidity !== undefined ? `${currentHumidity}%` : "—"}</span>
-                <span className="text-[10px] text-muted-foreground font-medium block">{currentHumidity !== undefined ? "Normal RH" : "No sensor synced"}</span>
+                <span className="text-[10px] text-muted-foreground font-medium block">{currentHumidity !== undefined ? "Ambient air RH" : "Live Weather Sync"}</span>
               </div>
             </div>
 
@@ -549,8 +549,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               </div>
               <div>
                 <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block">Colony Scale</span>
-                <span className="text-base font-bold font-mono text-foreground">{currentWeight !== undefined ? `${currentWeight} kg` : "—"}</span>
-                <span className="text-[10px] text-muted-foreground font-medium block">{currentWeight !== undefined ? "Continuous load" : "No scale synced"}</span>
+                <span className="text-base font-bold font-mono text-foreground">10 Frames</span>
+                <span className="text-[10px] text-muted-foreground font-medium block">Standard Langstroth</span>
               </div>
             </div>
 
@@ -568,7 +568,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   )}
                 </span>
                 <span className="text-[10px] text-muted-foreground block">
-                  {currentTemp !== undefined || currentHumidity !== undefined ? "VitalSensor Online" : "No hardware synced"}
+                  Manual Monitored • No IoT Sensors
                 </span>
               </div>
             </div>

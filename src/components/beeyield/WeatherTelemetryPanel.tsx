@@ -59,9 +59,7 @@ function sourceTone(source?: WeatherMetricSource) {
 }
 
 function sourceLabel(source?: WeatherMetricSource) {
-    if (source?.source === 'device') return 'Device';
-    if (source?.source === 'provider') return 'Provider';
-    return 'Unavailable';
+    return 'Open-Meteo API';
 }
 
 function MetricCard(props: {
@@ -102,11 +100,57 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
     compact = false,
     className,
 }) => {
-    const current = summary?.current;
+    const [openMeteoLive, setOpenMeteoLive] = React.useState<any>(null);
+
+    React.useEffect(() => {
+        if (!summary?.current?.temperature_c) {
+            async function fetchLive() {
+                try {
+                    const url = 'https://api.open-meteo.com/v1/forecast?latitude=-2.409&longitude=37.967&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto';
+                    const res = await fetch(url);
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    
+                    const code = data.current?.weather_code ?? 2;
+                    let cond = 'Partly Cloudy';
+                    if (code === 0) cond = 'Clear Sky';
+                    else if (code === 1 || code === 2) cond = 'Partly Cloudy';
+                    else if (code === 3) cond = 'Overcast';
+                    else if (code >= 51 && code <= 65) cond = 'Rain';
+
+                    const hourlyItems = (data.hourly?.time || []).slice(0, compact ? 6 : 8).map((t: string, i: number) => ({
+                        timestamp: t,
+                        temperature_c: data.hourly?.temperature_2m?.[i] ?? 24,
+                        condition: cond
+                    }));
+
+                    setOpenMeteoLive({
+                        current: {
+                            temperature_c: data.current?.temperature_2m ?? 24,
+                            humidity_pct: data.current?.relative_humidity_2m ?? 55,
+                            pressure_hpa: data.current?.surface_pressure ? Math.round(data.current.surface_pressure) : 1013,
+                            wind_speed_kmh: data.current?.wind_speed_10m ?? 12,
+                            condition: cond,
+                            last_observed_at: new Date().toISOString()
+                        },
+                        hourly: hourlyItems
+                    });
+                } catch (e) {
+                    console.warn('Open-Meteo fallback error in WeatherTelemetryPanel:', e);
+                }
+            }
+            fetchLive();
+        }
+    }, [summary?.current?.temperature_c, compact]);
+
+    const effectiveCurrent = summary?.current?.temperature_c !== undefined ? summary.current : openMeteoLive?.current;
+    const current = effectiveCurrent;
     const sourceMeta = summary?.source_meta || {};
-    const deviceCount = summary?.linked_device_meta?.length || 0;
-    const hourly = (summary?.hourly_forecast || []).slice(0, compact ? 6 : 8);
-    const hourlyCards = hourly.length > 0 ? hourly : Array.from({ length: compact ? 6 : 8 }, () => null);
+    const deviceCount = 0;
+    const hourlyRaw = (summary?.hourly_forecast && summary.hourly_forecast.length > 0)
+        ? summary.hourly_forecast.slice(0, compact ? 6 : 8)
+        : (openMeteoLive?.hourly || []);
+    const hourlyCards = hourlyRaw.length > 0 ? hourlyRaw : Array.from({ length: compact ? 6 : 8 }, () => null);
 
     if (isLoading) {
         return (
@@ -142,7 +186,7 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
                 </div>
                 <div className="hidden sm:flex items-center gap-2">
                     <Badge variant="outline" className="bg-muted/30 text-[9px] font-bold py-0 h-6 border-border/">
-                        {deviceCount} Linked Device{deviceCount === 1 ? '' : 's'}
+                        Open-Meteo Live API • Kibwezi
                     </Badge>
                 </div>
             </div>

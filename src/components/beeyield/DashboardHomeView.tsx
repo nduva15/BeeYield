@@ -399,7 +399,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h3 className="text-sm font-semibold text-foreground">Operational Workflows</h3>
-                                <p className="text-[11px] text-muted-foreground">Matches inspection parameters and field telemetry</p>
+                                <p className="text-[11px] text-muted-foreground">Matches physical inspection records and certified colony observations</p>
                             </div>
                         </div>
 
