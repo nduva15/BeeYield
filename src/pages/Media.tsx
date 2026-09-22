@@ -669,19 +669,19 @@ const Media = () => {
           </p>
 
           {/* Quick Filter Navigation Buttons */}
-          <div className="flex flex-wrap justify-center gap-2.5">
+          <div className="flex flex-wrap justify-center gap-2 px-2">
             <Button
               variant="default"
               size="sm"
-              className="rounded-full bg-[#1B9157] text-white hover:bg-[#157746] transition-colors font-bold shadow-md shadow-green-900/10"
+              className="max-w-full rounded-full bg-[#1B9157] text-white hover:bg-[#157746] transition-colors font-bold shadow-md shadow-green-900/10 text-[11px] sm:text-xs py-2 px-3.5 h-auto whitespace-normal text-center"
               onClick={() =>
                 document
                   .getElementById("latest-pollination")
                   ?.scrollIntoView({ behavior: "smooth" })
               }
             >
-              <Camera className="w-3.5 h-3.5 mr-1.5" />
-              Field Dispatch (105 Acres and Counting)
+              <Camera className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+              <span>Field Dispatch (105 Acres and Counting)</span>
             </Button>
             <Button
               variant="outline"
@@ -939,18 +939,19 @@ const Media = () => {
                 </div>
 
                 {/* CTAs */}
-                <div className="pt-2 flex flex-col sm:flex-row gap-3">
+                <div className="pt-2 flex flex-col sm:flex-row gap-3 w-full">
                   <Button
                     asChild
-                    className="rounded-full bg-[#1B9157] hover:bg-[#157746] text-white font-bold h-11 px-6 shadow-md shadow-green-900/10"
+                    className="w-full sm:w-auto rounded-full bg-[#1B9157] hover:bg-[#157746] text-white font-bold h-auto min-h-11 py-2.5 px-5 shadow-md shadow-green-900/10 text-xs sm:text-sm whitespace-normal text-center"
                   >
-                    <Link to="/pollination-request">
-                      Book Orchard Pollination <ArrowRight className="w-4 h-4 ml-2" />
+                    <Link to="/pollination-request" className="flex items-center justify-center gap-2">
+                      <span>Book Orchard Pollination</span>
+                      <ArrowRight className="w-4 h-4 shrink-0" />
                     </Link>
                   </Button>
                   <Button
                     variant="outline"
-                    className="rounded-full border-border hover:bg-secondary font-semibold h-11 px-5"
+                    className="w-full sm:w-auto rounded-full border-border hover:bg-secondary font-semibold h-auto min-h-11 py-2.5 px-5 text-xs sm:text-sm whitespace-normal text-center"
                     onClick={() => {
                       const crop = latestPollinationMedia[selectedPhotoIndex].cropType;
                       let targetId = "mangoes";
@@ -1084,20 +1085,20 @@ const Media = () => {
                             </blockquote>
                           </div>
 
-                          <div className="flex flex-col sm:flex-row gap-4 items-center pt-2">
+                          <div className="flex flex-col sm:flex-row gap-4 items-center pt-2 w-full">
                             <Button
                               asChild
                               size="lg"
-                              className="w-full sm:w-auto rounded-full font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all h-14 px-8 text-lg bg-[#1B9157] hover:bg-[#157746] text-white"
+                              className="w-full sm:w-auto max-w-full rounded-full font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all h-auto min-h-12 sm:h-14 py-3 px-6 sm:px-8 text-sm sm:text-base md:text-lg bg-[#1B9157] hover:bg-[#157746] text-white whitespace-normal text-center"
                             >
-                              <Link to="/pollination-request">
-                                Book Pollination{" "}
-                                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                              <Link to="/pollination-request" className="flex items-center justify-center gap-2">
+                                <span>Book Pollination</span>
+                                <ArrowRight className="ml-2 w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" />
                               </Link>
                             </Button>
-                            <p className="text-sm text-muted-foreground flex items-center">
-                              <MapPin className="w-3.5 h-3.5 mr-1 text-[#F4D03F]" /> Verified at{" "}
-                              {story.location}
+                            <p className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start">
+                              <MapPin className="w-3.5 h-3.5 mr-1 text-[#F4D03F] shrink-0" />
+                              <span>Verified at {story.location}</span>
                             </p>
                           </div>
                         </div>
@@ -1135,10 +1136,11 @@ const Media = () => {
           <Button
             asChild
             size="lg"
-            className="rounded-full bg-[#1B9157] hover:bg-[#157746] text-white font-bold h-14 px-8 text-lg shadow-xl shadow-green-900/10"
+            className="w-full sm:w-auto max-w-md mx-auto rounded-full bg-[#1B9157] hover:bg-[#157746] text-white font-bold h-auto min-h-12 sm:h-14 py-3.5 px-4 sm:px-8 text-xs xs:text-sm sm:text-base md:text-lg shadow-xl shadow-green-900/10 whitespace-normal text-center leading-tight tracking-normal sm:tracking-wider"
           >
-            <Link to="/pollination-request">
-              Schedule Your Farm Inspection <ArrowRight className="ml-2 w-5 h-5" />
+            <Link to="/pollination-request" className="flex items-center justify-center text-center gap-2">
+              <span>Schedule Your Farm Inspection</span>
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
             </Link>
           </Button>
         </div>

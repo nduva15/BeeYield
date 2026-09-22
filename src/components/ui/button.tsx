@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { triggerHapticFeedback } from "@/lib/haptic";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[13px] font-black uppercase tracking-wider ring-offset-background transition-all active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[13px] font-black uppercase tracking-wider ring-offset-background transition-all active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 max-w-full",
   {
     variants: {
       variant: {
@@ -18,9 +18,9 @@ const buttonVariants = cva(
         link: "text-beeyield-green underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-12 px-8 py-2",
+        default: "h-12 px-5 sm:px-8 py-2 text-[12px] sm:text-[13px]",
         sm: "h-9 rounded-xl px-3 text-[11px]",
-        lg: "h-14 rounded-[20px] px-10 text-[15px]",
+        lg: "min-h-12 sm:h-14 rounded-[20px] px-5 sm:px-10 py-3 text-[13px] sm:text-[15px] max-w-full",
         icon: "h-12 w-12",
       },
     },

@@ -152,11 +152,11 @@ const PollinationServices = () => {
                                 Professional pollination records for every field. We don't just supply bees; we provide clear proof of hive activity and colony health using reliable sensor technology.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                                <Button size="lg" className="bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-black rounded-2xl px-10 h-14 shadow-xl text-xs transition-all hover:scale-105" asChild>
+                            <div className="flex flex-col sm:flex-row gap-4 mb-12 w-full max-w-lg">
+                                <Button size="lg" className="w-full sm:w-auto max-w-full bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-black rounded-2xl px-6 sm:px-10 h-auto min-h-12 sm:h-14 py-3 shadow-xl text-xs sm:text-sm transition-all hover:scale-105 whitespace-normal text-center" asChild>
                                     <Link to="/pollination-request">Get Free Consultation</Link>
                                 </Button>
-                                <Button size="lg" variant="outline" className="border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
+                                <Button size="lg" variant="outline" className="w-full sm:w-auto max-w-full border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-6 sm:px-10 h-auto min-h-12 sm:h-14 py-3 text-xs sm:text-sm whitespace-normal text-center" asChild>
                                     <Link to="/pollination-solutions">See How It Works</Link>
                                 </Button>
                             </div>
@@ -621,13 +621,14 @@ const PollinationServices = () => {
                     </div>
 
                     {/* Section CTAs */}
-                    <div className="flex flex-wrap justify-center gap-4">
-                        <Button size="lg" className="bg-[#1B9157] hover:bg-[#157746] text-white font-black rounded-2xl px-10 h-14 shadow-lg text-xs" asChild>
-                            <Link to="/media">
-                                View All 105 Acres and Counting Photo Gallery & Media <ArrowRight className="ml-2 w-4 h-4 inline" />
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-2xl mx-auto">
+                        <Button size="lg" className="w-full sm:w-auto max-w-full bg-[#1B9157] hover:bg-[#157746] text-white font-black rounded-2xl px-5 sm:px-8 h-auto min-h-12 sm:h-14 py-3 shadow-lg text-xs sm:text-sm whitespace-normal text-center" asChild>
+                            <Link to="/media" className="flex items-center justify-center gap-2">
+                                <span>View All 105 Acres Photo Gallery & Media</span>
+                                <ArrowRight className="w-4 h-4 shrink-0" />
                             </Link>
                         </Button>
-                        <Button size="lg" variant="outline" className="border-2 border-neutral-300 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 text-xs" asChild>
+                        <Button size="lg" variant="outline" className="w-full sm:w-auto max-w-full border-2 border-neutral-300 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-5 sm:px-8 h-auto min-h-12 sm:h-14 py-3 text-xs sm:text-sm whitespace-normal text-center" asChild>
                             <Link to="/contact">Request Pollination Assessment</Link>
                         </Button>
                     </div>
@@ -734,9 +735,9 @@ const PollinationServices = () => {
                         Join the network of high-yield growers who've stopped guessing
                         and started growing with data.
                     </p>
-                    <div className="flex flex-wrap justify-center gap-6">
-                        <Link to="/contact">
-                            <Button size="default" className="bg-green-700 text-[#1A1A1A] hover:bg-green-800 text-xl font-black h-16 px-8 rounded-[2rem] shadow-2xl">
+                    <div className="flex flex-wrap justify-center gap-6 w-full px-4">
+                        <Link to="/contact" className="w-full sm:w-auto">
+                            <Button size="default" className="w-full sm:w-auto max-w-full bg-green-700 text-[#1A1A1A] hover:bg-green-800 text-base sm:text-xl font-black h-auto min-h-14 sm:h-16 py-4 px-6 sm:px-8 rounded-[2rem] shadow-2xl whitespace-normal text-center">
                                 Get Your Custom Plan
                             </Button>
                         </Link>
