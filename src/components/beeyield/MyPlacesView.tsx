@@ -480,20 +480,6 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange, initialParams,
         <div className="w-full pb-20">
             <ApiariesPage
                 embedded={true}
-                onSelectApiary={(ap) => {
-                    const matchedApiary = apiaries.find(a => a.id === ap.id) || {
-                        id: ap.id,
-                        name: ap.name,
-                        location_name: ap.location_name,
-                        latitude: ap.latitude,
-                        longitude: ap.longitude,
-                        type: ap.type,
-                        forage_type: ap.forage_type,
-                        size_acres: ap.size_acres,
-                        hive_count: ap.active_hives,
-                    };
-                    setViewingApiary(matchedApiary as any);
-                }}
                 onClose={() => onTabChange?.('home')}
             />
         </div>
