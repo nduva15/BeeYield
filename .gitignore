@@ -1,3 +1,21 @@
+# Environment & Secrets (Never push to GitHub)
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+secrets/
+private/
+credentials/
+
 # Logs
 logs
 *.log
