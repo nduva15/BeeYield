@@ -36,6 +36,7 @@ import {
   Package,
   Trees,
   CheckSquare,
+  Compass,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -81,6 +82,7 @@ import DatasetImport from "@/components/DatasetImport";
 import FeedingSchedule from "@/components/FeedingSchedule";
 import KnowledgeSearch from "@/components/KnowledgeSearch";
 import ApiarySizing from "@/components/ApiarySizing";
+import ApiariesPage from "@/components/ApiariesPage";
 import YieldProjection from "@/components/YieldProjection";
 import InspectionsPage from "@/components/InspectionsPage";
 import TasksPage from "@/components/TasksPage";
@@ -237,6 +239,7 @@ export default function Index() {
   const [feedingScheduleOpen, setFeedingScheduleOpen] = useState(false);
   const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
+  const [apiariesOpen, setApiariesOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [inspectionsOpen, setInspectionsOpen] = useState(false);
   const [tasksOpen, setTasksOpen] = useState(false);
@@ -480,6 +483,11 @@ export default function Index() {
     {
       label: "Apiary operations",
       items: [
+        {
+          label: "Apiaries & Live Weather",
+          icon: Compass,
+          onClick: () => setApiariesOpen(true),
+        },
         {
           label: "Hive Health Dashboard",
           icon: HeartPulse,
@@ -1028,6 +1036,7 @@ export default function Index() {
       <SettingsPage isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <HiveHealthDashboard isOpen={healthDashOpen} onClose={() => setHealthDashOpen(false)} />
       <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
+      <ApiariesPage isOpen={apiariesOpen} onClose={() => setApiariesOpen(false)} />
     </div>
   );
 }
