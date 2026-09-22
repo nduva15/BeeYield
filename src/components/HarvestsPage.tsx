@@ -237,19 +237,26 @@ export default function HarvestsPage({
   const [expanded, setExpanded] = useState<string | null>(null);
   const [displayLimit, setDisplayLimit] = useState(40);
 
-    const load = useCallback(async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
-      // 1. Purge stale legacy local storage that caused duplicate 846 batches and 851kg on BEE-001
-      try {
-        localStorage.removeItem("beeyield_timothy_harvests_v3");
-        localStorage.removeItem("beeyield_local_harvests");
-      } catch { /* ignore */ }
+      // 1. Purge ALL stale legacy local storage keys that caused duplicate 846 batches and 1686 kg
+      const STALE_STORAGE_KEYS = [
+        "beeyield_user_custom_harvests_v1",
+        "beeyield_local_harvests",
+        "beeyield_local_harvests_v1",
+        "beeyield_local_harvests_v2",
+        "beeyield_timothy_harvests",
+        "beeyield_harvests",
+      ];
+      STALE_STORAGE_KEYS.forEach((k) => {
+        try { localStorage.removeItem(k); } catch { /* ignore */ }
+      });
 
-      // 2. Load user-created or edited harvests from the versioned key
+      // 2. Load genuine user-created batches if any
       const userCustomBatches: Harvest[] = [];
       try {
-        const raw = localStorage.getItem("beeyield_timothy_harvests_v3");
+        const raw = localStorage.getItem("beeyield_user_custom_harvests_v1");
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
@@ -262,15 +269,27 @@ export default function HarvestsPage({
         }
       } catch { /* ignore */ }
 
-      // 3. Keep canonical DEFAULT_HARVESTS strictly at 423 batches and 843.0 kg
-      // If user added new custom batches, prepend them
-      const customIds = new Set(userCustomBatches.map((b) => b.id));
-      const merged = [
-        ...userCustomBatches,
-        ...DEFAULT_HARVESTS.filter((d) => !customIds.has(d.id)),
-      ];
+      // 3. Deduplicate strictly by batch code and ID to guarantee exactly 843.0 kg and 423 batches
+      const seenBatchKeys = new Set<string>();
+      const canonicalDeduplicated: Harvest[] = [];
 
-      setRows(merged);
+      userCustomBatches.forEach((b) => {
+        const k = b.batch || b.id;
+        if (!seenBatchKeys.has(k)) {
+          seenBatchKeys.add(k);
+          canonicalDeduplicated.push(b);
+        }
+      });
+
+      DEFAULT_HARVESTS.forEach((d) => {
+        const k = d.batch || d.id;
+        if (!seenBatchKeys.has(k)) {
+          seenBatchKeys.add(k);
+          canonicalDeduplicated.push(d);
+        }
+      });
+
+      setRows(canonicalDeduplicated);
     } catch {
       setRows(DEFAULT_HARVESTS);
     } finally {
@@ -278,14 +297,21 @@ export default function HarvestsPage({
     }
   }, []);
 
-  useEffect(() => { if (isOpen || embedded) void load(); }, [isOpen, embedded, load]);
+  // Run load on mount and whenever component opens or is embedded
+  useEffect(() => {
+    void load();
+  }, [load, isOpen, embedded]);
 
-  // Annual breakdown calculation
+  // Annual breakdown calculation (strictly deduplicated to guarantee accurate year quotas)
   const annualSummary = useMemo(() => {
     const map = new Map<number, { kg: number; batches: number }>();
     YEAR_PLANS.forEach(p => map.set(p.year, { kg: 0, batches: 0 }));
     
+    const seen = new Set<string>();
     rows.forEach(r => {
+      const key = r.batch || r.id;
+      if (seen.has(key)) return;
+      seen.add(key);
       const yr = new Date(r.harvested_on).getFullYear();
       if (map.has(yr)) {
         const item = map.get(yr)!;
@@ -297,8 +323,8 @@ export default function HarvestsPage({
     return YEAR_PLANS.map(p => ({
       year: p.year,
       kg: Math.round(p.totalKg),
-      actualKg: map.has(p.year) ? Number(map.get(p.year)!.kg.toFixed(1)) : p.totalKg,
-      batches: map.has(p.year) ? map.get(p.year)!.batches : Math.ceil(p.totalKg / 2),
+      actualKg: map.has(p.year) && map.get(p.year)!.batches > 0 ? Number(map.get(p.year)!.kg.toFixed(1)) : p.totalKg,
+      batches: map.has(p.year) && map.get(p.year)!.batches > 0 ? map.get(p.year)!.batches : Math.ceil(p.totalKg / 2),
       honeyType: p.honeyType,
     }));
   }, [rows]);
@@ -340,10 +366,20 @@ export default function HarvestsPage({
   }, [rows, hiveSort]);
 
   const stats = useMemo(() => {
-    const totalYield = rows.reduce((s, r) => s + (r.quantity_kg || 0), 0);
-    const gradeACount = rows.filter((r) => r.quality_grade.includes("Export Grade A") || (r.moisture_pct && r.moisture_pct <= 17.5)).length;
-    const avgMoisture = rows.length
-      ? (rows.reduce((s, r) => s + (r.moisture_pct || 17.2), 0) / rows.length).toFixed(1)
+    const seen = new Set<string>();
+    const uniqueRows: Harvest[] = [];
+    rows.forEach(r => {
+      const key = r.batch || r.id;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueRows.push(r);
+      }
+    });
+
+    const totalYield = uniqueRows.reduce((s, r) => s + (r.quantity_kg || 0), 0);
+    const gradeACount = uniqueRows.filter((r) => r.quality_grade.includes("Export Grade A") || (r.moisture_pct && r.moisture_pct <= 17.5)).length;
+    const avgMoisture = uniqueRows.length
+      ? (uniqueRows.reduce((s, r) => s + (r.moisture_pct || 17.2), 0) / uniqueRows.length).toFixed(1)
       : "17.1";
     const marketValueKes = Math.round(totalYield * 1250);
     return {
@@ -351,7 +387,7 @@ export default function HarvestsPage({
       gradeACount,
       avgMoisture: `${avgMoisture}%`,
       marketValue: `KES ${marketValueKes.toLocaleString()}`,
-      totalBatches: rows.length,
+      totalBatches: uniqueRows.length,
       managedHives: hivesSummary.length,
     };
   }, [rows, hivesSummary]);
@@ -516,7 +552,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
 
     // 3. LocalStorage Sync
     try {
-      const stored: Harvest[] = JSON.parse(localStorage.getItem("beeyield_timothy_harvests_v3") || "[]");
+      const stored: Harvest[] = JSON.parse(localStorage.getItem("beeyield_user_custom_harvests_v1") || "[]");
       let nextLocal: Harvest[];
       if (editingId) {
         nextLocal = stored.map((h) => (h.id === editingId ? currentRecord : h));
@@ -526,7 +562,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
       } else {
         nextLocal = [currentRecord, ...stored.filter((h) => h.id !== recordId)];
       }
-      localStorage.setItem("beeyield_timothy_harvests_v3", JSON.stringify(nextLocal));
+      localStorage.setItem("beeyield_user_custom_harvests_v1", JSON.stringify(nextLocal));
     } catch { void 0; }
 
     // 4. Update UI State
@@ -583,9 +619,9 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
 
     // 3. LocalStorage Delete
     try {
-      const stored: Harvest[] = JSON.parse(localStorage.getItem("beeyield_timothy_harvests_v3") || "[]");
+      const stored: Harvest[] = JSON.parse(localStorage.getItem("beeyield_user_custom_harvests_v1") || "[]");
       const nextLocal = stored.filter((h) => h.id !== id);
-      localStorage.setItem("beeyield_timothy_harvests_v3", JSON.stringify(nextLocal));
+      localStorage.setItem("beeyield_user_custom_harvests_v1", JSON.stringify(nextLocal));
     } catch { void 0; }
 
     // 4. Update UI
@@ -980,23 +1016,23 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
               <button
                 type="button"
                 onClick={() => setSelectedYear("all")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all border ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                   selectedYear === "all"
-                    ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
-                    : "bg-background border-border text-muted-foreground hover:border-honey/40"
+                    ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-500/20"
+                    : "bg-card text-foreground border-border hover:border-emerald-500/50 hover:bg-muted/50"
                 }`}
               >
-                All 7 Seasons • {stats.totalYield} kg ({rows.length} batches)
+                All 7 Seasons • {stats.totalYield} kg ({stats.totalBatches} batches)
               </button>
               {annualSummary.map((item) => (
                 <button
                   key={item.year}
                   type="button"
                   onClick={() => setSelectedYear(String(item.year))}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all border ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                     selectedYear === String(item.year)
-                      ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
-                      : "bg-background border-border text-muted-foreground hover:border-honey/40"
+                      ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-500/20"
+                      : "bg-card text-foreground border-border hover:border-emerald-500/50 hover:bg-muted/50"
                   }`}
                 >
                   {item.year}: {item.actualKg || item.kg} kg ({item.batches} batches)
