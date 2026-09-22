@@ -51,7 +51,7 @@ export const glass = {
     select: 'h-9 rounded-lg border border-border bg-card text-sm text-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary px-3 shadow-sm',
 
     /** Select Dropdown */
-    selectContent: 'rounded-lg border border-border bg-card shadow-lg p-1 min-w-[180px]',
+    selectContent: 'rounded-xl border border-neutral-200/90 bg-white text-neutral-900 shadow-2xl p-1.5 min-w-[180px]',
 
     /** Table styles */
     table: 'rounded-xl border border-border bg-card shadow-sm overflow-hidden relative',
