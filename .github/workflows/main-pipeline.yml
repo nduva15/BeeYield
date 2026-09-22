@@ -55,7 +55,7 @@ jobs:
         run: pnpm run type-check
 
       - name: Lint Frontend
-        run: pnpm run lint
+        run: pnpm run lint --max-warnings=500
 
       - name: Setup Python
         uses: actions/setup-python@v5

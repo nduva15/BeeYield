@@ -770,7 +770,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       colonyStrength < 25 ? 0.05 : Math.pow(colonyStrength / 100, 1.45);
 
     // 3. Environmental & Sensor Telemetry Modifiers
-    let tempF = 1.0;
+    let tempF: number;
     if (tempC < 13) {
       tempF = 0.08;
     } else if (tempC < 18) {
@@ -783,7 +783,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       tempF = Math.max(0.15, 0.8 - ((tempC - 35) / 5) * 0.6);
     }
 
-    let humidF = 1.0;
+    let humidF: number;
     if (humidityPct >= 50 && humidityPct <= 65) {
       humidF = 1.0;
     } else if (humidityPct > 65) {
@@ -792,7 +792,7 @@ export default function YieldProjection({ isOpen, onClose, embedded = false }: Y
       humidF = Math.max(0.5, 1.0 - ((50 - humidityPct) / 30) * 0.45);
     }
 
-    let pressureF = 1.0;
+    let pressureF: number;
     if (pressureHpa >= 1012) {
       pressureF = 1.05;
     } else if (pressureHpa >= 1007) {
