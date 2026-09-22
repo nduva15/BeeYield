@@ -57,10 +57,10 @@ class InvoiceSendRequest(BaseModel):
 async def get_stripe_status():
     """Return Stripe integration and encryption status."""
     has_key = bool(getattr(settings, 'STRIPE_SECRET_KEY', None))
-    pub_key = getattr(settings, 'STRIPE_PUBLISHABLE_KEY', None) or "pk_test_51O9p4qSF0y3s98R1j8JvK7Kq1sZz0rXq5p7u3v2w1y4z5a6b7c8d9e0f1g2h3i4j5"
+    pub_key = getattr(settings, 'STRIPE_PUBLISHABLE_KEY', None) or ''
     return {
         "status": "active",
-        "stripe_configured": True,
+        "stripe_configured": bool(pub_key),
         "live_mode": has_key,
         "vault_encryption": "AES-256-GCM / PCI-DSS Level 1",
         "publishable_key": pub_key,

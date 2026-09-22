@@ -9,7 +9,7 @@ import { CreditCard, Shield, Lock, CheckCircle2, AlertCircle, Loader2 } from 'lu
 import { toast } from 'sonner';
 
 // Standard Stripe Publishable key or fallback test key for development/test mode
-const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51O9p4qSF0y3s98R1j8JvK7Kq1sZz0rXq5p7u3v2w1y4z5a6b7c8d9e0f1g2h3i4j5';
+const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
 
 // Load Stripe instance safely
 let stripePromise: Promise<any> | null = null;

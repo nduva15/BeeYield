@@ -52,7 +52,7 @@ data:
   VITE_SUPABASE_URL_CEBA: "https://ceba-staging-ref.supabase.co"
   
   # Stripe Configuration
-  VITE_STRIPE_PUBLISHABLE_KEY: "pk_test_staging_key"
+  VITE_STRIPE_PUBLISHABLE_KEY: ""
   VITE_STRIPE_API_URL: "https://api.stripe.com/v1"
   
   # Admin Email

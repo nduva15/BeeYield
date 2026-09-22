@@ -39,7 +39,7 @@ kubectl create secret generic beeyield-secrets \
 ```bash
 kubectl create secret generic stripe-secrets \
   --namespace=beeyield-prod \
-  --from-literal=STRIPE_SECRET_KEY='sk_live_production_key'
+  --from-literal=STRIPE_SECRET_KEY='<YOUR_STRIPE_SECRET_KEY>'
 ```
 
 ### 4. Verify secrets were created
@@ -191,12 +191,12 @@ SUPABASE_URL: https://prod-project-ref.supabase.co
 SUPABASE_KEY: [PRODUCTION_SUPABASE_KEY]
 DATABASE_URL: postgresql://produser:[PRODUCTION_DB_PASS]@beeyield-postgres:5432/beeyield_prod
 POSTGRES_PASSWORD: [PRODUCTION_DB_PASS]
-STRIPE_SECRET_KEY: sk_live_[PRODUCTION_STRIPE_KEY]
+STRIPE_SECRET_KEY: <YOUR_STRIPE_SECRET_KEY>
 
 STAGING SECRETS:
 SUPABASE_URL: https://staging-project-ref.supabase.co
 SUPABASE_KEY: [STAGING_SUPABASE_KEY]
 DATABASE_URL: postgresql://postgres:[STAGING_DB_PASS]@beeyield-postgres:5432/beeyield_staging
 POSTGRES_PASSWORD: [STAGING_DB_PASS]
-STRIPE_SECRET_KEY: sk_test_[STAGING_STRIPE_KEY]
+STRIPE_SECRET_KEY: <YOUR_STRIPE_SECRET_KEY>
 ```
