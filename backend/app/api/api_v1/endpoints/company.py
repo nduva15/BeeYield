@@ -43,10 +43,10 @@ async def company_info(token: Optional[str] = Depends(get_token)):
         contact_phone="+254 742004187",
         values=values,
         social_links={
-            "twitter": "https://twitter.com/beeyield",
-            "linkedin": "https://linkedin.com/company/beeyield",
-            "instagram": "https://instagram.com/beeyield",
-            "facebook": "https://facebook.com/beeyield"
+            "twitter": "https://www.threads.com/@beeyield_",
+            "linkedin": "https://www.linkedin.com/company/beeyield/",
+            "instagram": "https://www.instagram.com/beeyield_?igsi=MWF3azdqNWxoOGswOQ%3D%3D",
+            "facebook": "https://www.facebook.com/share/1LghmZd2Jb/"
         }
     )
 
