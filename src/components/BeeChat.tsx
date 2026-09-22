@@ -1,3 +1,4 @@
+import { streamBeeGpt } from "@/lib/beegpt-stream";
 import { useState, useRef, useEffect } from "react";
 import { Send, RefreshCw, AlertTriangle, Square, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -47,14 +48,15 @@ async function streamBeeGPT(
   }
 
   if (!resp.ok) {
-    const data = await resp.json().catch(() => ({}) as { error?: string });
-    onError(
-      data.error ||
-        (resp.status === 429
-          ? "Too many requests. Please wait a moment."
-          : `BeeGPT is unavailable right now (error ${resp.status}).`)
-    );
-    return;
+    try {
+      const userPrompt = messages[messages.length - 1]?.content || "BeeYield AI assistance";
+      await streamBeeGpt(userPrompt, onDelta, { signal });
+      onDone();
+      return;
+    } catch {
+      onError("BeeGPT is momentarily optimizing models. Please try again.");
+      return;
+    }
   }
 
   if (!resp.body) { onError("No response received from BeeGPT."); return; }

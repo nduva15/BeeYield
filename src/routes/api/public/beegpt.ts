@@ -71,6 +71,7 @@ function createSseStreamFromText(text: string): ReadableStream<Uint8Array> {
  * Generates structured, high-fidelity agronomic and beekeeping analysis when external APIs are unavailable or unpaid.
  */
 function generateAutonomousBeeAnalysis(userText: string, variant?: string): string {
+  const lower = (userText || "").toLowerCase();
   // 0. Florage-Weighted Pollination Plan
   if (
     lower.includes("florage-weighted pollination plan") ||
@@ -417,6 +418,23 @@ export const Route = createFileRoute("/api/public/beegpt")({
   server: {
     handlers: {
       OPTIONS: async () => new Response(null, { headers: corsHeaders }),
+      GET: async () =>
+        new Response(
+          JSON.stringify({
+            status: "ok",
+            service: "BeeYield BeeGPT AI Engine",
+            methods: ["POST", "OPTIONS", "GET", "HEAD"],
+          }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        ),
+      HEAD: async () =>
+        new Response(null, {
+          status: 200,
+          headers: corsHeaders,
+        }),
       POST: async ({ request }) => {
         try {
           const body = (await request.json().catch(() => ({}))) as {
