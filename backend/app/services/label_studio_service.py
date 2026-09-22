@@ -347,7 +347,7 @@ def generate_advanced_label_pdf(payload: dict) -> bytes:
                 c.drawImage(qr_img, qr_x, qr_y, width=qr_size, height=qr_size, mask="auto")
 
                 # Traceability Batch in crisp monospace font
-                batch_text = (batch or "BEE-20260105-001").strip()
+                batch_text = (batch_code or "BEE-20260105-001").strip()
                 c.setFont("Helvetica-Bold", 4.5)
                 c.setFillColor(colors.HexColor("#1A1A1A"))
                 c.drawCentredString(qr_x + (qr_size / 2.0), qr_y - 2.2 * mm, f"BATCH: {batch_text}")
