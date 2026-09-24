@@ -1,5 +1,4 @@
-import { lazy, Suspense, memo } from "react";
-import { ClientOnly } from "@tanstack/react-router";
+import { lazy, Suspense, memo, useState, useEffect, ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 
 /**
@@ -9,6 +8,14 @@ import { Loader2 } from "lucide-react";
  * they mount nothing at all until the overlay is actually opened, so the heavy
  * Leaflet chunk is never downloaded or re-rendered during normal navigation.
  */
+
+function ClientOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  return mounted ? <>{children}</> : <>{fallback}</>;
+}
 
 const HivePlacementMapImpl = lazy(() => import("./HivePlacementMap"));
 const MOAViewImpl = lazy(() => import("./MOAView"));

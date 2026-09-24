@@ -101,3 +101,11 @@ export const createMiddleware = () => {
 
 export const registerGlobalMiddleware = () => {
 };
+
+export const ClientOnly = ({ children, fallback = null }: { children: React.ReactNode; fallback?: React.ReactNode }) => {
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+    return mounted ? React.createElement(React.Fragment, null, children) : React.createElement(React.Fragment, null, fallback);
+};
