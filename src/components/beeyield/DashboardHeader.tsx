@@ -298,6 +298,26 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                         )}
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                {/* AI Tools Rail Toggle Button */}
+                {onToggleToolsDrawer && (
+                    <button
+                        onClick={onToggleToolsDrawer}
+                        className={cn(
+                            "flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-bold transition-all shadow-md shrink-0",
+                            isToolsDrawerOpen
+                                ? "border-amber-500 bg-[#1c1915] text-[#f59e0b] shadow-amber-500/10 ring-1 ring-amber-500/30"
+                                : "border-amber-500/40 bg-[#14120f] hover:bg-[#1c1915] hover:border-amber-500/70 text-[#f59e0b]"
+                        )}
+                        title={isToolsDrawerOpen ? "Collapse AI Tools Rail" : "Open & Stick AI Tools Rail"}
+                    >
+                        <Menu className="w-4 h-4 text-[#f59e0b]" />
+                        <span>AI Tools Rail</span>
+                        {isToolsDrawerOpen && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
+                        )}
+                    </button>
+                )}
             </div>
 
             {/* Right: Search, Quick Action, Alerts, Profile */}
