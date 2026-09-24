@@ -51,6 +51,7 @@ import {
   Bug,
   Thermometer,
   ArrowUp,
+  Maximize2,
   Gauge,
   CheckSquare,
   LayoutGrid,
@@ -1211,6 +1212,498 @@ export function ShieldHeartIcon({ className = "w-5 h-5 text-amber-600" }: { clas
   );
 }
 
+
+// ----------------------------------------------------------------------
+// Interactive Companion Sensor Telemetry Chart Component (Matching Screenshots)
+// ----------------------------------------------------------------------
+interface CompanionSensorChartProps {
+  type: "inside_temp" | "humidity" | "pressure" | "outside_temp" | "weight" | "honey_gain";
+  title: string;
+  currentValue: string;
+  icon: React.ReactNode;
+  infoTooltip?: string;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  externalTemp?: number;
+  externalHumidity?: number;
+}
+
+export function CompanionSensorChart({
+  type,
+  title,
+  currentValue,
+  icon,
+  infoTooltip,
+  isExpanded,
+  onToggleExpand,
+  externalTemp,
+  externalHumidity,
+}: CompanionSensorChartProps) {
+  const [timeframe, setTimeframe] = useState<"24h" | "7d" | "1mo" | "3mo" | "6mo">("24h");
+  const [showTrend, setShowTrend] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Timeframe-specific data
+  const chartData = useMemo(() => {
+    if (type === "inside_temp") {
+      const minVal = timeframe === "24h" ? 20.5 : timeframe === "7d" ? 19.8 : 18.5;
+      const maxVal = timeframe === "24h" ? 35.5 : timeframe === "7d" ? 36.2 : 37.0;
+      const points = [
+        { x: 75, y: 133, val: 24.0 },
+        { x: 105, y: 143, val: 22.5 },
+        { x: 135, y: 149, val: 21.5 },
+        { x: 165, y: 149, val: 21.5 },
+        { x: 195, y: 152, val: 21.0 },
+        { x: 215, y: 156, val: minVal, isMin: true },
+        { x: 245, y: 105, val: 28.0 },
+        { x: 275, y: 77, val: 32.0 },
+        { x: 305, y: 52, val: maxVal, isMax: true },
+        { x: 325, y: 60, val: 34.5 },
+        { x: 345, y: 63, val: 34.0 },
+        { x: 365, y: 74, val: 32.5 },
+        { x: 385, y: 99, val: 29.0 },
+      ];
+      return {
+        unit: "°C",
+        minText: `${minVal} °C`,
+        maxText: `${maxVal} °C`,
+        yTicks: ["40.0 °C", "35.0 °C", "30.0 °C", "25.0 °C", "20.0 °C"],
+        yTickPos: [20, 55, 90, 125, 160],
+        points,
+        minPoint: points.find((p) => p.isMin)!,
+        maxPoint: points.find((p) => p.isMax)!,
+      };
+    } else if (type === "humidity") {
+      const minVal = timeframe === "24h" ? 56 : timeframe === "7d" ? 52 : 48;
+      const maxVal = timeframe === "24h" ? 59 : timeframe === "7d" ? 68 : 74;
+      const points = [
+        { x: 75, y: 103, val: 58 },
+        { x: 105, y: 103, val: 58 },
+        { x: 135, y: 103, val: 58 },
+        { x: 165, y: 103, val: 58 },
+        { x: 195, y: 100, val: maxVal, isMax: true },
+        { x: 225, y: 101, val: 58 },
+        { x: 255, y: 106, val: 57 },
+        { x: 285, y: 102, val: 58 },
+        { x: 315, y: 104, val: 58 },
+        { x: 335, y: 102, val: 58 },
+        { x: 355, y: 106, val: 57 },
+        { x: 375, y: 107, val: 57 },
+        { x: 385, y: 110, val: minVal, isMin: true },
+      ];
+      return {
+        unit: "%",
+        minText: `${minVal} %`,
+        maxText: `${maxVal} %`,
+        yTicks: ["80 %", "70 %", "60 %", "50 %", "40 %"],
+        yTickPos: [20, 55, 90, 125, 160],
+        points,
+        minPoint: points.find((p) => p.isMin)!,
+        maxPoint: points.find((p) => p.isMax)!,
+      };
+    } else if (type === "pressure") {
+      const minVal = timeframe === "24h" ? 904 : timeframe === "7d" ? 901 : 898;
+      const maxVal = timeframe === "24h" ? 910 : timeframe === "7d" ? 913 : 915;
+      const points = [
+        { x: 75, y: 70, val: 908 },
+        { x: 105, y: 47, val: 909 },
+        { x: 135, y: 70, val: 908 },
+        { x: 165, y: 92, val: 907 },
+        { x: 195, y: 92, val: 907 },
+        { x: 235, y: 70, val: 908 },
+        { x: 275, y: 47, val: 909 },
+        { x: 305, y: 25, val: maxVal, isMax: true },
+        { x: 325, y: 70, val: 908 },
+        { x: 345, y: 92, val: 907 },
+        { x: 360, y: 160, val: minVal, isMin: true },
+        { x: 375, y: 138, val: 905 },
+        { x: 385, y: 115, val: 906 },
+      ];
+      return {
+        unit: "hPa",
+        minText: `${minVal} hPa`,
+        maxText: `${maxVal} hPa`,
+        yTicks: ["910 hPa", "908 hPa", "906 hPa", "904 hPa"],
+        yTickPos: [25, 70, 115, 160],
+        points,
+        minPoint: points.find((p) => p.isMin)!,
+        maxPoint: points.find((p) => p.isMax)!,
+      };
+    } else if (type === "outside_temp") {
+      const cur = externalTemp || 28;
+      const minVal = (cur - 8.5).toFixed(1);
+      const maxVal = (cur + 5.5).toFixed(1);
+      const points = [
+        { x: 75, y: 130, val: cur - 5 },
+        { x: 125, y: 145, val: cur - 7 },
+        { x: 175, y: 155, val: minVal, isMin: true },
+        { x: 235, y: 95, val: cur + 1 },
+        { x: 295, y: 50, val: maxVal, isMax: true },
+        { x: 345, y: 75, val: cur + 3 },
+        { x: 385, y: 100, val: cur },
+      ];
+      return {
+        unit: "°C",
+        minText: `${minVal} °C`,
+        maxText: `${maxVal} °C`,
+        yTicks: ["40.0 °C", "35.0 °C", "30.0 °C", "25.0 °C", "20.0 °C"],
+        yTickPos: [20, 55, 90, 125, 160],
+        points,
+        minPoint: points.find((p) => p.isMin)!,
+        maxPoint: points.find((p) => p.isMax)!,
+      };
+    } else {
+      // Weight / Honey Gain
+      const points = [
+        { x: 75, y: 140, val: 42.1, isMin: true },
+        { x: 125, y: 135, val: 42.3 },
+        { x: 175, y: 125, val: 42.7 },
+        { x: 235, y: 110, val: 43.1 },
+        { x: 295, y: 85, val: 43.6 },
+        { x: 345, y: 65, val: 43.9, isMax: true },
+        { x: 385, y: 70, val: 43.8 },
+      ];
+      return {
+        unit: "kg",
+        minText: "42.1 kg",
+        maxText: "43.9 kg",
+        yTicks: ["45.0 kg", "44.0 kg", "43.0 kg", "42.0 kg", "41.0 kg"],
+        yTickPos: [20, 55, 90, 125, 160],
+        points,
+        minPoint: points.find((p) => p.isMin)!,
+        maxPoint: points.find((p) => p.isMax)!,
+      };
+    }
+  }, [type, timeframe, externalTemp]);
+
+  // Construct SVG paths
+  const areaPath = useMemo(() => {
+    if (!chartData.points.length) return "";
+    const pts = chartData.points;
+    const baseLine = 160;
+    const lineParts = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+    return `${lineParts} L ${pts[pts.length - 1].x} ${baseLine} L ${pts[0].x} ${baseLine} Z`;
+  }, [chartData]);
+
+  const linePath = useMemo(() => {
+    if (!chartData.points.length) return "";
+    return chartData.points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+  }, [chartData]);
+
+  return (
+    <div className={`transition-all rounded-2xl ${isExpanded ? "bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 p-4 sm:p-5 shadow-sm space-y-4" : "py-1.5"}`}>
+      {/* Header Row */}
+      <div
+        onClick={onToggleExpand}
+        className="flex items-center justify-between cursor-pointer select-none group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="text-[#8C6D46] dark:text-amber-400">
+            {icon}
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
+                {title}
+              </span>
+              {infoTooltip && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(infoTooltip);
+                  }}
+                  className="text-stone-400 hover:text-stone-600"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            {isExpanded && (
+              <span className="text-xl font-bold font-mono text-[#2E2A25] dark:text-stone-100 block mt-0.5">
+                {currentValue}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+          {!isExpanded && (
+            <span className="text-sm font-semibold text-[#2E2A25] dark:text-stone-200">
+              {currentValue}
+            </span>
+          )}
+          {isExpanded ? (
+            <ChevronDown className="w-5 h-5 text-[#2E2A25] dark:text-stone-200 transition-transform" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-amber-600 transition-colors" />
+          )}
+        </div>
+      </div>
+
+      {/* Expanded Chart View */}
+      {isExpanded && (
+        <div className="space-y-4 pt-1 border-t border-[#EAE3DA] dark:border-stone-800/80">
+          {/* Timeframe Pills */}
+          <div className="grid grid-cols-5 gap-1.5 p-1 bg-[#F2ECE4] dark:bg-stone-900/60 rounded-2xl text-xs font-semibold">
+            {(["24h", "7d", "1mo", "3mo", "6mo"] as const).map((tf) => (
+              <button
+                key={tf}
+                type="button"
+                onClick={() => setTimeframe(tf)}
+                className={`py-1.5 text-center rounded-xl transition-all ${
+                  timeframe === tf
+                    ? "bg-[#FFB800] text-stone-950 font-bold shadow-sm"
+                    : "text-[#4A4315] dark:text-stone-300 hover:bg-[#E5EBB2]/50"
+                }`}
+              >
+                {tf === "7d" ? "7 d" : tf === "1mo" ? "1 mo." : tf === "3mo" ? "3 mo." : tf === "6mo" ? "6 mo." : tf}
+              </button>
+            ))}
+          </div>
+
+          {/* Min & Max Indicators + Fullscreen Icon */}
+          <div className="flex items-center justify-between text-xs px-1">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1.5 font-bold text-[#2E2A25] dark:text-stone-200">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block shadow-sm" />
+                Min {chartData.minText}
+              </span>
+              <span className="flex items-center gap-1.5 font-bold text-[#2E2A25] dark:text-stone-200">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block shadow-sm" />
+                Max {chartData.maxText}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsFullscreen(!isFullscreen);
+                toast.info(`Expanded ${title} high-resolution telemetric graph`);
+              }}
+              className="p-1 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
+              title="Toggle fullscreen"
+            >
+              <Maximize2 className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-2 text-xs font-semibold text-[#4A601E] dark:text-emerald-400">
+            <span className="w-4 h-0.5 bg-[#4A601E] dark:bg-emerald-400 rounded-full inline-block" />
+            <span>Measurement</span>
+          </div>
+
+          {/* Interactive SVG Chart */}
+          <div className="w-full overflow-hidden bg-[#FAF4EE] dark:bg-[#1A1815] rounded-2xl p-2 border border-[#EAE3DA] dark:border-stone-800">
+            <svg
+              viewBox="0 0 400 190"
+              className="w-full h-auto select-none"
+              style={{ overflow: "visible" }}
+            >
+              {/* Humidity Colored Threshold Bands */}
+              {type === "humidity" && (
+                <g>
+                  {/* Top Critical Zone (>80%) */}
+                  <rect x="65" y="5" width="325" height="25" fill="#FDE8E8" opacity="0.75" />
+                  <line x1="65" y1="30" x2="390" y2="30" stroke="#F59E0B" strokeDasharray="3 3" strokeWidth="1.2" />
+
+                  {/* High Warning Zone (70% - 80%) */}
+                  <rect x="65" y="30" width="325" height="35" fill="#FEF3C7" opacity="0.6" />
+
+                  {/* Optimal Zone (55% - 70%) */}
+                  <rect x="65" y="65" width="325" height="52" fill="#EAF5E1" opacity="0.8" />
+                  <line x1="65" y1="65" x2="390" y2="65" stroke="#10B981" strokeDasharray="3 3" strokeWidth="1.2" />
+
+                  {/* Low Warning Zone (45% - 55%) */}
+                  <rect x="65" y="117" width="325" height="30" fill="#FEF3C7" opacity="0.6" />
+                  <line x1="65" y1="117" x2="390" y2="117" stroke="#F59E0B" strokeDasharray="3 3" strokeWidth="1.2" />
+
+                  {/* Bottom Critical Zone (<45%) */}
+                  <rect x="65" y="147" width="325" height="25" fill="#FDE8E8" opacity="0.75" />
+                  <line x1="65" y1="147" x2="390" y2="147" stroke="#DC2626" strokeDasharray="3 3" strokeWidth="1.2" />
+                </g>
+              )}
+
+              {/* Horizontal Grid Lines & Y-Axis Labels */}
+              {chartData.yTicks.map((label, i) => {
+                const yPos = chartData.yTickPos[i];
+                return (
+                  <g key={i}>
+                    <text
+                      x="60"
+                      y={yPos + 4}
+                      textAnchor="end"
+                      className="fill-stone-600 dark:fill-stone-400 text-[10px] font-mono font-medium"
+                    >
+                      {label}
+                    </text>
+                    {type !== "humidity" && (
+                      <line
+                        x1="65"
+                        y1={yPos}
+                        x2="390"
+                        y2={yPos}
+                        stroke="currentColor"
+                        className="text-[#DCD5CB] dark:text-stone-800"
+                        strokeDasharray="3 3"
+                        strokeWidth="1"
+                      />
+                    )}
+                  </g>
+                );
+              })}
+
+              {/* Area Fill for Temp and Pressure */}
+              {type !== "humidity" && areaPath && (
+                <path
+                  d={areaPath}
+                  fill="url(#greenGradientArea)"
+                  opacity="0.9"
+                />
+              )}
+
+              {/* Linear Gradient for Area Fill */}
+              <defs>
+                <linearGradient id="greenGradientArea" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#D5E6B5" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#EAF2DA" stopOpacity="0.2" />
+                </linearGradient>
+              </defs>
+
+              {/* Optional Trend Trajectory Line */}
+              {showTrend && chartData.points.length > 1 && (
+                <line
+                  x1={chartData.points[0].x}
+                  y1={chartData.points[0].y}
+                  x2={chartData.points[chartData.points.length - 1].x}
+                  y2={chartData.points[chartData.points.length - 1].y}
+                  stroke="#A16207"
+                  strokeDasharray="4 4"
+                  strokeWidth="2"
+                />
+              )}
+
+              {/* Main Measurement Line */}
+              {linePath && (
+                <path
+                  d={linePath}
+                  fill="none"
+                  stroke="#4A601E"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+
+              {/* Data Points */}
+              {chartData.points.map((pt, idx) => {
+                if (pt.isMin) {
+                  return (
+                    <g key={idx}>
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r="6"
+                        fill="#3B82F6"
+                        opacity="0.3"
+                      />
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r="4"
+                        fill="#3B82F6"
+                        stroke="#FAF4EE"
+                        strokeWidth="1.5"
+                      />
+                    </g>
+                  );
+                }
+                if (pt.isMax) {
+                  return (
+                    <g key={idx}>
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r="6"
+                        fill="#EF4444"
+                        opacity="0.3"
+                      />
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r="4"
+                        fill="#EF4444"
+                        stroke="#FAF4EE"
+                        strokeWidth="1.5"
+                      />
+                    </g>
+                  );
+                }
+                return (
+                  <circle
+                    key={idx}
+                    cx={pt.x}
+                    cy={pt.y}
+                    r="2.5"
+                    fill="#4A601E"
+                    stroke="#FAF4EE"
+                    strokeWidth="0.8"
+                  />
+                );
+              })}
+
+              {/* X-Axis Time Labels */}
+              <text x="75" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                21:00
+              </text>
+
+              <g>
+                <text x="165" y="174" textAnchor="middle" className="fill-stone-700 dark:fill-stone-300 text-[10px] font-bold">
+                  03:00
+                </text>
+                <text x="165" y="185" textAnchor="middle" className="fill-stone-500 dark:fill-stone-400 text-[9px]">
+                  24 Sep
+                </text>
+              </g>
+
+              <text x="265" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                09:00
+              </text>
+
+              <text x="355" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                15:00
+              </text>
+            </svg>
+          </div>
+
+          {/* Show Trend Toggle Switch */}
+          <div className="flex items-center justify-between pt-1 text-xs">
+            <span className="font-semibold text-[#2E2A25] dark:text-stone-200">
+              Show trend
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowTrend(!showTrend)}
+              className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                showTrend
+                  ? "bg-[#FFB800]"
+                  : "bg-[#DCD5CB] dark:bg-stone-700"
+              }`}
+            >
+              <div
+                className={`w-5 h-5 rounded-full bg-white dark:bg-stone-200 shadow-md transition-transform ${
+                  showTrend ? "translate-x-6" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ----------------------------------------------------------------------
 // Interactive Clickable Hive Detail Modal
 // ----------------------------------------------------------------------
@@ -1248,6 +1741,9 @@ function HiveDetailModal({
   const [showMenu, setShowMenu] = useState(false);
   const [showAddHarvestForm, setShowAddHarvestForm] = useState(false);
   const [editingBatch, setEditingBatch] = useState<HiveHarvestBatch | null>(null);
+  const [expandedMetric, setExpandedMetric] = useState<
+    "inside_temp" | "humidity" | "pressure" | "outside_temp" | "weight" | "honey_gain" | null
+  >("inside_temp");
 
   // Syrup Feeding Form State
   const [showAddSyrupForm, setShowAddSyrupForm] = useState(false);
@@ -1655,96 +2151,92 @@ function HiveDetailModal({
                     </h3>
 
                     {/* Current Weight */}
-                    <div className="flex items-center justify-between py-1.5">
-                      <div className="flex items-center gap-3">
-                        <Scale className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                        <span className="text-sm font-medium">Current weight</span>
-                        <Info className="w-3.5 h-3.5 text-stone-400 cursor-pointer" />
-                      </div>
-                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
-                        <span className="text-sm font-semibold">
-                          {hive.batches.length > 0
-                            ? `${(hive.batches.reduce((sum, b) => sum + b.quantityKg, 0) + 24).toFixed(1)} kg`
-                            : "No Scale"}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-stone-400" />
-                      </div>
-                    </div>
+                    <CompanionSensorChart
+                      type="weight"
+                      title="Current weight"
+                      currentValue={
+                        hive.batches.length > 0
+                          ? `${(hive.batches.reduce((sum, b) => sum + b.quantityKg, 0) + 24).toFixed(1)} kg`
+                          : "No Scale"
+                      }
+                      icon={<Scale className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
+                      infoTooltip="Optical & load cell weight sensor at bottom hive board"
+                      isExpanded={expandedMetric === "weight"}
+                      onToggleExpand={() =>
+                        setExpandedMetric(expandedMetric === "weight" ? null : "weight")
+                      }
+                    />
 
                     {/* Honey Gain */}
-                    <div className="flex items-center justify-between py-1.5">
-                      <div className="flex items-center gap-3">
-                        <ArrowUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                        <span className="text-sm font-medium">Honey gain</span>
-                        <Info className="w-3.5 h-3.5 text-stone-400 cursor-pointer" />
-                      </div>
-                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
-                        <span className="text-sm font-semibold">
-                          {hive.batches.length > 0 ? "+1.8 kg" : "No Scale"}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-stone-400" />
-                      </div>
-                    </div>
+                    <CompanionSensorChart
+                      type="honey_gain"
+                      title="Honey gain"
+                      currentValue={hive.batches.length > 0 ? "+1.8 kg" : "No Scale"}
+                      icon={<ArrowUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
+                      infoTooltip="Calculated 24h net honey nectar gain"
+                      isExpanded={expandedMetric === "honey_gain"}
+                      onToggleExpand={() =>
+                        setExpandedMetric(expandedMetric === "honey_gain" ? null : "honey_gain")
+                      }
+                    />
                   </div>
 
-                  {/* CARD 3: CONDITIONS */}
+                  {/* CARD 3: CONDITIONS (Interactive Expandable Telemetry Charts - Screenshots 1, 2, 3) */}
                   <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
                     <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
                       Conditions
                     </h3>
 
                     {/* Outside Temperature */}
-                    <div className="flex items-center justify-between py-1.5">
-                      <div className="flex items-center gap-3">
-                        <Sun className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                        <span className="text-sm font-medium">Outside temperature</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
-                        <span className="text-sm font-semibold">
-                          {weather ? `${weather.currentTemp}°C` : "No Scale"}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-stone-400" />
-                      </div>
-                    </div>
+                    <CompanionSensorChart
+                      type="outside_temp"
+                      title="Outside temperature"
+                      currentValue={weather ? `${weather.currentTemp}°C` : "No Scale"}
+                      icon={<Sun className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
+                      isExpanded={expandedMetric === "outside_temp"}
+                      onToggleExpand={() =>
+                        setExpandedMetric(expandedMetric === "outside_temp" ? null : "outside_temp")
+                      }
+                      externalTemp={weather?.currentTemp}
+                    />
 
-                    {/* Inside Hive Temperature */}
-                    <div className="flex items-center justify-between py-1.5">
-                      <div className="flex items-center gap-3">
-                        <Thermometer className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                        <span className="text-sm font-medium">Inside hive temperature</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
-                        <span className="text-sm font-semibold">28°C</span>
-                        <ChevronRight className="w-4 h-4 text-stone-400" />
-                      </div>
-                    </div>
+                    {/* Inside Hive Temperature (Screenshot 3) */}
+                    <CompanionSensorChart
+                      type="inside_temp"
+                      title="Inside hive temperature"
+                      currentValue="28°C"
+                      icon={<Thermometer className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
+                      isExpanded={expandedMetric === "inside_temp"}
+                      onToggleExpand={() =>
+                        setExpandedMetric(expandedMetric === "inside_temp" ? null : "inside_temp")
+                      }
+                    />
 
-                    {/* Humidity */}
-                    <div className="flex items-center justify-between py-1.5">
-                      <div className="flex items-center gap-3">
-                        <Droplets className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                        <span className="text-sm font-medium">Humidity</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
-                        <span className="text-sm font-semibold">
-                          {weather ? `${weather.currentHumidity}%` : "56%"}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-stone-400" />
-                      </div>
-                    </div>
+                    {/* Humidity (Screenshot 2 with Multi-Threshold Colored Bands) */}
+                    <CompanionSensorChart
+                      type="humidity"
+                      title="Humidity"
+                      currentValue={weather ? `${weather.currentHumidity}%` : "56%"}
+                      icon={<Droplets className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
+                      isExpanded={expandedMetric === "humidity"}
+                      onToggleExpand={() =>
+                        setExpandedMetric(expandedMetric === "humidity" ? null : "humidity")
+                      }
+                      externalHumidity={weather?.currentHumidity}
+                    />
 
-                    {/* Pressure */}
-                    <div className="flex items-center justify-between py-1.5">
-                      <div className="flex items-center gap-3">
-                        <Gauge className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                        <span className="text-sm font-medium">Pressure</span>
-                        <Info className="w-3.5 h-3.5 text-stone-400 cursor-pointer" />
-                      </div>
-                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
-                        <span className="text-sm font-semibold">906 hPa</span>
-                        <ChevronRight className="w-4 h-4 text-stone-400" />
-                      </div>
-                    </div>
+                    {/* Pressure (Screenshot 1) */}
+                    <CompanionSensorChart
+                      type="pressure"
+                      title="Pressure"
+                      currentValue="906 hPa"
+                      icon={<Gauge className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
+                      infoTooltip="Atmospheric barometric pressure sensor in hive canopy"
+                      isExpanded={expandedMetric === "pressure"}
+                      onToggleExpand={() =>
+                        setExpandedMetric(expandedMetric === "pressure" ? null : "pressure")
+                      }
+                    />
                   </div>
 
                   {/* CARD 4: QUEEN */}
