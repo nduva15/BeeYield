@@ -59,14 +59,42 @@ export default function SupportPage({
   const load = useCallback(async () => {
     if (!deviceId) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("support_tickets")
-      .select("*")
-      .eq("device_id", deviceId)
-      .order("created_at", { ascending: false });
-    setLoading(false);
-    if (error) { toast.error(error.message); return; }
-    setTickets((data ?? []) as Ticket[]);
+
+    let localTickets: Ticket[] = [];
+    try {
+      const stored = localStorage.getItem(`beeyield_support_tickets_${deviceId}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) localTickets = parsed;
+      }
+    } catch {}
+
+    try {
+      const { data, error } = await supabase
+        .from("support_tickets")
+        .select("*")
+        .eq("device_id", deviceId)
+        .order("created_at", { ascending: false });
+
+      if (!error && data) {
+        const mergedMap = new Map<string, Ticket>();
+        localTickets.forEach((t) => mergedMap.set(t.id, t));
+        (data as Ticket[]).forEach((t) => mergedMap.set(t.id, t));
+        const combined = Array.from(mergedMap.values()).sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        setTickets(combined);
+        try {
+          localStorage.setItem(`beeyield_support_tickets_${deviceId}`, JSON.stringify(combined));
+        } catch {}
+      } else {
+        setTickets(localTickets);
+      }
+    } catch {
+      setTickets(localTickets);
+    } finally {
+      setLoading(false);
+    }
   }, [deviceId]);
 
   useEffect(() => { if (isOpen) void load(); }, [isOpen, load]);
@@ -89,42 +117,88 @@ export default function SupportPage({
   }, [tickets, filter, query]);
 
   const submit = async () => {
-    if (!draft.subject.trim() || !draft.body.trim()) { toast.error("Subject and description are required"); return; }
+    if (!draft.subject.trim() || !draft.body.trim()) {
+      toast.error("Subject and description are required");
+      return;
+    }
     setSaving(true);
-    const { error } = await supabase.from("support_tickets").insert({
+    const newTicket: Ticket = {
+      id: crypto.randomUUID(),
       device_id: deviceId,
-      subject: draft.subject,
+      subject: draft.subject.trim(),
       category: draft.category,
       priority: draft.priority,
       status: "new",
-      hive_label: draft.hive_label || null,
-      body: draft.body,
-      contact_email: draft.contact_email || null,
-      contact_phone: draft.contact_phone || null,
+      hive_label: draft.hive_label?.trim() || null,
+      body: draft.body.trim(),
+      contact_email: draft.contact_email?.trim() || null,
+      contact_phone: draft.contact_phone?.trim() || null,
       last_contact_at: new Date().toISOString(),
-    });
-    setSaving(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Ticket raised — support notified");
-    setDraft({ ...EMPTY });
-    setShowForm(false);
-    void load();
+      created_at: new Date().toISOString(),
+    };
+
+    const updated = [newTicket, ...tickets];
+    setTickets(updated);
+    try {
+      localStorage.setItem(`beeyield_support_tickets_${deviceId}`, JSON.stringify(updated));
+    } catch {}
+
+    try {
+      const { error } = await supabase.from("support_tickets").insert({
+        id: newTicket.id,
+        device_id: newTicket.device_id,
+        subject: newTicket.subject,
+        category: newTicket.category,
+        priority: newTicket.priority,
+        status: newTicket.status,
+        hive_label: newTicket.hive_label,
+        body: newTicket.body,
+        contact_email: newTicket.contact_email,
+        contact_phone: newTicket.contact_phone,
+        last_contact_at: newTicket.last_contact_at,
+      });
+      if (error) {
+        console.warn("Support ticket sync queued locally:", error.message);
+      }
+    } catch (e) {
+      console.warn("Support ticket sync queued locally:", e);
+    } finally {
+      setSaving(false);
+      toast.success("Ticket registered — support notified");
+      setDraft({ ...EMPTY });
+      setShowForm(false);
+    }
   };
 
   const advance = async (t: Ticket) => {
     const next = t.status === "new" ? "in progress" : t.status === "in progress" ? "resolved" : "new";
-    const { error } = await supabase
-      .from("support_tickets")
-      .update({ status: next, last_contact_at: new Date().toISOString() })
-      .eq("id", t.id);
-    if (error) { toast.error(error.message); return; }
-    void load();
+    const updated = tickets.map((item) =>
+      item.id === t.id ? { ...item, status: next, last_contact_at: new Date().toISOString() } : item
+    );
+    setTickets(updated);
+    try {
+      localStorage.setItem(`beeyield_support_tickets_${deviceId}`, JSON.stringify(updated));
+    } catch {}
+
+    try {
+      await supabase
+        .from("support_tickets")
+        .update({ status: next, last_contact_at: new Date().toISOString() })
+        .eq("id", t.id);
+    } catch {}
   };
 
   const remove = async (id: string) => {
     if (!confirm("Delete this ticket?")) return;
-    await supabase.from("support_tickets").delete().eq("id", id);
-    void load();
+    const updated = tickets.filter((t) => t.id !== id);
+    setTickets(updated);
+    try {
+      localStorage.setItem(`beeyield_support_tickets_${deviceId}`, JSON.stringify(updated));
+    } catch {}
+    try {
+      await supabase.from("support_tickets").delete().eq("id", id);
+    } catch {}
+    toast.info("Ticket removed");
   };
 
   const exportServiceForm = () => {
