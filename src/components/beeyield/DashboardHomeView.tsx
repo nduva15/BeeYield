@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useApiaries, useHives } from '@/hooks/useHives';
 import { useSelectedApiary } from '@/hooks/useSelectedApiary';
+import { useInspections } from '@/hooks/useInspections';
 import { useHarvests, useBatches, useUpdateHarvest, useDeleteHarvest } from '@/hooks/useHarvests';
 import type { Apiary, BatchView, Hive, Harvest, IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { Label } from '@/components/ui/label';
@@ -218,6 +219,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const hivesQuery = useHives();
     const harvestsQuery = useHarvests();
     const batchesQuery = useBatches();
+    const inspectionsQuery = useInspections();
 
     const loadedApiaries = apiariesQuery.data && apiariesQuery.data.length > 0 ? apiariesQuery.data : [CANONICAL_KIBWEZI_APIARY];
     const loadedHives = hivesQuery.data && hivesQuery.data.length > 0 ? hivesQuery.data : CANONICAL_HIVES;
@@ -259,11 +261,11 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const userMetadata = (user as any)?.user_metadata || {};
     const fullName = userMetadata.first_name || userMetadata.full_name || (user as any)?.email?.split('@')[0] || 'Timothy Nduva';
 
-    // Canonical production stats calibrated to 843.0 kg
+    // Real production stats from user-logged records
     const productionSummary = React.useMemo(() => {
-        const totalHarvestedKg = harvests.reduce((sum, h) => sum + (h.quantity_kg || 0), 0) || 843.0;
-        const leftForBeesKg = harvests.reduce((sum, h) => sum + (h.quantity_left_for_bees_kg || 0), 0) || 120.0;
-        const verifiedBatches = batches.filter(b => b.verification_status === 'verified' || b.blockchain_verified).length || 8;
+        const totalHarvestedKg = harvests.reduce((sum, h) => sum + (Number(h.quantity_kg) || 0), 0);
+        const leftForBeesKg = harvests.reduce((sum, h) => sum + (Number(h.quantity_left_for_bees_kg) || 0), 0);
+        const verifiedBatches = batches.filter(b => b.verification_status === 'verified' || b.blockchain_verified).length;
 
         return {
             totalHarvestedKg,
@@ -284,25 +286,86 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         return { leftPct, widthPct };
     };
 
-    // Canonical recent inspection diagnostics matching InspectionsPage
-    const recentInspectionHives = React.useMemo(() => {
-        return loadedHives.slice(0, 6).map((h, i) => {
-            const seed = i + 1;
-            return {
-                id: `insp-kib-${h.hive_code.toLowerCase()}`,
-                hive_code: h.hive_code,
-                name: `${h.hive_code} (Langstroth 10)`,
-                colony_health: 'Healthy',
-                frames_total: 10,
-                frames_brood: 6,
-                frames_honey: 4,
-                queen_status: 'Active Laying Queen (Marked)',
-                varroa_status: 'Zero Varroa Observed',
-                weather_summary: `${weather?.currentTemp ?? 28}°C • Clear dry skies`,
-                inspected_on: '2026-01-10',
-            };
+    // Real user-logged inspection diagnostics (purging all synthetic mock data)
+    const recentInspections = React.useMemo(() => {
+        const queryList: any[] = inspectionsQuery.data || [];
+        const localList: any[] = [];
+        try {
+            const raw1 = localStorage.getItem("beeyield_local_inspections_v1");
+            if (raw1) {
+                const parsed = JSON.parse(raw1);
+                if (Array.isArray(parsed)) localList.push(...parsed);
+            }
+            const raw2 = localStorage.getItem("beeyield_inspections");
+            if (raw2) {
+                const parsed = JSON.parse(raw2);
+                if (Array.isArray(parsed)) localList.push(...parsed);
+            }
+        } catch {
+            // non-blocking
+        }
+
+        const combined = [...queryList, ...localList];
+        // Strip out any synthetic mock inspection records
+        const filtered = combined.filter((i) => {
+            const id = String(i.id || '');
+            return !id.startsWith("insp-0") && !id.startsWith("insp-kib-") && id !== '';
         });
-    }, [loadedHives, weather?.currentTemp]);
+
+        // Deduplicate by ID
+        const seen = new Set<string>();
+        const deduped: any[] = [];
+        for (const item of filtered) {
+            const key = item.id || JSON.stringify(item);
+            if (!seen.has(key)) {
+                seen.add(key);
+                deduped.push(item);
+            }
+        }
+
+        return deduped.sort((a, b) => {
+            const dateA = new Date(a.inspected_on || a.inspection_date || a.created_at || 0).getTime();
+            const dateB = new Date(b.inspected_on || b.inspection_date || b.created_at || 0).getTime();
+            return dateB - dateA;
+        });
+    }, [inspectionsQuery.data]);
+
+    // Live Inspection Metrics computed strictly from real audits
+    const inspectionMetrics = React.useMemo(() => {
+        const total = recentInspections.length;
+        if (total === 0) {
+            return [
+                { label: "Monitored Colonies", value: `${loadedHives.length} Hives`, icon: ClipboardList, tone: "text-amber-600", desc: `${loadedHives.length} colonies in registry` },
+                { label: "Colony Health", value: "—", icon: HeartPulse, tone: "text-neutral-500", desc: "Awaiting physical inspection audit" },
+                { label: "Colonies with Issues", value: "0 Flagged", icon: AlertTriangle, tone: "text-neutral-500", desc: "No health issues reported" },
+                { label: "Avg Varroa Load", value: "—", icon: Bug, tone: "text-neutral-500", desc: "No mite diagnostics logged" },
+            ];
+        }
+
+        const healthyCount = recentInspections.filter(i => {
+            const s = String(i.colony_health || i.health_status || '').toLowerCase();
+            return s.includes('good') || s.includes('healthy') || s.includes('optimal');
+        }).length;
+        const healthPct = Math.round((healthyCount / total) * 100);
+
+        const issuesCount = recentInspections.filter(i => {
+            const s = String(i.colony_health || i.health_status || '').toLowerCase();
+            const miteCount = Number(i.varroa_count ?? i.varroa_mite_count ?? 0);
+            return s.includes('critical') || s.includes('risk') || s.includes('weak') || s.includes('queenless') || miteCount > 3;
+        }).length;
+
+        const varroaTests = recentInspections.filter(i => typeof i.varroa_count === 'number' || typeof i.varroa_mite_count === 'number');
+        const avgVarroa = varroaTests.length > 0
+            ? (varroaTests.reduce((acc, curr) => acc + Number(curr.varroa_count ?? curr.varroa_mite_count ?? 0), 0) / varroaTests.length).toFixed(1)
+            : null;
+
+        return [
+            { label: "Monitored Colonies", value: `${loadedHives.length} Hives`, icon: ClipboardList, tone: "text-amber-600", desc: `${total} inspection reports logged` },
+            { label: "Colony Health", value: `${healthPct}% Optimal`, icon: HeartPulse, tone: healthPct >= 80 ? "text-emerald-600" : "text-amber-600", desc: `${healthyCount} of ${total} inspections healthy` },
+            { label: "Colonies with Issues", value: `${issuesCount} Flagged`, icon: AlertTriangle, tone: issuesCount > 0 ? "text-rose-600" : "text-neutral-700", desc: issuesCount > 0 ? "Requires beekeeper review" : "Zero brood diseases observed" },
+            { label: "Avg Varroa Load", value: avgVarroa !== null ? `${avgVarroa} Mites` : "—", icon: Bug, tone: avgVarroa !== null && Number(avgVarroa) <= 2 ? "text-emerald-600" : "text-amber-600", desc: avgVarroa !== null ? "<1.0% safe biological threshold" : "No tests logged" },
+        ];
+    }, [recentInspections, loadedHives.length]);
 
     return (
         <motion.div
@@ -351,7 +414,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                         <div className="bg-neutral-50 border border-neutral-200/90 rounded-xl p-4">
                             <Row label="Apiary Location" value={primaryApiary?.location_name || 'Kiunduani, Kibwezi'} />
-                            <Row label="Managed Colonies" value="184 Langstroth Hives" />
+                            <Row label="Managed Colonies" value={`${loadedHives.length} Langstroth Hives`} />
                             <Row label="Biosecurity Status" value={<span className="text-emerald-600 font-bold flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 inline" /> Optimal</span>} />
                             <Row label="Primary Flora" value={primaryApiary?.forage_type || 'Acacia & Desert Date'} />
                         </div>
@@ -380,10 +443,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {[
-                                { id: 'inspections', label: 'Hive Inspections', sub: '184 hives monitored', icon: ClipboardList },
+                                { id: 'inspections', label: 'Hive Inspections', sub: `${loadedHives.length} hives monitored`, icon: ClipboardList },
                                 { id: 'places', label: 'Apiary Stations', sub: 'Live weather sync', icon: MapPin },
                                 { id: 'beeyield', label: 'Colony Inventory', sub: 'Langstroth 10 frames', icon: Hexagon },
-                                { id: 'harvests', label: 'Harvest Batches', sub: '843 KG total recorded', icon: Binary },
+                                { id: 'harvests', label: 'Harvest Batches', sub: `${productionSummary.totalHarvestedKg.toFixed(1)} KG total recorded`, icon: Binary },
                                 { id: 'labels', label: 'Traceability Labels', sub: 'QR verification', icon: ShieldCheck },
                                 { id: 'assistant', label: 'BeeGPT Intelligence', sub: 'AI agronomist', icon: Sparkles },
                             ].map((v) => (
@@ -420,7 +483,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                 <div>
                                     <h3 className="text-base font-black text-foreground flex items-center gap-2">
                                         Hive Inspections & Colony Diagnostics
-                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">184 Verified Hives</span>
+                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">{loadedHives.length} Verified Colonies</span>
                                     </h3>
                                     <p className="text-xs text-muted-foreground">
                                         Diagnostic inspection ledger for Timothy Nduva • BeeYield Apiary in Kibwezi Kenya
@@ -445,15 +508,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             </div>
                         </div>
 
-                        {/* Inspection Metrics Row (Matching InspectionsPage stats) */}
+                        {/* Inspection Metrics Row (Live Telemetry from Real Audits) */}
                         <div className="p-6 border-b border-neutral-200/90 bg-white">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                {[
-                                    { label: "Monitored Colonies", value: "184 Hives", icon: ClipboardList, tone: "text-amber-600", desc: "Langstroth 10 architecture" },
-                                    { label: "Colony Health", value: "100% Optimal", icon: HeartPulse, tone: "text-emerald-600", desc: "Active laying queens sighted" },
-                                    { label: "Colonies with Issues", value: "0 Flagged", icon: AlertTriangle, tone: "text-neutral-700", desc: "Zero brood diseases observed" },
-                                    { label: "Avg Varroa Load", value: "0.0 Mites", icon: Bug, tone: "text-emerald-600", desc: "<1.0% safe biological threshold" },
-                                ].map((s) => (
+                                {inspectionMetrics.map((s) => (
                                     <div key={s.label} className="rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-4 space-y-1">
                                         <div className="flex items-center justify-between">
                                             <span className="text-[10px] uppercase tracking-wide font-bold text-neutral-500">{s.label}</span>
@@ -471,42 +529,88 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     <span className="text-xs font-bold text-neutral-800">Recent Colony Health Diagnostics</span>
                                     <span className="text-[11px] text-neutral-500">Live inspection reports</span>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    {recentInspectionHives.map((r) => (
-                                        <div
-                                            key={r.id}
-                                            onClick={() => onTabChange('inspections')}
-                                            className="p-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-amber-300 hover:bg-neutral-50 transition-all cursor-pointer shadow-xs group"
-                                        >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="font-mono font-black text-xs text-neutral-900 group-hover:text-amber-700 transition-colors">
-                                                    {r.hive_code}
-                                                </span>
-                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-700">
-                                                    Optimal Health
-                                                </span>
-                                            </div>
-                                            <div className="space-y-1 text-xs text-neutral-600">
-                                                <div className="flex justify-between">
-                                                    <span>Setup:</span>
-                                                    <span className="font-semibold text-neutral-900">10 Frames (6 Brood / 4 Honey)</span>
+                                {recentInspections.length > 0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                        {recentInspections.slice(0, 6).map((r) => {
+                                            const hiveCode = r.hive_label || r.hive_code || loadedHives.find((h) => h.id === r.hive_id)?.hive_code || 'Colony';
+                                            const health = r.colony_health || r.health_status || 'Healthy';
+                                            const isHealthy = health.toLowerCase().includes('good') || health.toLowerCase().includes('healthy') || health.toLowerCase().includes('optimal');
+                                            const isCritical = health.toLowerCase().includes('critical') || health.toLowerCase().includes('risk') || health.toLowerCase().includes('fail');
+                                            const badgeClass = isCritical 
+                                                ? "bg-rose-50 border-rose-200 text-rose-700" 
+                                                : isHealthy 
+                                                    ? "bg-emerald-50 border-emerald-200 text-emerald-700" 
+                                                    : "bg-amber-50 border-amber-200 text-amber-700";
+
+                                            const dateStr = r.inspected_on || r.inspection_date || (r.created_at ? r.created_at.slice(0, 10) : 'Recent');
+                                            const broodFrames = r.brood_frames ?? 6;
+                                            const honeyFrames = r.honey_frames ?? 4;
+                                            const totalFrames = r.total_frames ?? (Number(broodFrames) + Number(honeyFrames));
+                                            const queenStatus = r.queen_status || (r.queen_seen !== false ? 'Active Laying Queen' : 'Queen Not Sighted');
+                                            const varroaText = typeof r.varroa_count === 'number' 
+                                                ? `${r.varroa_count} Mites` 
+                                                : typeof r.varroa_mite_count === 'number' 
+                                                    ? `${r.varroa_mite_count} Mites` 
+                                                    : (r.varroa_sighting || 'Not Tested');
+
+                                            return (
+                                                <div
+                                                    key={r.id}
+                                                    onClick={() => onTabChange('inspections')}
+                                                    className="p-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-amber-300 hover:bg-neutral-50 transition-all cursor-pointer shadow-xs group"
+                                                >
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="font-mono font-black text-xs text-neutral-900 group-hover:text-amber-700 transition-colors">
+                                                            {hiveCode}
+                                                        </span>
+                                                        <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold border", badgeClass)}>
+                                                            {health}
+                                                        </span>
+                                                    </div>
+                                                    <div className="space-y-1 text-xs text-neutral-600">
+                                                        <div className="flex justify-between">
+                                                            <span>Setup:</span>
+                                                            <span className="font-semibold text-neutral-900">{totalFrames} Frames ({broodFrames} Brood / {honeyFrames} Honey)</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span>Queen:</span>
+                                                            <span className={cn("font-semibold", r.queen_seen !== false ? "text-emerald-700" : "text-amber-700")}>
+                                                                {queenStatus}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span>Varroa / Pests:</span>
+                                                            <span className="font-semibold text-neutral-800">{varroaText}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-between text-[10px] text-neutral-500 font-mono">
+                                                        <span>{dateStr}</span>
+                                                        <span className="text-amber-700 font-bold group-hover:underline">Inspect Hive →</span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex justify-between">
-                                                    <span>Queen:</span>
-                                                    <span className="font-semibold text-emerald-700">Active Laying Queen</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span>Varroa / Pests:</span>
-                                                    <span className="font-semibold text-neutral-800">Clean (0 Mites)</span>
-                                                </div>
-                                            </div>
-                                            <div className="mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-between text-[10px] text-neutral-500 font-mono">
-                                                <span>{r.inspected_on}</span>
-                                                <span className="text-amber-700 font-bold group-hover:underline">Inspect Hive →</span>
-                                            </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="p-8 text-center bg-neutral-50/60 rounded-2xl border border-dashed border-neutral-200/90 my-2 space-y-3">
+                                        <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-700 shadow-xs">
+                                            <ClipboardList className="w-5 h-5" />
                                         </div>
-                                    ))}
-                                </div>
+                                        <div className="space-y-1 max-w-sm mx-auto">
+                                            <h4 className="text-xs font-bold text-neutral-800">No Colony Health Diagnostics Logged Yet</h4>
+                                            <p className="text-[11px] text-neutral-500">
+                                                Physical hive inspections recorded by the apiary owner will automatically appear here with real health vitals, queen sightings, and pest counts.
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => onTabChange('inspections')}
+                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs transition-all"
+                                        >
+                                            <Plus className="w-3.5 h-3.5" />
+                                            Log First Hive Inspection
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -702,14 +806,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     </div>
                 </div>
 
-                {/* 3. INVENTORY SUMMARY (CALIBRATED TO 843.0 KG) */}
+                {/* 3. INVENTORY SUMMARY (CALCULATED FROM VERIFIED LOGS) */}
                 <div className="lg:col-span-12">
                     <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
                         {[
                             { label: 'Apiaries', value: loadedApiaries.length, icon: MapPin, hint: primaryApiary?.name || 'BeeYield Apiary in Kibwezi Kenya' },
-                            { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: '184 Langstroth (KIB-001..184)' },
-                            { label: 'Certified Yield', value: '843.0 KG', icon: Scale, hint: '783 KG hist + 60 KG 2026' },
-                            { label: 'Batches', value: batches.length || 8, icon: Binary, hint: 'Blockchain verified' },
+                            { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: `${loadedHives.length} Langstroth colonies` },
+                            { label: 'Certified Yield', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${harvests.length} harvest logs recorded` },
+                            { label: 'Batches', value: batches.length, icon: Binary, hint: batches.length > 0 ? `${productionSummary.verifiedBatches} verified on ledger` : 'No batches logged' },
                         ].map((card) => (
                             <div key={card.label} className={cn(glass.section, "p-5 bg-white")}>
                                 <div className="flex items-center justify-between mb-3">
@@ -806,7 +910,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-semibold text-foreground group-hover:text-amber-600 transition-colors">Traceability Batches</h3>
-                                    <p className="text-[11px] text-muted-foreground">{batches.length || 8} verified batches</p>
+                                    <p className="text-[11px] text-muted-foreground">{batches.length} verified batches</p>
                                 </div>
                             </div>
                             <button onClick={() => onTabChange('harvests')} className={cn(glass.btnSecondary, "h-8 px-3 text-[10px] bg-white")}>
@@ -814,20 +918,33 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             </button>
                         </div>
                         <div className="p-4 space-y-2">
-                            {[
-                                { code: 'KBZ-2026-01', type: 'Early Spring Acacia', weight: '60.0 KG' },
-                                { code: 'KBZ-2025-02', type: 'Forest Multifloral', weight: '300.0 KG' },
-                                { code: 'KBZ-2024-01', type: 'Wildflower & Acacia', weight: '250.0 KG' },
-                                { code: 'KBZ-2023-01', type: 'Dryland Flora', weight: '105.0 KG' },
-                            ].map((b, idx) => (
-                                <div key={idx} className="bg-white border border-neutral-200/90 rounded-xl p-3 flex items-center justify-between shadow-xs">
-                                    <div>
-                                        <div className="font-black text-[11px] tracking-tight text-neutral-900">{b.code}</div>
-                                        <div className="text-[10px] text-neutral-500">{b.type}</div>
+                            {batches.length > 0 ? (
+                                batches.slice(0, 5).map((b) => (
+                                    <div 
+                                        key={b.id} 
+                                        onClick={() => onTabChange('harvests')}
+                                        className="bg-white border border-neutral-200/90 rounded-xl p-3 flex items-center justify-between shadow-xs cursor-pointer hover:border-amber-300 hover:bg-neutral-50 transition-all"
+                                    >
+                                        <div>
+                                            <div className="font-black text-[11px] tracking-tight text-neutral-900">{b.batch_code || b.id}</div>
+                                            <div className="text-[10px] text-neutral-500">{b.honey_type || b.floral_source || 'Raw Honey'}</div>
+                                        </div>
+                                        <span className="text-xs font-bold text-amber-700">
+                                            {Number(b.total_weight_kg ?? b.quantity_kg ?? 0).toFixed(1)} KG
+                                        </span>
                                     </div>
-                                    <span className="text-xs font-bold text-amber-700">{b.weight}</span>
+                                ))
+                            ) : (
+                                <div className="py-6 text-center text-neutral-400">
+                                    <p className="text-xs font-medium">No traceability batches logged yet</p>
+                                    <button
+                                        onClick={() => onTabChange('harvests')}
+                                        className="mt-2 text-[10px] text-amber-700 font-bold hover:underline"
+                                    >
+                                        + Create Batch from Harvest
+                                    </button>
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>
