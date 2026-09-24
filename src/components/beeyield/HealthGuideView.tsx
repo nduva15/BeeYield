@@ -84,6 +84,8 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange, initialP
         const [loading, setLoading] = React.useState(true);
     const [search, setSearch] = React.useState('');
     const [diseaseTypeFilter, setDiseaseTypeFilter] = React.useState('all');
+    const [speciesCategoryFilter, setSpeciesCategoryFilter] = React.useState('all');
+    const filteredSpeciesData: any[] = [];
     
     React.useEffect(() => {
         beeyieldService.getHealthGuide('diseases').then((diseases) => {

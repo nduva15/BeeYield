@@ -33,6 +33,8 @@ import { cn } from '@/lib/utils';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { apiPost } from '@/services/api';
 
+type USBDevice = any;
+
 export function UsbHubDashboard() {
     const [device, setDevice] = React.useState<USBDevice | null>(null);
     const [connectionStatus, setConnectionStatus] = React.useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');

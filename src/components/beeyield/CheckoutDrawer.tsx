@@ -46,6 +46,7 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
     const [selectedMethod, setSelectedMethod] = React.useState<string>('method_1');
     const [isProcessing, setIsProcessing] = React.useState(false);
     const [receiptRef, setReceiptRef] = React.useState<string | null>(null);
+    const [idempotencyKey, setIdempotencyKey] = React.useState<string>('');
     const [mpesaPhone, setMpesaPhone] = React.useState<string>('');
 
     const paymentMethods: PaymentMethod[] = [
@@ -74,7 +75,9 @@ const CheckoutDrawer: React.FC<CheckoutDrawerProps> = ({ isOpen, onClose, item, 
         setIsProcessing(true);
         setStep('processing');
 
-        const idempotencyKey = crypto.randomUUID();
+        const key = crypto.randomUUID();
+        setIdempotencyKey(key);
+        const idempotencyKey = key;
 
         try {
             // 1. Initiate Checkout via Oxidized Shop Engine

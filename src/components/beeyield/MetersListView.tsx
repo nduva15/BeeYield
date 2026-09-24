@@ -18,6 +18,7 @@ import {
     XCircle, Clock, BarChart3, Info, Bell
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { glass } from './GlassTheme';
 import FirstStepsBanner from './FirstStepsBanner';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
