@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   X,
+  Eye,
   Plus,
   Search,
   Trash2,
@@ -725,6 +726,8 @@ function HiveDetailModal({
   onUpdateHive,
   onAddHarvestToHive,
   onOpenScanner,
+  onEditHive,
+  onDeleteHive,
 }: {
   hive: ApiaryHiveItem;
   apiary: ApiarySite;
@@ -732,6 +735,8 @@ function HiveDetailModal({
   onUpdateHive: (updated: ApiaryHiveItem) => void;
   onAddHarvestToHive: (batch: Omit<HiveHarvestBatch, "id">) => void;
   onOpenScanner: () => void;
+  onEditHive?: (hive: ApiaryHiveItem) => void;
+  onDeleteHive?: (hiveId: string, hiveCode: string) => void;
 }) {
   const [showAddHarvestForm, setShowAddHarvestForm] = useState(false);
   const [newBatch, setNewBatch] = useState({
@@ -793,13 +798,41 @@ function HiveDetailModal({
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-8 h-8 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onEditHive && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onEditHive(hive);
+                }}
+                className="px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5 shadow-sm transition-all"
+                title="Edit this hive"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Edit Hive
+              </button>
+            )}
+            {onDeleteHive && (
+              <button
+                type="button"
+                onClick={() => onDeleteHive(hive.id, hive.code)}
+                className="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 shadow-sm transition-all"
+                title="Delete this hive"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-8 h-8 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -1350,12 +1383,14 @@ function ApiaryDetailModal({
   weather,
   onClose,
   onEdit,
+  onDelete,
   onHivesCountChanged,
 }: {
   apiary: ApiarySite;
   weather?: LiveWeatherData;
   onClose: () => void;
   onEdit: (apiary: ApiarySite) => void;
+  onDelete?: (apiaryId: string, apiaryName: string) => void;
   onHivesCountChanged?: (apiaryId: string, count: number) => void;
 }) {
   const { user } = useAuth();
@@ -1465,10 +1500,31 @@ function ApiaryDetailModal({
     fetchUserHives();
   }, [user?.id, apiary.id, userKey, onHivesCountChanged]);
 
+  const [editingHive, setEditingHive] = useState<ApiaryHiveItem | null>(null);
+  const [modalWeather, setModalWeather] = useState<LiveWeatherData | null>(weather || null);
+  const [loadingWeather, setLoadingWeather] = useState<boolean>(false);
+
+  const loadWeatherForApiary = useCallback(async () => {
+    if (typeof apiary.latitude !== "number" || typeof apiary.longitude !== "number") return;
+    setLoadingWeather(true);
+    try {
+      const live = await fetchOpenMeteoWeather(apiary.latitude, apiary.longitude);
+      setModalWeather(live);
+    } catch {
+      setModalWeather(getFallbackWeather(apiary.latitude, apiary.longitude));
+    } finally {
+      setLoadingWeather(false);
+    }
+  }, [apiary.latitude, apiary.longitude]);
+
+  useEffect(() => {
+    loadWeatherForApiary();
+  }, [loadWeatherForApiary]);
+
   const [selectedHiveForDetail, setSelectedHiveForDetail] = useState<ApiaryHiveItem | null>(null);
   const [showAddHiveModal, setShowAddHiveModal] = useState(false);
   const [isScanningOpen, setIsScanningOpen] = useState(false);
-  const [scanContext, setScanContext] = useState<"addHive" | "detailHive">("addHive");
+  const [scanContext, setScanContext] = useState<"addHive" | "detailHive" | "editHive">("addHive");
   const [tempScannedSerial, setTempScannedSerial] = useState("");
 
   const filteredHives = useMemo(() => {
@@ -1493,12 +1549,80 @@ function ApiaryDetailModal({
   }, [harvestsList]);
 
   // Handle updates to a hive
-  const handleUpdateHive = (updated: ApiaryHiveItem) => {
+  const handleUpdateHive = async (updated: ApiaryHiveItem) => {
     const nextHives = hivesList.map((h) => (h.id === updated.id ? updated : h));
     saveHivesUserScoped(nextHives);
     if (selectedHiveForDetail?.id === updated.id) {
       setSelectedHiveForDetail(updated);
     }
+
+    if (user?.id) {
+      try {
+        await (supabase as any)
+          .from("hives")
+          .update({
+            name: updated.code,
+            max_brood_frames: updated.broodFrames,
+            queen_breeding_year: updated.queenBreedingYear,
+            queen_origin: updated.queenStatus,
+          })
+          .eq("id", updated.id);
+
+        if (updated.sensorSerial) {
+          const { data: existingDevice } = await (supabase as any)
+            .from("devices")
+            .select("id")
+            .eq("hive_id", updated.id)
+            .maybeSingle();
+
+          if (existingDevice) {
+            await (supabase as any)
+              .from("devices")
+              .update({ serial: updated.sensorSerial })
+              .eq("id", existingDevice.id);
+          } else {
+            await (supabase as any)
+              .from("devices")
+              .insert({
+                apiary_id: apiary.id,
+                hive_id: updated.id,
+                user_id: user.id,
+                serial: updated.sensorSerial,
+                device_kind: "vitalsensor",
+                link_type: "bluetooth",
+                status: "active",
+              });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to sync hive update to Supabase:", err);
+      }
+    }
+  };
+
+  const handleDeleteHive = async (hiveId: string, hiveCode: string) => {
+    if (!window.confirm(`Are you sure you want to delete hive "${hiveCode}"? This will permanently remove its records.`)) {
+      return;
+    }
+    const nextHives = hivesList.filter((h) => h.id !== hiveId);
+    saveHivesUserScoped(nextHives);
+
+    if (user?.id) {
+      try {
+        await (supabase as any).from("hives").delete().eq("id", hiveId);
+        await (supabase as any).from("devices").delete().eq("hive_id", hiveId);
+      } catch (err) {
+        console.error("Failed to delete hive from database:", err);
+      }
+    }
+
+    if (selectedHiveForDetail?.id === hiveId) {
+      setSelectedHiveForDetail(null);
+    }
+    if (editingHive?.id === hiveId) {
+      setEditingHive(null);
+    }
+    toast.success(`Hive ${hiveCode} successfully deleted`);
   };
 
   // Handle adding harvest to a specific hive
@@ -1588,6 +1712,8 @@ function ApiaryDetailModal({
         sensorSerial: serial,
       });
       toast.success(`Paired sensor ${serial} to hive ${selectedHiveForDetail.code}`);
+    } else if (scanContext === "editHive") {
+      setTempScannedSerial(serial);
     } else {
       setTempScannedSerial(serial);
     }
@@ -1629,6 +1755,17 @@ function ApiaryDetailModal({
               <Pencil className="w-3.5 h-3.5 text-amber-500" />
               Edit Apiary
             </button>
+            {onDelete && (
+              <button
+                type="button"
+                onClick={() => onDelete(apiary.id, normalizeApiaryName(apiary.name))}
+                className="px-3.5 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 shadow-sm transition-all"
+                title="Delete this apiary station"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete Apiary
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}
@@ -1643,23 +1780,41 @@ function ApiaryDetailModal({
         {/* Live Weather Microclimate Bar (Open-Meteo REST API) */}
         <div className="bg-gradient-to-r from-amber-500/10 via-emerald-500/5 to-amber-500/10 border-b border-border/70 px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-2.5 text-xs">
           <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-            <span className="flex items-center gap-1.5 font-bold text-foreground">
-              <Sun className="w-4 h-4 text-amber-500" />
-              {weather ? `${weather.currentTemp}°C ${weather.conditionText}` : "26°C Partly cloudy"}
-            </span>
+            {loadingWeather ? (
+              <span className="flex items-center gap-1.5 text-muted-foreground animate-pulse font-medium">
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-500" />
+                Fetching live climate for {normalizeApiaryLocation(apiary.location_name)}...
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 font-bold text-foreground">
+                <Sun className="w-4 h-4 text-amber-500" />
+                {modalWeather ? `${modalWeather.currentTemp}°C ${modalWeather.conditionText}` : "Live Weather Synced"}
+              </span>
+            )}
             <span className="flex items-center gap-1 text-muted-foreground">
               <Droplets className="w-3.5 h-3.5 text-blue-500" />
-              {weather ? `${weather.currentHumidity}% Humidity` : "52% Humidity"}
+              {modalWeather ? `${modalWeather.currentHumidity}% Humidity` : "—"}
             </span>
             <span className="flex items-center gap-1 text-muted-foreground">
               <Wind className="w-3.5 h-3.5 text-emerald-500" />
-              {weather ? `${weather.currentWind} km/h Wind` : "12 km/h Wind"}
+              {modalWeather ? `${modalWeather.currentWind} km/h Wind` : "—"}
             </span>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Open-Meteo API Connected
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={loadWeatherForApiary}
+              disabled={loadingWeather}
+              className="p-1 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              title="Refresh live weather for this location"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loadingWeather ? "animate-spin text-amber-500" : ""}`} />
+            </button>
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Open-Meteo ({apiary.latitude.toFixed(2)}°, {apiary.longitude.toFixed(2)}°)
+            </span>
+          </div>
         </div>
 
         {/* Beautiful Segmented Tab Controller (Fits Mobile Perfectly Without Any Cutoffs) */}
@@ -1831,9 +1986,35 @@ function ApiaryDetailModal({
                               )}
                             </td>
                             <td className="px-4 py-3 text-right">
-                              <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 group-hover:underline flex items-center justify-end gap-1">
-                                View Details <ChevronRight className="w-3.5 h-3.5" />
-                              </span>
+                              <div
+                                className="flex items-center justify-end gap-1.5"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedHiveForDetail(hive)}
+                                  className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                  title="View details"
+                                >
+                                  <Eye className="w-3 h-3 text-amber-500" /> View
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingHive(hive)}
+                                  className="px-2 py-1 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                  title="Edit hive"
+                                >
+                                  <Pencil className="w-3 h-3" /> Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteHive(hive.id, hive.code)}
+                                  className="p-1 rounded-lg border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-[11px] font-bold flex items-center transition-colors"
+                                  title="Delete hive"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -1995,6 +2176,24 @@ function ApiaryDetailModal({
               setScanContext("detailHive");
               setIsScanningOpen(true);
             }}
+            onEditHive={(h) => setEditingHive(h)}
+            onDeleteHive={handleDeleteHive}
+          />
+        )}
+
+        {/* Modal: Edit Existing Hive */}
+        {editingHive && (
+          <EditHiveModal
+            isOpen={!!editingHive}
+            hive={editingHive}
+            apiary={apiary}
+            onClose={() => setEditingHive(null)}
+            onSaveHive={handleUpdateHive}
+            onOpenScanner={() => {
+              setScanContext("editHive");
+              setIsScanningOpen(true);
+            }}
+            scannedSerial={scanContext === "editHive" ? tempScannedSerial : undefined}
           />
         )}
 
@@ -2036,12 +2235,14 @@ export function ApisenseWeatherCard({
   weather,
   userKey,
   onEdit,
+  onDelete,
   onOpenDetails,
 }: {
   apiary: ApiarySite;
   weather?: LiveWeatherData;
   userKey?: string;
   onEdit: (apiary: ApiarySite) => void;
+  onDelete?: (apiaryId: string, apiaryName: string) => void;
   onOpenDetails: (apiary: ApiarySite) => void;
 }) {
   const displayName = normalizeApiaryName(apiary.name);
@@ -2218,6 +2419,19 @@ export function ApisenseWeatherCard({
           >
             <Edit className="w-3 h-3" /> Edit
           </button>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(apiary.id, displayName);
+              }}
+              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 flex items-center gap-1 p-1 hover:underline"
+              title="Delete apiary"
+            >
+              <Trash2 className="w-3 h-3" /> Delete
+            </button>
+          )}
           <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40">
             View Details <ChevronRight className="w-3 h-3" />
           </span>
@@ -2721,6 +2935,7 @@ export default function ApiariesPage({
                 weather={weatherMap[apiary.id]}
                 userKey={userKey}
                 onEdit={handleEdit}
+                onDelete={handleDeleteApiary}
                 onOpenDetails={handleOpenDetails}
               />
             ))}
@@ -2926,6 +3141,7 @@ export default function ApiariesPage({
             weather={weatherMap[selectedDetailApiary.id]}
             onClose={() => setSelectedDetailApiary(null)}
             onEdit={handleEdit}
+            onDelete={handleDeleteApiary}
             onHivesCountChanged={handleHivesCountChanged}
           />
         )}
