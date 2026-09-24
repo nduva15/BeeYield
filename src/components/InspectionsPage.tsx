@@ -63,7 +63,7 @@ export interface ApiaryOption {
 }
 
 export const CANONICAL_APIARIES: ApiaryOption[] = [
-  { id: "apiary-kibwezi", name: "Kibwezi Main Apiary", region: "Kibwezi East", county: "Makueni" },
+  { id: "apiary-kibwezi", name: "BeeYield Apiary in Kibwezi Kenya", region: "Kibwezi East", county: "Makueni" },
 ];
 
 // Timothy Nduva's 184 Managed Langstroth Hives with deterministic live vitals & telemetry
@@ -273,7 +273,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
           id: uh.id,
           hive_code: code,
           name: uh.name || code,
-          apiary_name: uh.apiary_name || "Kibwezi Main Apiary",
+          apiary_name: uh.apiary_name || "BeeYield Apiary in Kibwezi Kenya",
           frame_count: 10,
         });
       }
