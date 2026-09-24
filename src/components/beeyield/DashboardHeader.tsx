@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import {
+    Home,
     LogIn,
     Calendar,
     Calculator,
@@ -199,8 +200,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
     const currentItem = navCategories.flatMap(c => c.items).find(i => i.id === activeTab) || 
         navItems.find(i => i.id === activeTab);
-    const CurrentIcon = (currentItem as any)?.icon || Sparkles;
-    const currentLabel = (currentItem as any)?.label || (activeTab === 'home' ? 'AI Tools (37)' : activeTab.replace(/-/g, ' '));
+    const CurrentIcon = (currentItem as any)?.icon || (activeTab === 'home' ? Home : Sparkles);
+    const currentLabel = (currentItem as any)?.label || (activeTab === 'home' ? 'Home' : activeTab.replace(/-/g, ' '));
 
     return (
         <header className={cn(
@@ -219,21 +220,21 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <Menu className="w-5 h-5 text-[#F4D03F]" />
                 </button>
 
-                {/* BeeYield Tools Dropdown - Dark sleek honey theme matching companion 1:1 */}
+                {/* BeeYield Tools Dropdown - Dark sleek honey theme matching screenshot 1:1 */}
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                     <DropdownMenuTrigger asChild>
                         <button
-                            className="flex items-center gap-2 px-3 py-1.5 bg-[#181614] hover:bg-[#231f1a] border border-amber-500/40 hover:border-amber-500/70 rounded-xl transition-all group outline-none shrink-0 shadow-md text-white"
+                            className="flex items-center gap-2.5 px-3 py-1.5 bg-[#14120f] hover:bg-[#1c1915] border border-amber-500/50 hover:border-amber-500/80 rounded-2xl transition-all group outline-none shrink-0 shadow-lg text-white"
                             title="BeeYield AI Tools & Views Directory"
                         >
-                            <div className="w-5 h-5 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-                                <CurrentIcon className="w-3.5 h-3.5" />
+                            <div className="w-7 h-7 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-[#f59e0b] shrink-0">
+                                <CurrentIcon className="w-4 h-4 text-[#f59e0b]" />
                             </div>
                             <div className="flex flex-col text-left">
-                                <span className="text-[9px] text-amber-400 font-bold uppercase tracking-wider leading-none">BeeYield AI</span>
-                                <span className="text-xs font-semibold text-neutral-100 capitalize tracking-tight flex items-center gap-1 max-w-[130px] sm:max-w-[200px] truncate leading-tight">
+                                <span className="text-[10px] text-[#f59e0b] font-bold uppercase tracking-wider leading-none">BEEYIELD AI</span>
+                                <span className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5 leading-tight mt-0.5">
                                     {currentLabel}
-                                    <ChevronDown className="w-3 h-3 text-neutral-400 group-data-[state=open]:rotate-180 transition-transform shrink-0" />
+                                    <ChevronDown className="w-3.5 h-3.5 text-neutral-300 group-data-[state=open]:rotate-180 transition-transform shrink-0" />
                                 </span>
                             </div>
                         </button>
@@ -241,19 +242,19 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuContent
                         align="start"
                         sideOffset={8}
-                        className="w-72 sm:w-80 max-h-[82vh] overflow-y-auto rounded-2xl border border-amber-500/30 p-2 shadow-2xl bg-[#181614] text-white z-50 custom-scrollbar"
+                        className="w-76 sm:w-84 max-h-[85vh] overflow-y-auto rounded-2xl border border-neutral-800 p-2.5 shadow-2xl bg-[#14120f] text-white z-50 custom-scrollbar"
                     >
                         {/* Search tools input matching screenshot */}
-                        <div className="p-1 mb-2 border-b border-neutral-800">
+                        <div className="p-1 mb-2.5 border-b border-neutral-800/80">
                             <div className="relative">
-                                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
+                                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                                 <input
                                     type="text"
                                     value={dropdownQuery}
                                     onChange={(e) => setDropdownQuery(e.target.value)}
                                     placeholder="Search tools"
                                     aria-label="Search tools"
-                                    className="w-full bg-[#24201c] border border-neutral-700/80 rounded-lg pl-8 pr-2.5 py-1.5 text-xs text-white placeholder:text-neutral-500 outline-none focus:border-amber-400/80 transition-colors"
+                                    className="w-full bg-[#1e1c18] border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder:text-neutral-500 outline-none focus:border-amber-500/80 transition-colors"
                                     onClick={(e) => e.stopPropagation()}
                                     onKeyDown={(e) => e.stopPropagation()}
                                     autoFocus
@@ -266,10 +267,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                 No tool matches “{dropdownQuery}”.
                             </p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-3.5">
                                 {filteredCategories.map((category) => (
-                                    <div key={category.title} className="space-y-0.5">
-                                        <p className="px-2 mb-1 text-[10px] font-bold uppercase tracking-wider text-amber-500">
+                                    <div key={category.title} className="space-y-1">
+                                        <p className="px-2.5 mb-1 text-[10px] font-bold uppercase tracking-wider text-[#f59e0b]">
                                             {category.title}
                                         </p>
                                         <div className="space-y-0.5">
@@ -284,16 +285,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                             setDropdownOpen(false);
                                                         }}
                                                         className={cn(
-                                                            "w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-left text-xs cursor-pointer transition-colors focus:bg-neutral-800/80 focus:text-white",
+                                                            "w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-left text-[13px] cursor-pointer transition-colors focus:bg-[#262420] focus:text-white",
                                                             isActive
-                                                                ? "bg-amber-500/20 text-white font-medium border border-amber-500/30"
-                                                                : "text-[#d6c7b2] hover:text-white hover:bg-white/5"
+                                                                ? "bg-[#262420] text-white font-medium border border-amber-500/20 shadow-sm"
+                                                                : "text-neutral-200 hover:text-white hover:bg-[#201d19]"
                                                         )}
                                                     >
                                                         <ItemIcon className="w-4 h-4 flex-shrink-0 text-[#f59e0b]" />
                                                         <span className="truncate flex-1">{item.label}</span>
                                                         {isActive && (
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
                                                         )}
                                                     </DropdownMenuItem>
                                                 );
@@ -310,10 +311,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {onToggleToolsDrawer && (
                     <button
                         onClick={onToggleToolsDrawer}
-                        className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-amber-500/30 bg-[#181614] hover:bg-[#231f1a] hover:border-amber-500/60 text-amber-400 text-xs font-medium transition-all shadow-sm"
+                        className="flex items-center gap-2 px-3.5 py-2 rounded-2xl border border-amber-500/40 bg-[#14120f] hover:bg-[#1c1915] hover:border-amber-500/70 text-[#f59e0b] text-xs font-bold transition-all shadow-md shrink-0"
                         title="Open AI Tools Rail"
                     >
-                        <Menu className="w-3.5 h-3.5 text-amber-400" />
+                        <Menu className="w-4 h-4 text-[#f59e0b]" />
                         <span>AI Tools Rail</span>
                     </button>
                 )}
