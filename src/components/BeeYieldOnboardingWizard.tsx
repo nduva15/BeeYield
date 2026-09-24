@@ -75,13 +75,13 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
   // Step 1: Apiary Form State
   const [apiaryForm, setApiaryForm] = useState({
     name: '',
-    location_name: '',
+    location_name: 'Kibwezi, Makueni, Kenya',
     latitude: -2.409,
     longitude: 37.967,
-    size_acres: 18,
+    size_acres: 5,
     type: 'Stationary Farm Yard',
     forage_type: 'Acacia Tortilis, Desert Date & Citrus Blossom',
-    notes: `Lead Beekeeper: ${effectiveUser?.user_metadata?.full_name || userName}. Commercial apiculture site.`,
+    notes: `Lead Beekeeper: ${effectiveUser?.user_metadata?.full_name || userName}. 5-acre commercial apiculture site in Kibwezi, Kenya.`,
   });
   const [isDetectingGps, setIsDetectingGps] = useState(false);
   const [savingApiary, setSavingApiary] = useState(false);
@@ -380,7 +380,7 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
                   required
                   value={apiaryForm.location_name}
                   onChange={(e) => setApiaryForm({ ...apiaryForm, location_name: e.target.value })}
-                  placeholder="e.g. Kiunduani, Kibwezi, Makueni County"
+                  placeholder="e.g. Kibwezi, Makueni County, Kenya"
                   className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-xs font-medium text-foreground focus:ring-2 focus:ring-amber-500/20"
                 />
               </div>

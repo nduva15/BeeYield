@@ -45,6 +45,11 @@ import {
   QrCode,
   Camera,
   Crown,
+  Cpu,
+  Radio,
+  Wifi,
+  Bug,
+  Thermometer,
 } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "sonner";
@@ -103,6 +108,21 @@ export interface HiveHarvestBatch {
   moisturePct?: number;
 }
 
+export type DeviceCategory = "in_land" | "in_hive" | "disease_devices";
+
+export interface ApiaryDeviceItem {
+  id: string;
+  category: DeviceCategory;
+  deviceType: string;
+  serial: string;
+  hiveCode?: string;
+  status: "active" | "online" | "optimal" | "low_battery" | "calibrating";
+  lastSync?: string;
+  telemetrySummary?: string;
+  model: string;
+  installedAt?: string;
+}
+
 export interface ApiaryHiveItem {
   id: string;
   code: string;
@@ -116,6 +136,8 @@ export interface ApiaryHiveItem {
   colonyStrength?: string;
   colonyAvailability?: string;
   sensorSerial?: string;
+  deviceCategory?: DeviceCategory;
+  deviceType?: string;
   batches: HiveHarvestBatch[];
 }
 
@@ -198,16 +220,18 @@ export function normalizeApiaryName(name?: string): string {
 }
 
 export function normalizeApiaryLocation(loc?: string): string {
-  if (!loc) return "Kiunduani, Kibwezi, Makueni, Kenya";
+  if (!loc) return "Kibwezi, Makueni, Kenya";
   const trimmed = loc.trim();
   const lower = trimmed.toLowerCase();
   if (
     lower === "kiunduani, kibwezi, makueni" ||
     lower === "kibwezi, makueni" ||
+    lower === "kibwezi" ||
     lower.includes("kiunduani, kibwezi, makueni") ||
-    (lower.includes("kiunduani") && !lower.includes("kenya"))
+    (lower.includes("kiunduani") && !lower.includes("kenya")) ||
+    (lower.includes("kibwezi") && !lower.includes("kenya"))
   ) {
-    return "Kiunduani, Kibwezi, Makueni, Kenya";
+    return "Kibwezi, Makueni, Kenya";
   }
   return trimmed;
 }
@@ -322,7 +346,7 @@ export const DEFAULT_APIARIES: ApiarySite[] = [
   {
     id: "apiary-kibwezi",
     name: "BeeYield Apiary in Kibwezi Kenya",
-    location_name: "Kiunduani, Kibwezi, Makueni, Kenya",
+    location_name: "Kibwezi, Makueni, Kenya",
     county: "Makueni",
     region: "Kibwezi East",
     latitude: -2.409,
@@ -331,10 +355,329 @@ export const DEFAULT_APIARIES: ApiarySite[] = [
     status: "Optimal",
     active_hives: 184,
     total_hives: 184,
-    size_acres: 18,
+    size_acres: 5,
     forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
-    notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
+    notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives on 5 acres in Kibwezi ecosystem, Kenya.",
     created_at: "2020-01-01T08:00:00Z",
+  },
+];
+
+// Device Categories configuration
+export const DEVICE_CATEGORIES: {
+  id: DeviceCategory;
+  label: string;
+  icon: string;
+  badgeColor: string;
+  description: string;
+  defaultTypes: string[];
+}[] = [
+  {
+    id: "in_land",
+    label: "In Land Devices",
+    icon: "🏞️",
+    badgeColor: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+    description: "Apiary environmental, weather station, soil moisture & perimeter defense",
+    defaultTypes: [
+      "Microclimate Weather Station (Open-Meteo Gateway)",
+      "Flora Bloom & Soil Moisture Probe Node",
+      "Acoustic Perimeter & Pest Defense Node",
+      "Solar Mesh Apiary Relay Hub",
+    ],
+  },
+  {
+    id: "in_hive",
+    label: "In Hive Devices",
+    icon: "🐝",
+    badgeColor: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30",
+    description: "Hive weight telemetry scales, brood core temperature & colony acoustics",
+    defaultTypes: [
+      "Hive Weight Scale (Telemetry Load Cell)",
+      "Apisense VitalSensor (Brood Cluster Temp & Acoustics)",
+      "Intelligent Hives Brood Monitor",
+      "Brood Frame Temperature Strip Monitor",
+      "Apisense NFC/QR Hive Tag",
+    ],
+  },
+  {
+    id: "disease_devices",
+    label: "Disease Devices",
+    icon: "🔬",
+    badgeColor: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30",
+    description: "Early Varroa detection, American Foulbrood scanner & biosecurity traps",
+    defaultTypes: [
+      "ApiSense Early Varroa Optical & Acoustic Detector",
+      "AI Brood Disease & Foulbrood (AFB) Diagnostic Scanner",
+      "Small Hive Beetle (SHB) & Wax Moth Telemetry Trap",
+      "Colony Depletion & Queen Mortality Warning Sensor",
+    ],
+  },
+];
+
+// Canonical 22 IoT Devices Active in Kibwezi Apiary (Deployed with Polish Partners Apisense & Intelligent Hives)
+export const CANONICAL_KIBWEZI_DEVICES: ApiaryDeviceItem[] = [
+  // In-Hive: Weight Scales
+  {
+    id: "dev-scale-001",
+    category: "in_hive",
+    deviceType: "Hive Weight Scale (Telemetry Load Cell)",
+    serial: "SCALE-KBZ-001",
+    hiveCode: "KIB-001",
+    status: "optimal",
+    lastSync: "10 mins ago",
+    telemetrySummary: "Weight: 44.2 kg (+1.4 kg / 48h nectar flow)",
+    model: "Apisense Pro Scale 150kg",
+    installedAt: "2025-06-15",
+  },
+  {
+    id: "dev-scale-002",
+    category: "in_hive",
+    deviceType: "Hive Weight Scale (Telemetry Load Cell)",
+    serial: "SCALE-KBZ-002",
+    hiveCode: "KIB-002",
+    status: "optimal",
+    lastSync: "15 mins ago",
+    telemetrySummary: "Weight: 42.8 kg (+0.9 kg nectar flow)",
+    model: "Apisense Pro Scale 150kg",
+    installedAt: "2025-06-15",
+  },
+  {
+    id: "dev-scale-003",
+    category: "in_hive",
+    deviceType: "Hive Weight Scale (Telemetry Load Cell)",
+    serial: "SCALE-KBZ-003",
+    hiveCode: "KIB-003",
+    status: "optimal",
+    lastSync: "32 mins ago",
+    telemetrySummary: "Weight: 39.5 kg (Steady)",
+    model: "Apisense Pro Scale 150kg",
+    installedAt: "2025-07-02",
+  },
+  {
+    id: "dev-scale-004",
+    category: "in_hive",
+    deviceType: "Hive Weight Scale (Telemetry Load Cell)",
+    serial: "SCALE-KBZ-004",
+    hiveCode: "KIB-004",
+    status: "optimal",
+    lastSync: "45 mins ago",
+    telemetrySummary: "Weight: 41.1 kg (+1.1 kg / 48h)",
+    model: "Apisense Pro Scale 150kg",
+    installedAt: "2025-07-02",
+  },
+  // In-Hive: VitalSensors & Brood Monitors
+  {
+    id: "dev-vs-001",
+    category: "in_hive",
+    deviceType: "Apisense VitalSensor (Brood Cluster Temp & Acoustics)",
+    serial: "VS-KBZ-001",
+    hiveCode: "KIB-001",
+    status: "optimal",
+    lastSync: "4 mins ago",
+    telemetrySummary: "Core Temp: 35.1°C · Acoustics: 245 Hz (Queen Laying)",
+    model: "Apisense VitalSensor v2.4",
+    installedAt: "2025-05-10",
+  },
+  {
+    id: "dev-vs-002",
+    category: "in_hive",
+    deviceType: "Apisense VitalSensor (Brood Cluster Temp & Acoustics)",
+    serial: "VS-KBZ-002",
+    hiveCode: "KIB-002",
+    status: "optimal",
+    lastSync: "8 mins ago",
+    telemetrySummary: "Core Temp: 34.9°C · Acoustics: 238 Hz (Normal)",
+    model: "Apisense VitalSensor v2.4",
+    installedAt: "2025-05-10",
+  },
+  {
+    id: "dev-vs-005",
+    category: "in_hive",
+    deviceType: "Intelligent Hives Brood Monitor",
+    serial: "IH-BROOD-005",
+    hiveCode: "KIB-005",
+    status: "optimal",
+    lastSync: "12 mins ago",
+    telemetrySummary: "Brood Index: 92% · Humidity: 58% RH",
+    model: "Intelligent Hives BM-300",
+    installedAt: "2025-08-14",
+  },
+  {
+    id: "dev-vs-006",
+    category: "in_hive",
+    deviceType: "Apisense VitalSensor (Brood Cluster Temp & Acoustics)",
+    serial: "VS-KBZ-006",
+    hiveCode: "KIB-006",
+    status: "optimal",
+    lastSync: "25 mins ago",
+    telemetrySummary: "Core Temp: 35.0°C · Acoustics: 242 Hz",
+    model: "Apisense VitalSensor v2.4",
+    installedAt: "2025-08-14",
+  },
+  {
+    id: "dev-vs-007",
+    category: "in_hive",
+    deviceType: "Intelligent Hives Brood Monitor",
+    serial: "IH-BROOD-007",
+    hiveCode: "KIB-007",
+    status: "optimal",
+    lastSync: "19 mins ago",
+    telemetrySummary: "Brood Index: 88% · Humidity: 61% RH",
+    model: "Intelligent Hives BM-300",
+    installedAt: "2025-09-01",
+  },
+  {
+    id: "dev-vs-008",
+    category: "in_hive",
+    deviceType: "Apisense VitalSensor (Brood Cluster Temp & Acoustics)",
+    serial: "VS-KBZ-008",
+    hiveCode: "KIB-008",
+    status: "optimal",
+    lastSync: "30 mins ago",
+    telemetrySummary: "Core Temp: 35.2°C · Acoustics: 240 Hz",
+    model: "Apisense VitalSensor v2.4",
+    installedAt: "2025-09-01",
+  },
+  {
+    id: "dev-tag-009",
+    category: "in_hive",
+    deviceType: "Apisense NFC/QR Hive Tag",
+    serial: "TAG-KBZ-009",
+    hiveCode: "KIB-009",
+    status: "optimal",
+    lastSync: "2 hours ago",
+    telemetrySummary: "QR Scanned Inspection Logged",
+    model: "Apisense Rugged Tag",
+    installedAt: "2025-09-15",
+  },
+  {
+    id: "dev-tag-010",
+    category: "in_hive",
+    deviceType: "Apisense NFC/QR Hive Tag",
+    serial: "TAG-KBZ-010",
+    hiveCode: "KIB-010",
+    status: "optimal",
+    lastSync: "2 hours ago",
+    telemetrySummary: "QR Scanned Inspection Logged",
+    model: "Apisense Rugged Tag",
+    installedAt: "2025-09-15",
+  },
+  // In-Land Devices
+  {
+    id: "dev-land-001",
+    category: "in_land",
+    deviceType: "Microclimate Weather Station (Open-Meteo Gateway)",
+    serial: "HUB-KBZ-LAND-01",
+    status: "optimal",
+    lastSync: "Live (Open-Meteo)",
+    telemetrySummary: "Ambient: 26.4°C · 52% RH · Wind: 14 km/h ESE",
+    model: "Apisense Solar LoRa Gateway v3",
+    installedAt: "2025-04-20",
+  },
+  {
+    id: "dev-land-002",
+    category: "in_land",
+    deviceType: "Flora Bloom & Soil Moisture Probe Node",
+    serial: "SOIL-KBZ-01",
+    status: "optimal",
+    lastSync: "15 mins ago",
+    telemetrySummary: "Soil Moisture: 28% VWC · Soil Temp: 22.8°C",
+    model: "Apisense AgroProbe Multi-Depth",
+    installedAt: "2025-04-20",
+  },
+  {
+    id: "dev-land-003",
+    category: "in_land",
+    deviceType: "Acoustic Perimeter & Pest Defense Node",
+    serial: "PERIMETER-KBZ-01",
+    status: "optimal",
+    lastSync: "6 mins ago",
+    telemetrySummary: "North Perimeter Secure · Ultrasonic Armed",
+    model: "Intelligent Hives Perimeter Guard",
+    installedAt: "2025-06-01",
+  },
+  {
+    id: "dev-land-004",
+    category: "in_land",
+    deviceType: "Solar Mesh Apiary Relay Hub",
+    serial: "RELAY-KBZ-02",
+    status: "optimal",
+    lastSync: "Live (5-min ping)",
+    telemetrySummary: "Battery: 98% · Solar Inflow: 18.2W · 22 Nodes Connected",
+    model: "Apisense Mesh Relay 868MHz",
+    installedAt: "2025-06-01",
+  },
+  // Disease Devices
+  {
+    id: "dev-dis-001",
+    category: "disease_devices",
+    deviceType: "ApiSense Early Varroa Optical & Acoustic Detector",
+    serial: "VARROA-KBZ-001",
+    hiveCode: "KIB-001",
+    status: "optimal",
+    lastSync: "5 mins ago",
+    telemetrySummary: "Mite Load: 0.2 / 100 bees (Safe Below 1.0 Threshold)",
+    model: "ApiSense VarroaSense Acoustic AI",
+    installedAt: "2025-06-15",
+  },
+  {
+    id: "dev-dis-002",
+    category: "disease_devices",
+    deviceType: "ApiSense Early Varroa Optical & Acoustic Detector",
+    serial: "VARROA-KBZ-002",
+    hiveCode: "KIB-002",
+    status: "optimal",
+    lastSync: "9 mins ago",
+    telemetrySummary: "Mite Load: 0.3 / 100 bees (Safe)",
+    model: "ApiSense VarroaSense Acoustic AI",
+    installedAt: "2025-06-15",
+  },
+  {
+    id: "dev-dis-003",
+    category: "disease_devices",
+    deviceType: "ApiSense Early Varroa Optical & Acoustic Detector",
+    serial: "VARROA-KBZ-003",
+    hiveCode: "KIB-003",
+    status: "optimal",
+    lastSync: "18 mins ago",
+    telemetrySummary: "Mite Load: 0.1 / 100 bees (Clean)",
+    model: "ApiSense VarroaSense Acoustic AI",
+    installedAt: "2025-07-02",
+  },
+  {
+    id: "dev-dis-004",
+    category: "disease_devices",
+    deviceType: "ApiSense Early Varroa Optical & Acoustic Detector",
+    serial: "VARROA-KBZ-004",
+    hiveCode: "KIB-004",
+    status: "optimal",
+    lastSync: "22 mins ago",
+    telemetrySummary: "Mite Load: 0.2 / 100 bees (Safe)",
+    model: "ApiSense VarroaSense Acoustic AI",
+    installedAt: "2025-07-02",
+  },
+  {
+    id: "dev-dis-005",
+    category: "disease_devices",
+    deviceType: "AI Brood Disease & Foulbrood (AFB) Diagnostic Scanner",
+    serial: "AFB-DIAG-KBZ-01",
+    hiveCode: "KIB-005",
+    status: "optimal",
+    lastSync: "1 hour ago",
+    telemetrySummary: "Pathogen Scan: Negative (No AFB/EFB Spores Detected)",
+    model: "Intelligent Hives PathoScan AI",
+    installedAt: "2025-08-14",
+  },
+  {
+    id: "dev-dis-006",
+    category: "disease_devices",
+    deviceType: "Small Hive Beetle (SHB) & Wax Moth Telemetry Trap",
+    serial: "SHB-TRAP-KBZ-01",
+    hiveCode: "KIB-008",
+    status: "optimal",
+    lastSync: "45 mins ago",
+    telemetrySummary: "Trap Clear · Optical Count: 0 Pests",
+    model: "BeeYield BioSecure Trap v1.1",
+    installedAt: "2025-09-01",
   },
 ];
 
@@ -1257,6 +1600,252 @@ function HiveDetailModal({
   );
 }
 
+
+// ----------------------------------------------------------------------
+// Add / Scan Device Modal (Choose In Land, In Hive, Disease Devices + Scan or Enter Code)
+// ----------------------------------------------------------------------
+function AddDeviceModal({
+  isOpen,
+  apiary,
+  hives,
+  preselectedCategory = "in_hive",
+  preselectedHiveCode,
+  onClose,
+  onAddDevice,
+  onOpenScanner,
+  scannedCode,
+}: {
+  isOpen: boolean;
+  apiary: ApiarySite;
+  hives: ApiaryHiveItem[];
+  preselectedCategory?: DeviceCategory;
+  preselectedHiveCode?: string;
+  onClose: () => void;
+  onAddDevice: (device: ApiaryDeviceItem) => void;
+  onOpenScanner: () => void;
+  scannedCode?: string;
+}) {
+  const [category, setCategory] = useState<DeviceCategory>(preselectedCategory);
+  const [deviceType, setDeviceType] = useState<string>("Hive Weight Scale (Telemetry Load Cell)");
+  const [deviceCode, setDeviceCode] = useState(scannedCode || "");
+  const [targetHive, setTargetHive] = useState(preselectedHiveCode || (hives[0]?.code ?? ""));
+  const [model, setModel] = useState("Apisense Pro Scale 150kg");
+
+  useEffect(() => {
+    if (scannedCode) {
+      setDeviceCode(scannedCode);
+    }
+  }, [scannedCode]);
+
+  useEffect(() => {
+    if (category === "in_hive") {
+      setDeviceType("Hive Weight Scale (Telemetry Load Cell)");
+      setModel("Apisense Pro Scale 150kg");
+    } else if (category === "in_land") {
+      setDeviceType("Microclimate Weather Station (Open-Meteo Gateway)");
+      setModel("Apisense Solar LoRa Gateway v3");
+    } else if (category === "disease_devices") {
+      setDeviceType("ApiSense Early Varroa Optical & Acoustic Detector");
+      setModel("ApiSense VarroaSense Acoustic AI");
+    }
+  }, [category]);
+
+  if (!isOpen) return null;
+
+  const activeCategoryMeta = DEVICE_CATEGORIES.find((c) => c.id === category) || DEVICE_CATEGORIES[1];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const finalCode = deviceCode.trim();
+    if (!finalCode) {
+      toast.error("Please enter or scan a device code / serial");
+      return;
+    }
+
+    const newDevice: ApiaryDeviceItem = {
+      id: `dev-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      category,
+      deviceType,
+      serial: finalCode.toUpperCase(),
+      hiveCode: category === "in_land" ? undefined : (targetHive || undefined),
+      status: "optimal",
+      lastSync: "Just registered",
+      telemetrySummary:
+        category === "in_hive" && deviceType.toLowerCase().includes("scale")
+          ? "Weight Scale Online · Calibrated (Tare 0.0 kg)"
+          : category === "disease_devices"
+          ? "Biohazard & Varroa AI Diagnostic Armed · Clean"
+          : category === "in_land"
+          ? "Ambient Environmental Telemetry Active"
+          : "Colony Vital Telemetry Active · Normal",
+      model: model || "Apisense IoT Hardware",
+      installedAt: new Date().toISOString().split("T")[0],
+    };
+
+    onAddDevice(newDevice);
+    toast.success(`Successfully registered ${newDevice.serial} (${newDevice.deviceType})`);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
+      <div className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        <div className="p-4 bg-amber-500 text-stone-950 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Radio className="w-5 h-5 font-black" />
+            <h3 className="font-bold text-sm">Register & Pair IoT Device — {normalizeApiaryName(apiary.name)}</h3>
+          </div>
+          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-black/10 transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4">
+          {/* STEP 1: Choose Device Category */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-foreground flex items-center justify-between">
+              <span>1. Choose Device Category *</span>
+              <span className="text-[10px] text-amber-600 font-semibold">Select deployment context</span>
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {DEVICE_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setCategory(cat.id)}
+                  className={`p-3 rounded-2xl border text-left transition-all flex flex-col gap-1 ${
+                    category === cat.id
+                      ? "border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/20 shadow-sm"
+                      : "border-border hover:border-amber-500/50 bg-background"
+                  }`}
+                >
+                  <span className="text-lg">{cat.icon}</span>
+                  <span className="text-xs font-bold text-foreground leading-tight">{cat.label}</span>
+                  <span className="text-[9px] text-muted-foreground line-clamp-2 leading-tight">
+                    {cat.id === "in_land" ? "Weather & Soil" : cat.id === "in_hive" ? "Scales & Vitals" : "Varroa & Disease"}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground pt-1">{activeCategoryMeta.description}</p>
+          </div>
+
+          {/* STEP 2: Device Specific Type */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-foreground">2. Device Model / Hardware Type *</label>
+            <select
+              value={deviceType}
+              onChange={(e) => {
+                setDeviceType(e.target.value);
+                if (e.target.value.toLowerCase().includes("scale")) {
+                  setModel("Apisense Pro Scale 150kg");
+                } else if (e.target.value.toLowerCase().includes("vital")) {
+                  setModel("Apisense VitalSensor v2.4");
+                } else if (e.target.value.toLowerCase().includes("varroa")) {
+                  setModel("ApiSense VarroaSense Acoustic AI");
+                } else if (e.target.value.toLowerCase().includes("weather")) {
+                  setModel("Apisense Solar LoRa Gateway v3");
+                }
+              }}
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold"
+            >
+              {activeCategoryMeta.defaultTypes.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* If In-Hive or Disease, Select Paired Hive */}
+          {category !== "in_land" && hives.length > 0 && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-foreground flex items-center justify-between">
+                <span>Assign To Hive</span>
+                <span className="text-[10px] text-muted-foreground">Target Colony</span>
+              </label>
+              <select
+                value={targetHive}
+                onChange={(e) => setTargetHive(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold"
+              >
+                <option value="">-- Unassigned (Station Standby) --</option>
+                {hives.map((h) => (
+                  <option key={h.id} value={h.code}>
+                    {h.code} — {h.name} {h.sensorSerial ? `(Currently: ${h.sensorSerial})` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* STEP 3: Scan Sensor or Enter Code (Weight Scales, VitalSensors, etc.) */}
+          <div className="p-3.5 rounded-2xl border border-border bg-background space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <ScanLine className="w-4 h-4 text-amber-500" /> 3. Scan QR Tag or Enter Hardware Code *
+              </span>
+              <button
+                type="button"
+                onClick={onOpenScanner}
+                className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-[11px] flex items-center gap-1 shadow-sm transition-all"
+              >
+                <Camera className="w-3.5 h-3.5" /> Scan Sensor (Camera)
+              </button>
+            </div>
+
+            <p className="text-[11px] text-muted-foreground">
+              Scan barcode/QR on the enclosure or enter code manually for weight scales, telemetry nodes, and pathogen traps.
+            </p>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                required
+                value={deviceCode}
+                onChange={(e) => setDeviceCode(e.target.value)}
+                placeholder={
+                  category === "in_hive" && deviceType.toLowerCase().includes("scale")
+                    ? "e.g. SCALE-KBZ-005"
+                    : category === "disease_devices"
+                    ? "e.g. VARROA-KBZ-005"
+                    : "e.g. HUB-KBZ-LAND-02"
+                }
+                className="flex-1 bg-card border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider"
+              />
+              <button
+                type="button"
+                onClick={onOpenScanner}
+                className="px-3 py-2 rounded-xl border border-border hover:bg-muted text-xs font-semibold flex items-center gap-1 shrink-0"
+              >
+                <ScanLine className="w-3.5 h-3.5 text-amber-500" />
+                Scan
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-2 flex items-center justify-end gap-2 border-t border-border">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl border border-border text-xs font-semibold text-muted-foreground hover:text-foreground"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all"
+            >
+              <Check className="w-4 h-4 font-black" />
+              Register Device
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ----------------------------------------------------------------------
 // Add Hive Modal (with Queen Present, Breeding Year, Harvest & QR Scan)
 // ----------------------------------------------------------------------
@@ -1286,6 +1875,8 @@ function AddHiveModal({
   const [broodFrames, setBroodFrames] = useState<number | "">("");
   const [honeyFrames, setHoneyFrames] = useState<number | "">("");
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
+  const [deviceCategory, setDeviceCategory] = useState<DeviceCategory>("in_hive");
+  const [deviceType, setDeviceType] = useState<string>("Hive Weight Scale (Telemetry Load Cell)");
   const [addHarvest, setAddHarvest] = useState(false);
   const [batchCode, setBatchCode] = useState(`KBZ-${new Date().getFullYear()}-01`);
   const [harvestDate, setHarvestDate] = useState(new Date().toISOString().split("T")[0]);
@@ -1324,6 +1915,8 @@ function AddHiveModal({
       colonyStrength,
       colonyAvailability,
       sensorSerial: sensorSerial.trim() || undefined,
+      deviceCategory: sensorSerial.trim() ? deviceCategory : undefined,
+      deviceType: sensorSerial.trim() ? deviceType : undefined,
       batches: [],
     };
 
@@ -1517,35 +2110,87 @@ function AddHiveModal({
             </div>
           </div>
 
-          {/* Sensor Pairing with QR Scanner */}
-          <div className="p-3.5 rounded-xl border border-border bg-background space-y-2">
+          {/* Sensor Pairing with QR Scanner & Category Selection */}
+          <div className="p-3.5 rounded-2xl border border-border bg-background space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <ScanLine className="w-4 h-4 text-amber-500" /> Pair Sensor Hardware (Optional)
+                <Radio className="w-4 h-4 text-amber-500" /> Pair IoT Device / Sensor (Optional)
               </span>
               <button
                 type="button"
                 onClick={onOpenScanner}
-                className="text-[11px] font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all"
               >
-                <Camera className="w-3.5 h-3.5" /> Scan QR Tag
+                <Camera className="w-3.5 h-3.5" /> Scan Sensor (Camera)
               </button>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={sensorSerial}
-                onChange={(e) => setSensorSerial(e.target.value)}
-                placeholder="Scan QR or type hardware serial (e.g. SENSOR-KIB-001)"
-                className="flex-1 bg-card border border-border rounded-lg px-3 py-1.5 text-xs font-mono"
-              />
-              <button
-                type="button"
-                onClick={onOpenScanner}
-                className="px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold flex items-center gap-1"
+
+            {/* Choose Device Category */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-muted-foreground">Select Device Category:</label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {DEVICE_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => {
+                      setDeviceCategory(cat.id);
+                      setDeviceType(cat.defaultTypes[0]);
+                    }}
+                    className={`py-1.5 px-2 rounded-xl border text-center transition-all flex items-center justify-center gap-1 text-[11px] font-bold ${
+                      deviceCategory === cat.id
+                        ? "border-amber-500 bg-amber-500/15 text-foreground ring-1 ring-amber-500/30"
+                        : "border-border hover:border-amber-500/40 text-muted-foreground"
+                    }`}
+                  >
+                    <span>{cat.icon}</span>
+                    <span className="truncate">{cat.label.replace(" Devices", "")}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Device Hardware Model */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-muted-foreground">Device Hardware Type:</label>
+              <select
+                value={deviceType}
+                onChange={(e) => setDeviceType(e.target.value)}
+                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-semibold"
               >
-                <ScanLine className="w-3.5 h-3.5" /> Scan
-              </button>
+                {(DEVICE_CATEGORIES.find((c) => c.id === deviceCategory) || DEVICE_CATEGORIES[1]).defaultTypes.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Scan or Enter Code */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-muted-foreground">
+                Scan QR or Enter Code (Weight Scales, VitalSensors, etc.):
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={sensorSerial}
+                  onChange={(e) => setSensorSerial(e.target.value)}
+                  placeholder={
+                    deviceCategory === "in_hive" && deviceType.toLowerCase().includes("scale")
+                      ? "e.g. SCALE-KBZ-001"
+                      : "Scan QR or type code (e.g. VS-KBZ-001)"
+                  }
+                  className="flex-1 bg-card border border-border rounded-lg px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider"
+                />
+                <button
+                  type="button"
+                  onClick={onOpenScanner}
+                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold flex items-center gap-1 shrink-0"
+                >
+                  <ScanLine className="w-3.5 h-3.5" /> Scan
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1675,6 +2320,8 @@ function EditHiveModal({
   const [broodFrames, setBroodFrames] = useState<number | "">(typeof hive.broodFrames === "number" ? hive.broodFrames : "");
   const [honeyFrames, setHoneyFrames] = useState<number | "">(typeof hive.honeyFrames === "number" ? hive.honeyFrames : "");
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || hive.sensorSerial || "");
+  const [deviceCategory, setDeviceCategory] = useState<DeviceCategory>(hive.deviceCategory || "in_hive");
+  const [deviceType, setDeviceType] = useState<string>(hive.deviceType || "Hive Weight Scale (Telemetry Load Cell)");
 
   useEffect(() => {
     if (scannedSerial) {
@@ -1707,6 +2354,8 @@ function EditHiveModal({
       colonyStrength,
       colonyAvailability,
       sensorSerial: sensorSerial.trim() || undefined,
+      deviceCategory: sensorSerial.trim() ? deviceCategory : undefined,
+      deviceType: sensorSerial.trim() ? deviceType : undefined,
     };
 
     onSaveHive(updatedHive);
@@ -1884,35 +2533,87 @@ function EditHiveModal({
             </div>
           </div>
 
-          {/* Sensor Pairing with QR Scanner */}
-          <div className="p-3.5 rounded-xl border border-border bg-background space-y-2">
+          {/* Sensor Pairing with QR Scanner & Category Selection */}
+          <div className="p-3.5 rounded-2xl border border-border bg-background space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <ScanLine className="w-4 h-4 text-amber-500" /> Pair Sensor Hardware (Optional)
+                <Radio className="w-4 h-4 text-amber-500" /> Pair IoT Device / Sensor (Optional)
               </span>
               <button
                 type="button"
                 onClick={onOpenScanner}
-                className="text-[11px] font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all"
               >
-                <Camera className="w-3.5 h-3.5" /> Scan QR Tag
+                <Camera className="w-3.5 h-3.5" /> Scan Sensor (Camera)
               </button>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={sensorSerial}
-                onChange={(e) => setSensorSerial(e.target.value)}
-                placeholder="Scan QR or type hardware serial"
-                className="flex-1 bg-card border border-border rounded-lg px-3 py-1.5 text-xs font-mono"
-              />
-              <button
-                type="button"
-                onClick={onOpenScanner}
-                className="px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold flex items-center gap-1"
+
+            {/* Choose Device Category */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-muted-foreground">Select Device Category:</label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {DEVICE_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => {
+                      setDeviceCategory(cat.id);
+                      setDeviceType(cat.defaultTypes[0]);
+                    }}
+                    className={`py-1.5 px-2 rounded-xl border text-center transition-all flex items-center justify-center gap-1 text-[11px] font-bold ${
+                      deviceCategory === cat.id
+                        ? "border-amber-500 bg-amber-500/15 text-foreground ring-1 ring-amber-500/30"
+                        : "border-border hover:border-amber-500/40 text-muted-foreground"
+                    }`}
+                  >
+                    <span>{cat.icon}</span>
+                    <span className="truncate">{cat.label.replace(" Devices", "")}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Device Hardware Model */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-muted-foreground">Device Hardware Type:</label>
+              <select
+                value={deviceType}
+                onChange={(e) => setDeviceType(e.target.value)}
+                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-semibold"
               >
-                <ScanLine className="w-3.5 h-3.5" /> Scan
-              </button>
+                {(DEVICE_CATEGORIES.find((c) => c.id === deviceCategory) || DEVICE_CATEGORIES[1]).defaultTypes.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Scan or Enter Code */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-muted-foreground">
+                Scan QR or Enter Code (Weight Scales, VitalSensors, etc.):
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={sensorSerial}
+                  onChange={(e) => setSensorSerial(e.target.value)}
+                  placeholder={
+                    deviceCategory === "in_hive" && deviceType.toLowerCase().includes("scale")
+                      ? "e.g. SCALE-KBZ-001"
+                      : "Scan QR or type code (e.g. VS-KBZ-001)"
+                  }
+                  className="flex-1 bg-card border border-border rounded-lg px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider"
+                />
+                <button
+                  type="button"
+                  onClick={onOpenScanner}
+                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold flex items-center gap-1 shrink-0"
+                >
+                  <ScanLine className="w-3.5 h-3.5" /> Scan
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2283,7 +2984,85 @@ function ApiaryDetailModal({
   const deviceId = useDeviceId();
   const userKey = user?.id || deviceId || "default_user";
 
-  const [activeTab, setActiveTab] = useState<"hives" | "forage" | "harvests">("hives");
+  const [activeTab, setActiveTab] = useState<"hives" | "devices" | "forage" | "harvests">("hives");
+  const [devicesList, setDevicesList] = useState<ApiaryDeviceItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(getStorageKey(userKey, apiary.id, "devices"));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return CANONICAL_KIBWEZI_DEVICES;
+  });
+
+  const saveDevicesUserScoped = (nextDevices: ApiaryDeviceItem[]) => {
+    setDevicesList(nextDevices);
+    try {
+      localStorage.setItem(getStorageKey(userKey, apiary.id, "devices"), JSON.stringify(nextDevices));
+    } catch (e) {
+      console.error("Failed to save devices locally", e);
+    }
+  };
+
+  const [showAddDeviceModal, setShowAddDeviceModal] = useState(false);
+  const [deviceFilterCategory, setDeviceFilterCategory] = useState<"all" | DeviceCategory>("all");
+  const [deviceSearchQuery, setDeviceSearchQuery] = useState("");
+  const [preselectedCategoryForDevice, setPreselectedCategoryForDevice] = useState<DeviceCategory>("in_hive");
+  const [preselectedHiveForDevice, setPreselectedHiveForDevice] = useState<string>("");
+  const [tempScannedDeviceCode, setTempScannedDeviceCode] = useState<string>("");
+
+  const handleAddDevice = (newDevice: ApiaryDeviceItem) => {
+    const nextDevices = [newDevice, ...devicesList.filter((d) => d.id !== newDevice.id)];
+    saveDevicesUserScoped(nextDevices);
+
+    if (newDevice.hiveCode) {
+      const target = hivesList.find((h) => h.code === newDevice.hiveCode);
+      if (target) {
+        handleUpdateHive({
+          ...target,
+          sensorSerial: newDevice.serial,
+          deviceCategory: newDevice.category,
+          deviceType: newDevice.deviceType,
+        });
+      }
+    }
+
+    if (user?.id) {
+      try {
+        (supabase as any).from("devices").insert({
+          id: newDevice.id,
+          apiary_id: apiary.id,
+          user_id: user.id,
+          serial: newDevice.serial,
+          device_kind: newDevice.category === "in_land" ? "hub" : "vitalsensor",
+          label: `${newDevice.deviceType} (${newDevice.serial})`,
+          status: "active",
+        });
+      } catch {}
+    }
+  };
+
+  const handleDeleteDevice = (deviceId: string, serial: string) => {
+    if (!window.confirm(`Are you sure you want to unpair and remove device "${serial}"?`)) return;
+    const nextDevices = devicesList.filter((d) => d.id !== deviceId);
+    saveDevicesUserScoped(nextDevices);
+
+    const nextHives = hivesList.map((h) => {
+      if (h.sensorSerial?.toUpperCase() === serial.toUpperCase()) {
+        return { ...h, sensorSerial: undefined, deviceCategory: undefined, deviceType: undefined };
+      }
+      return h;
+    });
+    saveHivesUserScoped(nextHives);
+
+    if (user?.id) {
+      try {
+        (supabase as any).from("devices").delete().eq("serial", serial);
+      } catch {}
+    }
+    toast.success(`Device ${serial} removed`);
+  };
   const [hiveSearch, setHiveSearch] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 15;
@@ -2658,6 +3437,9 @@ function ApiaryDetailModal({
       toast.success(`Paired sensor ${serial} to hive ${selectedHiveForDetail.code}`);
     } else if (scanContext === "editHive") {
       setTempScannedSerial(serial);
+    } else if (scanContext === "addDevice") {
+      setTempScannedDeviceCode(serial);
+      toast.success(`Scanned device hardware code: ${serial}`);
     } else {
       setTempScannedSerial(serial);
     }
@@ -2763,7 +3545,7 @@ function ApiaryDetailModal({
 
         {/* Beautiful Segmented Tab Controller (Fits Mobile Perfectly Without Any Cutoffs) */}
         <div className="p-3 sm:px-5 sm:py-3 bg-card border-b border-border">
-          <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/60 dark:bg-muted/30 rounded-2xl border border-border/80 text-xs font-bold">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-muted/60 dark:bg-muted/30 rounded-2xl border border-border/80 text-xs font-bold">
             <button
               type="button"
               onClick={() => setActiveTab("hives")}
@@ -2775,6 +3557,18 @@ function ApiaryDetailModal({
             >
               <Layers className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">Hives ({hivesList.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("devices")}
+              className={`py-2 px-2 text-center rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                activeTab === "devices"
+                  ? "bg-amber-500 text-stone-950 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Radio className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">IoT Devices ({devicesList.length})</span>
             </button>
             <button
               type="button"
@@ -3216,6 +4010,24 @@ function ApiaryDetailModal({
           />
         )}
 
+        {/* Modal: Register / Scan IoT Device */}
+        {showAddDeviceModal && (
+          <AddDeviceModal
+            isOpen={showAddDeviceModal}
+            apiary={apiary}
+            hives={hivesList}
+            preselectedCategory={preselectedCategoryForDevice}
+            preselectedHiveCode={preselectedHiveForDevice}
+            onClose={() => setShowAddDeviceModal(false)}
+            onAddDevice={handleAddDevice}
+            onOpenScanner={() => {
+              setScanContext("addDevice");
+              setIsScanningOpen(true);
+            }}
+            scannedCode={scanContext === "addDevice" ? tempScannedDeviceCode : undefined}
+          />
+        )}
+
         {/* Modal: Add New Hive */}
         {showAddHiveModal && (
           <AddHiveModal
@@ -3524,7 +4336,7 @@ export default function ApiariesPage({
   // New Apiary Form state
   const [formData, setFormData] = useState({
     name: "BeeYield Apiary in Kibwezi Kenya",
-    location_name: "Kiunduani, Kibwezi, Makueni, Kenya",
+    location_name: "Kibwezi, Makueni, Kenya",
     county: "Makueni",
     region: "Kibwezi East",
     latitude: -2.409,
@@ -3532,7 +4344,7 @@ export default function ApiariesPage({
     type: "Commercial Apiary",
     active_hives: 184,
     total_hives: 184,
-    size_acres: 18,
+    size_acres: 5,
     forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
     status: "Optimal" as "Optimal" | "Threatened" | "Watch" | "Maintenance",
     notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
@@ -3895,15 +4707,15 @@ export default function ApiariesPage({
                 setEditingApiary(null);
                 setFormData({
                   name: "BeeYield Apiary in Kibwezi Kenya",
-                  location_name: "Kiunduani, Kibwezi, Makueni, Kenya",
+                  location_name: "Kibwezi, Makueni, Kenya",
                   county: "Makueni",
                   region: "Kibwezi East",
                   latitude: -2.409,
                   longitude: 37.967,
                   type: "Commercial Apiary",
                   active_hives: 184,
-                  total_hives: 184,
-                  size_acres: 18,
+    total_hives: 184,
+    size_acres: 5,
                   forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
                   status: "Optimal",
                   notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
@@ -4044,7 +4856,7 @@ export default function ApiariesPage({
                       required
                       value={formData.location_name}
                       onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
-                      placeholder="e.g. Kiunduani, Kibwezi, Makueni, Kenya..."
+                      placeholder="e.g. Kibwezi, Makueni, Kenya..."
                       className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs"
                     />
                   </div>

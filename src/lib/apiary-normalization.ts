@@ -1,6 +1,7 @@
 export const CANONICAL_APIARY_NAME = "BeeYield Apiary in Kibwezi Kenya";
-export const CANONICAL_APIARY_LOCATION = "Kiunduani, Kibwezi, Makueni, Kenya";
+export const CANONICAL_APIARY_LOCATION = "Kibwezi, Makueni, Kenya";
 export const CANONICAL_BEEKEEPER = "Timothy Nduva";
+export const CANONICAL_APIARY_ACRES = 5;
 
 export function normalizeApiaryName(name?: string | null): string {
   if (!name) return CANONICAL_APIARY_NAME;
