@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +32,218 @@ const STORY_IMAGES = {
   fieldInspection2: '/images/diseases/hive-inspection-2.png',
 };
 
+
+interface YearMilestone {
+  year: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  imageAlt: string;
+  color: string;
+  stats: { label: string; value: string }[];
+  highlights: string[];
+  quote?: string;
+}
+
+const TIMELINE: YearMilestone[] = [
+  {
+    year: "2020",
+    title: "Humble Beginnings",
+    subtitle: "4 hives, ¼ acre, and a dream",
+    image: "/images/story/2020-humble-beginnings.jpg",
+    imageAlt: "Our first 4 hives on a quarter acre in rural Kenya — where it all started",
+    color: "from-amber-600 to-yellow-500",
+    stats: [
+      { label: "Hives", value: "4 → 20" },
+      { label: "Honey Harvested", value: "40 kg" },
+      { label: "Land", value: "¼ acre" },
+    ],
+    highlights: [
+      "Received 4 hives from our father — our entire inheritance and the seed of BeeYield",
+      "Timothy was in his 2nd year studying Finance & Marketing at Strathmore University",
+      "We were only keeping bees for the honey — no grand plans, just ambition and hope",
+      "Grew from 4 to 20 hives by year-end through pure grit",
+      "First harvest: 40 kg of pure, traceable honey sold entirely through word of mouth",
+      "Zero external funding — every shilling came from honey sales and personal savings",
+    ],
+    quote:
+      "We had nothing but 4 hives, a quarter acre of land, and the stubborn belief that we could build something extraordinary from it.",
+  },
+  {
+    year: "2021",
+    title: "Bigger Ambitions",
+    subtitle: "35 hives, first acre, first trees planted",
+    image: "/images/story/2021-growing-apiary.jpg",
+    imageAlt: "Growing our apiary — 35 hives and our first tree-planting initiative",
+    color: "from-green-600 to-emerald-500",
+    stats: [
+      { label: "Hives", value: "35" },
+      { label: "Honey Sold", value: "70 kg" },
+      { label: "Land Acquired", value: "1 acre" },
+      { label: "Trees Planted", value: "76" },
+    ],
+    highlights: [
+      "Set ambitious goal of 35 hives and 70 kg of honey — and hit both targets",
+      "Acquired our first full acre of land using only honey sale proceeds and savings",
+      "Planted 76 trees — mostly acacia, neem, and sunflower — to make our land bee-friendly",
+      "Identified water and packaging as our biggest challenges — issues we're still solving today",
+      "Maintained our commitment to harvesting only 50% of honey, leaving the rest for the bees",
+      "Still zero investors — still word of mouth only — still reinvesting everything",
+    ],
+  },
+  {
+    year: "2022",
+    title: "The Team Forms",
+    subtitle: "3 siblings, 1 mission — 95 kg harvested",
+    image: "/images/story/2022-team-formation.jpg",
+    imageAlt: "Timothy, Agatha, and Carole — the three siblings behind BeeYield",
+    color: "from-blue-600 to-indigo-500",
+    stats: [
+      { label: "Hives", value: "45" },
+      { label: "Honey Sold", value: "95 kg" },
+      { label: "Land Total", value: "2.5 acres" },
+      { label: "Yield/Hive", value: "2 kg (50%)" },
+    ],
+    highlights: [
+      "Agatha and Carole joined the dream — both Strathmore University graduates",
+      "Agatha brought IT expertise; Carole brought Project Management and Sales/Finance skills",
+      "BeeYield became a true family operation — three siblings, three different skill sets, one mission",
+      "Harvested 95 kg from 45 hives — averaging 2 kg per hive while only harvesting 50%",
+      "Acquired another acre, bringing total land to 2.5 acres — all from honey money",
+      "This was the year BeeYield stopped being a hobby and became a company",
+    ],
+    quote:
+      "When my sisters joined, everything changed. Agatha saw the data opportunity. Carole saw the business. I saw the future. Together, we saw BeeYield.",
+  },
+  {
+    year: "2023",
+    title: "The Fruitful Year",
+    subtitle: "150 kg of traceable honey — linear, steady growth",
+    image: "/images/story/2023-fruitful-year.jpg",
+    imageAlt: "150 kg of pure traceable honey — our most fruitful year of linear growth",
+    color: "from-amber-500 to-orange-500",
+    stats: [
+      { label: "Hives", value: "75" },
+      { label: "Honey Sold", value: "150 kg" },
+      { label: "Land Total", value: "3.5 acres" },
+      { label: "Trees Planted", value: "113" },
+    ],
+    highlights: [
+      "Our most fruitful year yet — 150 kg of pure, traceable honey from 75 hives",
+      "Growth remained linear and steady: hives doubled, honey doubled, trust doubled",
+      "Timothy graduated from Strathmore with a Second Class Honours in Finance & Marketing",
+      "Timothy got employed and saved almost his entire salary to fuel BeeYield's growth",
+      "Reinvested all profits to acquire another acre — total land now 3.5 acres",
+      "Planted 113 more trees to continue building our bee-friendly ecosystem",
+      "Traceability journey — Timothy built the documentation system from day one",
+    ],
+  },
+  {
+    year: "2024",
+    title: "Our Best Harvest Yet",
+    subtitle: "210 kg harvested — domain acquired — digital ambitions begin",
+    image: "/images/story/2024-best-year.jpg",
+    imageAlt: "210 kg harvest — our best year yet, with hives stretching across 5 acres",
+    color: "from-yellow-500 to-amber-600",
+    stats: [
+      { label: "Hives", value: "105+" },
+      { label: "Honey Sold", value: "210 kg" },
+      { label: "Land Total", value: "5 acres" },
+      { label: "Trees Planted", value: "250+" },
+    ],
+    highlights: [
+      "Best harvest year — 210 kg of honey, our highest volume to date",
+      "Acquired 30 more hives, pushing our colony count past 100",
+      "Reinvested revenue in acquiring 1.5 more acres — total land now 5 acres, fully fenced",
+      "Planted 250+ more trees, deepening our commitment to biodiversity",
+      "Secured beeyield.com domain and hosting — the digital chapter begins",
+      "Paid for professional harvesting and hive treatments for the first time",
+      "All funded by honey sales and Timothy's salary — still zero external investment",
+    ],
+    quote:
+      "Every kilogram of honey we sold went right back into the ground — more land, more hives, more trees. We were building something bigger than a honey business.",
+  },
+  {
+    year: "2025",
+    title: "The Pivot — Protecting Our Bees",
+    subtitle: "Crisis breeds innovation — from honey to precision pollination",
+    image: "/images/story/2025-iot-pivot.jpg",
+    imageAlt: "IoT sensors deployed on hives — the moment BeeYield pivoted to precision pollination",
+    color: "from-red-500 to-rose-600",
+    stats: [
+      { label: "Honey Harvested", value: "240 kg" },
+      { label: "Pollination Started", value: "July 28" },
+      { label: "Farmer Partners", value: "40" },
+      { label: "Part-Time Staff", value: "2" },
+    ],
+    highlights: [
+      "Timothy quit his job to focus full-time on the hives — colonies were dying from nearby pesticide use",
+      "Nearby farms using pesticides devastated our colonies — the crisis that changed everything",
+      "Timothy discovered Bee Hero, Apisense, and Intelligent Hives — and reached out to all of them",
+      "July 28th: BeeYield pivoted from honey-only to precision pollination as a primary revenue stream",
+      "Started pollination using traditional methods on family and neighbor farms — noticed real yield improvements",
+      "Timothy began building beeyield.com webapp and learning IoT, leveraging his Strathmore IT diploma",
+      "Managed to harvest 150+ kg despite colony losses — all documented in our traceability system",
+      "Hired Peter George and Ngumbau as part-time employees for field work, farmer partnerships, and harvesting",
+      "Started the farmer partner program in late 2025 — 40 farmers enrolled for hive checkups, harvesting, and education",
+      "Timothy also graduated his diploma in IT from Strathmore — now armed with Finance, Marketing, and IT",
+    ],
+    quote:
+      "When we started losing bees to pesticides, I knew we had two choices: give up or innovate. We chose to protect them. That's when BeeYield truly became what it was meant to be.",
+  },
+  {
+    year: "2026",
+    title: "The Technology Year",
+    subtitle: "22 IoT devices, 105 and counting acres pollinated, global partnerships",
+    image: "/images/story/2025-iot-pivot.jpg",
+    imageAlt: "2026 — IoT devices deployed, global partnerships with Apisense and Intelligent Hives",
+    color: "from-violet-600 to-purple-500",
+    stats: [
+      { label: "IoT Devices", value: "22" },
+      { label: "Acres Pollinated", value: "105 & Counting" },
+      { label: "Data Points/Day", value: "2,000+ & Growing" },
+      { label: "Honey to Date", value: "988 kg" },
+    ],
+    highlights: [
+      "June 12th: Official partnership with Apisense.io (Poland) — their Global Field Partner Program for disease detection IoT",
+      "Received 20 in-hive devices, 1 in-land device, and 2 weight sensors from Apisense",
+      "June 23rd: Partnership with Intelligent Hives (Poland) — first precision pollination in-land device and weight scale",
+      "Intelligent Hives prototype became our first operational precision pollination prototype",
+      "Devices collect temperature, weight, humidity, pressure, outside temp, colony state, and Varroa detection",
+      "Also detect Asian hornets — proven incredibly useful for colony protection",
+      "Collecting over 2,000 data points daily and growing across all sensor categories — unprecedented for a Kenyan operation",
+      "3 farmers enrolled in IoT device program with 22 devices working in hives right now",
+      "Pollinated 105 and counting acres — started with a goal of 15 acres, exceeded by 7x",
+      "Mango bloom season in Makueni, Kenya — targeting 150 acres before year-end",
+      "9–18% average yield increase for pollinated farms",
+      "Built Bee LLM and bee sound analysis — trained on 350K+ bee sounds via Kaggle for disease detection",
+      "Started mobile app development on August 3rd for full audience experience",
+      "203 kg honey harvested so far this year, bringing total to 988 kg lifetime",
+      "Managing 205+ additional hives from partner farmers",
+      "Planted 1,500 trees total, started own nursery for apiary and partner apiaries",
+      "Got water to apiary (bucket storage — borehole still a dream)",
+      "3 tons of CO₂ offset through our tree planting program",
+      "Timothy enrolled in his 3rd degree — a Private Pilot License in Aviation",
+      "Pollination revenue: $550 USD | Honey sales: $3,000+ USD — all reinvested",
+      "Marketing launch planned for September 14th, 2026 — the world is about to hear from us",
+    ],
+    quote:
+      "988 kg of honey from a 3-person team that's never branded a jar, never ran an ad, never took a cent from investors. All word of mouth. Imagine what happens when we actually start marketing.",
+  },
+];
+
+const GROWTH_BY_YEAR = [
+  { year: "2020", hives: "4 → 20", honey: "40 kg", land: "¼ acre", trees: "—", milestone: "Inherited 4 hives from father, harvested 40 kg, word-of-mouth only" },
+  { year: "2021", hives: "35", honey: "70 kg", land: "1.25 acres", trees: "76", milestone: "Bought 1st full acre with honey proceeds, planted 76 trees" },
+  { year: "2022", hives: "45", honey: "95 kg", land: "2.5 acres", trees: "—", milestone: "Sisters Agatha (IT) & Carole (Project Mgmt) join the mission" },
+  { year: "2023", hives: "75", honey: "150 kg", land: "3.5 acres", trees: "113", milestone: "Linear doubling, Timothy graduated Strathmore & saved salary" },
+  { year: "2024", hives: "105+", honey: "210 kg", land: "5 acres", trees: "250+", milestone: "Acquired beeyield.com, fully fenced 5 acres, professional harvesting" },
+  { year: "2025", hives: "150+", honey: "240 kg", land: "5 acres", trees: "800+", milestone: "Pesticide crisis, Timothy quit job, pivot to pollination, 40 partner farmers" },
+  { year: "2026*", hives: "184 (+205 partner)", honey: "203 kg (988 kg total)", land: "5 acres", trees: "1,500+", milestone: "22 IoT devices, Apisense & Intelligent Hives partnerships, 105+ acres" },
+];
+
 const OurStory = () => {
+  const [activeTimelineYear, setActiveTimelineYear] = useState<string | null>(null);
   return (
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
       

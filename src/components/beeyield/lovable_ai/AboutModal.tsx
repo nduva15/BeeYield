@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Database,
@@ -146,6 +147,17 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 <span className="text-foreground font-medium">$235–577 billion USD</span> globally
               </li>
             </ul>
+          </div>
+
+          <div className="pt-2">
+            <Link
+              to="/our-story"
+              onClick={() => onOpenChange(false)}
+              className="w-full py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-honey font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm"
+            >
+              <Heart className="w-3.5 h-3.5 text-amber-500" />
+              Read Our Story: 4 Hives to 184 — Timothy's Journey →
+            </Link>
           </div>
 
           <p className="text-[11px] text-muted-foreground text-center">
