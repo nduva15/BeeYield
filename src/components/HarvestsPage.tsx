@@ -111,7 +111,7 @@ function generateTimothyHarvestBatches(): Harvest[] {
       batches.push({
         id: `harv-${plan.year}-${String(seq).padStart(3, "0")}`,
         harvested_on: dateStr,
-        location: "BeeYield Apiary • Kibwezi",
+        location: "BeeYield Apiary in Kibwezi Kenya",
         hive_label: hiveLabel,
         batch: batchCode,
         honey_type: plan.honeyType,
@@ -146,7 +146,7 @@ const DEFAULT_HARVESTS: Harvest[] = generateTimothyHarvestBatches();
 
 const EMPTY_HARVEST = {
   harvested_on: new Date().toISOString().slice(0, 10),
-  location: "BeeYield Apiary • Kibwezi",
+  location: "BeeYield Apiary in Kibwezi Kenya",
   hive_label: "BEE-001 (Langstroth 10)",
   batch: `BEE-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-001`,
   honey_type: "Early Spring Acacia Blossom",
@@ -179,7 +179,7 @@ function harvestPdf(r: Harvest) {
       { label: "Date of Extraction", value: r.harvested_on },
       { label: "Hive Identifier", value: r.hive_label },
       { label: "Batch Lot Number", value: r.batch },
-      { label: "Apiary Location", value: r.location || "BeeYield Apiary • Kibwezi" },
+      { label: "Apiary Location", value: r.location || "BeeYield Apiary in Kibwezi Kenya" },
       { label: "Net Volume Extracted", value: `${r.quantity_kg} kg` },
       { label: "Frames Harvested", value: `${r.frames_harvested} frames` },
       { label: "Refractometer Moisture", value: `${r.moisture_pct}%` },
@@ -815,7 +815,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                 <input
                   value={draft.location}
                   onChange={(e) => setDraft({ ...draft, location: e.target.value })}
-                  placeholder="BeeYield Apiary • Kibwezi"
+                  placeholder="BeeYield Apiary in Kibwezi Kenya"
                   className="w-full bg-background border border-border rounded-lg px-2.5 py-2 font-medium text-foreground"
                 />
               </label>

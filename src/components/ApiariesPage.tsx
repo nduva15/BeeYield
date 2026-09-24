@@ -168,6 +168,68 @@ export function getQueenYearColor(year: number) {
   }
 }
 
+// ----------------------------------------------------------------------
+// User-Specific Storage Keys & Sanitization Engine
+// ----------------------------------------------------------------------
+export function getStorageKey(userKey: string, apiaryId: string, itemType: string) {
+  return `beeyield_${itemType}_${apiaryId}_${userKey}`;
+}
+
+export function normalizeApiaryName(name?: string): string {
+  if (!name) return "BeeYield Apiary in Kibwezi Kenya";
+  const trimmed = name.trim();
+  const lower = trimmed.toLowerCase();
+  if (
+    lower === "kibwezi main apiary" ||
+    lower.includes("kibwezi main") ||
+    lower === "kibwezi apiary" ||
+    lower === "beeyield apiary" ||
+    lower === "beeyield apiary kibwezi" ||
+    lower === "beeyield apiary • kibwezi"
+  ) {
+    return "BeeYield Apiary in Kibwezi Kenya";
+  }
+  return trimmed;
+}
+
+export function normalizeApiaryLocation(loc?: string): string {
+  if (!loc) return "Kiunduani, Kibwezi, Makueni, Kenya";
+  const trimmed = loc.trim();
+  const lower = trimmed.toLowerCase();
+  if (
+    lower === "kiunduani, kibwezi, makueni" ||
+    lower === "kibwezi, makueni" ||
+    lower.includes("kiunduani, kibwezi, makueni") ||
+    (lower.includes("kiunduani") && !lower.includes("kenya"))
+  ) {
+    return "Kiunduani, Kibwezi, Makueni, Kenya";
+  }
+  return trimmed;
+}
+
+export function normalizeApiarySite(site: ApiarySite): ApiarySite {
+  return {
+    ...site,
+    name: normalizeApiaryName(site.name),
+    location_name: normalizeApiaryLocation(site.location_name),
+  };
+}
+
+export function getUserHivesCount(userKey: string, apiaryId: string, fallbackCount: number): number {
+  try {
+    const stored = localStorage.getItem(getStorageKey(userKey, apiaryId, "hives"));
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed.length;
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return fallbackCount;
+}
+
 // Botanical Flora Ecosystem Species for BeeYield Apiary in Kibwezi Kenya
 export const KIBWEZI_BOTANICAL_FLORA = [
   {
@@ -714,7 +776,7 @@ function HiveDetailModal({
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                {apiary.name} · {apiary.location_name}
+                {normalizeApiaryName(apiary.name)} · {normalizeApiaryLocation(apiary.location_name)}
               </p>
             </div>
           </div>
@@ -1048,7 +1110,7 @@ function AddHiveModal({
     }
 
     onAddHive(newHiveItem, initialBatch);
-    toast.success(`Hive ${newHiveItem.code} successfully registered in ${apiary.name}`);
+    toast.success(`Hive ${newHiveItem.code} successfully registered in ${normalizeApiaryName(apiary.name)}`);
     onClose();
   };
 
@@ -1060,7 +1122,7 @@ function AddHiveModal({
         <div className="p-4 bg-amber-500 text-stone-950 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Plus className="w-5 h-5 font-black" />
-            <h3 className="font-bold text-sm">Add New Hive to {apiary.name}</h3>
+            <h3 className="font-bold text-sm">Add New Hive to {normalizeApiaryName(apiary.name)}</h3>
           </div>
           <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-black/10 transition-colors">
             <X className="w-5 h-5" />
@@ -1268,11 +1330,6 @@ function AddHiveModal({
 // ----------------------------------------------------------------------
 // User-Specific Storage Keys & Sync Engine
 // ----------------------------------------------------------------------
-function getStorageKey(userKey: string, apiaryId: string, itemType: string) {
-  return `beeyield_${itemType}_${apiaryId}_${userKey}`;
-}
-
-// ----------------------------------------------------------------------
 // Modal/Drawer showing Hives, Forage, and Harvests for the clicked Apiary
 // ----------------------------------------------------------------------
 function ApiaryDetailModal({
@@ -1280,11 +1337,13 @@ function ApiaryDetailModal({
   weather,
   onClose,
   onEdit,
+  onHivesCountChanged,
 }: {
   apiary: ApiarySite;
   weather?: LiveWeatherData;
   onClose: () => void;
   onEdit: (apiary: ApiarySite) => void;
+  onHivesCountChanged?: (apiaryId: string, count: number) => void;
 }) {
   const { user } = useAuth();
   const deviceId = useDeviceId();
@@ -1332,8 +1391,11 @@ function ApiaryDetailModal({
       } catch {
         // quota fallback
       }
+      if (onHivesCountChanged) {
+        onHivesCountChanged(apiary.id, newHives.length);
+      }
     },
-    [userKey, apiary.id]
+    [userKey, apiary.id, onHivesCountChanged]
   );
 
   // Sync to Supabase & localStorage whenever harvests change
@@ -1379,13 +1441,16 @@ function ApiaryDetailModal({
           } catch {
             // ignore
           }
+          if (onHivesCountChanged) {
+            onHivesCountChanged(apiary.id, mapped.length);
+          }
         }
       } catch {
         // fallback to local
       }
     };
     fetchUserHives();
-  }, [user?.id, apiary.id, userKey]);
+  }, [user?.id, apiary.id, userKey, onHivesCountChanged]);
 
   const [selectedHiveForDetail, setSelectedHiveForDetail] = useState<ApiaryHiveItem | null>(null);
   const [showAddHiveModal, setShowAddHiveModal] = useState(false);
@@ -1527,14 +1592,17 @@ function ApiaryDetailModal({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-lg sm:text-xl font-bold font-display tracking-tight text-foreground">
-                  {apiary.name}
+                  {normalizeApiaryName(apiary.name)}
                 </h2>
                 <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                   {apiary.status}
                 </span>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                  {hivesList.length} User Hives Logged
+                </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                {apiary.location_name} · {apiary.latitude}°, {apiary.longitude}° · {apiary.size_acres} Acres · Lead Beekeeper: Timothy Nduva
+                {normalizeApiaryLocation(apiary.location_name)} · {apiary.latitude}°, {apiary.longitude}° · {apiary.size_acres} Acres · Lead Beekeeper: Timothy Nduva
               </p>
             </div>
           </div>
@@ -1953,14 +2021,19 @@ function ApiaryDetailModal({
 export function ApisenseWeatherCard({
   apiary,
   weather,
+  userKey,
   onEdit,
   onOpenDetails,
 }: {
   apiary: ApiarySite;
   weather?: LiveWeatherData;
+  userKey?: string;
   onEdit: (apiary: ApiarySite) => void;
   onOpenDetails: (apiary: ApiarySite) => void;
 }) {
+  const displayName = normalizeApiaryName(apiary.name);
+  const displayLocation = normalizeApiaryLocation(apiary.location_name);
+  const hiveCount = userKey ? getUserHivesCount(userKey, apiary.id, apiary.active_hives) : apiary.active_hives;
   const currentCondition = weather?.conditionText || "Partly cloudy";
   const minTemp = weather?.todayMin ?? 18;
   const maxTemp = weather?.todayMax ?? 29;
@@ -1988,12 +2061,12 @@ export function ApisenseWeatherCard({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-display font-bold text-lg text-stone-900 dark:text-stone-100 tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                {apiary.name}
+                {displayName}
               </h3>
               <ArrowRight className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
             </div>
             <p className="text-xs text-stone-500 dark:text-stone-400 flex items-center gap-1">
-              {apiary.location_name}
+              {displayLocation}
             </p>
           </div>
         </div>
@@ -2005,7 +2078,7 @@ export function ApisenseWeatherCard({
           </span>
 
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
-            <Layers className="w-3.5 h-3.5 text-amber-600" /> {apiary.active_hives} Hives
+            <Layers className="w-3.5 h-3.5 text-amber-600" /> {hiveCount} Hives
           </span>
         </div>
       </div>
@@ -2164,12 +2237,30 @@ export default function ApiariesPage({
       const stored = localStorage.getItem(`beeyield_user_apiaries_${userKey}`);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((item) => {
+            const normalized = normalizeApiarySite(item);
+            const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
+            return {
+              ...normalized,
+              active_hives: userHives,
+              total_hives: Math.max(normalized.total_hives, userHives),
+            };
+          });
+        }
       }
     } catch {
       // fallback
     }
-    return DEFAULT_APIARIES;
+    return DEFAULT_APIARIES.map((item) => {
+      const normalized = normalizeApiarySite(item);
+      const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
+      return {
+        ...normalized,
+        active_hives: userHives,
+        total_hives: Math.max(normalized.total_hives, userHives),
+      };
+    });
   });
 
   const [weatherMap, setWeatherMap] = useState<Record<string, LiveWeatherData>>({});
@@ -2206,23 +2297,42 @@ export default function ApiariesPage({
         }
         const { data, error } = await query.limit(50);
         if (!error && data && data.length > 0) {
-          const mapped: ApiarySite[] = data.map((d: any) => ({
-            id: String(d.id),
-            name: d.name || "BeeYield Apiary in Kibwezi Kenya",
-            location_name: d.location_name || d.region || "Kiunduani, Kibwezi, Makueni, Kenya",
-            county: d.county || "Makueni",
-            region: d.region || "Kibwezi East",
-            latitude: Number(d.latitude) || -2.409,
-            longitude: Number(d.longitude) || 37.967,
-            type: d.type || d.apiary_type || "Commercial Apiary",
-            status: d.status === "Threatened" ? "Threatened" : "Optimal",
-            active_hives: Number(d.hive_count || d.active_hives || d.expected_hives || 184),
-            total_hives: Number(d.expected_hives || d.total_hives || 184),
-            size_acres: Number(d.size_acres || 18),
-            forage_type: d.forage_type || d.primary_forage || "Acacia Tortilis, Desert Date & Citrus Blossom",
-            notes: d.notes || "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
-            created_at: d.created_at || new Date().toISOString(),
-          }));
+          const mapped: ApiarySite[] = data.map((d: any) => {
+            const normalizedName = normalizeApiaryName(d.name);
+            const normalizedLoc = normalizeApiaryLocation(d.location_name || d.region);
+
+            // Silently fix stale legacy database records in Supabase
+            if (user?.id && (d.name !== normalizedName || d.location_name !== normalizedLoc)) {
+              void (supabase as any)
+                .from("apiaries")
+                .update({ name: normalizedName, location_name: normalizedLoc })
+                .eq("id", d.id);
+            }
+
+            const activeCount = getUserHivesCount(
+              userKey,
+              String(d.id),
+              Number(d.hive_count || d.active_hives || d.expected_hives || 184)
+            );
+
+            return {
+              id: String(d.id),
+              name: normalizedName,
+              location_name: normalizedLoc,
+              county: d.county || "Makueni",
+              region: d.region || "Kibwezi East",
+              latitude: Number(d.latitude) || -2.409,
+              longitude: Number(d.longitude) || 37.967,
+              type: d.type || d.apiary_type || "Commercial Apiary",
+              status: d.status === "Threatened" ? "Threatened" : "Optimal",
+              active_hives: activeCount,
+              total_hives: Math.max(Number(d.expected_hives || d.total_hives || 184), activeCount),
+              size_acres: Number(d.size_acres || 18),
+              forage_type: d.forage_type || d.primary_forage || "Acacia Tortilis, Desert Date & Citrus Blossom",
+              notes: d.notes || "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
+              created_at: d.created_at || new Date().toISOString(),
+            };
+          });
 
           setApiaries(mapped);
           try {
@@ -2413,14 +2523,40 @@ export default function ApiariesPage({
     });
   }, [apiaries, searchQuery]);
 
-  // Overall Statistics
+  const handleHivesCountChanged = useCallback(
+    (apiaryId: string, count: number) => {
+      setApiaries((prev) => {
+        const next = prev.map((a) =>
+          a.id === apiaryId
+            ? {
+                ...a,
+                active_hives: count,
+                total_hives: Math.max(a.total_hives, count),
+              }
+            : a
+        );
+        try {
+          localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify(next));
+        } catch {
+          // ignore
+        }
+        return next;
+      });
+    },
+    [userKey]
+  );
+
+  // Overall Statistics calculated dynamically from real user-logged info
   const stats = useMemo(() => {
     const totalSites = apiaries.length;
-    const activeHives = apiaries.reduce((acc, a) => acc + a.active_hives, 0);
+    const activeHives = apiaries.reduce((acc, a) => {
+      const count = getUserHivesCount(userKey, a.id, a.active_hives);
+      return acc + count;
+    }, 0);
     const totalAcres = apiaries.reduce((acc, a) => acc + a.size_acres, 0);
     const primaryWeather = apiaries.length > 0 && weatherMap[apiaries[0].id] ? weatherMap[apiaries[0].id] : null;
     return { totalSites, activeHives, totalAcres, primaryWeather };
-  }, [apiaries, weatherMap]);
+  }, [apiaries, weatherMap, userKey]);
 
   if (!isOpen) return null;
 
@@ -2521,7 +2657,7 @@ export default function ApiariesPage({
                 <Layers className="w-3.5 h-3.5 text-amber-500" /> Active Hives
               </span>
               <p className="text-2xl font-black text-foreground">{stats.activeHives}</p>
-              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">184 Total Capacity</p>
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">{stats.activeHives} Total Logged Capacity</p>
             </div>
 
             <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
@@ -2566,6 +2702,7 @@ export default function ApiariesPage({
                 key={apiary.id}
                 apiary={apiary}
                 weather={weatherMap[apiary.id]}
+                userKey={userKey}
                 onEdit={handleEdit}
                 onOpenDetails={handleOpenDetails}
               />
@@ -2772,6 +2909,7 @@ export default function ApiariesPage({
             weather={weatherMap[selectedDetailApiary.id]}
             onClose={() => setSelectedDetailApiary(null)}
             onEdit={handleEdit}
+            onHivesCountChanged={handleHivesCountChanged}
           />
         )}
       </div>
