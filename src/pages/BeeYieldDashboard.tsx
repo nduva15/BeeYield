@@ -386,7 +386,8 @@ const BeeYieldDashboard: React.FC = () => {
             case 'moa-compare': return renderEmbedded(<MOACompare isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'knowledge-search': return renderEmbedded(<KnowledgeSearch isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'forage-zones-page': return renderEmbedded(<ForageZonesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'sound-audit': return renderEmbedded(<SoundAnalysis isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'sound-audit':
+            case 'sound-analysis': return <SoundAnalysisView onTabChange={handleTabChange} embedded={true} />;
             case 'about-ai': return renderEmbedded(<AboutModal open={true} onOpenChange={() => handleTabChange('home')} />);
             case 'about': navigate('/about'); return null;
             case 'blogs': navigate('/blogs'); return null;

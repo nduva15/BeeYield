@@ -147,7 +147,7 @@ async function streamBeeyield(
     try {
       const lastMsg = [...messages].reverse().find(m => m.role === 'user');
       const userPrompt = typeof lastMsg?.content === 'string' ? lastMsg.content : "BeeYield AI analysis";
-      await streamBeeGpt(userPrompt, (delta) => onChunk(delta));
+      await streamBeeGpt(userPrompt, (delta) => onDelta(delta));
       onDone();
       return;
     } catch {

@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import {
     LogIn,
     Calendar,
+    Calculator,
     Sprout,
     Flower2,
     Target,

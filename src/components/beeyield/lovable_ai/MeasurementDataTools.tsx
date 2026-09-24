@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useId } from "react";
 import {
   X, Cpu, Usb, Bluetooth, Wifi, Plus, Trash2, ScanLine, ArrowLeft, ArrowRight, Check,
   Loader2, Thermometer, Droplets, Scale, BatteryCharging, MapPin, Boxes, Terminal,

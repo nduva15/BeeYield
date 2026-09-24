@@ -48,24 +48,23 @@ export default function SupportPage({ isOpen, onClose }: { isOpen: boolean; onCl
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState({ ...EMPTY });
 
+  const load = useCallback(async () => {
+    if (!deviceId) return;
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("support_tickets")
+      .select("*")
+      .eq("device_id", deviceId)
+      .order("created_at", { ascending: false });
+    setLoading(false);
+    if (error) { toast.error(error.message); return; }
+    setTickets((data ?? []) as Ticket[]);
+  }, [deviceId]);
+
   useEffect(() => {
     if (!isOpen || !deviceId) return;
-    let active = true;
-    const fetchTickets = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("support_tickets")
-        .select("*")
-        .eq("device_id", deviceId)
-        .order("created_at", { ascending: false });
-      if (!active) return;
-      setLoading(false);
-      if (error) { toast.error(error.message); return; }
-      setTickets((data ?? []) as Ticket[]);
-    };
-    void fetchTickets();
-    return () => { active = false; };
-  }, [isOpen, deviceId]);
+    void load();
+  }, [isOpen, deviceId, load]);
 
   const stats = useMemo(() => ({
     total: tickets.length,

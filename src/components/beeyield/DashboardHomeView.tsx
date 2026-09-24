@@ -5,7 +5,7 @@ import {
     ClipboardList, HelpCircle, FileBarChart, Cpu, Puzzle, Database, ArrowRight,
     RefreshCw, Binary, Scale, CloudSun, Droplets, Wind, Thermometer, Sunrise,
     Sun, Cloud, CloudRain, CloudLightning, CloudDrizzle, CloudFog, CheckCircle2,
-    HeartPulse, AlertTriangle, Bug, Layers, Plus, ExternalLink
+    HeartPulse, AlertTriangle, Sparkles, Bug, Layers, Plus, ExternalLink
 } from 'lucide-react';
 import { glass, PageHeader, GlassModal } from './GlassTheme';
 import { cn } from '@/lib/utils';
