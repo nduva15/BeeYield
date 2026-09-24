@@ -27,7 +27,6 @@ import {
   Calendar,
   Sprout,
   Scale,
-  Cpu,
   FileText,
   CheckCircle2,
   AlertCircle,
@@ -41,8 +40,13 @@ import {
   UserCheck,
   Check,
   Info,
+  ScanLine,
+  QrCode,
+  Camera,
+  Crown,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
@@ -88,23 +92,33 @@ export interface LiveWeatherData {
   source: string;
 }
 
+export interface HiveHarvestBatch {
+  id: string;
+  batchCode: string;
+  date: string;
+  quantityKg: number;
+  honeyType: string;
+  moisturePct?: number;
+}
+
 export interface ApiaryHiveItem {
   id: string;
   code: string;
   name: string;
   hiveType: string;
+  queenPresent: boolean;
+  queenBreedingYear: number;
   queenStatus: string;
   broodFrames: number;
   honeyFrames: number;
-  health: "Optimal" | "Good" | "Watch";
-  temperament: string;
-  pestStatus: string;
-  status: "Active Colony" | "Monitored";
+  sensorSerial?: string;
+  batches: HiveHarvestBatch[];
 }
 
 export interface ApiaryHarvestItem {
   id: string;
   batch: string;
+  hiveCode?: string;
   harvested_on: string;
   honey_type: string;
   quantity_kg: number;
@@ -112,6 +126,117 @@ export interface ApiaryHarvestItem {
   color_grade: string;
   quality_grade: string;
 }
+
+// Standard International Queen Marking Color Codes (Year ending digit)
+export function getQueenYearColor(year: number) {
+  const lastDigit = Math.abs(year) % 10;
+  if (lastDigit === 1 || lastDigit === 6) {
+    return {
+      name: "White",
+      code: "White (Years ending in 1, 6)",
+      bg: "bg-stone-100 text-stone-900 border-stone-300 dark:bg-stone-800 dark:text-stone-100",
+      dot: "bg-white border border-stone-400 shadow-sm",
+    };
+  } else if (lastDigit === 2 || lastDigit === 7) {
+    return {
+      name: "Yellow",
+      code: "Yellow (Years ending in 2, 7)",
+      bg: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/60 dark:text-amber-200",
+      dot: "bg-amber-400 shadow-sm",
+    };
+  } else if (lastDigit === 3 || lastDigit === 8) {
+    return {
+      name: "Red",
+      code: "Red (Years ending in 3, 8)",
+      bg: "bg-red-100 text-red-900 border-red-300 dark:bg-red-950/60 dark:text-red-200",
+      dot: "bg-red-500 shadow-sm",
+    };
+  } else if (lastDigit === 4 || lastDigit === 9) {
+    return {
+      name: "Green",
+      code: "Green (Years ending in 4, 9)",
+      bg: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-200",
+      dot: "bg-emerald-500 shadow-sm",
+    };
+  } else {
+    // 0 or 5
+    return {
+      name: "Blue",
+      code: "Blue (Years ending in 0, 5)",
+      bg: "bg-blue-100 text-blue-900 border-blue-300 dark:bg-blue-950/60 dark:text-blue-200",
+      dot: "bg-blue-500 shadow-sm",
+    };
+  }
+}
+
+// Botanical Flora Ecosystem Species for Kibwezi Apiary
+export const KIBWEZI_BOTANICAL_FLORA = [
+  {
+    id: "flora-acacia",
+    name: "Acacia Tortilis (Umbrella Thorn)",
+    botanical: "Vachellia tortilis",
+    role: "Primary Nectar Flow",
+    status: "Active Bloom",
+    nectarIndex: 95,
+    pollenYield: "High",
+    flowering: "October – December",
+    aroma: "Delicate floral, clear golden raw honey",
+    tagColor: "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/60 dark:text-amber-200",
+    description: "Dominant dryland acacia canopy tree in Kibwezi. High nectar secretion during morning thermal hours. Produces low-moisture organic single-origin honey.",
+  },
+  {
+    id: "flora-balanites",
+    name: "Balanites Aegyptiaca (Desert Date)",
+    botanical: "Balanites aegyptiaca",
+    role: "High Protein Pollen",
+    status: "Perennial Bloom",
+    nectarIndex: 78,
+    pollenYield: "Very High",
+    flowering: "Year-Round (Arid Sandy Clay)",
+    aroma: "Nutty, rich amber honey tones",
+    tagColor: "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-200",
+    description: "Deep-rooted arid tree providing perennial crude protein pollen essential for queen oviposition and nurse bee royal jelly production.",
+  },
+  {
+    id: "flora-citrus",
+    name: "Citrus Blossom (Orange & Lime)",
+    botanical: "Citrus sinensis",
+    role: "Spring Stimulation Flow",
+    status: "Early Bloom",
+    nectarIndex: 88,
+    pollenYield: "High",
+    flowering: "August – October",
+    aroma: "Aromatic citrus floral, extra light amber",
+    tagColor: "bg-orange-100 text-orange-900 border-orange-300 dark:bg-orange-950/60 dark:text-orange-200",
+    description: "Irrigated riverine citrus plantings near Kibwezi providing early spring nectar stimulation for fast comb building and brood chamber expansion.",
+  },
+  {
+    id: "flora-baobab",
+    name: "Adansonia digitata (African Baobab)",
+    botanical: "Adansonia digitata",
+    role: "Mineral-Rich Nocturnal Flow",
+    status: "Seasonal Bloom",
+    nectarIndex: 82,
+    pollenYield: "High",
+    flowering: "November – January",
+    aroma: "Tangy, rich in zinc and magnesium",
+    tagColor: "bg-stone-100 text-stone-900 border-stone-300 dark:bg-stone-800 dark:text-stone-200",
+    description: "Massive nocturnal blossom cups supplying high mineral pollen and evening moisture foraging for night-active hive cooling worker bees.",
+  },
+  {
+    id: "flora-basil",
+    name: "Ocimum basilicum (Wild Bush Basil)",
+    botanical: "Ocimum americanum",
+    role: "Drought Groundcover Sustenance",
+    status: "Resilient Bloom",
+    nectarIndex: 75,
+    pollenYield: "Medium",
+    flowering: "Intermittent / Post-Rain",
+    aroma: "Herbal, antimicrobial propolis precursor",
+    tagColor: "bg-teal-100 text-teal-900 border-teal-300 dark:bg-teal-950/60 dark:text-teal-200",
+    description: "Hardy dryland herbaceous cover keeping colonies supplied with sustained floral nectar between major canopy flowering flushes.",
+  },
+];
 
 // Canonical Apiary Sites (Timothy Nduva • BeeYield Network)
 export const DEFAULT_APIARIES: ApiarySite[] = [
@@ -134,25 +259,7 @@ export const DEFAULT_APIARIES: ApiarySite[] = [
   },
 ];
 
-// 184 Canonical Hives for Kibwezi Main Apiary
-export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 184 }, (_, i) => {
-  const code = `KIB-${String(i + 1).padStart(3, "0")}`;
-  return {
-    id: `hive-kib-${String(i + 1).padStart(3, "0")}`,
-    code,
-    name: `${code} (Langstroth 10)`,
-    hiveType: "Langstroth 10-Frame",
-    queenStatus: i % 12 === 0 ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)",
-    broodFrames: 6,
-    honeyFrames: 4,
-    health: i % 25 === 0 ? "Good" : "Optimal",
-    temperament: "Calm & Gentle",
-    pestStatus: "Zero Pests • Clean",
-    status: "Active Colony",
-  };
-});
-
-// Canonical Harvests for Kibwezi Main Apiary (943 kg total)
+// Canonical Harvests for Kibwezi Main Apiary (843.0 kg total certified honey)
 export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   {
     id: "harv-kib-2026-01",
@@ -204,7 +311,87 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
     color_grade: "Amber",
     quality_grade: "Export Grade A Raw (<18% moisture)",
   },
+  {
+    id: "harv-kib-2021-01",
+    batch: "KBZ-2021-01",
+    harvested_on: "2021-11-14",
+    honey_type: "Wildflower & Bush Blossom",
+    quantity_kg: 60.0,
+    moisture_pct: 17.1,
+    color_grade: "Light Amber",
+    quality_grade: "Export Grade A Raw (<18% moisture)",
+  },
+  {
+    id: "harv-kib-2020-01",
+    batch: "KBZ-2020-01",
+    harvested_on: "2020-11-10",
+    honey_type: "Wildflower Pioneer Harvest",
+    quantity_kg: 13.0,
+    moisture_pct: 17.4,
+    color_grade: "Amber",
+    quality_grade: "Export Grade A Raw (<18% moisture)",
+  },
 ];
+
+// 184 Canonical Hives for Kibwezi Main Apiary with Queen and Harvest Batches
+export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 184 }, (_, i) => {
+  const code = `KIB-${String(i + 1).padStart(3, "0")}`;
+  const breedingYear = i % 6 === 0 ? 2024 : i % 11 === 0 ? 2023 : 2025;
+  const isSpecial = i % 12 === 0;
+
+  const batches: HiveHarvestBatch[] = [];
+  if (i < 5) {
+    batches.push(
+      {
+        id: `batch-${code}-1`,
+        batchCode: "KBZ-2026-01",
+        date: "2026-01-10",
+        quantityKg: 12.0,
+        honeyType: "Early Spring Acacia Blossom",
+        moisturePct: 17.2,
+      },
+      {
+        id: `batch-${code}-2`,
+        batchCode: "KBZ-2025-02",
+        date: "2025-11-20",
+        quantityKg: 28.5,
+        honeyType: "Forest Multifloral & Bush Flora",
+        moisturePct: 16.9,
+      }
+    );
+  } else if (i < 20) {
+    batches.push({
+      id: `batch-${code}-1`,
+      batchCode: "KBZ-2025-02",
+      date: "2025-11-20",
+      quantityKg: 18.0 + (i % 5),
+      honeyType: "Forest Multifloral & Bush Flora",
+      moisturePct: 16.9,
+    });
+  } else if (i < 50) {
+    batches.push({
+      id: `batch-${code}-1`,
+      batchCode: "KBZ-2024-01",
+      date: "2024-11-15",
+      quantityKg: 14.5 + (i % 3),
+      honeyType: "Wildflower & Acacia Blossom",
+      moisturePct: 17.0,
+    });
+  }
+
+  return {
+    id: `hive-kib-${String(i + 1).padStart(3, "0")}`,
+    code,
+    name: `${code} (Langstroth 10)`,
+    hiveType: "Langstroth 10-Frame",
+    queenPresent: true,
+    queenBreedingYear: breedingYear,
+    queenStatus: isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)",
+    broodFrames: 6,
+    honeyFrames: 4,
+    batches,
+  };
+});
 
 // Helper to map WMO weather code to description and Lucide icon
 function getWeatherMeta(code: number) {
@@ -333,7 +520,1337 @@ function getFallbackWeather(lat: number, lon: number): LiveWeatherData {
   };
 }
 
-// Interactive, Clickable & Editable Apisense Weather Card
+// ----------------------------------------------------------------------
+// QR Code Scanner Modal using Html5Qrcode
+// ----------------------------------------------------------------------
+export function QrScannerModal({
+  isOpen,
+  onClose,
+  onScanSuccess,
+  title = "Scan Sensor Hardware QR Code",
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onScanSuccess: (serial: string) => void;
+  title?: string;
+}) {
+  const [manualSerial, setManualSerial] = useState("");
+  const [scannerError, setScannerError] = useState<string | null>(null);
+  const containerId = "beeyield-qr-scanner-viewfinder";
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let html5QrCode: Html5Qrcode | null = null;
+    let isMounted = true;
+
+    const startScanner = async () => {
+      try {
+        html5QrCode = new Html5Qrcode(containerId);
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          (decodedText) => {
+            if (isMounted) {
+              void html5QrCode?.stop().catch(() => undefined);
+              toast.success(`Scanned hardware code: ${decodedText.trim()}`);
+              onScanSuccess(decodedText.trim());
+              onClose();
+            }
+          },
+          () => undefined
+        );
+      } catch (err: any) {
+        if (isMounted) {
+          setScannerError(
+            err?.message || "Camera access not available. Please enter the serial number manually."
+          );
+        }
+      }
+    };
+
+    const timer = setTimeout(() => {
+      startScanner();
+    }, 200);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+      if (html5QrCode && html5QrCode.isScanning) {
+        void html5QrCode.stop().catch(() => undefined);
+      }
+    };
+  }, [isOpen, onScanSuccess, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 animate-in fade-in">
+      <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div className="flex items-center gap-2">
+            <ScanLine className="w-5 h-5 text-amber-500" />
+            <h3 className="font-bold text-sm text-foreground">{title}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="space-y-3 text-center">
+          <p className="text-xs text-muted-foreground">
+            Point camera at the QR code or barcode on the BeeYield VitalSensor hardware or device label.
+          </p>
+
+          <div
+            id={containerId}
+            className="w-full h-56 rounded-xl overflow-hidden bg-black/95 border-2 border-dashed border-amber-500/60 flex items-center justify-center relative shadow-inner"
+          />
+
+          {scannerError && (
+            <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/20 text-[11px] text-destructive">
+              {scannerError}
+            </div>
+          )}
+
+          <div className="pt-2 border-t border-border space-y-2 text-left">
+            <label className="text-[11px] font-semibold text-muted-foreground">
+              Or Enter Hardware Serial / QR Code Manually:
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={manualSerial}
+                onChange={(e) => setManualSerial(e.target.value)}
+                placeholder="e.g. SENSOR-KIB-001 or VITAL-9824"
+                className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (!manualSerial.trim()) {
+                    toast.error("Please enter a sensor serial");
+                    return;
+                  }
+                  onScanSuccess(manualSerial.trim());
+                  toast.success(`Paired sensor: ${manualSerial.trim()}`);
+                  onClose();
+                }}
+                className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-1.5 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
+// Interactive Clickable Hive Detail Modal
+// ----------------------------------------------------------------------
+function HiveDetailModal({
+  hive,
+  apiary,
+  onClose,
+  onUpdateHive,
+  onAddHarvestToHive,
+  onOpenScanner,
+}: {
+  hive: ApiaryHiveItem;
+  apiary: ApiarySite;
+  onClose: () => void;
+  onUpdateHive: (updated: ApiaryHiveItem) => void;
+  onAddHarvestToHive: (batch: Omit<HiveHarvestBatch, "id">) => void;
+  onOpenScanner: () => void;
+}) {
+  const [showAddHarvestForm, setShowAddHarvestForm] = useState(false);
+  const [newBatch, setNewBatch] = useState({
+    batchCode: `KBZ-${new Date().getFullYear()}-${String(hive.batches.length + 1).padStart(2, "0")}`,
+    date: new Date().toISOString().split("T")[0],
+    quantityKg: 15.0,
+    honeyType: "Raw Acacia Blossom",
+    moisturePct: 17.1,
+  });
+
+  const queenColor = getQueenYearColor(hive.queenBreedingYear);
+  const totalKg = hive.batches.reduce((sum, b) => sum + b.quantityKg, 0);
+
+  const handleSaveHarvest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBatch.batchCode.trim() || newBatch.quantityKg <= 0) {
+      toast.error("Please provide valid batch details and quantity");
+      return;
+    }
+    onAddHarvestToHive({
+      batchCode: newBatch.batchCode.trim(),
+      date: newBatch.date,
+      quantityKg: Number(newBatch.quantityKg),
+      honeyType: newBatch.honeyType.trim(),
+      moisturePct: Number(newBatch.moisturePct) || 17.1,
+    });
+    setShowAddHarvestForm(false);
+    toast.success(`Logged ${newBatch.quantityKg} kg harvest to hive ${hive.code}`);
+  };
+
+  const handleToggleQueenPresent = () => {
+    const nextPresent = !hive.queenPresent;
+    onUpdateHive({
+      ...hive,
+      queenPresent: nextPresent,
+      queenStatus: nextPresent ? "Active Laying Queen (Marked)" : "Queenless Colony (Needs Cell/Queen)",
+    });
+    toast.success(`Updated Queen status for ${hive.code}: ${nextPresent ? "Queenright" : "Queenless"}`);
+  };
+
+  return (
+    <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
+      <div className="relative w-full max-w-2xl bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Header */}
+        <div className="p-4 sm:p-5 border-b border-border bg-card/95 backdrop-blur flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 font-black text-sm shadow-sm">
+              <Box className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-bold font-display text-foreground tracking-tight">{hive.code}</h3>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                  {hive.hiveType}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {apiary.name} · {apiary.location_name}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-5 overflow-y-auto space-y-5">
+          {/* Queen Status & Breeding Year Card */}
+          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Crown className="w-4 h-4 text-amber-500" /> Queen Identification & Laying Status
+              </span>
+              <button
+                type="button"
+                onClick={handleToggleQueenPresent}
+                className={`text-xs px-2.5 py-1 rounded-full font-bold border transition-colors ${
+                  hive.queenPresent
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-300"
+                    : "bg-rose-50 text-rose-700 border-rose-300 dark:bg-rose-950/50 dark:text-rose-300"
+                }`}
+              >
+                {hive.queenPresent ? "✓ Queen Present (Queenright)" : "✕ Queenless Colony"}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Queen Breeding Year</span>
+                <div className="flex items-center gap-2">
+                  <span className={`w-3.5 h-3.5 rounded-full ${queenColor.dot}`} />
+                  <span className="text-sm font-black text-foreground">{hive.queenBreedingYear}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold border ${queenColor.bg}`}>
+                    {queenColor.name}
+                  </span>
+                </div>
+                <p className="text-[10px] text-muted-foreground">International Marking Color</p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Queen Oviposition</span>
+                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{hive.queenStatus}</p>
+                <p className="text-[10px] text-muted-foreground">Marked & Monitored</p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Chamber Frames</span>
+                <p className="text-xs font-bold text-foreground">
+                  {hive.broodFrames} Brood / {hive.honeyFrames} Honey
+                </p>
+                <p className="text-[10px] text-muted-foreground">10-Frame Langstroth</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Logged Harvests for This Hive */}
+          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Scale className="w-4 h-4 text-amber-500" /> Honey Harvests Logged For This Hive
+                </span>
+                <p className="text-xs text-foreground font-semibold mt-0.5">
+                  Total Yield: <span className="text-amber-600 font-bold">{totalKg.toFixed(1)} kg</span> across {hive.batches.length} batch(es)
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAddHarvestForm((v) => !v)}
+                className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                {showAddHarvestForm ? "Cancel" : "Add Harvest"}
+              </button>
+            </div>
+
+            {/* Quick Add Harvest Form */}
+            {showAddHarvestForm && (
+              <form onSubmit={handleSaveHarvest} className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-3">
+                <span className="text-xs font-bold text-amber-900 dark:text-amber-200 block">
+                  Record New Honey Harvest Batch
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div>
+                    <label className="text-[10px] font-semibold text-muted-foreground block">Batch Code</label>
+                    <input
+                      type="text"
+                      required
+                      value={newBatch.batchCode}
+                      onChange={(e) => setNewBatch({ ...newBatch, batchCode: e.target.value })}
+                      className="w-full bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-mono font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-muted-foreground block">Quantity (kg)</label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0.5"
+                      required
+                      value={newBatch.quantityKg}
+                      onChange={(e) => setNewBatch({ ...newBatch, quantityKg: parseFloat(e.target.value) || 0 })}
+                      className="w-full bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-muted-foreground block">Harvest Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={newBatch.date}
+                      onChange={(e) => setNewBatch({ ...newBatch, date: e.target.value })}
+                      className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-muted-foreground block">Moisture %</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={newBatch.moisturePct}
+                      onChange={(e) => setNewBatch({ ...newBatch, moisturePct: parseFloat(e.target.value) || 17.1 })}
+                      className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs font-mono"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <input
+                    type="text"
+                    value={newBatch.honeyType}
+                    onChange={(e) => setNewBatch({ ...newBatch, honeyType: e.target.value })}
+                    placeholder="Botanical Honey Type (e.g. Raw Acacia Blossom)"
+                    className="flex-1 bg-background border border-border rounded-lg px-3 py-1 text-xs"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs"
+                  >
+                    Save Batch Log
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Batches Table */}
+            {hive.batches.length > 0 ? (
+              <div className="border border-border rounded-xl overflow-hidden bg-card">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="bg-muted/40 border-b border-border text-[10px] uppercase font-bold text-muted-foreground">
+                      <th className="px-3 py-2">Batch Code</th>
+                      <th className="px-3 py-2">Date</th>
+                      <th className="px-3 py-2">Botanical Type</th>
+                      <th className="px-3 py-2">Yield (kg)</th>
+                      <th className="px-3 py-2">Moisture</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {hive.batches.map((b) => (
+                      <tr key={b.id} className="hover:bg-muted/30">
+                        <td className="px-3 py-2 font-mono font-bold text-foreground">{b.batchCode}</td>
+                        <td className="px-3 py-2 text-muted-foreground">{b.date}</td>
+                        <td className="px-3 py-2 font-medium text-amber-700 dark:text-amber-400">{b.honeyType}</td>
+                        <td className="px-3 py-2 font-black text-foreground">{b.quantityKg.toFixed(1)} kg</td>
+                        <td className="px-3 py-2 font-mono text-emerald-600 font-bold">{b.moisturePct || 17.1}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-4 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl">
+                No harvests logged for this hive yet. Use "Add Harvest" to record a batch.
+              </div>
+            )}
+          </div>
+
+          {/* Sensor Hardware Pairing through QR Scanning */}
+          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <ScanLine className="w-4 h-4 text-amber-500" /> Sensor Hardware Pairing (QR Scanning)
+              </span>
+              {hive.sensorSerial && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  Active Link
+                </span>
+              )}
+            </div>
+
+            {hive.sensorSerial ? (
+              <div className="p-3.5 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">
+                      Paired Sensor Serial: <span className="font-mono text-emerald-700 dark:text-emerald-400">{hive.sensorSerial}</span>
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">Scanned via optical QR camera</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUpdateHive({ ...hive, sensorSerial: undefined });
+                    toast.info(`Unpaired sensor from hive ${hive.code}`);
+                  }}
+                  className="px-3 py-1 rounded-lg border border-border bg-background hover:bg-muted text-xs text-muted-foreground font-semibold"
+                >
+                  Unpair
+                </button>
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl border border-dashed border-border bg-card/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold text-foreground">No IoT Sensor Paired</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Scan the QR tag or barcode on physical sensor hardware to pair with this hive.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={onOpenScanner}
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all whitespace-nowrap"
+                >
+                  <Camera className="w-4 h-4" />
+                  Scan Sensor QR Code
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-border bg-card flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs transition-colors"
+          >
+            Close Hive Details
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
+// Add Hive Modal (with Queen Present, Breeding Year, Harvest & QR Scan)
+// ----------------------------------------------------------------------
+function AddHiveModal({
+  isOpen,
+  apiary,
+  suggestedCode,
+  onClose,
+  onAddHive,
+  onOpenScanner,
+  scannedSerial,
+}: {
+  isOpen: boolean;
+  apiary: ApiarySite;
+  suggestedCode: string;
+  onClose: () => void;
+  onAddHive: (newHive: ApiaryHiveItem, initialBatch?: Omit<HiveHarvestBatch, "id">) => void;
+  onOpenScanner: () => void;
+  scannedSerial?: string;
+}) {
+  const [code, setCode] = useState(suggestedCode);
+  const [hiveType, setHiveType] = useState("Langstroth 10-Frame");
+  const [queenPresent, setQueenPresent] = useState(true);
+  const [queenBreedingYear, setQueenBreedingYear] = useState(2025);
+  const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
+  const [addHarvest, setAddHarvest] = useState(false);
+  const [batchCode, setBatchCode] = useState(`KBZ-${new Date().getFullYear()}-01`);
+  const [harvestDate, setHarvestDate] = useState(new Date().toISOString().split("T")[0]);
+  const [honeyType, setHoneyType] = useState("Raw Acacia Blossom");
+  const [quantityKg, setQuantityKg] = useState(15.0);
+  const [moisturePct, setMoisturePct] = useState(17.1);
+
+  useEffect(() => {
+    if (scannedSerial) {
+      setSensorSerial(scannedSerial);
+    }
+  }, [scannedSerial]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!code.trim()) {
+      toast.error("Please enter a hive code");
+      return;
+    }
+
+    const newHiveItem: ApiaryHiveItem = {
+      id: `hive-${code.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${Date.now()}`,
+      code: code.trim().toUpperCase(),
+      name: `${code.trim().toUpperCase()} (${hiveType})`,
+      hiveType,
+      queenPresent,
+      queenBreedingYear,
+      queenStatus: queenPresent ? "Active Laying Queen (Marked)" : "Queenless Colony",
+      broodFrames: 6,
+      honeyFrames: 4,
+      sensorSerial: sensorSerial.trim() || undefined,
+      batches: [],
+    };
+
+    let initialBatch: Omit<HiveHarvestBatch, "id"> | undefined = undefined;
+    if (addHarvest && quantityKg > 0) {
+      initialBatch = {
+        batchCode: batchCode.trim(),
+        date: harvestDate,
+        quantityKg: Number(quantityKg),
+        honeyType: honeyType.trim(),
+        moisturePct: Number(moisturePct) || 17.1,
+      };
+      newHiveItem.batches.push({
+        ...initialBatch,
+        id: `batch-${Date.now()}`,
+      });
+    }
+
+    onAddHive(newHiveItem, initialBatch);
+    toast.success(`Hive ${newHiveItem.code} successfully registered in ${apiary.name}`);
+    onClose();
+  };
+
+  const queenColor = getQueenYearColor(queenBreedingYear);
+
+  return (
+    <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
+      <div className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        <div className="p-4 bg-amber-500 text-stone-950 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Plus className="w-5 h-5 font-black" />
+            <h3 className="font-bold text-sm">Add New Hive to {apiary.name}</h3>
+          </div>
+          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-black/10 transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-foreground">Hive Code</label>
+              <input
+                type="text"
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="e.g. KIB-185"
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-mono font-bold"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-foreground">Hive Architecture</label>
+              <select
+                value={hiveType}
+                onChange={(e) => setHiveType(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-medium"
+              >
+                <option value="Langstroth 10-Frame">Langstroth 10-Frame</option>
+                <option value="Top Bar Hive (KTBH)">Top Bar Hive (KTBH)</option>
+                <option value="Dadant 12-Frame">Dadant 12-Frame</option>
+                <option value="Warre Hive">Warre Hive</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Queen Status & Breeding Year */}
+          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+            <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <Crown className="w-4 h-4 text-amber-500" /> Queen Status & Breeding Details
+            </span>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-muted-foreground">Queen Present?</label>
+                <select
+                  value={queenPresent ? "yes" : "no"}
+                  onChange={(e) => setQueenPresent(e.target.value === "yes")}
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
+                >
+                  <option value="yes">✓ Queen Present (Queenright)</option>
+                  <option value="no">✕ Queenless</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-semibold text-muted-foreground">Breeding Year</label>
+                  <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
+                </div>
+                <select
+                  value={queenBreedingYear}
+                  onChange={(e) => setQueenBreedingYear(parseInt(e.target.value, 10))}
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
+                >
+                  <option value={2026}>2026 (White)</option>
+                  <option value={2025}>2025 (Blue)</option>
+                  <option value={2024}>2024 (Green)</option>
+                  <option value={2023}>2023 (Red)</option>
+                  <option value={2022}>2022 (Yellow)</option>
+                  <option value={2021}>2021 (White)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Sensor Pairing with QR Scanner */}
+          <div className="p-3.5 rounded-xl border border-border bg-background space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <ScanLine className="w-4 h-4 text-amber-500" /> Pair Sensor Hardware (Optional)
+              </span>
+              <button
+                type="button"
+                onClick={onOpenScanner}
+                className="text-[11px] font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1"
+              >
+                <Camera className="w-3.5 h-3.5" /> Scan QR Tag
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={sensorSerial}
+                onChange={(e) => setSensorSerial(e.target.value)}
+                placeholder="Scan QR or type hardware serial (e.g. SENSOR-KIB-001)"
+                className="flex-1 bg-card border border-border rounded-lg px-3 py-1.5 text-xs font-mono"
+              />
+              <button
+                type="button"
+                onClick={onOpenScanner}
+                className="px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold flex items-center gap-1"
+              >
+                <ScanLine className="w-3.5 h-3.5" /> Scan
+              </button>
+            </div>
+          </div>
+
+          {/* Add Initial Harvest Toggle */}
+          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-foreground cursor-pointer flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={addHarvest}
+                  onChange={(e) => setAddHarvest(e.target.checked)}
+                  className="rounded text-amber-500 focus:ring-amber-500"
+                />
+                Log Initial Harvest Batch For This Hive
+              </label>
+              <span className="text-[10px] text-muted-foreground">Optional</span>
+            </div>
+
+            {addHarvest && (
+              <div className="pt-2 border-t border-border/60 space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="text-[10px] text-muted-foreground font-semibold">Batch Code</span>
+                    <input
+                      type="text"
+                      value={batchCode}
+                      onChange={(e) => setBatchCode(e.target.value)}
+                      className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs font-mono font-bold"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-muted-foreground font-semibold">Quantity (kg)</span>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0.5"
+                      value={quantityKg}
+                      onChange={(e) => setQuantityKg(parseFloat(e.target.value) || 0)}
+                      className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="text-[10px] text-muted-foreground font-semibold">Harvest Date</span>
+                    <input
+                      type="date"
+                      value={harvestDate}
+                      onChange={(e) => setHarvestDate(e.target.value)}
+                      className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-muted-foreground font-semibold">Moisture %</span>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={moisturePct}
+                      onChange={(e) => setMoisturePct(parseFloat(e.target.value) || 17.1)}
+                      className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[10px] text-muted-foreground font-semibold">Botanical Honey Type</span>
+                  <input
+                    type="text"
+                    value={honeyType}
+                    onChange={(e) => setHoneyType(e.target.value)}
+                    placeholder="e.g. Raw Acacia Blossom"
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl border border-border text-xs font-semibold text-foreground hover:bg-muted"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold shadow-sm"
+            >
+              Register Hive
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
+// Modal/Drawer showing Hives, Forage, and Harvests for the clicked Apiary
+// ----------------------------------------------------------------------
+function ApiaryDetailModal({
+  apiary,
+  weather,
+  onClose,
+  onEdit,
+}: {
+  apiary: ApiarySite;
+  weather?: LiveWeatherData;
+  onClose: () => void;
+  onEdit: (apiary: ApiarySite) => void;
+}) {
+  const [activeTab, setActiveTab] = useState<"hives" | "forage" | "harvests">("hives");
+  const [hiveSearch, setHiveSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 15;
+
+  const [hivesList, setHivesList] = useState<ApiaryHiveItem[]>(CANONICAL_KIBWEZI_HIVES);
+  const [harvestsList, setHarvestsList] = useState<ApiaryHarvestItem[]>(CANONICAL_KIBWEZI_HARVESTS);
+
+  const [selectedHiveForDetail, setSelectedHiveForDetail] = useState<ApiaryHiveItem | null>(null);
+  const [showAddHiveModal, setShowAddHiveModal] = useState(false);
+  const [isScanningOpen, setIsScanningOpen] = useState(false);
+  const [scanContext, setScanContext] = useState<"addHive" | "detailHive">("addHive");
+  const [tempScannedSerial, setTempScannedSerial] = useState("");
+
+  const filteredHives = useMemo(() => {
+    if (!hiveSearch.trim()) return hivesList;
+    const q = hiveSearch.toLowerCase();
+    return hivesList.filter(
+      (h) =>
+        h.code.toLowerCase().includes(q) ||
+        h.queenStatus.toLowerCase().includes(q) ||
+        (h.sensorSerial && h.sensorSerial.toLowerCase().includes(q))
+    );
+  }, [hivesList, hiveSearch]);
+
+  const totalPages = Math.ceil(filteredHives.length / pageSize) || 1;
+  const paginatedHives = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredHives.slice(start, start + pageSize);
+  }, [filteredHives, page, pageSize]);
+
+  const totalHoneyKg = useMemo(() => {
+    return harvestsList.reduce((acc, h) => acc + h.quantity_kg, 0);
+  }, [harvestsList]);
+
+  // Handle updates to a hive
+  const handleUpdateHive = (updated: ApiaryHiveItem) => {
+    setHivesList((prev) => prev.map((h) => (h.id === updated.id ? updated : h)));
+    if (selectedHiveForDetail?.id === updated.id) {
+      setSelectedHiveForDetail(updated);
+    }
+  };
+
+  // Handle adding harvest to a specific hive
+  const handleAddHarvestToHive = (batch: Omit<HiveHarvestBatch, "id">) => {
+    if (!selectedHiveForDetail) return;
+    const newBatchItem: HiveHarvestBatch = {
+      ...batch,
+      id: `batch-${Date.now()}`,
+    };
+    const updatedHive: ApiaryHiveItem = {
+      ...selectedHiveForDetail,
+      batches: [newBatchItem, ...selectedHiveForDetail.batches],
+    };
+    handleUpdateHive(updatedHive);
+
+    // Also register in apiary certified harvest list
+    const newHarvestItem: ApiaryHarvestItem = {
+      id: `harv-${Date.now()}`,
+      batch: batch.batchCode,
+      hiveCode: selectedHiveForDetail.code,
+      harvested_on: batch.date,
+      honey_type: batch.honeyType,
+      quantity_kg: batch.quantityKg,
+      moisture_pct: batch.moisturePct || 17.1,
+      color_grade: "Extra Light Amber",
+      quality_grade: "Export Grade A Raw (<18% moisture)",
+    };
+    setHarvestsList((prev) => [newHarvestItem, ...prev]);
+  };
+
+  // Handle adding a brand new hive
+  const handleAddHive = (newHive: ApiaryHiveItem, initialBatch?: Omit<HiveHarvestBatch, "id">) => {
+    setHivesList((prev) => [newHive, ...prev]);
+    if (initialBatch) {
+      const newHarvestItem: ApiaryHarvestItem = {
+        id: `harv-${Date.now()}`,
+        batch: initialBatch.batchCode,
+        hiveCode: newHive.code,
+        harvested_on: initialBatch.date,
+        honey_type: initialBatch.honeyType,
+        quantity_kg: initialBatch.quantityKg,
+        moisture_pct: initialBatch.moisturePct || 17.1,
+        color_grade: "Extra Light Amber",
+        quality_grade: "Export Grade A Raw (<18% moisture)",
+      };
+      setHarvestsList((prev) => [newHarvestItem, ...prev]);
+    }
+  };
+
+  // QR Scan callback
+  const handleScanSuccess = (serial: string) => {
+    if (scanContext === "detailHive" && selectedHiveForDetail) {
+      handleUpdateHive({
+        ...selectedHiveForDetail,
+        sensorSerial: serial,
+      });
+      toast.success(`Paired sensor ${serial} to hive ${selectedHiveForDetail.code}`);
+    } else {
+      setTempScannedSerial(serial);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
+      <div className="relative w-full max-w-5xl max-h-[94vh] bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="p-4 sm:p-5 border-b border-border bg-card/95 backdrop-blur flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0 shadow-sm">
+              <MapPin className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold font-display tracking-tight text-foreground">{apiary.name}</h2>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  {apiary.status}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {apiary.location_name}
+                {apiary.county ? `, ${apiary.county}` : ""} · {apiary.latitude}°, {apiary.longitude}° · {apiary.size_acres} Acres · Lead Beekeeper: Timothy Nduva
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-center">
+            <button
+              type="button"
+              onClick={() => onEdit(apiary)}
+              className="px-3.5 py-1.5 rounded-xl border border-border hover:border-amber-500 bg-background text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
+            >
+              <Pencil className="w-3.5 h-3.5 text-amber-500" />
+              Edit Apiary
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-9 h-9 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors shadow-sm"
+              aria-label="Close modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Live Weather Microclimate Bar (Open-Meteo REST API) */}
+        <div className="bg-gradient-to-r from-amber-500/10 via-emerald-500/5 to-amber-500/10 border-b border-border/70 px-5 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 font-bold text-foreground">
+              <Sun className="w-4 h-4 text-amber-500" />
+              {weather ? `${weather.currentTemp}°C ${weather.conditionText}` : "26°C Partly cloudy"}
+            </span>
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <Droplets className="w-3.5 h-3.5 text-blue-500" />
+              {weather ? `${weather.currentHumidity}% Humidity` : "52% Humidity"}
+            </span>
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <Wind className="w-3.5 h-3.5 text-emerald-500" />
+              {weather ? `${weather.currentWind} km/h Wind` : "12 km/h Wind"}
+            </span>
+          </div>
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Open-Meteo API Connected
+          </span>
+        </div>
+
+        {/* Dedicated Prominent Florage & Flora Container */}
+        <div className="bg-amber-500/10 dark:bg-amber-950/20 border-b border-amber-500/20 px-5 py-3.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-amber-950 dark:text-amber-200 flex items-center gap-1.5 uppercase tracking-wide">
+                  <Sprout className="w-4 h-4 text-amber-600" /> Botanical Florage Ecosystem
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                  3.0 km Radius • Organic Dryland
+                </span>
+              </div>
+              <p className="text-xs text-amber-900/80 dark:text-amber-300/80">
+                Primary floral nectar & pollen resources: Acacia Tortilis, Desert Date, Citrus Blossom, African Baobab & Wild Bush Basil. Zero agricultural pesticide drift.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("forage")}
+              className="self-start sm:self-center px-3 py-1.5 rounded-xl border border-amber-400/40 bg-white/80 dark:bg-stone-900/80 text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-950 text-xs font-bold flex items-center gap-1 shrink-0 transition-colors shadow-sm"
+            >
+              <Sprout className="w-3.5 h-3.5 text-amber-600" />
+              Explore All Flora Details →
+            </button>
+          </div>
+        </div>
+
+        {/* Navigation Tabs (Weather + Harvests logged only, no fake sensors) */}
+        <div className="flex items-center border-b border-border px-5 bg-card/60 overflow-x-auto gap-2 py-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab("hives")}
+            className={`py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "hives"
+                ? "bg-amber-500 text-stone-950 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            Colony Directory ({hivesList.length} Hives)
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("forage")}
+            className={`py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "forage"
+                ? "bg-amber-500 text-stone-950 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            }`}
+          >
+            <Sprout className="w-4 h-4" />
+            Botanical Forage & Flora (5 Species)
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("harvests")}
+            className={`py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "harvests"
+                ? "bg-amber-500 text-stone-950 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            }`}
+          >
+            <Scale className="w-4 h-4" />
+            Verified Harvest Logs ({totalHoneyKg.toFixed(1)} kg)
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-5 overflow-y-auto flex-1 space-y-5">
+          {/* TAB 1: COLONY DIRECTORY & HIVES */}
+          {activeTab === "hives" && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-bold text-foreground">
+                    Colony Directory ({filteredHives.length} Hives)
+                  </span>
+                  <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+                    100% Active & Monitored
+                  </span>
+                  <span className="text-[10px] bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full font-bold">
+                    Click Any Hive To View Details
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <div className="relative flex-1 sm:w-64">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="text"
+                      value={hiveSearch}
+                      onChange={(e) => {
+                        setHiveSearch(e.target.value);
+                        setPage(1);
+                      }}
+                      placeholder="Search hive (e.g. KIB-001)..."
+                      className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-border bg-background focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTempScannedSerial("");
+                      setShowAddHiveModal(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm whitespace-nowrap transition-all"
+                  >
+                    <Plus className="w-4 h-4" /> Add Hive
+                  </button>
+                </div>
+              </div>
+
+              {/* Hives Table */}
+              <div className="border border-border rounded-2xl overflow-hidden bg-background shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-muted/50 border-b border-border text-[10px] uppercase font-bold text-muted-foreground">
+                        <th className="px-4 py-3">Hive Code</th>
+                        <th className="px-4 py-3">Architecture</th>
+                        <th className="px-4 py-3">Queen Present</th>
+                        <th className="px-4 py-3">Breeding Year</th>
+                        <th className="px-4 py-3">Harvests Logged</th>
+                        <th className="px-4 py-3">Sensor Pairing</th>
+                        <th className="px-4 py-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/60">
+                      {paginatedHives.map((hive) => {
+                        const queenColor = getQueenYearColor(hive.queenBreedingYear);
+                        const hiveKg = hive.batches.reduce((sum, b) => sum + b.quantityKg, 0);
+
+                        return (
+                          <tr
+                            key={hive.id}
+                            onClick={() => setSelectedHiveForDetail(hive)}
+                            className="hover:bg-amber-500/10 cursor-pointer transition-colors group"
+                            title="Click to view hive details and harvests"
+                          >
+                            <td className="px-4 py-3 font-mono font-bold text-foreground group-hover:text-amber-600 transition-colors">
+                              {hive.code}
+                            </td>
+                            <td className="px-4 py-3 text-muted-foreground">{hive.hiveType}</td>
+                            <td className="px-4 py-3">
+                              {hive.queenPresent ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                  Queen Present
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                  Queenless
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="inline-flex items-center gap-1.5 font-bold text-[11px] text-foreground">
+                                <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
+                                {hive.queenBreedingYear}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              {hive.batches.length > 0 ? (
+                                <span className="font-bold text-foreground">
+                                  {hive.batches.length} batch(es) · <strong className="text-amber-600">{hiveKg.toFixed(1)} kg</strong>
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground text-[11px]">0 Batches</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              {hive.sensorSerial ? (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-bold">
+                                  <Check className="w-3.5 h-3.5" /> {hive.sensorSerial}
+                                </span>
+                              ) : (
+                                <span className="text-[11px] text-muted-foreground">No Sensor</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 group-hover:underline flex items-center justify-end gap-1">
+                                View Details <ChevronRight className="w-3.5 h-3.5" />
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="px-4 py-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground bg-muted/20">
+                    <span>
+                      Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, filteredHives.length)} of{" "}
+                      {filteredHives.length} hives
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="p-1 rounded-lg border border-border hover:bg-muted disabled:opacity-40"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="px-2 font-bold text-foreground">
+                        Page {page} of {totalPages}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages}
+                        className="p-1 rounded-lg border border-border hover:bg-muted disabled:opacity-40"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: FORAGE & FLORA ECOSYSTEM */}
+          {activeTab === "forage" && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-1">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+                  <Sprout className="w-4 h-4 text-amber-600" />
+                  Kibwezi Dryland Botanical Forage Ecosystem • {apiary.location_name}
+                </h4>
+                <p className="text-xs text-amber-800/80 dark:text-amber-300/80">
+                  Worker bee flight coverage: <strong>3.0 km radius</strong> across <strong>{apiary.size_acres} acres</strong> of certified organic dryland flora. Zero agricultural pesticide drift.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {KIBWEZI_BOTANICAL_FLORA.map((flora) => (
+                  <div key={flora.id} className="p-4 rounded-2xl border border-border bg-background space-y-2.5 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-foreground">{flora.name}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${flora.tagColor}`}>
+                        {flora.role}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-muted-foreground leading-relaxed">{flora.description}</p>
+
+                    <div className="space-y-1.5 pt-2 border-t border-border/60 text-[11px]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Flowering Season:</span>
+                        <span className="font-bold text-foreground">{flora.flowering}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Honey Aroma:</span>
+                        <span className="font-semibold text-amber-700 dark:text-amber-400">{flora.aroma}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Nectar Index:</span>
+                        <span className="font-mono font-bold text-emerald-600">{flora.nectarIndex}/100</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: HARVESTS & YIELDS */}
+          {activeTab === "harvests" && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-4 rounded-2xl border border-border bg-background space-y-1 shadow-sm">
+                  <span className="text-[10px] font-bold uppercase text-muted-foreground">Total Honey Harvested</span>
+                  <p className="text-2xl font-black text-amber-600">{totalHoneyKg.toFixed(1)} kg</p>
+                  <p className="text-[10px] text-emerald-600 font-semibold">Across {harvestsList.length} Verified Harvest Cycles</p>
+                </div>
+                <div className="p-4 rounded-2xl border border-border bg-background space-y-1 shadow-sm">
+                  <span className="text-[10px] font-bold uppercase text-muted-foreground">Average Moisture Content</span>
+                  <p className="text-2xl font-black text-foreground">17.1%</p>
+                  <p className="text-[10px] text-emerald-600 font-semibold">Export Grade A (&lt; 18.0% Standard)</p>
+                </div>
+                <div className="p-4 rounded-2xl border border-border bg-background space-y-1 shadow-sm">
+                  <span className="text-[10px] font-bold uppercase text-muted-foreground">Honey Botanical Class</span>
+                  <p className="text-base font-bold text-foreground truncate mt-1">Raw Acacia & Wildflower</p>
+                  <p className="text-[10px] text-muted-foreground">Cold Extracted • Unheated</p>
+                </div>
+              </div>
+
+              <div className="border border-border rounded-2xl overflow-hidden bg-background shadow-sm">
+                <div className="p-3 bg-muted/40 border-b border-border flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground">Certified Harvest Batches</span>
+                  <span className="text-[10px] text-muted-foreground">Traceable to Kibwezi Main Apiary</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-muted/20 border-b border-border text-[10px] uppercase font-bold text-muted-foreground">
+                        <th className="px-4 py-2.5">Batch Code</th>
+                        <th className="px-4 py-2.5">Harvest Date</th>
+                        <th className="px-4 py-2.5">Honey Type</th>
+                        <th className="px-4 py-2.5">Quantity (kg)</th>
+                        <th className="px-4 py-2.5">Moisture</th>
+                        <th className="px-4 py-2.5">Color Grade</th>
+                        <th className="px-4 py-2.5">Quality Certification</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/60">
+                      {harvestsList.map((h) => (
+                        <tr key={h.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="px-4 py-3 font-mono font-bold text-foreground">{h.batch}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{h.harvested_on}</td>
+                          <td className="px-4 py-3 font-semibold text-amber-800 dark:text-amber-400">{h.honey_type}</td>
+                          <td className="px-4 py-3 font-black text-foreground">{h.quantity_kg.toFixed(1)} kg</td>
+                          <td className="px-4 py-3 font-mono font-bold text-emerald-600">{h.moisture_pct}%</td>
+                          <td className="px-4 py-3 text-muted-foreground">{h.color_grade}</td>
+                          <td className="px-4 py-3">
+                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold text-[10px]">
+                              {h.quality_grade}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Modal: Interactive Hive Details */}
+        {selectedHiveForDetail && (
+          <HiveDetailModal
+            hive={selectedHiveForDetail}
+            apiary={apiary}
+            onClose={() => setSelectedHiveForDetail(null)}
+            onUpdateHive={handleUpdateHive}
+            onAddHarvestToHive={handleAddHarvestToHive}
+            onOpenScanner={() => {
+              setScanContext("detailHive");
+              setIsScanningOpen(true);
+            }}
+          />
+        )}
+
+        {/* Modal: Add New Hive */}
+        {showAddHiveModal && (
+          <AddHiveModal
+            isOpen={showAddHiveModal}
+            apiary={apiary}
+            suggestedCode={`KIB-${String(hivesList.length + 1).padStart(3, "0")}`}
+            onClose={() => setShowAddHiveModal(false)}
+            onAddHive={handleAddHive}
+            onOpenScanner={() => {
+              setScanContext("addHive");
+              setIsScanningOpen(true);
+            }}
+            scannedSerial={tempScannedSerial}
+          />
+        )}
+
+        {/* Modal: QR Scanner */}
+        {isScanningOpen && (
+          <QrScannerModal
+            isOpen={isScanningOpen}
+            onClose={() => setIsScanningOpen(false)}
+            onScanSuccess={handleScanSuccess}
+            title={scanContext === "detailHive" ? `Pair Sensor to ${selectedHiveForDetail?.code}` : "Scan Sensor Hardware QR"}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
+// Interactive Apisense Weather Card (Top Page Level)
+// ----------------------------------------------------------------------
 export function ApisenseWeatherCard({
   apiary,
   weather,
@@ -377,7 +1894,8 @@ export function ApisenseWeatherCard({
               <ArrowRight className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
             </div>
             <p className="text-xs text-stone-500 dark:text-stone-400 flex items-center gap-1">
-              {apiary.location_name}{apiary.county ? `, ${apiary.county}` : ""}
+              {apiary.location_name}
+              {apiary.county ? `, ${apiary.county}` : ""}
             </p>
           </div>
         </div>
@@ -447,14 +1965,13 @@ export function ApisenseWeatherCard({
             {(weather?.hourly || []).map((slot, idx) => {
               const { Icon } = getWeatherMeta(slot.code);
               return (
-                <div key={idx} className="flex flex-col items-center gap-1 text-center flex-1 py-1.5 px-1 rounded-xl bg-white/60 dark:bg-stone-900/40 border border-stone-200/60 dark:border-stone-800/60">
-                  <span className="text-[10px] font-medium text-stone-500 dark:text-stone-400">
-                    {slot.time}
-                  </span>
+                <div
+                  key={idx}
+                  className="flex flex-col items-center gap-1 text-center flex-1 py-1.5 px-1 rounded-xl bg-white/60 dark:bg-stone-900/40 border border-stone-200/60 dark:border-stone-800/60"
+                >
+                  <span className="text-[10px] font-medium text-stone-500 dark:text-stone-400">{slot.time}</span>
                   <Icon className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                  <span className="text-xs font-black text-stone-800 dark:text-stone-200">
-                    {slot.temp}°
-                  </span>
+                  <span className="text-xs font-black text-stone-800 dark:text-stone-200">{slot.temp}°</span>
                 </div>
               );
             })}
@@ -526,472 +2043,9 @@ export function ApisenseWeatherCard({
   );
 }
 
-// Modal/Drawer showing Hives, Forage, Harvests, and Devices for the clicked Apiary
-function ApiaryDetailModal({
-  apiary,
-  weather,
-  onClose,
-  onEdit,
-}: {
-  apiary: ApiarySite;
-  weather?: LiveWeatherData;
-  onClose: () => void;
-  onEdit: (apiary: ApiarySite) => void;
-}) {
-  const [activeTab, setActiveTab] = useState<"hives" | "forage" | "harvests" | "devices">("hives");
-  const [hiveSearch, setHiveSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const pageSize = 15;
-
-  const hivesList = CANONICAL_KIBWEZI_HIVES;
-  const harvestsList = CANONICAL_KIBWEZI_HARVESTS;
-
-  const filteredHives = useMemo(() => {
-    if (!hiveSearch.trim()) return hivesList;
-    const q = hiveSearch.toLowerCase();
-    return hivesList.filter(h => h.code.toLowerCase().includes(q) || h.queenStatus.toLowerCase().includes(q));
-  }, [hivesList, hiveSearch]);
-
-  const totalPages = Math.ceil(filteredHives.length / pageSize) || 1;
-  const paginatedHives = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return filteredHives.slice(start, start + pageSize);
-  }, [filteredHives, page, pageSize]);
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-5xl max-h-[92vh] bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="p-5 border-b border-border bg-card/95 backdrop-blur flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0 shadow-sm">
-              <MapPin className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold font-display tracking-tight text-foreground">{apiary.name}</h2>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  {apiary.status}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {apiary.location_name}{apiary.county ? `, ${apiary.county}` : ""} · {apiary.latitude}°, {apiary.longitude}° · {apiary.size_acres} Acres · Lead Beekeeper: Timothy Nduva
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 self-end sm:self-center">
-            <button
-              type="button"
-              onClick={() => onEdit(apiary)}
-              className="px-3.5 py-1.5 rounded-xl border border-border hover:border-amber-500 bg-background text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
-            >
-              <Pencil className="w-3.5 h-3.5 text-amber-500" />
-              Edit Apiary
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-9 h-9 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors shadow-sm"
-              aria-label="Close modal"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Live Weather Microclimate Bar */}
-        <div className="bg-gradient-to-r from-amber-500/10 via-emerald-500/5 to-amber-500/10 border-b border-border/70 px-5 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 font-bold text-foreground">
-              <Sun className="w-4 h-4 text-amber-500" />
-              {weather ? `${weather.currentTemp}°C ${weather.conditionText}` : "24°C Live Open-Meteo"}
-            </span>
-            <span className="flex items-center gap-1 text-muted-foreground">
-              <Droplets className="w-3.5 h-3.5 text-blue-500" />
-              {weather ? `${weather.currentHumidity}% Humidity` : "55% RH"}
-            </span>
-            <span className="flex items-center gap-1 text-muted-foreground">
-              <Wind className="w-3.5 h-3.5 text-emerald-500" />
-              {weather ? `${weather.currentWind} km/h Wind` : "12 km/h"}
-            </span>
-          </div>
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Open-Meteo API Connected
-          </span>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="flex items-center border-b border-border px-5 bg-card/50 overflow-x-auto custom-scrollbar">
-          <button
-            type="button"
-            onClick={() => setActiveTab("hives")}
-            className={`py-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "hives"
-                ? "border-amber-500 text-amber-600 dark:text-amber-400"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            Hives in Apiary ({apiary.active_hives})
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("forage")}
-            className={`py-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "forage"
-                ? "border-amber-500 text-amber-600 dark:text-amber-400"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Sprout className="w-4 h-4" />
-            Forage & Flora
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("harvests")}
-            className={`py-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "harvests"
-                ? "border-amber-500 text-amber-600 dark:text-amber-400"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Scale className="w-4 h-4" />
-            Harvests & Honey Yields (943 kg)
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("devices")}
-            className={`py-3 px-4 text-xs font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "devices"
-                ? "border-amber-500 text-amber-600 dark:text-amber-400"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Cpu className="w-4 h-4" />
-            Hardware & Devices
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        <div className="p-5 overflow-y-auto flex-1 space-y-5">
-          {/* TAB 1: HIVES */}
-          {activeTab === "hives" && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-foreground">
-                    Colony Directory ({filteredHives.length} Hives)
-                  </span>
-                  <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
-                    100% Active & Queenright
-                  </span>
-                </div>
-
-                <div className="relative w-full sm:w-64">
-                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    type="text"
-                    value={hiveSearch}
-                    onChange={(e) => { setHiveSearch(e.target.value); setPage(1); }}
-                    placeholder="Search hive (e.g. KIB-001)..."
-                    className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-border bg-background focus:outline-none focus:ring-1 focus:ring-amber-500"
-                  />
-                </div>
-              </div>
-
-              <div className="border border-border rounded-2xl overflow-hidden bg-background shadow-sm">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="bg-muted/50 border-b border-border text-[10px] uppercase font-bold text-muted-foreground">
-                        <th className="px-4 py-3">Hive Code</th>
-                        <th className="px-4 py-3">Hive Architecture</th>
-                        <th className="px-4 py-3">Queen Status</th>
-                        <th className="px-4 py-3">Frames</th>
-                        <th className="px-4 py-3">Colony Health</th>
-                        <th className="px-4 py-3">Biosecurity</th>
-                        <th className="px-4 py-3">Monitoring Mode</th>
-                        <th className="px-4 py-3">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/60">
-                      {paginatedHives.map((hive) => (
-                        <tr key={hive.id} className="hover:bg-muted/30 transition-colors">
-                          <td className="px-4 py-3 font-bold text-foreground">
-                            {hive.code}
-                          </td>
-                          <td className="px-4 py-3 text-muted-foreground">
-                            {hive.hiveType}
-                          </td>
-                          <td className="px-4 py-3 font-medium text-emerald-800 dark:text-emerald-400">
-                            {hive.queenStatus}
-                          </td>
-                          <td className="px-4 py-3 text-muted-foreground">
-                            {hive.broodFrames} Brood / {hive.honeyFrames} Honey
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-bold text-[10px]">
-                              {hive.health}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-emerald-700 dark:text-emerald-400 font-medium">
-                            {hive.pestStatus}
-                          </td>
-                          <td className="px-4 py-3 text-stone-500">
-                            Manual Inspection
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold text-[10px]">
-                              {hive.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {totalPages > 1 && (
-                  <div className="px-4 py-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground bg-muted/20">
-                    <span>
-                      Showing {((page - 1) * pageSize) + 1} to {Math.min(page * pageSize, filteredHives.length)} of {filteredHives.length} hives
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className="p-1 rounded-lg border border-border hover:bg-muted disabled:opacity-40"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <span className="px-2 font-bold text-foreground">
-                        Page {page} of {totalPages}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
-                        className="p-1 rounded-lg border border-border hover:bg-muted disabled:opacity-40"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: FORAGE & FLORA */}
-          {activeTab === "forage" && (
-            <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-1">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                  <Sprout className="w-4 h-4 text-amber-600" />
-                  Botanical Forage Ecosystem • {apiary.location_name}
-                </h4>
-                <p className="text-xs text-amber-800/80 dark:text-amber-300/80">
-                  Worker bee flight coverage: <strong>3.0 km radius</strong> across <strong>{apiary.size_acres} acres</strong> of certified organic dryland flora. Zero agricultural pesticide drift.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                <div className="p-4 rounded-2xl border border-border bg-background space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-foreground">Acacia Tortilis (Umbrella Thorn)</span>
-                    <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Primary Nectar</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Flowering peak: October – December. High nectar secretion during morning thermal hours. Produces clear golden organic honey.
-                  </p>
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50 text-[10px] text-muted-foreground">
-                    <span>Nectar Index: 95/100</span>
-                    <span className="font-bold text-emerald-600">Active Bloom</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl border border-border bg-background space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-foreground">Balanites Aegyptiaca (Desert Date)</span>
-                    <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">High Pollen</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Flowering year-round in arid sandy clay. Crucial protein source for continuous queen oviposition and robust brood rearing.
-                  </p>
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50 text-[10px] text-muted-foreground">
-                    <span>Pollen Yield: High</span>
-                    <span className="font-bold text-emerald-600">Perennial</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl border border-border bg-background space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-foreground">Citrus Blossom (Orange / Lime)</span>
-                    <span className="text-[10px] font-bold bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full">Spring Stimulation</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Flowering August – October. Aromatic, rapid nectar flow that accelerates early spring comb building and honey stores.
-                  </p>
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50 text-[10px] text-muted-foreground">
-                    <span>Aroma: Distinct Floral</span>
-                    <span className="font-bold text-amber-600">Early Bloom</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl border border-border bg-background space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-foreground">Adansonia digitata (Baobab)</span>
-                    <span className="text-[10px] font-bold bg-stone-100 text-stone-800 px-2 py-0.5 rounded-full">Mineral Rich</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Massive nocturnal blossoms supplying dense mineral pollen and evening moisture foraging for worker bees.
-                  </p>
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50 text-[10px] text-muted-foreground">
-                    <span>Mineral: Magnesium & Zinc</span>
-                    <span className="font-bold text-stone-600">Seasonal</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl border border-border bg-background space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-foreground">Ocimum basilicum (Wild Bush Basil)</span>
-                    <span className="text-[10px] font-bold bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full">Dryland Sustenance</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Drought-resistant groundcover providing sustained forage between major tree blooms, keeping hives healthy.
-                  </p>
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50 text-[10px] text-muted-foreground">
-                    <span>Forage Reliability: 100%</span>
-                    <span className="font-bold text-teal-600">Resilient</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: HARVESTS & YIELDS */}
-          {activeTab === "harvests" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-4 rounded-2xl border border-border bg-background space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground">Total Honey Harvested</span>
-                  <p className="text-2xl font-black text-amber-600">943.0 kg</p>
-                  <p className="text-[10px] text-emerald-600 font-semibold">Across 5 Verified Harvest Cycles</p>
-                </div>
-                <div className="p-4 rounded-2xl border border-border bg-background space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground">Average Moisture Content</span>
-                  <p className="text-2xl font-black text-foreground">17.1%</p>
-                  <p className="text-[10px] text-emerald-600 font-semibold">Export Grade A (&lt; 18.0% Standard)</p>
-                </div>
-                <div className="p-4 rounded-2xl border border-border bg-background space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground">Honey Botanical Class</span>
-                  <p className="text-base font-bold text-foreground truncate mt-1">Raw Acacia & Wildflower</p>
-                  <p className="text-[10px] text-muted-foreground">Cold Extracted • Unheated</p>
-                </div>
-              </div>
-
-              <div className="border border-border rounded-2xl overflow-hidden bg-background shadow-sm">
-                <div className="p-3 bg-muted/40 border-b border-border flex items-center justify-between">
-                  <span className="text-xs font-bold text-foreground">Certified Harvest Batches</span>
-                  <span className="text-[10px] text-muted-foreground">Traceable to Kibwezi Main Apiary</span>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="bg-muted/20 border-b border-border text-[10px] uppercase font-bold text-muted-foreground">
-                        <th className="px-4 py-2.5">Batch Code</th>
-                        <th className="px-4 py-2.5">Harvest Date</th>
-                        <th className="px-4 py-2.5">Honey Type</th>
-                        <th className="px-4 py-2.5">Quantity (kg)</th>
-                        <th className="px-4 py-2.5">Moisture</th>
-                        <th className="px-4 py-2.5">Color Grade</th>
-                        <th className="px-4 py-2.5">Quality Certification</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/60">
-                      {harvestsList.map((h) => (
-                        <tr key={h.id} className="hover:bg-muted/30 transition-colors">
-                          <td className="px-4 py-3 font-mono font-bold text-foreground">
-                            {h.batch}
-                          </td>
-                          <td className="px-4 py-3 text-muted-foreground">
-                            {h.harvested_on}
-                          </td>
-                          <td className="px-4 py-3 font-semibold text-amber-800 dark:text-amber-400">
-                            {h.honey_type}
-                          </td>
-                          <td className="px-4 py-3 font-black text-foreground">
-                            {h.quantity_kg.toFixed(1)} kg
-                          </td>
-                          <td className="px-4 py-3 font-mono font-bold text-emerald-600">
-                            {h.moisture_pct}%
-                          </td>
-                          <td className="px-4 py-3 text-muted-foreground">
-                            {h.color_grade}
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold text-[10px]">
-                              {h.quality_grade}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: DEVICES & HARDWARE */}
-          {activeTab === "devices" && (
-            <div className="space-y-4">
-              <div className="p-5 rounded-2xl border border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20 space-y-2">
-                <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
-                  <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                  <h4 className="font-bold text-sm">Operating in Certified Physical Inspection Mode</h4>
-                </div>
-                <p className="text-xs text-emerald-800/80 dark:text-emerald-300/80">
-                  This apiary is operated with hands-on manual beekeeper field inspections conducted by <strong>Timothy Nduva</strong>. No electronic IoT telemetry devices or physical scale sensors are currently installed in this apiary.
-                </p>
-                <div className="pt-2 flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-emerald-800 bg-white dark:bg-emerald-900 border border-emerald-200 px-3 py-1 rounded-lg">
-                    0 IoT Sensors Attached
-                  </span>
-                  <span className="text-[11px] font-bold text-emerald-800 bg-white dark:bg-emerald-900 border border-emerald-200 px-3 py-1 rounded-lg">
-                    Live Open-Meteo REST Weather Stream
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-5 rounded-2xl border border-dashed border-border bg-background space-y-3 text-center">
-                <Cpu className="w-8 h-8 mx-auto text-muted-foreground/50" />
-                <div>
-                  <h5 className="text-sm font-bold text-foreground">Hardware Device Pairing (Optional)</h5>
-                  <p className="text-xs text-muted-foreground max-w-md mx-auto mt-1">
-                    If you deploy physical BeeYield Hubs, hive scales, or acoustic sensors at {apiary.name} in the future, you can pair them here for automated hardware telemetry.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => toast.info("No physical hardware devices detected nearby. Apiary continues operating under certified manual inspection mode.")}
-                  className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground text-xs font-bold transition-colors"
-                >
-                  Pair New Hardware Device
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
+// ----------------------------------------------------------------------
 // Main Apiaries Modal & Standalone Page
+// ----------------------------------------------------------------------
 export default function ApiariesPage({
   isOpen = true,
   onClose,
@@ -1152,16 +2206,19 @@ export default function ApiariesPage({
     // Update Supabase if available
     try {
       if (editingApiary) {
-        await (supabase as any).from("apiaries").update({
-          name: newSite.name,
-          location_name: newSite.location_name,
-          latitude: newSite.latitude,
-          longitude: newSite.longitude,
-          type: newSite.type,
-          forage_type: newSite.forage_type,
-          size_acres: newSite.size_acres,
-          expected_hives: newSite.total_hives,
-        }).eq("id", editingApiary.id);
+        await (supabase as any)
+          .from("apiaries")
+          .update({
+            name: newSite.name,
+            location_name: newSite.location_name,
+            latitude: newSite.latitude,
+            longitude: newSite.longitude,
+            type: newSite.type,
+            forage_type: newSite.forage_type,
+            size_acres: newSite.size_acres,
+            expected_hives: newSite.total_hives,
+          })
+          .eq("id", editingApiary.id);
       } else {
         await (supabase as any).from("apiaries").insert({
           id: newSite.id,
@@ -1276,7 +2333,7 @@ export default function ApiariesPage({
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Click any apiary to view hives, botanical forage, honey harvests, and device hardware
+                Click any apiary to view hives, botanical forage ecosystem, and verified honey harvests
               </p>
             </div>
           </div>
@@ -1285,7 +2342,7 @@ export default function ApiariesPage({
             <button
               onClick={() => refreshAllWeather(true)}
               disabled={loadingWeather}
-              className="p-2 rounded-lg border border-border hover:border-honey/50 text-muted-foreground hover:text-foreground transition-colors"
+              className="p-2 rounded-lg border border-border hover:border-amber-500/50 text-muted-foreground hover:text-foreground transition-colors"
               title="Refresh Live Weather from API"
             >
               <RefreshCw className={`w-4 h-4 ${loadingWeather ? "animate-spin text-amber-500" : ""}`} />
