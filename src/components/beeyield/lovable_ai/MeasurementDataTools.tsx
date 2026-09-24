@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useId } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   X, Cpu, Usb, Bluetooth, Wifi, Plus, Trash2, ScanLine, ArrowLeft, ArrowRight, Check,
   Loader2, Thermometer, Droplets, Scale, BatteryCharging, MapPin, Boxes, Terminal,
@@ -34,8 +34,8 @@ const yearColor = (y: number) => QUEEN_YEAR_COLORS[y % 5] ?? "#d8d3c8";
 /* ------------------------------------------------------------------ QR scanner */
 
 function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; onCancel: () => void }) {
-  const scannerId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
-  const containerId = `qr-${scannerId}`;
+  const elId = useRef(`qr-${Math.random().toString(36).slice(2)}`);
+  const containerId = elId.current;
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -540,10 +540,7 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   const ingestSerialLine = async (line: string) => {
     // Accept "T=24.5;H=61;W=38.2;B=88" or JSON payloads from the hub.
     if (!user) return;
-    let temp: number | null;
-    let hum: number | null;
-    let wt: number | null;
-    let bat: number | null;
+    let temp: number | null = null, hum: number | null = null, wt: number | null = null, bat: number | null = null;
     try {
       const j = JSON.parse(line);
       temp = j.t ?? j.temperature ?? null; hum = j.h ?? j.humidity ?? null;

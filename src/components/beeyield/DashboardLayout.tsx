@@ -49,7 +49,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             label: "Apiary operations",
             items: [
                 { label: "Apiaries & Live Weather", icon: Compass, onClick: () => onTabChange('apiaries-weather') },
-                { label: "Hive Health Dashboard", icon: Heart, onClick: () => onTabChange('hive-health') },
+                { label: "Hive Health Dashboard", icon: HeartPulse, onClick: () => onTabChange('hive-health') },
                 { label: "Inspections & Diagnostics", icon: ClipboardList, onClick: () => onTabChange('inspections') },
                 { label: "My Tasks & Schedules", icon: CheckSquare, onClick: () => onTabChange('tasks') },
                 { label: "Acoustic Audit (Sound Analysis)", icon: AudioLines, onClick: () => onTabChange('sound-analysis') },
@@ -104,7 +104,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 { label: "My Devices, USB, Bluetooth & Online", icon: Cpu, onClick: () => onTabChange('measurement-tools') },
                 { label: "Support & Tickets", icon: LifeBuoy, onClick: () => onTabChange('support') },
                 { label: "Settings — Control Center", icon: Settings, onClick: () => onTabChange('settings') },
-                { label: "About Beeyield AI", icon: Info, onClick: () => onTabChange('assistant') },
+                { label: "About Beeyield AI", icon: Info, onClick: () => onTabChange('about-ai') },
                 { label: "Sign in / Sign up", icon: LogIn, onClick: () => onTabChange('auth') },
             ]
         }

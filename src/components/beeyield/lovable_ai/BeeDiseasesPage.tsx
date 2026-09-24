@@ -136,7 +136,7 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
           <label className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 cursor-pointer hover:bg-muted transition-colors"><Upload className="w-3.5 h-3.5" />Import
             <input type="file" accept=".csv" className="hidden" onChange={(e) => e.target.files?.[0] && importCSV(e.target.files[0])} />
           </label>
-          <button onClick={startNew} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:opacity-90 transition-opacity"><Plus className="w-3.5 h-3.5" />New</button>
+          <button onClick={startNew} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"><Plus className="w-4 h-4 text-white stroke-[2.5]" /><span className="text-white">New Disease</span></button>
           {!embedded && (
             <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors"><X className="w-4 h-4" /></button>
           )}
@@ -177,7 +177,7 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
             <Field label="Treatments (pipe `|` separated)"><textarea value={draft.treatments.join("|")} onChange={(e) => setDraft({ ...draft, treatments: e.target.value.split("|").map((s) => s.trim()) })} className={`${inp} min-h-[50px]`} /></Field>
             <Field label="Notes"><textarea value={draft.notes || ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} className={`${inp} min-h-[40px]`} /></Field>
             <div className="flex gap-2 pt-1">
-              <button onClick={save} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5"><Save className="w-3.5 h-3.5" />Save</button>
+              <button onClick={save} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"><Save className="w-4 h-4 text-white" /><span className="text-white">Save Disease</span></button>
               <button onClick={() => { setShowForm(false); setEditing(null); }} className="px-3 py-2 rounded-lg border border-border text-xs">Cancel</button>
             </div>
           </div>

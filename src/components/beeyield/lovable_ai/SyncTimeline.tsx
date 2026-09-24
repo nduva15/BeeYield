@@ -48,7 +48,6 @@ function OutcomeIcon({ state }: { state: Outcome["state"] }) {
   return <Clock className="w-3 h-3" />;
 }
 
-
 /**
  * Per-record history of what reached Shopify and QuickBooks, newest first,
  * with a one-click retry for anything that failed or was skipped.

@@ -133,7 +133,6 @@ const PROVIDERS: {
   },
 ];
 
-
 function statusPill(status: string) {
   if (status === "connected") return { label: "Connected", cls: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10", Icon: CheckCircle2 };
   if (status === "error") return { label: "Error", cls: "text-red-400 border-red-500/30 bg-red-500/10", Icon: AlertCircle };

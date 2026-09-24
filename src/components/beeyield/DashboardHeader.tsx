@@ -125,7 +125,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             title: "APIARY OPERATIONS",
             items: [
                 { id: 'apiaries-weather', label: 'Apiaries & Live Weather', icon: Compass },
-                { id: 'hive-health', label: 'Hive Health Dashboard', icon: Heart },
+                { id: 'hive-health', label: 'Hive Health Dashboard', icon: HeartPulse },
                 { id: 'inspections', label: 'Inspections & Diagnostics', icon: ClipboardList },
                 { id: 'tasks', label: 'My Tasks & Schedules', icon: CheckSquare },
                 { id: 'sound-analysis', label: 'Acoustic Audit (Sound Analysis)', icon: AudioLines },
@@ -180,7 +180,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 { id: 'measurement-tools', label: 'My Devices, USB, Bluetooth & Online', icon: Cpu },
                 { id: 'support', label: 'Support & Tickets', icon: LifeBuoy },
                 { id: 'settings', label: 'Settings — Control Center', icon: Settings },
-                { id: 'assistant', label: 'About Beeyield AI', icon: Info },
+                { id: 'about-ai', label: 'About Beeyield AI', icon: Info },
                 { id: 'auth', label: 'Sign in / Sign up', icon: LogIn },
             ]
         }

@@ -171,7 +171,7 @@ Recent commercial trials demonstrate the immediate return on investment when gro
 
 At BeeYield, our roots trace back to Kibwezi and Makueni County, Kenya, where our founder, **Timothy Nduva**, started with a handful of hives and a clear mission: **protect pollinators, empower growers, and ensure sustainable food security through data**. 
 
-When agrochemical drift and climate volatility devastated traditional beekeeping in our region in 2025, we didn't back down. We pivoted into precision apiculture, integrating IoT hardware, acoustic machine learning, and agronomic intelligence. Today, with over 184 hives owned, 22 active IoT sensor hubs, 95+ and counting acres pollinated, and partnerships spanning from smallholder Kenyan apiaries to European IoT pioneers, BeeYield is proving that nature and technology are strongest together.
+When agrochemical drift and climate volatility devastated traditional beekeeping in our region in 2025, we didn't back down. We pivoted into precision apiculture, integrating IoT hardware, acoustic machine learning, and agronomic intelligence. Today, with over 184 hives owned, 22 active IoT sensor hubs, 105 and counting acres pollinated, and partnerships spanning from smallholder Kenyan apiaries to European IoT pioneers, BeeYield is proving that nature and technology are strongest together.
 
 Our ambition is to make precision pollination standard practice across Africa and global high-value horticulture:
 - **Zero Chemical Mortality**: Aligning real-time bee flight data with orchard and polytunnel spray schedules to eliminate pollinator mortality.
@@ -205,7 +205,7 @@ Don't leave your harvest to chance. Partner with BeeYield™ to deploy Apisense 
     stats: [
       { label: "Food Crops", value: "75%", sub: "Rely directly on pollinators" },
       { label: "Yield Uplift", value: "+9% to 18%", sub: "Observed across Makueni trials" },
-      { label: "Intelligent Hives", value: "184 Hives", sub: "Connected via IoT across 95 and counting acres" },
+      { label: "Intelligent Hives", value: "184 Hives", sub: "Connected via IoT across 105 and counting acres" },
       { label: "Active Sensors", value: "22 Hubs", sub: "Real-time acoustic & microclimate telemetry" },
     ],
     mediaGallery: [
@@ -342,7 +342,7 @@ At BeeYield, we believe every flower deserves the chance to be pollinated by a s
       {
         src: "/images/pollination/beeyield-apisense-gateway-field.png",
         alt: "BeeYield solar-powered gateway node",
-        caption: "Solar-powered in-field gateway node providing real-time telemetry across 95+ pollinated acres.",
+        caption: "Solar-powered in-field gateway node providing real-time telemetry across 105 and counting pollinated acres.",
       },
       {
         src: "/images/pollination/apisense-sensor-comb-inspection.png",
@@ -450,7 +450,7 @@ In **2025**, a severe crisis hit: agrochemical spraying on neighboring farms cau
 Today, BeeYield has grown into an agtech leader:
 - **184+ Hives Owned** and managing over **205+ additional partner hives**.
 - **22 Active IoT Sensor Hubs** operating continuously in the field.
-- **95+ and Counting Acres Pollinated** across Makueni, Machakos, Murang'a, and Kibwezi.
+- **105 and Counting Acres Pollinated** across Makueni, Machakos, Murang'a, and Kibwezi.
 - **Over 2,000 Daily Telemetry Data Points** tracking acoustics, temperature, humidity, and foraging flight curves.
 - **Proprietary Bee Sound ML Models** trained on over 350,000 bee acoustic signatures to detect disease, queen status, and swarming before human inspection can.
 
@@ -1060,7 +1060,7 @@ We partnered with leading European IoT innovators **Apisense.io** and **Intellig
 
 ## Scaling Precision Pollination Across Africa
 
-Today, BeeYield operates across over **95+ and counting acres** in Kenya, managing **184+ owned hives** and coordinating **205+ partner hives** equipped with **22 active IoT sensor hubs**.
+Today, BeeYield operates across over **105 and counting acres** in Kenya, managing **184+ owned hives** and coordinating **205+ partner hives** equipped with **22 active IoT sensor hubs**.
 
 ![Non-invasive acoustic monitoring device alerting farm managers to swarming, stress, or queen loss](/images/pollination/apisense-colony-monitoring.png)
 

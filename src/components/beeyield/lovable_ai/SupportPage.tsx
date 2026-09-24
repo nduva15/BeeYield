@@ -38,7 +38,15 @@ const EMPTY = {
   contact_phone: "",
 };
 
-export default function SupportPage({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function SupportPage({
+  isOpen,
+  onClose,
+  embedded = false,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  embedded?: boolean;
+}) {
   const deviceId = useDeviceId();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,10 +69,7 @@ export default function SupportPage({ isOpen, onClose }: { isOpen: boolean; onCl
     setTickets((data ?? []) as Ticket[]);
   }, [deviceId]);
 
-  useEffect(() => {
-    if (!isOpen || !deviceId) return;
-    void load();
-  }, [isOpen, deviceId, load]);
+  useEffect(() => { if (isOpen) void load(); }, [isOpen, load]);
 
   const stats = useMemo(() => ({
     total: tickets.length,
@@ -139,11 +144,11 @@ export default function SupportPage({ isOpen, onClose }: { isOpen: boolean; onCl
     URL.revokeObjectURL(url);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-6xl mx-auto p-6"}>
         <div className="flex items-start justify-between mb-6">
           <div>
             <h2 className="font-display text-2xl font-bold">

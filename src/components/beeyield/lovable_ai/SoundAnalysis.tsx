@@ -158,7 +158,15 @@ function ModelCard() {
   );
 }
 
-export default function SoundAnalysis({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function SoundAnalysis({
+  isOpen,
+  onClose,
+  embedded = false,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  embedded?: boolean;
+}) {
   const deviceId = useDeviceId();
   const [hiveLabel, setHiveLabel] = useState("BY-H001");
   const [notes, setNotes] = useState("");
@@ -392,11 +400,11 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
     void loadHistory();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !embedded) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
+      <div className={embedded ? "w-full space-y-6" : "max-w-6xl mx-auto p-6"}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <AudioWaveform className="w-7 h-7 text-honey" />

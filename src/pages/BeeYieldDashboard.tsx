@@ -72,6 +72,7 @@ import SupportCenterView from '@/components/beeyield/SupportCenterView';
 import SettingsView from '@/components/beeyield/SettingsView';
 import ImageAnalysisView from '@/components/beeyield/ImageAnalysisView';
 import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
+import SoundAnalysis from '@/components/beeyield/lovable_ai/SoundAnalysis';
 import AcousticSpectralView from '@/components/beeyield/AcousticSpectralView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
@@ -99,6 +100,7 @@ import YieldProjection from '@/components/beeyield/lovable_ai/YieldProjection';
 import MeasurementDataTools from '@/components/beeyield/lovable_ai/MeasurementDataTools';
 import HiveHealthDashboard from '@/components/beeyield/lovable_ai/HiveHealthDashboard';
 import SupportPageModal from '@/components/beeyield/lovable_ai/SupportPageModal';
+import SupportPage from '@/components/beeyield/lovable_ai/SupportPage';
 import SettingsPage from '@/components/beeyield/lovable_ai/SettingsPage';
 import InspectionsPage from '@/components/beeyield/lovable_ai/InspectionsPage';
 import TasksPage from '@/components/beeyield/lovable_ai/TasksPage';
@@ -370,9 +372,11 @@ const BeeYieldDashboard: React.FC = () => {
             case 'precision-pollination-folder':
             case 'precision-pollination-home': return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
             case 'pollination-grid':
+            case 'precision-drilldown':
             case 'precision-pollination-grid': return renderEmbedded(<PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'pollination-engine': return <PollinationEngine onTabChange={handleTabChange} />;
             case 'pollination-calcs': return renderEmbedded(<PollinationCalcs isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'harvest-calculator':
             case 'bee-calculator':
             case 'yield-predict': return renderEmbedded(<HarvestCalculator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'activity-counter':
@@ -385,9 +389,11 @@ const BeeYieldDashboard: React.FC = () => {
             case 'apiaries': return renderEmbedded(<ApiariesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'moa-compare': return renderEmbedded(<MOACompare isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'knowledge-search': return renderEmbedded(<KnowledgeSearch isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'forage-zones':
             case 'forage-zones-page': return renderEmbedded(<ForageZonesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'sound-audit':
-            case 'sound-analysis': return <SoundAnalysisView onTabChange={handleTabChange} embedded={true} />;
+            case 'sound-analysis': return renderEmbedded(<SoundAnalysis isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'about-beeyield-ai':
             case 'about-ai': return renderEmbedded(<AboutModal open={true} onOpenChange={() => handleTabChange('home')} />);
             case 'about': navigate('/about'); return null;
             case 'blogs': navigate('/blogs'); return null;
@@ -412,11 +418,10 @@ const BeeYieldDashboard: React.FC = () => {
             case 'feeding-schedule': return renderEmbedded(<FeedingSchedule isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'apiary-sizing': return renderEmbedded(<ApiarySizing isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'yield-projection': return renderEmbedded(<YieldProjection isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'forage-zones': return <ForageZonesView onTabChange={handleTabChange} embedded={true} />;
             case 'site-reports-tactical': return <PollinationReports />;
-            case 'precision-drilldown': return renderEmbedded(<PrecisionDrilldown isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'sensor-alerts': return renderEmbedded(<AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'hive-health':
+            case 'sensor-alerts':
+            case 'alerts': return renderEmbedded(<AlertsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'hive-health': return renderEmbedded(<HiveHealthDashboard isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
@@ -451,7 +456,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-reports':
             case 'meters-settings': return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
             case 'integrations': return renderEmbedded(<IntegrationsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'support': return <SupportCenterView onTabChange={handleTabChange} />;
+            case 'support': return renderEmbedded(<SupportPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
             case 'settings': return renderEmbedded(<SettingsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             default: return (
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">

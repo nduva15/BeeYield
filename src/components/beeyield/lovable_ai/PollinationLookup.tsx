@@ -213,7 +213,7 @@ export default function PollinationLookup({ isOpen, onClose, embedded = false }:
       doc.setFontSize(8);
       doc.setTextColor(150);
       const footer = brand.farmName.trim()
-        ? `${brand.farmName.trim()} · BeeYield Pollination · Page ${i} / ${total}`
+        ? `${brand.farmName.trim()} · Farmer: Timothy Nduva · BeeYield Pollination · Page ${i} / ${total}`
         : `BeeYield Pollination Lookup · Farmer: Timothy Nduva · Page ${i} / ${total}`;
       doc.text(footer, pageW - margin, pageH - 16, { align: "right" });
     }
