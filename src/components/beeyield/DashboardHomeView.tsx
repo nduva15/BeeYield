@@ -31,7 +31,7 @@ interface DashboardHomeViewProps {
 const CANONICAL_KIBWEZI_APIARY: Apiary = {
     id: "apiary-kibwezi",
     name: "BeeYield Apiary in Kibwezi Kenya",
-    location_name: "Kiunduani, Kibwezi",
+    location_name: "Kibwezi, Makueni, Kenya",
     county: "Makueni",
     region: "Kibwezi East",
     latitude: -2.409,
@@ -420,7 +420,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
 
                         <div className="bg-neutral-50 border border-neutral-200/90 rounded-xl p-4">
-                            <Row label="Apiary Location" value={primaryApiary?.location_name || 'Kiunduani, Kibwezi'} />
+                            <Row label="Apiary Location" value={primaryApiary?.location_name || 'Kibwezi, Makueni, Kenya'} />
                             <Row label="Managed Colonies" value={`${loadedHives.length} Langstroth Hives`} />
                             <Row label="Biosecurity Status" value={<span className="text-emerald-600 font-bold flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 inline" /> Optimal</span>} />
                             <Row label="Primary Flora" value={primaryApiary?.forage_type || 'Acacia & Desert Date'} />
@@ -647,7 +647,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     </h3>
                                     <p className="text-xs text-neutral-500 font-medium flex items-center gap-1">
                                         <MapPin className="w-3.5 h-3.5 text-amber-600" />
-                                        Kiunduani, Kibwezi, Makueni County (-2.409°S, 37.967°E)
+                                        Kibwezi, Makueni County (-2.409°S, 37.967°E)
                                     </p>
                                 </div>
 

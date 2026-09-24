@@ -351,7 +351,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             Certified Physical Inspection Mode • No IoT Sensors Attached
                         </h4>
                         <p className="text-xs text-emerald-800/80 font-medium">
-                            Lead Beekeeper: <strong>Timothy Nduva</strong> · Location: <strong>BeeYield Apiary in Kibwezi Kenya, Kiunduani, Makueni County (-2.409°, 37.967°)</strong>. Colony health verified by physical field inspections. Ambient conditions connected live via Open-Meteo REST API.
+                            Lead Beekeeper: <strong>Timothy Nduva</strong> · Location: <strong>BeeYield Apiary in Kibwezi Kenya, Makueni County (-2.409°, 37.967°)</strong>. Colony health verified by physical field inspections. Ambient conditions connected live via Open-Meteo REST API.
                         </p>
                     </div>
                 </div>
