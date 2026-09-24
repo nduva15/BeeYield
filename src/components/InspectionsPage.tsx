@@ -253,35 +253,30 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
   const [selectedHiveCode, setSelectedHiveCode] = useState<string>("KIB-001");
   const [syncedBanner, setSyncedBanner] = useState<boolean>(true);
 
-  // Combine canonical apiaries with user-created apiaries from Supabase/API
+  // User-created apiaries from Supabase/API (only fallback to canonical for unauthenticated guest)
   const allApiaries = useMemo(() => {
-    const list: Array<{ id: string; name: string; region?: string; county?: string }> = [...CANONICAL_APIARIES];
-    userApiaries.forEach((ua) => {
-      const norm = normalizeApiaryName(ua.name);
-      if (!list.some((a) => a.name.toLowerCase() === norm.toLowerCase())) {
-        list.push({ id: ua.id, name: norm, region: "Kibwezi East", county: "Makueni" });
+    if (user?.id) {
+      if (userApiaries.length > 0) {
+        return deduplicateApiaries(userApiaries.map((ua) => ({ id: ua.id, name: normalizeApiaryName(ua.name), region: "Kibwezi East", county: "Makueni" })));
       }
-    });
-    return deduplicateApiaries(list);
-  }, [userApiaries]);
+      return [];
+    }
+    return deduplicateApiaries([...CANONICAL_APIARIES]);
+  }, [userApiaries, user?.id]);
 
-  // Combine canonical hives with user-created hives
+  // User-created hives (only fallback to canonical for unauthenticated guest)
   const allHives = useMemo(() => {
-    const list: Array<{ id: string; hive_code: string; name: string; apiary_name: string; frame_count: number }> = [...CANONICAL_HIVES];
-    userHives.forEach((uh) => {
-      const code = uh.hive_code || uh.name || "BEE-001";
-      if (!list.some((h) => h.hive_code === code)) {
-        list.unshift({
-          id: uh.id,
-          hive_code: code,
-          name: uh.name || code,
-          apiary_name: uh.apiary_name || "BeeYield Apiary in Kibwezi Kenya",
-          frame_count: 10,
-        });
-      }
-    });
-    return list;
-  }, [userHives]);
+    if (user?.id) {
+      return userHives.map((uh) => ({
+        id: uh.id,
+        hive_code: uh.hive_code || uh.name || "HIVE-001",
+        name: uh.name || uh.hive_code || "Hive",
+        apiary_name: uh.apiary_name || "Personal Apiary",
+        frame_count: 10,
+      }));
+    }
+    return [...CANONICAL_HIVES];
+  }, [userHives, user?.id]);
 
   // Filtered hives based on chosen apiary
   const filteredHivesForForm = useMemo(() => {
@@ -419,63 +414,64 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
         // Backend offline fallback
       }
 
-      // 2. Fetch from Supabase (real logged inspections)
+      // 2. Fetch from Supabase (real logged inspections strictly filtered by user_id)
       try {
-        const { data, error } = await (supabase as any)
-          .from("inspections")
-          .select("*")
-          .order("inspected_on", { ascending: false })
-          .limit(300);
+        if (user?.id) {
+          const { data, error } = await (supabase as any)
+            .from("inspections")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("inspected_on", { ascending: false })
+            .limit(300);
 
-        if (!error && data && data.length > 0) {
-          data.forEach((d: any) => {
-            if (String(d.id).startsWith("insp-0")) return; // purge mock IDs
-            const item: Inspection = {
-              id: String(d.id),
-              inspected_on: d.inspected_on || d.inspection_date || d.created_at?.slice(0, 10) || new Date().toISOString().slice(0, 10),
-              location: d.location || d.apiary_name || "",
-              hive_label: d.hive_label || d.hive_code || "Hive",
-              batch: d.batch || d.batch_code || "",
-              colony_health: d.colony_health || "Healthy",
-              temperament: d.temperament || "Calm",
-              queen_seen: Boolean(d.queen_seen),
-              queen_cells: Number(d.queen_cells) || 0,
-              total_frames: Number(d.total_frames) || (Number(d.brood_frames || 6) + Number(d.honey_frames || 4)),
-              brood_frames: Number(d.brood_frames) || 6,
-              honey_frames: Number(d.honey_frames) || 4,
-              varroa_count: Number(d.varroa_count || d.varroa_mite_count) || 0,
-              issues: Array.isArray(d.issues) ? d.issues : [],
-              actions: Array.isArray(d.actions) ? d.actions : [],
-              weather: d.weather || null,
-              notes: d.notes || null,
-              ai_insights: d.ai_insights || null,
-              created_at: d.created_at || new Date().toISOString(),
-            };
-            if (!userIds.has(item.id)) {
-              userIds.add(item.id);
-              userInspections.push(item);
-            }
-          });
+          if (!error && data && data.length > 0) {
+            data.forEach((d: any) => {
+              if (String(d.id).startsWith("insp-0") || String(d.id).startsWith("insp-kib-")) return; // purge mock IDs
+              const item: Inspection = {
+                id: String(d.id),
+                inspected_on: d.inspected_on || d.inspection_date || d.created_at?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+                location: d.location || d.apiary_name || "",
+                hive_label: d.hive_label || d.hive_code || "Hive",
+                batch: d.batch || d.batch_code || "",
+                colony_health: d.colony_health || "Healthy",
+                temperament: d.temperament || "Calm",
+                queen_seen: Boolean(d.queen_seen),
+                queen_cells: Number(d.queen_cells) || 0,
+                total_frames: Number(d.total_frames) || (Number(d.brood_frames || 6) + Number(d.honey_frames || 4)),
+                brood_frames: Number(d.brood_frames) || 6,
+                honey_frames: Number(d.honey_frames) || 4,
+                varroa_count: Number(d.varroa_count || d.varroa_mite_count) || 0,
+                issues: Array.isArray(d.issues) ? d.issues : [],
+                actions: Array.isArray(d.actions) ? d.actions : [],
+                weather: d.weather || null,
+                notes: d.notes || null,
+                ai_insights: d.ai_insights || null,
+                created_at: d.created_at || new Date().toISOString(),
+              };
+              if (!userIds.has(item.id)) {
+                userIds.add(item.id);
+                userInspections.push(item);
+              }
+            });
+          }
         }
       } catch (err) {
         // Supabase offline fallback
       }
 
-      // 3. Merge with LocalStorage (clean out any legacy mock data)
+      // 3. Merge with user-scoped LocalStorage (clean out any legacy mock data)
       try {
-        const raw = localStorage.getItem("beeyield_local_inspections_v1");
+        const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+        const raw = localStorage.getItem(userLsKey);
         if (raw) {
           const localItems: Inspection[] = JSON.parse(raw);
-          const cleanLocal = localItems.filter((item) => !item.id?.startsWith("insp-0"));
+          const cleanLocal = localItems.filter((item) => !item.id?.startsWith("insp-0") && !item.id?.startsWith("insp-kib-"));
           cleanLocal.forEach((item) => {
             if (!userIds.has(item.id)) {
               userIds.add(item.id);
               userInspections.push(item);
             }
           });
-          if (cleanLocal.length !== localItems.length) {
-            localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(cleanLocal));
-          }
         }
       } catch { void 0; }
 
@@ -489,7 +485,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     if (isOpen || embedded) {
@@ -693,9 +689,10 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
       console.warn("Supabase inspection sync fallback:", e);
     }
 
-    // 3. LocalStorage Sync
+    // 3. LocalStorage Sync (user-scoped)
     try {
-      const stored: Inspection[] = JSON.parse(localStorage.getItem("beeyield_local_inspections_v1") || "[]");
+      const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+      const stored: Inspection[] = JSON.parse(localStorage.getItem(userLsKey) || "[]");
       let nextLocal: Inspection[];
       if (editingId) {
         nextLocal = stored.map((h) => (h.id === editingId ? currentRecord : h));
@@ -705,7 +702,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
       } else {
         nextLocal = [currentRecord, ...stored.filter((h) => h.id !== recordId)];
       }
-      localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(nextLocal));
+      localStorage.setItem(userLsKey, JSON.stringify(nextLocal));
     } catch { void 0; }
 
     // 4. Update UI State

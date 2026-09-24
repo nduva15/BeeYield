@@ -1451,7 +1451,7 @@ function ApiaryDetailModal({
     } catch {
       // fallback
     }
-    return CANONICAL_KIBWEZI_HIVES;
+    return user ? [] : CANONICAL_KIBWEZI_HIVES;
   });
 
   // Load user-specific harvests with fallback
@@ -1465,7 +1465,7 @@ function ApiaryDetailModal({
     } catch {
       // fallback
     }
-    return CANONICAL_KIBWEZI_HARVESTS;
+    return user ? [] : CANONICAL_KIBWEZI_HARVESTS;
   });
 
   // Sync to Supabase & localStorage whenever hives change
@@ -2339,17 +2339,19 @@ export default function ApiariesPage({
     } catch {
       // fallback
     }
-    return deduplicateApiaries(
-      DEFAULT_APIARIES.map((item) => {
-        const normalized = normalizeApiarySite(item);
-        const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
-        return {
-          ...normalized,
-          active_hives: userHives,
-          total_hives: Math.max(normalized.total_hives, userHives),
-        };
-      })
-    );
+    return user?.id
+      ? []
+      : deduplicateApiaries(
+          DEFAULT_APIARIES.map((item) => {
+            const normalized = normalizeApiarySite(item);
+            const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
+            return {
+              ...normalized,
+              active_hives: userHives,
+              total_hives: Math.max(normalized.total_hives, userHives),
+            };
+          })
+        );
   });
 
   const [weatherMap, setWeatherMap] = useState<Record<string, LiveWeatherData>>({});
@@ -2385,7 +2387,16 @@ export default function ApiariesPage({
           query = query.eq("user_id", user.id);
         }
         const { data, error } = await query.limit(50);
-        if (!error && data && data.length > 0) {
+        if (!error && data) {
+          if (data.length === 0) {
+            if (user?.id) {
+              setApiaries([]);
+              try {
+                localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify([]));
+              } catch { void 0; }
+              return;
+            }
+          }
           const mapped: ApiarySite[] = data.map((d: any) => {
             const normalizedName = normalizeApiaryName(d.name);
             const normalizedLoc = normalizeApiaryLocation(d.location_name || d.region);
@@ -2401,7 +2412,7 @@ export default function ApiariesPage({
             const activeCount = getUserHivesCount(
               userKey,
               String(d.id),
-              Number(d.hive_count || d.active_hives || d.expected_hives || 184)
+              Number(d.hive_count ?? d.active_hives ?? d.expected_hives ?? 0)
             );
 
             return {
@@ -2415,10 +2426,10 @@ export default function ApiariesPage({
               type: d.type || d.apiary_type || "Commercial Apiary",
               status: d.status === "Threatened" ? "Threatened" : "Optimal",
               active_hives: activeCount,
-              total_hives: Math.max(Number(d.expected_hives || d.total_hives || 184), activeCount),
+              total_hives: Math.max(Number(d.expected_hives ?? d.total_hives ?? 0), activeCount),
               size_acres: Number(d.size_acres || 18),
               forage_type: d.forage_type || d.primary_forage || "Acacia Tortilis, Desert Date & Citrus Blossom",
-              notes: d.notes || "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
+              notes: d.notes || "",
               created_at: d.created_at || new Date().toISOString(),
             };
           });
