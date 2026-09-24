@@ -81,6 +81,7 @@ interface DashboardHeaderProps {
     deviceMode?: 'auto' | 'phone' | 'pad' | 'laptop';
     onDeviceModeChange?: (mode: 'auto' | 'phone' | 'pad' | 'laptop') => void;
     onToggleToolsDrawer?: () => void;
+    isToolsDrawerOpen?: boolean;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -92,7 +93,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     onToggleMobileSidebar,
     deviceMode = 'auto',
     onDeviceModeChange,
-    onToggleToolsDrawer
+    onToggleToolsDrawer,
+    isToolsDrawerOpen = false
 }) => {
     const { user, beeyieldUser } = useAuth();
     const { language, setLanguage, t } = useLanguage();
@@ -206,7 +208,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     return (
         <header className={cn(
             "h-16 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-4 md:px-6 transition-all duration-300",
-            scrolled ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-lg" : "bg-background/60 backdrop-blur-md"
+            "bg-background/95 backdrop-blur-md border-b border-border shadow-xs"
         )}>
             {/* Left: Main Tools Dropdown & Tools Rail Button (Matches screenshot 1:1) */}
             <div className="flex items-center gap-2 sm:gap-3">
@@ -301,11 +303,19 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {onToggleToolsDrawer && (
                     <button
                         onClick={onToggleToolsDrawer}
-                        className="flex items-center gap-2 px-3.5 py-2 rounded-2xl border border-amber-500/40 bg-[#14120f] hover:bg-[#1c1915] hover:border-amber-500/70 text-[#f59e0b] text-xs font-bold transition-all shadow-md shrink-0"
-                        title="Open AI Tools Rail"
+                        className={cn(
+                            "flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-bold transition-all shadow-md shrink-0",
+                            isToolsDrawerOpen
+                                ? "border-amber-500 bg-[#1c1915] text-[#f59e0b] shadow-amber-500/10 ring-1 ring-amber-500/30"
+                                : "border-amber-500/40 bg-[#14120f] hover:bg-[#1c1915] hover:border-amber-500/70 text-[#f59e0b]"
+                        )}
+                        title={isToolsDrawerOpen ? "Collapse AI Tools Rail" : "Open & Stick AI Tools Rail"}
                     >
                         <Menu className="w-4 h-4 text-[#f59e0b]" />
                         <span>AI Tools Rail</span>
+                        {isToolsDrawerOpen && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
+                        )}
                     </button>
                 )}
             </div>

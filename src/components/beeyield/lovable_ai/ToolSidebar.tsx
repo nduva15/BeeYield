@@ -2,23 +2,26 @@ import { useMemo, useState } from "react";
 import { Search, X, PanelLeftClose } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
+import { cn } from "@/lib/utils";
 
-export type ToolItem = { label: string; icon: LucideIcon; onClick: () => void };
+export type ToolItem = { label: string; icon: LucideIcon; onClick: () => void; id?: string };
 export type ToolGroup = { label: string; items: ToolItem[] };
 
 /**
  * Permanent vertical tool rail. Every tool is its own full-width horizontal row
- * so nothing is buried inside a dropdown. On narrow screens it slides over the
- * chat as a drawer; on desktop it is always visible.
+ * so nothing is buried inside a dropdown. On narrow screens it slides over as a drawer;
+ * on desktop it sticks cleanly as a permanent vertical rail that remains active while working.
  */
 export default function ToolSidebar({
   groups,
   open,
   onClose,
+  activeTab,
 }: {
   groups: ToolGroup[];
   open: boolean;
   onClose: () => void;
+  activeTab?: string;
 }) {
   const [query, setQuery] = useState("");
 
@@ -43,20 +46,22 @@ export default function ToolSidebar({
       )}
 
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-72 flex-shrink-0 border-r border-border bg-sidebar flex flex-col transition-transform duration-200 ${
+        className={cn(
+          "fixed lg:static inset-y-0 left-0 z-40 w-72 flex-shrink-0 border-r border-border bg-sidebar flex flex-col transition-transform duration-200 select-none",
           open ? "translate-x-0" : "-translate-x-full lg:hidden"
-        }`}
+        )}
       >
         <div className="flex items-center gap-2 px-3 py-3 border-b border-border">
           <img src={beeyieldLogo} alt="Beeyield" className="h-7 w-auto" />
           <div className="min-w-0">
-            <p className="font-display text-sm font-bold text-honey leading-tight">Beeyield tools</p>
+            <p className="font-display text-sm font-bold text-[#f59e0b] leading-tight">Beeyield tools</p>
             <p className="text-[10px] text-muted-foreground">{total} tools</p>
           </div>
           <button
             onClick={onClose}
-            aria-label="Hide tools"
-            className="ml-auto p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground"
+            aria-label="Hide tools rail"
+            title="Collapse AI Tools Rail"
+            className="ml-auto p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <span className="lg:hidden"><X className="w-4 h-4" /></span>
             <span className="hidden lg:inline"><PanelLeftClose className="w-4 h-4" /></span>
@@ -71,29 +76,47 @@ export default function ToolSidebar({
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search tools"
               aria-label="Search tools"
-              className="w-full bg-background border border-border rounded-lg pl-8 pr-2 py-1.5 text-xs outline-none focus:border-primary/50"
+              className="w-full bg-background border border-border rounded-lg pl-8 pr-2 py-1.5 text-xs outline-none focus:border-amber-500/60 text-foreground"
             />
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto custom-scroll px-2 py-2 space-y-4">
+        <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 py-2 space-y-4">
           {filtered.length === 0 && (
             <p className="px-2 text-xs text-muted-foreground">No tool matches “{query}”.</p>
           )}
           {filtered.map((g) => (
             <div key={g.label}>
-              <p className="px-2 mb-1 text-[10px] uppercase tracking-wide text-honey/80">{g.label}</p>
+              <p className="px-2 mb-1 text-[10px] uppercase font-bold tracking-wider text-[#f59e0b]">{g.label}</p>
               <div className="space-y-0.5">
-                {g.items.map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() => { item.onClick(); onClose(); }}
-                    className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  >
-                    <item.icon className="w-4 h-4 flex-shrink-0 text-honey/80" />
-                    <span className="truncate">{item.label}</span>
-                  </button>
-                ))}
+                {g.items.map((item) => {
+                  const isActive = activeTab && item.id === activeTab;
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => {
+                        item.onClick();
+                        if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                          onClose();
+                        }
+                      }}
+                      className={cn(
+                        "w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-left text-xs transition-colors",
+                        isActive
+                          ? "bg-amber-500/15 border border-amber-500/30 text-foreground font-semibold shadow-xs"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <item.icon className={cn("w-4 h-4 flex-shrink-0", isActive ? "text-[#f59e0b]" : "text-[#f59e0b]/80")} />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                      {isActive && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}

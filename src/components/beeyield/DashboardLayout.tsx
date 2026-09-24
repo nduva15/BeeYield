@@ -42,34 +42,51 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-    const [toolsDrawerOpen, setToolsDrawerOpen] = useState(false);
+    const [toolsDrawerOpen, setToolsDrawerOpen] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('beeyield_tools_rail_open');
+            if (saved !== null) return saved === 'true';
+            return window.innerWidth >= 1024;
+        }
+        return true;
+    });
+
+    const toggleToolsDrawer = () => {
+        setToolsDrawerOpen(prev => {
+            const next = !prev;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('beeyield_tools_rail_open', String(next));
+            }
+            return next;
+        });
+    };
 
     const toolGroups: ToolGroup[] = useMemo(() => [
         {
             label: "Apiary operations",
             items: [
-                { label: "Apiaries & Live Weather", icon: Compass, onClick: () => onTabChange('apiaries-weather') },
-                { label: "Hive Health Dashboard", icon: HeartPulse, onClick: () => onTabChange('hive-health') },
-                { label: "Inspections & Diagnostics", icon: ClipboardList, onClick: () => onTabChange('inspections') },
-                { label: "My Tasks & Schedules", icon: CheckSquare, onClick: () => onTabChange('tasks') },
-                { label: "Acoustic Audit (Sound Analysis)", icon: AudioLines, onClick: () => onTabChange('sound-analysis') },
-                { label: "Alerts", icon: Bug, onClick: () => onTabChange('sensor-alerts') },
-                { label: "Hive Placement Map", icon: MapPin, onClick: () => onTabChange('site-map') },
-                { label: "Feeding Schedule Timeline", icon: Calculator, onClick: () => onTabChange('feeding-schedule') },
-                { label: "Apiary & Equipment Sizing", icon: Layers, onClick: () => onTabChange('apiary-sizing') },
+                { id: 'apiaries-weather', label: "Apiaries & Live Weather", icon: Compass, onClick: () => onTabChange('apiaries-weather') },
+                { id: 'hive-health', label: "Hive Health Dashboard", icon: HeartPulse, onClick: () => onTabChange('hive-health') },
+                { id: 'inspections', label: "Inspections & Diagnostics", icon: ClipboardList, onClick: () => onTabChange('inspections') },
+                { id: 'tasks', label: "My Tasks & Schedules", icon: CheckSquare, onClick: () => onTabChange('tasks') },
+                { id: 'sound-analysis', label: "Acoustic Audit (Sound Analysis)", icon: AudioLines, onClick: () => onTabChange('sound-analysis') },
+                { id: 'sensor-alerts', label: "Alerts", icon: Bug, onClick: () => onTabChange('sensor-alerts') },
+                { id: 'site-map', label: "Hive Placement Map", icon: MapPin, onClick: () => onTabChange('site-map') },
+                { id: 'feeding-schedule', label: "Feeding Schedule Timeline", icon: Calculator, onClick: () => onTabChange('feeding-schedule') },
+                { id: 'apiary-sizing', label: "Apiary & Equipment Sizing", icon: Layers, onClick: () => onTabChange('apiary-sizing') },
             ]
         },
         {
             label: "Yield & pollination",
             items: [
-                { label: "Harvest Logs & Verification", icon: Package, onClick: () => onTabChange('harvests') },
-                { label: "Harvest Calculator", icon: Calculator, onClick: () => onTabChange('harvest-calculator') },
-                { label: "Honey Yield Projection", icon: BarChart3, onClick: () => onTabChange('yield-projection') },
-                { label: "Precision Pollination Drilldown", icon: Target, onClick: () => onTabChange('precision-drilldown') },
-                { label: "Pollination Planning", icon: Target, onClick: () => onTabChange('pollination-planning-ai') },
-                { label: "Pollination Calcs", icon: Calculator, onClick: () => onTabChange('pollination-calcs') },
-                { label: "Pollination Data & Charts", icon: BarChart3, onClick: () => onTabChange('pollination-analytics') },
-                { label: "Stocking Density Lookup", icon: Flower2, onClick: () => onTabChange('pollination-lookup') },
+                { id: 'harvests', label: "Harvest Logs & Verification", icon: Package, onClick: () => onTabChange('harvests') },
+                { id: 'harvest-calculator', label: "Harvest Calculator", icon: Calculator, onClick: () => onTabChange('harvest-calculator') },
+                { id: 'yield-projection', label: "Honey Yield Projection", icon: BarChart3, onClick: () => onTabChange('yield-projection') },
+                { id: 'precision-drilldown', label: "Precision Pollination Drilldown", icon: Target, onClick: () => onTabChange('precision-drilldown') },
+                { id: 'pollination-planning-ai', label: "Pollination Planning", icon: Target, onClick: () => onTabChange('pollination-planning-ai') },
+                { id: 'pollination-calcs', label: "Pollination Calcs", icon: Calculator, onClick: () => onTabChange('pollination-calcs') },
+                { id: 'pollination-analytics', label: "Pollination Data & Charts", icon: BarChart3, onClick: () => onTabChange('pollination-analytics') },
+                { id: 'pollination-lookup', label: "Stocking Density Lookup", icon: Flower2, onClick: () => onTabChange('pollination-lookup') },
                 { label: "MOA — Multi-Objective View", icon: Layers, onClick: () => onTabChange('moa-view') },
                 { label: "MOA Run Comparison", icon: Layers, onClick: () => onTabChange('moa-compare') },
             ]
@@ -77,22 +94,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {
             label: "Bloom & flight",
             items: [
-                { label: "Bloom Phenology", icon: Sprout, onClick: () => onTabChange('bloom-phenology') },
-                { label: "Bee Flight & Activity Tracker", icon: Plane, onClick: () => onTabChange('flight-tracker') },
-                { label: "Quick Activity Counter", icon: Plane, onClick: () => onTabChange('vpm-counter') },
-                { label: "Bee Activity Forecaster", icon: BarChart3, onClick: () => onTabChange('bfh-forecast') },
-                { label: "Florage Database", icon: Sprout, onClick: () => onTabChange('florage-page') },
-                { label: "Forage Zones & Floral Resources", icon: Flower2, onClick: () => onTabChange('forage-zones') },
+                { id: 'bloom-phenology', label: "Bloom Phenology", icon: Sprout, onClick: () => onTabChange('bloom-phenology') },
+                { id: 'flight-tracker', label: "Bee Flight & Activity Tracker", icon: Plane, onClick: () => onTabChange('flight-tracker') },
+                { id: 'vpm-counter', label: "Quick Activity Counter", icon: Plane, onClick: () => onTabChange('vpm-counter') },
+                { id: 'bfh-forecast', label: "Bee Activity Forecaster", icon: BarChart3, onClick: () => onTabChange('bfh-forecast') },
+                { id: 'florage-page', label: "Florage Database", icon: Sprout, onClick: () => onTabChange('florage-page') },
+                { id: 'forage-zones', label: "Forage Zones & Floral Resources", icon: Flower2, onClick: () => onTabChange('forage-zones') },
             ]
         },
         {
             label: "Knowledge & reference",
             items: [
-                { label: "Bee Diseases (Editable)", icon: HeartPulse, onClick: () => onTabChange('bee-diseases') },
-                { label: "Varroa Simulator", icon: HeartPulse, onClick: () => onTabChange('varroa-simulator') },
-                { label: "Beeyield Calculators", icon: Calculator, onClick: () => onTabChange('beeyield-calculators') },
-                { label: "Knowledge Base Search", icon: Info, onClick: () => onTabChange('knowledge-search') },
-                { label: "Dataset Import & Re-index", icon: Download, onClick: () => onTabChange('dataset-import') },
+                { id: 'bee-diseases', label: "Bee Diseases (Editable)", icon: HeartPulse, onClick: () => onTabChange('bee-diseases') },
+                { id: 'varroa-simulator', label: "Varroa Simulator", icon: HeartPulse, onClick: () => onTabChange('varroa-simulator') },
+                { id: 'beeyield-calculators', label: "Beeyield Calculators", icon: Calculator, onClick: () => onTabChange('beeyield-calculators') },
+                { id: 'knowledge-search', label: "Knowledge Base Search", icon: Info, onClick: () => onTabChange('knowledge-search') },
+                { id: 'dataset-import', label: "Dataset Import & Re-index", icon: Download, onClick: () => onTabChange('dataset-import') },
             ]
         },
         {
