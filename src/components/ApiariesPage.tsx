@@ -1709,9 +1709,11 @@ export function CompanionSensorChart({
 // Interactive Clickable Hive Detail Modal
 // ----------------------------------------------------------------------
 function HiveDetailModal({
-  hive,
+  hive: initialHive,
   apiary,
   weather,
+  initialTab = "hive_state",
+  allHives,
   onClose,
   onUpdateHive,
   onAddHarvestToHive,
@@ -1724,6 +1726,8 @@ function HiveDetailModal({
   hive: ApiaryHiveItem;
   apiary: ApiarySite;
   weather?: LiveWeatherData;
+  initialTab?: "hive_state" | "syrup" | "framesense" | "notes" | "inspections";
+  allHives?: ApiaryHiveItem[];
   onClose: () => void;
   onUpdateHive: (updated: ApiaryHiveItem) => void;
   onAddHarvestToHive: (batch: Omit<HiveHarvestBatch, "id">) => void;
@@ -1733,7 +1737,9 @@ function HiveDetailModal({
   onDeleteBatch?: (batchId: string) => void;
   onEditBatch?: (batch: HiveHarvestBatch) => void;
 }) {
-  const [activeTab, setActiveTab] = useState<"hive_state" | "syrup" | "framesense" | "notes" | "inspections">("hive_state");
+  const [activeHive, setActiveHive] = useState<ApiaryHiveItem>(initialHive);
+  const hive = activeHive;
+  const [activeTab, setActiveTab] = useState<"hive_state" | "syrup" | "framesense" | "notes" | "inspections">(initialTab);
   const [activeSubScreen, setActiveSubScreen] = useState<"main" | "colony_strength">("main");
   const [editingBroodFrames, setEditingBroodFrames] = useState(false);
   const [tempBroodFrames, setTempBroodFrames] = useState(hive.broodFrames !== undefined ? String(hive.broodFrames) : "");
@@ -2362,9 +2368,30 @@ function HiveDetailModal({
                 <div className="space-y-5">
                   <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-3xl p-5 sm:p-6 border border-[#EFE8DE] dark:border-stone-800 space-y-5 text-[#2E2A25] dark:text-stone-200 shadow-sm">
                     {/* Header Title from Screenshot */}
-                    <h2 className="text-2xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
-                      Syrup calculator
-                    </h2>
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <h2 className="text-2xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                        Syrup calculator
+                      </h2>
+                      {allHives && allHives.length > 1 && (
+                        <div className="flex items-center gap-1.5 bg-[#F3ECE3] dark:bg-[#25221F] px-3 py-1 rounded-xl text-xs">
+                          <span className="text-[#8E8880] text-[11px] font-semibold">Linked to:</span>
+                          <select
+                            value={hive.id}
+                            onChange={(e) => {
+                              const found = allHives.find((h) => h.id === e.target.value);
+                              if (found) setActiveHive(found);
+                            }}
+                            className="bg-transparent font-bold text-[#2E2A25] dark:text-stone-100 border-none outline-none text-xs cursor-pointer"
+                          >
+                            {allHives.map((h) => (
+                              <option key={h.id} value={h.id}>
+                                {h.code.startsWith("KIB-") ? `beeyield ${h.code.replace("KIB-", "")}` : h.code}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Ratio Section */}
                     <div className="space-y-2">
@@ -2462,25 +2489,23 @@ function HiveDetailModal({
                         type="button"
                         onClick={() => {
                           const v = parseFloat(calcTargetVolume) || 0;
-                          setSyrupHistory([
-                            {
-                              date: new Date().toISOString().split("T")[0],
-                              amount: `${v.toFixed(1)} L`,
-                              type: `${calcRatio} Sugar Syrup`,
-                              notes: `Mixed with ${syrupCalculation.water} L water & ${syrupCalculation.sugar} kg white sucrose`,
-                            },
-                            ...syrupHistory,
-                          ]);
-                          toast.success(`Logged ${v.toFixed(1)} L (${calcRatio}) syrup feed for ${hive.code}`);
+                          const newLog = {
+                            date: new Date().toISOString().split("T")[0],
+                            amount: `${v.toFixed(1)} L`,
+                            type: `${calcRatio} Sugar Syrup`,
+                            notes: `Mixed with ${syrupCalculation.water} L water & ${syrupCalculation.sugar} kg white sucrose`,
+                          };
+                          setSyrupHistory([newLog, ...syrupHistory]);
+                          toast.success(`Logged ${v.toFixed(1)} L (${calcRatio}) syrup feed for ${displayName}`);
                         }}
                         className="w-full py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
                       >
                         <Coffee className="w-4 h-4" />
-                        Log {calcTargetVolume} L ({calcRatio}) feeding to hive
+                        Log {calcTargetVolume} L ({calcRatio}) feeding to {displayName}
                       </button>
                     )}
 
-                    {/* How to Prepare Accordion Section */}
+                    {/* How to Prepare Accordion Section (Screenshots 1 & 2) */}
                     <div className="pt-2 border-t border-[#EAE3DA] dark:border-stone-800">
                       <div
                         onClick={() => setShowHowToPrepare(!showHowToPrepare)}
@@ -2497,19 +2522,67 @@ function HiveDetailModal({
                       </div>
 
                       {showHowToPrepare && (
-                        <div className="pt-2.5 space-y-3 text-xs text-[#5C5349] dark:text-stone-300 leading-relaxed">
-                          <p>
-                            1. <strong className="text-[#2E2A25] dark:text-stone-100">Use white sugar, pure sucrose.</strong> Not brown, not cane, not unrefined. Dark sugars carry residues bees cannot digest — in winter feed that is a straight road to dysentery in the colony.
-                          </p>
-                          <p>
-                            2. <strong className="text-[#2E2A25] dark:text-stone-100">Warm water, never boil.</strong> Dissolve in hot or warm water without continuous boiling. Boiling caramelizes sugars and produces toxic HMF (hydroxymethylfurfural), which harms bee gut flora.
-                          </p>
-                          <p>
-                            3. <strong className="text-[#2E2A25] dark:text-stone-100">Allow to cool completely.</strong> Never feed hot syrup directly to the hive; cool to ambient temperature before pouring into rapid or frame feeders.
-                          </p>
-                          <p>
-                            4. <strong className="text-[#2E2A25] dark:text-stone-100">Feed at dusk or evening.</strong> Evening feeding prevents robbing frenzies from neighboring apiary colonies.
-                          </p>
+                        <div className="pt-3 space-y-4 text-xs text-[#5C5349] dark:text-stone-300 leading-relaxed">
+                          <div className="flex items-start gap-2.5">
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">1.</span>
+                            <p>
+                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Use white sugar, pure sucrose.</strong> Not brown, not cane, not unrefined. Dark sugars carry residues bees cannot digest — in winter feed that is a straight road to dysentery in the colony.
+                            </p>
+                          </div>
+
+                          <div className="flex items-start gap-2.5">
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">2.</span>
+                            <p>
+                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Weigh the sugar on a scale, do not measure it by volume.</strong> A litre of granulated sugar weighs about 0.85 kg, not a kilogram. Measured with a cup it gives a syrup of a different strength than the one you asked for.
+                            </p>
+                          </div>
+
+                          <div className="flex items-start gap-2.5">
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">3.</span>
+                            <p>
+                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Boil the water and take the pot off the heat — only then pour in the sugar.</strong> Syrup is not boiled: prolonged heating turns sucrose into HMF, which is harmful to bees. Hot water is enough, the flame is no longer needed.
+                            </p>
+                          </div>
+
+                          <div className="flex items-start gap-2.5">
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">4.</span>
+                            <p>
+                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Add it in batches and stir until the last crystal is gone.</strong> Undissolved sugar settles at the bottom of the feeder — the bees will not take it, and the rest of the syrup crystallises sooner. At 2:1 you need really hot water, because it is a solution at the edge of solubility.
+                            </p>
+                          </div>
+
+                          <div className="flex items-start gap-2.5">
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">5.</span>
+                            <p>
+                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Serve it lukewarm, not hot.</strong> Hot syrup raises the temperature and humidity inside the nest.
+                            </p>
+                          </div>
+
+                          <div className="flex items-start gap-2.5">
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">6.</span>
+                            <p>
+                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Make only as much as the colony takes within a few days.</strong> Syrup standing longer in the feeder or in a bucket ferments, and fermented feed causes dysentery in winter.
+                            </p>
+                          </div>
+
+                          <div className="flex items-start gap-2.5">
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">7.</span>
+                            <p>
+                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Do not spill syrup around the hive and do not leave open containers.</strong> The smell of sugar in a dearth triggers robbing — foreign bees then attack weaker colonies.
+                            </p>
+                          </div>
+
+                          <div className="flex items-start gap-2.5">
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">8.</span>
+                            <p>
+                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Check the feeder after 2–4 days and see whether the colony is taking the feed.</strong>
+                            </p>
+                          </div>
+
+                          {/* Caution Notice Box (Screenshot 2) */}
+                          <div className="bg-[#F2ECE4] dark:bg-[#25221F] rounded-2xl p-4 text-xs font-medium text-[#5C5349] dark:text-stone-300 text-center leading-relaxed border border-[#EAE3DA] dark:border-stone-800 mt-2">
+                            Do not feed during a flow you want to harvest honey from — the sugar would end up in the honey.
+                          </div>
                         </div>
                       )}
                     </div>
@@ -2518,7 +2591,7 @@ function HiveDetailModal({
                     {syrupHistory.length > 0 && (
                       <div className="pt-3 border-t border-[#EAE3DA] dark:border-stone-800 space-y-2">
                         <span className="text-xs font-bold text-[#8E8880] block">
-                          Recent Feeding History
+                          Recent Feeding History ({displayName})
                         </span>
                         {syrupHistory.map((s, idx) => (
                           <div
@@ -4373,6 +4446,7 @@ function ApiaryDetailModal({
   }, [loadWeatherForApiary]);
 
   const [selectedHiveForDetail, setSelectedHiveForDetail] = useState<ApiaryHiveItem | null>(null);
+  const [selectedHiveForSyrup, setSelectedHiveForSyrup] = useState<ApiaryHiveItem | null>(null);
   const [showAddHiveModal, setShowAddHiveModal] = useState(false);
   const [isScanningOpen, setIsScanningOpen] = useState(false);
   const [scanContext, setScanContext] = useState<"addHive" | "detailHive" | "editHive">("addHive");
@@ -4993,7 +5067,23 @@ function ApiaryDetailModal({
 
                               {/* 3 Standard Rows */}
                               <div className="space-y-2 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
-                                {/* Row 1: Colony strength */}
+                              {/* Quick Syrup Tool Shortcut Link */}
+                              <div className="flex items-center justify-between text-xs pt-0.5">
+                                <span className="text-[11px] text-[#8E8880]">Nutritional Feed</span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedHiveForSyrup(hive);
+                                  }}
+                                  className="px-2.5 py-0.5 rounded-full border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[10px] font-bold flex items-center gap-1 hover:bg-amber-500 hover:text-stone-950 transition-all shadow-xs"
+                                >
+                                  <Coffee className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                  <span>Syrup Tool</span>
+                                </button>
+                              </div>
+
+                              {/* Row 1: Colony strength */}
                                 <div className="flex items-center justify-between py-1">
                                   <div className="flex items-center gap-2.5">
                                     <ShieldHeartIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
@@ -5387,6 +5477,26 @@ function ApiaryDetailModal({
             </div>
           )}
         </div>
+
+        {/* Modal: Syrup Tool Linked to Selected Hive */}
+        {selectedHiveForSyrup && (
+          <HiveDetailModal
+            hive={selectedHiveForSyrup}
+            apiary={apiary}
+            weather={modalWeather || weather}
+            initialTab="syrup"
+            allHives={hivesList}
+            onClose={() => setSelectedHiveForSyrup(null)}
+            onUpdateHive={handleUpdateHive}
+            onAddHarvestToHive={handleAddHarvestToHive}
+            onOpenScanner={() => {
+              setScanContext("detailHive");
+              setIsScanningOpen(true);
+            }}
+            onEditHive={(h) => setEditingHive(h)}
+            onDeleteHive={handleDeleteHive}
+          />
+        )}
 
         {/* Modal: Interactive Hive Details */}
         {selectedHiveForDetail && (
