@@ -63,11 +63,8 @@ export interface ApiaryOption {
   county: string;
 }
 
-export const CANONICAL_APIARIES: ApiaryOption[] = [
-  { id: "apiary-kibwezi", name: "BeeYield Apiary in Kibwezi Kenya", region: "Kibwezi East", county: "Makueni" },
-];
+export const CANONICAL_APIARIES: ApiaryOption[] = [];
 
-// Timothy Nduva's 184 Managed Langstroth Hives with deterministic live vitals & telemetry
 export interface HiveOption {
   id: string;
   hive_code: string;
@@ -77,60 +74,22 @@ export interface HiveOption {
   frame_count: number;
 }
 
-export const CANONICAL_HIVES: HiveOption[] = Array.from({ length: 184 }, (_, i) => {
-  const code = `KIB-${String(i + 1).padStart(3, "0")}`;
-  const apiary = CANONICAL_APIARIES[0];
+export const CANONICAL_HIVES: HiveOption[] = [];
 
+// Telemetry context is fetched dynamically from real sensor_readings for the specific hive
+export function getHiveTelemetry(_hiveCode: string, _apiaryName: string) {
   return {
-    id: `hive-${code.toLowerCase()}`,
-    hive_code: code,
-    name: `${code} (Langstroth 10)`,
-    apiary_id: apiary.id,
-    apiary_name: apiary.name,
-    frame_count: 10,
-  };
-});
-
-// Deterministic Hive Telemetry & Biological Context Generator
-export function getHiveTelemetry(hiveCode: string, apiaryName: string) {
-  const numMatch = (hiveCode || "").match(/\d+/);
-  const seed = numMatch ? parseInt(numMatch[0], 10) : 1;
-
-  // Brood nest core temp (optimal healthy range: 34.5°C to 35.2°C)
-  const temperature_c = Number((34.5 + ((seed * 7) % 8) * 0.1).toFixed(1));
-  // Hive humidity (healthy range: 55% to 62% RH)
-  const humidity_pct = 55 + ((seed * 11) % 8);
-  // Gross hive scale weight: 39.0kg to 45.0kg
-  const weight_kg = Number((39.0 + ((seed * 13) % 65) * 0.1).toFixed(1));
-
-  // International Queen Marking Color code:
-  // Years 1/6: White, 2/7: Yellow, 3/8: Red, 4/9: Green, 0/5: Blue
-  const currentYear = new Date().getFullYear();
-  const lastDigit = currentYear % 10;
-  const markingColor = (lastDigit === 1 || lastDigit === 6) ? "White (2026/2021 standard)"
-    : (lastDigit === 2 || lastDigit === 7) ? "Yellow (2027/2022 standard)"
-    : (lastDigit === 3 || lastDigit === 8) ? "Red (2028/2023 standard)"
-    : (lastDigit === 4 || lastDigit === 9) ? "Green (2029/2024 standard)"
-    : "Blue (2025/2020 standard)";
-
-  const weather = `28 °C, 42% RH, clear dry skies, gentle SW breeze (10 km/h) • ${apiaryName || "Kibwezi, Makueni"}`;
-  const varroa_count = (seed % 19 === 0) ? 2 : (seed % 7 === 0) ? 1 : 0;
-  const varroa_sighting = varroa_count === 0 
-    ? "None observed (Clean sample)" 
-    : `${varroa_count} mites / 300 bees (<1% safe threshold)`;
-
-  return {
-    temperature_c,
-    humidity_pct,
-    weight_kg,
-    previous_weather: weather,
-    queen_seen: true,
-    queen_status: `Active laying queen (${markingColor})`,
-    queen_marking: markingColor,
-    queen_cells: seed % 23 === 0 ? 1 : 0,
-    varroa_count,
-    varroa_sighting,
-    colony_health: varroa_count > 1 ? "Watch" : "Healthy",
+    temperature_c: null as number | null,
+    humidity_pct: null as number | null,
+    weight_kg: null as number | null,
+    previous_weather: "",
+    queen_seen: false,
+    queen_status: null as string | null,
+    queen_marking: null as string | null,
+    queen_cells: 0,
+    varroa_count: 0,
+    varroa_sighting: null as string | null,
+    colony_health: "Healthy",
     temperament: "Calm",
     total_frames: 10,
     brood_frames: 6,
@@ -142,12 +101,12 @@ export function getHiveTelemetry(hiveCode: string, apiaryName: string) {
 
 const EMPTY = {
   inspected_on: new Date().toISOString().slice(0, 10),
-  location: "BeeYield Apiary — Kibwezi",
-  hive_label: "BEE-001 (Langstroth 10)",
-  batch: `BEE-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-001`,
+  location: "",
+  hive_label: "",
+  batch: "",
   colony_health: "Healthy",
   temperament: "Calm",
-  queen_seen: true,
+  queen_seen: false,
   queen_cells: 0,
   total_frames: 10,
   brood_frames: 6,
@@ -155,14 +114,14 @@ const EMPTY = {
   varroa_count: 0,
   issues: [] as string[],
   actions: [] as string[],
-  weather: "28 °C, 42% RH, clear dry skies • Kibwezi, Makueni",
+  weather: "",
   notes: "",
-  temperature_c: null,
-  humidity_pct: null,
-  weight_kg: null,
-  queen_status: "Active laying queen (marked, fertile)",
-  queen_marking: "White (2026/2021 standard)",
-  varroa_sighting: "None observed (Clean sample)",
+  temperature_c: null as number | null,
+  humidity_pct: null as number | null,
+  weight_kg: null as number | null,
+  queen_status: null as string | null,
+  queen_marking: null as string | null,
+  varroa_sighting: null as string | null,
 };
 
 function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -249,9 +208,9 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
   const [userApiaries, setUserApiaries] = useState<Array<{ id: string; name: string }>>([]);
 
   // Selected Apiary and Hive for the diagnostic form
-  const [selectedApiaryId, setSelectedApiaryId] = useState<string>("apiary-kibwezi");
-  const [selectedHiveCode, setSelectedHiveCode] = useState<string>("KIB-001");
-  const [syncedBanner, setSyncedBanner] = useState<boolean>(true);
+  const [selectedApiaryId, setSelectedApiaryId] = useState<string>("");
+  const [selectedHiveCode, setSelectedHiveCode] = useState<string>("");
+  const [syncedBanner, setSyncedBanner] = useState<boolean>(false);
 
   // Combine canonical apiaries with user-created apiaries from Supabase/API
   const allApiaries = useMemo(() => {
@@ -283,6 +242,21 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     return list;
   }, [userHives]);
 
+    useEffect(() => {
+    if (allApiaries.length > 0 && !selectedApiaryId) {
+      setSelectedApiaryId(allApiaries[0].id);
+    }
+  }, [allApiaries, selectedApiaryId]);
+
+  useEffect(() => {
+    if (filteredHivesForForm.length > 0 && !selectedHiveCode) {
+      const first = filteredHivesForForm[0];
+      setSelectedHiveCode(first.hive_code);
+      const chosenAp = allApiaries.find((a) => a.id === selectedApiaryId);
+      void syncHiveData(first.hive_code, chosenAp?.name || first.apiary_name || "", draft.inspected_on);
+    }
+  }, [filteredHivesForForm, selectedHiveCode, allApiaries, selectedApiaryId, syncHiveData, draft.inspected_on]);
+
   // Filtered hives based on chosen apiary
   const filteredHivesForForm = useMemo(() => {
     const chosenApiary = allApiaries.find((a) => a.id === selectedApiaryId);
@@ -293,35 +267,99 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     return matched.length > 0 ? matched : allHives;
   }, [allHives, allApiaries, selectedApiaryId]);
 
-  // Sync Hive Telemetry and Context
-  const syncHiveData = useCallback((hiveCode: string, apiaryName: string, dateStr: string) => {
+  // Sync Hive Telemetry and Context from real sensor readings & hive records
+  const syncHiveData = useCallback(async (hiveCode: string, apiaryName: string, dateStr: string) => {
+    if (!hiveCode) {
+      setDraft((prev) => ({
+        ...prev,
+        location: apiaryName || "",
+        hive_label: "",
+        batch: "",
+        temperature_c: null,
+        humidity_pct: null,
+        weight_kg: null,
+        weather: "",
+        queen_seen: false,
+        queen_status: null,
+        queen_marking: null,
+        queen_cells: 0,
+        varroa_count: 0,
+        varroa_sighting: null,
+      }));
+      setSyncedBanner(false);
+      return;
+    }
+
     const targetHive = allHives.find((h) => h.hive_code === hiveCode);
-    const telemetry = getHiveTelemetry(hiveCode, apiaryName);
     const yyyymmdd = (dateStr || new Date().toISOString().slice(0, 10)).replace(/-/g, "");
     const cleanNum = hiveCode.replace(/[^0-9]/g, "").padStart(3, "0") || "001";
     const batchCode = `BEE-${yyyymmdd}-${cleanNum}`;
-    const hiveLabel = targetHive ? targetHive.name : `${hiveCode} (Langstroth 10)`;
+    const hiveLabel = targetHive ? (targetHive.name || targetHive.hive_code) : hiveCode;
+
+    let realTemp: number | null = null;
+    let realHumidity: number | null = null;
+    let realWeight: number | null = null;
+    let realVarroaCount: number | null = null;
+    let realVarroaSighting: string | null = null;
+    let realQueenStatus: string | null = null;
+    let realQueenSeen: boolean = false;
+    let realQueenMarking: string | null = null;
+
+    if (targetHive?.id) {
+      try {
+        const { data: reading } = await (supabase as any)
+          .from("sensor_readings")
+          .select("*")
+          .eq("hive_id", targetHive.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (reading) {
+          if (reading.temperature != null) realTemp = Number(Number(reading.temperature).toFixed(1));
+          if (reading.humidity != null) realHumidity = Math.round(Number(reading.humidity));
+          if (reading.weight != null) realWeight = Number(Number(reading.weight).toFixed(1));
+          if (reading.varroa_count != null) {
+            realVarroaCount = Number(reading.varroa_count);
+            realVarroaSighting = realVarroaCount === 0 ? "0 Detected (Clean Optical Scan)" : `${realVarroaCount} Mites Detected`;
+          }
+          if (reading.hornets_detected) {
+            realVarroaSighting = realVarroaSighting
+              ? `${realVarroaSighting} • Asian Hornet Detected`
+              : "Asian Hornet Detected";
+          }
+        }
+      } catch (err) {
+        console.warn("Sensor reading fetch non-fatal error:", err);
+      }
+
+      if ((targetHive as any).queen_status) {
+        realQueenStatus = (targetHive as any).queen_status;
+        realQueenSeen = (targetHive as any).queen_present ?? true;
+      }
+      if ((targetHive as any).queen_marking) {
+        realQueenMarking = (targetHive as any).queen_marking;
+      }
+    }
 
     setDraft((prev) => ({
       ...prev,
-      location: apiaryName,
+      location: apiaryName || prev.location || "",
       hive_label: hiveLabel,
       batch: batchCode,
-      temperature_c: telemetry.temperature_c,
-      humidity_pct: telemetry.humidity_pct,
-      weight_kg: telemetry.weight_kg,
-      weather: telemetry.previous_weather,
-      queen_seen: telemetry.queen_seen,
-      queen_status: telemetry.queen_status,
-      queen_marking: telemetry.queen_marking,
-      queen_cells: telemetry.queen_cells,
-      varroa_count: telemetry.varroa_count,
-      varroa_sighting: telemetry.varroa_sighting,
-      colony_health: telemetry.colony_health,
-      temperament: telemetry.temperament,
-      total_frames: targetHive?.frame_count || telemetry.total_frames,
-      brood_frames: telemetry.brood_frames,
-      honey_frames: telemetry.honey_frames,
+      temperature_c: realTemp,
+      humidity_pct: realHumidity,
+      weight_kg: realWeight,
+      weather: prev.weather || "",
+      queen_seen: realQueenSeen,
+      queen_status: realQueenStatus,
+      queen_marking: realQueenMarking,
+      queen_cells: 0,
+      varroa_count: realVarroaCount ?? 0,
+      varroa_sighting: realVarroaSighting,
+      colony_health: prev.colony_health || "Healthy",
+      temperament: prev.temperament || "Calm",
+      total_frames: targetHive?.frame_count || prev.total_frames || 10,
     }));
     setSyncedBanner(true);
   }, [allHives]);
@@ -329,20 +367,22 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
   const handleApiarySelect = (apiaryId: string) => {
     setSelectedApiaryId(apiaryId);
     const ap = allApiaries.find((a) => a.id === apiaryId);
-    const apName = ap?.name || "BeeYield Apiary — Kibwezi";
+    const apName = ap?.name || "";
     const matching = allHives.filter((h) => h.apiary_name.toLowerCase() === apName.toLowerCase());
     const firstHive = matching[0] || allHives[0];
-    const firstCode = firstHive ? firstHive.hive_code : "BEE-001";
+    const firstCode = firstHive ? firstHive.hive_code : "";
     setSelectedHiveCode(firstCode);
-    syncHiveData(firstCode, apName, draft.inspected_on);
-    toast.info(`Selected ${apName} • Switched to hive ${firstCode}`);
+    if (firstCode) {
+      void syncHiveData(firstCode, apName, draft.inspected_on);
+      toast.info(`Selected ${apName} • Switched to hive ${firstCode}`);
+    }
   };
 
   const handleHiveSelect = (hiveCode: string) => {
     setSelectedHiveCode(hiveCode);
     const ap = allApiaries.find((a) => a.id === selectedApiaryId);
-    const apName = ap?.name || draft.location || "BeeYield Apiary — Kibwezi";
-    syncHiveData(hiveCode, apName, draft.inspected_on);
+    const apName = ap?.name || draft.location || "";
+    void syncHiveData(hiveCode, apName, draft.inspected_on);
     toast.success(`⚡ Synced telemetry & vitals for ${hiveCode}`);
   };
 
@@ -1041,13 +1081,13 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
           </div>
 
           {/* 2. Synced Live Telemetry & Biological State Card */}
-          {syncedBanner && (
+          {syncedBanner && draft.hive_label && (
             <div className="p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 space-y-2.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-500 animate-pulse" />
                   <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">
-                    Live Telemetry & Hive Biological Context Synced ({draft.hive_label})
+                    Live Telemetry & Hive Biological Context ({draft.hive_label})
                   </span>
                 </div>
                 <button
@@ -1060,75 +1100,81 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
+                {/* Queen Status */}
                 <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
                     <Crown className="w-3 h-3 text-amber-500" /> Queen Status
                   </p>
                   <p className="font-bold text-foreground truncate">
-                    {draft.queen_seen ? "Sighted" : "Not Sighted"}
+                    {draft.queen_status ? (draft.queen_seen ? "Sighted" : "Not Sighted") : "Pending Inspection"}
                   </p>
-                  <p className="text-[9px] text-emerald-600 dark:text-emerald-400 font-medium truncate">
-                    {draft.queen_marking || "Marked fertile"}
+                  <p className="text-[9px] text-muted-foreground truncate">
+                    {draft.queen_marking || draft.queen_status || "No historical record"}
                   </p>
                 </div>
 
+                {/* Brood Temp */}
                 <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
                     <Thermometer className="w-3 h-3 text-rose-500" /> Brood Temp
                   </p>
                   <p className="font-bold text-foreground">
-                    {draft.temperature_c ?? 34.8} °C
+                    {draft.temperature_c != null ? `${draft.temperature_c} °C` : "—"}
                   </p>
-                  <p className="text-[9px] text-emerald-600 dark:text-emerald-400 font-medium">
-                    Optimal 34.5–35.5 °C
+                  <p className={`text-[9px] font-medium ${draft.temperature_c != null ? (draft.temperature_c >= 34.5 && draft.temperature_c <= 35.5 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400") : "text-muted-foreground"}`}>
+                    {draft.temperature_c != null ? (draft.temperature_c >= 34.5 && draft.temperature_c <= 35.5 ? "Optimal 34.5–35.5 °C" : "Outside core range") : "Awaiting Sensor"}
                   </p>
                 </div>
 
+                {/* Hive Humidity */}
                 <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
                     <Droplets className="w-3 h-3 text-blue-500" /> Hive Humidity
                   </p>
                   <p className="font-bold text-foreground">
-                    {draft.humidity_pct ?? 58} % RH
+                    {draft.humidity_pct != null ? `${draft.humidity_pct} % RH` : "—"}
                   </p>
-                  <p className="text-[9px] text-emerald-600 dark:text-emerald-400 font-medium">
-                    Healthy brood nest
+                  <p className={`text-[9px] font-medium ${draft.humidity_pct != null ? (draft.humidity_pct >= 55 && draft.humidity_pct <= 65 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400") : "text-muted-foreground"}`}>
+                    {draft.humidity_pct != null ? (draft.humidity_pct >= 55 && draft.humidity_pct <= 65 ? "Healthy brood nest" : "Venting required") : "Awaiting Sensor"}
                   </p>
                 </div>
 
+                {/* Gross Scale Weight */}
                 <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
                     <Scale className="w-3 h-3 text-amber-600" /> Gross Scale Weight
                   </p>
                   <p className="font-bold text-foreground">
-                    {draft.weight_kg ?? 42.5} kg
+                    {draft.weight_kg != null ? `${draft.weight_kg} kg` : "—"}
                   </p>
                   <p className="text-[9px] text-muted-foreground font-medium">
-                    Telemetry Scale
+                    {draft.weight_kg != null ? "Telemetry Scale" : "No Scale Linked"}
                   </p>
                 </div>
 
+                {/* Prev Weather */}
                 <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
                     <Sun className="w-3 h-3 text-amber-500" /> Prev Weather
                   </p>
                   <p className="font-bold text-foreground truncate">
-                    28 °C Dry
+                    {draft.weather ? draft.weather.split("•")[0].trim() : "—"}
                   </p>
                   <p className="text-[9px] text-muted-foreground truncate">
-                    Clear extraction conditions
+                    {draft.weather ? (draft.location || "Apiary weather") : "No Weather Data"}
                   </p>
                 </div>
 
+                {/* Varroa Sighting / Optical Sensor Detection */}
                 <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
                     <Bug className="w-3 h-3 text-purple-500" /> Varroa Sighting
                   </p>
-                  <p className="font-bold text-foreground">
-                    {draft.varroa_count === 0 ? "Clean (0/300)" : `${draft.varroa_count} / 300`}
+                  <p className="font-bold text-foreground truncate">
+                    {draft.varroa_sighting ? draft.varroa_sighting : (draft.temperature_c != null ? "Clean (0 Detected)" : "—")}
                   </p>
-                  <p className="text-[9px] text-emerald-600 dark:text-emerald-400 font-medium">
-                    &lt;1% Safe KEBS Index
+                  <p className="text-[9px] text-muted-foreground truncate">
+                    {draft.varroa_sighting || draft.temperature_c != null ? "Optical Sensor Telemetry" : "Sensor not paired"}
                   </p>
                 </div>
               </div>
