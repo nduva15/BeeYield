@@ -9,7 +9,10 @@
 !tailwind.config.*
 !postcss.config.*
 !components.json
-!eslint.config.js
+!eslint.config.jsMethod Not Allowed
+
+in generating report we have to generate report as we had resolved it a while back fix fully
+
 
 # Exclude root-level backend services & microservices
 /backend
