@@ -52,10 +52,11 @@ export type HiveItemInfo = {
 export type HiveRecord = {
   id: string;
   hive_name: string;
-  record_type: "inspection" | "acoustic" | "varroa";
+  record_type: "inspection" | "acoustic" | "varroa" | "asian_hornet";
   recorded_at: string;
   health_index?: number;
   varroa_count?: number;
+  asian_hornet_count?: number;
   temperature_c?: number;
   humidity_pct?: number;
   weight_kg?: number;
@@ -172,13 +173,22 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     }));
   });
 
-  // User-logged physical and acoustic records (strictly real user records, NO fake 35.1°C or 54% mock data)
+  // User-logged physical and sensor records (strictly purging legacy mock data, Varroa & Asian Hornet are sensor telemetry)
   const [records, setRecords] = useState<HiveRecord[]>(() => {
     try {
       const cached = localStorage.getItem(`beeyield_hive_health_records_${userKey}`);
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          const clean = parsed.filter((r: any) => {
+            const id = String(r?.id || "");
+            return !id.startsWith("rec_default") && !id.startsWith("mock_") && !id.startsWith("fake_");
+          });
+          if (clean.length !== parsed.length) {
+            localStorage.setItem(`beeyield_hive_health_records_${userKey}`, JSON.stringify(clean));
+          }
+          return clean;
+        }
       }
     } catch {}
     return [];
@@ -187,8 +197,9 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
   // Form State for "Log Hive Record" (Includes Colony Strength, Availability & Sensor Pairing)
   const [newRecordOpen, setNewRecordOpen] = useState<boolean>(false);
   const [recordHive, setRecordHive] = useState<string>("");
-  const [recordType, setRecordType] = useState<"inspection" | "acoustic" | "varroa">("inspection");
-  const [varroaInput, setVarroaInput] = useState<string>("1");
+  const [recordType, setRecordType] = useState<"inspection" | "varroa" | "asian_hornet" | "acoustic">("inspection");
+  const [varroaInput, setVarroaInput] = useState<string>("0");
+  const [asianHornetInput, setAsianHornetInput] = useState<string>("0");
   const [healthIndexInput, setHealthIndexInput] = useState<string>("92");
   const [colonyStrengthInput, setColonyStrengthInput] = useState<string>(COLONY_STRENGTH_OPTIONS[0]);
   const [colonyAvailabilityInput, setColonyAvailabilityInput] = useState<string>(COLONY_AVAILABILITY_OPTIONS[0]);
@@ -362,13 +373,21 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         });
       }
 
-      // Retrieve locally saved records and merge (without fake mock telemetry)
+      // Retrieve locally saved records and merge (purging any legacy mock records)
       const localCachedStr = localStorage.getItem(`beeyield_hive_health_records_${userKey}`);
       let localRecords: HiveRecord[] = [];
       if (localCachedStr) {
         try {
           const parsed = JSON.parse(localCachedStr);
-          if (Array.isArray(parsed)) localRecords = parsed;
+          if (Array.isArray(parsed)) {
+            localRecords = parsed.filter((r: any) => {
+              const id = String(r?.id || "");
+              return !id.startsWith("rec_default") && !id.startsWith("mock_") && !id.startsWith("fake_");
+            });
+            if (localRecords.length !== parsed.length) {
+              localStorage.setItem(`beeyield_hive_health_records_${userKey}`, JSON.stringify(localRecords));
+            }
+          }
         } catch {}
       }
 
@@ -433,12 +452,13 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       record_type: recordType,
       recorded_at: new Date().toISOString(),
       health_index: recordType === "inspection" ? Number(healthIndexInput) || 90 : undefined,
-      varroa_count: recordType === "varroa" ? Number(varroaInput) || 1 : undefined,
+      varroa_count: recordType === "varroa" ? Number(varroaInput) || 0 : undefined,
+      asian_hornet_count: recordType === "asian_hornet" ? Number(asianHornetInput) || 0 : undefined,
       colony_strength: colonyStrengthInput,
       colony_availability: colonyAvailabilityInput,
       sensor_serial: sensorSerialInput.trim() || undefined,
       inspector: ownerDisplayName,
-      notes: recordNotes || `Owner physical evaluation: ${colonyStrengthInput} • ${colonyAvailabilityInput}`,
+      notes: recordNotes || `Evaluation: ${colonyStrengthInput} • ${colonyAvailabilityInput}`,
     };
 
     const updatedRecords = [newRec, ...records];
@@ -511,20 +531,22 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     setPairingSerial("");
   };
 
-  // Records & statistics calculations
-  const filteredRecords = selectedHive === "all" ? records : records.filter((r) => r.hive_name === selectedHive);
-  const inspections = filteredRecords.filter((r) => r.record_type === "inspection");
-  const acousticAudits = filteredRecords.filter((r) => r.record_type === "acoustic");
-  const varroaRecords = filteredRecords.filter((r) => r.record_type === "varroa");
-
-  const latestVarroa = varroaRecords[0]?.varroa_count;
-  const latestHealth = inspections[0]?.health_index;
-
   // Selected hive object to inspect real hardware connection status
   const currentHiveObj = selectedHive === "all" ? hivesList[0] : hivesList.find((h) => h.name === selectedHive);
   const isHardwareSensorConnected = selectedHive === "all"
     ? hivesList.some((h) => Boolean(h.hasSensor && h.sensorSerial))
     : Boolean(currentHiveObj?.hasSensor && currentHiveObj?.sensorSerial);
+
+  // Records & statistics calculations (Varroa and Asian Hornets are strictly sensor data)
+  const filteredRecords = selectedHive === "all" ? records : records.filter((r) => r.hive_name === selectedHive);
+  const inspections = filteredRecords.filter((r) => r.record_type === "inspection");
+  const acousticAudits = filteredRecords.filter((r) => r.record_type === "acoustic");
+  const varroaRecords = filteredRecords.filter((r) => r.record_type === "varroa" || r.varroa_count !== undefined);
+  const hornetRecords = filteredRecords.filter((r) => r.record_type === "asian_hornet" || r.asian_hornet_count !== undefined);
+
+  const latestVarroa = isHardwareSensorConnected ? varroaRecords[0]?.varroa_count : undefined;
+  const latestAsianHornet = isHardwareSensorConnected ? (hornetRecords[0]?.asian_hornet_count ?? 0) : undefined;
+  const latestHealth = inspections[0]?.health_index;
 
   const activeColonyStrength = currentHiveObj?.colonyStrength || "Strong (8–10 Frames Brood & Bees)";
   const activeColonyAvailability = currentHiveObj?.colonyAvailability || "Dedicated Honey Production";
@@ -779,31 +801,39 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               </p>
             </div>
 
-            {/* Varroa (Latest) */}
+            {/* Varroa (Sensor Telemetry) */}
             <div className="rounded-2xl border border-border/80 bg-white p-4 shadow-sm">
               <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-muted-foreground uppercase mb-1">
                 <Bug className="w-3.5 h-3.5 text-amber-500" />
-                <span>Varroa (Latest)</span>
+                <span>Varroa (Sensor)</span>
               </div>
               <div className="text-2xl font-bold font-display text-foreground my-1">
-                {latestVarroa !== undefined ? `${latestVarroa}` : "—"}
+                {isHardwareSensorConnected
+                  ? (latestVarroa !== undefined ? `${latestVarroa}` : "0 Mites")
+                  : "—"}
               </div>
               <p className="text-[11px] text-muted-foreground truncate">
-                {latestVarroa !== undefined ? "mites / 300 bees" : "No tests logged"}
+                {isHardwareSensorConnected
+                  ? (latestVarroa !== undefined ? "Sensor detected mites" : "Sensor active • Clean hive")
+                  : "Sensor required to detect"}
               </p>
             </div>
 
-            {/* Open Alerts */}
+            {/* Asian Hornet Sensor Alert */}
             <div className="rounded-2xl border border-border/80 bg-white p-4 shadow-sm">
               <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-muted-foreground uppercase mb-1">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                <span>Open Alerts</span>
+                <AlertTriangle className="w-3.5 h-3.5 text-orange-500" />
+                <span>Asian Hornet Alert</span>
               </div>
               <div className="text-2xl font-bold font-display text-foreground my-1">
-                0
+                {isHardwareSensorConnected
+                  ? (latestAsianHornet !== undefined && latestAsianHornet > 0 ? `${latestAsianHornet} Sighted` : "0 Detected")
+                  : "—"}
               </div>
               <p className="text-[11px] text-muted-foreground truncate">
-                0 critical • colonies stable
+                {isHardwareSensorConnected
+                  ? (latestAsianHornet !== undefined && latestAsianHornet > 0 ? "Vespa velutina entrance alert" : "Entrance sensor clear")
+                  : "Sensor required to detect"}
               </p>
             </div>
           </div>
@@ -915,6 +945,61 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                     {isHardwareSensorConnected ? "Telemetry streaming" : "Offline / Unpaired"}
                   </span>
                 </div>
+              </div>
+            </div>
+
+            {/* Automated IoT Pest Detection (Varroa Mites & Asian Hornets) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="rounded-2xl border border-border/80 bg-white p-3.5 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
+                    <Bug className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block">
+                      Varroa Sensor Detection
+                    </span>
+                    <span className="text-base font-bold font-mono text-foreground">
+                      {isHardwareSensorConnected
+                        ? (latestVarroa !== undefined ? `${latestVarroa} Mites` : "0 Mites (Clean)")
+                        : "—"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground block">
+                      {isHardwareSensorConnected ? "VitalSensor optical & acoustic scan" : "0 Connected • Sensor Required"}
+                    </span>
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                  !isHardwareSensorConnected ? "bg-stone-100 text-stone-500" : (latestVarroa && latestVarroa > 3 ? "bg-rose-100 text-rose-700" : "bg-emerald-100 text-emerald-700")
+                }`}>
+                  {isHardwareSensorConnected ? (latestVarroa && latestVarroa > 3 ? "Action Req" : "Safe Colony") : "No Sensor"}
+                </span>
+              </div>
+
+              <div className="rounded-2xl border border-border/80 bg-white p-3.5 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-600 shrink-0">
+                    <AlertTriangle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground block">
+                      Asian Hornet (Vespa velutina) Guard
+                    </span>
+                    <span className="text-base font-bold font-mono text-foreground">
+                      {isHardwareSensorConnected
+                        ? (latestAsianHornet !== undefined && latestAsianHornet > 0 ? `${latestAsianHornet} Hornets Detected` : "0 Detected")
+                        : "—"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground block">
+                      {isHardwareSensorConnected ? "Entrance acoustic & optical sensor" : "0 Connected • Sensor Required"}
+                    </span>
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                  !isHardwareSensorConnected ? "bg-stone-100 text-stone-500" : (latestAsianHornet && latestAsianHornet > 0 ? "bg-rose-100 text-rose-700 animate-pulse" : "bg-emerald-100 text-emerald-700")
+                }`}>
+                  {isHardwareSensorConnected ? (latestAsianHornet && latestAsianHornet > 0 ? "Predator Alert" : "Entrance Safe") : "No Sensor"}
+                </span>
               </div>
             </div>
           </div>
@@ -1233,7 +1318,12 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                         </div>
                         {r.varroa_count !== undefined && (
                           <div className="text-[11px] font-medium text-foreground">
-                            Mite Load: <strong>{r.varroa_count}</strong> mites / 300 bees
+                            Varroa Sensor Count: <strong>{r.varroa_count}</strong> mites
+                          </div>
+                        )}
+                        {r.asian_hornet_count !== undefined && (
+                          <div className="text-[11px] font-medium text-orange-600">
+                            Asian Hornet Sighting: <strong>{r.asian_hornet_count}</strong> detected
                           </div>
                         )}
                         {r.notes && (
@@ -1353,20 +1443,25 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
               {/* Record Type Selector */}
               <div className="space-y-1">
-                <Label className="text-xs font-bold text-foreground">Record Type</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["inspection", "acoustic", "varroa"] as const).map((t) => (
+                <Label className="text-xs font-bold text-foreground">Assessment / Sensor Telemetry Type</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { id: "inspection", label: "Audit" },
+                    { id: "varroa", label: "Varroa Sensor" },
+                    { id: "asian_hornet", label: "Hornet Sensor" },
+                    { id: "acoustic", label: "Acoustics" },
+                  ].map((t) => (
                     <button
-                      key={t}
+                      key={t.id}
                       type="button"
-                      onClick={() => setRecordType(t)}
-                      className={`h-8 rounded-lg border font-semibold capitalize transition-all ${
-                        recordType === t
+                      onClick={() => setRecordType(t.id as any)}
+                      className={`h-8 px-1.5 rounded-lg border text-xs font-bold capitalize transition-all ${
+                        recordType === t.id
                           ? "bg-amber-500 border-amber-600 text-white shadow-xs"
                           : "bg-background border-border text-muted-foreground hover:bg-muted"
                       }`}
                     >
-                      {t}
+                      {t.label}
                     </button>
                   ))}
                 </div>
@@ -1390,16 +1485,38 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                 </div>
               )}
 
-              {/* Varroa Mites Input */}
+              {/* Varroa Mites Sensor Input */}
               {recordType === "varroa" && (
                 <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-foreground">Mites per 300 bees</Label>
+                  <Label className="text-xs font-semibold text-foreground flex items-center justify-between">
+                    <span>Sensor Detected Varroa Mites</span>
+                    <span className="text-[10px] text-amber-600 font-bold">VitalSensor Scan</span>
+                  </Label>
                   <Input
                     type="number"
                     min="0"
                     value={varroaInput}
                     onChange={(e) => setVarroaInput(e.target.value)}
                     className="h-9"
+                    placeholder="Enter detected mite count"
+                  />
+                </div>
+              )}
+
+              {/* Asian Hornet Sensor Input */}
+              {recordType === "asian_hornet" && (
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold text-foreground flex items-center justify-between">
+                    <span>Sensor Detected Asian Hornets (Vespa velutina)</span>
+                    <span className="text-[10px] text-orange-600 font-bold">Entrance Guard</span>
+                  </Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={asianHornetInput}
+                    onChange={(e) => setAsianHornetInput(e.target.value)}
+                    className="h-9"
+                    placeholder="Enter detected hornet count"
                   />
                 </div>
               )}
