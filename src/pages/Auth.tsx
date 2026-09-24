@@ -161,7 +161,8 @@ export default function Auth() {
         // Case 2: Auto-confirmed / immediate session returned
         if (data?.session) {
           toast.success("Welcome to BeeYield! Your account is created and active.");
-          nav(next, { replace: true });
+          localStorage.setItem('beeyieldPendingOnboarding', JSON.stringify({ step: 'apiary', email: cleanEmail, createdAt: new Date().toISOString() }));
+          nav('/beeyield-dashboard', { replace: true });
           return;
         }
 

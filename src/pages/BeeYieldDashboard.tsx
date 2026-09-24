@@ -33,6 +33,8 @@ import {
 } from '@/lib/beeyieldOnboarding';
 
 // View Imports
+import BeeYieldOnboardingWizard from '@/components/beeyield/BeeYieldOnboardingWizard';
+import { BeeYieldOnboardingStep } from '@/lib/beeyieldOnboarding';
 import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 import ApiariesPage from '@/components/beeyield/lovable_ai/ApiariesPage';
 import MOACompare from '@/components/beeyield/lovable_ai/MOACompare';
@@ -128,9 +130,9 @@ const BeeYieldDashboard: React.FC = () => {
     const [viewParams, setViewParams] = React.useState<{ message?: string, action?: string } | null>(null);
     const [dashboardOpenedAt] = React.useState(() => Date.now());
 
-    const { data: rawApiaries, isLoading: apiariesLoading } = useApiaries();
-    const { data: rawHives, isLoading: hivesLoading } = useHives();
-    const { data: rawDevices, isLoading: devicesLoading } = useDevices();
+    const { data: rawApiaries, isLoading: apiariesLoading, refetch: refetchApiaries } = useApiaries();
+    const { data: rawHives, isLoading: hivesLoading, refetch: refetchHives } = useHives();
+    const { data: rawDevices, isLoading: devicesLoading, refetch: refetchDevices } = useDevices();
     const { data: rawReadings, isLoading: readingsLoading } = useSensorReadings(undefined, 24 * 7);
 
     const { apiaries, hives, devices, readings } = React.useMemo(() => ({
@@ -142,25 +144,46 @@ const BeeYieldDashboard: React.FC = () => {
 
     const loading = apiariesLoading || hivesLoading || devicesLoading || readingsLoading;
     
-    const requiredOnboardingStep = React.useMemo(() => resolveBeeYieldOnboardingStep({
-        apiaries: apiaries.length,
-        hives: hives.length,
-        devices: devices.length,
-    }), [apiaries.length, hives.length, devices.length]);
+        const hasCompletedOnboarding = React.useMemo(() => {
+        if (!effectiveUser?.id) return false;
+        return (
+            localStorage.getItem(`beeyield_onboarding_completed_${effectiveUser.id}`) === 'true' ||
+            localStorage.getItem(`beeyield_onboarding_dismissed_${effectiveUser.id}`) === 'true'
+        );
+    }, [effectiveUser?.id]);
 
     const pendingOnboarding = React.useMemo(
         () => (effectiveEmail ? getBeeYieldPendingOnboarding(effectiveEmail) : null),
         [effectiveEmail]
     );
 
-    const shouldForceOnboarding = React.useMemo(() => {
-        if (!pendingOnboarding || !effectiveUser?.created_at) return false;
-        const createdAtMs = new Date(effectiveUser.created_at).getTime();
-        if (Number.isNaN(createdAtMs)) return false;
-        return (dashboardOpenedAt - createdAtMs) <= NEW_ACCOUNT_ONBOARDING_WINDOW_MS;
-    }, [dashboardOpenedAt, pendingOnboarding, effectiveUser?.created_at]);
+    // Enforce 3-step sequence for new signups:
+    // Step 1: Register primary Apiary
+    // Step 2: Register Hives with initial Harvest logging
+    // Step 3: Log IoT Devices (with skip option)
+    const onboardingStep = React.useMemo<BeeYieldOnboardingStep | null>(() => {
+        if (authLoading || loading) return null;
+        if (!effectiveUser) return null;
+        if (hasCompletedOnboarding) return null;
 
-    const onboardingStep = shouldForceOnboarding ? requiredOnboardingStep : null;
+        // Step 1: Register Apiary (if no apiaries exist)
+        if (apiaries.length === 0) {
+            return 'apiary';
+        }
+
+        // Step 2: Hives with Harvests (if no hives exist)
+        if (hives.length === 0) {
+            return 'hive';
+        }
+
+        // Step 3: Log Devices (unless skipped)
+        const hasSkippedDevices = localStorage.getItem(`beeyield_skipped_devices_${effectiveUser.id}`) === 'true';
+        if (devices.length === 0 && !hasSkippedDevices) {
+            return 'device';
+        }
+
+        return null;
+    }, [authLoading, loading, effectiveUser, hasCompletedOnboarding, apiaries.length, hives.length, devices.length]);
 
     const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
@@ -343,7 +366,38 @@ const BeeYieldDashboard: React.FC = () => {
         { id: 'settings', label: 'Settings', icon: Settings },
     ], []);
 
-    const renderContent = () => {
+        const renderContent = () => {
+        if (onboardingStep) {
+            return (
+                <ErrorBoundary>
+                    <BeeYieldOnboardingWizard
+                        step={onboardingStep}
+                        apiaries={apiaries}
+                        hives={hives}
+                        devices={devices}
+                        onComplete={async () => {
+                            clearBeeYieldPendingOnboarding();
+                            if (effectiveUser?.id) {
+                                localStorage.setItem(`beeyield_onboarding_completed_${effectiveUser.id}`, 'true');
+                            }
+                            await Promise.all([
+                                refetchApiaries(),
+                                refetchHives(),
+                                refetchDevices(),
+                            ]);
+                            handleTabChange('home');
+                        }}
+                        onRefreshData={async () => {
+                            await Promise.all([
+                                refetchApiaries(),
+                                refetchHives(),
+                                refetchDevices(),
+                            ]);
+                        }}
+                    />
+                </ErrorBoundary>
+            );
+        }
         return (
             <ErrorBoundary>
                 {renderBaseContent()}

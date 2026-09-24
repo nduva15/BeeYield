@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Loader2, Mail, Lock as LockIcon, User, UserPlus } from "lucide-react";
 import { buildAuthCallbackUrl } from '@/lib/authRedirect';
 import { completeSignupFlow, getBackendStorageKey } from '@/services/backendAuth';
+import { setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
 
 interface BeeYieldRegisterFormProps {
     onSuccess?: () => void;
@@ -52,6 +53,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             if (result.success) {
                 toast.success("Account created! Logging you in...");
                 localStorage.setItem(getBackendStorageKey('beeyield', 'newUser'), 'true');
+                setBeeYieldPendingOnboarding({ step: 'apiary', email });
                 onSuccess?.();
             } else {
                 toast.error("Signup failed", { description: result.error || 'Please try again' });
@@ -69,6 +71,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
             localStorage.setItem(getBackendStorageKey('beeyield', 'authReturnTo'), '/beeyield-dashboard');
             localStorage.setItem(getBackendStorageKey('beeyield', 'authBackend'), 'beeyield');
             localStorage.setItem(getBackendStorageKey('beeyield', 'authIntent'), 'signup');
+            setBeeYieldPendingOnboarding({ step: 'apiary' });
             const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo: '/beeyield-dashboard', intent: 'signup' });
             const { error } = await signInWithGoogle(undefined, 'beeyield', { redirectTo });
             if (error) {
