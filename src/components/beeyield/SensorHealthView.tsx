@@ -40,28 +40,8 @@ export interface ColonyInspectionItem {
     notes: string;
 }
 
-// Canonical Timothy Nduva 184 Hives in BeeYield Apiary in Kibwezi Kenya
-export const CANONICAL_INSPECTION_HIVES: ColonyInspectionItem[] = Array.from({ length: 184 }, (_, i) => {
-    const code = `KIB-${String(i + 1).padStart(3, '0')}`;
-    const isYoungQueen = i % 12 === 0;
-    return {
-        id: `hive-kib-${String(i + 1).padStart(3, '0')}`,
-        code,
-        name: `${code} (Langstroth 10)`,
-        apiary: 'BeeYield Apiary in Kibwezi Kenya',
-        hiveType: 'Langstroth 10-Frame',
-        queenStatus: isYoungQueen ? 'Active Laying Queen (Young, Marked)' : 'Active Laying Queen (Marked)',
-        broodFrames: '10 Frames (6 Brood / 4 Honey)',
-        healthStatus: i % 25 === 0 ? 'Good' : 'Optimal',
-        temperament: 'Calm & Gentle',
-        pestStatus: 'Zero Pests • Varroa Clean',
-        monitoringMode: 'Certified Manual Inspection',
-        sensorStatus: 'Manual Monitored • No IoT Sensor',
-        colonyStatus: 'Active Colony',
-        lastInspection: 'Certified Physical Inspection',
-        notes: 'Inspected by Timothy Nduva. Queen pattern solid, healthy worker cluster, strong natural foraging.'
-    };
-});
+// Zero hardcoded mock hives - strictly real database records
+export const CANONICAL_INSPECTION_HIVES: ColonyInspectionItem[] = [];
 
 // Backward-compatible alias
 export type HiveTelemetryItem = ColonyInspectionItem;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useId } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   X,
   HeartPulse,
@@ -14,7 +14,6 @@ import {
   Droplets,
   Wind,
   Loader2,
-  Check,
   Calendar,
   Waves,
   Scale,
@@ -23,7 +22,6 @@ import {
   QrCode,
   UserCheck,
   Sparkles,
-  Info
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,48 +82,8 @@ export const COLONY_AVAILABILITY_OPTIONS = [
   "Wintering / Seasonal Rest",
 ] as const;
 
-export const BEE_KNOWLEDGE_HIVES: HiveItemInfo[] = [
-  {
-    id: "hive-kib-001",
-    name: "Hive KIB-001 (Langstroth 10)",
-    apiary: "BeeYield Apiary in Kibwezi Kenya",
-    hasSensor: false,
-    colonyStrength: "Strong (8–10 Frames Brood & Bees)",
-    colonyAvailability: "Dedicated Honey Production",
-  },
-  {
-    id: "hive-kib-002",
-    name: "Hive KIB-002 (Langstroth 10)",
-    apiary: "BeeYield Apiary in Kibwezi Kenya",
-    hasSensor: false,
-    colonyStrength: "Moderate (5–7 Frames)",
-    colonyAvailability: "Dedicated Honey Production",
-  },
-  {
-    id: "hive-kib-003",
-    name: "Hive KIB-003 (Langstroth 10)",
-    apiary: "BeeYield Apiary in Kibwezi Kenya",
-    hasSensor: false,
-    colonyStrength: "Strong (8–10 Frames Brood & Bees)",
-    colonyAvailability: "Available for Pollination Contracts",
-  },
-  {
-    id: "hive-kib-004",
-    name: "Hive KIB-004 (Langstroth 10)",
-    apiary: "BeeYield Apiary in Kibwezi Kenya",
-    hasSensor: false,
-    colonyStrength: "Moderate (5–7 Frames)",
-    colonyAvailability: "Queen Rearing & Breeding",
-  },
-  {
-    id: "hive-kib-005",
-    name: "Hive KIB-005 (Langstroth 10)",
-    apiary: "BeeYield Apiary in Kibwezi Kenya",
-    hasSensor: false,
-    colonyStrength: "Weak / Nucleus (<5 Frames)",
-    colonyAvailability: "Splits & Nucleus Production",
-  },
-];
+// Strictly zero hardcoded mock hives - real logged-in user data only
+export const BEE_KNOWLEDGE_HIVES: HiveItemInfo[] = [];
 
 export default function HiveHealthDashboard({ isOpen, onClose, embedded = false }: HiveHealthDashboardProps) {
   const { user, profile } = useAuth();
@@ -134,12 +92,14 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     profile?.full_name ||
     user?.user_metadata?.full_name ||
     user?.email?.split("@")[0] ||
-    "Timothy (Owner)";
+    (user ? "Apiary Owner" : "Guest Beekeeper");
 
   const [selectedHive, setSelectedHive] = useState<string>("all");
   const [coords, setCoords] = useState<string>("-2.409, 37.967");
+  const [apiaryName, setApiaryName] = useState<string>(CANONICAL_APIARY_NAME);
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(true);
 
   // Live Open-Meteo ambient apiary weather state (explicitly distinct from in-hive telemetry)
   const [ambientWeather, setAmbientWeather] = useState<{
@@ -150,30 +110,43 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     lastUpdated: string;
   } | null>(null);
 
-  // Hive list with owner-managed Colony Strength, Availability and Sensor status
+  // Real 21-day timeline from Open-Meteo API (14 days past + 7 days forecast)
+  const [weatherTimeline, setWeatherTimeline] = useState<Array<{
+    date: string;
+    max: number;
+    min: number;
+    rain: number;
+    gust: number;
+  }>>([]);
+
+  // Hive list with owner-managed Colony Strength, Availability and Sensor status (strictly real user hives)
   const [hivesList, setHivesList] = useState<HiveItemInfo[]>(() => {
     try {
       const cached = localStorage.getItem(`beeyield_cached_hives_${userKey}`);
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((item: any) => ({
-            ...item,
-            apiary: normalizeApiaryName(item.apiary),
-            hasSensor: Boolean(item.hasSensor || item.sensorSerial),
-            colonyStrength: item.colonyStrength || "Strong (8–10 Frames Brood & Bees)",
-            colonyAvailability: item.colonyAvailability || "Dedicated Honey Production",
-          }));
+          const clean = parsed.filter(
+            (item: any) =>
+              !String(item?.id || "").startsWith("hive-kib-") &&
+              !String(item?.name || "").includes("KIB-00")
+          );
+          if (clean.length > 0) {
+            return clean.map((item: any) => ({
+              ...item,
+              apiary: normalizeApiaryName(item.apiary),
+              hasSensor: Boolean(item.hasSensor || item.sensorSerial),
+              colonyStrength: item.colonyStrength || "Strong (8–10 Frames Brood & Bees)",
+              colonyAvailability: item.colonyAvailability || "Dedicated Honey Production",
+            }));
+          }
         }
       }
     } catch {}
-    return BEE_KNOWLEDGE_HIVES.map((item) => ({
-      ...item,
-      apiary: normalizeApiaryName(item.apiary),
-    }));
+    return [];
   });
 
-  // User-logged physical and sensor records (strictly purging legacy mock data, Varroa & Asian Hornet are sensor telemetry)
+  // User-logged physical and sensor records (strictly purging legacy mock data)
   const [records, setRecords] = useState<HiveRecord[]>(() => {
     try {
       const cached = localStorage.getItem(`beeyield_hive_health_records_${userKey}`);
@@ -182,7 +155,15 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         if (Array.isArray(parsed)) {
           const clean = parsed.filter((r: any) => {
             const id = String(r?.id || "");
-            return !id.startsWith("rec_default") && !id.startsWith("mock_") && !id.startsWith("fake_");
+            const name = String(r?.hive_name || "");
+            return (
+              !id.startsWith("rec_default") &&
+              !id.startsWith("mock_") &&
+              !id.startsWith("fake_") &&
+              !id.startsWith("insp-0") &&
+              !id.startsWith("insp-kib-") &&
+              !name.includes("KIB-00")
+            );
           });
           if (clean.length !== parsed.length) {
             localStorage.setItem(`beeyield_hive_health_records_${userKey}`, JSON.stringify(clean));
@@ -194,7 +175,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     return [];
   });
 
-  // Form State for "Log Hive Record" (Includes Colony Strength, Availability & Sensor Pairing)
+  // Form State for "Log Hive Assessment"
   const [newRecordOpen, setNewRecordOpen] = useState<boolean>(false);
   const [recordHive, setRecordHive] = useState<string>("");
   const [recordType, setRecordType] = useState<"inspection" | "varroa" | "asian_hornet" | "acoustic">("inspection");
@@ -211,10 +192,11 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
   const [pairingHive, setPairingHive] = useState<string>("");
   const [pairingSerial, setPairingSerial] = useState<string>("");
 
-  // Fetch live Open-Meteo ambient apiary weather
+  // Fetch live Open-Meteo ambient apiary weather + 14-day history and 7-day forecast
   const fetchAmbientWeather = useCallback(async (lat: number, lon: number) => {
+    setIsWeatherLoading(true);
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&past_days=14&forecast_days=7&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
@@ -235,9 +217,22 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
             lastUpdated: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           });
         }
+
+        if (data.daily && Array.isArray(data.daily.time)) {
+          const timeline = data.daily.time.map((timeStr: string, idx: number) => ({
+            date: timeStr.slice(5), // "MM-DD"
+            max: Math.round(data.daily.temperature_2m_max?.[idx] ?? 0),
+            min: Math.round(data.daily.temperature_2m_min?.[idx] ?? 0),
+            rain: Math.round((data.daily.precipitation_sum?.[idx] ?? 0) * 10) / 10,
+            gust: Math.round(data.daily.wind_speed_10m_max?.[idx] ?? 0),
+          }));
+          setWeatherTimeline(timeline);
+        }
       }
     } catch (e) {
       console.warn("Ambient weather fetch error:", e);
+    } finally {
+      setIsWeatherLoading(false);
     }
   }, []);
 
@@ -251,13 +246,38 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     };
 
     try {
-      // 1. Fetch live Open-Meteo ambient apiary weather
-      const [latStr, lonStr] = coords.split(",").map((s) => parseFloat(s.trim()));
-      if (!isNaN(latStr) && !isNaN(lonStr)) {
-        void fetchAmbientWeather(latStr, lonStr);
+      // 1. Fetch user's actual apiary location to align weather coords
+      let targetLat = -2.409;
+      let targetLon = 37.967;
+      let targetApiaryName = CANONICAL_APIARY_NAME;
+
+      if (user?.id) {
+        try {
+          const { data: apiaryData } = await (supabase as any)
+            .from("apiaries")
+            .select("id, name, latitude, longitude, location")
+            .eq("user_id", user.id)
+            .limit(1);
+
+          if (apiaryData && apiaryData.length > 0) {
+            const ap = apiaryData[0];
+            if (ap.name) {
+              targetApiaryName = normalizeApiaryName(ap.name);
+              setApiaryName(targetApiaryName);
+            }
+            if (ap.latitude && ap.longitude && !isNaN(Number(ap.latitude)) && !isNaN(Number(ap.longitude))) {
+              targetLat = Number(ap.latitude);
+              targetLon = Number(ap.longitude);
+              setCoords(`${targetLat.toFixed(3)}, ${targetLon.toFixed(3)}`);
+            }
+          }
+        } catch {}
       }
 
-      // 2. Fetch user's real hives and paired devices
+      // Fetch live weather from real coordinates
+      void fetchAmbientWeather(targetLat, targetLon);
+
+      // 2. Fetch logged-in user's real hives and paired devices (strictly eq user_id, no guessing fallbacks)
       const [hivesResult, inspResult, devicesResult] = await Promise.allSettled([
         withTimeout(
           (async () => {
@@ -267,13 +287,9 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                 .select("id, name, hive_code, nickname, hive_label, notes, apiary_name, apiaries(name)")
                 .eq("user_id", user.id)
                 .limit(100);
-              if (data && data.length > 0) return data;
+              return data || [];
             }
-            const { data: allH } = await (supabase as any)
-              .from("hives")
-              .select("id, name, hive_code, nickname, hive_label, notes, apiary_name, apiaries(name)")
-              .limit(100);
-            return allH || [];
+            return [];
           })(),
           2500,
           []
@@ -286,15 +302,10 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                 .select("id, hive_label, colony_health, varroa_count, inspected_on, notes")
                 .eq("user_id", user.id)
                 .order("inspected_on", { ascending: false })
-                .limit(50);
-              if (data && data.length > 0) return data;
+                .limit(100);
+              return data || [];
             }
-            const { data: allIns } = await supabase
-              .from("inspections" as any)
-              .select("id, hive_label, colony_health, varroa_count, inspected_on, notes")
-              .order("inspected_on" as any, { ascending: false } as any)
-              .limit(50);
-            return allIns || [];
+            return [];
           })(),
           2500,
           []
@@ -318,40 +329,56 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       const rawHives = hivesResult.status === "fulfilled" ? hivesResult.value : [];
       const pairedDevices = devicesResult.status === "fulfilled" ? devicesResult.value : [];
 
-      if (rawHives.length > 0) {
-        const pulledHives: HiveItemInfo[] = rawHives.map((h: any) => {
-          const paired = pairedDevices.find((d: any) => d.hive_id === h.id && d.status === "active");
-          let parsedStrength = "Strong (8–10 Frames Brood & Bees)";
-          let parsedAvailability = "Dedicated Honey Production";
-          try {
-            if (h.notes?.startsWith("{")) {
-              const json = JSON.parse(h.notes);
-              if (json.colonyStrength) parsedStrength = json.colonyStrength;
-              if (json.colonyAvailability) parsedAvailability = json.colonyAvailability;
-            }
-          } catch {}
+      if (rawHives && rawHives.length > 0) {
+        const pulledHives: HiveItemInfo[] = rawHives
+          .filter((h: any) => {
+            const label = h.name || h.hive_code || h.nickname || h.hive_label || "";
+            return !String(h.id || "").startsWith("hive-kib-") && !label.includes("KIB-00");
+          })
+          .map((h: any) => {
+            const paired = pairedDevices.find((d: any) => d.hive_id === h.id && d.status === "active");
+            let parsedStrength = "Strong (8–10 Frames Brood & Bees)";
+            let parsedAvailability = "Dedicated Honey Production";
+            try {
+              if (h.notes?.startsWith("{")) {
+                const json = JSON.parse(h.notes);
+                if (json.colonyStrength) parsedStrength = json.colonyStrength;
+                if (json.colonyAvailability) parsedAvailability = json.colonyAvailability;
+              }
+            } catch {}
 
-          return {
-            id: h.id,
-            name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${h.id.slice(0, 5)}`,
-            apiary: normalizeApiaryName(h.apiaries?.name || h.apiary_name || CANONICAL_APIARY_NAME),
-            hasSensor: Boolean(paired?.serial),
-            sensorSerial: paired?.serial || undefined,
-            colonyStrength: parsedStrength,
-            colonyAvailability: parsedAvailability,
-          };
-        });
+            return {
+              id: h.id,
+              name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${h.id.slice(0, 5)}`,
+              apiary: normalizeApiaryName(h.apiaries?.name || h.apiary_name || targetApiaryName),
+              hasSensor: Boolean(paired?.serial),
+              sensorSerial: paired?.serial || undefined,
+              colonyStrength: parsedStrength,
+              colonyAvailability: parsedAvailability,
+            };
+          });
+
         setHivesList(pulledHives);
         try {
           localStorage.setItem(`beeyield_cached_hives_${userKey}`, JSON.stringify(pulledHives));
         } catch {}
+      } else {
+        setHivesList([]);
+        try {
+          localStorage.removeItem(`beeyield_cached_hives_${userKey}`);
+        } catch {}
       }
 
-      // 3. User Inspections (strictly real records)
+      // 3. User Inspections (strictly real logged records)
       const rawInspections = inspResult.status === "fulfilled" ? inspResult.value : [];
       const dbRecords: HiveRecord[] = [];
-      if (rawInspections.length > 0) {
+
+      if (rawInspections && rawInspections.length > 0) {
         rawInspections.forEach((ins: any) => {
+          if (String(ins.id).startsWith("insp-0") || String(ins.id).startsWith("insp-kib-")) return;
+          const label = ins.hive_label || ins.hive_code || "Hive";
+          if (label.includes("KIB-001") || label.includes("KIB-002") || label.includes("KIB-005")) return;
+
           const healthScore =
             ins.colony_health === "Healthy" || ins.colony_health === "Thriving"
               ? 92
@@ -360,20 +387,62 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               : ins.colony_health === "At risk"
               ? 55
               : 40;
+
           dbRecords.push({
-            id: ins.id,
-            hive_name: ins.hive_label || "Hive KIB-001 (Langstroth 10)",
+            id: String(ins.id),
+            hive_name: label,
             record_type: "inspection",
             recorded_at: ins.inspected_on ? new Date(ins.inspected_on).toISOString() : new Date().toISOString(),
             health_index: healthScore,
             varroa_count: ins.varroa_count ?? undefined,
-            notes: ins.notes || `Colony health evaluated as ${ins.colony_health}`,
+            notes: ins.notes || `Colony health evaluated as ${ins.colony_health || "Healthy"}`,
             inspector: ownerDisplayName,
           });
         });
       }
 
-      // Retrieve locally saved records and merge (purging any legacy mock records)
+      // 4. Merge with user-scoped LocalStorage inspections from InspectionsPage
+      try {
+        const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+        const rawLocal = localStorage.getItem(userLsKey);
+        if (rawLocal) {
+          const parsed = JSON.parse(rawLocal);
+          if (Array.isArray(parsed)) {
+            parsed.forEach((ins: any) => {
+              const id = String(ins.id || "");
+              const label = ins.hive_label || ins.hive_code || "Hive";
+              if (
+                id.startsWith("insp-0") ||
+                id.startsWith("insp-kib-") ||
+                label.includes("KIB-00") ||
+                label.includes("KIB-")
+              ) {
+                return;
+              }
+              const healthScore =
+                ins.colony_health === "Healthy" || ins.colony_health === "Thriving"
+                  ? 92
+                  : ins.colony_health === "Watch" || ins.colony_health === "Stable"
+                  ? 75
+                  : ins.colony_health === "At risk"
+                  ? 55
+                  : 40;
+              dbRecords.push({
+                id,
+                hive_name: label,
+                record_type: "inspection",
+                recorded_at: ins.inspected_on ? new Date(ins.inspected_on).toISOString() : (ins.created_at || new Date().toISOString()),
+                health_index: healthScore,
+                varroa_count: ins.varroa_count ?? undefined,
+                notes: ins.notes || `Colony health evaluated as ${ins.colony_health || "Healthy"}`,
+                inspector: ownerDisplayName,
+              });
+            });
+          }
+        }
+      } catch {}
+
+      // 5. Retrieve locally saved records and merge (purging legacy mock records)
       const localCachedStr = localStorage.getItem(`beeyield_hive_health_records_${userKey}`);
       let localRecords: HiveRecord[] = [];
       if (localCachedStr) {
@@ -382,14 +451,24 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
           if (Array.isArray(parsed)) {
             localRecords = parsed.filter((r: any) => {
               const id = String(r?.id || "");
-              return !id.startsWith("rec_default") && !id.startsWith("mock_") && !id.startsWith("fake_");
+              const name = String(r?.hive_name || "");
+              return (
+                !id.startsWith("rec_default") &&
+                !id.startsWith("mock_") &&
+                !id.startsWith("fake_") &&
+                !id.startsWith("insp-0") &&
+                !id.startsWith("insp-kib-") &&
+                !name.includes("KIB-00")
+              );
             });
-            if (localRecords.length !== parsed.length) {
-              localStorage.setItem(`beeyield_hive_health_records_${userKey}`, JSON.stringify(localRecords));
-            }
           }
         } catch {}
       }
+
+      // Purge legacy unkeyed key
+      try {
+        localStorage.removeItem("beeyield_hive_health_records");
+      } catch {}
 
       const combinedMap = new Map<string, HiveRecord>();
       [...localRecords, ...dbRecords].forEach((r) => combinedMap.set(r.id, r));
@@ -406,7 +485,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     } finally {
       setIsRefreshing(false);
     }
-  }, [user?.id, userKey, coords, fetchAmbientWeather, ownerDisplayName]);
+  }, [user?.id, userKey, fetchAmbientWeather, ownerDisplayName]);
 
   useEffect(() => {
     if (isOpen || embedded) {
@@ -429,13 +508,13 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         },
         () => {
           setIsLocating(false);
-          toast.info("Using default Kibwezi apiary location (-2.409, 37.967)");
+          toast.info("Using default apiary location (-2.409, 37.967)");
           void fetchAmbientWeather(-2.409, 37.967);
         }
       );
     } else {
       setIsLocating(false);
-      toast.info("Geolocation not supported. Using Kibwezi (-2.409, 37.967)");
+      toast.info("Geolocation not supported. Using -2.409, 37.967");
       void fetchAmbientWeather(-2.409, 37.967);
     }
   };
@@ -443,9 +522,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
   // Save new record with Colony Strength, Colony Availability, and Optional Sensor Pairing
   const handleSaveRecord = (e: React.FormEvent) => {
     e.preventDefault();
-    const targetHiveName = recordHive || (hivesList[0]?.name ?? "Hive KIB-001 (Langstroth 10)");
+    const targetHiveName = recordHive || (hivesList[0]?.name ?? "Primary Hive");
 
-    // 1. Create the new record
     const newRec: HiveRecord = {
       id: "rec_" + Date.now(),
       hive_name: targetHiveName,
@@ -454,62 +532,33 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       health_index: recordType === "inspection" ? Number(healthIndexInput) || 90 : undefined,
       varroa_count: recordType === "varroa" ? Number(varroaInput) || 0 : undefined,
       asian_hornet_count: recordType === "asian_hornet" ? Number(asianHornetInput) || 0 : undefined,
+      notes: recordNotes || (recordType === "acoustic" ? "Acoustic audit: stable queen flight pattern" : "Physical hive verification"),
       colony_strength: colonyStrengthInput,
       colony_availability: colonyAvailabilityInput,
-      sensor_serial: sensorSerialInput.trim() || undefined,
       inspector: ownerDisplayName,
-      notes: recordNotes || `Evaluation: ${colonyStrengthInput} • ${colonyAvailabilityInput}`,
+      sensor_serial: sensorSerialInput.trim() ? sensorSerialInput.trim().toUpperCase() : undefined,
     };
 
-    const updatedRecords = [newRec, ...records];
-    setRecords(updatedRecords);
-
-    // 2. Update the hive's colony strength, availability, and sensor pairing in hivesList
-    const updatedHives = hivesList.map((h) => {
-      if (h.name === targetHiveName) {
-        return {
-          ...h,
-          colonyStrength: colonyStrengthInput,
-          colonyAvailability: colonyAvailabilityInput,
-          hasSensor: Boolean(sensorSerialInput.trim() || h.hasSensor),
-          sensorSerial: sensorSerialInput.trim() || h.sensorSerial,
-        };
-      }
-      return h;
-    });
-    setHivesList(updatedHives);
-
+    const updated = [newRec, ...records];
+    setRecords(updated);
     try {
-      localStorage.setItem(`beeyield_hive_health_records_${userKey}`, JSON.stringify(updatedRecords));
-      localStorage.setItem(`beeyield_cached_hives_${userKey}`, JSON.stringify(updatedHives));
+      localStorage.setItem(`beeyield_hive_health_records_${userKey}`, JSON.stringify(updated));
     } catch {}
 
-    // Async write to Supabase inspections
-    if (user?.id) {
-      void (supabase as any).from("inspections").insert({
-        user_id: user.id,
-        hive_label: targetHiveName,
-        colony_health: Number(healthIndexInput) >= 85 ? "Thriving" : "Healthy",
-        varroa_count: Number(varroaInput) || 0,
-        notes: `Colony Strength: ${colonyStrengthInput} | Availability: ${colonyAvailabilityInput} | ${recordNotes}`,
-        inspected_on: new Date().toISOString(),
-      });
-    }
-
+    toast.success(`Logged ${recordType} assessment for ${targetHiveName}`);
     setNewRecordOpen(false);
     setRecordNotes("");
-    setSensorSerialInput("");
-    toast.success(`Assessment logged for ${targetHiveName}: Strength & availability saved.`);
   };
 
-  // Quick Sensor Pairing Handler
+  // Confirm VitalSensor Quick Pairing
   const handleConfirmPairSensor = (e: React.FormEvent) => {
     e.preventDefault();
     if (!pairingSerial.trim()) {
-      toast.error("Please enter or scan a VitalSensor serial number");
+      toast.error("Please enter a valid sensor serial code");
       return;
     }
-    const targetHiveName = pairingHive || (hivesList[0]?.name ?? "Hive KIB-001 (Langstroth 10)");
+    const targetHiveName = pairingHive || (hivesList[0]?.name ?? "Primary Hive");
+
     const updatedHives = hivesList.map((h) => {
       if (h.name === targetHiveName) {
         return {
@@ -548,8 +597,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
   const latestAsianHornet = isHardwareSensorConnected ? (hornetRecords[0]?.asian_hornet_count ?? 0) : undefined;
   const latestHealth = inspections[0]?.health_index;
 
-  const activeColonyStrength = currentHiveObj?.colonyStrength || "Strong (8–10 Frames Brood & Bees)";
-  const activeColonyAvailability = currentHiveObj?.colonyAvailability || "Dedicated Honey Production";
+  const activeColonyStrength = currentHiveObj?.colonyStrength;
+  const activeColonyAvailability = currentHiveObj?.colonyAvailability;
   const activeSensorSerial = currentHiveObj?.sensorSerial;
 
   // Only display in-hive sensor readings if an actual hardware sensor is paired and has recorded data
@@ -557,19 +606,11 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
   const currentHumidity = isHardwareSensorConnected ? filteredRecords.find((r) => r.humidity_pct !== undefined)?.humidity_pct : undefined;
   const currentWeight = isHardwareSensorConnected ? filteredRecords.find((r) => r.weight_kg !== undefined)?.weight_kg : undefined;
 
-  // 21-day timeline context (14 days past + 7 days forecast)
-  const weatherTimeline = Array.from({ length: 21 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - 14 + i);
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return {
-      date: `${mm}-${dd}`,
-      max: 27 + (i % 3 === 0 ? 1 : i % 2 === 0 ? -1 : 0),
-      min: 16 + (i % 2 === 0 ? 1 : 0),
-      rain: i === 1 ? 4 : i === 2 ? 12 : i === 3 ? 8 : i === 7 ? 2 : i === 8 ? 1 : i === 19 ? 3 : i === 20 ? 14 : 0,
-    };
-  });
+  // Calculate dynamic weather metrics from real timeline
+  const peakTemp = weatherTimeline.length > 0 ? Math.max(...weatherTimeline.map((d) => d.max)) : (ambientWeather ? Math.round(ambientWeather.temp) : null);
+  const totalRain = weatherTimeline.length > 0 ? Math.round(weatherTimeline.reduce((sum, d) => sum + d.rain, 0) * 10) / 10 : null;
+  const peakGust = weatherTimeline.length > 0 ? Math.max(...weatherTimeline.map((d) => d.gust)) : (ambientWeather ? ambientWeather.wind : null);
+  const maxWeatherVal = Math.max(32, ...weatherTimeline.map((pt) => Math.max(pt.max, pt.rain, 32)));
 
   const content = (
     <>
@@ -581,16 +622,20 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               <HeartPulse className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold font-display tracking-tight text-foreground flex items-center gap-1.5">
-                Hive Health <span className="text-amber-500">Dashboard</span>
-              </h1>
-              <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
-                <span className="font-medium text-foreground flex items-center gap-1">
-                  <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-lg font-bold text-foreground">Hive Health & Colony Monitoring</h2>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wide uppercase flex items-center gap-1">
+                  <UserCheck className="w-3 h-3 text-emerald-600" />
+                  Verified Apiary
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                <span className="font-semibold text-foreground flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
                   Owner: {ownerDisplayName}
                 </span>
                 <span>•</span>
-                <span>BeeYield Apiary in Kibwezi Kenya</span>
+                <span>{apiaryName}</span>
               </div>
             </div>
           </div>
@@ -643,107 +688,58 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   </option>
                 ))}
               </select>
+              {hivesList.length === 0 && (
+                <span className="text-[11px] text-muted-foreground italic">
+                  (0 hives registered in database)
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 flex-wrap text-xs">
               <button
                 onClick={handleUseLocation}
                 disabled={isLocating}
-                className="h-9 px-3 rounded-xl border border-border bg-background hover:bg-muted text-xs font-medium flex items-center gap-1.5 text-foreground shadow-sm transition-all"
+                className="h-8 px-2.5 rounded-lg border border-border bg-stone-50 hover:bg-stone-100 flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-all font-mono text-[11px]"
+                title="Synchronize live GPS for Open-Meteo Weather"
               >
-                {isLocating ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-500" />
-                ) : (
-                  <Sun className="w-3.5 h-3.5 text-amber-500" />
-                )}
-                <span>Sync Ambient Weather</span>
-              </button>
-              <span className="font-mono text-[11px] px-2.5 py-1.5 rounded-lg bg-muted text-muted-foreground border border-border">
+                {isLocating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sun className="w-3 h-3 text-amber-500" />}
                 {coords}
-              </span>
+              </button>
             </div>
           </div>
 
-          {/* Owner-Managed Colony Strength & Availability Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Colony Strength (Added by Owner) */}
-            <div className="rounded-2xl border border-amber-200/60 bg-linear-to-br from-amber-50/50 to-white p-4 shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-amber-800 uppercase">
-                    <ShieldCheck className="w-4 h-4 text-amber-600" />
-                    <span>Colony Strength</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                    Owner Assessed
+          {/* Colony Strength & Availability Summary Card */}
+          <div className="rounded-2xl border border-border/80 bg-white p-4 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Active Hive Focus
+                  </span>
+                  <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                    {selectedHive === "all" ? "All Apiary Colonies" : selectedHive}
                   </span>
                 </div>
-                <div className="text-base font-bold font-display text-foreground my-1">
-                  {activeColonyStrength}
-                </div>
-              </div>
-              <p className="text-[11px] text-muted-foreground mt-1">
-                Brood comb pattern, bee density & oviposition status.
-              </p>
-            </div>
-
-            {/* Colony Availability (Added by Owner) */}
-            <div className="rounded-2xl border border-blue-200/60 bg-linear-to-br from-blue-50/50 to-white p-4 shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-blue-800 uppercase">
-                    <Activity className="w-4 h-4 text-blue-600" />
-                    <span>Colony Availability</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300">
-                    Operational
+                <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                  <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-900 border border-amber-300 font-semibold flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-amber-600" />
+                    Strength: <strong>{activeColonyStrength || (hivesList.length > 0 ? "Strong (8–10 Frames)" : "Awaiting Hive Setup")}</strong>
                   </span>
-                </div>
-                <div className="text-base font-bold font-display text-foreground my-1">
-                  {activeColonyAvailability}
-                </div>
-              </div>
-              <p className="text-[11px] text-muted-foreground mt-1">
-                Commercial allocation for honey harvest or pollination.
-              </p>
-            </div>
-
-            {/* Hardware Sensor Pairing Status & Quick Pair CTA */}
-            <div className="rounded-2xl border border-border/80 bg-white p-4 shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-                    <Wifi className="w-4 h-4 text-muted-foreground" />
-                    <span>Hardware Sensor Status</span>
-                  </div>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                      isHardwareSensorConnected
-                        ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                        : "bg-stone-100 text-stone-600 border border-stone-200"
-                    }`}
-                  >
-                    {isHardwareSensorConnected ? "Paired" : "0 Connected"}
+                  <span className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-900 border border-blue-300 font-semibold flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                    Availability: <strong>{activeColonyAvailability || (hivesList.length > 0 ? "Dedicated Honey Production" : "Not Set")}</strong>
                   </span>
-                </div>
-                <div className="text-base font-bold font-display text-foreground my-1 flex items-center gap-2">
-                  {isHardwareSensorConnected ? (
-                    <span className="text-emerald-700 font-mono text-sm">
-                      {activeSensorSerial || "VitalSensor Active"}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground text-sm font-normal">
-                      No Hardware Sensor Paired
+                  {activeSensorSerial && (
+                    <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-900 border border-emerald-300 font-semibold font-mono text-[11px] flex items-center gap-1.5">
+                      <Wifi className="w-3.5 h-3.5 text-emerald-600" />
+                      Serial: {activeSensorSerial}
                     </span>
                   )}
                 </div>
               </div>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="text-[11px] text-muted-foreground">
-                  {isHardwareSensorConnected ? "Live telemetry synced" : "Manual inspection mode"}
-                </span>
+
+              <div className="flex items-center gap-2 self-start sm:self-center">
                 <button
-                  type="button"
                   onClick={() => {
                     setPairingHive(selectedHive === "all" ? (hivesList[0]?.name || "") : selectedHive);
                     setPairSensorModalOpen(true);
@@ -1014,7 +1010,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                     Ambient Apiary Weather (Open-Meteo Live API)
                   </h4>
                   <p className="text-[11px] text-muted-foreground">
-                    Outdoor atmospheric conditions across Kibwezi Apiary • Verified live weather feed
+                    Outdoor atmospheric conditions across {apiaryName} • Verified live weather feed
                   </p>
                 </div>
               </div>
@@ -1029,7 +1025,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   Outdoor Temp
                 </span>
                 <span className="text-lg font-bold font-mono text-foreground">
-                  {ambientWeather ? `${ambientWeather.temp} °C` : "28.0 °C"}
+                  {ambientWeather ? `${ambientWeather.temp} °C` : (isWeatherLoading ? "..." : "—")}
                 </span>
                 <span className="text-[10px] text-muted-foreground block">Ambient air</span>
               </div>
@@ -1039,7 +1035,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   Outdoor RH
                 </span>
                 <span className="text-lg font-bold font-mono text-foreground">
-                  {ambientWeather ? `${ambientWeather.humidity}%` : "48%"}
+                  {ambientWeather ? `${ambientWeather.humidity}%` : (isWeatherLoading ? "..." : "—")}
                 </span>
                 <span className="text-[10px] text-muted-foreground block">Atmospheric RH</span>
               </div>
@@ -1049,7 +1045,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   Wind Speed
                 </span>
                 <span className="text-lg font-bold font-mono text-foreground">
-                  {ambientWeather ? `${ambientWeather.wind} km/h` : "12 km/h"}
+                  {ambientWeather ? `${ambientWeather.wind} km/h` : (isWeatherLoading ? "..." : "—")}
                 </span>
                 <span className="text-[10px] text-muted-foreground block">Safe for flight</span>
               </div>
@@ -1059,7 +1055,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   Sky Condition
                 </span>
                 <span className="text-sm font-bold text-foreground truncate block mt-1">
-                  {ambientWeather?.conditionText || "Mainly Clear"}
+                  {ambientWeather?.conditionText || (isWeatherLoading ? "Syncing..." : "—")}
                 </span>
                 <span className="text-[10px] text-emerald-600 font-medium block">
                   Optimal foraging window
@@ -1068,134 +1064,189 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
             </div>
           </div>
 
-          {/* Weather Context (14 days back - 7 days ahead) */}
+          {/* Colony health trend (Strictly user-logged physical assessments) */}
+          <div className="rounded-2xl border border-border/80 bg-white p-5 shadow-sm space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-amber-500" />
+                <h3 className="font-bold text-sm text-foreground">Colony health trend</h3>
+              </div>
+              <span className="text-xs text-muted-foreground font-medium">
+                {inspections.length} recorded
+              </span>
+            </div>
+            {inspections.length > 0 ? (
+              <div className="pt-2 space-y-2">
+                {inspections.map((r) => (
+                  <div key={r.id} className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-muted/40 border border-border/60">
+                    <div className="space-y-0.5">
+                      <span className="font-semibold text-foreground block">{r.hive_name}</span>
+                      {(r.colony_strength || r.colony_availability) && (
+                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                          {r.colony_strength && <span>{r.colony_strength}</span>}
+                          {r.colony_availability && <span>• {r.colony_availability}</span>}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <span className="font-mono text-amber-600 font-bold block">
+                        {r.health_index !== undefined ? `${r.health_index}% Health` : "Audited"}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">
+                        {new Date(r.recorded_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-6 text-center space-y-1.5">
+                <ShieldCheck className="w-6 h-6 text-muted-foreground/40 mx-auto" />
+                <p className="text-xs font-medium text-foreground">
+                  No colony health inspections logged yet for your apiary.
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Tap 'Log Assessment' above to record your first hive evaluation.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Weather context (14 days back - 7 days ahead) */}
           <div className="rounded-2xl border border-border/80 bg-white p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-amber-500" />
                 <h3 className="font-bold text-sm text-foreground">
-                  Microclimate Trend Context (14-day history · 7-day forecast)
+                  Weather context (14 days back - 7 days ahead)
                 </h3>
               </div>
-              <span className="text-xs text-muted-foreground font-medium">Kibwezi, Kenya</span>
+              <span className="text-xs text-muted-foreground font-medium">{apiaryName}</span>
             </div>
 
             {/* SVG Weather Chart */}
             <div className="w-full overflow-x-auto">
               <div className="min-w-[700px] h-[190px] relative">
-                <svg className="w-full h-full" viewBox="0 0 700 170" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="rainGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#84cc16" stopOpacity="0.4" />
-                      <stop offset="100%" stopColor="#84cc16" stopOpacity="0.05" />
-                    </linearGradient>
-                    <linearGradient id="tempMaxGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.25" />
-                      <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.02" />
-                    </linearGradient>
-                  </defs>
+                {weatherTimeline.length > 0 ? (
+                  <svg className="w-full h-full" viewBox="0 0 700 170" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="rainGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#84cc16" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#84cc16" stopOpacity="0.05" />
+                      </linearGradient>
+                      <linearGradient id="tempMaxGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.25" />
+                        <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.02" />
+                      </linearGradient>
+                    </defs>
 
-                  {/* Horizontal gridlines for 0, 8, 16, 24, 32 */}
-                  {[0, 8, 16, 24, 32].map((val) => {
-                    const y = 140 - (val / 32) * 110;
-                    return (
-                      <g key={val}>
-                        <line x1="30" y1={y} x2="690" y2={y} stroke="#f1f0ea" strokeDasharray="3 3" strokeWidth="1" />
-                        <text x="22" y={y + 3} textAnchor="end" fontSize="9" fill="#9ca3af" fontFamily="sans-serif">
-                          {val}
-                        </text>
-                      </g>
-                    );
-                  })}
+                    {/* Horizontal gridlines for 0, 8, 16, 24, 32 */}
+                    {[0, 8, 16, 24, 32].map((val) => {
+                      const y = 140 - (val / maxWeatherVal) * 110;
+                      return (
+                        <g key={val}>
+                          <line x1="30" y1={y} x2="690" y2={y} stroke="#f1f0ea" strokeDasharray="3 3" strokeWidth="1" />
+                          <text x="22" y={y + 3} textAnchor="end" fontSize="9" fill="#9ca3af" fontFamily="sans-serif">
+                            {val}
+                          </text>
+                        </g>
+                      );
+                    })}
 
-                  {/* Rain Area Fill */}
-                  <polygon
-                    points={`
-                      35,140
-                      ${weatherTimeline
+                    {/* Rain Area Fill */}
+                    <polygon
+                      points={`
+                        35,140
+                        ${weatherTimeline
+                          .map((pt, i) => {
+                            const x = 35 + (i / Math.max(1, weatherTimeline.length - 1)) * 645;
+                            const y = 140 - (pt.rain / maxWeatherVal) * 90;
+                            return `${x},${y}`;
+                          })
+                          .join(" ")}
+                        680,140
+                      `}
+                      fill="url(#rainGrad)"
+                      stroke="#65a30d"
+                      strokeWidth="1.2"
+                    />
+
+                    {/* Max Temp Area */}
+                    <polygon
+                      points={`
+                        35,140
+                        ${weatherTimeline
+                          .map((pt, i) => {
+                            const x = 35 + (i / Math.max(1, weatherTimeline.length - 1)) * 645;
+                            const y = 140 - (pt.max / maxWeatherVal) * 110;
+                            return `${x},${y}`;
+                          })
+                          .join(" ")}
+                        680,140
+                      `}
+                      fill="url(#tempMaxGrad)"
+                    />
+
+                    {/* Max Temp Line */}
+                    <polyline
+                      points={weatherTimeline
                         .map((pt, i) => {
-                          const x = 35 + (i / (weatherTimeline.length - 1)) * 645;
-                          const y = 140 - (pt.rain / 32) * 90;
+                          const x = 35 + (i / Math.max(1, weatherTimeline.length - 1)) * 645;
+                          const y = 140 - (pt.max / maxWeatherVal) * 110;
                           return `${x},${y}`;
                         })
                         .join(" ")}
-                      680,140
-                    `}
-                    fill="url(#rainGrad)"
-                    stroke="#65a30d"
-                    strokeWidth="1.2"
-                  />
+                      fill="none"
+                      stroke="#f59e0b"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
 
-                  {/* Max Temp Area */}
-                  <polygon
-                    points={`
-                      35,140
-                      ${weatherTimeline
+                    {/* Min Temp Line */}
+                    <polyline
+                      points={weatherTimeline
                         .map((pt, i) => {
-                          const x = 35 + (i / (weatherTimeline.length - 1)) * 645;
-                          const y = 140 - (pt.max / 32) * 110;
+                          const x = 35 + (i / Math.max(1, weatherTimeline.length - 1)) * 645;
+                          const y = 140 - (pt.min / maxWeatherVal) * 110;
                           return `${x},${y}`;
                         })
                         .join(" ")}
-                      680,140
-                    `}
-                    fill="url(#tempMaxGrad)"
-                  />
+                      fill="none"
+                      stroke="#10b981"
+                      strokeWidth="1.8"
+                      strokeDasharray="4 3"
+                    />
 
-                  {/* Max Temp Line */}
-                  <polyline
-                    points={weatherTimeline
-                      .map((pt, i) => {
-                        const x = 35 + (i / (weatherTimeline.length - 1)) * 645;
-                        const y = 140 - (pt.max / 32) * 110;
-                        return `${x},${y}`;
-                      })
-                      .join(" ")}
-                    fill="none"
-                    stroke="#f59e0b"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Min Temp Line */}
-                  <polyline
-                    points={weatherTimeline
-                      .map((pt, i) => {
-                        const x = 35 + (i / (weatherTimeline.length - 1)) * 645;
-                        const y = 140 - (pt.min / 32) * 110;
-                        return `${x},${y}`;
-                      })
-                      .join(" ")}
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="1.8"
-                    strokeDasharray="4 3"
-                  />
-
-                  {/* Bottom timeline date ticks */}
-                  {weatherTimeline.map((pt, i) => {
-                    const x = 35 + (i / (weatherTimeline.length - 1)) * 645;
-                    return (
-                      <g key={pt.date}>
-                        <line x1={x} y1={140} x2={x} y2={144} stroke="#d1d5db" strokeWidth="1" />
-                        <text
-                          x={x}
-                          y={156}
-                          textAnchor="middle"
-                          fontSize="8.5"
-                          fill="#6b7280"
-                          fontFamily="monospace"
-                        >
-                          {pt.date}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </svg>
+                    {/* Bottom timeline date ticks */}
+                    {weatherTimeline.map((pt, i) => {
+                      const x = 35 + (i / Math.max(1, weatherTimeline.length - 1)) * 645;
+                      return (
+                        <g key={pt.date + i}>
+                          <line x1={x} y1={140} x2={x} y2={144} stroke="#d1d5db" strokeWidth="1" />
+                          <text
+                            x={x}
+                            y={156}
+                            textAnchor="middle"
+                            fontSize="8.5"
+                            fill="#6b7280"
+                            fontFamily="monospace"
+                          >
+                            {pt.date}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </svg>
+                ) : (
+                  <div className="w-full h-[170px] flex items-center justify-center text-xs text-muted-foreground gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
+                    Synchronizing live microclimate timeline for apiary...
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Legend & Stat summary */}
+            {/* Legend & Real Stat summary */}
             <div className="flex flex-wrap items-center justify-between gap-4 pt-1 border-t border-[#F5F4EE]">
               <div className="flex items-center gap-5 text-xs font-semibold">
                 <span className="flex items-center gap-1.5 text-amber-500">
@@ -1212,139 +1263,74 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Thermometer className="w-3.5 h-3.5 text-amber-500" />
-                  Peak <strong className="text-foreground font-semibold">28 °C</strong>
+                  Peak <strong className="text-foreground font-semibold">{peakTemp !== null ? `${peakTemp} °C` : "—"}</strong>
                 </span>
                 <span className="flex items-center gap-1">
                   <Droplets className="w-3.5 h-3.5 text-amber-500" />
-                  Total <strong className="text-foreground font-semibold">20 mm</strong>
+                  Total <strong className="text-foreground font-semibold">{totalRain !== null ? `${totalRain} mm` : "—"}</strong>
                 </span>
                 <span className="flex items-center gap-1">
                   <Wind className="w-3.5 h-3.5 text-amber-500" />
-                  Gusts <strong className="text-foreground font-semibold">19 km/h</strong>
+                  Gusts <strong className="text-foreground font-semibold">{peakGust !== null ? `${peakGust} km/h` : "—"}</strong>
                 </span>
               </div>
             </div>
           </div>
 
-          {/* User Logged Assessments & Colony Trend History */}
+          {/* Bottom 2-Card Grid: Latest Inspections & Latest Acoustic Audits */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {/* Inspections History with Colony Strength & Availability */}
-            <div className="rounded-2xl border border-border/80 bg-white p-5 shadow-sm space-y-3">
+            {/* Latest Inspections */}
+            <div className="rounded-2xl border border-border/80 bg-white p-5 shadow-sm space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-amber-500" />
-                  <h3 className="font-bold text-sm text-foreground">Logged Physical Assessments</h3>
+                  <h3 className="font-bold text-sm text-foreground">Latest inspections</h3>
                 </div>
-                <span className="text-xs text-muted-foreground font-medium">
-                  {inspections.length} recorded
-                </span>
+                <span className="text-xs text-muted-foreground">{inspections.length} recorded</span>
               </div>
               {inspections.length > 0 ? (
-                <div className="space-y-2 pt-1 max-h-56 overflow-y-auto custom-scroll pr-1">
-                  {inspections.slice(0, 6).map((r) => (
-                    <div
-                      key={r.id}
-                      className="p-3 rounded-xl bg-muted/30 border border-border/60 text-xs space-y-1.5"
-                    >
-                      <div className="flex items-center justify-between font-semibold">
-                        <span className="text-foreground">{r.hive_name}</span>
-                        <span className="font-mono text-amber-600 font-bold">
-                          {r.health_index !== undefined ? `${r.health_index}% Health` : "Audited"}
-                        </span>
+                <div className="space-y-1.5 pt-1">
+                  {inspections.slice(0, 5).map((r) => (
+                    <div key={r.id} className="text-xs flex justify-between items-center p-2.5 rounded-lg bg-muted/40">
+                      <div>
+                        <span className="font-medium text-foreground block">{r.hive_name}</span>
+                        {r.notes && <span className="text-[11px] text-muted-foreground italic truncate block max-w-xs">{r.notes}</span>}
                       </div>
-                      {(r.colony_strength || r.colony_availability) && (
-                        <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
-                          {r.colony_strength && (
-                            <span className="px-2 py-0.5 rounded-md bg-amber-100/70 text-amber-800 font-medium">
-                              {r.colony_strength}
-                            </span>
-                          )}
-                          {r.colony_availability && (
-                            <span className="px-2 py-0.5 rounded-md bg-blue-100/70 text-blue-800 font-medium">
-                              {r.colony_availability}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      {r.notes && (
-                        <p className="text-[11px] text-muted-foreground italic truncate">
-                          "{r.notes}"
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-0.5">
-                        <span>Inspector: {r.inspector || ownerDisplayName}</span>
-                        <span>{new Date(r.recorded_at).toLocaleDateString()}</span>
+                      <div className="text-right">
+                        <span className="font-mono text-amber-600 font-bold block">{r.health_index}% Health</span>
+                        <span className="text-[11px] text-muted-foreground">{new Date(r.recorded_at).toLocaleDateString()}</span>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-6 px-4 rounded-xl border border-dashed border-border bg-muted/20 space-y-2">
-                  <Info className="w-5 h-5 text-muted-foreground mx-auto" />
-                  <p className="text-xs font-medium text-foreground">No physical inspections logged yet.</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Tap "Log Assessment" above to record colony strength, availability & health index.
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground py-4 text-center">No inspections logged yet.</p>
               )}
             </div>
 
-            {/* Acoustic & Varroa Audit History */}
-            <div className="rounded-2xl border border-border/80 bg-white p-5 shadow-sm space-y-3">
+            {/* Latest Acoustic Audits */}
+            <div className="rounded-2xl border border-border/80 bg-white p-5 shadow-sm space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Waves className="w-4 h-4 text-amber-500" />
-                  <h3 className="font-bold text-sm text-foreground">Acoustic & Varroa Diagnostics</h3>
+                  <h3 className="font-bold text-sm text-foreground">Latest acoustic audits</h3>
                 </div>
-                <span className="text-xs text-muted-foreground font-medium">
-                  {acousticAudits.length + varroaRecords.length} records
-                </span>
+                <span className="text-xs text-muted-foreground">{acousticAudits.length} archived</span>
               </div>
-              {acousticAudits.length > 0 || varroaRecords.length > 0 ? (
-                <div className="space-y-2 pt-1 max-h-56 overflow-y-auto custom-scroll pr-1">
-                  {[...acousticAudits, ...varroaRecords]
-                    .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime())
-                    .slice(0, 6)
-                    .map((r) => (
-                      <div
-                        key={r.id}
-                        className="p-3 rounded-xl bg-muted/30 border border-border/60 text-xs space-y-1"
-                      >
-                        <div className="flex items-center justify-between font-semibold">
-                          <span className="text-foreground">{r.hive_name}</span>
-                          <span className="text-amber-600 font-bold uppercase text-[10px]">
-                            {r.record_type}
-                          </span>
-                        </div>
-                        {r.varroa_count !== undefined && (
-                          <div className="text-[11px] font-medium text-foreground">
-                            Varroa Sensor Count: <strong>{r.varroa_count}</strong> mites
-                          </div>
-                        )}
-                        {r.asian_hornet_count !== undefined && (
-                          <div className="text-[11px] font-medium text-orange-600">
-                            Asian Hornet Sighting: <strong>{r.asian_hornet_count}</strong> detected
-                          </div>
-                        )}
-                        {r.notes && (
-                          <p className="text-[11px] text-muted-foreground truncate">
-                            "{r.notes}"
-                          </p>
-                        )}
-                        <div className="text-[10px] text-muted-foreground">
-                          {new Date(r.recorded_at).toLocaleDateString()}
-                        </div>
+              {acousticAudits.length > 0 ? (
+                <div className="space-y-1.5 pt-1">
+                  {acousticAudits.slice(0, 5).map((r) => (
+                    <div key={r.id} className="text-xs flex justify-between items-center p-2.5 rounded-lg bg-muted/40">
+                      <div>
+                        <span className="font-medium text-foreground block">{r.hive_name}</span>
+                        <span className="text-[11px] text-amber-600 font-medium">Acoustic VitalSensor Link</span>
                       </div>
-                    ))}
+                      <span className="text-muted-foreground">{new Date(r.recorded_at).toLocaleDateString()}</span>
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <div className="text-center py-6 px-4 rounded-xl border border-dashed border-border bg-muted/20 space-y-2">
-                  <Waves className="w-5 h-5 text-muted-foreground mx-auto" />
-                  <p className="text-xs font-medium text-foreground">No acoustic audits or varroa tests logged yet.</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Record acoustic audits or mite washes via the assessment form.
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground py-4 text-center">No acoustic audits archived yet.</p>
               )}
             </div>
           </div>
@@ -1384,11 +1370,15 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                     onChange={(e) => setRecordHive(e.target.value)}
                     className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-semibold"
                   >
-                    {hivesList.map((h) => (
-                      <option key={h.id} value={h.name}>
-                        {h.name}
-                      </option>
-                    ))}
+                    {hivesList.length === 0 ? (
+                      <option value="Primary Hive">Primary Hive</option>
+                    ) : (
+                      hivesList.map((h) => (
+                        <option key={h.id} value={h.name}>
+                          {h.name}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 
@@ -1585,11 +1575,15 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   onChange={(e) => setPairingHive(e.target.value)}
                   className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-semibold"
                 >
-                  {hivesList.map((h) => (
-                    <option key={h.id} value={h.name}>
-                      {h.name} {h.hasSensor ? `(Currently ${h.sensorSerial})` : "(Unpaired)"}
-                    </option>
-                  ))}
+                  {hivesList.length === 0 ? (
+                    <option value="Primary Hive">Primary Hive</option>
+                  ) : (
+                    hivesList.map((h) => (
+                      <option key={h.id} value={h.name}>
+                        {h.name} {h.hasSensor ? `(Currently ${h.sensorSerial})` : "(Unpaired)"}
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
 
