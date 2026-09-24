@@ -79,6 +79,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {
             label: "Yield & pollination",
             items: [
+                { id: 'harvests-page', label: "Harvests Page", icon: Package, onClick: () => onTabChange('harvests') },
                 { id: 'harvests', label: "Harvest Logs & Verification", icon: Package, onClick: () => onTabChange('harvests') },
                 { id: 'varroa-simulator', label: "Varroa Mite Tracking", icon: Bug, onClick: () => onTabChange('varroa-simulator') },
                 { id: 'label-generator', label: "Label Generator & QR Verification", icon: Tag, onClick: () => onTabChange('label-generator') },

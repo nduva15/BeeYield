@@ -426,6 +426,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
             case 'inspections': return renderEmbedded(<InspectionsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'harvests-page':
             case 'harvests': return renderEmbedded(<HarvestsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} onTabChange={handleTabChange} />);
             case 'flight-map': return <FlightMapView />;
 
