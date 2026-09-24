@@ -3101,7 +3101,11 @@ export const beeyieldService = {
 
     // ========== INSPECTIONS ==========
     async getInspections(hiveId?: string): Promise<Inspection[]> {
-        const local = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
+        const userId = await getBeeYieldUserId();
+        if (!userId) return [];
+
+        const userLsKey = `beeyield_local_inspections_v1_${userId}`;
+        const local = _lsReadAlways<Inspection[]>(userLsKey, []);
         let remote: Inspection[] = [];
         try {
             const rows = await apiGet<any[]>('inspections', hiveId ? { hive_id: hiveId } : undefined);
@@ -3120,9 +3124,9 @@ export const beeyieldService = {
         }
 
         let sbRows: Inspection[] = [];
-        if (sb) {
+        if (sb && userId) {
             try {
-                let query = sb.from('inspections').select('*').order('inspection_date', { ascending: false }).limit(300);
+                let query = sb.from('inspections').select('*').eq('user_id', userId).order('inspection_date', { ascending: false }).limit(300);
                 if (hiveId) query = query.eq('hive_id', hiveId);
                 const { data } = await query;
                 if (Array.isArray(data)) {
@@ -3137,6 +3141,9 @@ export const beeyieldService = {
         const seen = new Set<string>();
         const deduped: Inspection[] = [];
         for (const item of combined) {
+            const id = String(item.id || '');
+            if (id.startsWith('insp-0') || id.startsWith('insp-kib-') || !id) continue;
+            if ((item as any).user_id && (item as any).user_id !== userId) continue;
             const key = item.id || JSON.stringify(item);
             if (!seen.has(key)) {
                 seen.add(key);
@@ -3177,15 +3184,18 @@ export const beeyieldService = {
             }
         }
 
+        const userId = (inspection as any).user_id || (await getBeeYieldUserId()) || null;
         if (!data && sb) {
             try {
-                const { data: sbData } = await sb.from('inspections').insert({
+                const insertPayload: any = {
                     id,
                     inspection_date: (payload as any).inspection_date || (payload as any).inspected_on,
                     hive_label: (payload as any).hive_label,
                     colony_health: (payload as any).colony_health,
                     notes: (payload as any).notes,
-                }).select().maybeSingle();
+                };
+                if (userId) insertPayload.user_id = userId;
+                const { data: sbData } = await sb.from('inspections').insert(insertPayload).select().maybeSingle();
                 if (sbData) data = normalizeInspection(sbData);
             } catch (sbErr) {
                 console.warn('Supabase createInspection fallback:', sbErr);
@@ -3202,8 +3212,9 @@ export const beeyieldService = {
             });
         }
 
-        const existing = _lsReadAlways<Inspection[]>(LS_KEYS.inspections, []);
-        _lsWriteAlways(LS_KEYS.inspections, [data, ...existing.filter(i => i.id !== id)]);
+        const userLsKey = userId ? `beeyield_local_inspections_v1_${userId}` : LS_KEYS.inspections;
+        const existing = _lsReadAlways<Inspection[]>(userLsKey, []);
+        _lsWriteAlways(userLsKey, [data, ...existing.filter(i => i.id !== id)]);
         toast.success('Inspection diagnostic saved');
         return { data, error: null };
     },

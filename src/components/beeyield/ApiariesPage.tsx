@@ -1378,7 +1378,7 @@ function ApiaryDetailModal({
     } catch {
       // fallback
     }
-    return CANONICAL_KIBWEZI_HIVES;
+    return user ? [] : CANONICAL_KIBWEZI_HIVES;
   });
 
   // Load user-specific harvests with fallback
@@ -1392,7 +1392,7 @@ function ApiaryDetailModal({
     } catch {
       // fallback
     }
-    return CANONICAL_KIBWEZI_HARVESTS;
+    return user ? [] : CANONICAL_KIBWEZI_HARVESTS;
   });
 
   // Sync to Supabase & localStorage whenever hives change
@@ -2328,7 +2328,7 @@ export default function ApiariesPage({
             const activeCount = getUserHivesCount(
               userKey,
               String(d.id),
-              Number(d.hive_count || d.active_hives || d.expected_hives || 184)
+              Number(d.hive_count ?? d.active_hives ?? d.expected_hives ?? 0)
             );
 
             return {
@@ -2342,7 +2342,7 @@ export default function ApiariesPage({
               type: d.type || d.apiary_type || "Commercial Apiary",
               status: d.status === "Threatened" ? "Threatened" : "Optimal",
               active_hives: activeCount,
-              total_hives: Math.max(Number(d.expected_hives || d.total_hives || 184), activeCount),
+              total_hives: Math.max(Number(d.expected_hives ?? d.total_hives ?? 0), activeCount),
               size_acres: Number(d.size_acres || 18),
               forage_type: d.forage_type || d.primary_forage || "Acacia Tortilis, Desert Date & Citrus Blossom",
               notes: d.notes || "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",

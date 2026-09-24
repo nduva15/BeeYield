@@ -463,7 +463,8 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
 
       // 3. Merge with LocalStorage (clean out any legacy mock data)
       try {
-        const raw = localStorage.getItem("beeyield_local_inspections_v1");
+        const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+        const raw = localStorage.getItem(userLsKey);
         if (raw) {
           const localItems: Inspection[] = JSON.parse(raw);
           const cleanLocal = localItems.filter((item) => !item.id?.startsWith("insp-0"));
@@ -705,7 +706,8 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
       } else {
         nextLocal = [currentRecord, ...stored.filter((h) => h.id !== recordId)];
       }
-      localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(nextLocal));
+      const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+      localStorage.setItem(userLsKey, JSON.stringify(nextLocal));
     } catch { void 0; }
 
     // 4. Update UI State

@@ -176,8 +176,9 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
     const [weatherError, setWeatherError] = useState<string | null>(null);
 
     // Colony hives state
-    const [hives, setHives] = useState<ColonyInspectionItem[]>(CANONICAL_INSPECTION_HIVES);
-    const [selectedHive, setSelectedHive] = useState<ColonyInspectionItem>(CANONICAL_INSPECTION_HIVES[0]);
+    const isLogged = !!(user || beeyieldUser);
+    const [hives, setHives] = useState<ColonyInspectionItem[]>(() => isLogged ? [] : CANONICAL_INSPECTION_HIVES);
+    const [selectedHive, setSelectedHive] = useState<ColonyInspectionItem | null>(() => isLogged ? null : CANONICAL_INSPECTION_HIVES[0]);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [page, setPage] = useState<number>(1);
     const pageSize = 15;
@@ -230,13 +231,13 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 setHives(mapped);
                 setSelectedHive(mapped[0]);
             } else {
-                setHives(CANONICAL_INSPECTION_HIVES);
-                setSelectedHive(CANONICAL_INSPECTION_HIVES[0]);
+                setHives(isLogged ? [] : CANONICAL_INSPECTION_HIVES);
+                setSelectedHive(isLogged ? (null as any) : CANONICAL_INSPECTION_HIVES[0]);
             }
         } catch (err) {
-            console.warn("Error fetching DB hives, defaulting to canonical:", err);
-            setHives(CANONICAL_INSPECTION_HIVES);
-            setSelectedHive(CANONICAL_INSPECTION_HIVES[0]);
+            console.warn("Error fetching DB hives:", err);
+            setHives(isLogged ? [] : CANONICAL_INSPECTION_HIVES);
+            setSelectedHive(isLogged ? (null as any) : CANONICAL_INSPECTION_HIVES[0]);
         } finally {
             setIsRefreshing(false);
         }

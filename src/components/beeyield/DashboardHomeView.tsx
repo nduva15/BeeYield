@@ -221,8 +221,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const batchesQuery = useBatches();
     const inspectionsQuery = useInspections();
 
-    const loadedApiaries = apiariesQuery.data && apiariesQuery.data.length > 0 ? apiariesQuery.data : [CANONICAL_KIBWEZI_APIARY];
-    const loadedHives = hivesQuery.data && hivesQuery.data.length > 0 ? hivesQuery.data : CANONICAL_HIVES;
+    const loadedApiaries = apiariesQuery.data || [];
+    const loadedHives = hivesQuery.data || [];
     const harvests = React.useMemo(() => harvestsQuery.data || [], [harvestsQuery.data]);
     const batches = React.useMemo(() => batchesQuery.data || [], [batchesQuery.data]);
 
@@ -259,7 +259,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
 
     const userMetadata = (user as any)?.user_metadata || {};
-    const fullName = userMetadata.first_name || userMetadata.full_name || (user as any)?.email?.split('@')[0] || 'Timothy Nduva';
+    const fullName = userMetadata.first_name || userMetadata.full_name || (user as any)?.email?.split('@')[0] || (user ? 'Apiary Owner' : 'Timothy Nduva');
 
     // Real production stats from user-logged records
     const productionSummary = React.useMemo(() => {
@@ -291,25 +291,32 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         const queryList: any[] = inspectionsQuery.data || [];
         const localList: any[] = [];
         try {
-            const raw1 = localStorage.getItem("beeyield_local_inspections_v1");
-            if (raw1) {
-                const parsed = JSON.parse(raw1);
-                if (Array.isArray(parsed)) localList.push(...parsed);
-            }
-            const raw2 = localStorage.getItem("beeyield_inspections");
-            if (raw2) {
-                const parsed = JSON.parse(raw2);
-                if (Array.isArray(parsed)) localList.push(...parsed);
+            const userKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : null;
+            if (userKey) {
+                const raw = localStorage.getItem(userKey);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) localList.push(...parsed);
+                }
             }
         } catch {
             // non-blocking
         }
 
         const combined = [...queryList, ...localList];
-        // Strip out any synthetic mock inspection records
+        const userHiveIds = new Set(loadedHives.map(h => h.id));
+        const userHiveCodes = new Set(loadedHives.map(h => (h.hive_code || '').toLowerCase()));
+
+        // Strip out any synthetic mock inspection records and non-user records
         const filtered = combined.filter((i) => {
             const id = String(i.id || '');
-            return !id.startsWith("insp-0") && !id.startsWith("insp-kib-") && id !== '';
+            if (id.startsWith("insp-0") || id.startsWith("insp-kib-") || id === '') return false;
+            if (user?.id && i.user_id && i.user_id !== user.id) return false;
+            if (loadedHives.length > 0 && i.hive_id) {
+                const matchesHive = userHiveIds.has(i.hive_id) || userHiveCodes.has(String(i.hive_label || i.hive_code || '').toLowerCase());
+                if (!matchesHive && !i.user_id) return false;
+            }
+            return true;
         });
 
         // Deduplicate by ID
@@ -328,7 +335,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
             const dateB = new Date(b.inspected_on || b.inspection_date || b.created_at || 0).getTime();
             return dateB - dateA;
         });
-    }, [inspectionsQuery.data]);
+    }, [inspectionsQuery.data, user?.id, loadedHives]);
 
     // Live Inspection Metrics computed strictly from real audits
     const inspectionMetrics = React.useMemo(() => {
@@ -486,7 +493,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">{loadedHives.length} Verified Colonies</span>
                                     </h3>
                                     <p className="text-xs text-muted-foreground">
-                                        Diagnostic inspection ledger for Timothy Nduva • BeeYield Apiary in Kibwezi Kenya
+                                        Diagnostic inspection ledger for {fullName}{primaryApiary ? ` • ${primaryApiary.name}` : ''}
                                     </p>
                                 </div>
                             </div>
@@ -628,7 +635,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         Open-Meteo Live API Weather
                                     </div>
                                     <h3 className="text-xl sm:text-2xl font-black tracking-tight text-neutral-900 flex items-center gap-2">
-                                        {primaryApiary?.name || 'BeeYield Apiary in Kibwezi Kenya'} Microclimate
+                                        {primaryApiary?.name || (user ? 'Local Apiary' : 'BeeYield Apiary in Kibwezi Kenya')} Microclimate
                                     </h3>
                                     <p className="text-xs text-neutral-500 font-medium flex items-center gap-1">
                                         <MapPin className="w-3.5 h-3.5 text-amber-600" />
@@ -847,7 +854,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             </button>
                         </div>
                         <div className="p-4 space-y-2">
-                            {loadedApiaries.slice(0, 8).map((a: Apiary) => (
+                            {loadedApiaries.length > 0 ? (
+                                loadedApiaries.slice(0, 8).map((a: Apiary) => (
                                 <div 
                                     key={a.id} 
                                     onClick={() => onTabChange('places')}
@@ -856,10 +864,18 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     <div className="font-black text-[11px] tracking-tight text-neutral-900">{a.name}</div>
                                     <div className="text-[10px] text-neutral-500 flex items-center justify-between mt-0.5">
                                         <span>{a.location_name}</span>
-                                        <span className="text-amber-700 font-bold">{a.hive_count || 184} Hives</span>
+                                        <span className="text-amber-700 font-bold">{a.hive_count ?? 0} Hives</span>
                                     </div>
                                 </div>
-                            ))}
+                            ))
+                            ) : (
+                                <div className="py-6 text-center text-neutral-400">
+                                    <p className="text-xs font-medium">No apiaries registered yet</p>
+                                    <button onClick={() => onTabChange('places')} className="mt-2 text-[10px] text-amber-700 font-bold hover:underline">
+                                        + Create First Apiary
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
