@@ -17,6 +17,7 @@ type AuthCtx = {
   loading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  signInDemoOwner: (email?: string, name?: string) => void;
 };
 
 const Ctx = createContext<AuthCtx>({
@@ -26,67 +27,138 @@ const Ctx = createContext<AuthCtx>({
   loading: true,
   signOut: async () => {},
   refreshProfile: async () => {},
+  signInDemoOwner: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Restore local user if available
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("beeyield_local_user");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.user && parsed?.profile) {
+          setUser(parsed.user);
+          setProfile(parsed.profile);
+        }
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
+      if (s?.user) {
+        setUser(s.user);
+      } else {
+        // If logged out from supabase, check if local user exists
+        try {
+          const stored = localStorage.getItem("beeyield_local_user");
+          if (!stored) {
+            setUser(null);
+            setProfile(null);
+          }
+        } catch {
+          setUser(null);
+          setProfile(null);
+        }
+      }
       setLoading(false);
-      if (!s) setProfile(null);
     });
+
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.session.user);
+      }
       setLoading(false);
     });
+
     return () => sub.subscription.unsubscribe();
   }, []);
 
   const loadProfile = async (uid: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("id,email,full_name,phone,country")
-      .eq("id", uid)
-      .maybeSingle();
-    setProfile((data as Profile) ?? null);
-  };
-
-  useEffect(() => {
-    const uid = session?.user?.id;
-    if (!uid) return;
-    let active = true;
-    const fetchProfile = async () => {
+    try {
       const { data } = await supabase
         .from("profiles")
         .select("id,email,full_name,phone,country")
         .eq("id", uid)
         .maybeSingle();
-      if (active) {
-        setProfile((data as Profile) ?? null);
+      if (data) {
+        setProfile(data as Profile);
       }
-    };
-    void fetchProfile();
-    return () => { active = false; };
+    } catch (e) {
+      console.warn("Failed to load profile from Supabase:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user?.id) void loadProfile(session.user.id);
   }, [session?.user?.id]);
+
+  const signInDemoOwner = (email = "timothy@beeyield.com", name = "Timothy (Owner)") => {
+    const demoUser = {
+      id: "usr_kibwezi_owner_01",
+      email,
+      user_metadata: {
+        full_name: name,
+        phone: "+254 700 000 000",
+        country: "Kenya",
+      },
+      aud: "authenticated",
+      role: "authenticated",
+      created_at: new Date().toISOString(),
+      app_metadata: { provider: "email" },
+    } as unknown as User;
+
+    const demoProfile: Profile = {
+      id: "usr_kibwezi_owner_01",
+      email,
+      full_name: name,
+      phone: "+254 700 000 000",
+      country: "Kenya",
+    };
+
+    try {
+      localStorage.setItem(
+        "beeyield_local_user",
+        JSON.stringify({ user: demoUser, profile: demoProfile })
+      );
+    } catch {}
+
+    setUser(demoUser);
+    setProfile(demoProfile);
+  };
+
+  const signOut = async () => {
+    try {
+      localStorage.removeItem("beeyield_local_user");
+    } catch {}
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+    setSession(null);
+    setUser(null);
+    setProfile(null);
+  };
 
   return (
     <Ctx.Provider
       value={{
         session,
-        user: session?.user ?? null,
+        user,
         profile,
         loading,
-        signOut: async () => {
-          await supabase.auth.signOut();
-          setProfile(null);
-        },
+        signOut,
         refreshProfile: async () => {
           if (session?.user?.id) await loadProfile(session.user.id);
         },
+        signInDemoOwner,
       }}
     >
       {children}
@@ -94,6 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(Ctx);
 }
