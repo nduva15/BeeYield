@@ -31,7 +31,6 @@ import {
   AudioLines,
   Plug,
   LifeBuoy,
-  BookOpen,
   Settings as SettingsIcon,
   Package,
   Trees,
@@ -605,8 +604,6 @@ export default function Index() {
     {
       label: "Business & devices",
       items: [
-        { label: "About BeeYield (Our Story)", icon: BookOpen, onClick: () => navigate("/about") },
-        { label: "BeeYield Blogs & Field Notes", icon: BookOpen, onClick: () => navigate("/blogs") },
         {
           label: "Integrations (Shopify, QuickBooks, eTIMS)",
           icon: Plug,
