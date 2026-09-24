@@ -34,6 +34,11 @@ import {
 
 // View Imports
 import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
+import ApiariesPage from '@/components/beeyield/lovable_ai/ApiariesPage';
+import MOACompare from '@/components/beeyield/lovable_ai/MOACompare';
+import KnowledgeSearch from '@/components/beeyield/lovable_ai/KnowledgeSearch';
+import ForageZonesPage from '@/components/beeyield/lovable_ai/ForageZonesPage';
+import AboutModal from '@/components/beeyield/lovable_ai/AboutModal';
 import LovableBeeYieldAI from '@/components/beeyield/lovable_ai/LovableIndex';
 import PollinationEngine from '@/components/beeyield/PollinationEngine';
 import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
@@ -376,6 +381,19 @@ const BeeYieldDashboard: React.FC = () => {
             case 'bfh-forecast': return renderEmbedded(<ActivityForecaster isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'moa-viewer':
             case 'moa-view': return renderEmbedded(<MOAView isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'apiaries-weather':
+            case 'apiaries': return renderEmbedded(<ApiariesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'moa-compare': return renderEmbedded(<MOACompare isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'knowledge-search': return renderEmbedded(<KnowledgeSearch isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'forage-zones-page':
+            case 'forage-zones': return renderEmbedded(<ForageZonesPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'sound-audit':
+            case 'sound-analysis': return renderEmbedded(<SoundAnalysis isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'about-ai': return renderEmbedded(<AboutModal open={true} onOpenChange={() => handleTabChange('home')} />);
+            case 'about': navigate('/about'); return null;
+            case 'blogs': navigate('/blogs'); return null;
+            case 'auth': navigate('/beeyield-login'); return null;
+
             case 'florage-database':
             case 'florage-page': return renderEmbedded(<FloragePage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'site-map': return renderEmbedded(<HivePlacementMap isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);

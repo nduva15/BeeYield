@@ -1,6 +1,14 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import {
+    LogIn,
+    Calendar,
+    Sprout,
+    Flower2,
+    Target,
+    Box,
+    CheckSquare,
+    Compass,
     Layers,
     Search,
     Bell,
@@ -77,6 +85,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const { language, setLanguage, t } = useLanguage();
     const { theme, setTheme } = useTheme();
     const [alerts, setAlerts] = React.useState<SensorAlert[]>([]);
+    const [dropdownQuery, setDropdownQuery] = React.useState('');
     const [scrolled, setScrolled] = React.useState(false);
 
     React.useEffect(() => {
@@ -99,46 +108,82 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const userName = (beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User').split(' ')[0];
     const avatarUrl = user?.user_metadata?.avatar_url;
 
-    const navCategories = [
+        const navCategories = [
         {
-            title: "Operations & Hives",
+            title: "APIARY OPERATIONS",
             items: [
-                { id: 'home', label: 'Overview', icon: LayoutGrid },
-                { id: 'beeyield', label: 'My Hives & Apiaries', icon: Hexagon },
-                { id: 'inspections', label: 'Inspections & Audits', icon: ClipboardList },
-                { id: 'harvests', label: 'Honey Harvest Batches', icon: Award },
-                { id: 'places', label: 'My Places & Maps', icon: MapPin },
-                { id: 'flight-map', label: 'Flight Mapping', icon: Navigation },
+                { id: 'apiaries-weather', label: 'Apiaries & Live Weather', icon: Compass },
+                { id: 'hive-health', label: 'Hive Health Dashboard', icon: Heart },
+                { id: 'inspections', label: 'Inspections & Diagnostics', icon: ClipboardList },
+                { id: 'tasks', label: 'My Tasks & Schedules', icon: CheckSquare },
+                { id: 'sound-analysis', label: 'Acoustic Audit (Sound Analysis)', icon: Volume2 },
+                { id: 'sensor-alerts', label: 'Alerts', icon: Bell },
+                { id: 'site-map', label: 'Hive Placement Map', icon: MapPin },
+                { id: 'feeding-schedule', label: 'Feeding Schedule Timeline', icon: Calendar },
+                { id: 'apiary-sizing', label: 'Apiary & Equipment Sizing', icon: Layers },
             ]
         },
         {
-            title: "Intelligence & Neural Hive",
+            title: "YIELD & POLLINATION",
             items: [
-                { id: 'assistant', label: 'BeeYield AI Assistant', icon: Bot },
-                                { id: 'hive-health', label: 'Hive Health Monitor', icon: Heart },
-                { id: 'sound-analysis', label: 'Sound Spectrogram', icon: Activity },
-                { id: 'bee-diseases', label: 'Pathogen & Disease Guide', icon: Bug },
-                { id: 'varroa-simulator', label: 'Varroa Mite Simulator', icon: Sparkles },
+                { id: 'harvests', label: 'Harvest Logs & Verification', icon: Box },
+                { id: 'harvest-calculator', label: 'Harvest Calculator', icon: Scale },
+                { id: 'yield-projection', label: 'Honey Yield Projection', icon: Gauge },
+                { id: 'precision-drilldown', label: 'Precision Pollination Drilldown', icon: Target },
+                { id: 'pollination-planning-ai', label: 'Pollination Planning', icon: Target },
+                { id: 'pollination-calcs', label: 'Pollination Calcs', icon: Scale },
+                { id: 'pollination-analytics', label: 'Pollination Data & Charts', icon: LayoutGrid },
+                { id: 'pollination-lookup', label: 'Stocking Density Lookup', icon: Flower2 },
+                { id: 'moa-view', label: 'MOA — Multi-Objective View', icon: Layers },
+                { id: 'moa-compare', label: 'MOA Run Comparison', icon: Layers },
             ]
         },
         {
-            title: "IoT Hardware & Sensors",
+            title: "BLOOM & FLIGHT",
             items: [
-                { id: 'sensor-alerts', label: 'Sensor Real-Time Alerts', icon: Bell },
-                { id: 'devices', label: 'Hardware & IoT Nodes', icon: Cpu },
-                { id: 'measurement-tools', label: 'Measurement Data Tools', icon: Scale },
-                { id: 'meters', label: 'IoT Flow & Smart Meters', icon: Zap },
+                { id: 'bloom-phenology', label: 'Bloom Phenology', icon: Sprout },
+                { id: 'flight-tracker', label: 'Bee Flight & Activity Tracker', icon: Navigation },
+                { id: 'vpm-counter', label: 'Quick Activity Counter', icon: Navigation },
+                { id: 'bfh-forecast', label: 'Bee Activity Forecaster', icon: Gauge },
+                { id: 'florage-page', label: 'Florage Database', icon: Sprout },
+                { id: 'forage-zones', label: 'Forage Zones & Floral Resources', icon: Flower2 },
             ]
         },
         {
-            title: "Platform & Settings",
+            title: "KNOWLEDGE & REFERENCE",
             items: [
-                { id: 'settings', label: 'Dashboard Settings', icon: Settings },
-                { id: 'integrations', label: 'Connected Integrations', icon: Puzzle },
-                { id: 'support', label: 'Support & Help Desk', icon: LifeBuoy },
+                { id: 'bee-diseases', label: 'Bee Diseases (Editable)', icon: Bug },
+                { id: 'varroa-simulator', label: 'Varroa Simulator', icon: Sparkles },
+                { id: 'beeyield-calculators', label: 'Beeyield Calculators', icon: Scale },
+                { id: 'knowledge-search', label: 'Knowledge Base Search', icon: Search },
+                { id: 'dataset-import', label: 'Dataset Import & Re-index', icon: Brain },
+            ]
+        },
+        {
+            title: "BUSINESS & DEVICES",
+            items: [
+                { id: 'about', label: 'About BeeYield (Our Story)', icon: BookOpen },
+                { id: 'blogs', label: 'BeeYield Blogs & Field Notes', icon: BookOpen },
+                { id: 'integrations', label: 'Integrations (Shopify, QuickBooks, eTIMS)', icon: Puzzle },
+                { id: 'measurement-tools', label: 'My Devices, USB, Bluetooth & Online', icon: Cpu },
+                { id: 'support', label: 'Support & Tickets', icon: LifeBuoy },
+                { id: 'settings', label: 'Settings — Control Center', icon: Settings },
+                { id: 'assistant', label: 'About Beeyield AI', icon: Bot },
+                { id: 'auth', label: 'Sign in / Sign up', icon: LogIn },
             ]
         }
     ];
+
+    const filteredCategories = React.useMemo(() => {
+        const q = dropdownQuery.trim().toLowerCase();
+        if (!q) return navCategories;
+        return navCategories
+            .map((c) => ({
+                ...c,
+                items: c.items.filter((i) => i.label.toLowerCase().includes(q))
+            }))
+            .filter((c) => c.items.length > 0);
+    }, [navCategories, dropdownQuery]);
 
     const currentItem = navCategories.flatMap(c => c.items).find(i => i.id === activeTab) || 
         navItems.find(i => i.id === activeTab);
@@ -188,7 +233,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-bold">Harvests Grade</span>
                         </DropdownMenuLabel>
                         <div className="space-y-3">
-                            {navCategories.map((category) => (
+                            {filteredCategories.map((category) => (
                                 <div key={category.title} className="space-y-1">
                                     <div className="flex items-center gap-1.5 px-3 py-1">
                                         <Layers className="w-3 h-3 text-amber-600" />
