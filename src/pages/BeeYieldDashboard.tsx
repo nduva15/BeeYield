@@ -456,7 +456,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-reports':
             case 'meters-settings': return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
             case 'integrations': return renderEmbedded(<IntegrationsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
-            case 'support': return renderEmbedded(<SupportPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />;
+            case 'support': return renderEmbedded(<SupportPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'settings': return renderEmbedded(<SettingsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             default: return (
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">
