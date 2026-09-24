@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
+import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 import {
   AreaChart,
   Area,
@@ -483,7 +484,7 @@ export default function YieldProjection({
           if (!apiaryMap.has(apiaryId)) {
             apiaryMap.set(apiaryId, {
               id: apiaryId,
-              name: h.apiaries?.name || h.apiary_name || "Main Apiary",
+              name: normalizeApiaryName(h.apiaries?.name || h.apiary_name || CANONICAL_APIARY_NAME),
               latitude: h.apiaries?.latitude ?? null,
               longitude: h.apiaries?.longitude ?? null,
               notes: h.apiaries?.notes ?? null,
@@ -502,7 +503,7 @@ export default function YieldProjection({
           const hiveItem: HiveHistoryItem = {
             id: h.id,
             apiary_id: apiaryId,
-            apiary_name: apiaryMap.get(apiaryId)?.name || "Apiary",
+            apiary_name: normalizeApiaryName(apiaryMap.get(apiaryId)?.name || CANONICAL_APIARY_NAME),
             name: h.name || h.nickname || h.hive_code || `Hive #${h.id.slice(0, 6)}`,
             hive_code: h.hive_code || undefined,
             max_brood_frames: Number(h.max_brood_frames || h.frame_count || 10),
@@ -541,8 +542,9 @@ export default function YieldProjection({
           name: h.name || h.nickname || h.hive_code || `Hive #${h.id.slice(0, 6)}`,
           hive_code: h.hive_code,
           max_brood_frames: Number(h.max_brood_frames || h.frame_count || 10),
-          apiary_name:
-            apiaryMap.get(h.apiary_id)?.name || h.apiaries?.name || h.apiary_name || "Apiary",
+          apiary_name: normalizeApiaryName(
+            apiaryMap.get(h.apiary_id)?.name || h.apiaries?.name || h.apiary_name || CANONICAL_APIARY_NAME
+          ),
         }));
         setHivesList(flattenedHives);
 
