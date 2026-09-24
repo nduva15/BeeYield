@@ -210,109 +210,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             "h-16 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-4 md:px-6 transition-all duration-300",
             "bg-background/95 backdrop-blur-md border-b border-border shadow-xs"
         )}>
-            {/* Left: Main Tools Dropdown & Tools Rail Button (Matches screenshot 1:1) */}
+            {/* Left: Mobile Sidebar Trigger */}
             <div className="flex items-center gap-2 sm:gap-3">
-                {/* BeeYield Tools Dropdown - Main navigation dropdown for tools */}
-                <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-                    <DropdownMenuTrigger asChild>
-                        <button
-                            className="flex items-center gap-2.5 px-3.5 py-2 bg-[#14120f] hover:bg-[#1c1915] border border-amber-500/50 hover:border-amber-500/80 rounded-2xl transition-all group outline-none shrink-0 shadow-lg text-white"
-                            title="BeeYield AI Tools & Views Directory"
-                        >
-                            <div className="w-7 h-7 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-[#f59e0b] shrink-0">
-                                <CurrentIcon className="w-4 h-4 text-[#f59e0b]" />
-                            </div>
-                            <span className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5 leading-none">
-                                {currentLabel}
-                                <ChevronDown className="w-3.5 h-3.5 text-neutral-300 group-data-[state=open]:rotate-180 transition-transform shrink-0" />
-                            </span>
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        align="start"
-                        sideOffset={8}
-                        className="w-76 sm:w-84 max-h-[85vh] overflow-y-auto rounded-2xl border border-neutral-800 p-2.5 shadow-2xl bg-[#14120f] text-white z-50 custom-scrollbar"
-                    >
-                        {/* Search tools input matching screenshot */}
-                        <div className="p-1 mb-2.5 border-b border-neutral-800/80">
-                            <div className="relative">
-                                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                                <input
-                                    type="text"
-                                    value={dropdownQuery}
-                                    onChange={(e) => setDropdownQuery(e.target.value)}
-                                    placeholder="Search tools"
-                                    aria-label="Search tools"
-                                    className="w-full bg-[#1e1c18] border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder:text-neutral-500 outline-none focus:border-amber-500/80 transition-colors"
-                                    onClick={(e) => e.stopPropagation()}
-                                    onKeyDown={(e) => e.stopPropagation()}
-                                    autoFocus
-                                />
-                            </div>
-                        </div>
-
-                        {filteredCategories.length === 0 ? (
-                            <p className="px-3 py-4 text-xs text-neutral-400 text-center">
-                                No tool matches “{dropdownQuery}”.
-                            </p>
-                        ) : (
-                            <div className="space-y-3.5">
-                                {filteredCategories.map((category) => (
-                                    <div key={category.title} className="space-y-1">
-                                        <p className="px-2.5 mb-1 text-[10px] font-bold uppercase tracking-wider text-[#f59e0b]">
-                                            {category.title}
-                                        </p>
-                                        <div className="space-y-0.5">
-                                            {category.items.map((item) => {
-                                                const ItemIcon = item.icon;
-                                                const isActive = activeTab === item.id;
-                                                return (
-                                                    <DropdownMenuItem
-                                                        key={item.id}
-                                                        onClick={() => {
-                                                            onTabChange(item.id);
-                                                            setDropdownOpen(false);
-                                                        }}
-                                                        className={cn(
-                                                            "w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-left text-[13px] cursor-pointer transition-colors focus:bg-[#262420] focus:text-white",
-                                                            isActive
-                                                                ? "bg-[#262420] text-white font-medium border border-amber-500/20 shadow-sm"
-                                                                : "text-neutral-200 hover:text-white hover:bg-[#201d19]"
-                                                        )}
-                                                    >
-                                                        <ItemIcon className="w-4 h-4 flex-shrink-0 text-[#f59e0b]" />
-                                                        <span className="truncate flex-1">{item.label}</span>
-                                                        {isActive && (
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
-                                                        )}
-                                                    </DropdownMenuItem>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* AI Tools Rail Toggle Button */}
                 {onToggleToolsDrawer && (
                     <button
                         onClick={onToggleToolsDrawer}
-                        className={cn(
-                            "flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-bold transition-all shadow-md shrink-0",
-                            isToolsDrawerOpen
-                                ? "border-amber-500 bg-[#1c1915] text-[#f59e0b] shadow-amber-500/10 ring-1 ring-amber-500/30"
-                                : "border-amber-500/40 bg-[#14120f] hover:bg-[#1c1915] hover:border-amber-500/70 text-[#f59e0b]"
-                        )}
-                        title={isToolsDrawerOpen ? "Collapse AI Tools Rail" : "Open & Stick AI Tools Rail"}
+                        className="lg:hidden p-2 rounded-xl bg-muted/40 hover:bg-[#F4D03F]/15 border border-border text-foreground transition-all flex items-center justify-center shrink-0"
+                        aria-label="Open BeeYield Dashboard Menu"
+                        title="Open BeeYield Dashboard Menu"
                     >
-                        <Menu className="w-4 h-4 text-[#f59e0b]" />
-                        <span>AI Tools Rail</span>
-                        {isToolsDrawerOpen && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
-                        )}
+                        <Menu className="w-5 h-5 text-[#F4D03F]" />
                     </button>
                 )}
             </div>

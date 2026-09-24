@@ -48,23 +48,20 @@ export default function ToolSidebar({
       <aside
         className={cn(
           "fixed lg:static inset-y-0 left-0 z-40 w-72 flex-shrink-0 border-r border-border bg-sidebar flex flex-col transition-transform duration-200 select-none",
-          open ? "translate-x-0" : "-translate-x-full lg:hidden"
+          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="flex items-center gap-2 px-3 py-3 border-b border-border">
-          <img src={beeyieldLogo} alt="Beeyield" className="h-7 w-auto" />
+        <div className="flex items-center gap-2.5 px-3.5 py-3 border-b border-border">
+          <img src={beeyieldLogo} alt="BeeYield" className="h-7 w-auto" />
           <div className="min-w-0">
-            <p className="font-display text-sm font-bold text-[#f59e0b] leading-tight">Beeyield tools</p>
-            <p className="text-[10px] text-muted-foreground">{total} tools</p>
+            <p className="font-display text-sm font-bold text-[#f59e0b] leading-tight">BeeYield Dashboard</p>
           </div>
           <button
             onClick={onClose}
-            aria-label="Hide tools rail"
-            title="Collapse AI Tools Rail"
-            className="ml-auto p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Close menu"
+            className="ml-auto p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors lg:hidden"
           >
-            <span className="lg:hidden"><X className="w-4 h-4" /></span>
-            <span className="hidden lg:inline"><PanelLeftClose className="w-4 h-4" /></span>
+            <X className="w-4 h-4" />
           </button>
         </div>
 
