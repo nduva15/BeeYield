@@ -194,13 +194,13 @@ function harvestPdf(r: Harvest) {
       {
         type: "kv",
         heading: "Commercial Compliance & Laboratory Specifications",
-        items: [
-          { label: "Certified Apiarist", value: "Timothy Nduva (Lead Beekeeper)" },
-          { label: "Moisture Content (Max 20%)", value: `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade" : "Standard"})` },
-          { label: "Sucrose Content (Max 5g/100g)", value: "< 1.8g / 100g (Pure Blossom Verified)" },
-          { label: "HMF (Hydroxymethylfurfural)", value: "< 10 mg/kg (Zero heat damage)" },
-          { label: "Diastase Enzyme Activity", value: "> 12 Schade units (Raw unpasteurized)" },
-          { label: "Filtration Protocol", value: r.actions.join("; ") || "Cold extracted, double strained" },
+        rows: [
+          ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
+          ["Moisture Content (Max 20%)", `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade" : "Standard"})`],
+          ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
+          ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
+          ["Diastase Enzyme Activity", "> 12 Schade units (Raw unpasteurized)"],
+          ["Filtration Protocol", r.actions.join("; ") || "Cold extracted, double strained"],
         ],
       },
       ...(r.notes ? [{ type: "text" as const, heading: "Beekeeper Extraction Notes", body: r.notes }] : []),
@@ -1112,29 +1112,29 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                       <span className="text-xs text-muted-foreground hidden sm:inline">{r.honey_type}</span>
                     </button>
 
-                    <div className="flex items-center gap-1.5 ml-auto">
+                    <div className="flex items-center gap-1.5 ml-auto flex-shrink-0">
                       <button
                         type="button"
                         onClick={() => startEdit(r)}
-                        className="px-2.5 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:text-honey hover:border-honey/40 flex items-center gap-1 transition-colors"
+                        className="px-2.5 py-1.5 rounded-lg border border-border text-xs text-foreground/80 hover:text-honey hover:border-honey/40 flex items-center gap-1 transition-colors bg-background/50 shadow-sm"
                         title="Edit Batch"
                       >
                         <Pencil className="w-3 h-3" />
-                        <span className="hidden sm:inline">Edit</span>
+                        <span className="font-medium text-xs">Edit</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => harvestPdf(r)}
-                        className="px-2.5 py-1.5 rounded-lg border border-honey/30 bg-honey/10 text-xs text-honey hover:bg-honey/20 flex items-center gap-1 transition-colors font-semibold"
+                        className="px-2.5 py-1.5 rounded-lg border border-honey/40 bg-honey/15 text-xs text-honey hover:bg-honey/25 flex items-center gap-1 transition-colors font-bold shadow-sm"
                         title="Download Certificate"
                       >
                         <Download className="w-3 h-3" />
-                        <span className="hidden sm:inline">Cert</span>
+                        <span className="text-xs">Cert</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => remove(r.id)}
-                        className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-red-400 transition-colors"
+                        className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 transition-colors bg-background/50 shadow-sm"
                         title="Delete Batch"
                       >
                         <Trash2 className="w-3.5 h-3.5" />

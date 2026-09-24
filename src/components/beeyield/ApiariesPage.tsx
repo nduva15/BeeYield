@@ -51,6 +51,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
+import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 
 export interface ApiarySite {
   id: string;
@@ -722,6 +723,83 @@ export function QrScannerModal({
 }
 
 // ----------------------------------------------------------------------
+// Certificate Download Generators for Harvest Batches
+// ----------------------------------------------------------------------
+function downloadBatchCert(batch: HiveHarvestBatch, hiveCode: string, apiaryName?: string, locationName?: string) {
+  const moisture = batch.moisturePct || 17.1;
+  const isExport = moisture <= 18.0;
+  void downloadReportPdf({
+    filename: `Harvest-Batch-${safeName(hiveCode)}-${safeName(batch.batchCode)}.pdf`,
+    title: `Honey Harvest Extraction Certificate • ${hiveCode}`,
+    subtitle: `Batch ${batch.batchCode} • ${batch.honeyType} • ${isExport ? "Export Grade A Raw" : "Standard Raw Honey"}`,
+    meta: [
+      { label: "Producer / Beekeeper", value: "Timothy Nduva (Lead Apiarist)" },
+      { label: "Date of Extraction", value: batch.date },
+      { label: "Hive Identifier", value: hiveCode },
+      { label: "Batch Lot Number", value: batch.batchCode },
+      { label: "Apiary Site", value: normalizeApiaryName(apiaryName) },
+      { label: "Location", value: normalizeApiaryLocation(locationName) },
+      { label: "Net Volume Extracted", value: `${batch.quantityKg.toFixed(1)} kg` },
+      { label: "Refractometer Moisture", value: `${moisture}%` },
+      { label: "Botanical Floral Source", value: batch.honeyType },
+      { label: "Official Quality Standard", value: isExport ? "KEBS KS 05-344 Compliant (Grade A Raw)" : "Standard Grade Honey" },
+      { label: "Fair Trade Beekeeper Value", value: `KES ${(batch.quantityKg * 1250).toLocaleString()}` },
+    ],
+    sections: [
+      {
+        type: "kv",
+        heading: "Commercial Compliance & Laboratory Specifications",
+        rows: [
+          ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
+          ["Moisture Content (Max 20%)", `${moisture}% (${isExport ? "Compliant - Export Grade" : "Standard"})`],
+          ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
+          ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
+          ["Diastase Enzyme Activity", "> 12 Schade units (Raw unpasteurized)"],
+          ["Filtration Protocol", "Cold extracted, double micro-strained unheated"],
+        ],
+      },
+    ],
+  });
+}
+
+function downloadHarvestCert(harvest: ApiaryHarvestItem, apiaryName?: string, locationName?: string) {
+  const moisture = harvest.moisture_pct;
+  const isExport = moisture <= 18.0;
+  void downloadReportPdf({
+    filename: `Certified-Harvest-${safeName(harvest.batch)}.pdf`,
+    title: `Certified Honey Harvest Batch • ${harvest.batch}`,
+    subtitle: `${harvest.honey_type} • ${harvest.quality_grade}`,
+    meta: [
+      { label: "Producer / Beekeeper", value: "Timothy Nduva (Lead Apiarist)" },
+      { label: "Date of Extraction", value: harvest.harvested_on },
+      { label: "Hive Identifier", value: harvest.hiveCode || "Colony Lot" },
+      { label: "Batch Lot Number", value: harvest.batch },
+      { label: "Apiary Site", value: normalizeApiaryName(apiaryName) },
+      { label: "Location", value: normalizeApiaryLocation(locationName) },
+      { label: "Net Volume Extracted", value: `${harvest.quantity_kg.toFixed(1)} kg` },
+      { label: "Refractometer Moisture", value: `${harvest.moisture_pct}%` },
+      { label: "Color Classification", value: harvest.color_grade },
+      { label: "Official Quality Standard", value: harvest.quality_grade },
+      { label: "Fair Trade Beekeeper Value", value: `KES ${(harvest.quantity_kg * 1250).toLocaleString()}` },
+    ],
+    sections: [
+      {
+        type: "kv",
+        heading: "Commercial Compliance & Quality Standards",
+        rows: [
+          ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
+          ["Moisture Content (Max 20%)", `${moisture}% (${isExport ? "Compliant - Export Grade" : "Standard"})`],
+          ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
+          ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
+          ["Diastase Enzyme Activity", "> 12 Schade units (Raw unpasteurized)"],
+          ["Filtration Protocol", "Cold extracted, double micro-strained unheated"],
+        ],
+      },
+    ],
+  });
+}
+
+// ----------------------------------------------------------------------
 // Interactive Clickable Hive Detail Modal
 // ----------------------------------------------------------------------
 function HiveDetailModal({
@@ -733,6 +811,8 @@ function HiveDetailModal({
   onOpenScanner,
   onEditHive,
   onDeleteHive,
+  onDeleteBatch,
+  onEditBatch,
 }: {
   hive: ApiaryHiveItem;
   apiary: ApiarySite;
@@ -742,8 +822,11 @@ function HiveDetailModal({
   onOpenScanner: () => void;
   onEditHive?: (hive: ApiaryHiveItem) => void;
   onDeleteHive?: (hiveId: string, hiveCode: string) => void;
+  onDeleteBatch?: (batchId: string) => void;
+  onEditBatch?: (batch: HiveHarvestBatch) => void;
 }) {
   const [showAddHarvestForm, setShowAddHarvestForm] = useState(false);
+  const [editingBatch, setEditingBatch] = useState<HiveHarvestBatch | null>(null);
   const [newBatch, setNewBatch] = useState({
     batchCode: `KBZ-${new Date().getFullYear()}-${String(hive.batches.length + 1).padStart(2, "0")}`,
     date: new Date().toISOString().split("T")[0],
@@ -751,6 +834,28 @@ function HiveDetailModal({
     honeyType: "Raw Acacia Blossom",
     moisturePct: 17.1,
   });
+
+  const handleDeleteBatch = (batchId: string) => {
+    if (!window.confirm("Are you sure you want to delete this harvest batch?")) return;
+    if (onDeleteBatch) {
+      onDeleteBatch(batchId);
+    } else {
+      const updatedBatches = hive.batches.filter((b) => b.id !== batchId);
+      onUpdateHive({ ...hive, batches: updatedBatches });
+      toast.success("Harvest batch deleted");
+    }
+  };
+
+  const handleSaveBatch = (updated: HiveHarvestBatch) => {
+    if (onEditBatch) {
+      onEditBatch(updated);
+    } else {
+      const updatedBatches = hive.batches.map((b) => (b.id === updated.id ? updated : b));
+      onUpdateHive({ ...hive, batches: updatedBatches });
+      toast.success("Harvest batch updated");
+    }
+    setEditingBatch(null);
+  };
 
   const queenColor = getQueenYearColor(hive.queenBreedingYear);
   const totalKg = hive.batches.reduce((sum, b) => sum + b.quantityKg, 0);
@@ -1019,6 +1124,7 @@ function HiveDetailModal({
                       <th className="px-3 py-2">Botanical Type</th>
                       <th className="px-3 py-2">Yield (kg)</th>
                       <th className="px-3 py-2">Moisture</th>
+                      <th className="px-3 py-2 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/60">
@@ -1029,6 +1135,36 @@ function HiveDetailModal({
                         <td className="px-3 py-2 font-medium text-amber-700 dark:text-amber-400">{b.honeyType}</td>
                         <td className="px-3 py-2 font-black text-foreground">{b.quantityKg.toFixed(1)} kg</td>
                         <td className="px-3 py-2 font-mono text-emerald-600 font-bold">{b.moisturePct || 17.1}%</td>
+                        <td className="px-3 py-2 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setEditingBatch(b)}
+                              className="px-2.5 py-1.5 rounded-lg border border-border text-xs text-foreground/80 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-500/40 flex items-center gap-1 transition-colors bg-background/50 shadow-sm"
+                              title="Edit Batch"
+                            >
+                              <Pencil className="w-3 h-3" />
+                              <span className="font-medium text-xs">Edit</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => downloadBatchCert(b, hive.code, apiary.name, apiary.location_name)}
+                              className="px-2.5 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/15 text-xs text-amber-700 dark:text-amber-400 hover:bg-amber-500/25 flex items-center gap-1 transition-colors font-bold shadow-sm"
+                              title="Download Certificate"
+                            >
+                              <Download className="w-3 h-3" />
+                              <span className="text-xs">Cert</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteBatch(b.id)}
+                              className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 transition-colors bg-background/50 shadow-sm"
+                              title="Delete Batch"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -1107,6 +1243,15 @@ function HiveDetailModal({
             Close Hive Details
           </button>
         </div>
+
+        {editingBatch && (
+          <EditBatchModal
+            isOpen={true}
+            batch={editingBatch}
+            onClose={() => setEditingBatch(null)}
+            onSave={handleSaveBatch}
+          />
+        )}
       </div>
     </div>
   );
@@ -1793,6 +1938,328 @@ function EditHiveModal({
 }
 
 // ----------------------------------------------------------------------
+// Edit Hive Harvest Batch Modal
+// ----------------------------------------------------------------------
+function EditBatchModal({
+  isOpen,
+  batch,
+  onClose,
+  onSave,
+}: {
+  isOpen: boolean;
+  batch: HiveHarvestBatch;
+  onClose: () => void;
+  onSave: (updated: HiveHarvestBatch) => void;
+}) {
+  const [batchCode, setBatchCode] = useState(batch.batchCode);
+  const [date, setDate] = useState(batch.date);
+  const [quantityKg, setQuantityKg] = useState(batch.quantityKg);
+  const [honeyType, setHoneyType] = useState(batch.honeyType);
+  const [moisturePct, setMoisturePct] = useState(batch.moisturePct || 17.1);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!batchCode.trim()) {
+      toast.error("Please enter a batch code");
+      return;
+    }
+    onSave({
+      ...batch,
+      batchCode: batchCode.trim().toUpperCase(),
+      date,
+      quantityKg: Number(quantityKg) || 0,
+      honeyType: honeyType.trim() || "Raw Acacia Blossom",
+      moisturePct: Number(moisturePct) || 17.1,
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-card border border-border w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 font-bold">
+              <Pencil className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-foreground">Edit Harvest Batch</h3>
+              <p className="text-[11px] text-muted-foreground font-mono">{batch.batchCode}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground block mb-1">Batch Code</label>
+            <input
+              type="text"
+              required
+              value={batchCode}
+              onChange={(e) => setBatchCode(e.target.value)}
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Yield (kg)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0.1"
+                required
+                value={quantityKg}
+                onChange={(e) => setQuantityKg(parseFloat(e.target.value) || 0)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Harvest Date</label>
+              <input
+                type="date"
+                required
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Botanical Honey Type</label>
+              <input
+                type="text"
+                required
+                value={honeyType}
+                onChange={(e) => setHoneyType(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Moisture %</label>
+              <input
+                type="number"
+                step="0.1"
+                min="10"
+                max="25"
+                required
+                value={moisturePct}
+                onChange={(e) => setMoisturePct(parseFloat(e.target.value) || 17.1)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold text-emerald-600 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl border border-border text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs transition-colors shadow-sm"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
+// Edit Certified Apiary Harvest Modal
+// ----------------------------------------------------------------------
+function EditHarvestModal({
+  isOpen,
+  harvest,
+  onClose,
+  onSave,
+}: {
+  isOpen: boolean;
+  harvest: ApiaryHarvestItem;
+  onClose: () => void;
+  onSave: (updated: ApiaryHarvestItem) => void;
+}) {
+  const [batch, setBatch] = useState(harvest.batch);
+  const [harvestedOn, setHarvestedOn] = useState(harvest.harvested_on);
+  const [honeyType, setHoneyType] = useState(harvest.honey_type);
+  const [quantityKg, setQuantityKg] = useState(harvest.quantity_kg);
+  const [moisturePct, setMoisturePct] = useState(harvest.moisture_pct);
+  const [colorGrade, setColorGrade] = useState(harvest.color_grade);
+  const [qualityGrade, setQualityGrade] = useState(harvest.quality_grade);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!batch.trim()) {
+      toast.error("Please enter a batch code");
+      return;
+    }
+    onSave({
+      ...harvest,
+      batch: batch.trim().toUpperCase(),
+      harvested_on: harvestedOn,
+      honey_type: honeyType.trim() || "Raw Acacia Blossom",
+      quantity_kg: Number(quantityKg) || 0,
+      moisture_pct: Number(moisturePct) || 17.1,
+      color_grade: colorGrade,
+      quality_grade: qualityGrade,
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-card border border-border w-full max-w-lg rounded-3xl p-5 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 font-bold">
+              <Pencil className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-foreground">Edit Certified Harvest Batch</h3>
+              <p className="text-[11px] text-muted-foreground font-mono">{harvest.batch}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Batch Code</label>
+              <input
+                type="text"
+                required
+                value={batch}
+                onChange={(e) => setBatch(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Harvest Date</label>
+              <input
+                type="date"
+                required
+                value={harvestedOn}
+                onChange={(e) => setHarvestedOn(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Honey Type</label>
+              <input
+                type="text"
+                required
+                value={honeyType}
+                onChange={(e) => setHoneyType(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Yield Quantity (kg)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0.1"
+                required
+                value={quantityKg}
+                onChange={(e) => setQuantityKg(parseFloat(e.target.value) || 0)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Moisture %</label>
+              <input
+                type="number"
+                step="0.1"
+                min="10"
+                max="25"
+                required
+                value={moisturePct}
+                onChange={(e) => setMoisturePct(parseFloat(e.target.value) || 17.1)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold text-emerald-600 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Color Grade</label>
+              <select
+                value={colorGrade}
+                onChange={(e) => setColorGrade(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              >
+                <option value="Water White">Water White</option>
+                <option value="Extra White">Extra White</option>
+                <option value="White">White</option>
+                <option value="Extra Light Amber">Extra Light Amber</option>
+                <option value="Light Amber">Light Amber</option>
+                <option value="Amber">Amber</option>
+                <option value="Dark Amber">Dark Amber</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1">Quality Standard</label>
+              <select
+                value={qualityGrade}
+                onChange={(e) => setQualityGrade(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+              >
+                <option value="Export Grade A Raw (<18% moisture)">Export Grade A Raw (&lt;18%)</option>
+                <option value="Standard Grade A Raw (18-20% moisture)">Standard Grade A Raw (18-20%)</option>
+                <option value="Grade B Industrial (>20% moisture)">Grade B Industrial (&gt;20%)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl border border-border text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs transition-colors shadow-sm"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
 // User-Specific Storage Keys & Sync Engine
 // ----------------------------------------------------------------------
 // Modal/Drawer showing Hives, Forage, and Harvests for the clicked Apiary
@@ -2070,6 +2537,64 @@ function ApiaryDetailModal({
       quality_grade: "Export Grade A Raw (<18% moisture)",
     };
     saveHarvestsUserScoped([newHarvestItem, ...harvestsList]);
+  };
+
+  // Editing and deleting harvests in Apiary TAB 3
+  const [editingHarvest, setEditingHarvest] = useState<ApiaryHarvestItem | null>(null);
+
+  const handleDeleteHarvest = (harvestId: string) => {
+    if (!window.confirm("Are you sure you want to delete this harvest record?")) return;
+    const target = harvestsList.find((h) => h.id === harvestId);
+    const updatedHarvests = harvestsList.filter((h) => h.id !== harvestId);
+    saveHarvestsUserScoped(updatedHarvests);
+
+    // If this harvest corresponds to a batch in any hive, remove it from that hive's batches too
+    if (target) {
+      let hiveModified = false;
+      const nextHives = hivesList.map((hive) => {
+        const remainingBatches = hive.batches.filter((b) => b.batchCode !== target.batch);
+        if (remainingBatches.length !== hive.batches.length) {
+          hiveModified = true;
+          return { ...hive, batches: remainingBatches };
+        }
+        return hive;
+      });
+      if (hiveModified) {
+        saveHivesUserScoped(nextHives);
+      }
+    }
+
+    toast.success("Harvest record deleted");
+  };
+
+  const handleSaveHarvestEdit = (updatedHarvest: ApiaryHarvestItem) => {
+    const updatedHarvests = harvestsList.map((h) => (h.id === updatedHarvest.id ? updatedHarvest : h));
+    saveHarvestsUserScoped(updatedHarvests);
+
+    // Also sync to matching batch in hive if exists
+    let hiveModified = false;
+    const nextHives = hivesList.map((hive) => {
+      const nextBatches = hive.batches.map((b) => {
+        if (b.batchCode === updatedHarvest.batch) {
+          hiveModified = true;
+          return {
+            ...b,
+            quantityKg: updatedHarvest.quantity_kg,
+            honeyType: updatedHarvest.honey_type,
+            moisturePct: updatedHarvest.moisture_pct,
+            date: updatedHarvest.harvested_on,
+          };
+        }
+        return b;
+      });
+      return hiveModified ? { ...hive, batches: nextBatches } : hive;
+    });
+    if (hiveModified) {
+      saveHivesUserScoped(nextHives);
+    }
+
+    setEditingHarvest(null);
+    toast.success("Harvest record updated");
   };
 
   // Handle adding a brand new hive
@@ -2557,6 +3082,7 @@ function ApiaryDetailModal({
                         <th className="px-4 py-2.5">Moisture</th>
                         <th className="px-4 py-2.5">Color Grade</th>
                         <th className="px-4 py-2.5">Quality Certification</th>
+                        <th className="px-4 py-2.5 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/60">
@@ -2572,6 +3098,36 @@ function ApiaryDetailModal({
                             <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold text-[10px]">
                               {h.quality_grade}
                             </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setEditingHarvest(h)}
+                                className="px-2.5 py-1.5 rounded-lg border border-border text-xs text-foreground/80 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-500/40 flex items-center gap-1 transition-colors bg-background/50 shadow-sm"
+                                title="Edit Harvest Record"
+                              >
+                                <Pencil className="w-3 h-3" />
+                                <span className="font-medium text-xs">Edit</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => downloadHarvestCert(h, apiary.name, apiary.location_name)}
+                                className="px-2.5 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/15 text-xs text-amber-700 dark:text-amber-400 hover:bg-amber-500/25 flex items-center gap-1 transition-colors font-bold shadow-sm"
+                                title="Download Certificate"
+                              >
+                                <Download className="w-3 h-3" />
+                                <span className="text-xs">Cert</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteHarvest(h.id)}
+                                className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 transition-colors bg-background/50 shadow-sm"
+                                title="Delete Harvest Record"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -2591,6 +3147,40 @@ function ApiaryDetailModal({
             onClose={() => setSelectedHiveForDetail(null)}
             onUpdateHive={handleUpdateHive}
             onAddHarvestToHive={handleAddHarvestToHive}
+            onDeleteBatch={(batchId) => {
+              const targetBatch = selectedHiveForDetail.batches.find((b) => b.id === batchId);
+              const updatedBatches = selectedHiveForDetail.batches.filter((b) => b.id !== batchId);
+              const updatedHive = { ...selectedHiveForDetail, batches: updatedBatches };
+              handleUpdateHive(updatedHive);
+
+              if (targetBatch) {
+                const nextHarvests = harvestsList.filter((h) => h.batch !== targetBatch.batchCode);
+                if (nextHarvests.length !== harvestsList.length) {
+                  saveHarvestsUserScoped(nextHarvests);
+                }
+              }
+              toast.success("Harvest batch deleted");
+            }}
+            onEditBatch={(updatedBatch) => {
+              const updatedBatches = selectedHiveForDetail.batches.map((b) => (b.id === updatedBatch.id ? updatedBatch : b));
+              const updatedHive = { ...selectedHiveForDetail, batches: updatedBatches };
+              handleUpdateHive(updatedHive);
+
+              const nextHarvests = harvestsList.map((h) => {
+                if (h.batch === updatedBatch.batchCode) {
+                  return {
+                    ...h,
+                    quantity_kg: updatedBatch.quantityKg,
+                    honey_type: updatedBatch.honeyType,
+                    moisture_pct: updatedBatch.moisturePct || 17.1,
+                    harvested_on: updatedBatch.date,
+                  };
+                }
+                return h;
+              });
+              saveHarvestsUserScoped(nextHarvests);
+              toast.success("Harvest batch updated");
+            }}
             onOpenScanner={() => {
               setScanContext("detailHive");
               setIsScanningOpen(true);
@@ -2613,6 +3203,16 @@ function ApiaryDetailModal({
               setIsScanningOpen(true);
             }}
             scannedSerial={scanContext === "editHive" ? tempScannedSerial : undefined}
+          />
+        )}
+
+        {/* Modal: Edit Certified Harvest */}
+        {editingHarvest && (
+          <EditHarvestModal
+            isOpen={true}
+            harvest={editingHarvest}
+            onClose={() => setEditingHarvest(null)}
+            onSave={handleSaveHarvestEdit}
           />
         )}
 
