@@ -12,7 +12,7 @@ import {
     Compass, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
     Calculator, Layers, Package, BarChart3, Target, Flower2, Sprout,
     Plane, HeartPulse, Info, Download, BookOpen, Plug, Cpu, LifeBuoy,
-    Settings, LogIn
+    Settings, LogIn, Tag, FileBarChart, Navigation
 } from 'lucide-react';
 
 export type DeviceMode = 'auto' | 'phone' | 'pad' | 'laptop';
@@ -80,6 +80,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             label: "Yield & pollination",
             items: [
                 { id: 'harvests', label: "Harvest Logs & Verification", icon: Package, onClick: () => onTabChange('harvests') },
+                { id: 'varroa-simulator', label: "Varroa Mite Tracking", icon: Bug, onClick: () => onTabChange('varroa-simulator') },
+                { id: 'label-generator', label: "Label Generator & QR Verification", icon: Tag, onClick: () => onTabChange('label-generator') },
+                { id: 'reports-exports', label: "Reports & Exports", icon: FileBarChart, onClick: () => onTabChange('reports-exports') },
                 { id: 'harvest-calculator', label: "Harvest Calculator", icon: Calculator, onClick: () => onTabChange('harvest-calculator') },
                 { id: 'yield-projection', label: "Honey Yield Projection", icon: BarChart3, onClick: () => onTabChange('yield-projection') },
                 { id: 'precision-drilldown', label: "Precision Pollination Drilldown", icon: Target, onClick: () => onTabChange('precision-drilldown') },
@@ -96,6 +99,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             items: [
                 { id: 'bloom-phenology', label: "Bloom Phenology", icon: Sprout, onClick: () => onTabChange('bloom-phenology') },
                 { id: 'flight-tracker', label: "Bee Flight & Activity Tracker", icon: Plane, onClick: () => onTabChange('flight-tracker') },
+                { id: 'flight-map', label: "Flight Map (Live Aerial Range)", icon: Navigation, onClick: () => onTabChange('flight-map') },
                 { id: 'vpm-counter', label: "Quick Activity Counter", icon: Plane, onClick: () => onTabChange('vpm-counter') },
                 { id: 'bfh-forecast', label: "Bee Activity Forecaster", icon: BarChart3, onClick: () => onTabChange('bfh-forecast') },
                 { id: 'florage-page', label: "Florage Database", icon: Sprout, onClick: () => onTabChange('florage-page') },
@@ -105,6 +109,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {
             label: "Knowledge & reference",
             items: [
+                { id: 'reports-exports', label: "Reports & Exports", icon: FileBarChart, onClick: () => onTabChange('reports-exports') },
                 { id: 'bee-diseases', label: "Bee Diseases (Editable)", icon: HeartPulse, onClick: () => onTabChange('bee-diseases') },
                 { id: 'varroa-simulator', label: "Varroa Simulator", icon: HeartPulse, onClick: () => onTabChange('varroa-simulator') },
                 { id: 'beeyield-calculators', label: "Beeyield Calculators", icon: Calculator, onClick: () => onTabChange('beeyield-calculators') },
@@ -115,6 +120,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {
             label: "Business & devices",
             items: [
+                { id: 'label-generator', label: "Label Generator & QR Codes", icon: Tag, onClick: () => onTabChange('label-generator') },
                 { label: "About BeeYield (Our Story)", icon: BookOpen, onClick: () => onTabChange('about') },
                 { label: "BeeYield Blogs & Field Notes", icon: BookOpen, onClick: () => onTabChange('blogs') },
                 { label: "Integrations (Shopify, QuickBooks, eTIMS)", icon: Plug, onClick: () => onTabChange('integrations') },
