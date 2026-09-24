@@ -61,6 +61,7 @@ import {
   MoreVertical,
   Bell,
   ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "sonner";
@@ -1745,6 +1746,37 @@ function HiveDetailModal({
     "inside_temp" | "humidity" | "pressure" | "outside_temp" | "weight" | "honey_gain" | null
   >("inside_temp");
 
+  // Syrup Calculator State (Matching Screenshot)
+  const [calcRatio, setCalcRatio] = useState<"1:1" | "3:2" | "2:1">("3:2");
+  const [calcTargetVolume, setCalcTargetVolume] = useState<string>("");
+  const [showHowToPrepare, setShowHowToPrepare] = useState(true);
+
+  // Syrup Calculation Logic
+  const syrupCalculation = useMemo(() => {
+    const v = parseFloat(calcTargetVolume);
+    if (isNaN(v) || v <= 0) {
+      return { water: "–", sugar: "–", valid: false };
+    }
+    let waterL = 0;
+    let sugarKg = 0;
+    if (calcRatio === "1:1") {
+      waterL = v / 1.625;
+      sugarKg = waterL * 1.0;
+    } else if (calcRatio === "3:2") {
+      waterL = v / 1.9375;
+      sugarKg = waterL * 1.5;
+    } else {
+      // 2:1
+      waterL = v / 2.25;
+      sugarKg = waterL * 2.0;
+    }
+    return {
+      water: waterL.toFixed(2),
+      sugar: sugarKg.toFixed(2),
+      valid: true,
+    };
+  }, [calcRatio, calcTargetVolume]);
+
   // Syrup Feeding Form State
   const [showAddSyrupForm, setShowAddSyrupForm] = useState(false);
   const [syrupLiters, setSyrupLiters] = useState(5.0);
@@ -2327,66 +2359,185 @@ function HiveDetailModal({
 
               {/* TAB 2: SYRUP (Feeding Management) */}
               {activeTab === "syrup" && (
-                <div className="space-y-4">
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold flex items-center gap-2">
-                        <Coffee className="w-4 h-4 text-amber-600" /> Nutritional Syrup Feeding
-                      </h3>
+                <div className="space-y-5">
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-3xl p-5 sm:p-6 border border-[#EFE8DE] dark:border-stone-800 space-y-5 text-[#2E2A25] dark:text-stone-200 shadow-sm">
+                    {/* Header Title from Screenshot */}
+                    <h2 className="text-2xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                      Syrup calculator
+                    </h2>
+
+                    {/* Ratio Section */}
+                    <div className="space-y-2">
+                      <span className="text-sm font-bold text-[#2E2A25] dark:text-stone-200 block">
+                        Ratio:
+                      </span>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => setCalcRatio("1:1")}
+                          className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                            calcRatio === "1:1"
+                              ? "bg-[#FCD99F] dark:bg-amber-500/40 text-stone-950 dark:text-stone-100 shadow-sm"
+                              : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
+                          }`}
+                        >
+                          1:1
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCalcRatio("3:2")}
+                          className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                            calcRatio === "3:2"
+                              ? "bg-[#FCD99F] dark:bg-amber-500/40 text-stone-950 dark:text-stone-100 shadow-sm"
+                              : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
+                          }`}
+                        >
+                          3:2
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCalcRatio("2:1")}
+                          className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                            calcRatio === "2:1"
+                              ? "bg-[#FCD99F] dark:bg-amber-500/40 text-stone-950 dark:text-stone-100 shadow-sm"
+                              : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
+                          }`}
+                        >
+                          2:1
+                        </button>
+                      </div>
+
+                      {/* Ratio Description */}
+                      <p className="text-xs text-[#7A6E68] dark:text-stone-400 pt-1">
+                        {calcRatio === "3:2" && "Medium — all-purpose, summer and autumn"}
+                        {calcRatio === "1:1" && "Thin — spring stimulation, brood rearing & wax building"}
+                        {calcRatio === "2:1" && "Heavy — autumn and winter storage feed, late reserves"}
+                      </p>
+                    </div>
+
+                    {/* How Much Syrup Input */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-[#2E2A25] dark:text-stone-200 block">
+                        How much syrup do I want to make?
+                      </label>
+                      <div className="bg-[#F3ECE3] dark:bg-[#25221F] rounded-2xl px-4 py-3.5 flex items-center justify-between border border-transparent focus-within:border-amber-500/50 transition-colors">
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0.1"
+                          value={calcTargetVolume}
+                          onChange={(e) => setCalcTargetVolume(e.target.value)}
+                          placeholder="Enter a value"
+                          className="w-full bg-transparent border-none outline-none text-sm font-semibold text-[#2E2A25] dark:text-stone-100 placeholder:text-[#9A9187]"
+                        />
+                        <span className="text-sm font-semibold text-[#5C5349] dark:text-stone-400 pl-2">
+                          l
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Calculated Results Box */}
+                    <div className="bg-[#F3ECE3] dark:bg-[#25221F] rounded-2xl p-4 grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-xs font-medium text-[#8E8880] block">
+                          Water
+                        </span>
+                        <span className="text-base font-semibold text-[#2E2A25] dark:text-stone-100 mt-0.5 block">
+                          {syrupCalculation.water} l
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs font-medium text-[#8E8880] block">
+                          Sugar
+                        </span>
+                        <span className="text-base font-semibold text-[#2E2A25] dark:text-stone-100 mt-0.5 block">
+                          {syrupCalculation.sugar} kg
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Quick Button to Log Feeding if Valid */}
+                    {syrupCalculation.valid && (
                       <button
                         type="button"
-                        onClick={() => setShowAddSyrupForm((v) => !v)}
-                        className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs"
+                        onClick={() => {
+                          const v = parseFloat(calcTargetVolume) || 0;
+                          setSyrupHistory([
+                            {
+                              date: new Date().toISOString().split("T")[0],
+                              amount: `${v.toFixed(1)} L`,
+                              type: `${calcRatio} Sugar Syrup`,
+                              notes: `Mixed with ${syrupCalculation.water} L water & ${syrupCalculation.sugar} kg white sucrose`,
+                            },
+                            ...syrupHistory,
+                          ]);
+                          toast.success(`Logged ${v.toFixed(1)} L (${calcRatio}) syrup feed for ${hive.code}`);
+                        }}
+                        className="w-full py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
                       >
-                        {showAddSyrupForm ? "Cancel" : "+ Add Feeding"}
+                        <Coffee className="w-4 h-4" />
+                        Log {calcTargetVolume} L ({calcRatio}) feeding to hive
                       </button>
-                    </div>
-
-                    {showAddSyrupForm && (
-                      <form onSubmit={handleAddSyrupLog} className="p-3.5 rounded-xl border border-amber-500/40 bg-white dark:bg-stone-900 space-y-3 mt-3">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="text-[10px] font-bold text-muted-foreground block">Quantity (Liters)</label>
-                            <input
-                              type="number"
-                              step="0.5"
-                              min="0.5"
-                              value={syrupLiters}
-                              onChange={(e) => setSyrupLiters(parseFloat(e.target.value) || 0)}
-                              className="w-full px-2.5 py-1 text-xs rounded-lg border border-border bg-background font-bold"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-[10px] font-bold text-muted-foreground block">Syrup Recipe</label>
-                            <select
-                              value={syrupRatio}
-                              onChange={(e) => setSyrupRatio(e.target.value)}
-                              className="w-full px-2.5 py-1 text-xs rounded-lg border border-border bg-background font-bold"
-                            >
-                              <option value="1:1 Spring Nectar Stimulant">1:1 Sugar Water</option>
-                              <option value="2:1 Winter Storage Feed">2:1 Heavy Feed</option>
-                              <option value="Thymol Infused Anti-Nosema">Thymol Medicated Feed</option>
-                            </select>
-                          </div>
-                        </div>
-                        <button type="submit" className="w-full py-1.5 bg-amber-500 font-bold text-stone-950 text-xs rounded-lg">
-                          Confirm Syrup Log
-                        </button>
-                      </form>
                     )}
 
-                    <div className="space-y-2 pt-2">
-                      <span className="text-xs font-bold text-[#8E8880] block">Recent Feeding Sessions</span>
-                      {syrupHistory.map((s, idx) => (
-                        <div key={idx} className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between text-xs">
-                          <div>
-                            <span className="font-bold text-foreground block">{s.type}</span>
-                            <span className="text-[#8E8880] text-[10px]">{s.date} · {s.notes}</span>
-                          </div>
-                          <span className="font-mono font-bold text-amber-600">{s.amount}</span>
+                    {/* How to Prepare Accordion Section */}
+                    <div className="pt-2 border-t border-[#EAE3DA] dark:border-stone-800">
+                      <div
+                        onClick={() => setShowHowToPrepare(!showHowToPrepare)}
+                        className="flex items-center justify-between cursor-pointer select-none py-1"
+                      >
+                        <h3 className="text-sm font-bold text-[#2E2A25] dark:text-stone-200">
+                          How to prepare
+                        </h3>
+                        {showHowToPrepare ? (
+                          <ChevronUp className="w-5 h-5 text-[#2E2A25] dark:text-stone-300" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-[#2E2A25] dark:text-stone-300" />
+                        )}
+                      </div>
+
+                      {showHowToPrepare && (
+                        <div className="pt-2.5 space-y-3 text-xs text-[#5C5349] dark:text-stone-300 leading-relaxed">
+                          <p>
+                            1. <strong className="text-[#2E2A25] dark:text-stone-100">Use white sugar, pure sucrose.</strong> Not brown, not cane, not unrefined. Dark sugars carry residues bees cannot digest — in winter feed that is a straight road to dysentery in the colony.
+                          </p>
+                          <p>
+                            2. <strong className="text-[#2E2A25] dark:text-stone-100">Warm water, never boil.</strong> Dissolve in hot or warm water without continuous boiling. Boiling caramelizes sugars and produces toxic HMF (hydroxymethylfurfural), which harms bee gut flora.
+                          </p>
+                          <p>
+                            3. <strong className="text-[#2E2A25] dark:text-stone-100">Allow to cool completely.</strong> Never feed hot syrup directly to the hive; cool to ambient temperature before pouring into rapid or frame feeders.
+                          </p>
+                          <p>
+                            4. <strong className="text-[#2E2A25] dark:text-stone-100">Feed at dusk or evening.</strong> Evening feeding prevents robbing frenzies from neighboring apiary colonies.
+                          </p>
                         </div>
-                      ))}
+                      )}
                     </div>
+
+                    {/* Recent Feeding Sessions */}
+                    {syrupHistory.length > 0 && (
+                      <div className="pt-3 border-t border-[#EAE3DA] dark:border-stone-800 space-y-2">
+                        <span className="text-xs font-bold text-[#8E8880] block">
+                          Recent Feeding History
+                        </span>
+                        {syrupHistory.map((s, idx) => (
+                          <div
+                            key={idx}
+                            className="p-3 rounded-2xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between text-xs"
+                          >
+                            <div>
+                              <span className="font-bold text-foreground block">{s.type}</span>
+                              <span className="text-[#8E8880] text-[10px]">
+                                {s.date} · {s.notes}
+                              </span>
+                            </div>
+                            <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
+                              {s.amount}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
