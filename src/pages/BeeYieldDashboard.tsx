@@ -494,7 +494,7 @@ const BeeYieldDashboard: React.FC = () => {
     }
 
     return (
-        <DashboardLayout activeTab={activeTab} onTabChange={handleTabChange} onLogout={handleLogout} navItems={navItems} hideHeader={!!onboardingStep} hideSidebar={true} hideBanner={!!onboardingStep}>
+        <DashboardLayout activeTab={activeTab} onTabChange={handleTabChange} onLogout={handleLogout} navItems={navItems} hideHeader={!!onboardingStep} hideSidebar={!!onboardingStep} hideBanner={!!onboardingStep}>
             {renderContent()}
         </DashboardLayout>
     );

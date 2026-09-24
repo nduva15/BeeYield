@@ -80,8 +80,6 @@ interface DashboardHeaderProps {
     onToggleMobileSidebar?: () => void;
     deviceMode?: 'auto' | 'phone' | 'pad' | 'laptop';
     onDeviceModeChange?: (mode: 'auto' | 'phone' | 'pad' | 'laptop') => void;
-    onToggleToolsDrawer?: () => void;
-    isToolsDrawerOpen?: boolean;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -93,8 +91,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     onToggleMobileSidebar,
     deviceMode = 'auto',
     onDeviceModeChange,
-    onToggleToolsDrawer,
-    isToolsDrawerOpen = false
 }) => {
     const { user, beeyieldUser } = useAuth();
     const { language, setLanguage, t } = useLanguage();
@@ -210,59 +206,63 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             "h-16 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-4 md:px-6 transition-all duration-300",
             "bg-background/95 backdrop-blur-md border-b border-border shadow-xs"
         )}>
-            {/* Left: Main Tools Dropdown & Tools Rail Button (Matches screenshot 1:1) */}
+            {/* Left: Hamburger, View Dropdown, & Breadcrumbs */}
             <div className="flex items-center gap-2 sm:gap-3">
-                {/* BeeYield Tools Dropdown - Main navigation dropdown for tools */}
-                <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                {/* Mobile Drawer Trigger */}
+                <button
+                    onClick={onToggleMobileSidebar}
+                    className="md:hidden p-2 rounded-xl bg-muted/40 hover:bg-[#F4D03F]/15 border border-border text-foreground transition-all flex items-center justify-center shrink-0"
+                    aria-label="Open navigation menu"
+                    title="Open Navigation Menu"
+                >
+                    <Menu className="w-5 h-5 text-[#F4D03F]" />
+                </button>
+
+                {/* View Selector Dropdown */}
+                <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button
-                            className="flex items-center gap-2.5 px-3 py-1.5 bg-[#14120f] hover:bg-[#1c1915] border border-amber-500/50 hover:border-amber-500/80 rounded-2xl transition-all group outline-none shrink-0 shadow-lg text-white"
-                            title="BeeYield AI Tools & Views Directory"
+                            className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#181614] hover:bg-neutral-50 dark:hover:bg-[#231f1a] border border-neutral-200/90 dark:border-amber-500/30 rounded-xl transition-all group outline-none shrink-0 shadow-sm"
+                            title="Switch Dashboard View"
                         >
-                            <div className="w-7 h-7 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-[#f59e0b] shrink-0">
-                                <CurrentIcon className="w-4 h-4 text-[#f59e0b]" />
+                            <div className="w-5 h-5 rounded-lg bg-[#F4D03F]/15 flex items-center justify-center text-[#B78103] dark:text-[#F4D03F] shrink-0">
+                                <CurrentIcon className="w-3.5 h-3.5" />
                             </div>
-                            <div className="flex flex-col text-left">
-                                <span className="text-[10px] text-[#f59e0b] font-bold uppercase tracking-wider leading-none">BEEYIELD AI</span>
-                                <span className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5 leading-tight mt-0.5">
-                                    {currentLabel}
-                                    <ChevronDown className="w-3.5 h-3.5 text-neutral-300 group-data-[state=open]:rotate-180 transition-transform shrink-0" />
-                                </span>
-                            </div>
+                            <span className="text-xs font-bold text-foreground capitalize tracking-tight flex items-center gap-1 max-w-[130px] sm:max-w-[200px] truncate">
+                                {currentLabel}
+                                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform shrink-0" />
+                            </span>
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="start"
                         sideOffset={8}
-                        className="w-76 sm:w-84 max-h-[85vh] overflow-y-auto rounded-2xl border border-neutral-800 p-2.5 shadow-2xl bg-[#14120f] text-white z-50 custom-scrollbar"
+                        className="w-80 max-h-[82vh] overflow-y-auto rounded-2xl border border-neutral-200/90 dark:border-neutral-800 p-2.5 shadow-2xl bg-white dark:bg-[#181614] text-neutral-900 dark:text-neutral-100 z-50 custom-scrollbar"
                     >
-                        {/* Search tools input matching screenshot */}
-                        <div className="p-1 mb-2.5 border-b border-neutral-800/80">
+                        <div className="p-1 mb-2 border-b border-border/50">
                             <div className="relative">
-                                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                 <input
                                     type="text"
                                     value={dropdownQuery}
                                     onChange={(e) => setDropdownQuery(e.target.value)}
-                                    placeholder="Search tools"
-                                    aria-label="Search tools"
-                                    className="w-full bg-[#1e1c18] border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder:text-neutral-500 outline-none focus:border-amber-500/80 transition-colors"
+                                    placeholder="Search views..."
+                                    className="w-full bg-muted/40 border border-border/60 rounded-lg pl-8 pr-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-amber-400/80 transition-colors"
                                     onClick={(e) => e.stopPropagation()}
                                     onKeyDown={(e) => e.stopPropagation()}
-                                    autoFocus
                                 />
                             </div>
                         </div>
 
                         {filteredCategories.length === 0 ? (
-                            <p className="px-3 py-4 text-xs text-neutral-400 text-center">
-                                No tool matches “{dropdownQuery}”.
+                            <p className="px-3 py-4 text-xs text-muted-foreground text-center">
+                                No view matches “{dropdownQuery}”.
                             </p>
                         ) : (
-                            <div className="space-y-3.5">
+                            <div className="space-y-3">
                                 {filteredCategories.map((category) => (
                                     <div key={category.title} className="space-y-1">
-                                        <p className="px-2.5 mb-1 text-[10px] font-bold uppercase tracking-wider text-[#f59e0b]">
+                                        <p className="px-2 mb-1 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-500">
                                             {category.title}
                                         </p>
                                         <div className="space-y-0.5">
@@ -272,21 +272,20 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                 return (
                                                     <DropdownMenuItem
                                                         key={item.id}
-                                                        onClick={() => {
-                                                            onTabChange(item.id);
-                                                            setDropdownOpen(false);
-                                                        }}
+                                                        onClick={() => onTabChange(item.id)}
                                                         className={cn(
-                                                            "w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-left text-[13px] cursor-pointer transition-colors focus:bg-[#262420] focus:text-white",
+                                                            "w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs cursor-pointer transition-colors",
                                                             isActive
-                                                                ? "bg-[#262420] text-white font-medium border border-amber-500/20 shadow-sm"
-                                                                : "text-neutral-200 hover:text-white hover:bg-[#201d19]"
+                                                                ? "bg-amber-500/15 border border-amber-500/30 text-foreground font-semibold shadow-xs"
+                                                                : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                                                         )}
                                                     >
-                                                        <ItemIcon className="w-4 h-4 flex-shrink-0 text-[#f59e0b]" />
-                                                        <span className="truncate flex-1">{item.label}</span>
+                                                        <div className="flex items-center gap-2.5 min-w-0">
+                                                            <ItemIcon className="w-4 h-4 flex-shrink-0 text-[#F4D03F]" />
+                                                            <span className="truncate">{item.label}</span>
+                                                        </div>
                                                         {isActive && (
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
                                                         )}
                                                     </DropdownMenuItem>
                                                 );
@@ -299,25 +298,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* AI Tools Rail Toggle Button */}
-                {onToggleToolsDrawer && (
-                    <button
-                        onClick={onToggleToolsDrawer}
-                        className={cn(
-                            "flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-bold transition-all shadow-md shrink-0",
-                            isToolsDrawerOpen
-                                ? "border-amber-500 bg-[#1c1915] text-[#f59e0b] shadow-amber-500/10 ring-1 ring-amber-500/30"
-                                : "border-amber-500/40 bg-[#14120f] hover:bg-[#1c1915] hover:border-amber-500/70 text-[#f59e0b]"
-                        )}
-                        title={isToolsDrawerOpen ? "Collapse AI Tools Rail" : "Open & Stick AI Tools Rail"}
-                    >
-                        <Menu className="w-4 h-4 text-[#f59e0b]" />
-                        <span>AI Tools Rail</span>
-                        {isToolsDrawerOpen && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
-                        )}
-                    </button>
-                )}
+                {/* Breadcrumbs */}
+                <div className="hidden sm:flex items-center gap-2">
+                    <span className="text-border">•</span>
+                    <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wide uppercase">OS</span>
+                    <span className="text-border">/</span>
+                    <span className="text-[11px] font-medium text-muted-foreground capitalize truncate max-w-[120px]">
+                        {activeTab.replace(/-/g, ' ')}
+                    </span>
+                </div>
             </div>
 
             {/* Right: Search, Quick Action, Alerts, Profile */}
