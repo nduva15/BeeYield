@@ -208,19 +208,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             "h-16 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-4 md:px-6 transition-all duration-300",
             scrolled ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-lg" : "bg-background/60 backdrop-blur-md"
         )}>
-            {/* Left: Hamburger, View Dropdown, & Tools Rail Button */}
+            {/* Left: Main Tools Dropdown & Tools Rail Button (Matches screenshot 1:1) */}
             <div className="flex items-center gap-2 sm:gap-3">
-                {/* Mobile Drawer Trigger */}
-                <button
-                    onClick={onToggleMobileSidebar}
-                    className="md:hidden p-2 rounded-xl bg-muted/40 hover:bg-[#F4D03F]/15 border border-border text-foreground transition-all flex items-center justify-center shrink-0"
-                    aria-label="Open navigation menu"
-                    title="Open Navigation Menu"
-                >
-                    <Menu className="w-5 h-5 text-[#F4D03F]" />
-                </button>
-
-                {/* BeeYield Tools Dropdown - Dark sleek honey theme matching screenshot 1:1 */}
+                {/* BeeYield Tools Dropdown - Main navigation dropdown for tools */}
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                     <DropdownMenuTrigger asChild>
                         <button

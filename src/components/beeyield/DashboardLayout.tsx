@@ -37,7 +37,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     navItems,
     isAdmin = false,
     hideHeader = false,
-    hideSidebar = false,
+    hideSidebar = true,
     hideBanner = false
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
