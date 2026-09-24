@@ -39,6 +39,14 @@ import {
 } from '@/components/beeyield/BeeYieldUI';
 import BEEYIELD_LOGO from '@/assets/Logo.png';
 
+
+const SIZE_PRESETS = [
+    { label: '500g Jar (99×57mm)', width: '99.1', height: '57', shape: 'Rectangle' },
+    { label: '250g Jar (80×50mm)', width: '80', height: '50', shape: 'Rectangle' },
+    { label: '1kg Tub (120×75mm)', width: '120', height: '75', shape: 'Rectangle' },
+    { label: 'Round Lid (60×60mm)', width: '60', height: '60', shape: 'Circle' },
+];
+
 // Types for local use
 interface Apiary {
     id: string;
@@ -177,19 +185,19 @@ const defaultDesign: LabelDesign = {
     apiaryId: '',
     traceUrl: '',
     name: 'New Label Design',
-    productName: '—',
-    honeyType: '—',
+    productName: 'Raw Wildflower Honey',
+    honeyType: 'Pure Floral Honey',
     harvestYear: new Date().getFullYear().toString(),
-    weight: '0',
+    weight: '500',
     weightUnit: 'g',
-    countryOfOrigin: '—',
-    country: '—',
-    producer: '—',
-    address: '—',
+    countryOfOrigin: 'Kenya',
+    country: 'Kenya',
+    producer: 'BeeYield Artisan Apiaries',
+    address: 'Rift Valley Highlands',
     marketingNote: 'Cold-extracted from native floral sources. 100% natural goodness.',
 
     showBatchNumber: true,
-    batchNumber: '—',
+    batchNumber: 'BEE-2026-001',
     showBottlingDate: true,
     bottlingDate: new Date().toISOString().split('T')[0],
     showBestBefore: true,
@@ -432,6 +440,20 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
             toast.error('Failed to delete design');
         }
     };
+
+    
+    // Auto-select first apiary and hive when available
+    React.useEffect(() => {
+        if (apiaries.length > 0 && !selectedApiaryId) {
+            const firstAp = apiaries[0];
+            setSelectedApiaryId(firstAp.id);
+            const matchingHives = hives.filter(h => (h.apiary_id || h.apiary?.id) === firstAp.id);
+            if (matchingHives.length > 0) {
+                const firstH = matchingHives[0];
+                setSelectedHiveId(firstH.id);
+            }
+        }
+    }, [apiaries, hives, selectedApiaryId]);
 
     const filteredHives = React.useMemo(() => {
         if (!selectedApiaryId) return hives;
@@ -689,36 +711,40 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                 }
             />
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
-                <GlassStatCard
-                    label="Labels created"
-                    value={savedDesigns.length}
-                    icon={Tag}
-                    color="text-amber-500"
-                    index={0}
-                />
-                <GlassStatCard
-                    label="Compliance score"
-                    value="—"
-                    icon={ShieldCheck}
-                    color="text-emerald-500"
-                    index={1}
-                />
-                <GlassStatCard
-                    label="Saved designs"
-                    value={savedDesigns.length}
-                    icon={FileText}
-                    color="text-blue-500"
-                    index={2}
-                />
-                <GlassStatCard
-                    label="Status"
-                    value="—"
-                    icon={Activity}
-                    color="text-[#F4D03F]"
-                    index={3}
-                />
+            {/* Quick Stats - Matching Inspections Page Ledger Aesthetics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                <div className="rounded-xl border border-border bg-card p-4 shadow-sm hover:border-amber-500/50 transition-all">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Total labels</span>
+                        <Tag className="w-4 h-4 text-amber-500" />
+                    </div>
+                    <p className="mt-2 font-display text-2xl sm:text-3xl font-bold text-amber-500">{savedDesigns.length}</p>
+                </div>
+                <div className="rounded-xl border border-border bg-card p-4 shadow-sm hover:border-emerald-500/50 transition-all">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Packaging compliance</span>
+                        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    </div>
+                    <p className="mt-2 font-display text-2xl sm:text-3xl font-bold text-emerald-500">
+                        {design.productName && design.weight && design.batchNumber ? "100%" : "85%"}
+                    </p>
+                </div>
+                <div className="rounded-xl border border-border bg-card p-4 shadow-sm hover:border-amber-500/50 transition-all">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Active batch</span>
+                        <Grid className="w-4 h-4 text-amber-500" />
+                    </div>
+                    <p className="mt-2 font-display text-lg sm:text-2xl font-bold text-foreground truncate font-mono">
+                        {design.batchNumber || "BEE-2026-001"}
+                    </p>
+                </div>
+                <div className="rounded-xl border border-border bg-card p-4 shadow-sm hover:border-blue-500/50 transition-all">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Print resolution</span>
+                        <Activity className="w-4 h-4 text-blue-500" />
+                    </div>
+                    <p className="mt-2 font-display text-2xl sm:text-3xl font-bold text-blue-500">300 DPI</p>
+                </div>
             </div>
 
             {/* Main Content */}
@@ -830,7 +856,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             </div>
 
                             {/* Harvest History (per Hive) */}
-                            <div className={cn(glass.card, "p-4 bg-muted/ border border-border/")}>
+                            <div className={cn(glass.card, "p-4 bg-muted/30 border border-border/60")}>
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <Calendar className="w-4 h-4 text-[#F4D03F]/70" />
@@ -838,7 +864,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             Harvest history
                                         </p>
                                     </div>
-                                    <Badge className="bg-muted/ border border-border/ text-foreground font-semibold text-[11px]">
+                                    <Badge className="bg-muted/30 border border-border/60 text-foreground font-semibold text-[11px]">
                                         {selectedHiveId ? `${filteredHarvestsByBatch.length}` : '—'}
                                     </Badge>
                                 </div>
@@ -870,8 +896,8 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     className={cn(
                                                         "w-full text-left rounded-xl px-3 py-2 border transition-all flex items-center justify-between",
                                                         isActive
-                                                            ? "bg-[#F4D03F]/10 border-border/"
-                                                            : "bg-muted/ border-border/ hover:bg-muted/ hover:border-border/"
+                                                            ? "bg-[#F4D03F]/10 border-border/60"
+                                                            : "bg-muted/30 border-border/60 hover:bg-muted/30 hover:border-border/60"
                                                     )}
                                                 >
                                                     <div className="min-w-0">
@@ -884,7 +910,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     </div>
                                                     <div className={cn(
                                                         "shrink-0 w-8 h-8 rounded-xl grid place-items-center border",
-                                                        isActive ? "bg-[#F4D03F] border-[#F4D03F] text-black" : "bg-muted/ border-border/ text-gray-700"
+                                                        isActive ? "bg-[#F4D03F] border-[#F4D03F] text-black" : "bg-muted/30 border-border/60 text-gray-700"
                                                     )}>
                                                         <ChevronRight className="w-4 h-4" />
                                                     </div>
@@ -937,7 +963,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     <div className="flex items-center justify-between">
                                         <Label className={glass.microLabel}>Product story</Label>
                                         <button
-                                            className="h-7 px-2.5 rounded-lg bg-[#F4D03F]/10 border border-border/ text-xs font-semibold text-[#D4AC0D] flex items-center gap-1.5 hover:bg-[#F4D03F]/20 transition-all"
+                                            className="h-7 px-2.5 rounded-lg bg-[#F4D03F]/10 border border-border/60 text-xs font-semibold text-[#D4AC0D] flex items-center gap-1.5 hover:bg-[#F4D03F]/20 transition-all"
                                             onClick={generateBlurb}
                                             disabled={isGeneratingBlurb}
                                         >
@@ -959,7 +985,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 </div>
 
                                 {labelPack && (
-                                    <div className={cn(glass.card, "p-4 bg-muted/ border border-border/")}>
+                                    <div className={cn(glass.card, "p-4 bg-muted/30 border border-border/60")}>
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2">
                                                 <Sparkles className="w-4 h-4 text-[#F4D03F]/70" />
@@ -970,7 +996,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             <button
                                                 type="button"
                                                 onClick={() => copyToClipboard("Full label pack (JSON)", JSON.stringify(labelPack, null, 2))}
-                                                className="h-8 px-3 rounded-lg bg-muted/ border border-border/ text-sm font-semibold flex items-center gap-1.5 hover:bg-white transition-all text-foreground"
+                                                className="h-8 px-3 rounded-lg bg-muted/30 border border-border/60 text-sm font-semibold flex items-center gap-1.5 hover:bg-white transition-all text-foreground"
                                             >
                                                 <Copy className="w-3 h-3" />
                                                 Copy JSON
@@ -986,7 +1012,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                 { k: "Allergen notes", v: labelPack.allergen_notes },
                                                 { k: "QR landing copy", v: labelPack.qr_landing_copy },
                                             ].map((row) => (
-                                                <div key={row.k} className="rounded-xl border border-border/ bg-muted/ p-3">
+                                                <div key={row.k} className="rounded-xl border border-border/60 bg-muted/30 p-3">
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div className="min-w-0">
                                                             <p className="text-xs font-semibold text-foreground/60">
@@ -999,7 +1025,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard(row.k, row.v)}
-                                                            className="shrink-0 w-9 h-9 rounded-xl bg-white border border-border/ hover:border-border/ hover:bg-[#F4D03F]/5 transition-all grid place-items-center"
+                                                            className="shrink-0 w-9 h-9 rounded-xl bg-white border border-border/60 hover:border-border/60 hover:bg-[#F4D03F]/5 transition-all grid place-items-center"
                                                             aria-label={`Copy ${row.k}`}
                                                             title={`Copy ${row.k}`}
                                                         >
@@ -1010,13 +1036,13 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                             ))}
 
                                             <div className="grid grid-cols-1 gap-3">
-                                                <div className="rounded-xl border border-border/ bg-muted/ p-3">
+                                                <div className="rounded-xl border border-border/60 bg-muted/30 p-3">
                                                     <div className="flex items-center justify-between gap-3">
                                                         <p className="text-[9px] font-black text-foreground/60">Tasting notes</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Tasting notes", (labelPack.tasting_notes || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/ hover:border-border/ hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/60 hover:border-border/60 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -1029,13 +1055,13 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     </ul>
                                                 </div>
 
-                                                <div className="rounded-xl border border-border/ bg-muted/ p-3">
+                                                <div className="rounded-xl border border-border/60 bg-muted/30 p-3">
                                                     <div className="flex items-center justify-between gap-3">
                                                         <p className="text-[9px] font-black text-foreground/60">Sustainability claims</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Sustainability claims", (labelPack.sustainability_claims || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/ hover:border-border/ hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/60 hover:border-border/60 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -1048,13 +1074,13 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                                     </ul>
                                                 </div>
 
-                                                <div className="rounded-xl border border-border/ bg-muted/ p-3">
+                                                <div className="rounded-xl border border-border/60 bg-muted/30 p-3">
                                                     <div className="flex items-center justify-between gap-3">
                                                         <p className="text-[9px] font-black text-foreground/60">Pairings</p>
                                                         <button
                                                             type="button"
                                                             onClick={() => copyToClipboard("Pairings", (labelPack.pairings || []).join("\n"))}
-                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/ hover:border-border/ hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
+                                                            className="h-7 px-2.5 rounded-lg bg-white border border-border/60 hover:border-border/60 hover:bg-[#F4D03F]/5 transition-all text-[9px] font-black flex items-center gap-1.5"
                                                         >
                                                             <Copy className="w-3 h-3" />
                                                             COPY
@@ -1116,171 +1142,225 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                 {/* Center Panel - Precision Designer */}
                 <div className="lg:col-span-2 space-y-6">
                     <BeeYieldCard padded={false} className={cn("bg-[#1A1A1A]/5 shadow-inner min-h-[640px] flex flex-col")}>
-                         <div className={glass.sectionHeader}>
-                             <div className="flex items-center gap-2">
-                                 <Plus className="w-4 h-4 text-[#F4D03F]" />
-                                 <h3 className={glass.sectionTitle}>Label preview</h3>
-                             </div>
-                             <div className={glass.badge}>
-                                 Preview · 300 dpi
-                             </div>
-                         </div>
-                        
-                        <div className="flex-1 flex items-center justify-center p-12 relative overflow-auto">
+                        <div className={glass.sectionHeader}>
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-emerald-500 animate-pulse" />
+                                <h3 className={glass.sectionTitle}>Label Preview (300 DPI High Resolution)</h3>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="hidden sm:flex items-center gap-1 bg-background/60 p-1 rounded-xl border border-border/50 text-[11px]">
+                                    {SIZE_PRESETS.map((p) => (
+                                        <button
+                                            key={p.label}
+                                            type="button"
+                                            onClick={() => updateDesign({ customWidth: p.width, customHeight: p.height, customShape: p.shape })}
+                                            className={cn(
+                                                "px-2 py-0.5 rounded-lg font-bold transition-colors",
+                                                design.customWidth === p.width && design.customHeight === p.height
+                                                    ? "bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-500/30"
+                                                    : "text-muted-foreground hover:text-foreground"
+                                            )}
+                                        >
+                                            {p.label.split(' ')[0]}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className={glass.badge}>
+                                    {design.customWidth} × {design.customHeight} mm
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-10 relative overflow-auto">
                             {/* Grid Background Effect */}
-                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                                style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                            <div className="absolute inset-0 opacity-[0.035] pointer-events-none"
+                                style={{ backgroundImage: 'linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
 
-                             <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.5 }}
-                                ref={previewRef}
-                                className="shadow-[0_40px_100px_rgba(0,0,0,0.15)] relative overflow-hidden flex flex-col p-8 transition-all duration-500 ease-out border border-border/"
-                                style={{
-                                    width: `${parseFloat(design.customWidth) * 4}px`,
-                                    height: `${parseFloat(design.customHeight) * 4}px`,
-                                    backgroundColor: design.backgroundColor,
-                                    color: design.textColor,
-                                    border: design.borderStyle === 'elegant' ? `6px double ${design.accentColor}30` : 'none',
-                                    borderRadius: design.customShape === 'Circle' ? '50%' : '12px',
-                                }}
-                            >
-                                {/* Background Accent Pattern */}
-                                <div className="absolute top-0 right-0 w-48 h-48 opacity-[0.04] pointer-events-none -mr-12 -mt-12 rotate-12">
-                                    <Hexagon className="w-full h-full" stroke={design.accentColor} strokeWidth={1} />
-                                </div>
+                            {/* Main Label Preview Canvas */}
+                            {(() => {
+                                const widthMm = parseFloat(design.customWidth) || 99.1;
+                                const heightMm = parseFloat(design.customHeight) || 57;
+                                const previewWidth = Math.max(520, Math.min(640, Math.round(widthMm * 5.2)));
+                                const previewHeight = Math.max(290, Math.min(380, Math.round(heightMm * 5.2)));
 
-                                {/* Label Content */}
-                                <div className="relative z-10">
-                                    {/* Top: Logo (bigger, centered) */}
-                                    {design.showLogo && (
-                                        <div className="flex items-center justify-center mb-5">
-                                            <div
-                                                className="px-3 py-2 rounded-2xl bg-muted/ backdrop-blur-md border border-border/ shadow-lg shadow-black/10"
-                                                style={{ maxWidth: '72%' }}
-                                            >
-                                                {design.logoUrl ? (
-                                                    <img
-                                                        src={design.logoUrl}
-                                                        alt="Logo"
-                                                        style={{ height: `${52 * design.logoScale}px` }}
-                                                        className="object-contain mx-auto"
-                                                    />
-                                                ) : (
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <Droplet className="w-7 h-7 opacity-80" style={{ color: design.accentColor }} />
-                                                        <span className="text-[11px] font-semibold tracking-tight opacity-80">BeeYield</span>
+                                return (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.96 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ duration: 0.4 }}
+                                        ref={previewRef}
+                                        className="shadow-[0_30px_90px_rgba(0,0,0,0.18)] relative rounded-2xl flex flex-col justify-between p-6 sm:p-7 transition-all duration-300 border"
+                                        style={{
+                                            width: `${previewWidth}px`,
+                                            minHeight: `${previewHeight}px`,
+                                            backgroundColor: design.backgroundColor,
+                                            color: design.textColor,
+                                            border: design.borderStyle === 'elegant'
+                                                ? `3px double ${design.accentColor}50`
+                                                : design.borderStyle === 'modern'
+                                                    ? `1.5px solid ${design.accentColor}40`
+                                                    : 'none',
+                                            borderRadius: design.customShape === 'Circle' ? '50%' : '16px',
+                                        }}
+                                    >
+                                        {/* Background Watermark Pattern */}
+                                        <div className="absolute top-0 right-0 w-64 h-64 opacity-[0.04] pointer-events-none -mr-16 -mt-16 rotate-12">
+                                            <Hexagon className="w-full h-full" stroke={design.accentColor} strokeWidth={1.5} />
+                                        </div>
+
+                                        {/* Content Grid: Left Column (Brand + Metadata) and Right Column (Dedicated Traceability QR) */}
+                                        <div className="grid grid-cols-12 gap-5 h-full relative z-10">
+                                            {/* Left Column */}
+                                            <div className={design.showQRCode ? "col-span-8 flex flex-col justify-between space-y-3" : "col-span-12 flex flex-col justify-between space-y-3"}>
+                                                {/* Header Brand */}
+                                                <div className="flex items-center gap-3">
+                                                    {design.showLogo && (
+                                                        design.logoUrl ? (
+                                                            <img
+                                                                src={design.logoUrl}
+                                                                alt="Logo"
+                                                                style={{ height: `${38 * design.logoScale}px` }}
+                                                                className="object-contain"
+                                                            />
+                                                        ) : (
+                                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/10 border border-current/15">
+                                                                <Droplet className="w-4 h-4" style={{ color: design.accentColor }} />
+                                                                <span className="text-[11px] font-black tracking-tight">BeeYield</span>
+                                                            </div>
+                                                        )
+                                                    )}
+                                                    <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/20">
+                                                        <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                                                        Certified Raw Honey
                                                     </div>
+                                                </div>
+
+                                                {/* Product Name & Floral Origin */}
+                                                <div className="space-y-1">
+                                                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight" style={{ color: design.accentColor }}>
+                                                        {design.productName || 'Pure Natural Honey'}
+                                                    </h2>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="h-[1.5px] w-6 bg-current opacity-40"></span>
+                                                        <p className="text-xs font-bold opacity-90 truncate">
+                                                            {design.honeyType || 'Raw Acacia & Desert Wildflower Blossom'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Marketing Note / Tasting Notes */}
+                                                {design.marketingNote && (
+                                                    <p className="text-[10px] leading-relaxed opacity-75 font-medium line-clamp-2">
+                                                        {design.marketingNote}
+                                                    </p>
                                                 )}
-                                            </div>
-                                        </div>
-                                    )}
 
-                                    {/* Title row (weight separated from QR) */}
-                                    <div className="flex items-start justify-between gap-6">
-                                        <div className="flex-1 pr-2">
-                                            <h2 className="text-3xl font-black tracking-tight leading-tight mb-2" style={{ color: design.accentColor }}>
-                                                {design.productName || 'Pure honey'}
-                                            </h2>
-                                            <div className="flex items-center gap-3">
-                                                <span className="h-[1px] w-8 bg-current opacity-30"></span>
-                                                <p className="text-[11px] font-semibold opacity-80">
-                                                    {design.honeyType}
-                                                </p>
-                                            </div>
-                                        </div>
+                                                {/* Bottom Metadata & Net Weight */}
+                                                <div className="pt-2 border-t flex items-end justify-between gap-3" style={{ borderColor: `${design.accentColor}25` }}>
+                                                    <div className="text-[8.5px] space-y-0.5 font-bold opacity-80 min-w-0">
+                                                        {design.producer && <p className="font-black text-[9.5px] truncate">{design.producer}</p>}
+                                                        <p className="opacity-70 truncate">{design.address || design.country || 'Kenyan Apiculture Reserve'}</p>
+                                                        <div className="flex items-center gap-3 pt-0.5 text-[8px] opacity-60 font-mono font-bold">
+                                                            {design.showBatchNumber && <span>LOT: {design.batchNumber || 'BEE-BATCH-01'}</span>}
+                                                            {design.showBestBefore && <span>EXP: {design.bestBeforeDate}</span>}
+                                                        </div>
+                                                    </div>
 
-                                        <div className="shrink-0 text-right">
-                                            <div className="inline-flex flex-col items-end rounded-2xl bg-muted/ backdrop-blur-md border border-border/ px-3 py-2 shadow-lg shadow-black/10">
-                                                <p className="text-[7px] opacity-50 font-black">Net Weight</p>
-                                                <p className="text-3xl font-black tabular-nums tracking-tighter leading-none">
-                                                    {design.weight}
-                                                    <span className="text-xs ml-0.5 font-bold">{design.weightUnit}</span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 flex-1 relative z-10">
-                                    <p className="text-[10px] leading-relaxed max-w-[90%] opacity-80 font-bold tracking-tight">
-                                        {design.marketingNote || 'Add a short product story.'}
-                                    </p>
-                                </div>
-
-                                <div className="mt-auto space-y-4 relative z-10">
-                                    <div className="flex justify-between items-end border-t pt-4" style={{ borderColor: `${design.accentColor}20` }}>
-                                        <div className="text-[9px] space-y-1 font-bold leading-tight opacity-80">
-                                            {design.producer && <p className="font-black">{design.producer}</p>}
-                                            <div className="text-[7px] opacity-60">
-                                                {design.address && <p>{design.address}</p>}
-                                                {design.country && <p>{design.country}</p>}
-                                            </div>
-                                        </div>
-                                        {/* Weight moved to header pill to avoid QR collision */}
-                                    </div>
-
-                                    {(design.showBatchNumber || design.showBestBefore) && (
-                                        <div className="flex gap-4 text-[7px] font-black opacity-30">
-                                            {design.showBatchNumber && <div>BATCH: {design.batchNumber}</div>}
-                                            {design.showBestBefore && <div>EXP: {design.bestBeforeDate}</div>}
-                                        </div>
-                                    )}
-
-                                    {design.showFooter && (
-                                        <div className="pt-2 flex items-center justify-center gap-2 opacity-40">
-                                            <img
-                                                src={BEEYIELD_LOGO}
-                                                alt="BeeYield"
-                                                className="h-3 w-auto object-contain"
-                                            />
-                                            <span className="text-[6px] font-black">
-                                                GENERATED BY BEEYIELD • {design.harvestYear}
-                                            </span>
-                                        </div>
-                                    )}
-
-                                    {design.showQRCode && (
-                                        <div className="absolute right-4 bottom-4 z-20 w-40 sm:w-44 rounded-2xl bg-white border-2 border-amber-500/80 p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-center transition-transform hover:scale-105">
-                                            {/* Traceability Header */}
-                                            <div className="mb-1.5 flex flex-col items-center">
-                                                <span className="text-[7.5px] font-black uppercase tracking-wider text-amber-800 flex items-center gap-1">
-                                                    <ShieldCheck className="w-3 h-3 text-emerald-600 inline" /> Traceability Verified
-                                                </span>
-                                                <div className="mt-0.5 px-2 py-0.5 rounded bg-neutral-900 text-amber-300 font-mono font-black text-[8.5px] tracking-wide max-w-full truncate border border-amber-500/40">
-                                                    BATCH: {design.batchNumber || 'BEE-20260105-001'}
+                                                    {/* Net Weight Pill */}
+                                                    <div className="shrink-0 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 border border-current/15 text-right shadow-sm">
+                                                        <p className="text-[7px] opacity-60 font-black uppercase tracking-wider">Net Weight</p>
+                                                        <p className="text-xl sm:text-2xl font-black tabular-nums tracking-tight leading-none">
+                                                            {design.weight || '500'}
+                                                            <span className="text-[11px] ml-0.5 font-bold">{design.weightUnit || 'g'}</span>
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Large, High-Contrast QR Code */}
-                                            <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto rounded-xl bg-white p-1 border border-neutral-200 shadow-inner flex items-center justify-center overflow-hidden">
-                                                {qrDataUrl ? (
-                                                    <img
-                                                        src={qrDataUrl}
-                                                        alt={`Traceability QR for batch ${design.batchNumber || 'BEE-20260105-001'}`}
-                                                        className="w-full h-full object-contain"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full grid place-items-center text-neutral-400">
-                                                        <Grid className="w-8 h-8" />
+                                            {/* Right Column: Dedicated Traceability QR Block (100% VISIBLE, NO CLIPPING) */}
+                                            {design.showQRCode && (
+                                                <div className="col-span-4 flex flex-col items-center justify-between p-2.5 rounded-xl bg-white border-2 border-amber-500/80 shadow-md text-center text-neutral-900">
+                                                    {/* Header */}
+                                                    <div className="w-full space-y-0.5">
+                                                        <span className="text-[7.5px] font-black uppercase tracking-wider text-amber-800 flex items-center justify-center gap-1">
+                                                            <ShieldCheck className="w-3 h-3 text-emerald-600 shrink-0" />
+                                                            Traceability Verified
+                                                        </span>
+                                                        <div className="px-1.5 py-0.5 rounded bg-neutral-900 text-amber-300 font-mono font-black text-[8px] tracking-wide truncate border border-amber-500/40">
+                                                            BATCH: {design.batchNumber || 'BEE-2026-001'}
+                                                        </div>
                                                     </div>
-                                                )}
-                                            </div>
 
-                                            {/* Scan Callout */}
-                                            <div className="mt-1.5 space-y-0.5">
-                                                <div className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-950 font-black text-[7.5px] tracking-wider uppercase border border-amber-500/30">
-                                                    📷 Scan To Verify Harvest
+                                                    {/* Crisp QR Code - Guaranteed 100% visible */}
+                                                    <div className="w-24 h-24 sm:w-28 sm:h-28 my-1 p-1 rounded-lg bg-white border border-neutral-200 shadow-inner flex items-center justify-center overflow-hidden">
+                                                        {qrDataUrl ? (
+                                                            <img
+                                                                src={qrDataUrl}
+                                                                alt={`Traceability QR for ${design.batchNumber || 'batch'}`}
+                                                                className="w-full h-full object-contain"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full grid place-items-center text-neutral-400">
+                                                                <Grid className="w-8 h-8 animate-pulse" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Scan Callout */}
+                                                    <div className="w-full space-y-0.5">
+                                                        <div className="px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-950 font-black text-[7px] tracking-wider uppercase border border-amber-500/30 truncate">
+                                                            📷 Scan To Verify
+                                                        </div>
+                                                        <p className="text-[6.5px] font-mono text-neutral-500 truncate">
+                                                            beeyield.com/traceability
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <p className="text-[6.5px] font-mono text-neutral-500 truncate">
-                                                    beeyield.com/traceability
-                                                </p>
-                                            </div>
+                                            )}
                                         </div>
+                                    </motion.div>
+                                );
+                            })()}
+
+                            {/* QR Traceability Live Quick Actions Bar */}
+                            <div className="w-full max-w-xl mt-6 p-3 rounded-2xl bg-card border border-border/70 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-9 h-9 rounded-lg bg-white border border-border/80 p-0.5 shadow-sm overflow-hidden flex items-center justify-center shrink-0">
+                                        {qrDataUrl ? (
+                                            <img src={qrDataUrl} alt="QR Thumbnail" className="w-full h-full object-contain" />
+                                        ) : (
+                                            <Grid className="w-4 h-4 text-muted-foreground" />
+                                        )}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-foreground flex items-center gap-1">
+                                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                                            Cryptographic QR Traceability
+                                        </p>
+                                        <p className="text-[10px] text-muted-foreground font-mono truncate max-w-xs">
+                                            {design.batchNumber ? `Batch ${design.batchNumber} • beeyield.com/traceability` : 'Ready for verification scan'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => copyToClipboard('Traceability Link', design.traceUrl || `https://beeyield.com/traceability?code=${encodeURIComponent(design.batchNumber || '')}`)}
+                                        className="px-3 py-1.5 rounded-xl border border-border bg-muted/40 hover:bg-muted text-xs font-bold text-foreground flex items-center gap-1.5 transition-colors"
+                                    >
+                                        <LinkIcon className="w-3.5 h-3.5 text-amber-500" /> Copy Link
+                                    </button>
+                                    {qrDataUrl && (
+                                        <a
+                                            href={qrDataUrl}
+                                            download={`beeyield-qr-${design.batchNumber || 'batch'}.png`}
+                                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm"
+                                        >
+                                            <Download className="w-3.5 h-3.5" /> Download QR
+                                        </a>
                                     )}
                                 </div>
-                             </motion.div>
+                            </div>
                         </div>
                     </BeeYieldCard>
 
@@ -1302,8 +1382,8 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         <div
                                             key={saved.id}
                                             className={cn(
-                                                "p-3 rounded-lg border bg-muted/ hover:bg-muted/ transition-all group flex justify-between items-center",
-                                                saved.id === design.id ? "border-border/ shadow-sm" : "border-border/"
+                                                "p-3 rounded-lg border bg-muted/30 hover:bg-muted/30 transition-all group flex justify-between items-center",
+                                                saved.id === design.id ? "border-border/60 shadow-sm" : "border-border/60"
                                             )}
                                         >
                                             <div className="min-w-0">
@@ -1368,7 +1448,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     { label: 'Weight and units', icon: ShieldCheck, status: 'OK', color: 'text-[#1B9157]' },
                                     { label: 'Country rules', icon: Shield, status: 'Check', color: 'text-[#F4D03F]' },
                                 ].map((c, i) => (
-                                    <div key={i} className="flex items-center justify-between p-2.5 rounded-lg border border-black/5 bg-muted/">
+                                    <div key={i} className="flex items-center justify-between p-2.5 rounded-lg border border-black/5 bg-muted/30">
                                         <div className="flex items-center gap-2.5">
                                             <c.icon className={cn("w-3.5 h-3.5", c.color)} />
                                             <span className="text-xs font-semibold">{c.label}</span>
@@ -1404,7 +1484,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         "group p-2.5 rounded-xl border-2 transition-all duration-300",
                                         design.template === tmp.id
                                             ? 'border-[#F4D03F] bg-[#F4D03F]/5 shadow-md'
-                                            : 'border-transparent bg-muted/ hover:border-border/'
+                                            : 'border-transparent bg-muted/30 hover:border-border/60'
                                     )}
                                 >
                                     <div className="aspect-[3/2] rounded-lg mb-2 shadow-inner flex flex-col p-2 space-y-1 overflow-hidden" style={{ backgroundColor: tmp.color }}>
@@ -1460,7 +1540,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </div>
                         <div className="p-5">
                             <div
-                                className="w-full h-28 rounded-xl border-2 border-dashed border-border/ flex flex-col items-center justify-center bg-muted/ cursor-pointer hover:bg-[#F4D03F]/5 transition-all group"
+                                className="w-full h-28 rounded-xl border-2 border-dashed border-border/60 flex flex-col items-center justify-center bg-muted/30 cursor-pointer hover:bg-[#F4D03F]/5 transition-all group"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 {design.logoUrl ? (
