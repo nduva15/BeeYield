@@ -649,14 +649,14 @@ Zone Notes: ${draft.notes || "None"}`;
       </div>
 
       {/* Prominent Add Forage Zone Banner (matching InspectionsPage) */}
-      <div className="rounded-2xl border border-emerald-500/40 bg-emerald-950/40 p-4 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/90 dark:bg-emerald-950/40 p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-emerald-600/10 dark:bg-emerald-500/20 border border-emerald-600/20 dark:border-emerald-500/40 flex items-center justify-center shrink-0 text-emerald-700 dark:text-emerald-400">
             <Flower2 className="w-5 h-5 text-emerald-400" />
           </div>
           <div>
-            <div className="text-sm font-semibold text-white">Record New Forage Zone</div>
-            <div className="text-xs text-emerald-200/80">
+            <div className="text-sm font-bold text-emerald-950 dark:text-white">Record New Forage Zone</div>
+            <div className="text-xs text-emerald-800/90 dark:text-emerald-200/80">
               Log flora species, bloom density, and flight radii to predict nectar flow and carrying capacity
             </div>
           </div>
@@ -736,14 +736,14 @@ Zone Notes: ${draft.notes || "None"}`;
           </div>
 
           {/* BeeGPT Field SOP Assistant */}
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 space-y-2.5">
+          <div className="rounded-xl border border-emerald-200/90 dark:border-emerald-800/60 bg-emerald-50/80 dark:bg-emerald-950/30 p-4 space-y-3 shadow-xs">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-950 dark:text-emerald-300">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>BeeGPT Floral & Forage Intelligence</span>
               </div>
               {aiStreaming && (
-                <span className="flex items-center gap-1 text-[11px] text-emerald-400">
+                <span className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
                   <Loader2 className="w-3 h-3 animate-spin" />
                   Generating botanical advice...
                 </span>
@@ -759,7 +759,7 @@ Zone Notes: ${draft.notes || "None"}`;
                     setAiPrompt(prompt);
                     void runAiAdvisor(prompt);
                   }}
-                  className="px-2.5 py-1 rounded-full text-[11px] border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 transition-colors"
+                  className="px-3 py-1 rounded-full text-[11px] border border-emerald-300/90 dark:border-emerald-700/60 bg-white dark:bg-emerald-900/40 hover:bg-emerald-100/90 dark:hover:bg-emerald-800/60 text-emerald-950 dark:text-emerald-100 font-semibold shadow-xs transition-all active:scale-95"
                 >
                   {prompt}
                 </button>
@@ -778,7 +778,7 @@ Zone Notes: ${draft.notes || "None"}`;
                     void runAiAdvisor();
                   }
                 }}
-                className="flex-1 bg-background/80 border border-border rounded-lg px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-500"
+                className="flex-1 bg-white dark:bg-background/80 border border-emerald-300/80 dark:border-border rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-600 shadow-xs"
               />
               <button
                 type="button"
@@ -792,9 +792,9 @@ Zone Notes: ${draft.notes || "None"}`;
             </div>
 
             {aiText && (
-              <div className="mt-2 p-3 rounded-lg bg-background/90 border border-emerald-500/30 text-xs space-y-2">
+              <div className="mt-2 p-3.5 rounded-xl bg-white dark:bg-background/90 border border-emerald-200 dark:border-emerald-800/50 text-xs space-y-2 shadow-sm">
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground border-b border-border/40 pb-1.5">
-                  <span className="font-semibold text-emerald-400">Field Advice & Calculations</span>
+                  <span className="font-bold text-emerald-950 dark:text-emerald-300">Field Advice & Calculations</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -804,7 +804,7 @@ Zone Notes: ${draft.notes || "None"}`;
                       }));
                       toast.success("Advice copied into notes");
                     }}
-                    className="text-emerald-400 hover:underline flex items-center gap-1"
+                    className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-200 font-semibold hover:underline flex items-center gap-1"
                   >
                     <Copy className="w-3 h-3" />
                     Insert into Notes
@@ -897,7 +897,7 @@ Zone Notes: ${draft.notes || "None"}`;
                     className={cn(
                       "px-2 py-0.5 rounded text-[11px] border transition-colors",
                       draft.flora_type === preset
-                        ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-semibold"
+                        ? "bg-emerald-100 dark:bg-emerald-900/50 border-emerald-500 text-emerald-950 dark:text-emerald-100 font-bold"
                         : "bg-muted/40 border-border/50 text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -911,7 +911,7 @@ Zone Notes: ${draft.notes || "None"}`;
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <label className="font-medium text-foreground">Flight Radius (km)</label>
-                <span className="text-emerald-400 font-semibold">{draft.radius_km} km</span>
+                <span className="text-emerald-800 dark:text-emerald-400 font-bold">{draft.radius_km} km</span>
               </div>
               <input
                 type="range"
@@ -1080,7 +1080,7 @@ Zone Notes: ${draft.notes || "None"}`;
               className={cn(
                 "px-2.5 py-1 rounded-full text-[11px] border transition-colors",
                 speciesFilter === sp
-                  ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-semibold"
+                  ? "bg-emerald-100 dark:bg-emerald-900/50 border-emerald-500 text-emerald-950 dark:text-emerald-100 font-bold"
                   : "bg-card/60 border-border/60 text-muted-foreground hover:border-emerald-500/40"
               )}
             >
@@ -1101,7 +1101,7 @@ Zone Notes: ${draft.notes || "None"}`;
               className={cn(
                 "px-2.5 py-1 rounded-full text-[11px] border transition-colors",
                 densityFilter === d.id
-                  ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-semibold"
+                  ? "bg-emerald-100 dark:bg-emerald-900/50 border-emerald-500 text-emerald-950 dark:text-emerald-100 font-bold"
                   : "bg-card/60 border-border/60 text-muted-foreground hover:border-emerald-500/40"
               )}
             >
@@ -1117,7 +1117,7 @@ Zone Notes: ${draft.notes || "None"}`;
               className={cn(
                 "px-2.5 py-1 rounded-full text-[11px] border transition-colors",
                 seasonFilter === s
-                  ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-semibold"
+                  ? "bg-emerald-100 dark:bg-emerald-900/50 border-emerald-500 text-emerald-950 dark:text-emerald-100 font-bold"
                   : "bg-card/60 border-border/60 text-muted-foreground hover:border-emerald-500/40"
               )}
             >
@@ -1285,10 +1285,10 @@ Zone Notes: ${draft.notes || "None"}`;
 
                 {/* BeeGPT Advice Drawer */}
                 {zone.ai_insights && (
-                  <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/10 p-2.5 text-xs space-y-1.5">
+                  <div className="rounded-xl border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50/70 dark:bg-emerald-950/20 p-2.5 text-xs space-y-1.5">
                     <button
                       onClick={() => setExpandedZoneAi((prev) => ({ ...prev, [zone.id]: !prev[zone.id] }))}
-                      className="w-full flex items-center justify-between text-emerald-400 font-semibold text-[11px]"
+                      className="w-full flex items-center justify-between text-emerald-900 dark:text-emerald-300 font-bold text-[11px]"
                     >
                       <span className="flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
