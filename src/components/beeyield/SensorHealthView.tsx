@@ -40,7 +40,7 @@ export interface ColonyInspectionItem {
     notes: string;
 }
 
-// Canonical Timothy Nduva 184 Hives in Kibwezi Main Apiary
+// Canonical Timothy Nduva 184 Hives in BeeYield Apiary in Kibwezi Kenya
 export const CANONICAL_INSPECTION_HIVES: ColonyInspectionItem[] = Array.from({ length: 184 }, (_, i) => {
     const code = `KIB-${String(i + 1).padStart(3, '0')}`;
     const isYoungQueen = i % 12 === 0;
@@ -48,7 +48,7 @@ export const CANONICAL_INSPECTION_HIVES: ColonyInspectionItem[] = Array.from({ l
         id: `hive-kib-${String(i + 1).padStart(3, '0')}`,
         code,
         name: `${code} (Langstroth 10)`,
-        apiary: 'Kibwezi Main Apiary',
+        apiary: 'BeeYield Apiary in Kibwezi Kenya',
         hiveType: 'Langstroth 10-Frame',
         queenStatus: isYoungQueen ? 'Active Laying Queen (Young, Marked)' : 'Active Laying Queen (Marked)',
         broodFrames: '10 Frames (6 Brood / 4 Honey)',
@@ -214,7 +214,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     id: dh.id,
                     code: dh.hive_code || dh.name || `KIB-${String(idx + 1).padStart(3, '0')}`,
                     name: dh.name || dh.hive_code || `Hive ${dh.id.slice(0, 6)}`,
-                    apiary: dh.apiary?.name || dh.apiary_name || 'Kibwezi Main Apiary',
+                    apiary: dh.apiary?.name || dh.apiary_name || 'BeeYield Apiary in Kibwezi Kenya',
                     hiveType: dh.hive_type || 'Langstroth 10-Frame',
                     queenStatus: dh.queen_status || 'Active Laying Queen (Marked)',
                     broodFrames: dh.max_brood_frames ? `${dh.max_brood_frames} Frames` : '10 Frames (6 Brood / 4 Honey)',
@@ -370,7 +370,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             Certified Physical Inspection Mode • No IoT Sensors Attached
                         </h4>
                         <p className="text-xs text-emerald-800/80 font-medium">
-                            Lead Beekeeper: <strong>Timothy Nduva</strong> · Location: <strong>Kibwezi Main Apiary, Kiunduani, Makueni County (-2.409°, 37.967°)</strong>. Colony health verified by physical field inspections. Ambient conditions connected live via Open-Meteo REST API.
+                            Lead Beekeeper: <strong>Timothy Nduva</strong> · Location: <strong>BeeYield Apiary in Kibwezi Kenya, Kiunduani, Makueni County (-2.409°, 37.967°)</strong>. Colony health verified by physical field inspections. Ambient conditions connected live via Open-Meteo REST API.
                         </p>
                     </div>
                 </div>
@@ -754,3 +754,4 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 };
 
 export default SensorHealthView;
+

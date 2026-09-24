@@ -220,7 +220,7 @@ const UserDebugPanel: React.FC = () => {
                                         }}
                                         className="w-full bg-[#F4D03F] hover:bg-amber-600 text-foreground font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 tracking-wider text-[10px]"
                                     >
-                                        Claim Kibwezi Main Apiary
+                                        Claim BeeYield Apiary in Kibwezi Kenya
                                     </Button>
                                 </div>
                             )}
@@ -233,4 +233,5 @@ const UserDebugPanel: React.FC = () => {
 };
 
 export default UserDebugPanel;
+
 

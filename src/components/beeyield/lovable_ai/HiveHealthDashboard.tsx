@@ -48,11 +48,11 @@ type HiveRecord = {
 };
 
 export const BEE_KNOWLEDGE_HIVES: Array<{ id: string; name: string; apiary?: string }> = [
-  { id: "hive-kib-001", name: "Hive KIB-001 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
-  { id: "hive-kib-002", name: "Hive KIB-002 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
-  { id: "hive-kib-003", name: "Hive KIB-003 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
-  { id: "hive-kib-004", name: "Hive KIB-004 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
-  { id: "hive-kib-005", name: "Hive KIB-005 (Langstroth 10)", apiary: "Kibwezi Main Apiary" },
+  { id: "hive-kib-001", name: "Hive KIB-001 (Langstroth 10)", apiary: "BeeYield Apiary in Kibwezi Kenya" },
+  { id: "hive-kib-002", name: "Hive KIB-002 (Langstroth 10)", apiary: "BeeYield Apiary in Kibwezi Kenya" },
+  { id: "hive-kib-003", name: "Hive KIB-003 (Langstroth 10)", apiary: "BeeYield Apiary in Kibwezi Kenya" },
+  { id: "hive-kib-004", name: "Hive KIB-004 (Langstroth 10)", apiary: "BeeYield Apiary in Kibwezi Kenya" },
+  { id: "hive-kib-005", name: "Hive KIB-005 (Langstroth 10)", apiary: "BeeYield Apiary in Kibwezi Kenya" },
 ];
 
 const DEFAULT_RECORDS: HiveRecord[] = [
@@ -944,3 +944,4 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     </div>
   );
 }
+

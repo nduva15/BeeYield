@@ -154,13 +154,13 @@ export default function ForageZonesView({
         setApiaries(data);
       } else {
         setApiaries([
-          { id: "primary-apiary", name: "Kibwezi Main Apiary", latitude: -2.4251, longitude: 37.9742 },
+          { id: "primary-apiary", name: "BeeYield Apiary in Kibwezi Kenya", latitude: -2.4251, longitude: 37.9742 },
           { id: "north-apiary", name: "Mbuinzau Hill Apiary", latitude: -2.4412, longitude: 37.9890 },
         ]);
       }
     } catch {
       setApiaries([
-        { id: "primary-apiary", name: "Kibwezi Main Apiary", latitude: -2.4251, longitude: 37.9742 },
+        { id: "primary-apiary", name: "BeeYield Apiary in Kibwezi Kenya", latitude: -2.4251, longitude: 37.9742 },
         { id: "north-apiary", name: "Mbuinzau Hill Apiary", latitude: -2.4412, longitude: 37.9890 },
       ]);
     }
@@ -1346,3 +1346,4 @@ Zone Notes: ${draft.notes || "None"}`;
     </div>
   );
 }
+

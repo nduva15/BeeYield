@@ -29,7 +29,7 @@ interface DashboardHomeViewProps {
 // Canonical Timothy Nduva Inspection Apiary & Hive Defaults
 const CANONICAL_KIBWEZI_APIARY: Apiary = {
     id: "apiary-kibwezi",
-    name: "Kibwezi Main Apiary",
+    name: "BeeYield Apiary in Kibwezi Kenya",
     location_name: "Kiunduani, Kibwezi",
     county: "Makueni",
     region: "Kibwezi East",
@@ -423,7 +423,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">184 Verified Hives</span>
                                     </h3>
                                     <p className="text-xs text-muted-foreground">
-                                        Diagnostic inspection ledger for Timothy Nduva • Kibwezi Main Apiary
+                                        Diagnostic inspection ledger for Timothy Nduva • BeeYield Apiary in Kibwezi Kenya
                                     </p>
                                 </div>
                             </div>
@@ -524,7 +524,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         Open-Meteo Live API Weather
                                     </div>
                                     <h3 className="text-xl sm:text-2xl font-black tracking-tight text-neutral-900 flex items-center gap-2">
-                                        {primaryApiary?.name || 'Kibwezi Main Apiary'} Microclimate
+                                        {primaryApiary?.name || 'BeeYield Apiary in Kibwezi Kenya'} Microclimate
                                     </h3>
                                     <p className="text-xs text-neutral-500 font-medium flex items-center gap-1">
                                         <MapPin className="w-3.5 h-3.5 text-amber-600" />
@@ -706,7 +706,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 <div className="lg:col-span-12">
                     <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
                         {[
-                            { label: 'Apiaries', value: loadedApiaries.length, icon: MapPin, hint: primaryApiary?.name || 'Kibwezi Main Apiary' },
+                            { label: 'Apiaries', value: loadedApiaries.length, icon: MapPin, hint: primaryApiary?.name || 'BeeYield Apiary in Kibwezi Kenya' },
                             { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: '184 Langstroth (KIB-001..184)' },
                             { label: 'Certified Yield', value: '843.0 KG', icon: Scale, hint: '783 KG hist + 60 KG 2026' },
                             { label: 'Batches', value: batches.length || 8, icon: Binary, hint: 'Blockchain verified' },
@@ -837,3 +837,4 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 };
 
 export default DashboardHomeView;
+
