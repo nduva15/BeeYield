@@ -431,7 +431,6 @@ const BeeYieldDashboard: React.FC = () => {
 
             case 'varroa': return renderEmbedded(<VarroaSimulator isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'acoustic-spectral': return <AcousticSpectralView onTabChange={handleTabChange} embedded={true} />;
-            case 'sound-analysis':
             case 'sound': return <SoundAnalysisView onTabChange={handleTabChange} embedded={true} />;
             case 'image-analysis': return <ImageAnalysisView onTabChange={handleTabChange} />;
             case 'health-guide': return <HealthGuideView onTabChange={handleTabChange} initialParams={viewParams} />;
