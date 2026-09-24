@@ -215,6 +215,19 @@ export function normalizeApiarySite(site: ApiarySite): ApiarySite {
   };
 }
 
+export function deduplicateApiaries<T extends ApiarySite>(apiariesList: T[]): T[] {
+  const seen = new Set<string>();
+  const deduplicated: T[] = [];
+  for (const ap of apiariesList) {
+    const key = normalizeApiaryName(ap.name).toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      deduplicated.push(normalizeApiarySite(ap) as T);
+    }
+  }
+  return deduplicated.length > 0 ? deduplicated : (DEFAULT_APIARIES.map(normalizeApiarySite) as T[]);
+}
+
 export function getUserHivesCount(userKey: string, apiaryId: string, fallbackCount: number): number {
   try {
     const stored = localStorage.getItem(getStorageKey(userKey, apiaryId, "hives"));
@@ -2238,7 +2251,7 @@ export default function ApiariesPage({
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((item) => {
+          const list = parsed.map((item) => {
             const normalized = normalizeApiarySite(item);
             const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
             return {
@@ -2247,20 +2260,23 @@ export default function ApiariesPage({
               total_hives: Math.max(normalized.total_hives, userHives),
             };
           });
+          return deduplicateApiaries(list);
         }
       }
     } catch {
       // fallback
     }
-    return DEFAULT_APIARIES.map((item) => {
-      const normalized = normalizeApiarySite(item);
-      const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
-      return {
-        ...normalized,
-        active_hives: userHives,
-        total_hives: Math.max(normalized.total_hives, userHives),
-      };
-    });
+    return deduplicateApiaries(
+      DEFAULT_APIARIES.map((item) => {
+        const normalized = normalizeApiarySite(item);
+        const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
+        return {
+          ...normalized,
+          active_hives: userHives,
+          total_hives: Math.max(normalized.total_hives, userHives),
+        };
+      })
+    );
   });
 
   const [weatherMap, setWeatherMap] = useState<Record<string, LiveWeatherData>>({});
@@ -2334,9 +2350,10 @@ export default function ApiariesPage({
             };
           });
 
-          setApiaries(mapped);
+          const cleanApiaries = deduplicateApiaries(mapped);
+          setApiaries(cleanApiaries);
           try {
-            localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify(mapped));
+            localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify(cleanApiaries));
           } catch {
             // ignore
           }

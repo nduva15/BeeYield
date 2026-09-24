@@ -12,6 +12,7 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
+import { normalizeApiaryName, deduplicateApiaries, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 
 export type Inspection = {
   id: string;
@@ -256,11 +257,12 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
   const allApiaries = useMemo(() => {
     const list: Array<{ id: string; name: string; region?: string; county?: string }> = [...CANONICAL_APIARIES];
     userApiaries.forEach((ua) => {
-      if (!list.some((a) => a.name.toLowerCase() === ua.name.toLowerCase())) {
-        list.push({ id: ua.id, name: ua.name, region: "Custom Site", county: "Kenya" });
+      const norm = normalizeApiaryName(ua.name);
+      if (!list.some((a) => a.name.toLowerCase() === norm.toLowerCase())) {
+        list.push({ id: ua.id, name: norm, region: "Kibwezi East", county: "Makueni" });
       }
     });
-    return list;
+    return deduplicateApiaries(list);
   }, [userApiaries]);
 
   // Combine canonical hives with user-created hives
@@ -346,27 +348,30 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
 
   const loadUserHivesAndApiaries = useCallback(async () => {
     try {
-      const [hivesRes, apiariesRes] = await Promise.all([
-        (supabase as any).from("hives").select("id, name, hive_code, apiary_id, apiaries(name)").limit(100),
-        (supabase as any).from("apiaries").select("id, name").limit(100),
-      ]);
+      let hivesQuery = (supabase as any).from("hives").select("id, name, hive_code, apiary_id, apiaries(name)").limit(100);
+      let apiariesQuery = (supabase as any).from("apiaries").select("id, name").limit(100);
+      if (user?.id) {
+        hivesQuery = hivesQuery.eq("user_id", user.id);
+        apiariesQuery = apiariesQuery.eq("user_id", user.id);
+      }
+      const [hivesRes, apiariesRes] = await Promise.all([hivesQuery, apiariesQuery]);
       if (hivesRes.data) {
         setUserHives(
           hivesRes.data.map((h: any) => ({
             id: h.id,
             name: h.name,
             hive_code: h.hive_code,
-            apiary_name: h.apiaries?.name || "Apiary",
+            apiary_name: normalizeApiaryName(h.apiaries?.name || CANONICAL_APIARY_NAME),
           }))
         );
       }
       if (apiariesRes.data) {
-        setUserApiaries(apiariesRes.data.map((a: any) => ({ id: a.id, name: a.name })));
+        setUserApiaries(apiariesRes.data.map((a: any) => ({ id: a.id, name: normalizeApiaryName(a.name) })));
       }
     } catch {
       // non-blocking
     }
-  }, []);
+  }, [user?.id]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -1545,4 +1550,3 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
     </div>
   );
 }
-

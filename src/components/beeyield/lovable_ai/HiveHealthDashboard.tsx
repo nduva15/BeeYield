@@ -27,6 +27,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 
 export interface HiveHealthDashboardProps {
   isOpen: boolean;
@@ -134,10 +135,18 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       const cached = localStorage.getItem("beeyield_cached_hives");
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((item: any) => ({
+            ...item,
+            apiary: normalizeApiaryName(item.apiary),
+          }));
+        }
       }
     } catch {}
-    return BEE_KNOWLEDGE_HIVES;
+    return BEE_KNOWLEDGE_HIVES.map((item) => ({
+      ...item,
+      apiary: normalizeApiaryName(item.apiary),
+    }));
   });
 
   const [records, setRecords] = useState<HiveRecord[]>(() => {
@@ -230,7 +239,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         pulledHives = rawHives.map((h: any) => ({
           id: h.id,
           name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${h.id.slice(0, 5)}`,
-          apiary: h.apiaries?.name || h.apiary_name || "BeeYield Apiary",
+          apiary: normalizeApiaryName(h.apiaries?.name || h.apiary_name || CANONICAL_APIARY_NAME),
         }));
         setHivesList(pulledHives);
         try {
@@ -423,7 +432,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               <option value="all">All hives</option>
               {hivesList.map((h) => (
                 <option key={h.id} value={h.name}>
-                  {h.name} {h.apiary ? `· ${h.apiary}` : ""}
+                  {h.name} {h.apiary ? `· ${normalizeApiaryName(h.apiary)}` : ""}
                 </option>
               ))}
             </select>
@@ -944,4 +953,3 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     </div>
   );
 }
-

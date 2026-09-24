@@ -29,6 +29,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
+import { normalizeApiaryName, deduplicateApiaries, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 
 export type ForageZone = {
   id: string;
@@ -146,25 +147,35 @@ export default function ForageZonesView({
   // Load apiaries
   const loadApiaries = useCallback(async () => {
     try {
-      const { data } = await (supabase as any)
+      let query = (supabase as any)
         .from("apiaries")
         .select("id, name, latitude, longitude")
         .order("name");
+      if (user?.id) {
+        query = query.eq("user_id", user.id);
+      }
+      const { data } = await query;
       if (data && Array.isArray(data) && data.length > 0) {
-        setApiaries(data);
+        const clean = deduplicateApiaries(
+          data.map((d: any) => ({
+            id: d.id,
+            name: normalizeApiaryName(d.name),
+            latitude: d.latitude || -2.409,
+            longitude: d.longitude || 37.967,
+          }))
+        );
+        setApiaries(clean);
       } else {
         setApiaries([
-          { id: "primary-apiary", name: "BeeYield Apiary in Kibwezi Kenya", latitude: -2.4251, longitude: 37.9742 },
-          { id: "north-apiary", name: "Mbuinzau Hill Apiary", latitude: -2.4412, longitude: 37.9890 },
+          { id: "apiary-kibwezi", name: CANONICAL_APIARY_NAME, latitude: -2.409, longitude: 37.967 },
         ]);
       }
     } catch {
       setApiaries([
-        { id: "primary-apiary", name: "BeeYield Apiary in Kibwezi Kenya", latitude: -2.4251, longitude: 37.9742 },
-        { id: "north-apiary", name: "Mbuinzau Hill Apiary", latitude: -2.4412, longitude: 37.9890 },
+        { id: "apiary-kibwezi", name: CANONICAL_APIARY_NAME, latitude: -2.409, longitude: 37.967 },
       ]);
     }
-  }, []);
+  }, [user?.id]);
 
   // 1. Fetch data from backend with multi-level fallback
   const loadData = useCallback(async () => {
@@ -1346,4 +1357,3 @@ Zone Notes: ${draft.notes || "None"}`;
     </div>
   );
 }
-
