@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BeeyieldDashboardRouteImport } from './routes/beeyield-dashboard'
 import { Route as BlogsRouteImport } from './routes/blogs'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as CropsWePollinateRouteImport } from './routes/crops-we-pollinate'
@@ -34,6 +35,11 @@ const AboutRoute = AboutRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeeyieldDashboardRoute = BeeyieldDashboardRouteImport.update({
+  id: '/beeyield-dashboard',
+  path: '/beeyield-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogsRoute = BlogsRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
   '/careers': typeof CareersRoute
   '/crops-we-pollinate': typeof CropsWePollinateRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
   '/careers': typeof CareersRoute
   '/crops-we-pollinate': typeof CropsWePollinateRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
   '/careers': typeof CareersRoute
   '/crops-we-pollinate': typeof CropsWePollinateRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/beeyield-dashboard'
     | '/blogs'
     | '/careers'
     | '/crops-we-pollinate'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/beeyield-dashboard'
     | '/blogs'
     | '/careers'
     | '/crops-we-pollinate'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/beeyield-dashboard'
     | '/blogs'
     | '/careers'
     | '/crops-we-pollinate'
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  BeeyieldDashboardRoute: typeof BeeyieldDashboardRoute
   BlogsRoute: typeof BlogsRoute
   CareersRoute: typeof CareersRoute
   CropsWePollinateRoute: typeof CropsWePollinateRoute
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/beeyield-dashboard': {
+      id: '/beeyield-dashboard'
+      path: '/beeyield-dashboard'
+      fullPath: '/beeyield-dashboard'
+      preLoaderRoute: typeof BeeyieldDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blogs': {
@@ -259,6 +279,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  BeeyieldDashboardRoute: BeeyieldDashboardRoute,
   BlogsRoute: BlogsRoute,
   CareersRoute: CareersRoute,
   CropsWePollinateRoute: CropsWePollinateRoute,
