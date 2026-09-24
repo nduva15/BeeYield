@@ -141,7 +141,7 @@ const WeatherTelemetryPanel: React.FC<WeatherTelemetryPanelProps> = ({
             }
             fetchLive();
         }
-    }, [summary?.current?.temperature_c, compact]);
+    }, [summary, compact]);
 
     const effectiveCurrent = summary?.current?.temperature_c !== undefined ? summary.current : openMeteoLive?.current;
     const current = effectiveCurrent;

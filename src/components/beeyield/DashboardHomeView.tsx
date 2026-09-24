@@ -221,8 +221,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
     const loadedApiaries = apiariesQuery.data && apiariesQuery.data.length > 0 ? apiariesQuery.data : [CANONICAL_KIBWEZI_APIARY];
     const loadedHives = hivesQuery.data && hivesQuery.data.length > 0 ? hivesQuery.data : CANONICAL_HIVES;
-    const harvests = harvestsQuery.data || [];
-    const batches = batchesQuery.data || [];
+    const harvests = React.useMemo(() => harvestsQuery.data || [], [harvestsQuery.data]);
+    const batches = React.useMemo(() => batchesQuery.data || [], [batchesQuery.data]);
 
     const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(loadedApiaries[0]?.id);
     const primaryApiary = loadedApiaries.find((a) => a.id === selectedApiaryId) || loadedApiaries[0];

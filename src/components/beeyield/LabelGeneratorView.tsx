@@ -343,7 +343,6 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
         return () => {
             cancelled = true;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [design.showQRCode, design.batchNumber, design.traceUrl]);
 
     const saveDesign = async () => {

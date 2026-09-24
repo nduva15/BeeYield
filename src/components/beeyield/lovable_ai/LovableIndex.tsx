@@ -236,14 +236,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [activityForecasterOpen, setActivityForecasterOpen] = useState(false);
   const [measurementToolsOpen, setMeasurementToolsOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(true);
-  const initialConsumedRef = useRef(false);
-  useEffect(() => {
-    if (initialMessage && initialMessage.trim() && !initialConsumedRef.current) {
-      initialConsumedRef.current = true;
-      send(initialMessage);
-      onInitialMessageConsumed?.();
-    }
-  }, [initialMessage, onInitialMessageConsumed]);
+
 
   const [pollinationPlanningOpen, setPollinationPlanningOpen] = useState(false);
   const [pollinationCalcsOpen, setPollinationCalcsOpen] = useState(false);
@@ -367,6 +360,19 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
     setImagePreviewUrl(null);
     toast.success(`Audio attached: ${file.name}`);
   };
+
+  const initialConsumedRef = useRef(false);
+  const sendRef = useRef<(t: string) => void>(() => {});
+  useEffect(() => {
+    sendRef.current = send;
+  });
+  useEffect(() => {
+    if (initialMessage && initialMessage.trim() && !initialConsumedRef.current) {
+      initialConsumedRef.current = true;
+      sendRef.current(initialMessage);
+      onInitialMessageConsumed?.();
+    }
+  }, [initialMessage, onInitialMessageConsumed]);
 
   const send = async (text: string) => {
     if (!text.trim() || isLoading) return;

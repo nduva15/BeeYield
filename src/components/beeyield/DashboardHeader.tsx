@@ -108,7 +108,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const userName = (beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User').split(' ')[0];
     const avatarUrl = user?.user_metadata?.avatar_url;
 
-        const navCategories = [
+        const navCategories = React.useMemo(() => [
         {
             title: "APIARY OPERATIONS",
             items: [
@@ -172,7 +172,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 { id: 'auth', label: 'Sign in / Sign up', icon: LogIn },
             ]
         }
-    ];
+    ], []);
 
     const filteredCategories = React.useMemo(() => {
         const q = dropdownQuery.trim().toLowerCase();
