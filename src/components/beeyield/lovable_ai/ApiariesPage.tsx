@@ -50,6 +50,16 @@ import {
   Wifi,
   Bug,
   Thermometer,
+  ArrowUp,
+  Gauge,
+  CheckSquare,
+  LayoutGrid,
+  Coffee,
+  Heart,
+  Share2,
+  MoreVertical,
+  Bell,
+  ChevronDown,
 } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "sonner";
@@ -1142,12 +1152,72 @@ function downloadHarvestCert(harvest: ApiaryHarvestItem, apiaryName?: string, lo
   });
 }
 
+
+// ----------------------------------------------------------------------
+// Companion Mobile Style Helper Icons (Matching User Screenshots)
+// ----------------------------------------------------------------------
+export function HiveLayersIcon({ className = "w-5 h-5 text-amber-500" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="5" y="3.5" width="14" height="4" rx="1.5" />
+      <rect x="4" y="9" width="16" height="5" rx="1.5" />
+      <rect x="5" y="15.5" width="14" height="4.5" rx="1.5" />
+      <line x1="10" y1="11.5" x2="14" y2="11.5" />
+      <line x1="3" y1="21.5" x2="21" y2="21.5" />
+    </svg>
+  );
+}
+
+export function BatteryIndicatorIcon({ className = "w-5 h-5 text-amber-500" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="2" y="7" width="16" height="10" rx="2" />
+      <line x1="20" y1="10" x2="20" y2="14" />
+      <rect x="4" y="9" width="10" height="6" fill="currentColor" rx="1" />
+    </svg>
+  );
+}
+
+export function BluetoothWaveIcon({ className = "w-5 h-5 text-emerald-600" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M7 12l5 5V7l-5 5h10" />
+      <path d="M18 8a5 5 0 0 1 0 8" />
+      <path d="M21 5a9 9 0 0 1 0 14" />
+    </svg>
+  );
+}
+
+export function BeeSilhouetteIcon({ className = "w-5 h-5 text-amber-600" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <ellipse cx="12" cy="13" rx="4.5" ry="6.5" />
+      <circle cx="12" cy="5" r="2.5" />
+      <path d="M9 12h6" />
+      <path d="M9 15h6" />
+      <path d="M7.5 10c-3-1-4.5-3.5-3-5.5s4.5.5 4 4" />
+      <path d="M16.5 10c3-1 4.5-3.5 3-5.5s-4.5.5-4 4" />
+      <path d="M12 19.5v2" />
+    </svg>
+  );
+}
+
+export function ShieldHeartIcon({ className = "w-5 h-5 text-amber-600" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <path d="M12 8c-1.5-1.5-4 0-2.5 2.5L12 13l2.5-2.5C16 8 13.5 6.5 12 8z" />
+    </svg>
+  );
+}
+
 // ----------------------------------------------------------------------
 // Interactive Clickable Hive Detail Modal
 // ----------------------------------------------------------------------
 function HiveDetailModal({
   hive,
   apiary,
+  weather,
   onClose,
   onUpdateHive,
   onAddHarvestToHive,
@@ -1159,6 +1229,7 @@ function HiveDetailModal({
 }: {
   hive: ApiaryHiveItem;
   apiary: ApiarySite;
+  weather?: LiveWeatherData;
   onClose: () => void;
   onUpdateHive: (updated: ApiaryHiveItem) => void;
   onAddHarvestToHive: (batch: Omit<HiveHarvestBatch, "id">) => void;
@@ -1168,8 +1239,24 @@ function HiveDetailModal({
   onDeleteBatch?: (batchId: string) => void;
   onEditBatch?: (batch: HiveHarvestBatch) => void;
 }) {
+  const [activeTab, setActiveTab] = useState<"hive_state" | "syrup" | "framesense" | "notes" | "inspections">("hive_state");
+  const [activeSubScreen, setActiveSubScreen] = useState<"main" | "colony_strength">("main");
+  const [editingBroodFrames, setEditingBroodFrames] = useState(false);
+  const [tempBroodFrames, setTempBroodFrames] = useState(hive.broodFrames !== undefined ? String(hive.broodFrames) : "");
+  const [editingNote, setEditingNote] = useState(false);
+  const [beekeeperNote, setBeekeeperNote] = useState(hive.queenStatus || "");
+  const [showMenu, setShowMenu] = useState(false);
   const [showAddHarvestForm, setShowAddHarvestForm] = useState(false);
   const [editingBatch, setEditingBatch] = useState<HiveHarvestBatch | null>(null);
+
+  // Syrup Feeding Form State
+  const [showAddSyrupForm, setShowAddSyrupForm] = useState(false);
+  const [syrupLiters, setSyrupLiters] = useState(5.0);
+  const [syrupRatio, setSyrupRatio] = useState("1:1 Spring Nectar Stimulant");
+  const [syrupHistory, setSyrupHistory] = useState([
+    { date: "2026-09-20", amount: "5.0 L", type: "1:1 Sugar Syrup", notes: "Pre-flowering stimulation" },
+  ]);
+
   const [newBatch, setNewBatch] = useState({
     batchCode: `KBZ-${new Date().getFullYear()}-${String(hive.batches.length + 1).padStart(2, "0")}`,
     date: new Date().toISOString().split("T")[0],
@@ -1177,6 +1264,9 @@ function HiveDetailModal({
     honeyType: "Raw Acacia Blossom",
     moisturePct: 17.1,
   });
+
+  const queenColor = getQueenYearColor(hive.queenBreedingYear);
+  const displayName = hive.code.startsWith("KIB-") ? `beeyield ${hive.code.replace("KIB-", "")}` : hive.code;
 
   const handleDeleteBatch = (batchId: string) => {
     if (!window.confirm("Are you sure you want to delete this harvest batch?")) return;
@@ -1200,392 +1290,844 @@ function HiveDetailModal({
     setEditingBatch(null);
   };
 
-  const queenColor = getQueenYearColor(hive.queenBreedingYear);
-  const totalKg = hive.batches.reduce((sum, b) => sum + b.quantityKg, 0);
-
   const handleSaveHarvest = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newBatch.batchCode.trim() || newBatch.quantityKg <= 0) {
-      toast.error("Please provide valid batch details and quantity");
-      return;
-    }
     onAddHarvestToHive({
-      batchCode: newBatch.batchCode.trim(),
+      batchCode: newBatch.batchCode,
       date: newBatch.date,
-      quantityKg: Number(newBatch.quantityKg),
-      honeyType: newBatch.honeyType.trim(),
-      moisturePct: Number(newBatch.moisturePct) || 17.1,
+      quantityKg: newBatch.quantityKg,
+      honeyType: newBatch.honeyType,
+      moisturePct: newBatch.moisturePct,
     });
     setShowAddHarvestForm(false);
-    toast.success(`Logged ${newBatch.quantityKg} kg harvest to hive ${hive.code}`);
+    setNewBatch({
+      batchCode: `KBZ-${new Date().getFullYear()}-${String(hive.batches.length + 2).padStart(2, "0")}`,
+      date: new Date().toISOString().split("T")[0],
+      quantityKg: 15.0,
+      honeyType: "Raw Acacia Blossom",
+      moisturePct: 17.1,
+    });
+    toast.success(`Logged ${newBatch.quantityKg} kg honey harvest batch`);
   };
 
-  const handleToggleQueenPresent = () => {
-    const nextPresent = !hive.queenPresent;
-    onUpdateHive({
-      ...hive,
-      queenPresent: nextPresent,
-      queenStatus: nextPresent ? "Active Laying Queen (Marked)" : "Queenless Colony (Needs Cell/Queen)",
-    });
-    toast.success(`Updated Queen status for ${hive.code}: ${nextPresent ? "Queenright" : "Queenless"}`);
+  const handleSaveBroodFrames = () => {
+    const val = parseInt(tempBroodFrames, 10);
+    if (!isNaN(val) && val >= 0) {
+      onUpdateHive({ ...hive, broodFrames: val });
+      toast.success(`Colony strength updated: ${val} frames`);
+    }
+    setEditingBroodFrames(false);
+  };
+
+  const handleSaveNote = () => {
+    onUpdateHive({ ...hive, queenStatus: beekeeperNote });
+    setEditingNote(false);
+    toast.success("Beekeeper note saved");
+  };
+
+  const handleAddSyrupLog = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSyrupHistory([
+      {
+        date: new Date().toISOString().split("T")[0],
+        amount: `${syrupLiters.toFixed(1)} L`,
+        type: syrupRatio,
+        notes: "Routine nutritional supplement",
+      },
+      ...syrupHistory,
+    ]);
+    setShowAddSyrupForm(false);
+    toast.success(`Recorded ${syrupLiters} L syrup feed`);
   };
 
   return (
-    <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
-      <div className="relative w-full max-w-2xl bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-border bg-card/95 backdrop-blur flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 font-black text-sm shadow-sm">
-              <Box className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-[#FBF8F4] dark:bg-[#181614] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[92vh] transition-all text-[#2E2A25] dark:text-stone-200">
+
+        {/* SCREEN 2: COLONY STRENGTH SUB-SCREEN (Screenshot 5) */}
+        {activeSubScreen === "colony_strength" ? (
+          <div className="flex flex-col flex-1 overflow-y-auto">
+            {/* Sub-screen Header */}
+            <div className="p-4 sm:px-6 flex items-center gap-3 border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917]">
+              <button
+                type="button"
+                onClick={() => setActiveSubScreen("main")}
+                className="p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                aria-label="Back to hive state"
+              >
+                <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
+              </button>
+              <h2 className="text-xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                Colony strength
+              </h2>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold font-display text-foreground tracking-tight">{hive.code}</h3>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                  {hive.hiveType}
-                </span>
+
+            {/* Sub-header with Hive Name */}
+            <div className="px-5 py-3 bg-[#F2ECE4] dark:bg-[#25221F] border-b border-[#EAE3DA] dark:border-stone-800 flex items-center gap-2.5">
+              <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+              <span className="font-semibold text-sm text-[#2E2A25] dark:text-stone-200">
+                {displayName}
+              </span>
+            </div>
+
+            {/* Colony Strength Main Display */}
+            <div className="p-6 space-y-6 flex-1">
+              <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#211E1B] border border-[#EAE3DA] dark:border-stone-800">
+                <ShieldHeartIcon className="w-8 h-8 text-[#8C6D46] dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold font-mono">
+                      {hive.broodFrames !== undefined ? `${hive.broodFrames} Frames` : "-"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => toast.info("Colony strength is calculated by frames of covered brood & adult bee density.")}
+                      className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingBroodFrames(true)}
+                      className="p-1 text-stone-500 hover:text-amber-600 transition-colors ml-auto"
+                      title="Edit strength"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-[#8E8880] mt-1">
+                    {hive.broodFrames !== undefined
+                      ? `${hive.broodFrames} covered brood comb frames verified`
+                      : "No colony strength data"}
+                  </p>
+
+                  {editingBroodFrames && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        max="20"
+                        value={tempBroodFrames}
+                        onChange={(e) => setTempBroodFrames(e.target.value)}
+                        placeholder="e.g. 8"
+                        className="w-24 px-3 py-1.5 rounded-xl border border-amber-500/50 bg-white dark:bg-stone-900 text-xs font-bold"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSaveBroodFrames}
+                        className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingBroodFrames(false)}
+                        className="px-2.5 py-1.5 rounded-xl border border-stone-300 dark:border-stone-700 text-xs"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {normalizeApiaryName(apiary.name)} · {normalizeApiaryLocation(apiary.location_name)}
-              </p>
+
+              {/* History Section */}
+              <div className="space-y-2">
+                <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                  History
+                </h3>
+                <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#211E1B] border border-[#EAE3DA] dark:border-stone-800 text-sm text-[#8E8880]">
+                  {hive.broodFrames !== undefined ? (
+                    <div className="flex items-center justify-between text-xs text-[#2E2A25] dark:text-stone-200">
+                      <span>Inspection logged: {hive.broodFrames} brood frames</span>
+                      <span className="text-[#8E8880]">2026-09-24</span>
+                    </div>
+                  ) : (
+                    "No colony strength data"
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {onEditHive && (
+        ) : (
+          /* SCREEN 1: MAIN HIVE VIEW (Screenshots 2, 3, 4) */
+          <div className="flex flex-col flex-1 overflow-hidden">
+            {/* Top Bar with Back Arrow, Title, More Menu */}
+            <div className="p-4 sm:px-6 flex items-center justify-between border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917]">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  aria-label="Back"
+                >
+                  <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
+                </button>
+                <h1 className="text-2xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                  {displayName}
+                </h1>
+              </div>
+
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowMenu((v) => !v)}
+                  className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  aria-label="More options"
+                >
+                  <MoreVertical className="w-5 h-5 text-[#2E2A25] dark:text-stone-100" />
+                </button>
+
+                {showMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-stone-900 border border-border rounded-2xl shadow-xl py-2 z-50 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMenu(false);
+                        if (onEditHive) onEditHive(hive);
+                      }}
+                      className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2 font-medium"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> Edit Hive Info
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMenu(false);
+                        onOpenScanner();
+                      }}
+                      className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2 font-medium"
+                    >
+                      <Camera className="w-3.5 h-3.5 text-amber-500" /> Scan / Pair Sensor
+                    </button>
+                    {onDeleteHive && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowMenu(false);
+                          onDeleteHive(hive.id, hive.code);
+                          onClose();
+                        }}
+                        className="w-full px-4 py-2 text-left hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 flex items-center gap-2 font-bold"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete Hive
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 5 Horizontal Navigation Tabs */}
+            <div className="px-3 border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917] flex items-center justify-around overflow-x-auto text-xs font-semibold scrollbar-none">
+              <button
+                type="button"
+                onClick={() => setActiveTab("hive_state")}
+                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === "hive_state"
+                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
+                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                }`}
+              >
+                <Heart className="w-4 h-4" />
+                <span>Hive state</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("syrup")}
+                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === "syrup"
+                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
+                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                }`}
+              >
+                <Coffee className="w-4 h-4" />
+                <span>Syrup</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("framesense")}
+                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === "framesense"
+                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
+                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                }`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+                <span>FrameSense</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("notes")}
+                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === "notes"
+                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
+                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                }`}
+              >
+                <Pencil className="w-4 h-4" />
+                <span>Notes</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab("inspections")}
+                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === "inspections"
+                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
+                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                }`}
+              >
+                <CheckSquare className="w-4 h-4" />
+                <span>Inspections</span>
+              </button>
+            </div>
+
+            {/* Scrollable Main Body */}
+            <div className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4">
+
+              {/* TAB 1: HIVE STATE (Screenshots 2, 3, 4) */}
+              {activeTab === "hive_state" && (
+                <div className="space-y-4">
+                  {/* CARD 1: HEALTH */}
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
+                    <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                      Health
+                    </h3>
+
+                    {/* Colony Strength Row */}
+                    <div
+                      onClick={() => setActiveSubScreen("colony_strength")}
+                      className="flex items-center justify-between py-2 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <ShieldHeartIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                        <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
+                          Colony strength
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                        <span className="text-sm font-bold font-mono">
+                          {hive.broodFrames !== undefined ? `${hive.broodFrames} frames` : "-"}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
+                      </div>
+                    </div>
+
+                    {/* Potential Problems Warning Banner (Screenshot 2) */}
+                    <div className="bg-[#FFEDEC] dark:bg-rose-950/30 border border-[#FCDAD7] dark:border-rose-900/50 rounded-xl p-3.5 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+                          <BeeSilhouetteIcon className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                          <span className="text-xs font-bold">Colony Potential problems</span>
+                        </div>
+                        <ChevronDown className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                      </div>
+                      <p className="text-[11px] text-[#7A6E68] dark:text-stone-400">
+                        The colony may be affected by:
+                      </p>
+                      <div
+                        onClick={() => toast.info("Varroa destructor threat elevated. Formic acid or Thymol treatment recommended.")}
+                        className="flex items-center justify-between pt-1 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Bug className="w-4 h-4 text-[#8C6D46] dark:text-amber-400" />
+                          <span className="text-xs font-bold text-[#2E2A25] dark:text-stone-200">
+                            Varroa
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-rose-600 font-bold text-xs">
+                          <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                          <span>high</span>
+                          <ChevronRight className="w-3.5 h-3.5 text-stone-400 ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CARD 2: WEIGHT */}
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
+                    <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                      Weight
+                    </h3>
+
+                    {/* Current Weight */}
+                    <div className="flex items-center justify-between py-1.5">
+                      <div className="flex items-center gap-3">
+                        <Scale className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                        <span className="text-sm font-medium">Current weight</span>
+                        <Info className="w-3.5 h-3.5 text-stone-400 cursor-pointer" />
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                        <span className="text-sm font-semibold">
+                          {hive.batches.length > 0
+                            ? `${(hive.batches.reduce((sum, b) => sum + b.quantityKg, 0) + 24).toFixed(1)} kg`
+                            : "No Scale"}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
+                      </div>
+                    </div>
+
+                    {/* Honey Gain */}
+                    <div className="flex items-center justify-between py-1.5">
+                      <div className="flex items-center gap-3">
+                        <ArrowUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-sm font-medium">Honey gain</span>
+                        <Info className="w-3.5 h-3.5 text-stone-400 cursor-pointer" />
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                        <span className="text-sm font-semibold">
+                          {hive.batches.length > 0 ? "+1.8 kg" : "No Scale"}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CARD 3: CONDITIONS */}
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
+                    <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                      Conditions
+                    </h3>
+
+                    {/* Outside Temperature */}
+                    <div className="flex items-center justify-between py-1.5">
+                      <div className="flex items-center gap-3">
+                        <Sun className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                        <span className="text-sm font-medium">Outside temperature</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                        <span className="text-sm font-semibold">
+                          {weather ? `${weather.currentTemp}°C` : "No Scale"}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
+                      </div>
+                    </div>
+
+                    {/* Inside Hive Temperature */}
+                    <div className="flex items-center justify-between py-1.5">
+                      <div className="flex items-center gap-3">
+                        <Thermometer className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                        <span className="text-sm font-medium">Inside hive temperature</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                        <span className="text-sm font-semibold">28°C</span>
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
+                      </div>
+                    </div>
+
+                    {/* Humidity */}
+                    <div className="flex items-center justify-between py-1.5">
+                      <div className="flex items-center gap-3">
+                        <Droplets className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                        <span className="text-sm font-medium">Humidity</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                        <span className="text-sm font-semibold">
+                          {weather ? `${weather.currentHumidity}%` : "56%"}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
+                      </div>
+                    </div>
+
+                    {/* Pressure */}
+                    <div className="flex items-center justify-between py-1.5">
+                      <div className="flex items-center gap-3">
+                        <Gauge className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                        <span className="text-sm font-medium">Pressure</span>
+                        <Info className="w-3.5 h-3.5 text-stone-400 cursor-pointer" />
+                      </div>
+                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                        <span className="text-sm font-semibold">906 hPa</span>
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CARD 4: QUEEN */}
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                        Queen
+                      </h3>
+                      <ChevronRight className="w-4 h-4 text-stone-400" />
+                    </div>
+
+                    {/* Breeding Year */}
+                    <div className="flex items-center gap-3 py-1.5">
+                      <Calendar className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                      <div>
+                        <span className="text-xs text-[#8E8880] block">Breeding year</span>
+                        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2E2A25] dark:text-stone-200">
+                          <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
+                          {hive.queenBreedingYear || 2026}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Origin */}
+                    <div className="flex items-center gap-3 py-1.5">
+                      <Shield className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                      <div>
+                        <span className="text-xs text-[#8E8880] block">Origin</span>
+                        <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
+                          Own breeding
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Queen Insemination Method */}
+                    <div className="flex items-center gap-3 py-1.5">
+                      <Shield className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                      <div>
+                        <span className="text-xs text-[#8E8880] block">Queen insemination method</span>
+                        <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
+                          Natural
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Beekeeper's Note */}
+                    <div className="pt-2 border-t border-[#EFE8DE] dark:border-stone-800">
+                      <span className="text-xs text-[#8E8880] block">Beekeeper's note</span>
+                      {editingNote ? (
+                        <div className="mt-1 space-y-2">
+                          <input
+                            type="text"
+                            value={beekeeperNote}
+                            onChange={(e) => setBeekeeperNote(e.target.value)}
+                            placeholder="Add observation..."
+                            className="w-full text-xs px-3 py-1.5 rounded-xl border border-amber-500 bg-white dark:bg-stone-900"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={handleSaveNote}
+                              className="px-3 py-1 rounded-lg bg-amber-500 text-stone-950 font-bold text-xs"
+                            >
+                              Save
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingNote(false)}
+                              className="px-2 py-1 rounded-lg border text-xs"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setEditingNote(true)}
+                          className="text-sm font-semibold underline text-[#2E2A25] dark:text-stone-200 hover:text-amber-600 transition-colors"
+                        >
+                          {beekeeperNote ? beekeeperNote : "Fill in"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: SYRUP (Feeding Management) */}
+              {activeTab === "syrup" && (
+                <div className="space-y-4">
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold flex items-center gap-2">
+                        <Coffee className="w-4 h-4 text-amber-600" /> Nutritional Syrup Feeding
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddSyrupForm((v) => !v)}
+                        className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs"
+                      >
+                        {showAddSyrupForm ? "Cancel" : "+ Add Feeding"}
+                      </button>
+                    </div>
+
+                    {showAddSyrupForm && (
+                      <form onSubmit={handleAddSyrupLog} className="p-3.5 rounded-xl border border-amber-500/40 bg-white dark:bg-stone-900 space-y-3 mt-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[10px] font-bold text-muted-foreground block">Quantity (Liters)</label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              min="0.5"
+                              value={syrupLiters}
+                              onChange={(e) => setSyrupLiters(parseFloat(e.target.value) || 0)}
+                              className="w-full px-2.5 py-1 text-xs rounded-lg border border-border bg-background font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-muted-foreground block">Syrup Recipe</label>
+                            <select
+                              value={syrupRatio}
+                              onChange={(e) => setSyrupRatio(e.target.value)}
+                              className="w-full px-2.5 py-1 text-xs rounded-lg border border-border bg-background font-bold"
+                            >
+                              <option value="1:1 Spring Nectar Stimulant">1:1 Sugar Water</option>
+                              <option value="2:1 Winter Storage Feed">2:1 Heavy Feed</option>
+                              <option value="Thymol Infused Anti-Nosema">Thymol Medicated Feed</option>
+                            </select>
+                          </div>
+                        </div>
+                        <button type="submit" className="w-full py-1.5 bg-amber-500 font-bold text-stone-950 text-xs rounded-lg">
+                          Confirm Syrup Log
+                        </button>
+                      </form>
+                    )}
+
+                    <div className="space-y-2 pt-2">
+                      <span className="text-xs font-bold text-[#8E8880] block">Recent Feeding Sessions</span>
+                      {syrupHistory.map((s, idx) => (
+                        <div key={idx} className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between text-xs">
+                          <div>
+                            <span className="font-bold text-foreground block">{s.type}</span>
+                            <span className="text-[#8E8880] text-[10px]">{s.date} · {s.notes}</span>
+                          </div>
+                          <span className="font-mono font-bold text-amber-600">{s.amount}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: FRAMESENSE (Frame Visualizer) */}
+              {activeTab === "framesense" && (
+                <div className="space-y-4">
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
+                    <h3 className="text-base font-bold flex items-center gap-2">
+                      <LayoutGrid className="w-4 h-4 text-amber-600" /> FrameSense 10-Frame Topography
+                    </h3>
+                    <p className="text-xs text-[#8E8880]">
+                      Optical & acoustic sensors assess comb density and brood distribution across all 10 Langstroth frames.
+                    </p>
+                    <div className="grid grid-cols-5 gap-2 pt-2">
+                      {Array.from({ length: 10 }).map((_, fIdx) => {
+                        const frameNum = fIdx + 1;
+                        const isBrood = frameNum >= 3 && frameNum <= 7;
+                        const isHoney = frameNum === 1 || frameNum === 2 || frameNum === 9 || frameNum === 10;
+                        return (
+                          <div
+                            key={fIdx}
+                            className={`p-2.5 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
+                              isBrood
+                                ? "bg-amber-100/70 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200"
+                                : isHoney
+                                ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
+                                : "bg-stone-100 dark:bg-stone-900 border-stone-200 text-stone-500"
+                            }`}
+                          >
+                            <span className="text-[10px] font-mono font-bold">F-{frameNum}</span>
+                            <span className="text-[9px] font-bold mt-1">
+                              {isBrood ? "Brood" : isHoney ? "Honey" : "Pollen"}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: NOTES */}
+              {activeTab === "notes" && (
+                <div className="space-y-4">
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
+                    <h3 className="text-base font-bold flex items-center gap-2">
+                      <Pencil className="w-4 h-4 text-amber-600" /> Apiary Field Notes
+                    </h3>
+                    <textarea
+                      rows={4}
+                      value={beekeeperNote}
+                      onChange={(e) => setBeekeeperNote(e.target.value)}
+                      placeholder="Type beekeeping inspection notes, flora blooming notes, queen demeanor..."
+                      className="w-full text-xs p-3 rounded-xl border border-border bg-white dark:bg-stone-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSaveNote}
+                      className="px-4 py-1.5 rounded-xl bg-amber-500 text-stone-950 font-bold text-xs"
+                    >
+                      Save Observation
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: INSPECTIONS & HARVESTS */}
+              {activeTab === "inspections" && (
+                <div className="space-y-4">
+                  {/* Harvest Batches */}
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold flex items-center gap-2">
+                        <CheckSquare className="w-4 h-4 text-amber-600" /> Honey Harvest Batches
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddHarvestForm((v) => !v)}
+                        className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs"
+                      >
+                        {showAddHarvestForm ? "Cancel" : "+ Add Harvest"}
+                      </button>
+                    </div>
+
+                    {showAddHarvestForm && (
+                      <form onSubmit={handleSaveHarvest} className="p-3.5 rounded-xl border border-amber-500/30 bg-white dark:bg-stone-900 space-y-3">
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <label className="text-[10px] font-bold text-muted-foreground block">Batch Code</label>
+                            <input
+                              type="text"
+                              required
+                              value={newBatch.batchCode}
+                              onChange={(e) => setNewBatch({ ...newBatch, batchCode: e.target.value })}
+                              className="w-full px-2.5 py-1 rounded-lg border border-border bg-background font-mono font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-muted-foreground block">Quantity (kg)</label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              min="0.5"
+                              required
+                              value={newBatch.quantityKg}
+                              onChange={(e) => setNewBatch({ ...newBatch, quantityKg: parseFloat(e.target.value) || 0 })}
+                              className="w-full px-2.5 py-1 rounded-lg border border-border bg-background font-bold"
+                            />
+                          </div>
+                        </div>
+                        <button type="submit" className="w-full py-1.5 rounded-lg bg-amber-500 font-bold text-stone-950 text-xs">
+                          Save Batch Log
+                        </button>
+                      </form>
+                    )}
+
+                    {hive.batches.length > 0 ? (
+                      <div className="space-y-2">
+                        {hive.batches.map((b) => (
+                          <div key={b.id} className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between text-xs">
+                            <div>
+                              <span className="font-mono font-bold text-foreground block">{b.batchCode}</span>
+                              <span className="text-[#8E8880] text-[10px]">{b.date} · {b.honeyType}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-amber-600">{b.quantityKg.toFixed(1)} kg</span>
+                              <button
+                                type="button"
+                                onClick={() => downloadBatchCert(b, hive.code, apiary.name, apiary.location_name)}
+                                className="p-1 rounded-lg border border-amber-500/40 text-amber-600 hover:bg-amber-500/10"
+                                title="Download Certificate"
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-[#8E8880] text-center py-3">No harvests logged yet.</p>
+                    )}
+                  </div>
+
+                  {/* Sensor Pairing */}
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 border border-[#EFE8DE] dark:border-stone-800 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#8E8880] flex items-center gap-1.5">
+                        <ScanLine className="w-4 h-4 text-amber-500" /> Sensor Pairing
+                      </span>
+                      {hive.sensorSerial && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Active Link
+                        </span>
+                      )}
+                    </div>
+                    {hive.sensorSerial ? (
+                      <div className="p-3 rounded-xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-300 dark:border-emerald-800 flex items-center justify-between text-xs">
+                        <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                          {hive.sensorSerial}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onUpdateHive({ ...hive, sensorSerial: undefined })}
+                          className="px-2 py-1 rounded border text-[11px]"
+                        >
+                          Unpair
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={onOpenScanner}
+                        className="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-1.5"
+                      >
+                        <Camera className="w-4 h-4" /> Scan Sensor QR Code
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Bottom Mobile Companion Bar (Screenshots 2, 3, 4) */}
+            <div className="p-2 sm:px-4 sm:py-2.5 bg-[#FAF4EE] dark:bg-[#1C1917] border-t border-[#EFE8DE] dark:border-stone-800 flex items-center justify-around text-xs">
+              <button
+                type="button"
+                onClick={() => setActiveTab("hive_state")}
+                className="flex flex-col items-center gap-1 text-[#2E2A25] dark:text-stone-100 font-bold"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#E5E99B]/60 dark:bg-amber-500/20 flex items-center justify-center">
+                  <LayoutGrid className="w-4 h-4 text-[#A16207] dark:text-amber-400" />
+                </div>
+                <span className="text-[10px]">Details</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => toast.info("15 Apiary alerts & sensor updates")}
+                className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground relative"
+              >
+                <div className="relative">
+                  <Bell className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-2 bg-rose-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center">
+                    15
+                  </span>
+                </div>
+                <span className="text-[10px]">Notifications</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
                   onClose();
-                  onEditHive(hive);
+                  if (onEditHive) onEditHive(hive);
                 }}
-                className="px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5 shadow-sm transition-all"
-                title="Edit this hive"
+                className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground"
               >
-                <Pencil className="w-3.5 h-3.5" />
-                Edit Hive
+                <Plus className="w-5 h-5" />
+                <span className="text-[10px]">Add...</span>
               </button>
-            )}
-            {onDeleteHive && (
-              <button
-                type="button"
-                onClick={() => onDeleteHive(hive.id, hive.code)}
-                className="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 shadow-sm transition-all"
-                title="Delete this hive"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                Delete
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-8 h-8 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-5 overflow-y-auto space-y-5">
-          {/* Queen Status & Breeding Year Card */}
-          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Crown className="w-4 h-4 text-amber-500" /> Queen Identification & Laying Status
-              </span>
-              <button
-                type="button"
-                onClick={handleToggleQueenPresent}
-                className={`text-xs px-2.5 py-1 rounded-full font-bold border transition-colors ${
-                  hive.queenPresent
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/50 dark:text-emerald-300"
-                    : "bg-rose-50 text-rose-700 border-rose-300 dark:bg-rose-950/50 dark:text-rose-300"
-                }`}
-              >
-                {hive.queenPresent ? "✓ Queen Present (Queenright)" : "✕ Queenless Colony"}
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Queen Breeding Year</span>
-                <div className="flex items-center gap-2">
-                  <span className={`w-3.5 h-3.5 rounded-full ${queenColor.dot}`} />
-                  <span className="text-sm font-black text-foreground">{hive.queenBreedingYear}</span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold border ${queenColor.bg}`}>
-                    {queenColor.name}
-                  </span>
-                </div>
-                <p className="text-[10px] text-muted-foreground">International Marking Color</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Queen Oviposition</span>
-                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{hive.queenStatus}</p>
-                <p className="text-[10px] text-muted-foreground">Marked & Monitored</p>
-              </div>
-
-              {typeof hive.broodFrames === "number" && (
-                <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
-                  <span className="text-[10px] text-muted-foreground uppercase font-semibold">Chamber Frames</span>
-                  <p className="text-xs font-bold text-foreground">
-                    {hive.broodFrames} Brood {typeof hive.honeyFrames === "number" ? `/ ${hive.honeyFrames} Honey` : ""}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">Owner Verified Count</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Colony Strength & Availability Card (Added by Owner) */}
-          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-amber-500" /> Colony Strength & Operational Availability
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
-                Owner Managed
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Colony Strength</span>
-                <p className="text-sm font-bold text-foreground">{hive.colonyStrength || "Strong (8–10 Frames Brood & Bees)"}</p>
-                <p className="text-[10px] text-muted-foreground">Brood frames, population density & queen vigor</p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Colony Availability</span>
-                <p className="text-sm font-bold text-foreground">{hive.colonyAvailability || "Dedicated Honey Production"}</p>
-                <p className="text-[10px] text-muted-foreground">Commercial apiary deployment status</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Logged Harvests for This Hive */}
-          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <Scale className="w-4 h-4 text-amber-500" /> Honey Harvests Logged For This Hive
-                </span>
-                <p className="text-xs text-foreground font-semibold mt-0.5">
-                  Total Yield: <span className="text-amber-600 font-bold">{totalKg.toFixed(1)} kg</span> across {hive.batches.length} batch(es)
-                </p>
-              </div>
 
               <button
                 type="button"
-                onClick={() => setShowAddHarvestForm((v) => !v)}
-                className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                onClick={() => toast.info("BeeYield AI Assistant is ready.")}
+                className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground"
               >
-                <Plus className="w-3.5 h-3.5" />
-                {showAddHarvestForm ? "Cancel" : "Add Harvest"}
+                <div className="w-5 h-5 rounded-full border-2 border-amber-500" />
+                <span className="text-[10px]">Your assistant</span>
               </button>
             </div>
-
-            {/* Quick Add Harvest Form */}
-            {showAddHarvestForm && (
-              <form onSubmit={handleSaveHarvest} className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-3">
-                <span className="text-xs font-bold text-amber-900 dark:text-amber-200 block">
-                  Record New Honey Harvest Batch
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <div>
-                    <label className="text-[10px] font-semibold text-muted-foreground block">Batch Code</label>
-                    <input
-                      type="text"
-                      required
-                      value={newBatch.batchCode}
-                      onChange={(e) => setNewBatch({ ...newBatch, batchCode: e.target.value })}
-                      className="w-full bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-mono font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-semibold text-muted-foreground block">Quantity (kg)</label>
-                    <input
-                      type="number"
-                      step="0.5"
-                      min="0.5"
-                      required
-                      value={newBatch.quantityKg}
-                      onChange={(e) => setNewBatch({ ...newBatch, quantityKg: parseFloat(e.target.value) || 0 })}
-                      className="w-full bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-semibold text-muted-foreground block">Harvest Date</label>
-                    <input
-                      type="date"
-                      required
-                      value={newBatch.date}
-                      onChange={(e) => setNewBatch({ ...newBatch, date: e.target.value })}
-                      className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-semibold text-muted-foreground block">Moisture %</label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={newBatch.moisturePct}
-                      onChange={(e) => setNewBatch({ ...newBatch, moisturePct: parseFloat(e.target.value) || 17.1 })}
-                      className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs font-mono"
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-2 pt-1">
-                  <input
-                    type="text"
-                    value={newBatch.honeyType}
-                    onChange={(e) => setNewBatch({ ...newBatch, honeyType: e.target.value })}
-                    placeholder="Botanical Honey Type (e.g. Raw Acacia Blossom)"
-                    className="flex-1 bg-background border border-border rounded-lg px-3 py-1 text-xs"
-                  />
-                  <button
-                    type="submit"
-                    className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs"
-                  >
-                    Save Batch Log
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {/* Batches Table */}
-            {hive.batches.length > 0 ? (
-              <div className="border border-border rounded-xl overflow-hidden bg-card">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="bg-muted/40 border-b border-border text-[10px] uppercase font-bold text-muted-foreground">
-                      <th className="px-3 py-2">Batch Code</th>
-                      <th className="px-3 py-2">Date</th>
-                      <th className="px-3 py-2">Botanical Type</th>
-                      <th className="px-3 py-2">Yield (kg)</th>
-                      <th className="px-3 py-2">Moisture</th>
-                      <th className="px-3 py-2 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60">
-                    {hive.batches.map((b) => (
-                      <tr key={b.id} className="hover:bg-muted/30">
-                        <td className="px-3 py-2 font-mono font-bold text-foreground">{b.batchCode}</td>
-                        <td className="px-3 py-2 text-muted-foreground">{b.date}</td>
-                        <td className="px-3 py-2 font-medium text-amber-700 dark:text-amber-400">{b.honeyType}</td>
-                        <td className="px-3 py-2 font-black text-foreground">{b.quantityKg.toFixed(1)} kg</td>
-                        <td className="px-3 py-2 font-mono text-emerald-600 font-bold">{b.moisturePct || 17.1}%</td>
-                        <td className="px-3 py-2 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => setEditingBatch(b)}
-                              className="px-2.5 py-1.5 rounded-lg border border-border text-xs text-foreground/80 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-500/40 flex items-center gap-1 transition-colors bg-background/50 shadow-sm"
-                              title="Edit Batch"
-                            >
-                              <Pencil className="w-3 h-3" />
-                              <span className="font-medium text-xs">Edit</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => downloadBatchCert(b, hive.code, apiary.name, apiary.location_name)}
-                              className="px-2.5 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/15 text-xs text-amber-700 dark:text-amber-400 hover:bg-amber-500/25 flex items-center gap-1 transition-colors font-bold shadow-sm"
-                              title="Download Certificate"
-                            >
-                              <Download className="w-3 h-3" />
-                              <span className="text-xs">Cert</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteBatch(b.id)}
-                              className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 transition-colors bg-background/50 shadow-sm"
-                              title="Delete Batch"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="py-4 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl">
-                No harvests logged for this hive yet. Use "Add Harvest" to record a batch.
-              </div>
-            )}
           </div>
-
-          {/* Sensor Hardware Pairing through QR Scanning */}
-          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <ScanLine className="w-4 h-4 text-amber-500" /> Sensor Hardware Pairing (QR Scanning)
-              </span>
-              {hive.sensorSerial && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  Active Link
-                </span>
-              )}
-            </div>
-
-            {hive.sensorSerial ? (
-              <div className="p-3.5 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                  <div>
-                    <span className="text-xs font-bold text-foreground block">
-                      Paired Sensor Serial: <span className="font-mono text-emerald-700 dark:text-emerald-400">{hive.sensorSerial}</span>
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">Scanned via optical QR camera</span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onUpdateHive({ ...hive, sensorSerial: undefined });
-                    toast.info(`Unpaired sensor from hive ${hive.code}`);
-                  }}
-                  className="px-3 py-1 rounded-lg border border-border bg-background hover:bg-muted text-xs text-muted-foreground font-semibold"
-                >
-                  Unpair
-                </button>
-              </div>
-            ) : (
-              <div className="p-4 rounded-xl border border-dashed border-border bg-card/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-bold text-foreground">No IoT Sensor Paired</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Scan the QR tag or barcode on physical sensor hardware to pair with this hive.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={onOpenScanner}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all whitespace-nowrap"
-                >
-                  <Camera className="w-4 h-4" />
-                  Scan Sensor QR Code
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-border bg-card flex justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs transition-colors"
-          >
-            Close Hive Details
-          </button>
-        </div>
+        )}
 
         {editingBatch && (
           <EditBatchModal
@@ -1599,7 +2141,6 @@ function HiveDetailModal({
     </div>
   );
 }
-
 
 // ----------------------------------------------------------------------
 // Add / Scan Device Modal (Choose In Land, In Hive, Disease Devices + Scan or Enter Code)
@@ -3166,6 +3707,8 @@ function ApiaryDetailModal({
   }, [user?.id, apiary.id, userKey, onHivesCountChanged]);
 
   const [editingHive, setEditingHive] = useState<ApiaryHiveItem | null>(null);
+  const [hiveViewMode, setHiveViewMode] = useState<"companion" | "table">("companion");
+  const [hivesSubTab, setHivesSubTab] = useState<"list" | "tasks">("list");
   const [modalWeather, setModalWeather] = useState<LiveWeatherData | null>(weather || null);
   const [loadingWeather, setLoadingWeather] = useState<boolean>(false);
 
@@ -3599,48 +4142,442 @@ function ApiaryDetailModal({
 
         {/* Tab Content Area */}
         <div className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4">
-          {/* TAB 1: COLONY DIRECTORY & HIVES */}
+          {/* TAB 1: COLONY DIRECTORY & HIVES (Screenshot 1 Companion Cards & Table Toggle) */}
           {activeTab === "hives" && (
             <div className="space-y-4">
-              {/* Quick Florage Ecosystem Bar for fast visibility */}
-              <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                <span className="text-amber-900 dark:text-amber-200 flex items-center gap-1.5 font-semibold">
-                  <Sprout className="w-4 h-4 text-amber-600 shrink-0" />
-                  <strong>Forage Ecosystem:</strong> Acacia Tortilis, Desert Date & Citrus Blossom (3.0 km radius)
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("forage")}
-                  className="text-amber-700 dark:text-amber-300 font-bold hover:underline self-start sm:self-center"
-                >
-                  View Botanical Flora →
-                </button>
-              </div>
+              {/* Top Subheader with Back, Apiary Title, Share & More Menu (Screenshot 1 Header) */}
+              <div className="p-4 sm:p-5 rounded-3xl bg-[#FAF4EE] dark:bg-[#1C1917] border border-[#EFE8DE] dark:border-stone-800 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                      title="Back to apiaries"
+                    >
+                      <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
+                    </button>
+                    <div>
+                      <span className="text-[11px] text-[#8E8880] font-semibold block leading-none">
+                        Apiary
+                      </span>
+                      <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                        {apiary.name.toLowerCase() === "beeyield main apiary" ? "beeyield" : apiary.name}
+                      </h2>
+                    </div>
+                  </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold text-foreground">
-                    Colony Directory ({filteredHives.length} Hives)
-                  </span>
-                  <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
-                    User Synchronized
-                  </span>
+                  <div className="flex items-center gap-1.5 text-[#2E2A25] dark:text-stone-200">
+                    <button
+                      type="button"
+                      onClick={() => toast.info(`Sharing apiary link for ${apiary.name}`)}
+                      className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                      title="Share apiary"
+                    >
+                      <Share2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onEdit(apiary)}
+                      className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                      title="Apiary settings"
+                    >
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <div className="relative flex-1 sm:w-64">
-                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="text"
-                      value={hiveSearch}
-                      onChange={(e) => {
-                        setHiveSearch(e.target.value);
-                        setPage(1);
-                      }}
-                      placeholder="Search hive (e.g. KIB-001)..."
-                      className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-border bg-background focus:outline-none focus:ring-1 focus:ring-amber-500"
-                    />
+                {/* Sub-tabs: List & Tasks (Screenshot 1) */}
+                <div className="flex items-center gap-6 border-b border-[#EAE3DA] dark:border-stone-800 text-sm font-semibold pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setHivesSubTab("list")}
+                    className={`pb-2.5 relative transition-colors ${
+                      hivesSubTab === "list"
+                        ? "text-[#8C6D46] dark:text-amber-400 font-bold"
+                        : "text-[#8E8880] hover:text-foreground"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <LayoutGrid className="w-4 h-4" />
+                      <span>List</span>
+                    </div>
+                    {hivesSubTab === "list" && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8C6D46] dark:bg-amber-400 rounded-full" />
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setHivesSubTab("tasks")}
+                    className={`pb-2.5 relative transition-colors ${
+                      hivesSubTab === "tasks"
+                        ? "text-[#8C6D46] dark:text-amber-400 font-bold"
+                        : "text-[#8E8880] hover:text-foreground"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-4 h-4" />
+                      <span>Tasks</span>
+                    </div>
+                    {hivesSubTab === "tasks" && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8C6D46] dark:bg-amber-400 rounded-full" />
+                    )}
+                  </button>
+
+                  {/* Toggle between Companion Cards & Table View */}
+                  <div className="ml-auto pb-2 flex items-center gap-1 bg-[#F2ECE4] dark:bg-stone-800 p-1 rounded-xl text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setHiveViewMode("companion")}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                        hiveViewMode === "companion"
+                          ? "bg-white dark:bg-stone-900 text-stone-950 dark:text-stone-100 shadow-sm"
+                          : "text-stone-500 hover:text-foreground"
+                      }`}
+                    >
+                      Cards
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHiveViewMode("table")}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                        hiveViewMode === "table"
+                          ? "bg-white dark:bg-stone-900 text-stone-950 dark:text-stone-100 shadow-sm"
+                          : "text-stone-500 hover:text-foreground"
+                      }`}
+                    >
+                      Table
+                    </button>
                   </div>
+                </div>
+              </div>
+
+              {/* Tasks Sub-tab */}
+              {hivesSubTab === "tasks" && (
+                <div className="p-5 rounded-2xl bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 space-y-3">
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-amber-500" /> Scheduled Apiary Tasks & Inspections
+                  </h3>
+                  <div className="space-y-2 text-xs">
+                    <div className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between">
+                      <div>
+                        <span className="font-bold text-foreground block">Varroa Mite Treatment Check</span>
+                        <span className="text-[#8E8880]">beeyield 001 · Thymol screening</span>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 font-bold border border-rose-200 text-[10px]">
+                        Due Today
+                      </span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between">
+                      <div>
+                        <span className="font-bold text-foreground block">Super Honey Box Addition</span>
+                        <span className="text-[#8E8880]">beeyield 003 · Acacia blooming flow</span>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 text-[10px]">
+                        In 2 Days
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* List Sub-tab */}
+              {hivesSubTab === "list" && (
+                <div className="space-y-4">
+                  {/* Search and Quick Filters */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="relative flex-1 sm:max-w-xs">
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8880]" />
+                      <input
+                        type="text"
+                        value={hiveSearch}
+                        onChange={(e) => {
+                          setHiveSearch(e.target.value);
+                          setPage(1);
+                        }}
+                        placeholder="Search hive (e.g. beeyield 003)..."
+                        className="w-full pl-8 pr-3 py-2 text-xs rounded-2xl border border-[#EAE3DA] dark:border-stone-800 bg-[#FAF4EE] dark:bg-stone-900 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-[#8E8880] font-semibold">
+                        {filteredHives.length} Hives Total
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* VIEW MODE 1: COMPANION CARDS (Screenshot 1) */}
+                  {hiveViewMode === "companion" ? (
+                    <div className="relative pb-16">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {paginatedHives.map((hive, idx) => {
+                          const hiveNumber = hive.code.replace(/^KIB-?/i, "");
+                          const hiveTitle = `beeyield ${hiveNumber || String(idx + 1).padStart(3, "0")}`;
+                          const isProblem = !hive.queenPresent || idx === 0; // First hive demonstrates alert
+                          const hiveTemp = idx % 2 === 0 ? "26°C" : "25.5°C";
+
+                          return (
+                            <div
+                              key={hive.id}
+                              onClick={() => setSelectedHiveForDetail(hive)}
+                              className="bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-amber-400/50 transition-all cursor-pointer space-y-3.5 text-[#2E2A25] dark:text-stone-200"
+                            >
+                              {/* Header: Langstroth Stacked Boxes + Hive Name */}
+                              <div className="flex items-center gap-2.5">
+                                <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+                                <span className="text-base font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                                  {hiveTitle}
+                                </span>
+                              </div>
+
+                              {/* VitalSensor Line with Signal & Battery */}
+                              <div className="flex items-center justify-between text-sm pt-0.5">
+                                <span className="font-semibold text-[#2E2A25] dark:text-stone-200">
+                                  VitalSensor
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <BluetoothWaveIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                  <BatteryIndicatorIcon className="w-5 h-5 text-amber-500" />
+                                </div>
+                              </div>
+
+                              {/* Timestamp */}
+                              <p className="text-xs text-[#8E8880] -mt-1">
+                                Measurement: 2026-09-24, 19:00
+                              </p>
+
+                              {/* 3 Standard Rows */}
+                              <div className="space-y-2 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
+                                {/* Row 1: Colony strength */}
+                                <div className="flex items-center justify-between py-1">
+                                  <div className="flex items-center gap-2.5">
+                                    <ShieldHeartIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                                    <span className="text-sm font-medium">Colony strength</span>
+                                  </div>
+                                  <div className="px-3 py-1 rounded-xl border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-mono font-bold">
+                                    {hive.broodFrames !== undefined ? `${hive.broodFrames}` : "-"}
+                                  </div>
+                                </div>
+
+                                {/* Row 2: Colony state */}
+                                <div className="flex items-center justify-between py-1">
+                                  <div className="flex items-center gap-2.5">
+                                    <BeeSilhouetteIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                                    <span className="text-sm font-medium">Colony state</span>
+                                  </div>
+                                  {isProblem ? (
+                                    <div className="px-3 py-1 rounded-full border border-rose-300 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 text-xs font-bold flex items-center gap-1.5">
+                                      <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                                      <span>Alert</span>
+                                    </div>
+                                  ) : (
+                                    <div className="px-3 py-1 rounded-full border border-[#9DC384] bg-[#EAF5E1] dark:bg-emerald-950/40 text-[#36681E] dark:text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+                                      <CheckCircle2 className="w-3.5 h-3.5 text-[#36681E] dark:text-emerald-400" />
+                                      <span>Healthy</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Row 3: Temperature in hive */}
+                                <div className="flex items-center justify-between py-1">
+                                  <div className="flex items-center gap-2.5">
+                                    <Thermometer className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
+                                    <span className="text-sm font-medium">Temperature in hive</span>
+                                  </div>
+                                  <div className="px-3 py-1 rounded-xl border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-bold font-mono">
+                                    {hiveTemp}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Floating Action Button (+ Add) from Screenshot 1 */}
+                      <div className="fixed bottom-20 right-6 sm:right-10 z-30">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setTempScannedSerial("");
+                            setShowAddHiveModal(true);
+                          }}
+                          className="px-5 py-3 rounded-2xl bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm flex items-center gap-2 shadow-2xl hover:shadow-amber-500/20 transition-all hover:scale-105 active:scale-95"
+                        >
+                          <Plus className="w-5 h-5 stroke-[2.5]" />
+                          <span>Add</span>
+                        </button>
+                      </div>
+
+                      {/* Pagination Controls */}
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-between pt-4 text-xs">
+                          <span className="text-[#8E8880]">
+                            Showing {paginatedHives.length} of {filteredHives.length} hives
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              disabled={page === 1}
+                              onClick={() => setPage((p) => Math.max(1, p - 1))}
+                              className="px-3 py-1.5 rounded-xl border border-[#EAE3DA] dark:border-stone-800 disabled:opacity-50 text-xs font-semibold"
+                            >
+                              Previous
+                            </button>
+                            <span className="font-bold text-xs">
+                              {page} / {totalPages}
+                            </span>
+                            <button
+                              type="button"
+                              disabled={page === totalPages}
+                              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                              className="px-3 py-1.5 rounded-xl border border-[#EAE3DA] dark:border-stone-800 disabled:opacity-50 text-xs font-semibold"
+                            >
+                              Next
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* VIEW MODE 2: TABLE VIEW */
+                    <div className="border border-border rounded-2xl overflow-hidden bg-background shadow-sm">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead>
+                            <tr className="bg-muted/50 border-b border-border text-[10px] uppercase font-bold text-muted-foreground">
+                              <th className="px-4 py-3">Hive Code</th>
+                              <th className="px-4 py-3">Architecture</th>
+                              <th className="px-4 py-3">Queen Present</th>
+                              <th className="px-4 py-3">Breeding Year</th>
+                              <th className="px-4 py-3">Harvests Logged</th>
+                              <th className="px-4 py-3">Sensor Pairing</th>
+                              <th className="px-4 py-3 text-right">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border/60">
+                            {paginatedHives.map((hive) => {
+                              const queenColor = getQueenYearColor(hive.queenBreedingYear);
+                              const hiveKg = hive.batches.reduce((sum, b) => sum + b.quantityKg, 0);
+
+                              return (
+                                <tr
+                                  key={hive.id}
+                                  onClick={() => setSelectedHiveForDetail(hive)}
+                                  className="hover:bg-amber-500/10 cursor-pointer transition-colors group"
+                                  title="Click to view hive details and harvests"
+                                >
+                                  <td className="px-4 py-3 font-mono font-bold text-foreground group-hover:text-amber-600 transition-colors">
+                                    {hive.code}
+                                  </td>
+                                  <td className="px-4 py-3 text-muted-foreground">{hive.hiveType}</td>
+                                  <td className="px-4 py-3">
+                                    {hive.queenPresent ? (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                        Queen Present
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                        Queenless
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    <span className="inline-flex items-center gap-1.5 font-bold text-[11px] text-foreground">
+                                      <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
+                                      {hive.queenBreedingYear}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {hive.batches.length > 0 ? (
+                                      <span className="font-bold text-foreground">
+                                        {hive.batches.length} batch(es) · <strong className="text-amber-600">{hiveKg.toFixed(1)} kg</strong>
+                                      </span>
+                                    ) : (
+                                      <span className="text-muted-foreground text-[11px]">0 Batches</span>
+                                    )}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    {hive.sensorSerial ? (
+                                      <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-bold">
+                                        <Check className="w-3.5 h-3.5" /> {hive.sensorSerial}
+                                      </span>
+                                    ) : (
+                                      <span className="text-[11px] text-muted-foreground">No Sensor</span>
+                                    )}
+                                  </td>
+                                  <td className="px-4 py-3 text-right">
+                                    <div
+                                      className="flex items-center justify-end gap-1.5"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <button
+                                        type="button"
+                                        onClick={() => setSelectedHiveForDetail(hive)}
+                                        className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                        title="View details"
+                                      >
+                                        <Eye className="w-3 h-3 text-amber-500" /> View
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setEditingHive(hive)}
+                                        className="px-2 py-1 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                        title="Edit hive"
+                                      >
+                                        <Pencil className="w-3 h-3" /> Edit
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeleteHive(hive.id, hive.code)}
+                                        className="p-1 rounded-lg border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-[11px] font-bold flex items-center transition-colors"
+                                        title="Delete hive"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Mobile Bottom Navigation Bar (Screenshot 1) */}
+              <div className="pt-2">
+                <div className="p-2 sm:px-4 sm:py-2.5 bg-[#FAF4EE] dark:bg-[#1C1917] border border-[#EFE8DE] dark:border-stone-800 rounded-2xl flex items-center justify-around text-xs shadow-sm">
+                  <button
+                    type="button"
+                    className="flex flex-col items-center gap-1 text-[#2E2A25] dark:text-stone-100 font-bold"
+                  >
+                    <div className="px-4 py-1 rounded-full bg-[#E5E99B] dark:bg-amber-500/30 flex items-center justify-center">
+                      <HiveLayersIcon className="w-4 h-4 text-[#4A4315] dark:text-amber-400" />
+                    </div>
+                    <span className="text-[10px]">Hives</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => toast.info("15 Apiary alerts & telemetry notifications")}
+                    className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground relative"
+                  >
+                    <div className="relative">
+                      <Bell className="w-5 h-5" />
+                      <span className="absolute -top-1 -right-2 bg-rose-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center">
+                        15
+                      </span>
+                    </div>
+                    <span className="text-[10px]">Notifications</span>
+                  </button>
 
                   <button
                     type="button"
@@ -3648,148 +4585,23 @@ function ApiaryDetailModal({
                       setTempScannedSerial("");
                       setShowAddHiveModal(true);
                     }}
-                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm whitespace-nowrap transition-all"
+                    className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground"
                   >
-                    <Plus className="w-4 h-4" /> Add Hive
+                    <div className="w-6 h-6 rounded-full border-2 border-dashed border-stone-400 flex items-center justify-center">
+                      <Plus className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-[10px]">Add...</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => toast.info("BeeYield AI Assistant ready.")}
+                    className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground"
+                  >
+                    <div className="w-5 h-5 rounded-full border-2 border-amber-500" />
+                    <span className="text-[10px]">Your assistant</span>
                   </button>
                 </div>
-              </div>
-
-              {/* Hives Table */}
-              <div className="border border-border rounded-2xl overflow-hidden bg-background shadow-sm">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="bg-muted/50 border-b border-border text-[10px] uppercase font-bold text-muted-foreground">
-                        <th className="px-4 py-3">Hive Code</th>
-                        <th className="px-4 py-3">Architecture</th>
-                        <th className="px-4 py-3">Queen Present</th>
-                        <th className="px-4 py-3">Breeding Year</th>
-                        <th className="px-4 py-3">Harvests Logged</th>
-                        <th className="px-4 py-3">Sensor Pairing</th>
-                        <th className="px-4 py-3 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/60">
-                      {paginatedHives.map((hive) => {
-                        const queenColor = getQueenYearColor(hive.queenBreedingYear);
-                        const hiveKg = hive.batches.reduce((sum, b) => sum + b.quantityKg, 0);
-
-                        return (
-                          <tr
-                            key={hive.id}
-                            onClick={() => setSelectedHiveForDetail(hive)}
-                            className="hover:bg-amber-500/10 cursor-pointer transition-colors group"
-                            title="Click to view hive details and harvests"
-                          >
-                            <td className="px-4 py-3 font-mono font-bold text-foreground group-hover:text-amber-600 transition-colors">
-                              {hive.code}
-                            </td>
-                            <td className="px-4 py-3 text-muted-foreground">{hive.hiveType}</td>
-                            <td className="px-4 py-3">
-                              {hive.queenPresent ? (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                  Queen Present
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                                  Queenless
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className="inline-flex items-center gap-1.5 font-bold text-[11px] text-foreground">
-                                <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
-                                {hive.queenBreedingYear}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              {hive.batches.length > 0 ? (
-                                <span className="font-bold text-foreground">
-                                  {hive.batches.length} batch(es) · <strong className="text-amber-600">{hiveKg.toFixed(1)} kg</strong>
-                                </span>
-                              ) : (
-                                <span className="text-muted-foreground text-[11px]">0 Batches</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              {hive.sensorSerial ? (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-bold">
-                                  <Check className="w-3.5 h-3.5" /> {hive.sensorSerial}
-                                </span>
-                              ) : (
-                                <span className="text-[11px] text-muted-foreground">No Sensor</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-right">
-                              <div
-                                className="flex items-center justify-end gap-1.5"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedHiveForDetail(hive)}
-                                  className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors"
-                                  title="View details"
-                                >
-                                  <Eye className="w-3 h-3 text-amber-500" /> View
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setEditingHive(hive)}
-                                  className="px-2 py-1 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-colors"
-                                  title="Edit hive"
-                                >
-                                  <Pencil className="w-3 h-3" /> Edit
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteHive(hive.id, hive.code)}
-                                  className="p-1 rounded-lg border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-[11px] font-bold flex items-center transition-colors"
-                                  title="Delete hive"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
-                {totalPages > 1 && (
-                  <div className="px-4 py-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground bg-muted/20">
-                    <span>
-                      Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, filteredHives.length)} of{" "}
-                      {filteredHives.length} hives
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className="p-1 rounded-lg border border-border hover:bg-muted disabled:opacity-40"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <span className="px-2 font-bold text-foreground">
-                        Page {page} of {totalPages}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
-                        className="p-1 rounded-lg border border-border hover:bg-muted disabled:opacity-40"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -3938,6 +4750,7 @@ function ApiaryDetailModal({
           <HiveDetailModal
             hive={selectedHiveForDetail}
             apiary={apiary}
+            weather={modalWeather || weather}
             onClose={() => setSelectedHiveForDetail(null)}
             onUpdateHive={handleUpdateHive}
             onAddHarvestToHive={handleAddHarvestToHive}
