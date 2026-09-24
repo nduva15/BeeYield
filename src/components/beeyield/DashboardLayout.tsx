@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 import {
     Compass, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
     Calculator, Layers, Package, BarChart3, Target, Flower2, Sprout,
-    Plane, HeartPulse, Info, Download, BookOpen, Plug, Cpu, LifeBuoy,
+    Plane, HeartPulse, Info, Download, Plug, Cpu, LifeBuoy,
     Settings, LogIn, Tag, FileBarChart, Navigation
 } from 'lucide-react';
 
@@ -122,8 +122,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             label: "Business & devices",
             items: [
                 { id: 'label-generator', label: "Label Generator & QR Codes", icon: Tag, onClick: () => onTabChange('label-generator') },
-                { label: "About BeeYield (Our Story)", icon: BookOpen, onClick: () => onTabChange('about') },
-                { label: "BeeYield Blogs & Field Notes", icon: BookOpen, onClick: () => onTabChange('blogs') },
                 { label: "Integrations (Shopify, QuickBooks, eTIMS)", icon: Plug, onClick: () => onTabChange('integrations') },
                 { label: "My Devices, USB, Bluetooth & Online", icon: Cpu, onClick: () => onTabChange('measurement-tools') },
                 { label: "Support & Tickets", icon: LifeBuoy, onClick: () => onTabChange('support') },

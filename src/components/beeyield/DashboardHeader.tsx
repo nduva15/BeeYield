@@ -48,7 +48,6 @@ import {
     HeartPulse,
     Info,
     Download,
-    BookOpen,
     Plug,
     Package,
     AudioLines,
@@ -178,8 +177,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         {
             title: "BUSINESS & DEVICES",
             items: [
-                { id: 'about', label: 'About BeeYield (Our Story)', icon: BookOpen },
-                { id: 'blogs', label: 'BeeYield Blogs & Field Notes', icon: BookOpen },
                 { id: 'integrations', label: 'Integrations (Shopify, QuickBooks, eTIMS)', icon: Plug },
                 { id: 'measurement-tools', label: 'My Devices, USB, Bluetooth & Online', icon: Cpu },
                 { id: 'support', label: 'Support & Tickets', icon: LifeBuoy },

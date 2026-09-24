@@ -6,10 +6,7 @@ import {
   Microscope,
   Heart,
   Zap,
-  BookOpen,
-  ArrowRight,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 
 const stats = [
@@ -77,46 +74,6 @@ export default function AboutModal({ open, onOpenChange }: AboutModalProps) {
             pollination science. From species identification to disease treatment protocols, honey
             composition analysis to global industry statistics.
           </p>
-
-          {/* Our Story Banner & Field Blogs */}
-          <div className="space-y-2">
-            <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <div className="font-display text-sm font-bold text-amber-400 flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4" /> The BeeYield Story: 2020–2026
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  From 4 hives from our dad to 184 hives, 22 IoT devices, and precision pollination
-                  across 95 and counting acres in Kenya.
-                </p>
-              </div>
-              <Link
-                to="/about"
-                onClick={() => onOpenChange(false)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500 text-black font-semibold text-xs hover:bg-amber-400 transition-colors flex-shrink-0"
-              >
-                Read Our Story <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <div className="font-display text-sm font-bold text-emerald-400 flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4" /> BeeYield Field Blogs & Agronomy
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  4 in-depth dispatches on mango bloom anthesis, the 44M-ton fruit deficit, and IoT pollinator monitoring.
-                </p>
-              </div>
-              <Link
-                to="/blogs"
-                onClick={() => onOpenChange(false)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-500 transition-colors flex-shrink-0"
-              >
-                Read 4 Blogs <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
 
           {/* Stats Grid */}
           <div>

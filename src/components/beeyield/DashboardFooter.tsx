@@ -75,7 +75,7 @@ export const DashboardFooter: React.FC<DashboardFooterProps> = ({
                     <span>•</span>
                     <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
                     <span>•</span>
-                    <a href="/about" className="hover:text-foreground transition-colors">About Us</a>
+                    <a href="/contact" className="hover:text-foreground transition-colors">Contact</a>
                 </div>
             </div>
         </footer>
