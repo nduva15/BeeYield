@@ -216,19 +216,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                     <DropdownMenuTrigger asChild>
                         <button
-                            className="flex items-center gap-2.5 px-3 py-1.5 bg-[#14120f] hover:bg-[#1c1915] border border-amber-500/50 hover:border-amber-500/80 rounded-2xl transition-all group outline-none shrink-0 shadow-lg text-white"
+                            className="flex items-center gap-2.5 px-3.5 py-2 bg-[#14120f] hover:bg-[#1c1915] border border-amber-500/50 hover:border-amber-500/80 rounded-2xl transition-all group outline-none shrink-0 shadow-lg text-white"
                             title="BeeYield AI Tools & Views Directory"
                         >
                             <div className="w-7 h-7 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-[#f59e0b] shrink-0">
                                 <CurrentIcon className="w-4 h-4 text-[#f59e0b]" />
                             </div>
-                            <div className="flex flex-col text-left">
-                                <span className="text-[10px] text-[#f59e0b] font-bold uppercase tracking-wider leading-none">BEEYIELD AI</span>
-                                <span className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5 leading-tight mt-0.5">
-                                    {currentLabel}
-                                    <ChevronDown className="w-3.5 h-3.5 text-neutral-300 group-data-[state=open]:rotate-180 transition-transform shrink-0" />
-                                </span>
-                            </div>
+                            <span className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5 leading-none">
+                                {currentLabel}
+                                <ChevronDown className="w-3.5 h-3.5 text-neutral-300 group-data-[state=open]:rotate-180 transition-transform shrink-0" />
+                            </span>
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
