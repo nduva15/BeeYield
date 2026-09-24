@@ -110,6 +110,8 @@ export interface ApiaryHiveItem {
   queenStatus: string;
   broodFrames: number;
   honeyFrames: number;
+  colonyStrength?: string;
+  colonyAvailability?: string;
   sensorSerial?: string;
   batches: HiveHarvestBatch[];
 }
@@ -443,6 +445,8 @@ export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 18
     queenStatus: isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)",
     broodFrames: 6,
     honeyFrames: 4,
+    colonyStrength: i % 4 === 0 ? "Strong (8–10 Frames Brood & Bees)" : i % 7 === 0 ? "Moderate (5–7 Frames)" : "Strong (8–10 Frames Brood & Bees)",
+    colonyAvailability: i % 5 === 0 ? "Available for Pollination Contracts" : "Dedicated Honey Production",
     batches,
   };
 });
@@ -852,6 +856,32 @@ function HiveDetailModal({
             </div>
           </div>
 
+          {/* Colony Strength & Availability Card (Added by Owner) */}
+          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-amber-500" /> Colony Strength & Operational Availability
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+                Owner Managed
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Colony Strength</span>
+                <p className="text-sm font-bold text-foreground">{hive.colonyStrength || "Strong (8–10 Frames Brood & Bees)"}</p>
+                <p className="text-[10px] text-muted-foreground">Brood frames, population density & queen vigor</p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Colony Availability</span>
+                <p className="text-sm font-bold text-foreground">{hive.colonyAvailability || "Dedicated Honey Production"}</p>
+                <p className="text-[10px] text-muted-foreground">Commercial apiary deployment status</p>
+              </div>
+            </div>
+          </div>
+
           {/* Logged Harvests for This Hive */}
           <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
             <div className="flex items-center justify-between">
@@ -1070,6 +1100,8 @@ function AddHiveModal({
   const [hiveType, setHiveType] = useState("Langstroth 10-Frame");
   const [queenPresent, setQueenPresent] = useState(true);
   const [queenBreedingYear, setQueenBreedingYear] = useState(2025);
+  const [colonyStrength, setColonyStrength] = useState("Strong (8–10 Frames Brood & Bees)");
+  const [colonyAvailability, setColonyAvailability] = useState("Dedicated Honey Production");
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
   const [addHarvest, setAddHarvest] = useState(false);
   const [batchCode, setBatchCode] = useState(`KBZ-${new Date().getFullYear()}-01`);
@@ -1103,6 +1135,8 @@ function AddHiveModal({
       queenStatus: queenPresent ? "Active Laying Queen (Marked)" : "Queenless Colony",
       broodFrames: 6,
       honeyFrames: 4,
+      colonyStrength,
+      colonyAvailability,
       sensorSerial: sensorSerial.trim() || undefined,
       batches: [],
     };
@@ -1206,6 +1240,45 @@ function AddHiveModal({
                   <option value={2023}>2023 (Red)</option>
                   <option value={2022}>2022 (Yellow)</option>
                   <option value={2021}>2021 (White)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Colony Strength & Availability (Added by Owner) */}
+          <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/50 space-y-3">
+            <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-amber-600" /> Colony Strength & Operational Availability
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-amber-900">Colony Strength</label>
+                <select
+                  value={colonyStrength}
+                  onChange={(e) => setColonyStrength(e.target.value)}
+                  className="w-full bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-amber-950"
+                >
+                  <option value="Strong (8–10 Frames Brood & Bees)">Strong (8–10 Frames)</option>
+                  <option value="Moderate (5–7 Frames)">Moderate (5–7 Frames)</option>
+                  <option value="Weak / Nucleus (<5 Frames)">Weak / Nucleus (&lt;5 Frames)</option>
+                  <option value="Very Strong / Swarm-Prone (>10 Frames)">Very Strong (&gt;10 Frames)</option>
+                  <option value="Critical / Queenless (<3 Frames)">Critical (&lt;3 Frames)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-amber-900">Colony Availability</label>
+                <select
+                  value={colonyAvailability}
+                  onChange={(e) => setColonyAvailability(e.target.value)}
+                  className="w-full bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-amber-950"
+                >
+                  <option value="Dedicated Honey Production">Dedicated Honey Production</option>
+                  <option value="Available for Pollination Contracts">Pollination Contracts</option>
+                  <option value="Queen Rearing & Breeding">Queen Rearing & Breeding</option>
+                  <option value="Splits & Nucleus Production">Splits & Nucleus Production</option>
+                  <option value="Under Quarantine / Medical Observation">Under Quarantine</option>
+                  <option value="Wintering / Seasonal Rest">Wintering / Seasonal Rest</option>
                 </select>
               </div>
             </div>
