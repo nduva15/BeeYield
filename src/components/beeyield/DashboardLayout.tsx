@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import GlassSidebar from './GlassSidebar';
 import { NavItem } from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
 import DashboardFooter from './DashboardFooter';
 import QuickActionModal from './QuickActionModal';
 import FirstStepsBanner from './FirstStepsBanner';
+import ToolSidebar, { type ToolGroup } from './lovable_ai/ToolSidebar';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import {
+    Compass, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
+    Calculator, Layers, Package, BarChart3, Target, Flower2, Sprout,
+    Plane, HeartPulse, Info, Download, BookOpen, Plug, Cpu, LifeBuoy,
+    Settings, LogIn
+} from 'lucide-react';
 
 export type DeviceMode = 'auto' | 'phone' | 'pad' | 'laptop';
 
@@ -35,6 +42,73 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+    const [toolsDrawerOpen, setToolsDrawerOpen] = useState(false);
+
+    const toolGroups: ToolGroup[] = useMemo(() => [
+        {
+            label: "Apiary operations",
+            items: [
+                { label: "Apiaries & Live Weather", icon: Compass, onClick: () => onTabChange('apiaries-weather') },
+                { label: "Hive Health Dashboard", icon: Heart, onClick: () => onTabChange('hive-health') },
+                { label: "Inspections & Diagnostics", icon: ClipboardList, onClick: () => onTabChange('inspections') },
+                { label: "My Tasks & Schedules", icon: CheckSquare, onClick: () => onTabChange('tasks') },
+                { label: "Acoustic Audit (Sound Analysis)", icon: AudioLines, onClick: () => onTabChange('sound-analysis') },
+                { label: "Alerts", icon: Bug, onClick: () => onTabChange('sensor-alerts') },
+                { label: "Hive Placement Map", icon: MapPin, onClick: () => onTabChange('site-map') },
+                { label: "Feeding Schedule Timeline", icon: Calculator, onClick: () => onTabChange('feeding-schedule') },
+                { label: "Apiary & Equipment Sizing", icon: Layers, onClick: () => onTabChange('apiary-sizing') },
+            ]
+        },
+        {
+            label: "Yield & pollination",
+            items: [
+                { label: "Harvest Logs & Verification", icon: Package, onClick: () => onTabChange('harvests') },
+                { label: "Harvest Calculator", icon: Calculator, onClick: () => onTabChange('harvest-calculator') },
+                { label: "Honey Yield Projection", icon: BarChart3, onClick: () => onTabChange('yield-projection') },
+                { label: "Precision Pollination Drilldown", icon: Target, onClick: () => onTabChange('precision-drilldown') },
+                { label: "Pollination Planning", icon: Target, onClick: () => onTabChange('pollination-planning-ai') },
+                { label: "Pollination Calcs", icon: Calculator, onClick: () => onTabChange('pollination-calcs') },
+                { label: "Pollination Data & Charts", icon: BarChart3, onClick: () => onTabChange('pollination-analytics') },
+                { label: "Stocking Density Lookup", icon: Flower2, onClick: () => onTabChange('pollination-lookup') },
+                { label: "MOA — Multi-Objective View", icon: Layers, onClick: () => onTabChange('moa-view') },
+                { label: "MOA Run Comparison", icon: Layers, onClick: () => onTabChange('moa-compare') },
+            ]
+        },
+        {
+            label: "Bloom & flight",
+            items: [
+                { label: "Bloom Phenology", icon: Sprout, onClick: () => onTabChange('bloom-phenology') },
+                { label: "Bee Flight & Activity Tracker", icon: Plane, onClick: () => onTabChange('flight-tracker') },
+                { label: "Quick Activity Counter", icon: Plane, onClick: () => onTabChange('vpm-counter') },
+                { label: "Bee Activity Forecaster", icon: BarChart3, onClick: () => onTabChange('bfh-forecast') },
+                { label: "Florage Database", icon: Sprout, onClick: () => onTabChange('florage-page') },
+                { label: "Forage Zones & Floral Resources", icon: Flower2, onClick: () => onTabChange('forage-zones') },
+            ]
+        },
+        {
+            label: "Knowledge & reference",
+            items: [
+                { label: "Bee Diseases (Editable)", icon: HeartPulse, onClick: () => onTabChange('bee-diseases') },
+                { label: "Varroa Simulator", icon: HeartPulse, onClick: () => onTabChange('varroa-simulator') },
+                { label: "Beeyield Calculators", icon: Calculator, onClick: () => onTabChange('beeyield-calculators') },
+                { label: "Knowledge Base Search", icon: Info, onClick: () => onTabChange('knowledge-search') },
+                { label: "Dataset Import & Re-index", icon: Download, onClick: () => onTabChange('dataset-import') },
+            ]
+        },
+        {
+            label: "Business & devices",
+            items: [
+                { label: "About BeeYield (Our Story)", icon: BookOpen, onClick: () => onTabChange('about') },
+                { label: "BeeYield Blogs & Field Notes", icon: BookOpen, onClick: () => onTabChange('blogs') },
+                { label: "Integrations (Shopify, QuickBooks, eTIMS)", icon: Plug, onClick: () => onTabChange('integrations') },
+                { label: "My Devices, USB, Bluetooth & Online", icon: Cpu, onClick: () => onTabChange('measurement-tools') },
+                { label: "Support & Tickets", icon: LifeBuoy, onClick: () => onTabChange('support') },
+                { label: "Settings — Control Center", icon: Settings, onClick: () => onTabChange('settings') },
+                { label: "About Beeyield AI", icon: Info, onClick: () => onTabChange('assistant') },
+                { label: "Sign in / Sign up", icon: LogIn, onClick: () => onTabChange('auth') },
+            ]
+        }
+    ], [onTabChange]);
 
     return (
         <div className="flex h-screen w-full bg-background overflow-hidden font-sans text-foreground selection:bg-primary/30 selection:text-foreground">
@@ -50,6 +124,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 />
             )}
 
+            {/* BeeYield AI ToolSidebar Rail matching companion 1:1 */}
+            <ToolSidebar
+                groups={toolGroups}
+                open={toolsDrawerOpen}
+                onClose={() => setToolsDrawerOpen(false)}
+            />
+
             {/* Main content */}
             <main className={cn(
                 "flex-1 flex flex-col h-full overflow-hidden relative transition-all duration-300",
@@ -63,6 +144,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         onQuickAction={() => setIsQuickActionOpen(true)}
                         navItems={navItems}
                         onToggleMobileSidebar={() => setMobileSidebarOpen(prev => !prev)}
+                        onToggleToolsDrawer={() => setToolsDrawerOpen(prev => !prev)}
                     />
                 )}
 

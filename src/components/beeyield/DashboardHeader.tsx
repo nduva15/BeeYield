@@ -41,7 +41,16 @@ import {
     Scale,
     Zap,
     Puzzle,
-    LifeBuoy
+    LifeBuoy,
+    Plane,
+    HeartPulse,
+    Info,
+    Download,
+    BookOpen,
+    Plug,
+    Package,
+    AudioLines,
+    BarChart3
 } from 'lucide-react';
 import { NavItem } from './DashboardSidebar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -69,6 +78,7 @@ interface DashboardHeaderProps {
     onToggleMobileSidebar?: () => void;
     deviceMode?: 'auto' | 'phone' | 'pad' | 'laptop';
     onDeviceModeChange?: (mode: 'auto' | 'phone' | 'pad' | 'laptop') => void;
+    onToggleToolsDrawer?: () => void;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -79,13 +89,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     navItems = [],
     onToggleMobileSidebar,
     deviceMode = 'auto',
-    onDeviceModeChange
+    onDeviceModeChange,
+    onToggleToolsDrawer
 }) => {
     const { user, beeyieldUser } = useAuth();
     const { language, setLanguage, t } = useLanguage();
     const { theme, setTheme } = useTheme();
     const [alerts, setAlerts] = React.useState<SensorAlert[]>([]);
     const [dropdownQuery, setDropdownQuery] = React.useState('');
+    const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [scrolled, setScrolled] = React.useState(false);
 
     React.useEffect(() => {
@@ -104,11 +116,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         };
     }, []);
 
-
     const userName = (beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User').split(' ')[0];
     const avatarUrl = user?.user_metadata?.avatar_url;
 
-        const navCategories = React.useMemo(() => [
+    const navCategories = React.useMemo(() => [
         {
             title: "APIARY OPERATIONS",
             items: [
@@ -116,23 +127,23 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 { id: 'hive-health', label: 'Hive Health Dashboard', icon: Heart },
                 { id: 'inspections', label: 'Inspections & Diagnostics', icon: ClipboardList },
                 { id: 'tasks', label: 'My Tasks & Schedules', icon: CheckSquare },
-                { id: 'sound-analysis', label: 'Acoustic Audit (Sound Analysis)', icon: Volume2 },
-                { id: 'sensor-alerts', label: 'Alerts', icon: Bell },
+                { id: 'sound-analysis', label: 'Acoustic Audit (Sound Analysis)', icon: AudioLines },
+                { id: 'sensor-alerts', label: 'Alerts', icon: Bug },
                 { id: 'site-map', label: 'Hive Placement Map', icon: MapPin },
-                { id: 'feeding-schedule', label: 'Feeding Schedule Timeline', icon: Calendar },
+                { id: 'feeding-schedule', label: 'Feeding Schedule Timeline', icon: Calculator },
                 { id: 'apiary-sizing', label: 'Apiary & Equipment Sizing', icon: Layers },
             ]
         },
         {
             title: "YIELD & POLLINATION",
             items: [
-                { id: 'harvests', label: 'Harvest Logs & Verification', icon: Box },
-                { id: 'harvest-calculator', label: 'Harvest Calculator', icon: Scale },
-                { id: 'yield-projection', label: 'Honey Yield Projection', icon: Gauge },
+                { id: 'harvests', label: 'Harvest Logs & Verification', icon: Package },
+                { id: 'harvest-calculator', label: 'Harvest Calculator', icon: Calculator },
+                { id: 'yield-projection', label: 'Honey Yield Projection', icon: BarChart3 },
                 { id: 'precision-drilldown', label: 'Precision Pollination Drilldown', icon: Target },
                 { id: 'pollination-planning-ai', label: 'Pollination Planning', icon: Target },
-                { id: 'pollination-calcs', label: 'Pollination Calcs', icon: Scale },
-                { id: 'pollination-analytics', label: 'Pollination Data & Charts', icon: LayoutGrid },
+                { id: 'pollination-calcs', label: 'Pollination Calcs', icon: Calculator },
+                { id: 'pollination-analytics', label: 'Pollination Data & Charts', icon: BarChart3 },
                 { id: 'pollination-lookup', label: 'Stocking Density Lookup', icon: Flower2 },
                 { id: 'moa-view', label: 'MOA — Multi-Objective View', icon: Layers },
                 { id: 'moa-compare', label: 'MOA Run Comparison', icon: Layers },
@@ -142,9 +153,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             title: "BLOOM & FLIGHT",
             items: [
                 { id: 'bloom-phenology', label: 'Bloom Phenology', icon: Sprout },
-                { id: 'flight-tracker', label: 'Bee Flight & Activity Tracker', icon: Navigation },
-                { id: 'vpm-counter', label: 'Quick Activity Counter', icon: Navigation },
-                { id: 'bfh-forecast', label: 'Bee Activity Forecaster', icon: Gauge },
+                { id: 'flight-tracker', label: 'Bee Flight & Activity Tracker', icon: Plane },
+                { id: 'vpm-counter', label: 'Quick Activity Counter', icon: Plane },
+                { id: 'bfh-forecast', label: 'Bee Activity Forecaster', icon: BarChart3 },
                 { id: 'florage-page', label: 'Florage Database', icon: Sprout },
                 { id: 'forage-zones', label: 'Forage Zones & Floral Resources', icon: Flower2 },
             ]
@@ -152,11 +163,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         {
             title: "KNOWLEDGE & REFERENCE",
             items: [
-                { id: 'bee-diseases', label: 'Bee Diseases (Editable)', icon: Bug },
-                { id: 'varroa-simulator', label: 'Varroa Simulator', icon: Sparkles },
-                { id: 'beeyield-calculators', label: 'Beeyield Calculators', icon: Scale },
-                { id: 'knowledge-search', label: 'Knowledge Base Search', icon: Search },
-                { id: 'dataset-import', label: 'Dataset Import & Re-index', icon: Brain },
+                { id: 'bee-diseases', label: 'Bee Diseases (Editable)', icon: HeartPulse },
+                { id: 'varroa-simulator', label: 'Varroa Simulator', icon: HeartPulse },
+                { id: 'beeyield-calculators', label: 'Beeyield Calculators', icon: Calculator },
+                { id: 'knowledge-search', label: 'Knowledge Base Search', icon: Info },
+                { id: 'dataset-import', label: 'Dataset Import & Re-index', icon: Download },
             ]
         },
         {
@@ -164,11 +175,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             items: [
                 { id: 'about', label: 'About BeeYield (Our Story)', icon: BookOpen },
                 { id: 'blogs', label: 'BeeYield Blogs & Field Notes', icon: BookOpen },
-                { id: 'integrations', label: 'Integrations (Shopify, QuickBooks, eTIMS)', icon: Puzzle },
+                { id: 'integrations', label: 'Integrations (Shopify, QuickBooks, eTIMS)', icon: Plug },
                 { id: 'measurement-tools', label: 'My Devices, USB, Bluetooth & Online', icon: Cpu },
                 { id: 'support', label: 'Support & Tickets', icon: LifeBuoy },
                 { id: 'settings', label: 'Settings — Control Center', icon: Settings },
-                { id: 'assistant', label: 'About Beeyield AI', icon: Bot },
+                { id: 'assistant', label: 'About Beeyield AI', icon: Info },
                 { id: 'auth', label: 'Sign in / Sign up', icon: LogIn },
             ]
         }
@@ -187,17 +198,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
     const currentItem = navCategories.flatMap(c => c.items).find(i => i.id === activeTab) || 
         navItems.find(i => i.id === activeTab);
-    const CurrentIcon = (currentItem as any)?.icon || Hexagon;
-    const currentLabel = (currentItem as any)?.label || activeTab.replace(/-/g, ' ');
+    const CurrentIcon = (currentItem as any)?.icon || Sparkles;
+    const currentLabel = (currentItem as any)?.label || (activeTab === 'home' ? 'AI Tools (37)' : activeTab.replace(/-/g, ' '));
 
     return (
         <header className={cn(
-            "h-16 sticky top-0 z-40 flex items-center justify-between px-4 md:px-6 transition-all duration-300",
-            scrolled ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-lg" : "bg-transparent"
+            "h-16 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-4 md:px-6 transition-all duration-300",
+            scrolled ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-lg" : "bg-background/60 backdrop-blur-md"
         )}>
-            {/* Left: Hamburger, View Dropdown, & Breadcrumbs */}
+            {/* Left: Hamburger, View Dropdown, & Tools Rail Button */}
             <div className="flex items-center gap-2 sm:gap-3">
-                {/* Mobile Drawer Trigger (phone & pad) */}
+                {/* Mobile Drawer Trigger */}
                 <button
                     onClick={onToggleMobileSidebar}
                     className="md:hidden p-2 rounded-xl bg-muted/40 hover:bg-[#F4D03F]/15 border border-border text-foreground transition-all flex items-center justify-center shrink-0"
@@ -207,92 +218,110 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <Menu className="w-5 h-5 text-[#F4D03F]" />
                 </button>
 
-                {/* View Selector Dropdown - ALWAYS VISIBLE ON PHONE, PAD, AND LAPTOP */}
-                <DropdownMenu>
+                {/* BeeYield Tools Dropdown - Dark sleek honey theme matching companion 1:1 */}
+                <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                     <DropdownMenuTrigger asChild>
                         <button
-                            className="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-neutral-50 border border-neutral-200/90 rounded-xl transition-all group outline-none shrink-0 shadow-sm"
-                            title="Switch Dashboard View"
+                            className="flex items-center gap-2 px-3 py-1.5 bg-[#181614] hover:bg-[#231f1a] border border-amber-500/40 hover:border-amber-500/70 rounded-xl transition-all group outline-none shrink-0 shadow-md text-white"
+                            title="BeeYield AI Tools & Views Directory"
                         >
-                            <div className="w-5 h-5 rounded-lg bg-[#F4D03F]/15 flex items-center justify-center text-[#B78103] dark:text-[#F4D03F] shrink-0">
+                            <div className="w-5 h-5 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
                                 <CurrentIcon className="w-3.5 h-3.5" />
                             </div>
-                            <span className="text-xs font-bold text-foreground capitalize tracking-tight flex items-center gap-1 max-w-[130px] sm:max-w-[200px] truncate">
-                                {currentLabel}
-                                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground group-data-[state=open]:rotate-180 transition-transform shrink-0" />
-                            </span>
+                            <div className="flex flex-col text-left">
+                                <span className="text-[9px] text-amber-400 font-bold uppercase tracking-wider leading-none">BeeYield AI</span>
+                                <span className="text-xs font-semibold text-neutral-100 capitalize tracking-tight flex items-center gap-1 max-w-[130px] sm:max-w-[200px] truncate leading-tight">
+                                    {currentLabel}
+                                    <ChevronDown className="w-3 h-3 text-neutral-400 group-data-[state=open]:rotate-180 transition-transform shrink-0" />
+                                </span>
+                            </div>
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="start"
                         sideOffset={8}
-                        className="w-80 max-h-[82vh] overflow-y-auto rounded-2xl border border-neutral-200/90 p-2.5 shadow-2xl bg-white text-neutral-900 z-50 custom-scrollbar"
+                        className="w-72 sm:w-80 max-h-[82vh] overflow-y-auto rounded-2xl border border-amber-500/30 p-2 shadow-2xl bg-[#181614] text-white z-50 custom-scrollbar"
                     >
-                        <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-amber-700 flex items-center justify-between border-b border-neutral-100 mb-2">
-                            <span>BeeYield Expert Views</span>
-                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-bold">Harvests Grade</span>
-                        </DropdownMenuLabel>
-                        <div className="space-y-3">
-                            {filteredCategories.map((category) => (
-                                <div key={category.title} className="space-y-1">
-                                    <div className="flex items-center gap-1.5 px-3 py-1">
-                                        <Layers className="w-3 h-3 text-amber-600" />
-                                        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">{category.title}</p>
-                                    </div>
-                                    <div className="space-y-0.5">
-                                        {category.items.map((item) => {
-                                            const ItemIcon = item.icon;
-                                            const isActive = activeTab === item.id;
-                                            return (
-                                                <DropdownMenuItem
-                                                    key={item.id}
-                                                    onClick={() => onTabChange(item.id)}
-                                                    className={cn(
-                                                        "px-2.5 py-2 text-xs rounded-xl cursor-pointer flex items-center justify-between transition-all border my-0.5",
-                                                        isActive 
-                                                            ? "bg-amber-50 border-amber-300 text-neutral-950 font-bold shadow-sm" 
-                                                            : "border-transparent text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 hover:border-neutral-200"
-                                                    )}
-                                                >
-                                                    <div className="flex items-center gap-2.5 min-w-0">
-                                                        <div className={cn(
-                                                            "w-6 h-6 rounded-md flex items-center justify-center shrink-0 border transition-all",
-                                                            isActive
-                                                                ? "bg-[#F4D03F] text-neutral-900 border-[#F4D03F]"
-                                                                : "bg-[#F4D03F]/10 border-[#F4D03F]/20 text-[#F4D03F]"
-                                                        )}>
-                                                            <ItemIcon className="w-3.5 h-3.5 shrink-0" />
-                                                        </div>
-                                                        <span className="truncate font-semibold">{item.label}</span>
-                                                    </div>
-                                                    {isActive && (
-                                                        <span className="w-2 h-2 rounded-full bg-[#F4D03F] shrink-0" />
-                                                    )}
-                                                </DropdownMenuItem>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
+                        {/* Search tools input matching screenshot */}
+                        <div className="p-1 mb-2 border-b border-neutral-800">
+                            <div className="relative">
+                                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
+                                <input
+                                    type="text"
+                                    value={dropdownQuery}
+                                    onChange={(e) => setDropdownQuery(e.target.value)}
+                                    placeholder="Search tools"
+                                    aria-label="Search tools"
+                                    className="w-full bg-[#24201c] border border-neutral-700/80 rounded-lg pl-8 pr-2.5 py-1.5 text-xs text-white placeholder:text-neutral-500 outline-none focus:border-amber-400/80 transition-colors"
+                                    onClick={(e) => e.stopPropagation()}
+                                    onKeyDown={(e) => e.stopPropagation()}
+                                    autoFocus
+                                />
+                            </div>
                         </div>
+
+                        {filteredCategories.length === 0 ? (
+                            <p className="px-3 py-4 text-xs text-neutral-400 text-center">
+                                No tool matches “{dropdownQuery}”.
+                            </p>
+                        ) : (
+                            <div className="space-y-3">
+                                {filteredCategories.map((category) => (
+                                    <div key={category.title} className="space-y-0.5">
+                                        <p className="px-2 mb-1 text-[10px] font-bold uppercase tracking-wider text-amber-500">
+                                            {category.title}
+                                        </p>
+                                        <div className="space-y-0.5">
+                                            {category.items.map((item) => {
+                                                const ItemIcon = item.icon;
+                                                const isActive = activeTab === item.id;
+                                                return (
+                                                    <DropdownMenuItem
+                                                        key={item.id}
+                                                        onClick={() => {
+                                                            onTabChange(item.id);
+                                                            setDropdownOpen(false);
+                                                        }}
+                                                        className={cn(
+                                                            "w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-left text-xs cursor-pointer transition-colors focus:bg-neutral-800/80 focus:text-white",
+                                                            isActive
+                                                                ? "bg-amber-500/20 text-white font-medium border border-amber-500/30"
+                                                                : "text-[#d6c7b2] hover:text-white hover:bg-white/5"
+                                                        )}
+                                                    >
+                                                        <ItemIcon className="w-4 h-4 flex-shrink-0 text-[#f59e0b]" />
+                                                        <span className="truncate flex-1">{item.label}</span>
+                                                        {isActive && (
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                                                        )}
+                                                    </DropdownMenuItem>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Breadcrumbs (Hidden on tiny phone screens, visible on pad & laptop) */}
-                <div className="hidden sm:flex items-center gap-2">
-                    <span className="text-border">•</span>
-                    <span className="text-[11px] font-semibold text-[#F4D03F] tracking-wide uppercase">OS</span>
-                    <span className="text-border">/</span>
-                    <span className="text-[11px] font-medium text-muted-foreground capitalize truncate max-w-[120px]">
-                        {activeTab.replace(/-/g, ' ')}
-                    </span>
-                </div>
+                {/* AI Tools Rail Toggle Button */}
+                {onToggleToolsDrawer && (
+                    <button
+                        onClick={onToggleToolsDrawer}
+                        className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-amber-500/30 bg-[#181614] hover:bg-[#231f1a] hover:border-amber-500/60 text-amber-400 text-xs font-medium transition-all shadow-sm"
+                        title="Open AI Tools Rail"
+                    >
+                        <Menu className="w-3.5 h-3.5 text-amber-400" />
+                        <span>AI Tools Rail</span>
+                    </button>
+                )}
             </div>
 
-            {/* Right: Controls */}
-            <div className="flex items-center gap-2 md:gap-3">
-                {/* Search */}
-                <div className="hidden lg:flex items-center h-10 px-4 bg-white rounded-xl border border-neutral-200 focus-within:border-amber-400 transition-all gap-2 w-64 group/search shadow-sm">
+            {/* Right: Search, Quick Action, Alerts, Profile */}
+            <div className="flex items-center gap-2 sm:gap-3">
+                {/* Search Bar */}
+                <div className="relative hidden xl:flex items-center gap-2 px-3 py-1.5 bg-muted/40 border border-border/50 rounded-xl w-48 group-focus-within/search:w-64 transition-all group/search">
                     <Search className="w-4 h-4 text-muted-foreground/70 group-focus-within/search:text-[#F4D03F] transition-colors" />
                     <input
                         type="text"
@@ -314,7 +343,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {/* Notifications */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="relative h-10 w-10 bg-white border border-neutral-200/90 rounded-xl flex items-center justify-center hover:border-amber-300 hover:bg-neutral-50 transition-all group shadow-sm">
+                        <button className="relative h-10 w-10 bg-white dark:bg-[#181614] border border-neutral-200/90 dark:border-amber-500/30 rounded-xl flex items-center justify-center hover:border-amber-300 hover:bg-neutral-50 dark:hover:bg-[#231f1a] transition-all group shadow-sm">
                             <Bell className="w-4 h-4 text-muted-foreground group-hover:text-foreground/90 transition-colors" />
                             {alerts.length > 0 && (
                                 <div className="absolute top-2 right-2 w-2 h-2 bg-[#F4D03F] rounded-full shadow-[0_0_8px_rgba(255,107,0,0.6)] animate-pulse" />
@@ -324,7 +353,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuContent
                         align="end"
                         sideOffset={8}
-                        className="w-80 rounded-2xl border border-neutral-200 p-2 shadow-2xl bg-white text-neutral-900 z-50"
+                        className="w-80 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-2 shadow-2xl bg-white dark:bg-[#181614] text-neutral-900 dark:text-neutral-100 z-50"
                     >
                         <div className="px-4 py-3 bg-[#F4D03F]/5 rounded-lg mb-2 border border-border/50">
                             <div className="flex items-center gap-3">
@@ -364,7 +393,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 {/* Profile */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="flex items-center gap-3 h-10 pl-1.5 pr-3 bg-white border border-neutral-200/90 rounded-xl hover:border-amber-300 hover:bg-neutral-50 transition-all group shadow-sm">
+                        <button className="flex items-center gap-3 h-10 pl-1.5 pr-3 bg-white dark:bg-[#181614] border border-neutral-200/90 dark:border-amber-500/30 rounded-xl hover:border-amber-300 hover:bg-neutral-50 dark:hover:bg-[#231f1a] transition-all group shadow-sm">
                             <div className="w-7 h-7 rounded-lg bg-card border border-border/50 flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
                                 {avatarUrl ? (
                                     <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
@@ -384,7 +413,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuContent
                         align="end"
                         sideOffset={8}
-                        className="w-56 rounded-2xl border border-neutral-200 p-2 shadow-2xl bg-white text-neutral-900 z-50"
+                        className="w-56 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-2 shadow-2xl bg-white dark:bg-[#181614] text-neutral-900 dark:text-neutral-100 z-50"
                     >
                         <DropdownMenuLabel className="px-3 py-2 text-[11px] font-medium text-muted-foreground tracking-wider">
                             Account
@@ -419,5 +448,3 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 };
 
 export default DashboardHeader;
-
-
