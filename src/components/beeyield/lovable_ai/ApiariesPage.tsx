@@ -46,6 +46,7 @@ import {
   Camera,
   Crown,
 } from "lucide-react";
+import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -109,8 +110,10 @@ export interface ApiaryHiveItem {
   queenPresent: boolean;
   queenBreedingYear: number;
   queenStatus: string;
-  broodFrames: number;
-  honeyFrames: number;
+  broodFrames?: number;
+  honeyFrames?: number;
+  colonyStrength?: string;
+  colonyAvailability?: string;
   sensorSerial?: string;
   batches: HiveHarvestBatch[];
 }
@@ -444,6 +447,8 @@ export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 18
     queenStatus: isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)",
     broodFrames: 6,
     honeyFrames: 4,
+    colonyStrength: i % 4 === 0 ? "Strong (8–10 Frames Brood & Bees)" : i % 7 === 0 ? "Moderate (5–7 Frames)" : "Strong (8–10 Frames Brood & Bees)",
+    colonyAvailability: i % 5 === 0 ? "Available for Pollination Contracts" : "Dedicated Honey Production",
     batches,
   };
 });
@@ -875,12 +880,40 @@ function HiveDetailModal({
                 <p className="text-[10px] text-muted-foreground">Marked & Monitored</p>
               </div>
 
+              {typeof hive.broodFrames === "number" && (
+                <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+                  <span className="text-[10px] text-muted-foreground uppercase font-semibold">Chamber Frames</span>
+                  <p className="text-xs font-bold text-foreground">
+                    {hive.broodFrames} Brood {typeof hive.honeyFrames === "number" ? `/ ${hive.honeyFrames} Honey` : ""}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">Owner Verified Count</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Colony Strength & Availability Card (Added by Owner) */}
+          <div className="p-4 rounded-2xl border border-border bg-background shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-amber-500" /> Colony Strength & Operational Availability
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+                Owner Managed
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
-                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Chamber Frames</span>
-                <p className="text-xs font-bold text-foreground">
-                  {hive.broodFrames} Brood / {hive.honeyFrames} Honey
-                </p>
-                <p className="text-[10px] text-muted-foreground">10-Frame Langstroth</p>
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Colony Strength</span>
+                <p className="text-sm font-bold text-foreground">{hive.colonyStrength || "Strong (8–10 Frames Brood & Bees)"}</p>
+                <p className="text-[10px] text-muted-foreground">Brood frames, population density & queen vigor</p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1">
+                <span className="text-[10px] text-muted-foreground uppercase font-semibold">Colony Availability</span>
+                <p className="text-sm font-bold text-foreground">{hive.colonyAvailability || "Dedicated Honey Production"}</p>
+                <p className="text-[10px] text-muted-foreground">Commercial apiary deployment status</p>
               </div>
             </div>
           </div>
@@ -1103,6 +1136,10 @@ function AddHiveModal({
   const [hiveType, setHiveType] = useState("Langstroth 10-Frame");
   const [queenPresent, setQueenPresent] = useState(true);
   const [queenBreedingYear, setQueenBreedingYear] = useState(2025);
+  const [colonyStrength, setColonyStrength] = useState("Strong (8–10 Frames Brood & Bees)");
+  const [colonyAvailability, setColonyAvailability] = useState("Dedicated Honey Production");
+  const [broodFrames, setBroodFrames] = useState<number | "">("");
+  const [honeyFrames, setHoneyFrames] = useState<number | "">("");
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
   const [addHarvest, setAddHarvest] = useState(false);
   const [batchCode, setBatchCode] = useState(`KBZ-${new Date().getFullYear()}-01`);
@@ -1126,6 +1163,9 @@ function AddHiveModal({
       return;
     }
 
+    const parsedBrood = broodFrames !== "" && !isNaN(Number(broodFrames)) ? Number(broodFrames) : undefined;
+    const parsedHoney = honeyFrames !== "" && !isNaN(Number(honeyFrames)) ? Number(honeyFrames) : undefined;
+
     const newHiveItem: ApiaryHiveItem = {
       id: `hive-${code.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${Date.now()}`,
       code: code.trim().toUpperCase(),
@@ -1134,8 +1174,10 @@ function AddHiveModal({
       queenPresent,
       queenBreedingYear,
       queenStatus: queenPresent ? "Active Laying Queen (Marked)" : "Queenless Colony",
-      broodFrames: 6,
-      honeyFrames: 4,
+      broodFrames: parsedBrood,
+      honeyFrames: parsedHoney,
+      colonyStrength,
+      colonyAvailability,
       sensorSerial: sensorSerial.trim() || undefined,
       batches: [],
     };
@@ -1204,6 +1246,53 @@ function AddHiveModal({
             </div>
           </div>
 
+          {/* Brood Frames & Food Stores (Owner Configured - No Guessing) */}
+          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-amber-500" /> Brood Chamber Frames (Owner Count)
+              </span>
+              <span className="text-[10px] font-semibold text-muted-foreground">Optional</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-muted-foreground">Brood Frames</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="30"
+                  value={broodFrames}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setBroodFrames(val === "" ? "" : Math.max(0, parseInt(val, 10) || 0));
+                  }}
+                  placeholder="e.g. 6 (or leave blank)"
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold font-mono"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-muted-foreground">Honey / Food Frames</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="30"
+                  value={honeyFrames}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setHoneyFrames(val === "" ? "" : Math.max(0, parseInt(val, 10) || 0));
+                  }}
+                  placeholder="e.g. 4 (optional)"
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold font-mono"
+                />
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-normal">
+              Enter the audited brood frames if known. If you have not inspected or added this count yet, leave it blank and it will not be shown.
+            </p>
+          </div>
+
           {/* Queen Status & Breeding Year */}
           <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
             <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
@@ -1239,6 +1328,45 @@ function AddHiveModal({
                   <option value={2023}>2023 (Red)</option>
                   <option value={2022}>2022 (Yellow)</option>
                   <option value={2021}>2021 (White)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Colony Strength & Availability (Added by Owner) */}
+          <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/50 space-y-3">
+            <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-amber-600" /> Colony Strength & Operational Availability
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-amber-900">Colony Strength</label>
+                <select
+                  value={colonyStrength}
+                  onChange={(e) => setColonyStrength(e.target.value)}
+                  className="w-full bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-amber-950"
+                >
+                  <option value="Strong (8–10 Frames Brood & Bees)">Strong (8–10 Frames)</option>
+                  <option value="Moderate (5–7 Frames)">Moderate (5–7 Frames)</option>
+                  <option value="Weak / Nucleus (<5 Frames)">Weak / Nucleus (&lt;5 Frames)</option>
+                  <option value="Very Strong / Swarm-Prone (>10 Frames)">Very Strong (&gt;10 Frames)</option>
+                  <option value="Critical / Queenless (<3 Frames)">Critical (&lt;3 Frames)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-amber-900">Colony Availability</label>
+                <select
+                  value={colonyAvailability}
+                  onChange={(e) => setColonyAvailability(e.target.value)}
+                  className="w-full bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-amber-950"
+                >
+                  <option value="Dedicated Honey Production">Dedicated Honey Production</option>
+                  <option value="Available for Pollination Contracts">Pollination Contracts</option>
+                  <option value="Queen Rearing & Breeding">Queen Rearing & Breeding</option>
+                  <option value="Splits & Nucleus Production">Splits & Nucleus Production</option>
+                  <option value="Under Quarantine / Medical Observation">Under Quarantine</option>
+                  <option value="Wintering / Seasonal Rest">Wintering / Seasonal Rest</option>
                 </select>
               </div>
             </div>
@@ -1374,6 +1502,297 @@ function AddHiveModal({
 }
 
 // ----------------------------------------------------------------------
+// Edit Hive Modal (Allows Owner to edit details, Brood frames, and sensor)
+// ----------------------------------------------------------------------
+function EditHiveModal({
+  isOpen,
+  hive,
+  apiary,
+  onClose,
+  onSaveHive,
+  onOpenScanner,
+  scannedSerial,
+}: {
+  isOpen: boolean;
+  hive: ApiaryHiveItem;
+  apiary: ApiarySite;
+  onClose: () => void;
+  onSaveHive: (updated: ApiaryHiveItem) => void;
+  onOpenScanner: () => void;
+  scannedSerial?: string;
+}) {
+  const [code, setCode] = useState(hive.code);
+  const [hiveType, setHiveType] = useState(hive.hiveType);
+  const [queenPresent, setQueenPresent] = useState(hive.queenPresent);
+  const [queenBreedingYear, setQueenBreedingYear] = useState(hive.queenBreedingYear);
+  const [colonyStrength, setColonyStrength] = useState(hive.colonyStrength || "Strong (8–10 Frames Brood & Bees)");
+  const [colonyAvailability, setColonyAvailability] = useState(hive.colonyAvailability || "Dedicated Honey Production");
+  const [broodFrames, setBroodFrames] = useState<number | "">(typeof hive.broodFrames === "number" ? hive.broodFrames : "");
+  const [honeyFrames, setHoneyFrames] = useState<number | "">(typeof hive.honeyFrames === "number" ? hive.honeyFrames : "");
+  const [sensorSerial, setSensorSerial] = useState(scannedSerial || hive.sensorSerial || "");
+
+  useEffect(() => {
+    if (scannedSerial) {
+      setSensorSerial(scannedSerial);
+    }
+  }, [scannedSerial]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!code.trim()) {
+      toast.error("Please enter a hive code");
+      return;
+    }
+
+    const parsedBrood = broodFrames !== "" && !isNaN(Number(broodFrames)) ? Number(broodFrames) : undefined;
+    const parsedHoney = honeyFrames !== "" && !isNaN(Number(honeyFrames)) ? Number(honeyFrames) : undefined;
+
+    const updatedHive: ApiaryHiveItem = {
+      ...hive,
+      code: code.trim().toUpperCase(),
+      name: `${code.trim().toUpperCase()} (${hiveType})`,
+      hiveType,
+      queenPresent,
+      queenBreedingYear,
+      queenStatus: queenPresent ? "Active Laying Queen (Marked)" : "Queenless Colony",
+      broodFrames: parsedBrood,
+      honeyFrames: parsedHoney,
+      colonyStrength,
+      colonyAvailability,
+      sensorSerial: sensorSerial.trim() || undefined,
+    };
+
+    onSaveHive(updatedHive);
+    toast.success(`Hive ${updatedHive.code} updated successfully`);
+    onClose();
+  };
+
+  const queenColor = getQueenYearColor(queenBreedingYear);
+
+  return (
+    <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
+      <div className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        <div className="p-4 bg-amber-500 text-stone-950 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Pencil className="w-5 h-5 font-black" />
+            <h3 className="font-bold text-sm">Edit Hive {hive.code}</h3>
+          </div>
+          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-black/10 transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-foreground">Hive Code</label>
+              <input
+                type="text"
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="e.g. KIB-185"
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-mono font-bold"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-foreground">Hive Architecture</label>
+              <select
+                value={hiveType}
+                onChange={(e) => setHiveType(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-medium"
+              >
+                <option value="Langstroth 10-Frame">Langstroth 10-Frame</option>
+                <option value="Top Bar Hive (KTBH)">Top Bar Hive (KTBH)</option>
+                <option value="Dadant 12-Frame">Dadant 12-Frame</option>
+                <option value="Warre Hive">Warre Hive</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Brood Frames & Food Stores (Owner Configured - No Guessing) */}
+          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-amber-500" /> Brood Chamber Frames (Owner Count)
+              </span>
+              <span className="text-[10px] font-semibold text-muted-foreground">Optional</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-muted-foreground">Brood Frames</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="30"
+                  value={broodFrames}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setBroodFrames(val === "" ? "" : Math.max(0, parseInt(val, 10) || 0));
+                  }}
+                  placeholder="e.g. 6 (or leave blank)"
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold font-mono"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-muted-foreground">Honey / Food Frames</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="30"
+                  value={honeyFrames}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setHoneyFrames(val === "" ? "" : Math.max(0, parseInt(val, 10) || 0));
+                  }}
+                  placeholder="e.g. 4 (optional)"
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold font-mono"
+                />
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-normal">
+              Enter the audited brood frames if known. If you haven't counted or added this yet, leave blank and it will not be shown.
+            </p>
+          </div>
+
+          {/* Queen Status & Breeding Year */}
+          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+            <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <Crown className="w-4 h-4 text-amber-500" /> Queen Status & Breeding Details
+            </span>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-muted-foreground">Queen Present?</label>
+                <select
+                  value={queenPresent ? "yes" : "no"}
+                  onChange={(e) => setQueenPresent(e.target.value === "yes")}
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
+                >
+                  <option value="yes">✓ Queen Present (Queenright)</option>
+                  <option value="no">✕ Queenless</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-semibold text-muted-foreground">Breeding Year</label>
+                  <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
+                </div>
+                <select
+                  value={queenBreedingYear}
+                  onChange={(e) => setQueenBreedingYear(parseInt(e.target.value, 10))}
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
+                >
+                  <option value={2026}>2026 (White)</option>
+                  <option value={2025}>2025 (Blue)</option>
+                  <option value={2024}>2024 (Green)</option>
+                  <option value={2023}>2023 (Red)</option>
+                  <option value={2022}>2022 (Yellow)</option>
+                  <option value={2021}>2021 (White)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Colony Strength & Availability */}
+          <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/50 space-y-3">
+            <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-amber-600" /> Colony Strength & Operational Availability
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-amber-900">Colony Strength</label>
+                <select
+                  value={colonyStrength}
+                  onChange={(e) => setColonyStrength(e.target.value)}
+                  className="w-full bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-amber-950"
+                >
+                  <option value="Strong (8–10 Frames Brood & Bees)">Strong (8–10 Frames)</option>
+                  <option value="Moderate (5–7 Frames)">Moderate (5–7 Frames)</option>
+                  <option value="Weak / Nucleus (<5 Frames)">Weak / Nucleus (&lt;5 Frames)</option>
+                  <option value="Very Strong / Swarm-Prone (>10 Frames)">Very Strong (&gt;10 Frames)</option>
+                  <option value="Critical / Queenless (<3 Frames)">Critical (&lt;3 Frames)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-amber-900">Colony Availability</label>
+                <select
+                  value={colonyAvailability}
+                  onChange={(e) => setColonyAvailability(e.target.value)}
+                  className="w-full bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-amber-950"
+                >
+                  <option value="Dedicated Honey Production">Dedicated Honey Production</option>
+                  <option value="Available for Pollination Contracts">Pollination Contracts</option>
+                  <option value="Queen Rearing & Breeding">Queen Rearing & Breeding</option>
+                  <option value="Splits & Nucleus Production">Splits & Nucleus Production</option>
+                  <option value="Under Quarantine / Medical Observation">Under Quarantine</option>
+                  <option value="Wintering / Seasonal Rest">Wintering / Seasonal Rest</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Sensor Pairing with QR Scanner */}
+          <div className="p-3.5 rounded-xl border border-border bg-background space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <ScanLine className="w-4 h-4 text-amber-500" /> Pair Sensor Hardware (Optional)
+              </span>
+              <button
+                type="button"
+                onClick={onOpenScanner}
+                className="text-[11px] font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1"
+              >
+                <Camera className="w-3.5 h-3.5" /> Scan QR Tag
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={sensorSerial}
+                onChange={(e) => setSensorSerial(e.target.value)}
+                placeholder="Scan QR or type hardware serial"
+                className="flex-1 bg-card border border-border rounded-lg px-3 py-1.5 text-xs font-mono"
+              />
+              <button
+                type="button"
+                onClick={onOpenScanner}
+                className="px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold flex items-center gap-1"
+              >
+                <ScanLine className="w-3.5 h-3.5" /> Scan
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl border border-border text-xs font-semibold text-foreground hover:bg-muted"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold shadow-sm"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
 // User-Specific Storage Keys & Sync Engine
 // ----------------------------------------------------------------------
 // Modal/Drawer showing Hives, Forage, and Harvests for the clicked Apiary
@@ -1478,8 +1897,8 @@ function ApiaryDetailModal({
             queenPresent: h.queen_breeding_year !== null,
             queenBreedingYear: Number(h.queen_breeding_year) || 2025,
             queenStatus: h.queen_origin || "Active Laying Queen (Marked)",
-            broodFrames: Number(h.max_brood_frames) || 6,
-            honeyFrames: 4,
+            broodFrames: typeof h.max_brood_frames === "number" && h.max_brood_frames > 0 ? h.max_brood_frames : undefined,
+            honeyFrames: undefined,
             sensorSerial: h.devices?.[0]?.serial || undefined,
             batches: [],
           }));
@@ -1562,7 +1981,7 @@ function ApiaryDetailModal({
           .from("hives")
           .update({
             name: updated.code,
-            max_brood_frames: updated.broodFrames,
+            max_brood_frames: typeof updated.broodFrames === "number" ? updated.broodFrames : null,
             queen_breeding_year: updated.queenBreedingYear,
             queen_origin: updated.queenStatus,
           })
@@ -1666,7 +2085,7 @@ function ApiaryDetailModal({
           apiary_id: apiary.id,
           user_id: user.id,
           name: newHive.code,
-          max_brood_frames: newHive.broodFrames,
+          max_brood_frames: typeof newHive.broodFrames === "number" ? newHive.broodFrames : null,
           queen_breeding_year: newHive.queenBreedingYear,
           queen_origin: newHive.queenStatus,
           hygienic_bottom_board: true,
@@ -2480,17 +2899,19 @@ export default function ApiariesPage({
     } catch {
       // fallback
     }
-    return deduplicateApiaries(
-      DEFAULT_APIARIES.map((item) => {
-        const normalized = normalizeApiarySite(item);
-        const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
-        return {
-          ...normalized,
-          active_hives: userHives,
-          total_hives: Math.max(normalized.total_hives, userHives),
-        };
-      })
-    );
+    return user?.id
+      ? []
+      : deduplicateApiaries(
+          DEFAULT_APIARIES.map((item) => {
+            const normalized = normalizeApiarySite(item);
+            const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
+            return {
+              ...normalized,
+              active_hives: userHives,
+              total_hives: Math.max(normalized.total_hives, userHives),
+            };
+          })
+        );
   });
 
   const [weatherMap, setWeatherMap] = useState<Record<string, LiveWeatherData>>({});
@@ -2526,7 +2947,16 @@ export default function ApiariesPage({
           query = query.eq("user_id", user.id);
         }
         const { data, error } = await query.limit(50);
-        if (!error && data && data.length > 0) {
+        if (!error && data) {
+          if (data.length === 0) {
+            if (user?.id) {
+              setApiaries([]);
+              try {
+                localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify([]));
+              } catch { void 0; }
+              return;
+            }
+          }
           const mapped: ApiarySite[] = data.map((d: any) => {
             const normalizedName = normalizeApiaryName(d.name);
             const normalizedLoc = normalizeApiaryLocation(d.location_name || d.region);
@@ -2559,7 +2989,7 @@ export default function ApiariesPage({
               total_hives: Math.max(Number(d.expected_hives ?? d.total_hives ?? 0), activeCount),
               size_acres: Number(d.size_acres || 18),
               forage_type: d.forage_type || d.primary_forage || "Acacia Tortilis, Desert Date & Citrus Blossom",
-              notes: d.notes || "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
+              notes: d.notes || "",
               created_at: d.created_at || new Date().toISOString(),
             };
           });
@@ -2733,6 +3163,30 @@ export default function ApiariesPage({
       notes: site.notes || "",
     });
     setShowAddModal(true);
+  };
+
+  const handleDeleteApiary = async (apiaryId: string, apiaryName: string) => {
+    if (!window.confirm(`Are you sure you want to remove apiary "${apiaryName}"?`)) {
+      return;
+    }
+    const nextApiaries = apiaries.filter((a) => a.id !== apiaryId);
+    setApiaries(nextApiaries);
+    try {
+      localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify(nextApiaries));
+    } catch {
+      // ignore
+    }
+    if (user?.id) {
+      try {
+        await (supabase as any).from("apiaries").delete().eq("id", apiaryId);
+      } catch (err) {
+        console.error("Failed to delete apiary from db:", err);
+      }
+    }
+    if (selectedDetailApiary?.id === apiaryId) {
+      setSelectedDetailApiary(null);
+    }
+    toast.success(`Removed apiary ${apiaryName}`);
   };
 
   const handleOpenDetails = (site: ApiarySite) => {

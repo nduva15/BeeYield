@@ -198,7 +198,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                     apiary: dh.apiary?.name || dh.apiary_name || 'BeeYield Apiary in Kibwezi Kenya',
                     hiveType: dh.hive_type || 'Langstroth 10-Frame',
                     queenStatus: dh.queen_status || 'Active Laying Queen (Marked)',
-                    broodFrames: dh.max_brood_frames ? `${dh.max_brood_frames} Frames` : '10 Frames (6 Brood / 4 Honey)',
+                    broodFrames: dh.max_brood_frames ? `${dh.max_brood_frames} Brood Frames` : '',
                     healthStatus: dh.health_status === 'Fair' ? 'Good' : 'Optimal',
                     temperament: dh.temperament || 'Calm & Gentle',
                     pestStatus: 'Zero Pests • Varroa Clean',
@@ -563,11 +563,13 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             <p className="text-xs font-bold text-foreground mt-0.5">{selectedHive.queenStatus}</p>
                             <p className="text-[10px] text-emerald-600 font-semibold mt-1">Laying pattern solid</p>
                         </div>
-                        <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
-                            <p className="text-[10px] uppercase font-bold text-muted-foreground/70">Brood & Honey Frames</p>
-                            <p className="text-xs font-bold text-foreground mt-0.5">{selectedHive.broodFrames}</p>
-                            <p className="text-[10px] text-muted-foreground font-semibold mt-1">Standard 10-Frame Box</p>
-                        </div>
+                        {selectedHive.broodFrames ? (
+                            <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                                <p className="text-[10px] uppercase font-bold text-muted-foreground/70">Brood Frames</p>
+                                <p className="text-xs font-bold text-foreground mt-0.5">{selectedHive.broodFrames}</p>
+                                <p className="text-[10px] text-muted-foreground font-semibold mt-1">Owner Verified Count</p>
+                            </div>
+                        ) : null}
                         <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                             <p className="text-[10px] uppercase font-bold text-muted-foreground/70">Temperament</p>
                             <p className="text-xs font-bold text-foreground mt-0.5">{selectedHive.temperament}</p>

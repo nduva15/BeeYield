@@ -762,6 +762,8 @@ export interface Hive {
     hive_type?: string;
     bee_type?: string;
     frame_count?: number;
+    brood_frames?: number;
+    max_brood_frames?: number;
     material?: string;
     status?: string;
     installation_date?: string;

@@ -550,9 +550,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                                     : "bg-amber-50 border-amber-200 text-amber-700";
 
                                             const dateStr = r.inspected_on || r.inspection_date || (r.created_at ? r.created_at.slice(0, 10) : 'Recent');
-                                            const broodFrames = r.brood_frames ?? 6;
-                                            const honeyFrames = r.honey_frames ?? 4;
-                                            const totalFrames = r.total_frames ?? (Number(broodFrames) + Number(honeyFrames));
+                                            const hasBrood = typeof r.brood_frames === 'number';
+                                            const broodFrames = r.brood_frames;
+                                            const honeyFrames = r.honey_frames;
+                                            const totalFrames = r.total_frames ?? (hasBrood ? (Number(broodFrames) + Number(honeyFrames || 0)) : null);
                                             const queenStatus = r.queen_status || (r.queen_seen !== false ? 'Active Laying Queen' : 'Queen Not Sighted');
                                             const varroaText = typeof r.varroa_count === 'number' 
                                                 ? `${r.varroa_count} Mites` 
@@ -575,10 +576,17 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                                         </span>
                                                     </div>
                                                     <div className="space-y-1 text-xs text-neutral-600">
-                                                        <div className="flex justify-between">
-                                                            <span>Setup:</span>
-                                                            <span className="font-semibold text-neutral-900">{totalFrames} Frames ({broodFrames} Brood / {honeyFrames} Honey)</span>
-                                                        </div>
+                                                        {hasBrood ? (
+                                                            <div className="flex justify-between">
+                                                                <span>Setup:</span>
+                                                                <span className="font-semibold text-neutral-900">{totalFrames ? `${totalFrames} Frames (` : ''}${broodFrames} Brood${typeof honeyFrames === 'number' ? ` / ${honeyFrames} Honey` : ''}${totalFrames ? ')' : ''}</span>
+                                                            </div>
+                                                        ) : totalFrames ? (
+                                                            <div className="flex justify-between">
+                                                                <span>Setup:</span>
+                                                                <span className="font-semibold text-neutral-900">${totalFrames} Frames</span>
+                                                            </div>
+                                                        ) : null}
                                                         <div className="flex justify-between">
                                                             <span>Queen:</span>
                                                             <span className={cn("font-semibold", r.queen_seen !== false ? "text-emerald-700" : "text-amber-700")}>

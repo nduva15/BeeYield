@@ -29,6 +29,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
         hive_type: 'Langstroth',
         bee_type: 'African Honey Bee',
         frame_count: 10,
+        brood_frames: undefined,
         material: 'Wood',
         status: 'Active',
         installation_date: new Date().toISOString().split('T')[0],
@@ -56,6 +57,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 hive_type: editingHive.hive_type || 'Langstroth',
                 bee_type: editingHive.bee_type || 'African Honey Bee',
                 frame_count: editingHive.frame_count || 10,
+                brood_frames: editingHive.brood_frames ?? editingHive.max_brood_frames,
                 material: editingHive.material || 'Wood',
                 status: editingHive.status || 'Active',
                 installation_date: formatDateForInput(editingHive.installation_date),
@@ -70,7 +72,8 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                 hive_type: 'Langstroth',
                 bee_type: 'African Honey Bee',
                 frame_count: 10,
-                material: 'Wood',
+        brood_frames: undefined,
+        material: 'Wood',
                 status: 'Active',
                 installation_date: new Date().toISOString().split('T')[0],
                 has_sensors: false,
@@ -175,6 +178,25 @@ export const HiveForm: React.FC<HiveFormProps> = ({ editingHive, preselectedApia
                             value={formData.frame_count || ''}
                             onChange={(e) => setFormData({ ...formData, frame_count: parseInt(e.target.value) || 0 })}
                             placeholder="10"
+                            className={cn(glass.input, "pl-10 h-10 text-[11px] font-black tabular-nums")}
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="hive-form-brood-frames" className="text-[9px] font-black text-muted-foreground/70 ml-2">Brood Chamber Frames (Optional)</Label>
+                    <div className="relative">
+                        <Hexagon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-amber-500/60" />
+                        <Input
+                            id="hive-form-brood-frames"
+                            name="brood_frames"
+                            autoComplete="off"
+                            type="number"
+                            min="0"
+                            max="30"
+                            value={formData.brood_frames ?? ''}
+                            onChange={(e) => setFormData({ ...formData, brood_frames: e.target.value === '' ? undefined : parseInt(e.target.value) || 0 })}
+                            placeholder="e.g. 6 (or leave blank if uncounted)"
                             className={cn(glass.input, "pl-10 h-10 text-[11px] font-black tabular-nums")}
                         />
                     </div>
