@@ -62,7 +62,7 @@ const ChartsView: React.FC = () => {
                     <div className="space-y-2">
                         <label className={cn(glass.microLabel, "pl-1 opacity-70")}>Geospatial Area</label>
                         <Input
-                            defaultValue="Kibwezi Main Area A"
+                            defaultValue="BeeYield Apiary in Kibwezi Kenya - Sector A"
                             className={cn(glass.input, "h-12 text-sm font-semibold")}
                         />
                     </div>
