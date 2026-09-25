@@ -82,14 +82,18 @@ export interface HiveOption {
   frame_count: number;
 }
 
-export const CANONICAL_HIVES: HiveOption[] = CANONICAL_TIMOTHY_HIVES.map((h) => ({
-  id: h.id,
-  hive_code: h.code || h.hive_code || "KIB-001",
-  name: h.name,
-  apiary_id: "apiary-kibwezi",
-  apiary_name: CANONICAL_APIARY_NAME,
-  frame_count: h.frame_count || 10,
-}));
+export function getCanonicalHives(): HiveOption[] {
+  return CANONICAL_TIMOTHY_HIVES.map((h) => ({
+    id: h.id,
+    hive_code: h.code || h.hive_code || "KIB-001",
+    name: h.name,
+    apiary_id: "apiary-kibwezi",
+    apiary_name: CANONICAL_APIARY_NAME,
+    frame_count: h.frame_count || 10,
+  }));
+}
+
+export const CANONICAL_HIVES: HiveOption[] = [];
 
 // Telemetry context is fetched dynamically from real sensor_readings for the specific hive
 export function getHiveTelemetry(_hiveCode: string, _apiaryName: string) {
@@ -246,21 +250,6 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     }));
   }, [userHives]);
 
-    useEffect(() => {
-    if (allApiaries.length > 0 && !selectedApiaryId) {
-      setSelectedApiaryId(allApiaries[0].id);
-    }
-  }, [allApiaries, selectedApiaryId]);
-
-  useEffect(() => {
-    if (filteredHivesForForm.length > 0 && !selectedHiveCode) {
-      const first = filteredHivesForForm[0];
-      setSelectedHiveCode(first.hive_code);
-      const chosenAp = allApiaries.find((a) => a.id === selectedApiaryId);
-      void syncHiveData(first.hive_code, chosenAp?.name || first.apiary_name || "", draft.inspected_on);
-    }
-  }, [filteredHivesForForm, selectedHiveCode, allApiaries, selectedApiaryId, syncHiveData, draft.inspected_on]);
-
   // Filtered hives based on chosen apiary
   const filteredHivesForForm = useMemo(() => {
     const chosenApiary = allApiaries.find((a) => a.id === selectedApiaryId);
@@ -368,6 +357,21 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     setSyncedBanner(true);
   }, [allHives]);
 
+  useEffect(() => {
+    if (allApiaries.length > 0 && !selectedApiaryId) {
+      setSelectedApiaryId(allApiaries[0].id);
+    }
+  }, [allApiaries, selectedApiaryId]);
+
+  useEffect(() => {
+    if (filteredHivesForForm.length > 0 && !selectedHiveCode) {
+      const first = filteredHivesForForm[0];
+      setSelectedHiveCode(first.hive_code);
+      const chosenAp = allApiaries.find((a) => a.id === selectedApiaryId);
+      void syncHiveData(first.hive_code, chosenAp?.name || first.apiary_name || "", draft.inspected_on);
+    }
+  }, [filteredHivesForForm, selectedHiveCode, allApiaries, selectedApiaryId, syncHiveData, draft.inspected_on]);
+
   const handleApiarySelect = (apiaryId: string) => {
     setSelectedApiaryId(apiaryId);
     const ap = allApiaries.find((a) => a.id === apiaryId);
@@ -411,7 +415,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
           }))
         );
       } else if (isTimothy || isGuest) {
-        setUserHives(CANONICAL_HIVES);
+        setUserHives(getCanonicalHives());
       } else {
         setUserHives([]);
       }
