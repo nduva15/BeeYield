@@ -135,6 +135,21 @@ export interface ApiaryDeviceItem {
   installedAt?: string;
 }
 
+
+export interface FrameSenseAnalysis {
+  id: string;
+  timestamp: string;
+  broodPct: number;
+  storesPct: number;
+  combSurfacePct: number;
+  queenCells: number;
+  status: "Analysis completed" | "Processing...";
+  middlePhotoUrl?: string;
+  firstPhotoUrl?: string;
+  lastPhotoUrl?: string;
+  aiRecommendations?: string;
+}
+
 export interface ApiaryHiveItem {
   id: string;
   code: string;
@@ -1204,6 +1219,17 @@ export function BeeSilhouetteIcon({ className = "w-5 h-5 text-amber-600" }: { cl
   );
 }
 
+
+export function CameraPlusIcon({ className = "w-12 h-12 text-[#9A9187] dark:text-stone-500" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+      <line x1="12" y1="11" x2="12" y2="17" />
+      <line x1="9" y1="14" x2="15" y2="14" />
+    </svg>
+  );
+}
+
 export function ShieldHeartIcon({ className = "w-5 h-5 text-amber-600" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -1751,6 +1777,84 @@ function HiveDetailModal({
   const [expandedMetric, setExpandedMetric] = useState<
     "inside_temp" | "humidity" | "pressure" | "outside_temp" | "weight" | "honey_gain" | null
   >("inside_temp");
+
+  // FrameSense Tool State (Matching Screenshots 1, 2, 3)
+  const [frameSenseSubScreen, setFrameSenseSubScreen] = useState<"list" | "add_photos" | "view_report">("list");
+  const [selectedReport, setSelectedReport] = useState<FrameSenseAnalysis | null>(null);
+  const [middlePhoto, setMiddlePhoto] = useState<string | null>(null);
+  const [firstPhoto, setFirstPhoto] = useState<string | null>(null);
+  const [lastPhoto, setLastPhoto] = useState<string | null>(null);
+  const [isAnalyzingFrames, setIsAnalyzingFrames] = useState(false);
+
+  const [frameSenseList, setFrameSenseList] = useState<FrameSenseAnalysis[]>(() => {
+    try {
+      const stored = localStorage.getItem(`framesense_${hive.id}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return [
+      {
+        id: `fs-${hive.id}-1`,
+        timestamp: "14.07.2026, 07:35",
+        status: "Analysis completed",
+        broodPct: 0,
+        storesPct: 0,
+        combSurfacePct: 0,
+        queenCells: 0,
+        aiRecommendations: "No brood detected in selected frame. Comb foundation freshly introduced. Monitor for egg laying in next 3 days.",
+      },
+      {
+        id: `fs-${hive.id}-2`,
+        timestamp: "13.07.2026, 22:47",
+        status: "Analysis completed",
+        broodPct: 0,
+        storesPct: 0,
+        combSurfacePct: 59,
+        queenCells: 0,
+        aiRecommendations: "Comb surface 59% drawn with worker cells. Stores starting to accumulate in upper arch. Queen presence verified active.",
+      },
+    ];
+  });
+
+  const saveFrameSenseList = (newList: FrameSenseAnalysis[]) => {
+    setFrameSenseList(newList);
+    try {
+      localStorage.setItem(`framesense_${hive.id}`, JSON.stringify(newList));
+    } catch {}
+  };
+
+  const handleSendForAnalysis = () => {
+    setIsAnalyzingFrames(true);
+    setTimeout(() => {
+      const now = new Date();
+      const dateStr = `${String(now.getDate()).padStart(2, "0")}.${String(now.getMonth() + 1).padStart(2, "0")}.${now.getFullYear()}, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      
+      const newReport: FrameSenseAnalysis = {
+        id: `fs-${hive.id}-${Date.now()}`,
+        timestamp: dateStr,
+        status: "Analysis completed",
+        broodPct: 48,
+        storesPct: 32,
+        combSurfacePct: 85,
+        queenCells: 0,
+        middlePhotoUrl: middlePhoto || undefined,
+        firstPhotoUrl: firstPhoto || undefined,
+        lastPhotoUrl: lastPhoto || undefined,
+        aiRecommendations: "BeeYield AI Diagnostics: High-density solid worker brood pattern in central frame. Honey stores cap 32% of perimeter. Zero swarm or emergency queen cells detected.",
+      };
+
+      const updated = [newReport, ...frameSenseList];
+      saveFrameSenseList(updated);
+      setIsAnalyzingFrames(false);
+      setFrameSenseSubScreen("list");
+      setMiddlePhoto(null);
+      setFirstPhoto(null);
+      setLastPhoto(null);
+      toast.success(`BeeYield AI completed FrameSense analysis for ${displayName}!`);
+    }, 1200);
+  };
 
   // Syrup Calculator State (Matching Screenshot)
   const [calcRatio, setCalcRatio] = useState<"1:1" | "3:2" | "2:1">("3:2");
@@ -2618,38 +2722,365 @@ function HiveDetailModal({
               {/* TAB 3: FRAMESENSE (Frame Visualizer) */}
               {activeTab === "framesense" && (
                 <div className="space-y-4">
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
-                    <h3 className="text-base font-bold flex items-center gap-2">
-                      <LayoutGrid className="w-4 h-4 text-amber-600" /> FrameSense 10-Frame Topography
-                    </h3>
-                    <p className="text-xs text-[#8E8880]">
-                      Optical & acoustic sensors assess comb density and brood distribution across all 10 Langstroth frames.
-                    </p>
-                    <div className="grid grid-cols-5 gap-2 pt-2">
-                      {Array.from({ length: 10 }).map((_, fIdx) => {
-                        const frameNum = fIdx + 1;
-                        const isBrood = frameNum >= 3 && frameNum <= 7;
-                        const isHoney = frameNum === 1 || frameNum === 2 || frameNum === 9 || frameNum === 10;
-                        return (
-                          <div
-                            key={fIdx}
-                            className={`p-2.5 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
-                              isBrood
-                                ? "bg-amber-100/70 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200"
-                                : isHoney
-                                ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
-                                : "bg-stone-100 dark:bg-stone-900 border-stone-200 text-stone-500"
-                            }`}
-                          >
-                            <span className="text-[10px] font-mono font-bold">F-{frameNum}</span>
-                            <span className="text-[9px] font-bold mt-1">
-                              {isBrood ? "Brood" : isHoney ? "Honey" : "Pollen"}
-                            </span>
+                  {/* SCREEN A: ADD FRAME PHOTOS FOR AI ANALYSIS (Screenshots 1 & 3) */}
+                  {frameSenseSubScreen === "add_photos" ? (
+                    <div className="space-y-4 text-[#2E2A25] dark:text-stone-200">
+                      {/* Top Bar inside sub-screen */}
+                      <div className="flex items-center gap-3 pb-3 border-b border-[#EAE3DA] dark:border-stone-800">
+                        <button
+                          type="button"
+                          onClick={() => setFrameSenseSubScreen("list")}
+                          className="p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                        >
+                          <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
+                        </button>
+                        <h2 className="text-xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                          FrameSense
+                        </h2>
+                      </div>
+
+                      {/* Subheader Banner with Hive Code */}
+                      <div className="px-4 py-2.5 bg-[#F2ECE4] dark:bg-[#25221F] rounded-2xl flex items-center gap-2.5">
+                        <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+                        <span className="font-semibold text-sm text-[#2E2A25] dark:text-stone-200">
+                          {displayName}
+                        </span>
+                      </div>
+
+                      {/* AI Description text from Screenshot 1 */}
+                      <p className="text-xs text-[#5C5349] dark:text-stone-300 leading-relaxed">
+                        AI-based analysis of frame photos — classifies comb cells, detects queen cells, determines coverage and estimates the number of bees, and provides recommendations.
+                      </p>
+
+                      {/* Add Frame Photos Section Header & Guidance */}
+                      <div className="space-y-1.5 pt-1">
+                        <h3 className="text-sm font-bold text-[#2E2A25] dark:text-stone-100">
+                          Add frame photos for analysis
+                        </h3>
+                        <p className="text-xs text-[#7A6E68] dark:text-stone-400 leading-relaxed">
+                          The frame should be fully visible in the photo (no cropped corners or edges) and fill almost the entire frame, leaving only a small margin. When possible, take the photo against a uniform background to ensure the highest quality AI analysis.
+                        </p>
+                      </div>
+
+                      {/* SLOT 1: Middle (central) frame (Required) */}
+                      <div className="space-y-2 pt-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[#2E2A25] dark:text-stone-200">
+                            Middle (central) frame
+                          </span>
+                          <span className="font-bold text-amber-600 dark:text-amber-400">
+                            Required
+                          </span>
+                        </div>
+
+                        <label className="block cursor-pointer">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const url = URL.createObjectURL(file);
+                                setMiddlePhoto(url);
+                              }
+                            }}
+                          />
+                          <div className="w-full h-44 rounded-3xl bg-[#F4EDE4] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800 flex flex-col items-center justify-center p-4 hover:border-amber-500/50 transition-all overflow-hidden relative">
+                            {middlePhoto ? (
+                              <div className="w-full h-full relative">
+                                <img
+                                  src={middlePhoto}
+                                  alt="Middle frame"
+                                  className="w-full h-full object-cover rounded-2xl"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={(ev) => {
+                                    ev.preventDefault();
+                                    ev.stopPropagation();
+                                    setMiddlePhoto(null);
+                                  }}
+                                  className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center gap-2">
+                                <CameraPlusIcon className="w-12 h-12 text-[#9A9187] dark:text-stone-500" />
+                                <span className="text-[11px] font-semibold text-[#8E8880]">
+                                  Tap to capture or upload central frame
+                                </span>
+                              </div>
+                            )}
                           </div>
-                        );
-                      })}
+                        </label>
+                      </div>
+
+                      {/* SLOT 2: First frame in the hive (Optional) */}
+                      <div className="space-y-2 pt-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[#2E2A25] dark:text-stone-200">
+                            First frame in the hive
+                          </span>
+                          <span className="text-[#8E8880]">Optional</span>
+                        </div>
+
+                        <label className="block cursor-pointer">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) setFirstPhoto(URL.createObjectURL(file));
+                            }}
+                          />
+                          <div className="w-full h-36 rounded-3xl bg-[#F4EDE4] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800 flex flex-col items-center justify-center p-4 hover:border-amber-500/50 transition-all overflow-hidden relative">
+                            {firstPhoto ? (
+                              <div className="w-full h-full relative">
+                                <img
+                                  src={firstPhoto}
+                                  alt="First frame"
+                                  className="w-full h-full object-cover rounded-2xl"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={(ev) => {
+                                    ev.preventDefault();
+                                    ev.stopPropagation();
+                                    setFirstPhoto(null);
+                                  }}
+                                  className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <CameraPlusIcon className="w-10 h-10 text-[#9A9187] dark:text-stone-500" />
+                            )}
+                          </div>
+                        </label>
+                      </div>
+
+                      {/* SLOT 3: Last frame in the hive (Optional) */}
+                      <div className="space-y-2 pt-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-[#2E2A25] dark:text-stone-200">
+                            Last frame in the hive
+                          </span>
+                          <span className="text-[#8E8880]">Optional</span>
+                        </div>
+
+                        <label className="block cursor-pointer">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) setLastPhoto(URL.createObjectURL(file));
+                            }}
+                          />
+                          <div className="w-full h-36 rounded-3xl bg-[#F4EDE4] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800 flex flex-col items-center justify-center p-4 hover:border-amber-500/50 transition-all overflow-hidden relative">
+                            {lastPhoto ? (
+                              <div className="w-full h-full relative">
+                                <img
+                                  src={lastPhoto}
+                                  alt="Last frame"
+                                  className="w-full h-full object-cover rounded-2xl"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={(ev) => {
+                                    ev.preventDefault();
+                                    ev.stopPropagation();
+                                    setLastPhoto(null);
+                                  }}
+                                  className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <CameraPlusIcon className="w-10 h-10 text-[#9A9187] dark:text-stone-500" />
+                            )}
+                          </div>
+                        </label>
+                      </div>
+
+                      {/* Action Button: Send for analysis */}
+                      <div className="pt-2 pb-4">
+                        <button
+                          type="button"
+                          disabled={isAnalyzingFrames}
+                          onClick={handleSendForAnalysis}
+                          className="w-full py-3.5 rounded-2xl bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2"
+                        >
+                          {isAnalyzingFrames ? (
+                            <>
+                              <RefreshCw className="w-4 h-4 animate-spin text-stone-950" />
+                              <span>BeeYield AI analyzing frame cells...</span>
+                            </>
+                          ) : (
+                            <span>Send for analysis</span>
+                          )}
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ) : selectedReport ? (
+                    /* SCREEN C: VIEW SPECIFIC REPORT */
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between pb-3 border-b border-[#EAE3DA] dark:border-stone-800">
+                        <div className="flex items-center gap-2.5">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedReport(null)}
+                            className="p-1 rounded-xl hover:bg-black/5"
+                          >
+                            <ChevronLeft className="w-6 h-6" />
+                          </button>
+                          <div>
+                            <span className="text-[11px] text-[#8E8880] block">AI Comb Diagnostics</span>
+                            <h3 className="text-base font-bold">{selectedReport.timestamp}</h3>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {selectedReport.status}
+                        </span>
+                      </div>
+
+                      {/* Metric Breakdown Grid */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800">
+                          <span className="text-xs text-[#8E8880] block">Brood Area</span>
+                          <span className="text-2xl font-bold font-mono text-amber-700 dark:text-amber-400">
+                            {selectedReport.broodPct}%
+                          </span>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800">
+                          <span className="text-xs text-[#8E8880] block">Stores (Honey/Pollen)</span>
+                          <span className="text-2xl font-bold font-mono text-amber-700 dark:text-amber-400">
+                            {selectedReport.storesPct}%
+                          </span>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800">
+                          <span className="text-xs text-[#8E8880] block">Comb Surface Drawn</span>
+                          <span className="text-2xl font-bold font-mono text-[#2E2A25] dark:text-stone-100">
+                            {selectedReport.combSurfacePct}%
+                          </span>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800">
+                          <span className="text-xs text-[#8E8880] block">Queen Cells Detected</span>
+                          <span className="text-2xl font-bold font-mono text-emerald-600">
+                            {selectedReport.queenCells}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* AI Recommendations */}
+                      <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-2">
+                        <span className="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-amber-600" /> BeeYield AI Analysis Summary
+                        </span>
+                        <p className="text-xs text-[#5C5349] dark:text-stone-300 leading-relaxed">
+                          {selectedReport.aiRecommendations}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setSelectedReport(null)}
+                        className="w-full py-2.5 rounded-xl border border-border text-xs font-semibold"
+                      >
+                        Back to Analysis List
+                      </button>
+                    </div>
+                  ) : (
+                    /* SCREEN B: FRAMESENSE ANALYSES LIST (Screenshot 2) */
+                    <div className="space-y-4 relative pb-20">
+                      {/* List of completed analyses */}
+                      {frameSenseList.length > 0 ? (
+                        <div className="space-y-3">
+                          {frameSenseList.map((item) => (
+                            <div
+                              key={item.id}
+                              onClick={() => setSelectedReport(item)}
+                              className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 shadow-sm hover:border-amber-400/50 cursor-pointer transition-all space-y-3"
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="p-2 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 text-[#8C6D46] dark:text-amber-400">
+                                    <LayoutGrid className="w-5 h-5" />
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-bold text-[#2E2A25] dark:text-stone-100">
+                                      {item.timestamp}
+                                    </h4>
+                                    <span className="text-xs text-[#8E8880]">
+                                      {item.status}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const updated = frameSenseList.filter((f) => f.id !== item.id);
+                                      saveFrameSenseList(updated);
+                                      toast.success("FrameSense analysis record removed");
+                                    }}
+                                    className="p-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors"
+                                    title="Delete record"
+                                  >
+                                    <Trash2 className="w-4 h-4 text-rose-600" />
+                                  </button>
+                                  <ChevronRight className="w-4 h-4 text-stone-400" />
+                                </div>
+                              </div>
+
+                              {/* Metric Stats Row from Screenshot 2 */}
+                              <div className="flex items-center gap-4 text-xs font-medium text-[#2E2A25] dark:text-stone-200 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80 flex-wrap">
+                                <span>
+                                  <strong className="font-bold">{item.broodPct}%</strong> Brood
+                                </span>
+                                <span>
+                                  <strong className="font-bold">{item.storesPct}%</strong> Stores
+                                </span>
+                                <span>
+                                  <strong className="font-bold">{item.combSurfacePct}%</strong> Comb surface
+                                </span>
+                                <span>
+                                  <strong className="font-bold">{item.queenCells}</strong> Queen cells
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-8 text-center border border-dashed border-[#EAE3DA] dark:border-stone-800 rounded-3xl space-y-2">
+                          <LayoutGrid className="w-8 h-8 text-stone-400 mx-auto" />
+                          <p className="text-xs text-[#8E8880]">No FrameSense photo analyses for this hive yet.</p>
+                          <p className="text-[11px] text-[#8E8880]">Tap "+ Add" to take photos and run BeeYield AI comb analysis.</p>
+                        </div>
+                      )}
+
+                      {/* Floating Action Button (+ Add) from Screenshot 2 */}
+                      <div className="fixed bottom-20 right-6 sm:right-10 z-30">
+                        <button
+                          type="button"
+                          onClick={() => setFrameSenseSubScreen("add_photos")}
+                          className="px-5 py-3 rounded-2xl bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm flex items-center gap-2 shadow-2xl hover:shadow-amber-500/20 transition-all hover:scale-105 active:scale-95"
+                        >
+                          <Plus className="w-5 h-5 stroke-[2.5]" />
+                          <span>Add</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -4447,6 +4878,7 @@ function ApiaryDetailModal({
 
   const [selectedHiveForDetail, setSelectedHiveForDetail] = useState<ApiaryHiveItem | null>(null);
   const [selectedHiveForSyrup, setSelectedHiveForSyrup] = useState<ApiaryHiveItem | null>(null);
+  const [selectedHiveForFrameSense, setSelectedHiveForFrameSense] = useState<ApiaryHiveItem | null>(null);
   const [showAddHiveModal, setShowAddHiveModal] = useState(false);
   const [isScanningOpen, setIsScanningOpen] = useState(false);
   const [scanContext, setScanContext] = useState<"addHive" | "detailHive" | "editHive">("addHive");
@@ -5070,17 +5502,32 @@ function ApiaryDetailModal({
                               {/* Quick Syrup Tool Shortcut Link */}
                               <div className="flex items-center justify-between text-xs pt-0.5">
                                 <span className="text-[11px] text-[#8E8880]">Nutritional Feed</span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedHiveForSyrup(hive);
-                                  }}
-                                  className="px-2.5 py-0.5 rounded-full border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[10px] font-bold flex items-center gap-1 hover:bg-amber-500 hover:text-stone-950 transition-all shadow-xs"
-                                >
-                                  <Coffee className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                                  <span>Syrup Tool</span>
-                                </button>
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedHiveForSyrup(hive);
+                                    }}
+                                    className="px-2 py-0.5 rounded-full border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[10px] font-bold flex items-center gap-1 hover:bg-amber-500 hover:text-stone-950 transition-all shadow-xs"
+                                    title="Syrup Calculator for this hive"
+                                  >
+                                    <Coffee className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                    <span>Syrup</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedHiveForFrameSense(hive);
+                                    }}
+                                    className="px-2 py-0.5 rounded-full border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[10px] font-bold flex items-center gap-1 hover:bg-amber-500 hover:text-stone-950 transition-all shadow-xs"
+                                    title="FrameSense AI comb analysis for this hive"
+                                  >
+                                    <LayoutGrid className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                    <span>FrameSense</span>
+                                  </button>
+                                </div>
                               </div>
 
                               {/* Row 1: Colony strength */}
@@ -5477,6 +5924,26 @@ function ApiaryDetailModal({
             </div>
           )}
         </div>
+
+        {/* Modal: FrameSense Tool Linked to Selected Hive */}
+        {selectedHiveForFrameSense && (
+          <HiveDetailModal
+            hive={selectedHiveForFrameSense}
+            apiary={apiary}
+            weather={modalWeather || weather}
+            initialTab="framesense"
+            allHives={hivesList}
+            onClose={() => setSelectedHiveForFrameSense(null)}
+            onUpdateHive={handleUpdateHive}
+            onAddHarvestToHive={handleAddHarvestToHive}
+            onOpenScanner={() => {
+              setScanContext("detailHive");
+              setIsScanningOpen(true);
+            }}
+            onEditHive={(h) => setEditingHive(h)}
+            onDeleteHive={handleDeleteHive}
+          />
+        )}
 
         {/* Modal: Syrup Tool Linked to Selected Hive */}
         {selectedHiveForSyrup && (
