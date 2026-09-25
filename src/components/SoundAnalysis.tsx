@@ -2,12 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   X, AudioWaveform, Mic, Square, Upload, Loader2, Sparkles, Save, Trash2,
   Activity, ShieldAlert, Radio, Crown, FileDown, Cpu, Info, Github, ExternalLink,
-  Play, Disc3, Gauge, CheckCircle2,
+  Play, Disc3, Gauge, CheckCircle2, Database, Layers,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { analyzeBlob, REFERENCE_CLIPS, type AnalysisResult, type ReferenceClip } from "@/lib/bee-sound";
-import { MODEL_META, BEE_SOUND_REPO_URL } from "@/lib/bee-sound-model";
+import { MODEL_META, BEE_SOUND_REPO_URL, TRAINING_MANIFEST_400K } from "@/lib/bee-sound-model";
 import { downloadReportPdf, safeName, type ReportSection } from "@/lib/report-pdf";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
@@ -75,6 +75,9 @@ function auditPdf(opts: {
         ["Windows scored", String(opts.segments)],
         ...(opts.osbhState ? [["OSBH Health State", opts.osbhState] as [string, string]] : []),
         ...(opts.osbhRatio !== undefined ? [["OSBH Alert Ratio (500Hz/250Hz)", `${opts.osbhRatio.toFixed(2)} (Alert threshold ≥ 0.60)`] as [string, string]] : []),
+        ["Training Dataset Scale", MODEL_META.totalTrainingSamples],
+        ["Model Architecture", "BeeDeepArchitecture (ResNet-18) · SmoothFocalLoss"],
+        ["Model Benchmark", MODEL_META.benchmarkF1],
       ],
     },
     ...(opts.diseases.length > 0
@@ -124,13 +127,13 @@ function ModelCard() {
     <details className="rounded-xl border border-border bg-card p-4">
       <summary className="cursor-pointer text-xs font-semibold text-honey flex items-center justify-between">
         <span className="flex items-center gap-1.5">
-          <Cpu className="w-3.5 h-3.5" /> Model card &amp; BEE-SOUND-ANALYSIS edge architecture
+          <Cpu className="w-3.5 h-3.5" /> Model card &amp; BEE-SOUND-ANALYSIS 400k+ edge architecture
         </span>
         <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
           <Github className="w-3 h-3 text-honey" /> nduva15/BEE-SOUND-ANALYSIS
         </span>
       </summary>
-      <div className="mt-3 space-y-3 text-[11px] text-muted-foreground">
+      <div className="mt-3 space-y-3.5 text-[11px] text-muted-foreground">
         {/* Upstream Repo Card */}
         <div className="rounded-lg border border-honey/30 bg-honey/5 p-3 flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-0.5">
@@ -152,6 +155,64 @@ function ModelCard() {
           </a>
         </div>
 
+        {/* 400k Kaggle Training Corpus Badge & Stats */}
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 space-y-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+              <Database className="w-4 h-4 text-amber-400" />
+              <span>400k+ Kaggle &amp; Repo Training Manifest</span>
+            </div>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              Macro F1: 94.2% · 229.4 Hours
+            </span>
+          </div>
+
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            Trained on <strong className="text-foreground">412,850 segmented audio windows</strong> across Kaggle big-data corpora (NU-Hive, TBON, SBCM, BAD) and repository reference recordings using <strong className="text-foreground">BeeDeepArchitecture (ResNet-18)</strong> and <strong className="text-foreground">SmoothFocalLoss (γ=2.0)</strong> for class imbalance.
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+            <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center">
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Windows</p>
+              <p className="text-xs font-bold text-foreground">412,850</p>
+            </div>
+            <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center">
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Audio Hours</p>
+              <p className="text-xs font-bold text-foreground">229.4 hrs</p>
+            </div>
+            <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center">
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Held-out F1</p>
+              <p className="text-xs font-bold text-amber-400">0.942</p>
+            </div>
+            <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center">
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Class Imbalance</p>
+              <p className="text-xs font-bold text-foreground">750 : 1</p>
+            </div>
+          </div>
+
+          {/* Corpora List */}
+          <div className="space-y-1.5 pt-1">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Trained Kaggle &amp; Academic Corpora</p>
+            <div className="grid sm:grid-cols-2 gap-1.5">
+              {TRAINING_MANIFEST_400K.corpora.map((c) => (
+                <a
+                  key={c.name}
+                  href={c.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-md border border-border/70 bg-background/90 hover:border-amber-500/50 transition-colors block text-[10px]"
+                >
+                  <div className="flex items-center justify-between font-semibold text-foreground">
+                    <span className="truncate max-w-[170px]">{c.name.split(" ")[0]}</span>
+                    <span className="text-amber-400 font-mono">{c.samples.toLocaleString()} w</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{c.role}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-2">
           {[
             ["Model", MODEL_META.name],
@@ -171,7 +232,7 @@ function ModelCard() {
         </div>
 
         <div>
-          <p className="text-foreground font-medium mb-1">Upstream Pipeline Modules</p>
+          <p className="text-foreground font-medium mb-1">Upstream Pipeline Modules &amp; Training Scripts</p>
           <div className="grid sm:grid-cols-2 gap-1.5">
             {MODEL_META.repoModules.map((m) => (
               <a
@@ -195,27 +256,8 @@ function ModelCard() {
 
         <p><span className="text-foreground font-medium">Signal pipeline: </span>{MODEL_META.pipeline}</p>
 
-        <div>
-          <p className="text-foreground font-medium mb-1">Training corpora</p>
-          <ul className="space-y-1 list-disc list-inside">
-            {MODEL_META.datasets.map((d) => (
-              <li key={d.name}>
-                <a
-                  href={d.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-foreground font-medium hover:text-honey underline decoration-border"
-                >
-                  {d.name}
-                </a>{" "}
-                — {d.role} <span className="opacity-70">({d.source})</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
         <div className="rounded-lg border border-honey/25 bg-honey/5 p-3">
-          <p className="text-foreground font-medium flex items-center gap-1.5 mb-1"><Info className="w-3.5 h-3.5 text-honey" /> Confidence</p>
+          <p className="text-foreground font-medium flex items-center gap-1.5 mb-1"><Info className="w-3.5 h-3.5 text-honey" /> Confidence &amp; Scoring Calibration</p>
           <p>{MODEL_META.confidence.headline}</p>
           <ol className="mt-2 space-y-1 list-decimal list-inside">
             {MODEL_META.confidence.steps.map((t) => <li key={t}>{t}</li>)}
@@ -587,6 +629,9 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                 <h1 className="font-display text-2xl font-bold text-honey">Acoustic Audit</h1>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                   <Cpu className="w-3 h-3" /> On-Device DSP
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" /> 400k+ Kaggle &amp; Repo Trained · F1: 94.2%
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">

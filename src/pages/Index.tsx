@@ -92,6 +92,7 @@ import IntegrationsPage from "@/components/IntegrationsPage";
 import SettingsPage from "@/components/SettingsPage";
 import HiveHealthDashboard from "@/components/HiveHealthDashboard";
 import SupportPage from "@/components/SupportPage";
+import BeeYieldOnboardingWizard from "@/components/BeeYieldOnboardingWizard";
 
 type Message = {
   id: string;
@@ -249,6 +250,17 @@ export default function Index() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [healthDashOpen, setHealthDashOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const action = urlParams.get("action");
+      if (action && action.startsWith("onboarding:")) {
+        setOnboardingOpen(true);
+      }
+    } catch {}
+  }, []);
   const [promptVariant, setPromptVariant] = useState<
     "baseline" | "bloom" | "flight" | "bloom_flight"
   >("baseline");
@@ -482,6 +494,11 @@ export default function Index() {
     {
       label: "Apiary operations",
       items: [
+        {
+          label: "Apiary & IoT Onboarding Wizard",
+          icon: Sparkles,
+          onClick: () => setOnboardingOpen(true),
+        },
         {
           label: "Apiaries & Live Weather",
           icon: Compass,
@@ -1034,6 +1051,25 @@ export default function Index() {
       <HiveHealthDashboard isOpen={healthDashOpen} onClose={() => setHealthDashOpen(false)} />
       <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
       <ApiariesPage isOpen={apiariesOpen} onClose={() => setApiariesOpen(false)} />
+
+      {/* Onboarding Setup Wizard Modal */}
+      {onboardingOpen && (
+        <div className="fixed inset-0 z-[70] bg-background/90 backdrop-blur-md overflow-y-auto p-2 sm:p-6 flex items-center justify-center animate-in fade-in">
+          <div className="w-full max-w-4xl relative my-auto">
+            <button
+              onClick={() => setOnboardingOpen(false)}
+              className="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground shadow-sm transition-colors"
+              aria-label="Close Onboarding"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <BeeYieldOnboardingWizard
+              step="device"
+              onComplete={() => setOnboardingOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

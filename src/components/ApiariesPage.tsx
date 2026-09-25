@@ -3995,19 +3995,10 @@ function AddHiveModal({
                   </span>
                   <button
                     type="button"
-                    onClick={() => {
-                      const sample =
-                        sensorCategory === "scale"
-                          ? `SCALE-KBZ-0${cleanDisplayNum.slice(-1) || "1"}`
-                          : sensorCategory === "acoustic_varroa"
-                          ? `APISENSE-KBZ-0${cleanDisplayNum.slice(-1) || "1"}`
-                          : `VS-KBZ-${cleanDisplayNum.padStart(3, "0")}`;
-                      setSensorSerial(sample);
-                      toast.success(`Scanned Sensor Barcode: ${sample}`);
-                    }}
-                    className="text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300 flex items-center gap-1 transition-colors"
+                    onClick={onOpenScanner}
+                    className="text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300 flex items-center gap-1 transition-colors active:scale-95"
                   >
-                    <QrCode className="w-3.5 h-3.5" /> Scan QR
+                    <QrCode className="w-3.5 h-3.5" /> Scan QR Camera
                   </button>
                 </div>
                 <input
