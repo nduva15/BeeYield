@@ -3,24 +3,11 @@ import {
   X, LifeBuoy, Plus, Search, Mail, Phone, MapPin, Activity, Printer, Send,
   Loader2, Trash2, ChevronRight, CheckCircle2,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supportTicketService, type Ticket } from "@/services/supportTicketService";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
 
-type Ticket = {
-  id: string;
-  subject: string;
-  category: string;
-  priority: string;
-  status: string;
-  hive_label: string | null;
-  body: string;
-  contact_email: string | null;
-  contact_phone: string | null;
-  last_contact_at: string | null;
-  resolution: string | null;
-  created_at: string;
-};
+
 
 const FILTERS = ["all", "new", "in progress", "resolved"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -57,16 +44,15 @@ export default function SupportPage({
   const [draft, setDraft] = useState({ ...EMPTY });
 
   const load = useCallback(async () => {
-    if (!deviceId) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("support_tickets")
-      .select("*")
-      .eq("device_id", deviceId)
-      .order("created_at", { ascending: false });
-    setLoading(false);
-    if (error) { toast.error(error.message); return; }
-    setTickets((data ?? []) as Ticket[]);
+    try {
+      const data = await supportTicketService.getTickets(deviceId);
+      setTickets(data);
+    } catch (err) {
+      console.warn("Failed to load tickets:", err);
+    } finally {
+      setLoading(false);
+    }
   }, [deviceId]);
 
   useEffect(() => { if (isOpen) void load(); }, [isOpen, load]);
@@ -89,42 +75,54 @@ export default function SupportPage({
   }, [tickets, filter, query]);
 
   const submit = async () => {
-    if (!draft.subject.trim() || !draft.body.trim()) { toast.error("Subject and description are required"); return; }
+    if (!draft.subject.trim() || !draft.body.trim()) {
+      toast.error("Subject and description are required");
+      return;
+    }
     setSaving(true);
-    const { error } = await supabase.from("support_tickets").insert({
-      device_id: deviceId,
-      subject: draft.subject,
-      category: draft.category,
-      priority: draft.priority,
-      status: "new",
-      hive_label: draft.hive_label || null,
-      body: draft.body,
-      contact_email: draft.contact_email || null,
-      contact_phone: draft.contact_phone || null,
-      last_contact_at: new Date().toISOString(),
-    });
-    setSaving(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Ticket raised — support notified");
-    setDraft({ ...EMPTY });
-    setShowForm(false);
-    void load();
+    try {
+      const { data } = await supportTicketService.createTicket({
+        subject: draft.subject,
+        category: draft.category,
+        priority: draft.priority,
+        hive_label: draft.hive_label || null,
+        body: draft.body,
+        contact_email: draft.contact_email || null,
+        contact_phone: draft.contact_phone || null,
+      }, deviceId);
+
+      setTickets((prev) => [data, ...prev.filter((t) => t.id !== data.id)]);
+      toast.success("Ticket registered — support notified");
+      setDraft({ ...EMPTY });
+      setShowForm(false);
+      void load();
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("Failed to register ticket");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const advance = async (t: Ticket) => {
-    const next = t.status === "new" ? "in progress" : t.status === "in progress" ? "resolved" : "new";
-    const { error } = await supabase
-      .from("support_tickets")
-      .update({ status: next, last_contact_at: new Date().toISOString() })
-      .eq("id", t.id);
-    if (error) { toast.error(error.message); return; }
-    void load();
+    try {
+      const updated = await supportTicketService.advanceTicket(t, deviceId);
+      setTickets((prev) => prev.map((item) => (item.id === t.id ? updated : item)));
+      toast.success(`Ticket status updated to ${updated.status}`);
+    } catch (err) {
+      console.error("Advance error:", err);
+    }
   };
 
   const remove = async (id: string) => {
     if (!confirm("Delete this ticket?")) return;
-    await supabase.from("support_tickets").delete().eq("id", id);
-    void load();
+    try {
+      await supportTicketService.deleteTicket(id, deviceId);
+      setTickets((prev) => prev.filter((t) => t.id !== id));
+      toast.info("Ticket removed");
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
   };
 
   const exportServiceForm = () => {

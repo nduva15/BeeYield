@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, startTransition } from "react";
 import { Search, X, PanelLeftClose } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
@@ -93,17 +93,31 @@ export default function ToolSidebar({
                       ((activeTab === 'beeyield' || activeTab === 'hives') && (item.id === 'beeyield' || item.id === 'hives'))
                     )
                   );
+                  const handleItemClick = () => {
+                    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                      onClose();
+                    }
+                    // Yield immediately to the browser event loop to paint interaction before dispatching heavy view switch
+                    if (typeof window !== 'undefined' && 'requestAnimationFrame' in window) {
+                      window.requestAnimationFrame(() => {
+                        startTransition(() => {
+                          item.onClick();
+                        });
+                      });
+                    } else {
+                      startTransition(() => {
+                        item.onClick();
+                      });
+                    }
+                  };
+
                   return (
                     <button
                       key={item.label}
-                      onClick={() => {
-                        item.onClick();
-                        if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-                          onClose();
-                        }
-                      }}
+                      type="button"
+                      onClick={handleItemClick}
                       className={cn(
-                        "w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-left text-xs transition-colors",
+                        "w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-left text-xs transition-colors cursor-pointer",
                         isActive
                           ? "bg-amber-500/15 border border-amber-500/30 text-foreground font-semibold shadow-xs"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted/60"

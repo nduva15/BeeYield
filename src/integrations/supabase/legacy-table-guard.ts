@@ -23,6 +23,9 @@ const OPTIONAL_TABLES = new Set([
   "generated_reports",
   "scheduled_reports",
   "billing_ledger",
+  "support_tickets",
+  "ticket_comments",
+  "device_support_tickets",
 ]);
 
 const missingTables = new Set<string>();

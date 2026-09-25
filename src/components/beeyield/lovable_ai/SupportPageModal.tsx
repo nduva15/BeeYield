@@ -1,3 +1,4 @@
+import { supportTicketService } from "@/services/supportTicketService";
 import { useState, useEffect, useId } from "react";
 import {
   X,
@@ -53,14 +54,26 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem("beeyield_support_tickets");
-    if (saved) {
-      try {
-        setTickets(JSON.parse(saved));
-      } catch {
-        // ignore
+    let mounted = true;
+    supportTicketService.getTickets().then((data) => {
+      if (mounted && Array.isArray(data)) {
+        setTickets(data.map((t) => ({
+          id: t.id,
+          category: t.category,
+          subject: t.subject,
+          description: t.body || (t as any).description || "",
+          priority: (t.priority as any) || "medium",
+          status: (t.status as any) || "new",
+          created_at: t.created_at,
+        })));
       }
-    }
+    }).catch(() => {
+      const saved = localStorage.getItem("beeyield_support_tickets");
+      if (saved && mounted) {
+        try { setTickets(JSON.parse(saved)); } catch {}
+      }
+    });
+    return () => { mounted = false; };
   }, [isOpen]);
 
   if (!isOpen) return null;

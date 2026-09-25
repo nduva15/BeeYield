@@ -3,24 +3,11 @@ import {
   X, LifeBuoy, Plus, Search, Mail, Phone, MapPin, Activity, Printer, Send,
   Loader2, Trash2, ChevronRight, CheckCircle2,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supportTicketService, type Ticket } from "@/services/supportTicketService";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
 
-type Ticket = {
-  id: string;
-  subject: string;
-  category: string;
-  priority: string;
-  status: string;
-  hive_label: string | null;
-  body: string;
-  contact_email: string | null;
-  contact_phone: string | null;
-  last_contact_at: string | null;
-  resolution: string | null;
-  created_at: string;
-};
+
 
 const FILTERS = ["all", "new", "in progress", "resolved"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -57,41 +44,12 @@ export default function SupportPage({
   const [draft, setDraft] = useState({ ...EMPTY });
 
   const load = useCallback(async () => {
-    if (!deviceId) return;
     setLoading(true);
-
-    let localTickets: Ticket[] = [];
     try {
-      const stored = localStorage.getItem(`beeyield_support_tickets_${deviceId}`);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) localTickets = parsed;
-      }
-    } catch {}
-
-    try {
-      const { data, error } = await supabase
-        .from("support_tickets")
-        .select("*")
-        .eq("device_id", deviceId)
-        .order("created_at", { ascending: false });
-
-      if (!error && data) {
-        const mergedMap = new Map<string, Ticket>();
-        localTickets.forEach((t) => mergedMap.set(t.id, t));
-        (data as Ticket[]).forEach((t) => mergedMap.set(t.id, t));
-        const combined = Array.from(mergedMap.values()).sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        setTickets(combined);
-        try {
-          localStorage.setItem(`beeyield_support_tickets_${deviceId}`, JSON.stringify(combined));
-        } catch {}
-      } else {
-        setTickets(localTickets);
-      }
-    } catch {
-      setTickets(localTickets);
+      const data = await supportTicketService.getTickets(deviceId);
+      setTickets(data);
+    } catch (err) {
+      console.warn("Failed to load tickets:", err);
     } finally {
       setLoading(false);
     }
@@ -122,83 +80,49 @@ export default function SupportPage({
       return;
     }
     setSaving(true);
-    const newTicket: Ticket = {
-      id: crypto.randomUUID(),
-      device_id: deviceId,
-      subject: draft.subject.trim(),
-      category: draft.category,
-      priority: draft.priority,
-      status: "new",
-      hive_label: draft.hive_label?.trim() || null,
-      body: draft.body.trim(),
-      contact_email: draft.contact_email?.trim() || null,
-      contact_phone: draft.contact_phone?.trim() || null,
-      last_contact_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-    };
-
-    const updated = [newTicket, ...tickets];
-    setTickets(updated);
     try {
-      localStorage.setItem(`beeyield_support_tickets_${deviceId}`, JSON.stringify(updated));
-    } catch {}
+      const { data } = await supportTicketService.createTicket({
+        subject: draft.subject,
+        category: draft.category,
+        priority: draft.priority,
+        hive_label: draft.hive_label || null,
+        body: draft.body,
+        contact_email: draft.contact_email || null,
+        contact_phone: draft.contact_phone || null,
+      }, deviceId);
 
-    try {
-      const { error } = await supabase.from("support_tickets").insert({
-        id: newTicket.id,
-        device_id: newTicket.device_id,
-        subject: newTicket.subject,
-        category: newTicket.category,
-        priority: newTicket.priority,
-        status: newTicket.status,
-        hive_label: newTicket.hive_label,
-        body: newTicket.body,
-        contact_email: newTicket.contact_email,
-        contact_phone: newTicket.contact_phone,
-        last_contact_at: newTicket.last_contact_at,
-      });
-      if (error) {
-        console.warn("Support ticket sync queued locally:", error.message);
-      }
-    } catch (e) {
-      console.warn("Support ticket sync queued locally:", e);
-    } finally {
-      setSaving(false);
+      setTickets((prev) => [data, ...prev.filter((t) => t.id !== data.id)]);
       toast.success("Ticket registered — support notified");
       setDraft({ ...EMPTY });
       setShowForm(false);
+      void load();
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("Failed to register ticket");
+    } finally {
+      setSaving(false);
     }
   };
 
   const advance = async (t: Ticket) => {
-    const next = t.status === "new" ? "in progress" : t.status === "in progress" ? "resolved" : "new";
-    const updated = tickets.map((item) =>
-      item.id === t.id ? { ...item, status: next, last_contact_at: new Date().toISOString() } : item
-    );
-    setTickets(updated);
     try {
-      localStorage.setItem(`beeyield_support_tickets_${deviceId}`, JSON.stringify(updated));
-    } catch {}
-
-    try {
-      await supabase
-        .from("support_tickets")
-        .update({ status: next, last_contact_at: new Date().toISOString() })
-        .eq("id", t.id);
-    } catch {}
+      const updated = await supportTicketService.advanceTicket(t, deviceId);
+      setTickets((prev) => prev.map((item) => (item.id === t.id ? updated : item)));
+      toast.success(`Ticket status updated to ${updated.status}`);
+    } catch (err) {
+      console.error("Advance error:", err);
+    }
   };
 
   const remove = async (id: string) => {
     if (!confirm("Delete this ticket?")) return;
-    const updated = tickets.filter((t) => t.id !== id);
-    setTickets(updated);
     try {
-      localStorage.setItem(`beeyield_support_tickets_${deviceId}`, JSON.stringify(updated));
-    } catch {}
-    try {
-      await supabase.from("support_tickets").delete().eq("id", id);
-    } catch {}
-    toast.info("Ticket removed");
+      await supportTicketService.deleteTicket(id, deviceId);
+      setTickets((prev) => prev.filter((t) => t.id !== id));
+      toast.info("Ticket removed");
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
   };
 
   const exportServiceForm = () => {
