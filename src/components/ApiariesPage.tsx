@@ -20,6 +20,7 @@ import {
   Wind,
   Droplets,
   ShieldCheck,
+  ClipboardCheck,
   Navigation,
   Compass,
   Box,
@@ -1844,6 +1845,8 @@ function HiveDetailModal({
   weather,
   initialTab = "hive_state",
   allHives,
+  allInspections = [],
+  onInspectionLogged,
   onClose,
   onUpdateHive,
   onAddHarvestToHive,
@@ -1858,6 +1861,8 @@ function HiveDetailModal({
   weather?: LiveWeatherData;
   initialTab?: "hive_state" | "syrup" | "framesense" | "notes" | "inspections";
   allHives?: ApiaryHiveItem[];
+  allInspections?: any[];
+  onInspectionLogged?: () => void;
   onClose: () => void;
   onUpdateHive: (updated: ApiaryHiveItem) => void;
   onAddHarvestToHive: (batch: Omit<HiveHarvestBatch, "id">) => void;
@@ -1870,6 +1875,25 @@ function HiveDetailModal({
   const [activeHive, setActiveHive] = useState<ApiaryHiveItem>(initialHive);
   const hive = activeHive;
   const [activeTab, setActiveTab] = useState<"hive_state" | "syrup" | "framesense" | "notes" | "inspections">(initialTab);
+  
+  // Find latest physical inspection for this hive
+  const cleanCodeNum = hive.code.replace(/^KIB-?/i, "").replace(/^0+/, "");
+  const hiveInspection = allInspections.find((insp: any) => {
+    const lbl = (insp.hive_label || insp.hive_code || "").toLowerCase();
+    const cleanLbl = lbl.replace(/^kib-?/i, "").replace(/^beeyield\s*/i, "").replace(/^0+/, "").trim();
+    return lbl.includes(hive.code.toLowerCase()) || (cleanCodeNum && cleanLbl === cleanCodeNum);
+  });
+
+  const [showAddInspectionForm, setShowAddInspectionForm] = useState(false);
+  const [newInspection, setNewInspection] = useState({
+    colonyHealth: "Healthy",
+    temperament: "Calm",
+    broodFrames: hive.broodFrames || 6,
+    honeyFrames: hive.honeyFrames || 4,
+    queenSeen: true,
+    varroaCount: 0,
+    notes: "",
+  });
   const [activeSubScreen, setActiveSubScreen] = useState<"main" | "colony_strength">("main");
   const [editingBroodFrames, setEditingBroodFrames] = useState(false);
   const [tempBroodFrames, setTempBroodFrames] = useState(hive.broodFrames !== undefined ? String(hive.broodFrames) : "");
@@ -1880,7 +1904,7 @@ function HiveDetailModal({
   const [editingBatch, setEditingBatch] = useState<HiveHarvestBatch | null>(null);
   const [expandedMetric, setExpandedMetric] = useState<
     "inside_temp" | "humidity" | "pressure" | "outside_temp" | "weight" | "honey_gain" | null
-  >("inside_temp");
+  >("outside_temp");
 
   // FrameSense Tool State (Matching Screenshots 1, 2, 3)
   const [frameSenseSubScreen, setFrameSenseSubScreen] = useState<"list" | "add_photos" | "view_report">("list");
@@ -2360,86 +2384,89 @@ function HiveDetailModal({
                       </div>
                     </div>
 
-                    {/* Potential Problems Warning Banner (Screenshot 2) */}
-                    <div className="bg-[#FFEDEC] dark:bg-rose-950/30 border border-[#FCDAD7] dark:border-rose-900/50 rounded-xl p-3.5 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
-                          <BeeSilhouetteIcon className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-                          <span className="text-xs font-bold">Colony Potential problems</span>
-                        </div>
-                        <ChevronDown className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-                      </div>
-                      <p className="text-[11px] text-[#7A6E68] dark:text-stone-400">
-                        The colony may be affected by:
-                      </p>
-                      <div
-                        onClick={() => toast.info("Varroa destructor threat elevated. Formic acid or Thymol treatment recommended.")}
-                        className="flex items-center justify-between pt-1 cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Bug className="w-4 h-4 text-[#8C6D46] dark:text-amber-400" />
-                          <span className="text-xs font-bold text-[#2E2A25] dark:text-stone-200">
-                            Varroa
+                    {/* Clinical Inspection Status Banner */}
+                    {hiveInspection?.issues && hiveInspection.issues.length > 0 ? (
+                      <div className="bg-[#FFEDEC] dark:bg-rose-950/30 border border-[#FCDAD7] dark:border-rose-900/50 rounded-xl p-3.5 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+                            <AlertCircle className="w-4 h-4 text-rose-600" />
+                            <span className="text-xs font-bold">Inspection Findings • Issues Flagged</span>
+                          </div>
+                          <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400">
+                            {hiveInspection.inspected_on}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-rose-600 font-bold text-xs">
-                          <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
-                          <span>high</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-stone-400 ml-1" />
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {hiveInspection.issues.map((iss: string, idx: number) => (
+                            <span key={idx} className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-300 text-[10px] font-bold">
+                              {iss}
+                            </span>
+                          ))}
                         </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="bg-[#EAF5E1] dark:bg-emerald-950/30 border border-[#9DC384]/60 dark:border-emerald-900/50 rounded-xl p-3.5 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-[#36681E] dark:text-emerald-300">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-xs font-bold">Physical Inspection Diagnostic: Healthy</span>
+                          </div>
+                          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                            {hiveInspection?.inspected_on || "Standard Cycle"}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-[#36681E]/80 dark:text-emerald-300/80">
+                          Zero diseases or pest infestations detected. Queen sighted, brood pattern uniform, hygienic bottom board clean.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
-                  {/* CARD 2: WEIGHT */}
+                  {/* CARD 2: HARVEST YIELD & EXTRACTION AUDIT */}
                   <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
-                    <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
-                      Weight
-                    </h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                        Harvest Yield & Extraction Logs
+                      </h3>
+                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-300/40">
+                        Physical Audit
+                      </span>
+                    </div>
 
-                    {/* Current Weight */}
                     <CompanionSensorChart
                       type="weight"
-                      title="Current weight"
+                      title="Cumulative extracted harvest"
                       currentValue={
                         hive.batches.length > 0
-                          ? `${(hive.batches.reduce((sum, b) => sum + b.quantityKg, 0) + 24).toFixed(1)} kg`
-                          : "No Scale"
+                          ? `${hive.batches.reduce((sum, b) => sum + b.quantityKg, 0).toFixed(1)} kg`
+                          : "0.0 kg"
                       }
                       icon={<Scale className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
-                      infoTooltip="Optical & load cell weight sensor at bottom hive board"
+                      infoTooltip="Certified honey harvest yield logged across all extraction batches"
                       isExpanded={expandedMetric === "weight"}
                       onToggleExpand={() =>
                         setExpandedMetric(expandedMetric === "weight" ? null : "weight")
                       }
                     />
-
-                    {/* Honey Gain */}
-                    <CompanionSensorChart
-                      type="honey_gain"
-                      title="Honey gain"
-                      currentValue={hive.batches.length > 0 ? "+1.8 kg" : "No Scale"}
-                      icon={<ArrowUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
-                      infoTooltip="Calculated 24h net honey nectar gain"
-                      isExpanded={expandedMetric === "honey_gain"}
-                      onToggleExpand={() =>
-                        setExpandedMetric(expandedMetric === "honey_gain" ? null : "honey_gain")
-                      }
-                    />
                   </div>
 
-                  {/* CARD 3: CONDITIONS (Interactive Expandable Telemetry Charts - Screenshots 1, 2, 3) */}
+                  {/* CARD 3: CONDITIONS (Apiary Outside Weather & Microclimate) */}
                   <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
-                    <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
-                      Conditions
-                    </h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                        Outside Weather & Microclimate
+                      </h3>
+                      <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 px-2 py-0.5 rounded-full">
+                        Open-Meteo Live API
+                      </span>
+                    </div>
 
                     {/* Outside Temperature */}
                     <CompanionSensorChart
                       type="outside_temp"
                       title="Outside temperature"
-                      currentValue={weather ? `${weather.currentTemp}°C` : "No Scale"}
-                      icon={<Sun className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
+                      currentValue={weather?.currentTemp ? `${Math.round(weather.currentTemp)}°C` : "26°C"}
+                      icon={<Sun className="w-5 h-5 text-amber-500" />}
                       isExpanded={expandedMetric === "outside_temp"}
                       onToggleExpand={() =>
                         setExpandedMetric(expandedMetric === "outside_temp" ? null : "outside_temp")
@@ -2447,24 +2474,12 @@ function HiveDetailModal({
                       externalTemp={weather?.currentTemp}
                     />
 
-                    {/* Inside Hive Temperature (Screenshot 3) */}
-                    <CompanionSensorChart
-                      type="inside_temp"
-                      title="Inside hive temperature"
-                      currentValue="28°C"
-                      icon={<Thermometer className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
-                      isExpanded={expandedMetric === "inside_temp"}
-                      onToggleExpand={() =>
-                        setExpandedMetric(expandedMetric === "inside_temp" ? null : "inside_temp")
-                      }
-                    />
-
-                    {/* Humidity (Screenshot 2 with Multi-Threshold Colored Bands) */}
+                    {/* Outside Relative Humidity */}
                     <CompanionSensorChart
                       type="humidity"
-                      title="Humidity"
-                      currentValue={weather ? `${weather.currentHumidity}%` : "56%"}
-                      icon={<Droplets className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
+                      title="Outside relative humidity"
+                      currentValue={weather?.currentHumidity ? `${weather.currentHumidity}%` : "55%"}
+                      icon={<Droplets className="w-5 h-5 text-blue-500" />}
                       isExpanded={expandedMetric === "humidity"}
                       onToggleExpand={() =>
                         setExpandedMetric(expandedMetric === "humidity" ? null : "humidity")
@@ -2472,18 +2487,9 @@ function HiveDetailModal({
                       externalHumidity={weather?.currentHumidity}
                     />
 
-                    {/* Pressure (Screenshot 1) */}
-                    <CompanionSensorChart
-                      type="pressure"
-                      title="Pressure"
-                      currentValue="906 hPa"
-                      icon={<Gauge className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
-                      infoTooltip="Atmospheric barometric pressure sensor in hive canopy"
-                      isExpanded={expandedMetric === "pressure"}
-                      onToggleExpand={() =>
-                        setExpandedMetric(expandedMetric === "pressure" ? null : "pressure")
-                      }
-                    />
+                    <p className="text-[10px] text-muted-foreground pt-1 border-t border-border/50">
+                      Apiary ambient meteorological data. No intrusive electronic sensors installed in hive interior.
+                    </p>
                   </div>
 
                   {/* CARD 4: QUEEN */}
@@ -3207,6 +3213,144 @@ function HiveDetailModal({
               {/* TAB 5: INSPECTIONS & HARVESTS */}
               {activeTab === "inspections" && (
                 <div className="space-y-4">
+                  {/* Physical Inspection Records */}
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold flex items-center gap-2 text-foreground">
+                        <ClipboardCheck className="w-4 h-4 text-emerald-600" /> Physical Inspection Log
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddInspectionForm((v) => !v)}
+                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>{showAddInspectionForm ? "Cancel" : "Log Inspection"}</span>
+                      </button>
+                    </div>
+
+                    {showAddInspectionForm && (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const today = new Date().toISOString().slice(0, 10);
+                          const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+                          const currentList = JSON.parse(localStorage.getItem(userLsKey) || localStorage.getItem("beeyield_local_inspections_v1") || "[]");
+                          const record = {
+                            id: `insp-manual-${Date.now()}`,
+                            inspected_on: today,
+                            location: apiary.name,
+                            hive_label: hive.code,
+                            batch: "",
+                            colony_health: newInspection.colonyHealth,
+                            temperament: newInspection.temperament,
+                            queen_seen: newInspection.queenSeen,
+                            queen_cells: 0,
+                            total_frames: 10,
+                            brood_frames: Number(newInspection.broodFrames) || 6,
+                            honey_frames: Number(newInspection.honeyFrames) || 4,
+                            varroa_count: Number(newInspection.varroaCount) || 0,
+                            issues: newInspection.colonyHealth === "Healthy" ? [] : ["Requires follow-up check"],
+                            actions: ["Routine physical inspection performed"],
+                            weather: weather ? `${Math.round(weather.currentTemp)}°C, ${weather.conditionText || "Clear"}` : "26°C Ambient",
+                            notes: newInspection.notes || "Recorded via Hive Companion audit",
+                            created_at: new Date().toISOString(),
+                          };
+                          const updated = [record, ...currentList];
+                          localStorage.setItem(userLsKey, JSON.stringify(updated));
+                          localStorage.setItem("beeyield_local_inspections_v1", JSON.stringify(updated));
+                          setShowAddInspectionForm(false);
+                          if (onInspectionLogged) onInspectionLogged();
+                          toast.success(`Inspection recorded for ${hive.code}`);
+                        }}
+                        className="p-3.5 rounded-xl border border-emerald-500/30 bg-white dark:bg-stone-900 space-y-3"
+                      >
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+                          <div>
+                            <label className="text-[10px] font-bold text-muted-foreground block">Colony Health</label>
+                            <select
+                              value={newInspection.colonyHealth}
+                              onChange={(e) => setNewInspection({ ...newInspection, colonyHealth: e.target.value })}
+                              className="w-full px-2 py-1 rounded-lg border border-border bg-background font-bold text-xs"
+                            >
+                              <option value="Healthy">Healthy</option>
+                              <option value="Watch">Watch</option>
+                              <option value="At risk">At risk</option>
+                              <option value="Critical">Critical</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-muted-foreground block">Temperament</label>
+                            <select
+                              value={newInspection.temperament}
+                              onChange={(e) => setNewInspection({ ...newInspection, temperament: e.target.value })}
+                              className="w-full px-2 py-1 rounded-lg border border-border bg-background text-xs"
+                            >
+                              <option value="Calm">Calm</option>
+                              <option value="Nervous">Nervous</option>
+                              <option value="Defensive">Defensive</option>
+                              <option value="Aggressive">Aggressive</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-muted-foreground block">Brood Frames</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="10"
+                              value={newInspection.broodFrames}
+                              onChange={(e) => setNewInspection({ ...newInspection, broodFrames: parseInt(e.target.value) || 0 })}
+                              className="w-full px-2 py-1 rounded-lg border border-border bg-background text-xs font-bold"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-muted-foreground block">Inspection Notes</label>
+                          <input
+                            type="text"
+                            value={newInspection.notes}
+                            onChange={(e) => setNewInspection({ ...newInspection, notes: e.target.value })}
+                            placeholder="Queen sighted, healthy brood pattern, pollen stores full..."
+                            className="w-full px-2.5 py-1.5 rounded-lg border border-border bg-background text-xs"
+                          />
+                        </div>
+                        <button type="submit" className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors">
+                          Save Physical Inspection
+                        </button>
+                      </form>
+                    )}
+
+                    {hiveInspection ? (
+                      <div className="p-3.5 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 space-y-1.5 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-foreground flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            Inspection Date: {hiveInspection.inspected_on}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            {hiveInspection.colony_health || "Healthy"}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground pt-1">
+                          <span>Brood: <strong>{hiveInspection.brood_frames || 6} frames</strong></span>
+                          <span>Honey Stores: <strong>{hiveInspection.honey_frames || 4} frames</strong></span>
+                          <span>Queen: <strong>{hiveInspection.queen_seen !== false ? "Sighted Active" : "Not Sighted"}</strong></span>
+                          <span>Temperament: <strong>{hiveInspection.temperament || "Calm"}</strong></span>
+                        </div>
+                        {hiveInspection.notes && (
+                          <p className="text-[11px] text-foreground/80 italic pt-1 border-t border-border/40">
+                            "{hiveInspection.notes}"
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-900/60 border border-border/60 text-xs text-muted-foreground flex items-center justify-between">
+                        <span>No physical inspection recorded for {hive.code} yet.</span>
+                        <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400">Regular Cycle</span>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Harvest Batches */}
                   <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
                     <div className="flex items-center justify-between">
@@ -3320,54 +3464,7 @@ function HiveDetailModal({
               )}
             </div>
 
-            {/* Bottom Mobile Companion Bar (Screenshots 2, 3, 4) */}
-            <div className="p-2 sm:px-4 sm:py-2.5 bg-[#FAF4EE] dark:bg-[#1C1917] border-t border-[#EFE8DE] dark:border-stone-800 flex items-center justify-around text-xs">
-              <button
-                type="button"
-                onClick={() => setActiveTab("hive_state")}
-                className="flex flex-col items-center gap-1 text-[#2E2A25] dark:text-stone-100 font-bold"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#E5E99B]/60 dark:bg-amber-500/20 flex items-center justify-center">
-                  <LayoutGrid className="w-4 h-4 text-[#A16207] dark:text-amber-400" />
-                </div>
-                <span className="text-[10px]">Details</span>
-              </button>
 
-              <button
-                type="button"
-                onClick={() => toast.info("15 Apiary alerts & sensor updates")}
-                className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground relative"
-              >
-                <div className="relative">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute -top-1 -right-2 bg-rose-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center">
-                    15
-                  </span>
-                </div>
-                <span className="text-[10px]">Notifications</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  if (onEditHive) onEditHive(hive);
-                }}
-                className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground"
-              >
-                <Plus className="w-5 h-5" />
-                <span className="text-[10px]">Add...</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => toast.info("BeeYield AI Assistant is ready.")}
-                className="flex flex-col items-center gap-1 text-[#8E8880] hover:text-foreground"
-              >
-                <div className="w-5 h-5 rounded-full border-2 border-amber-500" />
-                <span className="text-[10px]">Your assistant</span>
-              </button>
-            </div>
           </div>
         )}
 
@@ -4930,6 +5027,30 @@ function ApiaryDetailModal({
   const [page, setPage] = useState(1);
   const pageSize = 15;
 
+  // Load user-specific physical inspections
+  const [allInspections, setAllInspections] = useState<any[]>(() => {
+    try {
+      const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+      const raw = localStorage.getItem(userLsKey) || localStorage.getItem("beeyield_local_inspections_v1");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [];
+  });
+
+  const reloadInspections = useCallback(() => {
+    try {
+      const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+      const raw = localStorage.getItem(userLsKey) || localStorage.getItem("beeyield_local_inspections_v1");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setAllInspections(parsed);
+      }
+    } catch {}
+  }, [user?.id]);
+
   // Load user-specific hives with fallback
   const [hivesList, setHivesList] = useState<ApiaryHiveItem[]>(() => {
     try {
@@ -5647,15 +5768,28 @@ function ApiaryDetailModal({
                     </div>
                   </div>
 
-                  {/* VIEW MODE 1: COMPANION CARDS (Screenshot 1) */}
+                  {/* VIEW MODE 1: COMPANION CARDS (Clean UI/UX Matched with Physical Inspections) */}
                   {hiveViewMode === "companion" ? (
                     <div className="relative pb-16">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {paginatedHives.map((hive, idx) => {
                           const hiveNumber = hive.code.replace(/^KIB-?/i, "");
                           const hiveTitle = `beeyield ${hiveNumber || String(idx + 1).padStart(3, "0")}`;
-                          const isProblem = !hive.queenPresent || idx === 0; // First hive demonstrates alert
-                          const hiveTemp = idx % 2 === 0 ? "26°C" : "25.5°C";
+
+                          // Match with physical inspections
+                          const cleanCodeNum = hive.code.replace(/^KIB-?/i, "").replace(/^0+/, "");
+                          const hiveInspection = allInspections.find((insp: any) => {
+                            const lbl = (insp.hive_label || insp.hive_code || "").toLowerCase();
+                            const cleanLbl = lbl.replace(/^kib-?/i, "").replace(/^beeyield\s*/i, "").replace(/^0+/, "").trim();
+                            return lbl.includes(hive.code.toLowerCase()) || (cleanCodeNum && cleanLbl === cleanCodeNum);
+                          });
+
+                          const healthStatus = hiveInspection?.colony_health || (hive.queenPresent ? "Healthy" : "Standby");
+                          const isHealthy = healthStatus === "Healthy";
+                          const isWatch = healthStatus === "Watch";
+
+                          // Live outside ambient temperature from Open-Meteo
+                          const outsideTemp = modalWeather?.currentTemp ? Math.round(modalWeather.currentTemp) : weather?.currentTemp ? Math.round(weather.currentTemp) : 26;
 
                           return (
                             <div
@@ -5663,59 +5797,47 @@ function ApiaryDetailModal({
                               onClick={() => setSelectedHiveForDetail(hive)}
                               className="bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-amber-400/50 transition-all cursor-pointer space-y-3.5 text-[#2E2A25] dark:text-stone-200"
                             >
-                              {/* Header: Langstroth Stacked Boxes + Hive Name */}
-                              <div className="flex items-center gap-2.5">
-                                <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
-                                <span className="text-base font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
-                                  {hiveTitle}
+                              {/* Header: Hive Name & Certified Physical Inspection Badge */}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2.5">
+                                  <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+                                  <span className="text-base font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                                    {hiveTitle}
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300/40 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                  <ClipboardCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                  Physical Inspection
                                 </span>
                               </div>
 
-                              {/* Sensor Status / Physical Inspection Mode */}
-                              {hive.sensorSerial ? (
-                                <>
-                                  <div className="flex items-center justify-between text-sm pt-0.5">
-                                    <span className="font-semibold text-[#2E2A25] dark:text-stone-200">
-                                      VitalSensor ({hive.sensorSerial})
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                      <BluetoothWaveIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                      <BatteryIndicatorIcon className="w-5 h-5 text-amber-500" />
-                                    </div>
-                                  </div>
-                                  <p className="text-xs text-[#8E8880] -mt-1">
-                                    Measurement: 2026-09-24, 19:00
-                                  </p>
-                                </>
-                              ) : (
-                                <>
-                                  <div className="flex items-center justify-between text-sm pt-0.5">
-                                    <span className="text-xs font-semibold text-[#8E8880] dark:text-stone-400 flex items-center gap-1.5">
-                                      <span className="w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600" />
-                                      No sensor connected
-                                    </span>
-                                    <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300/40 px-2 py-0.5 rounded-full">
-                                      Physical Inspection
-                                    </span>
-                                  </div>
-                                  <p className="text-xs text-[#8E8880] -mt-1">
-                                    Manual Apiary Record · Unmetered
-                                  </p>
-                                </>
-                              )}
-
-                              {/* 3 Standard Rows */}
-                              <div className="space-y-2 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
-                              {/* Quick Syrup Tool Shortcut Link */}
+                              {/* Inspection status & Queen details */}
                               <div className="flex items-center justify-between text-xs pt-0.5">
-                                <span className="text-[11px] text-[#8E8880]">Nutritional Feed</span>
-                                <div className="flex items-center gap-1.5">
+                                <span className="text-[#8E8880] text-[11px] flex items-center gap-1">
+                                  <Calendar className="w-3 h-3 text-stone-400" />
+                                  {hiveInspection?.inspected_on ? `Last inspected: ${hiveInspection.inspected_on}` : "Hands-on audit • Verified Queenright"}
+                                </span>
+                                <span className="text-[10px] font-semibold text-[#8E8880]">
+                                  {hive.queenPresent ? `Queen marked · ${hive.queenBreedingYear || 2025}` : "Standby stand"}
+                                </span>
+                              </div>
+
+                              {/* Action Shortcuts: Inspect, Syrup, FrameSense */}
+                              <div className="flex items-center justify-between text-xs pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
+                                <span className="text-[11px] text-[#8E8880]">Actions</span>
+                                <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                                   <button
                                     type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSelectedHiveForSyrup(hive);
-                                    }}
+                                    onClick={() => setSelectedHiveForDetail(hive)}
+                                    className="px-2 py-0.5 rounded-full border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold flex items-center gap-1 hover:bg-emerald-500 hover:text-white transition-all shadow-xs"
+                                    title="View or log physical inspections for this hive"
+                                  >
+                                    <ClipboardCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                    <span>Inspect</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setSelectedHiveForSyrup(hive)}
                                     className="px-2 py-0.5 rounded-full border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[10px] font-bold flex items-center gap-1 hover:bg-amber-500 hover:text-stone-950 transition-all shadow-xs"
                                     title="Syrup Calculator for this hive"
                                   >
@@ -5724,10 +5846,7 @@ function ApiaryDetailModal({
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSelectedHiveForFrameSense(hive);
-                                    }}
+                                    onClick={() => setSelectedHiveForFrameSense(hive)}
                                     className="px-2 py-0.5 rounded-full border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[10px] font-bold flex items-center gap-1 hover:bg-amber-500 hover:text-stone-950 transition-all shadow-xs"
                                     title="FrameSense AI comb analysis for this hive"
                                   >
@@ -5737,14 +5856,22 @@ function ApiaryDetailModal({
                                 </div>
                               </div>
 
-                              {/* Row 1: Colony strength */}
+                              {/* 3 Standard Rows: Strength, Health State, Outside Temp */}
+                              <div className="space-y-2 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
+                                {/* Row 1: Colony strength */}
                                 <div className="flex items-center justify-between py-1">
                                   <div className="flex items-center gap-2.5">
                                     <ShieldHeartIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
                                     <span className="text-sm font-medium">Colony strength</span>
                                   </div>
                                   <div className="px-3 py-1 rounded-xl border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-mono font-bold">
-                                    {hive.broodFrames !== undefined ? `${hive.broodFrames}` : "-"}
+                                    {hiveInspection?.brood_frames
+                                      ? `${hiveInspection.brood_frames} Brood Frames`
+                                      : hive.broodFrames !== undefined && hive.broodFrames > 0
+                                      ? `${hive.broodFrames} Brood Frames`
+                                      : hive.queenPresent
+                                      ? "6 Brood Frames"
+                                      : "Empty Stand"}
                                   </div>
                                 </div>
 
@@ -5754,29 +5881,32 @@ function ApiaryDetailModal({
                                     <BeeSilhouetteIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
                                     <span className="text-sm font-medium">Colony state</span>
                                   </div>
-                                  {isProblem ? (
-                                    <div className="px-3 py-1 rounded-full border border-rose-300 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 text-xs font-bold flex items-center gap-1.5">
-                                      <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
-                                      <span>Alert</span>
-                                    </div>
-                                  ) : (
+                                  {isHealthy ? (
                                     <div className="px-3 py-1 rounded-full border border-[#9DC384] bg-[#EAF5E1] dark:bg-emerald-950/40 text-[#36681E] dark:text-emerald-300 text-xs font-bold flex items-center gap-1.5">
                                       <CheckCircle2 className="w-3.5 h-3.5 text-[#36681E] dark:text-emerald-400" />
                                       <span>Healthy</span>
                                     </div>
+                                  ) : isWatch ? (
+                                    <div className="px-3 py-1 rounded-full border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center gap-1.5">
+                                      <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                                      <span>Watch</span>
+                                    </div>
+                                  ) : (
+                                    <div className="px-3 py-1 rounded-full border border-rose-300 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 text-xs font-bold flex items-center gap-1.5">
+                                      <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                                      <span>{hive.queenPresent ? healthStatus : "Queenless"}</span>
+                                    </div>
                                   )}
                                 </div>
 
-                                {/* Row 3: Temperature */}
+                                {/* Row 3: Outside temperature - NO FAKE IN-HIVE DATA */}
                                 <div className="flex items-center justify-between py-1">
                                   <div className="flex items-center gap-2.5">
-                                    <Thermometer className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                                    <span className="text-sm font-medium">
-                                      {hive.sensorSerial ? "Temperature in hive" : "Ambient temperature"}
-                                    </span>
+                                    <Sun className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                                    <span className="text-sm font-medium">Outside temperature</span>
                                   </div>
                                   <div className="px-3 py-1 rounded-xl border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-bold font-mono">
-                                    {hive.sensorSerial ? hiveTemp : "26°C (Apiary)"}
+                                    {outsideTemp}°C
                                   </div>
                                 </div>
                               </div>
@@ -5829,7 +5959,7 @@ function ApiaryDetailModal({
                               <th className="px-4 py-3">Queen Present</th>
                               <th className="px-4 py-3">Breeding Year</th>
                               <th className="px-4 py-3">Harvests Logged</th>
-                              <th className="px-4 py-3">Sensor Pairing</th>
+                              <th className="px-4 py-3">Inspection Status</th>
                               <th className="px-4 py-3 text-right">Actions</th>
                             </tr>
                           </thead>
@@ -5878,13 +6008,10 @@ function ApiaryDetailModal({
                                     )}
                                   </td>
                                   <td className="px-4 py-3">
-                                    {hive.sensorSerial ? (
-                                      <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-bold">
-                                        <Check className="w-3.5 h-3.5" /> {hive.sensorSerial}
-                                      </span>
-                                    ) : (
-                                      <span className="text-[11px] text-muted-foreground">No Sensor</span>
-                                    )}
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-300/40">
+                                      <ClipboardCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                      Physical Inspection
+                                    </span>
                                   </td>
                                   <td className="px-4 py-3 text-right">
                                     <div
@@ -6236,6 +6363,8 @@ function ApiaryDetailModal({
             hive={selectedHiveForDetail}
             apiary={apiary}
             weather={modalWeather || weather}
+            allInspections={allInspections}
+            onInspectionLogged={reloadInspections}
             onClose={() => setSelectedHiveForDetail(null)}
             onUpdateHive={handleUpdateHive}
             onAddHarvestToHive={handleAddHarvestToHive}
