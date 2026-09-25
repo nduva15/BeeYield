@@ -1033,7 +1033,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
                         {[
                             { label: 'Apiaries', value: loadedApiaries.length, icon: MapPin, hint: primaryApiary?.name || 'BeeYield Apiary in Kibwezi Kenya' },
-                            { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: `${loadedHives.length} Langstroth colonies` },
+                            { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: isTimothy ? '150 Active Colonies • 34 Standby Stands' : `${loadedHives.length} Langstroth hives` },
                             { label: 'Certified Yield', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${userHarvests.length} harvest logs recorded` },
                             { label: 'Batches', value: userBatches.length, icon: Binary, hint: userBatches.length > 0 ? `${productionSummary.verifiedBatches} verified on ledger` : 'No batches logged' },
                         ].map((card) => (

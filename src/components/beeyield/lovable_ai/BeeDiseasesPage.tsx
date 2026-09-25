@@ -1,3 +1,13 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { X, Search, AlertTriangle, Plus, Pencil, Trash2, Save, Upload, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -201,7 +211,7 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
                     </button>
                     <div className="flex gap-1">
                       <button onClick={() => startEdit(r)} className="p-1.5 rounded hover:bg-muted" title="Edit"><Pencil className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => remove(r)} className="p-1.5 rounded hover:bg-destructive/10 text-destructive" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => setDeleteRecord(r)} className="p-1.5 rounded hover:bg-destructive/10 text-destructive" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </div>
                   {isExp && (
@@ -238,6 +248,25 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
       <div className="bg-card border border-border/60 rounded-2xl w-full max-w-6xl shadow-2xl p-4 sm:p-6 overflow-y-auto max-h-[90vh] my-auto">
         {content}
       </div>
+      <AlertDialog open={!!deleteRecord} onOpenChange={(open) => !open && setDeleteRecord(null)}>
+        <AlertDialogContent className="rounded-2xl border bg-background/95 backdrop-blur-md shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Disease Record?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove the record for "{deleteRecord?.name}"?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

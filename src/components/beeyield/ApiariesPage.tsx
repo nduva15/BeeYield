@@ -1913,7 +1913,7 @@ function HiveDetailModal({
   const displayName = hive.code.startsWith("KIB-") ? `beeyield ${hive.code.replace("KIB-", "")}` : hive.code;
 
   const handleDeleteBatch = (batchId: string) => {
-    if (!window.confirm("Are you sure you want to delete this harvest batch?")) return;
+    if (!await confirmAsync("Are you sure you want to delete this harvest batch?")) return;
     if (onDeleteBatch) {
       onDeleteBatch(batchId);
     } else {
@@ -4817,7 +4817,7 @@ function ApiaryDetailModal({
   };
 
   const handleDeleteDevice = (deviceId: string, serial: string) => {
-    if (!window.confirm(`Are you sure you want to unpair and remove device "${serial}"?`)) return;
+    if (!await confirmAsync(`Are you sure you want to unpair and remove device "${serial}"?`)) return;
     const nextDevices = devicesList.filter((d) => d.id !== deviceId);
     saveDevicesUserScoped(nextDevices);
 
@@ -5043,7 +5043,7 @@ function ApiaryDetailModal({
   };
 
   const handleDeleteHive = async (hiveId: string, hiveCode: string) => {
-    if (!window.confirm(`Are you sure you want to delete hive "${hiveCode}"? This will permanently remove its records.`)) {
+    if (!await confirmAsync(`Are you sure you want to delete hive "${hiveCode}"? This will permanently remove its records.`)) {
       return;
     }
     const nextHives = hivesList.filter((h) => h.id !== hiveId);
@@ -5099,7 +5099,7 @@ function ApiaryDetailModal({
   const [editingHarvest, setEditingHarvest] = useState<ApiaryHarvestItem | null>(null);
 
   const handleDeleteHarvest = (harvestId: string) => {
-    if (!window.confirm("Are you sure you want to delete this harvest record?")) return;
+    if (!await confirmAsync("Are you sure you want to delete this harvest record?")) return;
     const target = harvestsList.find((h) => h.id === harvestId);
     const updatedHarvests = harvestsList.filter((h) => h.id !== harvestId);
     saveHarvestsUserScoped(updatedHarvests);
@@ -6393,6 +6393,15 @@ export function ApisenseWeatherCard({
 // ----------------------------------------------------------------------
 // Main Apiaries Modal & Standalone Page
 // ----------------------------------------------------------------------
+
+const confirmAsync = (msg: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+    }, 25);
+  });
+};
+
 export default function ApiariesPage({
   isOpen = true,
   onClose,
@@ -6714,7 +6723,7 @@ export default function ApiariesPage({
   };
 
   const handleDeleteApiary = async (apiaryId: string, apiaryName: string) => {
-    if (!window.confirm(`Are you sure you want to remove apiary "${apiaryName}"?`)) {
+    if (!await confirmAsync(`Are you sure you want to remove apiary "${apiaryName}"?`)) {
       return;
     }
     const nextApiaries = apiaries.filter((a) => a.id !== apiaryId);

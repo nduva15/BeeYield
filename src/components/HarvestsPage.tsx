@@ -1,3 +1,13 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { CANONICAL_TIMOTHY_HARVESTS, getNormalizedHarvestKey } from '@/data/canonicalHarvests';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -600,8 +610,12 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
     setAiText("");
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this harvest record?")) return;
+  const [deleteHarvestId, setDeleteHarvestId] = useState<string | null>(null);
+
+  const confirmDeleteHarvest = async () => {
+    if (!deleteHarvestId) return;
+    const id = deleteHarvestId;
+    setDeleteHarvestId(null);
     
     // 1. Backend API Delete
     try {
@@ -1133,7 +1147,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                       </button>
                       <button
                         type="button"
-                        onClick={() => remove(r.id)}
+                        onClick={() => setDeleteHarvestId(r.id)}
                         className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 transition-colors bg-background/50 shadow-sm"
                         title="Delete Batch"
                       >

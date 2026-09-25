@@ -10,7 +10,7 @@ export const YEAR_PLANS = [
   { year: 2020, totalKg: 13.0, start: "2020-06-15", end: "2020-12-15", honeyType: "Wildflower", nectarSource: "Wildflower Pioneer", colorGrade: "Amber" },
 ];
 
-export const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `BEE-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
+export const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `KIB-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
 
 export function generateTimothyHarvestBatches(): Harvest[] {
   const batches: Harvest[] = [];
@@ -36,20 +36,20 @@ export function generateTimothyHarvestBatches(): Harvest[] {
       } else if (plan.year === 2025) {
         hiveIndex = (seq - 1) % 150;
       } else if (plan.year === 2024) {
-        hiveIndex = (seq - 1 + 59) % 184;
+        hiveIndex = (seq - 1) % 125;
       } else if (plan.year === 2023) {
-        hiveIndex = (seq - 1 + 90) % 184;
+        hiveIndex = (seq - 1) % 53;
       } else if (plan.year === 2022) {
-        hiveIndex = (seq - 1 + 130) % 184;
+        hiveIndex = (seq - 1) % 28;
       } else if (plan.year === 2021) {
-        hiveIndex = (seq - 1 + 25) % 184;
+        hiveIndex = (seq - 1) % 30;
       } else {
         hiveIndex = (seq - 1) % 7;
       }
 
       const hiveLabel = TIMOTHY_HIVES[hiveIndex];
-      const hiveCode = `BEE-${String(hiveIndex + 1).padStart(3, "0")}`;
-      const batchCode = `BEE-${yyyymmdd}-${hiveCode.slice(-3)}`;
+      const hiveCode = `KIB-${String(hiveIndex + 1).padStart(3, "0")}`;
+      const batchCode = `BEE-${yyyymmdd}-${String(hiveIndex + 1).padStart(3, "0")}`;
       const traceCode = `TRC-${plan.year}-${hiveCode.slice(-3)}-${String(seq).padStart(3, "0")}`;
       const moisture = plan.year === 2026 ? 16.8 : Number((17.0 + ((seq % 5) * 0.1)).toFixed(1));
 

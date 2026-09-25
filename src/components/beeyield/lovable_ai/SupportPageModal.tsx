@@ -1,3 +1,13 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supportTicketService } from "@/services/supportTicketService";
 import { useState, useEffect } from "react";
 import {
@@ -157,8 +167,12 @@ export default function SupportPageModal({ isOpen, onClose, embedded = false }: 
     }
   };
 
-  const handleDeleteTicket = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this ticket?")) return;
+  const [deleteTicketId, setDeleteTicketId] = useState<string | null>(null);
+
+  const confirmDeleteTicket = async () => {
+    if (!deleteTicketId) return;
+    const id = deleteTicketId;
+    setDeleteTicketId(null);
     try {
       await supportTicketService.deleteTicket(id);
       setTickets((prev) => prev.filter((t) => t.id !== id));
@@ -405,7 +419,7 @@ export default function SupportPageModal({ isOpen, onClose, embedded = false }: 
                       </button>
                     )}
                     <button
-                      onClick={() => handleDeleteTicket(ticket.id)}
+                      onClick={() => setDeleteTicketId(ticket.id)}
                       className="p-1.5 rounded-lg border border-red-500/20 hover:bg-red-500/20 text-red-400 transition-all"
                       title="Delete Ticket"
                     >
@@ -525,6 +539,25 @@ export default function SupportPageModal({ isOpen, onClose, embedded = false }: 
           </div>
         </div>
       )}
+      <AlertDialog open={!!deleteTicketId} onOpenChange={(open) => !open && setDeleteTicketId(null)}>
+        <AlertDialogContent className="rounded-2xl border bg-[#1C1A14] text-white border-white/15 shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Support Ticket?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/60">
+              Are you sure you want to delete this ticket? This will permanently remove it from the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/10 text-white hover:bg-white/20 border-white/20">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteTicket}
+              className="bg-red-600 hover:bg-red-700 text-white border-none"
+            >
+              Delete Ticket
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 

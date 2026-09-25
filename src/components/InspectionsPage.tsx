@@ -1,3 +1,13 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, ClipboardList, Plus, Search, Trash2, HeartPulse, AlertTriangle, Activity,
@@ -801,8 +811,12 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
     setAiText("");
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this inspection record?")) return;
+  const [deleteInspectionId, setDeleteInspectionId] = useState<string | null>(null);
+
+  const confirmDeleteInspection = async () => {
+    if (!deleteInspectionId) return;
+    const id = deleteInspectionId;
+    setDeleteInspectionId(null);
     
     // 1. Backend API Delete
     try {
@@ -1582,7 +1596,7 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                         className="px-3 py-1.5 rounded-lg border border-honey/40 bg-honey/10 text-honey flex items-center gap-1.5 hover:bg-honey/20 transition-colors font-medium">
                         <Pencil className="w-3.5 h-3.5" /> Edit diagnostic
                       </button>
-                      <button onClick={() => remove(r.id)} className="text-red-400 flex items-center gap-1 hover:underline ml-auto">
+                      <button onClick={() => setDeleteInspectionId(r.id)} className="text-red-400 flex items-center gap-1 hover:underline ml-auto">
                         <Trash2 className="w-3.5 h-3.5" /> Delete record
                       </button>
                     </div>
