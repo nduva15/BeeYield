@@ -629,7 +629,7 @@ export default function Index() {
         {
           label: "My Devices, USB, Bluetooth & Online",
           icon: Cpu,
-          onClick: () => (user ? setMeasurementToolsOpen(true) : navigate("/auth?next=/")),
+          onClick: () => setMeasurementToolsOpen(true),
         },
         { label: "Support & Tickets", icon: LifeBuoy, onClick: () => setSupportOpen(true) },
         {
