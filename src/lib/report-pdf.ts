@@ -1,4 +1,5 @@
 import jsPDF from "jspdf";
+import { toast } from "sonner";
 
 /**
  * Shared PDF builder for BeeYield findings reports (inspections and acoustic
@@ -84,7 +85,29 @@ export function createReportPdf(doc: ReportDoc): jsPDF {
     y += 22;
   };
 
-  for (const section of doc.sections) {
+  if (doc.meta && doc.meta.length > 0) {
+    heading("Extraction Lot & Official Certification");
+    pdf.setFontSize(9.5);
+    const colW = W / 2;
+    let col = 0;
+    for (const m of doc.meta) {
+      room(20);
+      const x = M + col * colW;
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(...MUTED);
+      pdf.text(m.label, x, y);
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(...INK);
+      const value = pdf.splitTextToSize(String(m.value ?? ""), colW - 100)[0] ?? "";
+      pdf.text(value, x + colW - 12, y, { align: "right" });
+      if (col === 1) y += 17;
+      col = col === 0 ? 1 : 0;
+    }
+    if (col === 1) y += 17;
+    y += 8;
+  }
+
+  for (const section of doc.sections ?? []) {
     heading(section.heading);
 
     if (section.type === "kv") {
@@ -197,7 +220,32 @@ export function createReportPdf(doc: ReportDoc): jsPDF {
 
 export function downloadReportPdf(doc: ReportDoc): jsPDF {
   const pdf = createReportPdf(doc);
-  pdf.save(doc.fileName || doc.filename || "beeyield-report.pdf");
+  const rawFileName = doc.fileName || doc.filename || "beeyield-certificate.pdf";
+  const fileName = rawFileName.toLowerCase().endsWith(".pdf") ? rawFileName : `${rawFileName}.pdf`;
+  try {
+    pdf.save(fileName);
+    toast.success(`Downloaded ${fileName}`);
+  } catch (err) {
+    console.warn("Direct pdf.save failed, falling back to blob anchor download:", err);
+    try {
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 1500);
+      toast.success(`Downloaded ${fileName}`);
+    } catch (fallbackErr) {
+      console.error("Certificate download failed:", fallbackErr);
+      toast.error("Failed to download certificate PDF");
+    }
+  }
   return pdf;
 }
 
