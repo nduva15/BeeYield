@@ -245,7 +245,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({
                                     <option value="">No hive selected</option>
                                     {hives.map((hive) => (
                                         <option key={hive.id} value={hive.id}>
-                                            {(hive.hive_code || hive.id).toUpperCase()}{hive.name ? ` • ${hive.name}` : ''}{hive.apiary_name ? ` (${hive.apiary_name})` : ''}
+                                            {(hive.hive_code || hive.id).toUpperCase()}{(hive as any).name ? ` • ${(hive as any).name}` : ''}{(hive as any).apiary_name ? ` (${(hive as any).apiary_name})` : ''}
                                         </option>
                                     ))}
                                 </select>

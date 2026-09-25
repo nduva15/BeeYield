@@ -12,7 +12,7 @@ import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/AuthContext";
 import beeyieldService from "@/services/beeyieldService";
 
 type SavedAnalysis = {
@@ -169,8 +169,11 @@ export default function SoundAnalysis({
   onClose: () => void;
   embedded?: boolean;
 }) {
+  const { user } = useAuth();
   const deviceId = useDeviceId();
   const [hiveLabel, setHiveLabel] = useState("BY-H001");
+  const [userHives, setUserHives] = useState<Array<{ id: string; code: string; name?: string; apiary_name?: string }>>([]);
+  const [isCustomHive, setIsCustomHive] = useState(false);
   const [notes, setNotes] = useState("");
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -249,8 +252,8 @@ export default function SoundAnalysis({
           const svcHives = await beeyieldService.getHives();
           if (Array.isArray(svcHives)) {
             for (const h of svcHives) {
-              if (!user?.id || !h.user_id || h.user_id === user.id) {
-                addOption(h.id, h.hive_code || h.name, h.name, h.apiary_name);
+              if (!user?.id || !(h as any).user_id || (h as any).user_id === user.id) {
+                addOption(h.id, h.hive_code || (h as any).name, (h as any).name, (h as any).apiary_name);
               }
             }
           }
@@ -295,7 +298,6 @@ export default function SoundAnalysis({
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const loadHistory = useCallback(async () => {
