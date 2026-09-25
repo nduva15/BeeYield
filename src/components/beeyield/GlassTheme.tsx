@@ -39,10 +39,10 @@ export const glass = {
     modalCard: 'rounded-xl border border-border bg-card shadow-xl overflow-hidden max-w-2xl w-full relative',
 
     /** Primary Button */
-    btnPrimary: 'h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95 gap-2 flex items-center justify-center border border-emerald-500/40',
+    btnPrimary: 'h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95 gap-2 flex items-center justify-center border border-emerald-500/40 transform-gpu will-change-transform select-none',
 
     /** Secondary Button */
-    btnSecondary: 'h-9 px-4 rounded-lg bg-card border border-border text-foreground hover:bg-accent/10 transition-all text-sm font-semibold flex items-center gap-2 justify-center',
+    btnSecondary: 'h-9 px-4 rounded-lg bg-card border border-border text-foreground hover:bg-accent/10 transition-all text-sm font-semibold flex items-center gap-2 justify-center transform-gpu will-change-transform select-none',
 
     /** Form Input */
     input: 'h-9 rounded-lg border border-border bg-card text-sm text-foreground transition-all focus:ring-2 focus:ring-primary/50 focus:border-primary px-3 placeholder:text-muted-foreground/40 shadow-sm',

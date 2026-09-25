@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { triggerHapticFeedback } from "@/lib/haptic";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[13px] font-black uppercase tracking-wider ring-offset-background transition-all active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 max-w-full",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[13px] font-black uppercase tracking-wider ring-offset-background transition-all active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 max-w-full transform-gpu will-change-transform select-none",
   {
     variants: {
       variant: {
@@ -42,8 +42,29 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      triggerHapticFeedback(10);
-      if (onClick) onClick(e);
+      try {
+        triggerHapticFeedback(10);
+      } catch (_) {}
+
+      if (!onClick) return;
+
+      if (props.type === "submit") {
+        onClick(e);
+        return;
+      }
+
+      // Yield immediately to browser event loop to paint interaction without blocking UI updates
+      if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
+        window.requestAnimationFrame(() => {
+          React.startTransition(() => {
+            onClick(e);
+          });
+        });
+      } else {
+        React.startTransition(() => {
+          onClick(e);
+        });
+      }
     };
 
     return (
