@@ -1409,6 +1409,17 @@ function mapBatchRecord(record: any): BatchView {
     };
 }
 
+async function getBeeYieldUser(): Promise<{ id?: string; email?: string } | null> {
+    if (!sb) return null;
+    try {
+        const { data } = await sb.auth.getUser();
+        if (data?.user) return { id: data.user.id, email: data.user.email };
+        const { data: sessionData } = await sb.auth.getSession();
+        if (sessionData?.session?.user) return { id: sessionData.session.user.id, email: sessionData.session.user.email };
+    } catch {}
+    return null;
+}
+
 async function getBeeYieldUserId(): Promise<string | null> {
     if (!sb) return null;
 

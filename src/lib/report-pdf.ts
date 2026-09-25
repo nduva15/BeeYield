@@ -1,9 +1,9 @@
 import jsPDF from "jspdf";
 
 /**
- * Shared PDF builder for BeeYield findings reports (inspections and acoustic
- * audits). Produces a downloadable, shareable A4 document with the honey/wax
- * brand colours used across the app.
+ * Shared PDF builder for BeeYield findings reports (inspections, acoustic
+ * audits, and honey extraction certificates). Produces a downloadable, shareable A4
+ * document with the honey/wax brand colours used across the app.
  */
 
 const HONEY: [number, number, number] = [214, 158, 46];
@@ -17,12 +17,14 @@ export type ReportSection =
   | { type: "list"; heading: string; items: string[] };
 
 export type ReportDoc = {
-  kind: string;
+  kind?: string;
   title: string;
-  subtitle: string;
-  badge: string;
-  fileName: string;
-  sections: ReportSection[];
+  subtitle?: string;
+  badge?: string;
+  fileName?: string;
+  filename?: string;
+  meta?: { label: string; value: string | number }[];
+  sections?: ReportSection[];
   footer?: string;
 };
 
@@ -51,20 +53,21 @@ export function createReportPdf(doc: ReportDoc): jsPDF {
   pdf.text("BeeYield", M, 40);
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(13);
-  pdf.text(doc.title, M, 62);
+  pdf.text(doc.title || "BeeYield Certificate", M, 62);
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(9);
   pdf.setTextColor(215, 205, 190);
-  pdf.text(doc.subtitle, M, 78);
+  pdf.text(doc.subtitle || "Official Apiary Telemetry & Certification", M, 78);
 
+  const badgeText = doc.badge || "EXPORT GRADE A • CERTIFIED";
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(10);
   pdf.setTextColor(...HONEY);
-  pdf.text(doc.badge, pageW - M, 40, { align: "right" });
+  pdf.text(badgeText, pageW - M, 40, { align: "right" });
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(8);
   pdf.setTextColor(215, 205, 190);
-  pdf.text(`Generated ${new Date().toLocaleString()}`, pageW - M, 56, { align: "right" });
+  pdf.text(`Generated ${new Date().toLocaleDateString()}`, pageW - M, 56, { align: "right" });
 
   y = 122;
 
@@ -80,7 +83,19 @@ export function createReportPdf(doc: ReportDoc): jsPDF {
     y += 22;
   };
 
-  for (const section of doc.sections) {
+  const sections: ReportSection[] = [...(doc.sections || [])];
+  if (doc.meta && doc.meta.length > 0) {
+    const hasMetaSection = sections.some((s) => s.type === "kv" && /telemetry|metadata|details/i.test(s.heading));
+    if (!hasMetaSection) {
+      sections.unshift({
+        type: "kv",
+        heading: "Extraction & Lot Telemetry",
+        rows: doc.meta.map((m) => [m.label, String(m.value)]),
+      });
+    }
+  }
+
+  for (const section of sections) {
     heading(section.heading);
 
     if (section.type === "kv") {
@@ -184,7 +199,11 @@ export function createReportPdf(doc: ReportDoc): jsPDF {
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(7.5);
     pdf.setTextColor(...MUTED);
-    pdf.text(doc.footer ?? "BeeYield — Apiary Intelligence & Yield Management Platform. Acoustic and visual findings support physical inspection.", M, pageH - 24);
+    pdf.text(
+      doc.footer ?? "BeeYield — Official Certified Extraction Certificate • Verified Traceability QR",
+      M,
+      pageH - 24
+    );
     pdf.text(`Page ${p} of ${pages}`, pageW - M, pageH - 24, { align: "right" });
   }
 
@@ -192,13 +211,32 @@ export function createReportPdf(doc: ReportDoc): jsPDF {
 }
 
 export function downloadReportPdf(doc: ReportDoc): jsPDF {
-  const pdf = createReportPdf(doc);
-  pdf.save(doc.fileName);
+  const fileName = doc.fileName || doc.filename || "BeeYield-Certificate.pdf";
+  const pdf = createReportPdf({ ...doc, fileName });
+  try {
+    pdf.save(fileName);
+  } catch (e) {
+    console.warn("Direct pdf.save failed, using browser anchor download fallback:", e);
+    try {
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch (err2) {
+      console.error("All PDF download methods failed:", err2);
+    }
+  }
   return pdf;
 }
 
 export function buildReportPdf(doc: ReportDoc): { pdf: jsPDF; blob: Blob; url: string } {
-  const pdf = createReportPdf(doc);
+  const fileName = doc.fileName || doc.filename || "BeeYield-Report.pdf";
+  const pdf = createReportPdf({ ...doc, fileName });
   const blob = pdf.output("blob");
   const url = URL.createObjectURL(blob);
   return { pdf, blob, url };

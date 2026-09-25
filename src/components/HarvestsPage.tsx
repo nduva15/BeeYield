@@ -8,7 +8,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CANONICAL_TIMOTHY_HARVESTS, getNormalizedHarvestKey } from '@/data/canonicalHarvests';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, Package, Plus, Search, Trash2, Droplets, ShieldCheck, Scale,
@@ -73,8 +72,8 @@ export const YEAR_PLANS = [
   { year: 2020, totalKg: 13.0, start: "2020-06-15", end: "2020-12-15", honeyType: "Wildflower", nectarSource: "Wildflower Pioneer", colorGrade: "Amber" },
 ];
 
-// Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi
-export const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `BEE-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
+// Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi (150 Active Colonies, 34 Standby Stands)
+export const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `KIB-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
 
 function generateTimothyHarvestBatches(): Harvest[] {
   const batches: Harvest[] = [];
@@ -94,28 +93,28 @@ function generateTimothyHarvestBatches(): Harvest[] {
       const dateStr = batchDate.toISOString().slice(0, 10);
       const yyyymmdd = dateStr.replace(/-/g, "");
 
-      // Accurate historical hive distribution across Timothy Nduva's 184 Langstroth hives:
+      // Accurate historical hive distribution across Timothy Nduva's active colonies (hives 1..150):
       let hiveIndex: number;
       if (plan.year === 2026) {
-        hiveIndex = (seq - 1) % 30; // BEE-001 to BEE-030 (Jan 2026 current season)
+        hiveIndex = (seq - 1) % 30; // KIB-001 to KIB-030 (Jan 2026 current season)
       } else if (plan.year === 2025) {
-        hiveIndex = (seq - 1) % 150; // BEE-001 to BEE-150 (2025 major harvest)
+        hiveIndex = (seq - 1) % 150; // KIB-001 to KIB-150 (2025 major harvest)
       } else if (plan.year === 2024) {
-        hiveIndex = (seq - 1 + 59) % 184; // BEE-060 to BEE-184 (2024 harvest)
+        hiveIndex = (seq - 1) % 125; // KIB-001 to KIB-125 (2024 harvest)
       } else if (plan.year === 2023) {
-        hiveIndex = (seq - 1 + 90) % 184; // BEE-091 to BEE-143 (2023 harvest)
+        hiveIndex = (seq - 1) % 53; // KIB-001 to KIB-053 (2023 harvest)
       } else if (plan.year === 2022) {
-        hiveIndex = (seq - 1 + 130) % 184; // BEE-131 to BEE-158 (2022 harvest)
+        hiveIndex = (seq - 1) % 28; // KIB-001 to KIB-028 (2022 harvest)
       } else if (plan.year === 2021) {
-        hiveIndex = (seq - 1 + 25) % 184; // BEE-026 to BEE-055 (2021 harvest)
+        hiveIndex = (seq - 1) % 30; // KIB-001 to KIB-030 (2021 harvest)
       } else {
-        hiveIndex = (seq - 1) % 7; // BEE-001 to BEE-007 (2020 pioneer founding stands)
+        hiveIndex = (seq - 1) % 7; // KIB-001 to KIB-007 (2020 pioneer founding stands)
       }
 
       const hiveLabel = TIMOTHY_HIVES[hiveIndex];
-      const hiveCode = `BEE-${String(hiveIndex + 1).padStart(3, "0")}`;
+      const hiveCode = `KIB-${String(hiveIndex + 1).padStart(3, "0")}`;
 
-      const batchCode = `BEE-${yyyymmdd}-${hiveCode.slice(-3)}`;
+      const batchCode = `BEE-${yyyymmdd}-${String(hiveIndex + 1).padStart(3, "0")}`;
       const traceCode = `TRC-${plan.year}-${hiveCode.slice(-3)}-${String(seq).padStart(3, "0")}`;
       const moisture = plan.year === 2026 ? 16.8 : Number((17.0 + ((seq % 5) * 0.1)).toFixed(1));
 
@@ -153,7 +152,7 @@ function generateTimothyHarvestBatches(): Harvest[] {
   return batches;
 }
 
-const DEFAULT_HARVESTS: Harvest[] = CANONICAL_TIMOTHY_HARVESTS;
+const DEFAULT_HARVESTS: Harvest[] = generateTimothyHarvestBatches();
 
 const EMPTY_HARVEST = {
   harvested_on: new Date().toISOString().slice(0, 10),
@@ -181,46 +180,56 @@ function gradeTone(grade: string, moisture?: number) {
 }
 
 function harvestPdf(r: Harvest) {
-  void downloadReportPdf({
-    filename: `Harvest-${safeName(r.hive_label)}-${safeName(r.batch)}.pdf`,
-    title: `Honey Harvest Extraction Certificate • ${r.hive_label}`,
-    subtitle: `Batch ${r.batch} • ${r.honey_type} • ${r.quality_grade}`,
-    meta: [
-      { label: "Producer / Beekeeper", value: r.beekeeper || "Timothy Nduva" },
-      { label: "Date of Extraction", value: r.harvested_on },
-      { label: "Hive Identifier", value: r.hive_label },
-      { label: "Batch Lot Number", value: r.batch },
-      { label: "Apiary Location", value: r.location || "BeeYield Apiary in Kibwezi Kenya" },
-      { label: "Net Volume Extracted", value: `${r.quantity_kg} kg` },
-      { label: "Frames Harvested", value: `${r.frames_harvested} frames` },
-      { label: "Refractometer Moisture", value: `${r.moisture_pct}%` },
-      { label: "Color Classification", value: r.color_grade },
-      { label: "Official Quality Standard", value: r.quality_grade },
-      { label: "Traceability QR Hash", value: r.traceability_code },
-      { label: "Ambient Extraction Weather", value: r.weather || "28 °C, dry harvest" },
-      { label: "Fair Trade Beekeeper Value", value: `KES ${(r.quantity_kg * 1000).toLocaleString()}` },
-      { label: "Cumulative Certified Yield", value: "843.0 kg KEBS Certified" },
-    ],
-    sections: [
-      {
-        type: "kv",
-        heading: "Commercial Compliance & Laboratory Specifications",
-        rows: [
-          ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
-          ["Moisture Content (Max 20%)", `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade" : "Standard"})`],
-          ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
-          ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
-          ["Diastase Enzyme Activity", "> 12 Schade units (Raw unpasteurized)"],
-          ["Filtration Protocol", r.actions.join("; ") || "Cold extracted, double strained"],
-        ],
-      },
-      ...(r.notes ? [{ type: "text" as const, heading: "Beekeeper Extraction Notes", body: r.notes }] : []),
-      ...(r.ai_insights ? [{ type: "text" as const, heading: "AI Quality & Yield Analysis", body: r.ai_insights }] : []),
-    ],
-  });
-}
-
-export default function HarvestsPage({
+  try {
+    toast.info("Preparing Extraction Certificate...");
+    const fileName = `Harvest-${safeName(r.hive_label || "hive")}-${safeName(r.batch || "batch")}.pdf`;
+    downloadReportPdf({
+      kind: "certificate",
+      badge: "KEBS / ISO CERTIFIED",
+      fileName,
+      filename: fileName,
+      title: `Honey Harvest Extraction Certificate • ${r.hive_label}`,
+      subtitle: `Batch ${r.batch} • ${r.honey_type} • ${r.quality_grade}`,
+      meta: [
+        { label: "Producer / Beekeeper", value: r.beekeeper || "Timothy Nduva" },
+        { label: "Date of Extraction", value: r.harvested_on },
+        { label: "Hive Identifier", value: r.hive_label },
+        { label: "Batch Lot Number", value: r.batch },
+        { label: "Apiary Location", value: r.location || "BeeYield Apiary in Kibwezi Kenya" },
+        { label: "Net Volume Extracted", value: `${r.quantity_kg} kg` },
+        { label: "Frames Harvested", value: `${r.frames_harvested} frames` },
+        { label: "Refractometer Moisture", value: `${r.moisture_pct}%` },
+        { label: "Color Classification", value: r.color_grade },
+        { label: "Official Quality Standard", value: r.quality_grade },
+        { label: "Traceability QR Hash", value: r.traceability_code },
+        { label: "Ambient Extraction Weather", value: r.weather || "28 °C, dry harvest" },
+        { label: "Fair Trade Beekeeper Value", value: `KES ${(r.quantity_kg * 1000).toLocaleString()}` },
+        { label: "Cumulative Certified Yield", value: "843.0 kg KEBS Certified" },
+      ],
+      sections: [
+        {
+          type: "kv",
+          heading: "Commercial Compliance & Laboratory Specifications",
+          rows: [
+            ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
+            ["Moisture Content (Max 20%)", `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade A" : "Standard Raw"})`],
+            ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
+            ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
+            ["Diastase Enzyme Activity", "> 12 Schade units (Raw unpasteurized)"],
+            ["Filtration Protocol", Array.isArray(r.actions) ? r.actions.join("; ") : "Cold extracted, double strained"],
+          ],
+        },
+        ...(r.notes ? [{ type: "text" as const, heading: "Beekeeper Extraction Notes", body: r.notes }] : []),
+        ...(r.ai_insights ? [{ type: "text" as const, heading: "AI Quality & Yield Analysis", body: r.ai_insights }] : []),
+      ],
+      footer: "BeeYield Official Harvest Ledger • Verified Traceability QR • Export Grade Apiculture",
+    });
+    toast.success(`Downloaded Certificate for Batch ${r.batch}`);
+  } catch (err: any) {
+    console.error("Failed to generate certificate PDF:", err);
+    toast.error("Failed to download certificate.");
+  }
+}\n\nexport default function HarvestsPage({
   isOpen = true,
   onClose,
   embedded = false,
@@ -284,7 +293,7 @@ export default function HarvestsPage({
       const canonicalDeduplicated: Harvest[] = [];
 
       userCustomBatches.forEach((b) => {
-        const k = getNormalizedHarvestKey(b);
+        const k = b.batch || b.id;
         if (!seenBatchKeys.has(k)) {
           seenBatchKeys.add(k);
           canonicalDeduplicated.push(b);
@@ -292,7 +301,7 @@ export default function HarvestsPage({
       });
 
       DEFAULT_HARVESTS.forEach((d) => {
-        const k = getNormalizedHarvestKey(d);
+        const k = d.batch || d.id;
         if (!seenBatchKeys.has(k)) {
           seenBatchKeys.add(k);
           canonicalDeduplicated.push(d);

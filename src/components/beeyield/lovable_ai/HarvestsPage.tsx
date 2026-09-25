@@ -181,46 +181,56 @@ function gradeTone(grade: string, moisture?: number) {
 }
 
 function harvestPdf(r: Harvest) {
-  void downloadReportPdf({
-    filename: `Harvest-${safeName(r.hive_label)}-${safeName(r.batch)}.pdf`,
-    title: `Honey Harvest Extraction Certificate • ${r.hive_label}`,
-    subtitle: `Batch ${r.batch} • ${r.honey_type} • ${r.quality_grade}`,
-    meta: [
-      { label: "Producer / Beekeeper", value: r.beekeeper || "Timothy Nduva" },
-      { label: "Date of Extraction", value: r.harvested_on },
-      { label: "Hive Identifier", value: r.hive_label },
-      { label: "Batch Lot Number", value: r.batch },
-      { label: "Apiary Location", value: r.location || "BeeYield Apiary in Kibwezi Kenya" },
-      { label: "Net Volume Extracted", value: `${r.quantity_kg} kg` },
-      { label: "Frames Harvested", value: `${r.frames_harvested} frames` },
-      { label: "Refractometer Moisture", value: `${r.moisture_pct}%` },
-      { label: "Color Classification", value: r.color_grade },
-      { label: "Official Quality Standard", value: r.quality_grade },
-      { label: "Traceability QR Hash", value: r.traceability_code },
-      { label: "Ambient Extraction Weather", value: r.weather || "28 °C, dry harvest" },
-      { label: "Fair Trade Beekeeper Value", value: `KES ${(r.quantity_kg * 1250).toLocaleString()}` },
-      { label: "Cumulative Certified Yield", value: "843.0 kg KEBS Certified" },
-    ],
-    sections: [
-      {
-        type: "kv",
-        heading: "Commercial Compliance & Laboratory Specifications",
-        rows: [
-          ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
-          ["Moisture Content (Max 20%)", `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade" : "Standard"})`],
-          ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
-          ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
-          ["Diastase Enzyme Activity", "> 12 Schade units (Raw unpasteurized)"],
-          ["Filtration Protocol", r.actions.join("; ") || "Cold extracted, double strained"],
-        ],
-      },
-      ...(r.notes ? [{ type: "text" as const, heading: "Beekeeper Extraction Notes", body: r.notes }] : []),
-      ...(r.ai_insights ? [{ type: "text" as const, heading: "AI Quality & Yield Analysis", body: r.ai_insights }] : []),
-    ],
-  });
-}
-
-export default function HarvestsPage({
+  try {
+    toast.info("Preparing Extraction Certificate...");
+    const fileName = `Harvest-${safeName(r.hive_label || "hive")}-${safeName(r.batch || "batch")}.pdf`;
+    downloadReportPdf({
+      kind: "certificate",
+      badge: "KEBS / ISO CERTIFIED",
+      fileName,
+      filename: fileName,
+      title: `Honey Harvest Extraction Certificate • ${r.hive_label}`,
+      subtitle: `Batch ${r.batch} • ${r.honey_type} • ${r.quality_grade}`,
+      meta: [
+        { label: "Producer / Beekeeper", value: r.beekeeper || "Timothy Nduva" },
+        { label: "Date of Extraction", value: r.harvested_on },
+        { label: "Hive Identifier", value: r.hive_label },
+        { label: "Batch Lot Number", value: r.batch },
+        { label: "Apiary Location", value: r.location || "BeeYield Apiary in Kibwezi Kenya" },
+        { label: "Net Volume Extracted", value: `${r.quantity_kg} kg` },
+        { label: "Frames Harvested", value: `${r.frames_harvested} frames` },
+        { label: "Refractometer Moisture", value: `${r.moisture_pct}%` },
+        { label: "Color Classification", value: r.color_grade },
+        { label: "Official Quality Standard", value: r.quality_grade },
+        { label: "Traceability QR Hash", value: r.traceability_code },
+        { label: "Ambient Extraction Weather", value: r.weather || "28 °C, dry harvest" },
+        { label: "Fair Trade Beekeeper Value", value: `KES ${(r.quantity_kg * 1000).toLocaleString()}` },
+        { label: "Cumulative Certified Yield", value: "843.0 kg KEBS Certified" },
+      ],
+      sections: [
+        {
+          type: "kv",
+          heading: "Commercial Compliance & Laboratory Specifications",
+          rows: [
+            ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
+            ["Moisture Content (Max 20%)", `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade A" : "Standard Raw"})`],
+            ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
+            ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
+            ["Diastase Enzyme Activity", "> 12 Schade units (Raw unpasteurized)"],
+            ["Filtration Protocol", Array.isArray(r.actions) ? r.actions.join("; ") : "Cold extracted, double strained"],
+          ],
+        },
+        ...(r.notes ? [{ type: "text" as const, heading: "Beekeeper Extraction Notes", body: r.notes }] : []),
+        ...(r.ai_insights ? [{ type: "text" as const, heading: "AI Quality & Yield Analysis", body: r.ai_insights }] : []),
+      ],
+      footer: "BeeYield Official Harvest Ledger • Verified Traceability QR • Export Grade Apiculture",
+    });
+    toast.success(`Downloaded Certificate for Batch ${r.batch}`);
+  } catch (err: any) {
+    console.error("Failed to generate certificate PDF:", err);
+    toast.error("Failed to download certificate.");
+  }
+}\n\nexport default function HarvestsPage({
   isOpen = true,
   onClose,
   embedded = false,
