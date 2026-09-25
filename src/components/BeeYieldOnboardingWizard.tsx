@@ -1026,7 +1026,7 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
             <div className="grid grid-cols-2 gap-2 p-1 bg-muted/60 rounded-2xl border border-border">
               <button
                 type="button"
-                onClick={() => setDeviceMode('pair')}
+                onClick={() => React.startTransition(() => setDeviceMode('pair'))}
                 className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
                   deviceMode === 'pair'
                     ? 'bg-card text-foreground shadow-sm border border-border'
@@ -1034,12 +1034,12 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
                 }`}
               >
                 <Cpu className="w-4 h-4 text-emerald-500" />
-                <span className="truncate">Pair IoT Hardware</span>
+                <span className="truncate pointer-events-none select-none">Pair IoT Hardware</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setDeviceMode('none')}
+                onClick={() => React.startTransition(() => setDeviceMode('none'))}
                 className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
                   deviceMode === 'none'
                     ? 'bg-card text-foreground shadow-sm border border-border'
@@ -1047,7 +1047,7 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
                 }`}
               >
                 <Smartphone className="w-4 h-4 text-amber-500" />
-                <span className="truncate">Start Without Devices</span>
+                <span className="truncate pointer-events-none select-none">Start Without Devices</span>
               </button>
             </div>
 

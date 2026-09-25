@@ -203,7 +203,7 @@ function ModelCard() {
                   className="p-2 rounded-md border border-border/70 bg-background/90 hover:border-amber-500/50 transition-colors block text-[10px]"
                 >
                   <div className="flex items-center justify-between font-semibold text-foreground">
-                    <span className="truncate max-w-[170px]">{c.name.split(" ")[0]}</span>
+                    <span className="truncate max-w-[170px] pointer-events-none select-none">{c.name.split(" ")[0]}</span>
                     <span className="text-amber-400 font-mono">{c.samples.toLocaleString()} w</span>
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{c.role}</p>
@@ -805,13 +805,13 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                     } disabled:opacity-50`}
                   >
                     <div className="flex items-center justify-between w-full gap-2">
-                      <span className="font-semibold text-foreground flex items-center gap-1.5 truncate">
+                      <span className="font-semibold text-foreground flex items-center gap-1.5 truncate pointer-events-none select-none">
                         {isLoading ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin text-honey flex-shrink-0" />
                         ) : (
                           <Play className="w-3 h-3 text-honey flex-shrink-0" />
                         )}
-                        <span className="truncate">{clip.name}</span>
+                        <span className="truncate pointer-events-none select-none">{clip.name}</span>
                       </span>
                       <span
                         className={`px-1.5 py-0.5 rounded text-[9px] uppercase font-bold border flex-shrink-0 ${
@@ -890,13 +890,13 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                   } disabled:opacity-50`}
                 >
                   <div className="flex items-center justify-between gap-1 mb-1">
-                    <span className="font-semibold text-xs text-foreground flex items-center gap-1.5 truncate">
+                    <span className="font-semibold text-xs text-foreground flex items-center gap-1.5 truncate pointer-events-none select-none">
                       {loadingClip === clip.id ? (
                         <Loader2 className="w-3 h-3 animate-spin text-honey shrink-0" />
                       ) : (
                         <Play className="w-3 h-3 text-honey shrink-0" />
                       )}
-                      <span className="truncate">{clip.name}</span>
+                      <span className="truncate pointer-events-none select-none">{clip.name}</span>
                     </span>
                     <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono shrink-0 ${
                       clip.expectedState === "Healthy" ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20" :

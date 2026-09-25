@@ -94,11 +94,24 @@ export default function ToolSidebar({
                 {g.items.map((item) => (
                   <button
                     key={item.label}
-                    onClick={() => { item.onClick(); onClose(); }}
+                    onClick={() => {
+                      onClose();
+                      if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
+                          window.requestAnimationFrame(() => {
+                              React.startTransition(() => {
+                                  item.onClick();
+                              });
+                          });
+                      } else {
+                          React.startTransition(() => {
+                              item.onClick();
+                          });
+                      }
+                    }}
                     className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   >
                     <item.icon className="w-4 h-4 flex-shrink-0 text-honey/80" />
-                    <span className="truncate">{item.label}</span>
+                    <span className="truncate pointer-events-none select-none">{item.label}</span>
                   </button>
                 ))}
               </div>

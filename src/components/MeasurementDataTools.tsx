@@ -1838,10 +1838,10 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
                                     >
                                       <div className="flex items-center gap-1.5 truncate">
                                         <IconComp className={`w-3.5 h-3.5 ${catConfig.colorClass} shrink-0`} />
-                                        <span className={`text-[10px] font-bold ${catConfig.badgeText} truncate`}>
+                                        <span className={`text-[10px] font-bold ${catConfig.badgeText} truncate pointer-events-none select-none`}>
                                           {catConfig.name}:
                                         </span>
-                                        <span className="font-mono text-[10px] font-bold truncate">
+                                        <span className="font-mono text-[10px] font-bold truncate pointer-events-none select-none">
                                           {pd.serial}
                                         </span>
                                       </div>
@@ -1879,7 +1879,7 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => { setSelHive(h.id); setTab("online"); }}
+                              onClick={() => { setSelHive(h.id); React.startTransition(() => setTab("online")); }}
                               className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
                             >
                               Live Telemetry →
