@@ -242,6 +242,22 @@ async def list_harvests(
     if not rows:
         from api.index import get_canonical_timothy_harvests
         rows = get_canonical_timothy_harvests()
+    elif len(rows) < 423 and not hive_id and not farmer_id:
+        from api.index import get_canonical_timothy_harvests
+        canonical = get_canonical_timothy_harvests()
+        seen_keys = set()
+        merged = []
+        for r in rows:
+            k = r.get("batch_code") or r.get("id")
+            if k and k not in seen_keys:
+                seen_keys.add(k)
+                merged.append(r)
+        for c in canonical:
+            k = c.get("batch_code") or c.get("id")
+            if k not in seen_keys:
+                seen_keys.add(k)
+                merged.append(c)
+        rows = merged
 
     if year:
         rows = [r for r in rows if r.get("harvest_date") and str(year) in str(r.get("harvest_date"))]

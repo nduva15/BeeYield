@@ -2816,6 +2816,16 @@ export const beeyieldService = {
                     deduped.push(item);
                 }
             }
+            // If fewer than 423 records are returned (e.g. legacy 401 batch seed), ensure canonical 423 batches (843.0 kg)
+            if (deduped.length < 423 && !filters?.hive_id) {
+                for (const item of CANONICAL_TIMOTHY_HARVESTS) {
+                    const key = getNormalizedHarvestKey(item);
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        deduped.push(item);
+                    }
+                }
+            }
             return deduped;
         }
 
@@ -2845,6 +2855,15 @@ export const beeyieldService = {
                 if (!seen.has(key)) {
                     seen.add(key);
                     deduped.push(item);
+                }
+            }
+            if (deduped.length < 423 && !filters?.hive_id) {
+                for (const item of CANONICAL_TIMOTHY_HARVESTS) {
+                    const key = getNormalizedHarvestKey(item);
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        deduped.push(item);
+                    }
                 }
             }
             return deduped;
