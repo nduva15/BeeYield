@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { useState, useEffect, useCallback, useRef, useId } from "react";
+import { useState, useEffect, useCallback, useRef, useId, useMemo } from "react";
 import {
   X,
   HeartPulse,
@@ -40,7 +40,13 @@ import { Label } from "@/components/ui/label";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 import { Html5Qrcode } from "html5-qrcode";
 import { cn } from "@/lib/utils";
-import { resolveUserHives, isTimothyUser, TIMOTHY_DEFAULT_HEALTH_RECORDS } from "@/lib/user-hives";
+import {
+  resolveUserHives,
+  isTimothyUser,
+  TIMOTHY_DEFAULT_HEALTH_RECORDS,
+  getAuthenticatedUserName,
+  UnifiedHive,
+} from "@/lib/user-hives";
 
 export interface HiveHealthDashboardProps {
   isOpen: boolean;
@@ -252,16 +258,133 @@ function VitalSensorScannerView({
 
 export default function HiveHealthDashboard({ isOpen, onClose, embedded = false }: HiveHealthDashboardProps) {
   const { user, profile } = useAuth();
-  const userKey = user?.id || "guest_owner";
-  const ownerDisplayName =
-    profile?.full_name ||
-    user?.user_metadata?.full_name ||
-    user?.email?.split("@")[0] ||
-    (user ? "Apiary Owner" : "Guest Beekeeper");
+
+  // Instant fallback to locally stored session to prevent unauthenticated flash
+  const effectiveUser = user || (() => {
+    try {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("beeyield_local_user") : null;
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return parsed?.user || null;
+      }
+    } catch {}
+    return null;
+  })();
+
+  const effectiveProfile = profile || (() => {
+    try {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("beeyield_local_user") : null;
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return parsed?.profile || null;
+      }
+    } catch {}
+    return null;
+  })();
+
+  const userKey = effectiveUser?.id || "guest_owner";
+  const isTimothy = isTimothyUser(effectiveUser, effectiveProfile);
+
+  // Authenticated user display name
+  const ownerDisplayName = useMemo(() => {
+    const authName = getAuthenticatedUserName(effectiveUser, effectiveProfile);
+    if (authName) {
+      if (isTimothy && !authName.toLowerCase().includes("timothy")) {
+        return `${authName} (Timothy Apiary)`;
+      }
+      return authName;
+    }
+    if (isTimothy) {
+      return "Timothy Nduva (Lead Beekeeper)";
+    }
+    if (effectiveUser) {
+      return "Apiary Owner";
+    }
+    return "Guest Beekeeper";
+  }, [effectiveUser, effectiveProfile, isTimothy]);
+
+  // Read local user hives across all apiaries in localStorage
+  const getLocalUserHives = useCallback((targetKey: string): UnifiedHive[] => {
+    if (typeof window === "undefined") return [];
+    const foundHives: UnifiedHive[] = [];
+    const seenIds = new Set<string>();
+
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k) continue;
+        if (k.startsWith("beeyield_hives_") && (k.includes(targetKey) || targetKey === "guest_owner")) {
+          const val = localStorage.getItem(k);
+          if (val) {
+            try {
+              const parsed = JSON.parse(val);
+              if (Array.isArray(parsed)) {
+                parsed.forEach((h: any) => {
+                  const id = String(h.id || h.code);
+                  if (!seenIds.has(id)) {
+                    seenIds.add(id);
+                    foundHives.push({
+                      id,
+                      name: h.name || h.code || `Hive ${id}`,
+                      code: h.code || h.hive_code,
+                      hive_code: h.code || h.hive_code,
+                      apiary: normalizeApiaryName(h.apiary || h.apiary_name),
+                      hasSensor: Boolean(h.hasSensor || h.sensorSerial),
+                      sensorSerial: h.sensorSerial,
+                      colonyStrength: h.colonyStrength || (h.broodFrames ? `${h.broodFrames} Frames Brood` : "Strong (8–10 Frames Brood & Bees)"),
+                      colonyAvailability: h.colonyAvailability || "Dedicated Honey Production",
+                    });
+                  }
+                });
+              }
+            } catch {}
+          }
+        }
+      }
+
+      const cached = localStorage.getItem(`beeyield_cached_hives_${targetKey}`);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((h: any) => {
+            const id = String(h.id || h.name);
+            if (!seenIds.has(id)) {
+              seenIds.add(id);
+              foundHives.push({
+                id,
+                name: h.name,
+                code: h.code || h.hive_code,
+                apiary: normalizeApiaryName(h.apiary || h.apiary_name),
+                hasSensor: Boolean(h.hasSensor || h.sensorSerial),
+                sensorSerial: h.sensorSerial,
+                colonyStrength: h.colonyStrength || "Strong (8–10 Frames Brood & Bees)",
+                colonyAvailability: h.colonyAvailability || "Dedicated Honey Production",
+              });
+            }
+          });
+        }
+      }
+    } catch {}
+
+    return foundHives;
+  }, []);
 
   const [selectedHive, setSelectedHive] = useState<string>("all");
   const [coords, setCoords] = useState<string>("-2.409, 37.967");
-  const [apiaryName, setApiaryName] = useState<string>(CANONICAL_APIARY_NAME);
+  const [apiaryName, setApiaryName] = useState<string>(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const cachedAp = localStorage.getItem(`beeyield_user_apiaries_${userKey}`);
+        if (cachedAp) {
+          const parsed = JSON.parse(cachedAp);
+          if (Array.isArray(parsed) && parsed[0]?.name) {
+            return normalizeApiaryName(parsed[0].name);
+          }
+        }
+      }
+    } catch {}
+    return CANONICAL_APIARY_NAME;
+  });
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(true);
@@ -286,18 +409,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
   // Hive list with owner-managed Colony Strength, Availability and Sensor status (user-specific with Timothy 184 hives)
   const [hivesList, setHivesList] = useState<HiveItemInfo[]>(() => {
-    let customList: any[] = [];
-    try {
-      const cached = localStorage.getItem(`beeyield_cached_hives_${userKey}`);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          customList = parsed;
-        }
-      }
-    } catch {}
-
-    const resolved = resolveUserHives(user, profile, customList);
+    const localHives = getLocalUserHives(userKey);
+    const resolved = resolveUserHives(effectiveUser, effectiveProfile, localHives);
     return resolved.map((item: any) => ({
       id: item.id,
       name: item.name || item.code || `Hive ${item.id}`,
@@ -418,15 +531,35 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       let targetLon = 37.967;
       let targetApiaryName = CANONICAL_APIARY_NAME;
 
-      if (user?.id) {
+      // Check local storage apiaries first
+      try {
+        const cachedAp = localStorage.getItem(`beeyield_user_apiaries_${userKey}`);
+        if (cachedAp) {
+          const parsed = JSON.parse(cachedAp);
+          if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.name) {
+            targetApiaryName = normalizeApiaryName(parsed[0].name);
+            setApiaryName(targetApiaryName);
+            if (parsed[0].latitude && parsed[0].longitude) {
+              targetLat = Number(parsed[0].latitude);
+              targetLon = Number(parsed[0].longitude);
+              setCoords(`${targetLat.toFixed(3)}, ${targetLon.toFixed(3)}`);
+            }
+          }
+        }
+      } catch {}
+
+      let userApiaryIds: string[] = [];
+
+      if (effectiveUser?.id) {
         try {
           const { data: apiaryData } = await (supabase as any)
             .from("apiaries")
             .select("id, name, latitude, longitude, location")
-            .eq("user_id", user.id)
-            .limit(1);
+            .eq("user_id", effectiveUser.id)
+            .limit(10);
 
           if (apiaryData && apiaryData.length > 0) {
+            userApiaryIds = apiaryData.map((a: any) => String(a.id));
             const ap = apiaryData[0];
             if (ap.name) {
               targetApiaryName = normalizeApiaryName(ap.name);
@@ -444,16 +577,16 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       // Fetch live weather from real coordinates
       void fetchAmbientWeather(targetLat, targetLon);
 
-      // 2. Fetch logged-in user's real hives and paired devices (strictly eq user_id, no guessing fallbacks)
-      const [hivesResult, inspResult, devicesResult] = await Promise.allSettled([
+      // 2. Fetch logged-in user's real hives and paired devices
+      const [hivesResult, apiaryHivesResult, inspResult, devicesResult] = await Promise.allSettled([
         withTimeout(
           (async () => {
-            if (user?.id) {
+            if (effectiveUser?.id) {
               const { data } = await (supabase as any)
                 .from("hives")
-                .select("id, name, hive_code, nickname, hive_label, notes, apiary_name, apiaries(name)")
-                .eq("user_id", user.id)
-                .limit(100);
+                .select("id, name, hive_code, nickname, hive_label, notes, apiary_name, apiaries(name), apiary_id, max_brood_frames, queen_breeding_year, queen_origin")
+                .eq("user_id", effectiveUser.id)
+                .limit(200);
               return data || [];
             }
             return [];
@@ -463,11 +596,26 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         ),
         withTimeout(
           (async () => {
-            if (user?.id) {
+            if (effectiveUser?.id && userApiaryIds.length > 0) {
+              const { data } = await (supabase as any)
+                .from("hives")
+                .select("id, name, hive_code, nickname, hive_label, notes, apiary_name, apiaries(name), apiary_id, max_brood_frames, queen_breeding_year, queen_origin")
+                .in("apiary_id", userApiaryIds)
+                .limit(200);
+              return data || [];
+            }
+            return [];
+          })(),
+          2500,
+          []
+        ),
+        withTimeout(
+          (async () => {
+            if (effectiveUser?.id) {
               const { data } = await (supabase as any)
                 .from("inspections")
                 .select("id, hive_label, colony_health, varroa_count, inspected_on, notes")
-                .eq("user_id", user.id)
+                .eq("user_id", effectiveUser.id)
                 .order("inspected_on", { ascending: false })
                 .limit(100);
               return data || [];
@@ -479,11 +627,11 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         ),
         withTimeout(
           (async () => {
-            if (user?.id) {
+            if (effectiveUser?.id) {
               const { data } = await (supabase as any)
                 .from("devices")
                 .select("id, hive_id, serial, status")
-                .eq("user_id", user.id);
+                .eq("user_id", effectiveUser.id);
               return (data as any[]) || [];
             }
             return [];
@@ -494,10 +642,17 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       ]);
 
       const rawHives: any[] = hivesResult.status === "fulfilled" && Array.isArray(hivesResult.value) ? (hivesResult.value as any[]) : [];
+      const rawApiaryHives: any[] = apiaryHivesResult.status === "fulfilled" && Array.isArray(apiaryHivesResult.value) ? (apiaryHivesResult.value as any[]) : [];
       const pairedDevices: any[] = devicesResult.status === "fulfilled" && Array.isArray(devicesResult.value) ? (devicesResult.value as any[]) : [];
 
-      const mappedRemote: any[] = (rawHives || []).map((h: any) => {
-        const paired = pairedDevices.find((d: any) => d.hive_id === h.id && d.status === "active");
+      // Combine remote hives by id
+      const remoteHivesMap = new Map<string, any>();
+      [...rawHives, ...rawApiaryHives].forEach((h) => {
+        if (h && h.id) remoteHivesMap.set(String(h.id), h);
+      });
+
+      const mappedRemote: UnifiedHive[] = Array.from(remoteHivesMap.values()).map((h: any) => {
+        const paired = pairedDevices.find((d: any) => (d.hive_id === h.id || d.hive_id === h.name) && d.status === "active");
         let parsedStrength = "Strong (8–10 Frames Brood & Bees)";
         let parsedAvailability = "Dedicated Honey Production";
         try {
@@ -509,8 +664,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         } catch {}
 
         return {
-          id: h.id,
-          name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${h.id.slice(0, 5)}`,
+          id: String(h.id),
+          name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${String(h.id).slice(0, 5)}`,
           hive_code: h.hive_code || h.code,
           code: h.hive_code || h.code,
           apiary: normalizeApiaryName(h.apiaries?.name || h.apiary_name || targetApiaryName),
@@ -522,10 +677,18 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         };
       });
 
-      const resolved = resolveUserHives(user, profile, mappedRemote);
+      // Gather local user hives from localStorage
+      const localHives = getLocalUserHives(userKey);
+
+      // Merge remote and local hives
+      const combinedHivesMap = new Map<string, UnifiedHive>();
+      localHives.forEach((lh) => combinedHivesMap.set(lh.code || lh.name || lh.id, lh));
+      mappedRemote.forEach((rh) => combinedHivesMap.set(rh.code || rh.name || rh.id, { ...combinedHivesMap.get(rh.code || rh.name || rh.id), ...rh }));
+
+      const resolved = resolveUserHives(effectiveUser, effectiveProfile, Array.from(combinedHivesMap.values()));
       const pulledHives: HiveItemInfo[] = resolved.map((h: any) => ({
-        id: h.id,
-        name: h.name,
+        id: String(h.id),
+        name: h.name || h.code || `Hive ${h.id}`,
         apiary: normalizeApiaryName(h.apiary || h.apiary_name || targetApiaryName),
         hasSensor: Boolean(h.hasSensor || h.sensorSerial),
         sensorSerial: h.sensorSerial,
@@ -571,7 +734,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
       // 4. Merge with user-scoped LocalStorage inspections from InspectionsPage
       try {
-        const userLsKey = user?.id ? `beeyield_local_inspections_v1_${user.id}` : `beeyield_local_inspections_v1`;
+        const userLsKey = effectiveUser?.id ? `beeyield_local_inspections_v1_${effectiveUser.id}` : `beeyield_local_inspections_v1`;
         const rawLocal = localStorage.getItem(userLsKey);
         if (rawLocal) {
           const parsed = JSON.parse(rawLocal);
@@ -629,7 +792,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime()
       );
 
-      if (combined.length === 0 && (isTimothyUser(user, profile) || !user)) {
+      if (combined.length === 0 && (isTimothy || !effectiveUser)) {
         combined = TIMOTHY_DEFAULT_HEALTH_RECORDS as HiveRecord[];
       }
 
@@ -642,13 +805,19 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     } finally {
       setIsRefreshing(false);
     }
-  }, [user, profile, userKey, fetchAmbientWeather, ownerDisplayName]);
+  }, [effectiveUser, effectiveProfile, userKey, isTimothy, fetchAmbientWeather, ownerDisplayName, getLocalUserHives]);
 
   useEffect(() => {
     if (isOpen || embedded) {
       void loadData();
     }
   }, [isOpen, embedded, loadData]);
+
+  useEffect(() => {
+    if (selectedHive !== "all" && hivesList.length > 0 && !hivesList.some((h) => h.name === selectedHive)) {
+      setSelectedHive("all");
+    }
+  }, [hivesList, selectedHive]);
 
   if (!isOpen && !embedded) return null;
 
@@ -866,9 +1035,13 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   </option>
                 ))}
               </select>
-              {hivesList.length === 0 && (
+              {hivesList.length === 0 ? (
                 <span className="text-[11px] text-muted-foreground italic">
                   (0 hives registered in database)
+                </span>
+              ) : (
+                <span className="text-[11px] text-muted-foreground font-medium">
+                  ({hivesList.length} hive{hivesList.length === 1 ? "" : "s"} available)
                 </span>
               )}
             </div>

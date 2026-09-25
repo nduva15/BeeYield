@@ -178,6 +178,20 @@ export default function Auth() {
 
         // Case 2: Auto-confirmed / immediate session returned
         if (data?.session) {
+          try {
+            const p = {
+              id: data.session.user.id,
+              email: cleanEmail,
+              full_name: fullName.trim(),
+              phone: phone.trim(),
+              country,
+              avatar_url: null,
+            };
+            localStorage.setItem(
+              "beeyield_local_user",
+              JSON.stringify({ user: data.session.user, profile: p })
+            );
+          } catch {}
           toast.success("Welcome to BeeYield! Your account is created and active.");
           nav(next, { replace: true });
           return;
@@ -211,6 +225,20 @@ export default function Auth() {
         }
 
         if (data?.session) {
+          try {
+            const p = {
+              id: data.session.user.id,
+              email: cleanEmail,
+              full_name: data.session.user.user_metadata?.full_name || null,
+              phone: data.session.user.user_metadata?.phone || null,
+              country: data.session.user.user_metadata?.country || null,
+              avatar_url: data.session.user.user_metadata?.avatar_url || null,
+            };
+            localStorage.setItem(
+              "beeyield_local_user",
+              JSON.stringify({ user: data.session.user, profile: p })
+            );
+          } catch {}
           toast.success("Signed in successfully. Welcome back!");
           nav(next, { replace: true });
         }

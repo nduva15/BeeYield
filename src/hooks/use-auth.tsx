@@ -124,6 +124,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           p.avatar_url = cachedAvatar;
         }
         setProfile(p);
+        try {
+          const stored = localStorage.getItem("beeyield_local_user");
+          const parsed = stored ? JSON.parse(stored) : {};
+          localStorage.setItem("beeyield_local_user", JSON.stringify({ ...parsed, profile: p }));
+        } catch {}
       } else if (cachedAvatar) {
         setProfile((prev) => (prev ? { ...prev, avatar_url: cachedAvatar } : prev));
       }
@@ -143,6 +148,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           s.user.user_metadata = { ...(s.user.user_metadata || {}), avatar_url: cachedAvatar };
         }
         setUser(s.user);
+        try {
+          const rawName = s.user.user_metadata?.full_name || s.user.user_metadata?.name || (s.user.email ? s.user.email.split("@")[0] : null);
+          const initialProfile: Profile = {
+            id: s.user.id,
+            email: s.user.email || null,
+            full_name: rawName,
+            phone: s.user.user_metadata?.phone || null,
+            country: s.user.user_metadata?.country || null,
+            avatar_url: cachedAvatar || null,
+          };
+          localStorage.setItem(
+            "beeyield_local_user",
+            JSON.stringify({ user: s.user, profile: initialProfile })
+          );
+        } catch {}
         void loadProfile(s.user.id);
       } else {
         // If logged out from supabase, check if local user exists
@@ -173,6 +193,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
         }
         setUser(data.session.user);
+        try {
+          const rawName = data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name || (data.session.user.email ? data.session.user.email.split("@")[0] : null);
+          const initialProfile: Profile = {
+            id: data.session.user.id,
+            email: data.session.user.email || null,
+            full_name: rawName,
+            phone: data.session.user.user_metadata?.phone || null,
+            country: data.session.user.user_metadata?.country || null,
+            avatar_url: cachedAvatar || null,
+          };
+          localStorage.setItem(
+            "beeyield_local_user",
+            JSON.stringify({ user: data.session.user, profile: initialProfile })
+          );
+        } catch {}
         void loadProfile(data.session.user.id);
       }
       setLoading(false);
