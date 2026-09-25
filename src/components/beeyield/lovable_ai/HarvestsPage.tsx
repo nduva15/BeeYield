@@ -230,7 +230,9 @@ function harvestPdf(r: Harvest) {
     console.error("Failed to generate certificate PDF:", err);
     toast.error("Failed to download certificate.");
   }
-}\n\nexport default function HarvestsPage({
+}
+
+export default function HarvestsPage({
   isOpen = true,
   onClose,
   embedded = false,

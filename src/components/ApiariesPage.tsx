@@ -1285,7 +1285,9 @@ function downloadHarvestCert(harvest: ApiaryHarvestItem, apiaryName?: string, lo
     console.error("Failed to generate certificate PDF:", err);
     toast.error("Failed to download certificate.");
   }
-}\n\nexport default function ApiariesPage({
+}
+
+export default function ApiariesPage({
   isOpen = true,
   onClose,
   embedded = false,
