@@ -12,6 +12,8 @@ import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
+import { useAuth } from "@/hooks/use-auth";
+import beeyieldService from "@/services/beeyieldService";
 
 type SavedAnalysis = {
   id: string;
@@ -187,6 +189,114 @@ export default function SoundAnalysis({
   const rafRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchHives = async () => {
+      try {
+        const options: Array<{ id: string; code: string; name?: string; apiary_name?: string }> = [];
+        const seen = new Set<string>();
+
+        const addOption = (id: string, code: string, name?: string, apiary_name?: string) => {
+          const cleanCode = (code || id || "").trim().toUpperCase();
+          if (cleanCode && !seen.has(cleanCode)) {
+            seen.add(cleanCode);
+            options.push({
+              id: String(id || cleanCode),
+              code: cleanCode,
+              name: name && name !== cleanCode ? name : undefined,
+              apiary_name,
+            });
+          }
+        };
+
+        // 1. Fetch user-specific hives from Supabase
+        if (user?.id) {
+          try {
+            const { data: sbHives } = await (supabase as any)
+              .from("hives")
+              .select("id, name, hive_code, apiary_id, apiaries(name)")
+              .eq("user_id", user.id)
+              .limit(100);
+
+            if (Array.isArray(sbHives)) {
+              for (const h of sbHives) {
+                addOption(h.id, h.hive_code || h.name, h.name, h.apiaries?.name);
+              }
+            }
+          } catch {
+            // non-blocking
+          }
+        }
+
+        // 2. Fetch from local cache or local storage
+        try {
+          const cached = localStorage.getItem("beeyield_cached_hives") || localStorage.getItem("beeyield_hives");
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed)) {
+              for (const h of parsed) {
+                if (!user?.id || !h.user_id || h.user_id === user.id) {
+                  addOption(h.id, h.hive_code || h.name, h.name, h.apiary_name || h.apiary);
+                }
+              }
+            }
+          }
+        } catch {}
+
+        // 3. Fallback to beeyieldService.getHives()
+        try {
+          const svcHives = await beeyieldService.getHives();
+          if (Array.isArray(svcHives)) {
+            for (const h of svcHives) {
+              if (!user?.id || !h.user_id || h.user_id === user.id) {
+                addOption(h.id, h.hive_code || h.name, h.name, h.apiary_name);
+              }
+            }
+          }
+        } catch {}
+
+        // 4. If Timothy or demo/preview or no hives found, include canonical hives
+        const isTimothy = (user?.email || "").toLowerCase().includes("timothy") ||
+                          (user?.email || "").toLowerCase().includes("nduva") ||
+                          !user?.id;
+
+        if (options.length === 0 || isTimothy) {
+          const canonical = Array.from({ length: 20 }, (_, i) => ({
+            id: `canonical-${i + 1}`,
+            code: `BY-H${String(i + 1).padStart(3, "0")}`,
+            name: `Colony ${i + 1}`,
+            apiary_name: "BeeYield Apiary in Kibwezi Kenya",
+          }));
+          for (const c of canonical) {
+            addOption(c.id, c.code, c.name, c.apiary_name);
+          }
+        }
+
+        if (!mounted) return;
+        setUserHives(options);
+
+        // Auto-select the first user hive if default BY-H001
+        if (options.length > 0) {
+          setHiveLabel((curr) => {
+            if (!curr || curr === "BY-H001") {
+              return options[0].code;
+            }
+            return curr;
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load hives for SoundAnalysis:", err);
+      }
+    };
+
+    void fetchHives();
+
+    return () => {
+      mounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const loadHistory = useCallback(async () => {
     const { data } = await supabase
@@ -423,11 +533,61 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
         {/* Scanner */}
         <div className="rounded-xl border border-border bg-card p-5 mb-6">
           <div className="flex flex-wrap items-end gap-3 mb-4">
-            <label className="text-xs space-y-1">
-              <span className="text-muted-foreground">Hive binding</span>
-              <input value={hiveLabel} onChange={(e) => setHiveLabel(e.target.value)}
-                className="block bg-background border border-border rounded-lg px-2 py-1.5 text-sm" />
-            </label>
+            <div className="text-xs space-y-1 min-w-[240px]">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-muted-foreground font-medium">Hive binding</span>
+                {isCustomHive ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomHive(false)}
+                    className="text-[11px] text-honey hover:underline"
+                  >
+                    Select from hives
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomHive(true)}
+                    className="text-[11px] text-muted-foreground hover:text-foreground underline decoration-dotted"
+                  >
+                    Custom code
+                  </button>
+                )}
+              </div>
+
+              {!isCustomHive ? (
+                <select
+                  value={hiveLabel}
+                  onChange={(e) => {
+                    if (e.target.value === "__custom__") {
+                      setIsCustomHive(true);
+                    } else {
+                      setHiveLabel(e.target.value);
+                    }
+                  }}
+                  aria-label="Select user hive"
+                  title="Select user hive"
+                  className="block w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-honey font-medium"
+                >
+                  {userHives.map((h) => (
+                    <option key={h.id || h.code} value={h.code}>
+                      {h.code}{h.name ? ` • ${h.name}` : ''}{h.apiary_name ? ` (${h.apiary_name})` : ''}
+                    </option>
+                  ))}
+                  {userHives.length === 0 && <option value="BY-H001">BY-H001 (Default)</option>}
+                  <option value="__custom__">+ Enter custom hive code...</option>
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  placeholder="Enter hive code (e.g. BY-H001)"
+                  value={hiveLabel}
+                  onChange={(e) => setHiveLabel(e.target.value)}
+                  className="block w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-sm font-medium"
+                  autoFocus
+                />
+              )}
+            </div>
             <div className="ml-auto flex items-center gap-2">
               <span className={`px-2.5 py-1 rounded-full text-[11px] border ${recording ? "text-red-400 border-red-500/40 bg-red-500/10" : analyzing ? "text-honey border-honey/40 bg-honey/10" : "text-muted-foreground border-border"}`}>
                 {recording ? `Recording ${elapsed}s` : analyzing ? "Analysing…" : result ? "Scan complete" : "Scanner standby"}

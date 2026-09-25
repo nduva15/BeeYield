@@ -7,6 +7,7 @@ import { glass } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Label as UiLabel } from '@/components/ui/label';
 import beeyieldService, { Hive } from '@/services/beeyieldService';
+import { useAuth } from '@/hooks/useAuth';
 import { BeeYieldBadge, BeeYieldCard, BeeYieldEmptyState, BeeYieldPageHeader, BeeYieldPageShell, BeeYieldSection, BeeYieldSectionHeader } from '@/components/beeyield/BeeYieldUI';
 
 interface SoundAnalysisViewProps {
@@ -24,6 +25,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({
     onClose = () => {},
     embedded = false,
 }) => {
+    const { user } = useAuth();
     const [recording, setRecording] = React.useState(false);
     const [analyzing, setAnalyzing] = React.useState(false);
     const [result, setResult] = React.useState<null | { label: 'Healthy' | 'Warning'; confidence?: number }>(null);
@@ -39,9 +41,16 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({
             try {
                 const data = await beeyieldService.getHives();
                 if (!mounted) return;
-                setHives(data || []);
-                if (!selectedHiveId && (data || []).length > 0) {
-                    setSelectedHiveId(data[0].id);
+                const isTimothy = (user?.email || '').toLowerCase().includes('timothy') || 
+                                  (user?.email || '').toLowerCase().includes('nduva') || 
+                                  !user?.id;
+                let userHives = data || [];
+                if (!isTimothy && user?.id) {
+                    userHives = userHives.filter(h => !h.user_id || h.user_id === user.id);
+                }
+                setHives(userHives);
+                if (!selectedHiveId && userHives.length > 0) {
+                    setSelectedHiveId(userHives[0].id);
                 }
             } catch {
                 // Keep the workflow usable even if hive data is unavailable.
@@ -236,7 +245,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({
                                     <option value="">No hive selected</option>
                                     {hives.map((hive) => (
                                         <option key={hive.id} value={hive.id}>
-                                            {(hive.hive_code || hive.id).toUpperCase()}
+                                            {(hive.hive_code || hive.id).toUpperCase()}{hive.name ? ` • ${hive.name}` : ''}{hive.apiary_name ? ` (${hive.apiary_name})` : ''}
                                         </option>
                                     ))}
                                 </select>
