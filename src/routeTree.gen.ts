@@ -18,6 +18,7 @@ import { Route as CareersRouteImport } from './routes/careers'
 import { Route as CropsWePollinateRouteImport } from './routes/crops-we-pollinate'
 import { Route as OurStoryRouteImport } from './routes/our-story'
 import { Route as PandaMitiRouteImport } from './routes/panda-miti'
+import { Route as ShopDashboardRouteImport } from './routes/shop-dashboard'
 import { Route as SharedRunIdRouteImport } from './routes/shared-run.$id'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicBeegptRouteImport } from './routes/api/public/beegpt'
@@ -67,6 +68,11 @@ const PandaMitiRoute = PandaMitiRouteImport.update({
   path: '/panda-miti',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopDashboardRoute = ShopDashboardRouteImport.update({
+  id: '/shop-dashboard',
+  path: '/shop-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SharedRunIdRoute = SharedRunIdRouteImport.update({
   id: '/shared-run/$id',
   path: '/shared-run/$id',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
+  '/shop-dashboard': typeof ShopDashboardRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
+  '/shop-dashboard': typeof ShopDashboardRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
+  '/shop-dashboard': typeof ShopDashboardRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/our-story'
     | '/panda-miti'
+    | '/shop-dashboard'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/our-story'
     | '/panda-miti'
+    | '/shop-dashboard'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/our-story'
     | '/panda-miti'
+    | '/shop-dashboard'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   CropsWePollinateRoute: typeof CropsWePollinateRoute
   OurStoryRoute: typeof OurStoryRoute
   PandaMitiRoute: typeof PandaMitiRoute
+  ShopDashboardRoute: typeof ShopDashboardRoute
   SharedRunIdRoute: typeof SharedRunIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicBeegptRoute: typeof ApiPublicBeegptRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PandaMitiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop-dashboard': {
+      id: '/shop-dashboard'
+      path: '/shop-dashboard'
+      fullPath: '/shop-dashboard'
+      preLoaderRoute: typeof ShopDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shared-run/$id': {
       id: '/shared-run/$id'
       path: '/shared-run/$id'
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   CropsWePollinateRoute: CropsWePollinateRoute,
   OurStoryRoute: OurStoryRoute,
   PandaMitiRoute: PandaMitiRoute,
+  ShopDashboardRoute: ShopDashboardRoute,
   SharedRunIdRoute: SharedRunIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicBeegptRoute: ApiPublicBeegptRoute,

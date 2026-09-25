@@ -37,6 +37,7 @@ import {
   CheckSquare,
   Compass,
   Sparkles,
+  ShoppingBag,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -94,6 +95,7 @@ import SettingsPage from "@/components/SettingsPage";
 import HiveHealthDashboard from "@/components/HiveHealthDashboard";
 import SupportPage from "@/components/SupportPage";
 import BeeYieldOnboardingWizard from "@/components/BeeYieldOnboardingWizard";
+import ShopDashboard from "@/components/ShopDashboard";
 
 type Message = {
   id: string;
@@ -252,6 +254,7 @@ export default function Index() {
   const [healthDashOpen, setHealthDashOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const [shopDashOpen, setShopDashOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -622,6 +625,11 @@ export default function Index() {
     {
       label: "Business & devices",
       items: [
+        {
+          label: "Shop & Orders Dashboard",
+          icon: ShoppingBag,
+          onClick: () => setShopDashOpen(true),
+        },
         {
           label: "Integrations (Shopify, QuickBooks, eTIMS)",
           icon: Plug,
@@ -1052,6 +1060,7 @@ export default function Index() {
       <HiveHealthDashboard isOpen={healthDashOpen} onClose={() => setHealthDashOpen(false)} />
       <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
       <ApiariesPage isOpen={apiariesOpen} onClose={() => setApiariesOpen(false)} />
+      <ShopDashboard isOpen={shopDashOpen} onClose={() => setShopDashOpen(false)} />
 
       {/* Onboarding Setup Wizard Modal */}
       {onboardingOpen && (
