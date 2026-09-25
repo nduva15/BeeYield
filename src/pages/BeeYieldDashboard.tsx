@@ -283,7 +283,7 @@ const BeeYieldDashboard: React.FC = () => {
                     items: [
                         { id: 'forage-zones', label: 'Forage zones', icon: MapPin },
                         { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
-                        { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
+                        { id: 'site-reports-tactical', label: 'Pollination Site Reports', icon: FileBarChart },
                     ]
                 },
                 {
@@ -313,7 +313,6 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'feeding-schedule', label: 'Feeding Schedule Timeline', icon: Calendar },
                         { id: 'apiary-sizing', label: 'Apiary & Equipment Sizing', icon: Layers },
                         { id: 'yield-projection', label: 'Honey Yield Projection', icon: BarChart3 },
-                        { id: 'measurement-tools', label: 'Measurement Data Tools', icon: Settings },
                     ]
                 },
                 {
@@ -338,11 +337,10 @@ const BeeYieldDashboard: React.FC = () => {
                 { id: 'sound', label: 'Sound', icon: Volume2 },
                 { id: 'image-analysis', label: 'Image Analysis', icon: Camera },
                 { id: 'health-guide', label: 'Health Guide', icon: BookOpen },
-                { id: 'reports-exports', label: 'Reports & Exports', icon: FileText },
-                { id: 'label-generator', label: 'Label Generator', icon: Tag },
-
             ]
         },
+        { id: 'reports-exports', label: 'Reports & Exports', icon: FileBarChart },
+        { id: 'label-generator', label: 'Label Generator & QR Codes', icon: Tag },
         { id: 'measurement-tools', label: 'Measurement Data Tools', icon: Activity },
         { id: 'notes', label: 'My Notes', icon: FileText },
         { id: 'requests', label: 'My Requests', icon: HelpCircle },
@@ -357,8 +355,8 @@ const BeeYieldDashboard: React.FC = () => {
                 { id: 'meters-list', label: 'Meter List', icon: List },
                 { id: 'meters-alarms', label: 'Alarms/Events', icon: Bell },
                 { id: 'meters-payments', label: 'Payments', icon: Banknote },
-                { id: 'meters-reports', label: 'Reports', icon: FileText },
-                { id: 'meters-settings', label: 'Settings', icon: Settings },
+                { id: 'meters-reports', label: 'Telemetry Reports', icon: FileText },
+                { id: 'meters-settings', label: 'Meter Configurations', icon: Settings },
             ]
         },
         { id: 'integrations', label: 'Integrations', icon: Puzzle },
@@ -492,7 +490,8 @@ const BeeYieldDashboard: React.FC = () => {
             case 'image-analysis': return <ImageAnalysisView onTabChange={handleTabChange} />;
             case 'health-guide': return <HealthGuideView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'reports-exports': return <ReportsExportsView onTabChange={handleTabChange} />;
-            case 'label-generator': return <LabelGeneratorView onTabChange={handleTabChange} />;
+            case 'label-generator':
+            case 'labels': return <LabelGeneratorView onTabChange={handleTabChange} />;
             case 'data':
             case 'devices':
             case 'online':

@@ -656,7 +656,7 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
 
   return (
     <div className="flex h-screen w-full bg-background honeycomb-bg overflow-hidden">
-      <ToolSidebar groups={toolGroups} open={toolsOpen} onClose={() => setToolsOpen(false)} />
+      {!embedded && <ToolSidebar groups={toolGroups} open={toolsOpen} onClose={() => setToolsOpen(false)} />}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Chat History Sidebar */}
         <ChatHistory

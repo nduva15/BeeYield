@@ -164,6 +164,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             items: [
                 { id: 'bloom-phenology', label: 'Bloom Phenology', icon: Sprout },
                 { id: 'flight-tracker', label: 'Bee Flight & Activity Tracker', icon: Plane },
+                { id: 'flight-map', label: 'Flight Map (Live Aerial Range)', icon: Navigation },
                 { id: 'vpm-counter', label: 'Quick Activity Counter', icon: Plane },
                 { id: 'bfh-forecast', label: 'Bee Activity Forecaster', icon: BarChart3 },
                 { id: 'florage-page', label: 'Florage Database', icon: Sprout },
