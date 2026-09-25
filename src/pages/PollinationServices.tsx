@@ -65,7 +65,7 @@ const PollinationServices = () => {
         <BeeYieldPageShell className="bg-background">
             <SEO 
                 title="Precision Pollination Services & Bee Intelligence"
-                description="BeeYield provides world-class precision pollination services and IoT-enabled beekeeping in Kenya. Increase crop yield by 9–18% with verifiable data."
+                description="Your partner in pollination"
                 keywords="BeeYield, your partner in pollination, precision pollination Kenya, crop yield improvement, Kibwezi bees, Makueni pollination, sustainable beekeeping Africa, IoT agriculture"
                 url="/pollination-services"
                 image="/og-image.png"

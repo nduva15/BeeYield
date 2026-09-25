@@ -11,8 +11,7 @@ interface SEOProps {
   type?: string;
 }
 
-const DEFAULT_DESCRIPTION =
-  "BeeYield - Your Partner in Pollination. Premium precision pollination services, sustainable beekeeping, and traceable raw honey from Kenya to the World.";
+const DEFAULT_DESCRIPTION = "Your partner in pollination";
 const DEFAULT_KEYWORDS =
   "BeeYield, your partner in pollination, precision pollination, honey traceability, sustainable beekeeping, Kibwezi, Makueni, Kenya honey, African agriculture, IoT bees";
 
