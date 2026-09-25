@@ -212,8 +212,44 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
     );
 }
 
+
+const getNormalizedHarvestKey = (h: any): string => {
+    if (!h) return '';
+    const rawBatch = String(h.batch_code || h.batch || '').trim().toUpperCase();
+    if (rawBatch) {
+        const m = rawBatch.match(/BEE-(\d{8})-?[A-Z]*(\d{1,4})/);
+        if (m) {
+            const dateStr = m[1];
+            const num = parseInt(m[2], 10);
+            return `BATCH_${dateStr}_${num}`;
+        }
+        return `BATCH_${rawBatch}`;
+    }
+    const date = String(h.harvest_date || h.harvested_on || h.date || '').slice(0, 10);
+    const hive = String(h.hive_code || h.hive_label || h.hive_id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const qty = Number(h.quantity_kg ?? h.weight_kg ?? 0).toFixed(1);
+    if (date && hive) {
+        return `HARV_${date}_${hive}_${qty}`;
+    }
+    return `ID_${String(h.id || '')}`;
+};
+
 const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) => {
     const { user } = useAuth();
+    React.useEffect(() => {
+        try {
+            const staleKeys = [
+                'beeyield_local_harvests',
+                'beeyield_local_harvests_v1',
+                'beeyield_local_harvests_v2',
+                'beeyield_timothy_harvests',
+                'beeyield_timothy_harvests_v3',
+                'beeyield_harvests',
+            ];
+            staleKeys.forEach(k => localStorage.removeItem(k));
+        } catch {}
+    }, []);
+
     const [selectedHarvest, setSelectedHarvest] = React.useState<Harvest | null>(null);
     const apiariesQuery = useApiaries();
     const hivesQuery = useHives();
@@ -280,7 +316,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         const seen = new Set<string>();
         const deduped: Harvest[] = [];
         for (const h of raw) {
-            const code = ((h.batch_code || (h as any).batch || h.id || '') as string).trim();
+            const code = getNormalizedHarvestKey(h);
             if (code && !seen.has(code)) {
                 seen.add(code);
                 deduped.push(h);
@@ -309,7 +345,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         const seen = new Set<string>();
         const deduped: BatchView[] = [];
         for (const b of raw) {
-            const code = ((b.batch_code || b.id || '') as string).trim();
+            const code = getNormalizedHarvestKey(b);
             if (code && !seen.has(code)) {
                 seen.add(code);
                 deduped.push(b);
@@ -368,7 +404,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
     // Real production stats from user-logged records
     const productionSummary = React.useMemo(() => {
-        const totalHarvestedKg = userHarvests.reduce((sum, h) => sum + (Number(h.quantity_kg) || 0), 0);
+        const totalHarvestedKg = userHarvests.reduce((sum, h) => sum + (Number(h.quantity_kg ?? (h as any).weight_kg ?? 0) || 0), 0);
         const leftForBeesKg = userHarvests.reduce((sum, h) => sum + (Number(h.quantity_left_for_bees_kg) || 0), 0);
         const verifiedBatches = userBatches.filter(b => b.verification_status === 'verified' || b.blockchain_verified).length;
 

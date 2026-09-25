@@ -242,7 +242,6 @@ export default function HarvestsPage({
     try {
       // 1. Purge ALL stale legacy local storage keys that caused duplicate 846 batches and 1686 kg
       const STALE_STORAGE_KEYS = [
-        "beeyield_user_custom_harvests_v1",
         "beeyield_local_harvests",
         "beeyield_local_harvests_v1",
         "beeyield_local_harvests_v2",

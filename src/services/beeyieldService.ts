@@ -1375,6 +1375,28 @@ function mapHiveRecord(record: any): Hive {
     };
 }
 
+
+export function getNormalizedHarvestKey(h: any): string {
+    if (!h) return '';
+    const rawBatch = String(h.batch_code || h.batch || '').trim().toUpperCase();
+    if (rawBatch) {
+        const m = rawBatch.match(/BEE-(\d{8})-?[A-Z]*(\d{1,4})/);
+        if (m) {
+            const dateStr = m[1];
+            const num = parseInt(m[2], 10);
+            return `BATCH_${dateStr}_${num}`;
+        }
+        return `BATCH_${rawBatch}`;
+    }
+    const date = String(h.harvest_date || h.harvested_on || h.date || '').slice(0, 10);
+    const hive = String(h.hive_code || h.hive_label || h.hive_id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const qty = Number(h.quantity_kg ?? h.weight_kg ?? 0).toFixed(1);
+    if (date && hive) {
+        return `HARV_${date}_${hive}_${qty}`;
+    }
+    return `ID_${String(h.id || '')}`;
+}
+
 function mapHarvestRecord(record: any): Harvest {
     const normalized = { ...record };
 
@@ -2786,7 +2808,37 @@ export const beeyieldService = {
 
     // ========== HARVESTS ==========
     async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
-        const local = _lsReadAlways<Harvest[]>(LS_KEYS.harvests, []);
+        // 1. Purge legacy stale storage keys to guarantee no duplicated 1686 kg / 846 batches
+        if (typeof window !== 'undefined') {
+            const STALE_HARVEST_KEYS = [
+                'beeyield_local_harvests',
+                'beeyield_local_harvests_v1',
+                'beeyield_local_harvests_v2',
+                'beeyield_timothy_harvests',
+                'beeyield_timothy_harvests_v3',
+                'beeyield_harvests',
+            ];
+            STALE_HARVEST_KEYS.forEach(k => {
+                try { localStorage.removeItem(k); } catch {}
+            });
+        }
+
+        // 2. Fetch authenticated user-specific harvests directly from Supabase
+        const sbHarvests = await getHarvestsFromSupabase(filters);
+        if (Array.isArray(sbHarvests) && sbHarvests.length > 0) {
+            const seen = new Set<string>();
+            const deduped: Harvest[] = [];
+            for (const item of sbHarvests) {
+                const key = getNormalizedHarvestKey(item);
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    deduped.push(item);
+                }
+            }
+            return deduped;
+        }
+
+        // 3. Optional backend REST API fallback
         let apiHarvests: Harvest[] = [];
         try {
             const data = await apiGet<Harvest[]>('beeyield/harvests', filters as any);
@@ -2800,18 +2852,29 @@ export const beeyieldService = {
                     apiHarvests = data.map((record: any) => mapHarvestRecord(record));
                 }
             } catch (fallbackErr) {
-                console.error('getHarvests API error:', error);
+                // non-blocking
             }
         }
 
-        const sbHarvests = await getHarvestsFromSupabase(filters);
-        
-        // Merge in order: local first, then API, then Supabase
-        const combined = [...local, ...apiHarvests, ...sbHarvests];
+        if (apiHarvests.length > 0) {
+            const seen = new Set<string>();
+            const deduped: Harvest[] = [];
+            for (const item of apiHarvests) {
+                const key = getNormalizedHarvestKey(item);
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    deduped.push(item);
+                }
+            }
+            return deduped;
+        }
+
+        // 4. Offline mode: only return genuine user custom batches if any exist
+        const customLocal = _lsReadAlways<Harvest[]>('beeyield_user_custom_harvests_v1', []);
         const seen = new Set<string>();
         const deduped: Harvest[] = [];
-        for (const item of combined) {
-            const key = item.batch_code || (item as any).batch || item.id;
+        for (const item of customLocal) {
+            const key = getNormalizedHarvestKey(item);
             if (!seen.has(key)) {
                 seen.add(key);
                 deduped.push(item);
