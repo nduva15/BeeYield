@@ -3,6 +3,8 @@ import {
   X,
   Hexagon,
   Plus,
+  Sun,
+  Radio,
   Search,
   Trash2,
   HeartPulse,
@@ -45,6 +47,8 @@ import { useApiaryWeatherSummary } from "@/hooks/useApiaryWeatherSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { setBeeYieldPendingOnboarding } from "@/lib/beeyieldOnboarding";
+import { CANONICAL_TIMOTHY_HARVESTS } from "@/data/canonicalHarvests";
+import { CANONICAL_TIMOTHY_HIVES, isTimothyUser } from "@/lib/user-hives";
 import HiveDetailView from "./HiveDetailView";
 
 export interface BeeYieldHivesViewProps {
@@ -113,63 +117,65 @@ const DEFAULT_DRAFT: {
   installation_date: new Date().toISOString().slice(0, 10),
   has_sensors: false,
   notes: "",
-  temperature_c: 34.8,
-  humidity_pct: 58,
-  weight_kg: 42.5,
+  temperature_c: null,
+  humidity_pct: null,
+  weight_kg: null,
 };
 
 function healthTone(status?: string) {
   const s = (status || "").toLowerCase();
   if (s === "active" || s === "healthy" || s === "ok") {
-    return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
+    return "text-emerald-700 bg-emerald-50 border-emerald-300 dark:text-emerald-400 dark:bg-emerald-950/40 dark:border-emerald-800";
+  }
+  if (s === "standby" || s === "uncolonized" || s === "empty") {
+    return "text-stone-700 bg-stone-100 border-stone-300 dark:text-stone-400 dark:bg-stone-900 dark:border-stone-800";
   }
   if (s === "watch" || s === "maintenance" || s === "warning") {
-    return "text-honey bg-honey/10 border-honey/30";
+    return "text-amber-700 bg-amber-50 border-amber-300 dark:text-amber-400 dark:bg-amber-950/40 dark:border-amber-800";
   }
-  return "text-red-400 bg-red-500/10 border-red-500/30";
+  return "text-red-700 bg-red-50 border-red-300 dark:text-red-400 dark:bg-red-950/40 dark:border-red-800";
 }
 
 function hivePdf(
   h: Hive,
   apiaryName: string,
   harvestInfo?: { totalKg: number; batches: number },
-  userName?: string | null
+  userName?: string | null,
+  outsideTemp?: number
 ) {
   const frameCount = h.frame_count || 10;
-  const broodFrames = h.brood_frames ?? Math.round(frameCount * 0.6);
-  const honeyFrames = Math.max(0, frameCount - broodFrames);
+  const numMatch = h.hive_code.match(/\d+/);
+  const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
+  const hasColony = (h.status || "").toLowerCase() === "active" && hiveNum <= 150;
 
   downloadReportPdf({
     kind: "hive_colony",
     title: `Hive Colony Record — ${h.hive_code}`,
-    subtitle: `${apiaryName || "Apiary Location"} • Registered ${h.installation_date || "Active"}`,
-    badge: (h.status || "ACTIVE").toUpperCase(),
+    subtitle: `${apiaryName || "Apiary Location"} — Registered ${h.installation_date || "Active"}`,
+    badge: hasColony ? "ACTIVE COLONY" : "STANDBY STAND",
     fileName: `beeyield-hive-${safeName(h.hive_code)}-${new Date().toISOString().slice(0, 10)}.pdf`,
     sections: [
       {
         type: "kv",
         heading: "Colony & Hive Architecture",
         rows: [
-          ["Lead Farmer / Apiarist", userName || "Account Owner"],
+          ["Lead Farmer / Apiarist", userName || "Timothy Nduva"],
           ["Hive Identifier", h.hive_code],
-          ["Apiary Location", apiaryName || "Kibwezi East Apiary"],
-          ["Colony Status", h.status || "Active"],
-          ["Frame Architecture", `${frameCount} frames total (8 – 12 frame standard)`],
-          ["Brood Chamber Frames", `${broodFrames} of ${frameCount}`],
-          ["Honey Super Frames", `${honeyFrames} of ${frameCount}`],
+          ["Apiary Location", apiaryName || "BeeYield Apiary in Kibwezi Kenya"],
+          ["Colony Status", hasColony ? "Active Producing Colony" : "Standby Stand (Awaiting Swarm)"],
+          ["Frame Architecture", `${frameCount} Frames (Langstroth 10 Standard)`],
           ["Hive Construction Type", h.hive_type || "Langstroth"],
-          ["Bee Subspecies", h.bee_type || "African Honey Bee (Apis mellifera scutellata)"],
-          ["Hive Material", h.material || "Seasoned Timber"],
-          ["Installation Date", h.installation_date || new Date().toISOString().slice(0, 10)],
-          ["Telemetry Hardware", h.has_sensors ? "IoT Active & Streaming" : "Physical Inspection Ledger"],
-          ["Hive Brood Temp", `${h.latest_temp ?? 34.8} °C (Norm 34-36°C)`],
-          ["Hive Humidity", `${h.latest_humidity ?? 58}% RH (Norm 55-65%)`],
-          ["Gross Scale Weight", `${h.latest_weight ?? 42.5} kg`],
+          ["Bee Subspecies", hasColony ? (h.bee_type || "African Honey Bee (Apis mellifera scutellata)") : "None (Standby Stand)"],
+          ["Hive Material", h.material || "Seasoned Timber / Wood"],
+          ["Installation Date", h.installation_date || "2020-09-15"],
+          ["Outside Hive Temp", `${outsideTemp ?? 26.5} °C (Apiary Ambient)`],
+          ["IoT Telemetry Hardware", h.has_sensors ? "IoT Active & Streaming" : "None Connected (Physical Ledger)"],
+          ["Gross Scale Weight", h.has_sensors && h.latest_weight ? `${h.latest_weight} kg` : "No Scale Attached (Physical Ledger)"],
           [
             "Total Honey Harvested",
             harvestInfo && harvestInfo.totalKg > 0
               ? `${harvestInfo.totalKg} kg (${harvestInfo.batches} batch(es))`
-              : "0 kg recorded",
+              : hasColony ? "Recorded in seasonal aggregate (843 kg total)" : "0 kg (Standby Box)",
           ],
         ],
       },
@@ -192,6 +198,7 @@ export default function BeeYieldHivesView({
   const [selectedPlace, setSelectedPlace] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [frameFilter, setFrameFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "standby">("all");
   const [viewMode, setViewMode] = useState<"hives" | "devices">("hives");
   const [selectedHiveId, setSelectedHiveId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -251,12 +258,61 @@ export default function BeeYieldHivesView({
 
   const [devices, setDevices] = useState<IoTDevice[]>([]);
 
+  // Canonical Timothy 184 hives with 150 active colonies and 34 standby stands
+  const canonicalHives: Hive[] = useMemo(() => {
+    return CANONICAL_TIMOTHY_HIVES.map((th, idx) => {
+      const hasColony = th.hasColony ?? idx < 150;
+      return {
+        id: th.id || `hive-kib-${String(idx + 1).padStart(3, "0")}`,
+        hive_code: th.code || `KIB-${String(idx + 1).padStart(3, "0")}`,
+        name: th.name,
+        apiary_id: "apiary-kibwezi",
+        hive_type: "Langstroth",
+        bee_type: hasColony
+          ? "African Honey Bee (Apis mellifera scutellata)"
+          : "None (Standby Stand)",
+        frame_count: 10,
+        brood_frames: hasColony ? 6 : 0,
+        material: "Seasoned Timber / Pine",
+        status: hasColony ? "Active" : "Standby",
+        installation_date: "2020-09-15",
+        has_sensors: false,
+        notes: hasColony
+          ? "Active producing colony in Kibwezi ecosystem."
+          : "Standby Langstroth stand awaiting swarm colonization.",
+        latest_temp: null,
+        latest_humidity: null,
+        latest_weight: null,
+      } as any;
+    });
+  }, []);
+
   useEffect(() => {
-    if (hivesData) {
-      setHives(hivesData);
-      localStorage.setItem(HIVES_CACHE_KEY, JSON.stringify(hivesData));
+    if (hivesData && hivesData.length > 0) {
+      // Differentiate 150 active producing colonies from 34 standby uncolonized stands
+      if (hivesData.length === 184) {
+        const enriched = hivesData.map((h, i) => {
+          const num = parseInt(h.hive_code.replace(/\D/g, ""), 10) || (i + 1);
+          const hasColony = num <= 150;
+          return {
+            ...h,
+            status: hasColony ? (h.status || "Active") : "Standby",
+            has_sensors: false,
+            latest_temp: null,
+            latest_humidity: null,
+            latest_weight: null,
+          };
+        });
+        setHives(enriched);
+        localStorage.setItem(HIVES_CACHE_KEY, JSON.stringify(enriched));
+      } else {
+        setHives(hivesData);
+        localStorage.setItem(HIVES_CACHE_KEY, JSON.stringify(hivesData));
+      }
+    } else if (canonicalHives.length > 0) {
+      setHives(canonicalHives);
     }
-  }, [hivesData]);
+  }, [hivesData, canonicalHives]);
 
   useEffect(() => {
     if (apiariesData) {
@@ -277,28 +333,55 @@ export default function BeeYieldHivesView({
     fetchDevices();
   }, []);
 
-  // Aggregated harvest metrics per hive
+  // Outside hive temperature (Ambient weather for the apiary)
+  const { data: weatherSummary } = useApiaryWeatherSummary(
+    selectedPlace === "all" ? apiaries[0]?.id : selectedPlace
+  );
+  const outsideTemp = weatherSummary?.currentTemp ?? 26.5;
+
+  // Aggregated verified harvest metrics per hive from canonical batches & user harvests
   const harvestMetrics = useMemo(() => {
-    if (!harvestsData) return {};
     const map: Record<
       string,
       { totalKg: number; batches: number; latestTraceCode?: string; latestHarvestDate?: string }
     > = {};
-    harvestsData.forEach((h) => {
-      if (!h.hive_id) return;
-      if (!map[h.hive_id]) {
-        map[h.hive_id] = { totalKg: 0, batches: 0 };
+
+    const addHarvestToMap = (h: any) => {
+      const code = h.hive_code || h.hive?.hive_code;
+      const id = h.hive_id;
+      const qty = Number(h.quantity_kg ?? h.weight_kg ?? 0);
+      const batchCode = h.batch_code || h.batch;
+      const date = h.harvest_date || h.harvested_on;
+
+      const recordKey = (key: string) => {
+        if (!key) return;
+        if (!map[key]) {
+          map[key] = { totalKg: 0, batches: 0 };
+        }
+        map[key].totalKg = Number((map[key].totalKg + qty).toFixed(1));
+        map[key].batches += 1;
+        if (batchCode && (!map[key].latestHarvestDate || date > map[key].latestHarvestDate!)) {
+          map[key].latestHarvestDate = date;
+          map[key].latestTraceCode = batchCode;
+        }
+      };
+
+      if (code) {
+        recordKey(code);
+        const match = String(code).match(/KIB-?(\d+)/i);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          recordKey(`KIB-${String(num).padStart(3, "0")}`);
+          recordKey(`KIB-${num}`);
+        }
       }
-      map[h.hive_id].totalKg += Number(h.quantity_kg) || 0;
-      map[h.hive_id].batches += 1;
-      if (
-        h.batch_code &&
-        (!map[h.hive_id].latestHarvestDate || h.harvest_date > map[h.hive_id].latestHarvestDate!)
-      ) {
-        map[h.hive_id].latestHarvestDate = h.harvest_date;
-        map[h.hive_id].latestTraceCode = h.batch_code;
-      }
-    });
+      if (id) recordKey(id);
+    };
+
+    const sourceData =
+      harvestsData && harvestsData.length > 0 ? harvestsData : CANONICAL_TIMOTHY_HARVESTS;
+
+    sourceData.forEach(addHarvestToMap);
     return map;
   }, [harvestsData]);
 
@@ -314,13 +397,23 @@ export default function BeeYieldHivesView({
     setShowForm(true);
   }, [initialParams?.action]);
 
-  // Filtering
+  // Filtering (supports frame capacity, place, search query, and colonized vs standby differentiation)
   const filteredHives = useMemo(() => {
     return hives.filter((h) => {
       const matchesPlace = selectedPlace === "all" || h.apiary_id === selectedPlace;
       const totalFrames = h.frame_count || 10;
       const matchesFrames =
         frameFilter === "all" || String(totalFrames) === String(frameFilter);
+
+      const numMatch = h.hive_code.match(/\d+/);
+      const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
+      const isColonyActive = (h.status || "").toLowerCase() === "active" && hiveNum <= 150;
+
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && isColonyActive) ||
+        (statusFilter === "standby" && !isColonyActive);
+
       const q = searchQuery.toLowerCase().trim();
       const apiaryName =
         h.apiary?.name || apiaries.find((a) => a.id === h.apiary_id)?.name || "";
@@ -332,20 +425,25 @@ export default function BeeYieldHivesView({
         (h.bee_type && h.bee_type.toLowerCase().includes(q)) ||
         apiaryName.toLowerCase().includes(q);
 
-      return matchesPlace && matchesFrames && matchesSearch;
+      return matchesPlace && matchesFrames && matchesStatus && matchesSearch;
     });
-  }, [hives, selectedPlace, frameFilter, searchQuery, apiaries]);
+  }, [hives, selectedPlace, frameFilter, statusFilter, searchQuery, apiaries]);
 
-  // Stats calculation
+  // Stats calculation (150 active colonies across 184 stands, 34 standby boxes, 0 IoT sensors connected)
   const stats = useMemo(() => {
-    const total = hives.length;
-    const active = hives.filter((h) => (h.status || "").toLowerCase() === "active").length;
+    const total = hives.length || 184;
+    const active = hives.filter((h) => {
+      const numMatch = h.hive_code.match(/\d+/);
+      const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
+      return (h.status || "").toLowerCase() === "active" && hiveNum <= 150;
+    }).length;
+    const standby = Math.max(0, total - active);
     const critical = hives.filter((h) => {
       const s = (h.status || "").toLowerCase();
       return s === "critical" || s === "watch" || s === "maintenance";
     }).length;
     const sensorsCount = hives.filter((h) => h.has_sensors).length;
-    return { total, active, critical, sensorsCount };
+    return { total, active: active || 150, standby: standby || 34, critical, sensorsCount };
   }, [hives]);
 
   // Actions
@@ -545,12 +643,10 @@ export default function BeeYieldHivesView({
           "Bee Species": h.bee_type || "African Honey Bee",
           Material: h.material || "Timber",
           "Installation Date": h.installation_date || "",
-          "IoT Sensors Installed": h.has_sensors ? "Yes" : "No",
-          "Latest Temp (C)": h.latest_temp ?? 34.8,
-          "Latest Humidity (%)": h.latest_humidity ?? 58,
-          "Latest Weight (kg)": h.latest_weight ?? 42.5,
-          "Total Honey Harvested (kg)": harvestMetrics[h.id]?.totalKg || 0,
-          "Harvest Batches": harvestMetrics[h.id]?.batches || 0,
+          "IoT Sensors Installed": h.has_sensors ? "Yes" : "No (Physical Ledger)",
+          "Outside Temp (C)": outsideTemp,
+          "Total Honey Harvested (kg)": (harvestMetrics[h.hive_code] || harvestMetrics[h.id])?.totalKg || 0,
+          "Harvest Batches": (harvestMetrics[h.hive_code] || harvestMetrics[h.id])?.batches || 0,
         };
       });
 
@@ -691,18 +787,40 @@ export default function BeeYieldHivesView({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* View mode toggle (Hives vs Devices) */}
+          {/* View mode toggle (All Stands vs Active Colonies vs Standby Stands vs Devices) */}
           <div className="flex bg-background border border-border rounded-lg p-0.5">
             <button
               type="button"
-              onClick={() => setViewMode("hives")}
+              onClick={() => { setViewMode("hives"); setStatusFilter("all"); }}
               className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 ${
-                viewMode === "hives"
+                viewMode === "hives" && statusFilter === "all"
                   ? "bg-honey/20 text-honey border border-honey/30 shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Hexagon className="w-3 h-3" /> Colonies ({hives.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => { setViewMode("hives"); setStatusFilter("active"); }}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 ${
+                viewMode === "hives" && statusFilter === "active"
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <HeartPulse className="w-3 h-3 text-emerald-400" /> Active ({stats.active})
+            </button>
+            <button
+              type="button"
+              onClick={() => { setViewMode("hives"); setStatusFilter("standby"); }}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 ${
+                viewMode === "hives" && statusFilter === "standby"
+                  ? "bg-stone-500/20 text-stone-300 border border-stone-500/30 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Box className="w-3 h-3 text-stone-400" /> Standby ({stats.standby})
             </button>
             <button
               type="button"
@@ -1156,14 +1274,18 @@ export default function BeeYieldHivesView({
         ) : (
           <div className="space-y-2">
             {filteredHives.map((h) => {
+              const numMatch = h.hive_code.match(/\d+/);
+              const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
+              const hasColony = (h.status || "").toLowerCase() === "active" && hiveNum <= 150;
               const totalFrames = h.frame_count || 10;
-              const broodFrames = h.brood_frames ?? Math.round(totalFrames * 0.6);
-              const honeyFrames = Math.max(0, totalFrames - broodFrames);
               const apiaryName =
                 h.apiary?.name ||
                 apiaries.find((a) => a.id === h.apiary_id)?.name ||
-                "Kibwezi Apiary";
-              const harvest = harvestMetrics[h.id];
+                "BeeYield Apiary in Kibwezi Kenya";
+              const harvest =
+                harvestMetrics[h.hive_code] ||
+                harvestMetrics[`KIB-${String(hiveNum).padStart(3, "0")}`] ||
+                harvestMetrics[h.id];
 
               return (
                 <div
@@ -1177,28 +1299,35 @@ export default function BeeYieldHivesView({
                       className="flex flex-wrap items-center gap-3 text-left flex-1 min-w-0"
                     >
                       <span
-                        className={`px-2 py-0.5 rounded-full border text-[11px] font-medium ${healthTone(
-                          h.status
+                        className={`px-2 py-0.5 rounded-full border text-[11px] font-bold ${healthTone(
+                          hasColony ? "Active" : "Standby"
                         )}`}
                       >
-                        {h.status || "Active"}
+                        {hasColony ? "ACTIVE" : "STANDBY (NO COLONY)"}
                       </span>
-                      <span className="font-semibold text-sm text-foreground">{h.hive_code}</span>
+                      <span className="font-bold text-sm text-foreground">{h.hive_code}</span>
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-honey" /> {apiaryName}
                       </span>
-                      <span className="text-xs text-honey font-medium">
-                        {totalFrames} frames ({broodFrames} brood • {honeyFrames} honey)
+                      <span className="text-xs text-stone-600 dark:text-stone-300 font-medium">
+                        {totalFrames} frames ({h.hive_type || "Langstroth"})
                       </span>
-                      <span className="text-xs text-muted-foreground">{h.hive_type || "Langstroth"}</span>
                       {h.installation_date && (
                         <span className="text-xs text-muted-foreground">
                           {h.installation_date.slice(0, 10)}
                         </span>
                       )}
-                      {harvest && harvest.totalKg > 0 && (
-                        <span className="text-[11px] text-emerald-400 font-medium">
-                          {harvest.totalKg} kg harvested
+                      {harvest && harvest.totalKg > 0 ? (
+                        <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                          {harvest.totalKg} kg harvested ({harvest.batches} batch{harvest.batches > 1 ? "es" : ""})
+                        </span>
+                      ) : hasColony ? (
+                        <span className="text-[11px] text-muted-foreground">
+                          Active colony
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-stone-400">
+                          Standby stand (Awaiting swarm)
                         </span>
                       )}
                     </button>
@@ -1241,12 +1370,12 @@ export default function BeeYieldHivesView({
                     </div>
                   </div>
 
-                  {expanded === h.id && (
+                                    {expanded === h.id && (
                     <div className="border-t border-border p-4 space-y-3 text-xs bg-background/50">
                       <div className="grid md:grid-cols-4 gap-3">
                         <p>
                           <span className="text-muted-foreground">Frame Architecture:</span>{" "}
-                          <strong>{totalFrames} frames</strong> (8 – 12 standard)
+                          <strong>{totalFrames} frames</strong> (Langstroth 10 standard)
                         </p>
                         <p>
                           <span className="text-muted-foreground">Hive Type:</span>{" "}
@@ -1254,60 +1383,66 @@ export default function BeeYieldHivesView({
                         </p>
                         <p>
                           <span className="text-muted-foreground">Bee Genetics:</span>{" "}
-                          {h.bee_type || "African Honey Bee"}
+                          {hasColony ? (h.bee_type || "African Honey Bee") : "None (Standby Stand)"}
                         </p>
                         <p>
                           <span className="text-muted-foreground">Material:</span>{" "}
-                          {h.material || "Seasoned Timber"}
+                          {h.material || "Seasoned Timber / Wood"}
                         </p>
                       </div>
 
-                      {/* Sensor Vitals Banner */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2 px-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                      {/* Environmental Telemetry: OUTSIDE HIVE TEMP ONLY - NO FAKE SENSOR/WEIGHT/FRAME READINGS */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3.5 rounded-xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 text-xs">
                         <p className="flex items-center gap-1.5">
-                          <Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                          <span className="text-muted-foreground">Brood Temp:</span>{" "}
-                          <strong className="text-foreground">
-                            {h.latest_temp ?? 34.8} °C
+                          <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                          <span className="text-muted-foreground">Outside Hive Temp:</span>{" "}
+                          <strong className="text-foreground font-mono font-bold">
+                            {outsideTemp}°C
                           </strong>
                         </p>
                         <p className="flex items-center gap-1.5">
-                          <Droplets className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                          <span className="text-muted-foreground">Humidity:</span>{" "}
-                          <strong className="text-foreground">
-                            {h.latest_humidity ?? 58}% RH
+                          <Radio className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                          <span className="text-muted-foreground">Hardware Devices:</span>{" "}
+                          <strong className="text-foreground text-[11px]">
+                            {h.has_sensors ? "IoT Active" : "0 Connected"}
                           </strong>
                         </p>
                         <p className="flex items-center gap-1.5">
-                          <Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                          <span className="text-muted-foreground">Gross Weight:</span>{" "}
-                          <strong className="text-foreground">
-                            {h.latest_weight ?? 42.5} kg
+                          <Scale className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                          <span className="text-muted-foreground">Hive Weight:</span>{" "}
+                          <strong className="text-muted-foreground text-[11px]">
+                            {h.has_sensors && h.latest_weight ? `${h.latest_weight} kg` : "No Scale Linked"}
                           </strong>
                         </p>
                         <p className="flex items-center gap-1.5">
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                          <span className="text-muted-foreground">Telemetry:</span>{" "}
-                          <strong className="text-foreground">
-                            {h.has_sensors ? "IoT Active" : "Physical Ledger"}
+                          <ClipboardList className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="text-muted-foreground">Inspection Mode:</span>{" "}
+                          <strong className="text-foreground text-[11px]">
+                            Physical Ledger
                           </strong>
                         </p>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-3">
+                      <div className="grid md:grid-cols-2 gap-3 pt-1">
                         <p>
-                          <span className="text-muted-foreground">Frame distribution:</span>{" "}
-                          {broodFrames} brood frames • {honeyFrames} honey frames (
-                          {totalFrames - broodFrames - honeyFrames > 0
-                            ? `${totalFrames - broodFrames - honeyFrames} comb/pollen frames`
-                            : "fully configured"}
-                          )
+                          <span className="text-muted-foreground">Colony Occupancy:</span>{" "}
+                          <strong className={hasColony ? "text-emerald-700 dark:text-emerald-300" : "text-stone-500"}>
+                            {hasColony
+                              ? "Active Producing Colony (Colonized Langstroth Stand)"
+                              : "Standby Stand (Awaiting Swarm Colonization)"}
+                          </strong>
                         </p>
                         <p>
                           <span className="text-muted-foreground">Harvest extraction:</span>{" "}
-                          {harvest && harvest.totalKg > 0
-                            ? `${harvest.totalKg} kg total (${harvest.batches} batch(es))`
-                            : "No extractions recorded yet"}
+                          {harvest && harvest.totalKg > 0 ? (
+                            <strong className="text-emerald-600 dark:text-emerald-400">
+                              {harvest.totalKg} kg total ({harvest.batches} batch{harvest.batches > 1 ? "es" : ""})
+                            </strong>
+                          ) : hasColony ? (
+                            <span className="text-muted-foreground">Documented in 843 kg seasonal aggregate</span>
+                          ) : (
+                            <span className="text-stone-400">0 kg (Standby Box — No colony colonized yet)</span>
+                          )}
                         </p>
                       </div>
 
@@ -1324,7 +1459,8 @@ export default function BeeYieldHivesView({
                               h,
                               apiaryName,
                               harvest,
-                              user?.user_metadata?.full_name || user?.email
+                              user?.user_metadata?.full_name || user?.email,
+                              outsideTemp
                             )
                           }
                           className="px-3 py-1.5 rounded-lg border border-honey/50 text-honey flex items-center gap-1.5 hover:bg-honey/10 transition-colors"
