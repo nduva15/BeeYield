@@ -242,21 +242,6 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     return list;
   }, [userHives]);
 
-    useEffect(() => {
-    if (allApiaries.length > 0 && !selectedApiaryId) {
-      setSelectedApiaryId(allApiaries[0].id);
-    }
-  }, [allApiaries, selectedApiaryId]);
-
-  useEffect(() => {
-    if (filteredHivesForForm.length > 0 && !selectedHiveCode) {
-      const first = filteredHivesForForm[0];
-      setSelectedHiveCode(first.hive_code);
-      const chosenAp = allApiaries.find((a) => a.id === selectedApiaryId);
-      void syncHiveData(first.hive_code, chosenAp?.name || first.apiary_name || "", draft.inspected_on);
-    }
-  }, [filteredHivesForForm, selectedHiveCode, allApiaries, selectedApiaryId, syncHiveData, draft.inspected_on]);
-
   // Filtered hives based on chosen apiary
   const filteredHivesForForm = useMemo(() => {
     const chosenApiary = allApiaries.find((a) => a.id === selectedApiaryId);
@@ -363,6 +348,21 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     }));
     setSyncedBanner(true);
   }, [allHives]);
+
+  useEffect(() => {
+    if (allApiaries.length > 0 && !selectedApiaryId) {
+      setSelectedApiaryId(allApiaries[0].id);
+    }
+  }, [allApiaries, selectedApiaryId]);
+
+  useEffect(() => {
+    if (filteredHivesForForm.length > 0 && !selectedHiveCode) {
+      const first = filteredHivesForForm[0];
+      setSelectedHiveCode(first.hive_code);
+      const chosenAp = allApiaries.find((a) => a.id === selectedApiaryId);
+      void syncHiveData(first.hive_code, chosenAp?.name || first.apiary_name || "", draft.inspected_on);
+    }
+  }, [filteredHivesForForm, selectedHiveCode, allApiaries, selectedApiaryId, syncHiveData, draft.inspected_on]);
 
   const handleApiarySelect = (apiaryId: string) => {
     setSelectedApiaryId(apiaryId);
