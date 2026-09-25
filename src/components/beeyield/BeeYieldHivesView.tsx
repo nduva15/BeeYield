@@ -49,6 +49,7 @@ import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { setBeeYieldPendingOnboarding } from "@/lib/beeyieldOnboarding";
 import { CANONICAL_TIMOTHY_HARVESTS } from "@/data/canonicalHarvests";
 import { CANONICAL_TIMOTHY_HIVES, isTimothyUser } from "@/lib/user-hives";
+import { AddHiveModal, AddHiveSubmitData } from "../AddHiveModal";
 import HiveDetailView from "./HiveDetailView";
 
 export interface BeeYieldHivesViewProps {
@@ -205,6 +206,7 @@ export default function BeeYieldHivesView({
 
   // Form states
   const [showForm, setShowForm] = useState(false);
+  const [showAddHiveModal, setShowAddHiveModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState(DEFAULT_DRAFT);
   const [saving, setSaving] = useState(false);
@@ -448,12 +450,51 @@ export default function BeeYieldHivesView({
 
   // Actions
   const handleOpenAddHive = () => {
-    setEditingId(null);
-    setDraft({
-      ...DEFAULT_DRAFT,
-      apiary_id: apiaries[0]?.id || "",
-    });
-    setShowForm(true);
+    setShowAddHiveModal(true);
+  };
+
+  const handleAddHiveSubmit = async (newHive: AddHiveSubmitData) => {
+    const toastId = toast.loading(`Registering ${newHive.code}...`);
+    try {
+      const payload: HiveCreateInput = {
+        hive_code: newHive.code.trim().toUpperCase(),
+        apiary_id: newHive.apiaryId || apiaries[0]?.id || "kibwezi-apiary-01",
+        hive_type: newHive.hiveType || "Langstroth",
+        bee_type: "African Honey Bee (Apis mellifera scutellata)",
+        frame_count: Number(newHive.maxBroodFrames) || 10,
+        brood_frames: Number(newHive.broodFrames) || 10,
+        material: "Seasoned Timber / Pine",
+        status: "Active",
+        installation_date: new Date().toISOString().slice(0, 10),
+        has_sensors: !!newHive.has_sensors,
+        notes: [
+          newHive.queenBreedingYear ? `Queen Year: ${newHive.queenBreedingYear} (${newHive.queenStatus})` : null,
+          newHive.queenOrigin ? `Queen Origin: ${newHive.queenOrigin}` : null,
+          newHive.queenInsemination ? `Insemination: ${newHive.queenInsemination}` : null,
+          newHive.hasHygienicBottomBoard ? `Hygienic Bottom Board: Yes` : null,
+          newHive.sensorSerial ? `Device Serial: ${newHive.sensorSerial} (${newHive.deviceType})` : null,
+          newHive.queenNote ? `Note: ${newHive.queenNote}` : null,
+        ].filter(Boolean).join(" • "),
+      };
+
+      const created = await createHiveMutation.mutateAsync(payload);
+      toast.success(`Hive ${payload.hive_code} registered successfully`, { id: toastId });
+
+      if (onboardingMode && created?.id) {
+        setBeeYieldPendingOnboarding({
+          step: "device",
+          email: user?.email || undefined,
+          apiaryId: created.apiary_id,
+          hiveId: created.id,
+        });
+        onTabChange("devices", undefined, `onboarding:add-device:${created.apiary_id || ""}:${created.id}`);
+      }
+      setShowAddHiveModal(false);
+      refetchHives();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to save hive colony", { id: toastId });
+    }
   };
 
   const handleStartEdit = (h: Hive) => {
@@ -720,11 +761,11 @@ export default function BeeYieldHivesView({
           </button>
           <button
             onClick={handleOpenAddHive}
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
-            title="Add Hive Colony"
+            className="px-4 py-2.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 active:bg-amber-600 text-stone-950 text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-amber-400/60"
+            title="Add Hive"
           >
-            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
-            <span className="text-white">Add Hive Colony</span>
+            <Plus className="w-4 h-4 text-stone-950 stroke-[2.5]" />
+            <span className="text-stone-950 font-bold">Add Hive</span>
           </button>
           {!embedded && onClose && (
             <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
@@ -734,28 +775,28 @@ export default function BeeYieldHivesView({
         </div>
       </div>
 
-      {/* Prominent Add Colony Banner */}
+      {/* Prominent Add Hive Banner */}
       {!showForm && (
-        <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+        <div className="rounded-xl border border-amber-500/40 bg-[#FAF4EE] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm text-stone-900">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
-              <Plus className="w-5 h-5 text-white stroke-[2.5]" />
+            <div className="w-10 h-10 rounded-xl bg-[#FFB800] text-stone-950 flex items-center justify-center shrink-0 shadow-md">
+              <Plus className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h3 className="font-display text-sm sm:text-base font-bold text-white">
+              <h3 className="font-display text-sm sm:text-base font-bold text-stone-900">
                 Register Hive Colony & Architecture
               </h3>
-              <p className="text-xs text-emerald-200/90 mt-0.5">
-                Bind colony to apiary, configure 8 – 12 frame capacity, link IoT telemetry sensors, and manage colony health.
+              <p className="text-xs text-stone-600 mt-0.5">
+                Add hive details, queen breeding year, hygienic bottom board, and pair telemetry hardware.
               </p>
             </div>
           </div>
           <button
             onClick={handleOpenAddHive}
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-400/50 whitespace-nowrap shrink-0"
+            className="px-4 py-2.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 active:bg-amber-600 text-stone-950 text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-amber-400/60 whitespace-nowrap shrink-0"
           >
-            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
-            <span className="text-white">Add Hive Colony</span>
+            <Plus className="w-4 h-4 text-stone-950 stroke-[2.5]" />
+            <span className="text-stone-950 font-bold">Add Hive</span>
           </button>
         </div>
       )}
@@ -1745,6 +1786,17 @@ export default function BeeYieldHivesView({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Pop-out Add Hive Modal (Matching reference photos with device pairing) */}
+      {showAddHiveModal && (
+        <AddHiveModal
+          isOpen={showAddHiveModal}
+          onClose={() => setShowAddHiveModal(false)}
+          apiaries={apiaries.map((a) => ({ id: a.id, name: a.name }))}
+          suggestedCode={`KIB-${String(stats.total + 1).padStart(3, "0")}`}
+          onAddHive={handleAddHiveSubmit}
+        />
       )}
     </div>
   );
