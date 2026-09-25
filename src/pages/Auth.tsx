@@ -77,6 +77,24 @@ export default function Auth() {
     }
   }, [user, nav, next]);
 
+  // Catch OAuth redirect errors (from Supabase URL hash or query params)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash;
+    const search = window.location.search;
+    const searchParams = new URLSearchParams(search);
+    const errorMsg =
+      searchParams.get("error_description") ||
+      searchParams.get("error") ||
+      (hash.includes("error_description=")
+        ? decodeURIComponent(hash.split("error_description=")[1]?.split("&")[0]?.replace(/\+/g, " ") || "")
+        : null);
+
+    if (errorMsg) {
+      toast.error(`Authentication error: ${errorMsg}`);
+    }
+  }, []);
+
   // Resend email confirmation handler
   async function handleResendConfirmation(targetEmail: string) {
     if (!targetEmail.trim()) {
@@ -161,8 +179,7 @@ export default function Auth() {
         // Case 2: Auto-confirmed / immediate session returned
         if (data?.session) {
           toast.success("Welcome to BeeYield! Your account is created and active.");
-          localStorage.setItem('beeyieldPendingOnboarding', JSON.stringify({ step: 'apiary', email: cleanEmail, createdAt: new Date().toISOString() }));
-          nav('/beeyield-dashboard', { replace: true });
+          nav(next, { replace: true });
           return;
         }
 
@@ -208,18 +225,56 @@ export default function Auth() {
   async function handleGoogleOAuth() {
     setBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: returnTo });
-      if (result.error) {
-        // Fallback to standard Supabase OAuth if Lovable broker is unavailable
-        const { error: sbErr } = await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo: returnTo },
-        });
-        if (sbErr) throw sbErr;
-        return;
+      // 1. Verify if Google OAuth provider is active on the Supabase instance
+      // to avoid dumping the user onto a raw Supabase 400 Bad Request JSON error page
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+
+      if (supabaseUrl && supabaseKey) {
+        try {
+          const res = await fetch(`${supabaseUrl}/auth/v1/settings`, {
+            headers: { apikey: supabaseKey },
+          });
+          if (res.ok) {
+            const settings = await res.json();
+            if (settings?.external && settings.external.google === false) {
+              toast.error(
+                "Google sign-in is not enabled on this Supabase project yet. Please sign in with email or use Fast Owner Sign-In.",
+                { duration: 6000 }
+              );
+              return;
+            }
+          }
+        } catch {
+          // If network check fails, continue to auth attempt
+        }
       }
-      if (result.redirected) return;
-      nav(next, { replace: true });
+
+      // Try Lovable Cloud Auth broker first if available
+      try {
+        const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: returnTo });
+        if (result && !result.error) {
+          if (result.redirected) return;
+          nav(next, { replace: true });
+          return;
+        }
+      } catch {
+        // Fall back to standard Supabase OAuth
+      }
+
+      // Standard Supabase OAuth with skipBrowserRedirect to safely validate data.url
+      const { data, error: sbErr } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: returnTo,
+          skipBrowserRedirect: true,
+        },
+      });
+
+      if (sbErr) throw sbErr;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
     } catch (err: any) {
       toast.error(err?.message || "Google sign-in unavailable. Please use email sign in.");
     } finally {
