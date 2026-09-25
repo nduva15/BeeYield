@@ -1,705 +1,1625 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    Plus, Hexagon, Box, MapPin, Loader2, FileSpreadsheet, Activity, Zap, X, ShieldCheck, Radio, Search, Cpu, TrendingUp, HeartPulse, Binary, Download, Send, Calendar, AlertCircle, RefreshCw, Layers, ChevronRight, Hash, Shield, Battery
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
-import * as XLSX from 'xlsx';
-import { beeyieldService, Hive, IoTDevice, Apiary } from '@/services/beeyieldService';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useHives, useDeleteHive, useUpdateHive, useApiaries } from '@/hooks/useHives';
-import { useHarvests } from '@/hooks/useHarvests';
-import { useSelectedApiary } from '@/hooks/useSelectedApiary';
-import { useApiaryWeatherSummary } from '@/hooks/useApiaryWeatherSummary';
-import HiveFormModal from './HiveFormModal';
-import FlipCardHive from './FlipCardHive';
-import HiveDetailView from './HiveDetailView';
-import { BeeYieldPageHeader, BeeYieldPageShell } from './BeeYieldUI';
-import { glass, GlassStatCard } from './GlassTheme';
-import WeatherTelemetryPanel from './WeatherTelemetryPanel';
-import { setBeeYieldPendingOnboarding } from '@/lib/beeyieldOnboarding';
-import { useAuth } from '@/hooks/useAuth';
+  X,
+  Hexagon,
+  Plus,
+  Search,
+  Trash2,
+  HeartPulse,
+  AlertTriangle,
+  Sparkles,
+  Loader2,
+  Save,
+  CalendarDays,
+  MapPin,
+  Bug,
+  FileDown,
+  Layers,
+  Pencil,
+  User,
+  RefreshCw,
+  Thermometer,
+  Droplets,
+  Scale,
+  ShieldCheck,
+  Cpu,
+  FileSpreadsheet,
+  Activity,
+  ClipboardList,
+  FileText,
+  Clock,
+  Battery,
+  Hash,
+  Crown,
+  Box,
+  Eye,
+  CheckCircle2,
+} from "lucide-react";
+import { toast } from "sonner";
+import * as XLSX from "xlsx";
+import { beeyieldService, Hive, IoTDevice, Apiary, HiveCreateInput } from "@/services/beeyieldService";
+import { useHives, useCreateHive, useUpdateHive, useDeleteHive, useApiaries } from "@/hooks/useHives";
+import { useHarvests } from "@/hooks/useHarvests";
+import { useSelectedApiary } from "@/hooks/useSelectedApiary";
+import { useApiaryWeatherSummary } from "@/hooks/useApiaryWeatherSummary";
+import { useAuth } from "@/hooks/useAuth";
+import { downloadReportPdf, safeName } from "@/lib/report-pdf";
+import { setBeeYieldPendingOnboarding } from "@/lib/beeyieldOnboarding";
+import HiveDetailView from "./HiveDetailView";
 
-interface BeeYieldHivesViewProps {
-    onTabChange: (tab: string, message?: string, action?: string) => void;
-    initialParams?: { message?: string; action?: string } | null;
-    onboardingMode?: boolean;
+export interface BeeYieldHivesViewProps {
+  onTabChange: (tab: string, message?: string, action?: string) => void;
+  initialParams?: { message?: string; action?: string } | null;
+  onboardingMode?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
+  embedded?: boolean;
 }
 
-const HIVES_CACHE_KEY = 'beeyield_hives_cache_v1';
-const APIARIES_CACHE_KEY = 'beeyield_apiaries_cache_v1';
+const HIVES_CACHE_KEY = "beeyield_hives_cache_v1";
+const APIARIES_CACHE_KEY = "beeyield_apiaries_cache_v1";
 
-const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange, initialParams, onboardingMode = false }) => {
-    const { user } = useAuth();
-    // UI State
-    const [selectedPlace, setSelectedPlace] = React.useState('all');
-    const [searchQuery, setSearchQuery] = React.useState('');
-    const [isExporting, setIsExporting] = React.useState(false);
-    const [viewMode, setViewMode] = React.useState<'hives' | 'devices'>('hives');
-    const [selectedHiveId, setSelectedHiveId] = React.useState<string | null>(null);
+const HEALTH_GRADES = ["Active", "Watch", "Critical", "Maintenance"];
+const HIVE_TYPES = [
+  "Langstroth",
+  "Top-Bar Hive",
+  "Flow Hive",
+  "Warré Hive",
+  "Commercial Deep 12",
+  "Dadant",
+];
+const BEE_TYPES = [
+  "African Honey Bee (Apis mellifera scutellata)",
+  "Carniolan (Apis mellifera carnica)",
+  "Italian (Apis mellifera ligustica)",
+  "Buckfast Hybrid",
+  "Caucasian (Apis mellifera caucasia)",
+  "Stingless Bee (Meliponula bocandei)",
+];
+const MATERIALS = [
+  "Seasoned Timber / Pine",
+  "Cedar Hardwood",
+  "Cypress Wood",
+  "Polyurethane Insulated",
+  "Langstroth Composite",
+];
 
-    // Modal states
-    const [isHiveModalOpen, setIsHiveModalOpen] = React.useState(false);
-    const [editingHive, setEditingHive] = React.useState<Hive | null>(null);
-
-    // Notes and Quick Details states
-    const [isNotesModalOpen, setIsNotesModalOpen] = React.useState(false);
-    const [isQuickDetailsOpen, setIsQuickDetailsOpen] = React.useState(false);
-    const [activeHive, setActiveHive] = React.useState<Hive | null>(null);
-    const [hiveNotes, setHiveNotes] = React.useState("");
-    const [isSavingNotes, setIsSavingNotes] = React.useState(false);
-
-    // Request Inspection Task State
-    const [isRequestingInspection, setIsRequestingInspection] = React.useState(false);
-    const [isSavingTask, setIsSavingTask] = React.useState(false);
-    const [inspectionTaskForm, setInspectionTaskForm] = React.useState({
-        title: 'Routine Inspection',
-        description: 'Standard hive health check',
-        due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        priority: 'medium' as 'low' | 'medium' | 'high',
-        hive_id: '',
-        apiary_id: ''
-    });
-
-    // Data Hooks
-    const { data: hivesData, isLoading: hivesLoading } = useHives();
-    const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
-    const { data: harvestsData } = useHarvests();
-    
-    // Aggregated harvest metrics per hive
-    const harvestMetrics = React.useMemo(() => {
-        if (!harvestsData) return {};
-        const metrics: Record<string, { totalKg: number, batches: number, latestTraceCode?: string, latestHarvestDate?: string }> = {};
-        
-        harvestsData.forEach(h => {
-            if (!h.hive_id) return;
-            if (!metrics[h.hive_id]) {
-                metrics[h.hive_id] = { totalKg: 0, batches: 0 };
-            }
-            metrics[h.hive_id].totalKg += (h.quantity_kg || 0);
-            metrics[h.hive_id].batches += 1;
-            if (h.batch_code && (!metrics[h.hive_id].latestHarvestDate || h.harvest_date > metrics[h.hive_id].latestHarvestDate)) {
-                metrics[h.hive_id].latestHarvestDate = h.harvest_date;
-                metrics[h.hive_id].latestTraceCode = h.batch_code;
-            }
-        });
-        
-        return metrics;
-    }, [harvestsData]);
-    
-    // Local state for caching support
-    const [hives, setHives] = React.useState<Hive[]>(() => {
-        const cached = localStorage.getItem(HIVES_CACHE_KEY);
-        return cached ? JSON.parse(cached) : [];
-    });
-    const [apiaries, setApiaries] = React.useState<Apiary[]>(() => {
-        const cached = localStorage.getItem(APIARIES_CACHE_KEY);
-        return cached ? JSON.parse(cached) : [];
-    });
-    const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(apiaries[0]?.id);
-
-    React.useEffect(() => {
-        if (hivesData) {
-            setHives(hivesData);
-            localStorage.setItem(HIVES_CACHE_KEY, JSON.stringify(hivesData));
-        }
-    }, [hivesData]);
-
-    React.useEffect(() => {
-        if (apiariesData) {
-            setApiaries(apiariesData);
-            localStorage.setItem(APIARIES_CACHE_KEY, JSON.stringify(apiariesData));
-        }
-    }, [apiariesData]);
-
-    const updateHiveMutation = useUpdateHive();
-    const [devices, setDevices] = React.useState<IoTDevice[]>([]);
-
-    React.useEffect(() => {
-        const fetchDevices = async () => {
-            try {
-                const devicesData = await beeyieldService.getDevices();
-                setDevices(devicesData);
-                localStorage.removeItem('beeyield_devices_cache_v1');
-            } catch (error) {
-                console.error("Failed to fetch devices", error);
-                setDevices([]);
-                localStorage.removeItem('beeyield_devices_cache_v1');
-            }
-        };
-        fetchDevices();
-    }, []);
-
-    const isLoading = (hivesLoading || apiariesLoading) && hives.length === 0;
-    const weatherApiaryId = selectedPlace !== 'all' ? selectedPlace : (selectedApiaryId || apiaries[0]?.id || '');
-    const { data: weatherSummary, isLoading: weatherLoading } = useApiaryWeatherSummary(weatherApiaryId || undefined);
-
-    React.useEffect(() => {
-        if (selectedPlace && selectedPlace !== 'all') {
-            setSelectedApiaryId(selectedPlace);
-        }
-    }, [selectedPlace, setSelectedApiaryId]);
-
-    React.useEffect(() => {
-        if (!initialParams?.action?.startsWith('onboarding:add-hive')) return;
-
-        const [, , apiaryId] = initialParams.action.split(':');
-        if (apiaryId) {
-            setSelectedPlace(apiaryId);
-            setSelectedApiaryId(apiaryId);
-        }
-
-        setEditingHive(null);
-        setIsHiveModalOpen(true);
-    }, [initialParams?.action, setSelectedApiaryId]);
-
-    // Filtering
-    const filteredHives = React.useMemo(() => {
-        return hives.filter(h => {
-            const matchesPlace = selectedPlace === 'all' || h.apiary_id === selectedPlace;
-            const matchesSearch = searchQuery === '' ||
-                h.hive_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                h.status?.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchesPlace && matchesSearch;
-        });
-    }, [hives, selectedPlace, searchQuery]);
-
-    // Stats (counts only — avoid synthetic/derived telemetry KPIs when metrics are missing)
-    const stats = React.useMemo(() => {
-        return {
-            total: hives.length,
-            active: hives.filter(h => h.status === 'Active').length,
-            critical: hives.filter(h => h.status !== 'Active').length,
-        };
-    }, [hives]);
-
-    // Handlers
-    const handleOpenAddHive = () => {
-        setEditingHive(null);
-        if (apiaries.length === 0) {
-            toast.error('Please add an apiary first before adding hives');
-            onTabChange('places');
-            return;
-        }
-        setIsHiveModalOpen(true);
-    };
-
-    const handleEditHive = (hive: Hive) => {
-        setEditingHive(hive);
-        setIsHiveModalOpen(true);
-    };
-
-    const handleRequestInspection = (hive: Hive, e: React.MouseEvent) => {
-        e.stopPropagation();
-        setInspectionTaskForm({
-            title: `Inspect Hive ${hive.hive_code}`,
-            description: 'Routine colony health and productivity check.',
-            due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            priority: 'medium',
-            hive_id: hive.id,
-            apiary_id: hive.apiary_id || ''
-        });
-        setIsRequestingInspection(true);
-    };
-
-    const handleOpenQuickDetails = (hive: Hive) => {
-        setActiveHive(hive);
-        setIsQuickDetailsOpen(true);
-    };
-
-    const handleOpenNotes = (hive: Hive, e?: React.MouseEvent) => {
-        if (e) e.stopPropagation();
-        setActiveHive(hive);
-        setHiveNotes(hive.notes || "");
-        setIsNotesModalOpen(true);
-    };
-
-    const handleSaveNotes = async () => {
-        if (!activeHive) return;
-        const toastId = toast.loading("Saving your notes...");
-        setIsSavingNotes(true);
-        try {
-            await updateHiveMutation.mutateAsync({
-                id: activeHive.id,
-                data: { notes: hiveNotes }
-            });
-            setIsNotesModalOpen(false);
-            toast.success("Notes saved successfully", { id: toastId });
-        } catch (error) {
-            toast.error("Could not save notes. Please try again.", { id: toastId });
-        } finally {
-            setIsSavingNotes(false);
-        }
-    };
-
-    const submitInspectionRequest = async () => {
-        const toastId = toast.loading("Scheduling inspection...");
-        setIsSavingTask(true);
-        try {
-            const { error } = await beeyieldService.createTask({
-                title: inspectionTaskForm.title,
-                description: inspectionTaskForm.description,
-                status: 'pending',
-                priority: inspectionTaskForm.priority === 'high' ? 'High' : inspectionTaskForm.priority === 'low' ? 'Low' : 'Medium',
-                type: 'Inspection',
-                category: 'Inspection',
-                due_date: new Date(inspectionTaskForm.due_date).toISOString(),
-                hive_id: inspectionTaskForm.hive_id,
-                apiary_id: inspectionTaskForm.apiary_id,
-                is_completed: false
-            });
-
-            if (!error) {
-                toast.success('Inspection scheduled', { id: toastId });
-                setIsRequestingInspection(false);
-            }
-        } catch (e) {
-            toast.error('Failed to schedule inspection', { id: toastId });
-        } finally {
-            setIsSavingTask(false);
-        }
-    };
-
-    const handleExportExcel = async () => {
-        setIsExporting(true);
-        const toastId = toast.loading("Preparing your data...");
-        try {
-            const exportData = filteredHives.map(h => ({
-                hive_id: h.hive_code,
-                apiary: h.apiary?.name || apiaries.find(a => a.id === h.apiary_id)?.name || 'Unknown',
-                type: h.hive_type,
-                status: h.status,
-                installed: h.installation_date,
-                weight: h.latest_weight,
-                temp: h.latest_temp
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Hives');
-            XLSX.writeFile(wb, `BeeYield_Hives_${new Date().toISOString().split('T')[0]}.xlsx`);
-            toast.success('Data exported successfully', { id: toastId });
-        } catch (error) {
-            toast.error('Export failed. Please try again.', { id: toastId });
-        } finally {
-            setIsExporting(false);
-        }
-    };
-
-    // ── If a hive is selected, show the detail view ──
-    if (selectedHiveId) {
-        return (
-            <HiveDetailView
-                hiveId={selectedHiveId}
-                onBack={() => setSelectedHiveId(null)}
-                onTabChange={onTabChange}
-            />
-        );
-    }
-
-    if (onboardingMode) {
-        return (
-            <HiveFormModal
-                isOpen={isHiveModalOpen}
-                onClose={() => setIsHiveModalOpen(false)}
-                editingHive={editingHive}
-                preventClose
-                onSuccess={(newHive) => {
-                    if (!editingHive && newHive?.id) {
-                        setBeeYieldPendingOnboarding({
-                            step: 'device',
-                            email: user?.email || undefined,
-                            apiaryId: newHive.apiary_id,
-                            hiveId: newHive.id,
-                        });
-                        onTabChange('devices', undefined, `onboarding:add-device:${newHive.apiary_id || ''}:${newHive.id}`);
-                    }
-                }}
-            />
-        );
-    }
-
-    return (
-        <BeeYieldPageShell>
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={glass.page}
-        >
-            {/* ── Header ── */}
-            <BeeYieldPageHeader
-                icon={Hexagon}
-                label="Hive Management"
-                title={<>Hive <span className="text-[#F4D03F]">Inventory</span></>}
-                subtitle="Track your hives and manage records."
-                onBack={() => onTabChange('home')}
-                actions={
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={handleExportExcel}
-                            disabled={isExporting}
-                            className={cn(glass.btnSecondary, "w-9 h-9 p-0")}
-                            aria-label="Export hives to Excel"
-                            title="Export to Excel"
-                        >
-                            <span className="sr-only">Export</span>
-                            {isExporting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                        </button>
-                        <button
-                            onClick={handleOpenAddHive}
-                            className={cn(glass.btnPrimary, "h-11 px-6 text-[11px] font-black uppercase tracking-widest")}
-                        >
-                            <Plus className="w-4 h-4" />
-                            Add hive unit
-                        </button>
-                    </div>
-                }
-            />
-
-            {/* ── Quick Stats ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <GlassStatCard label="Total Hives" value={stats.total} icon={Box} index={0} />
-                <GlassStatCard label="Active Hives" value={stats.active} icon={ShieldCheck} index={1} color="text-[#1B9157]" />
-                <GlassStatCard label="Active Alerts" value={stats.critical} icon={AlertCircle} index={2} color="text-red-500" />
-                <GlassStatCard label="Trends" value="—" icon={TrendingUp} index={3} color="text-foreground" />
-            </div>
-
-            <WeatherTelemetryPanel
-                summary={weatherSummary}
-                isLoading={weatherLoading}
-                title="Hive weather telemetry"
-                compact
-            />
-
-            {/* ── Filter Bar ── */}
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-1.5 bg-muted/ border-border/ backdrop-blur-md relative overflow-visible")}
-            >
-                <div className="relative z-10 flex flex-col xl:flex-row gap-3 justify-between items-center">
-                    <div className="flex bg-[#F4D03F]/5 p-1 rounded-lg gap-1 border border-border/ w-full xl:w-auto shadow-inner">
-                        <button
-                            onClick={() => setViewMode('hives')}
-                            className={cn('flex-1 xl:flex-initial h-8 px-4 rounded-md text-[9px] font-bold transition-all flex items-center gap-2 justify-center',
-                                viewMode === 'hives' ? 'bg-white text-[#F4D03F] shadow-md border border-border/' : 'text-muted-foreground/70 hover:text-foreground'
-                            )}
-                        >
-                            <Layers className="w-3 h-3" /> Hives
-                        </button>
-                        <button
-                            onClick={() => setViewMode('devices')}
-                            className={cn('flex-1 xl:flex-initial h-8 px-4 rounded-md text-[9px] font-bold transition-all flex items-center gap-2 justify-center',
-                                viewMode === 'devices' ? 'bg-white text-[#F4D03F] shadow-md border border-border/' : 'text-muted-foreground/70 hover:text-foreground'
-                            )}
-                        >
-                            <Cpu className="w-3 h-3" /> Devices
-                        </button>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row gap-2 w-full xl:flex-1 xl:justify-end">
-                        <div className="relative flex-1 max-w-sm group/search">
-                            <label htmlFor="hive-search-input" className="sr-only">Search hives</label>
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/70" />
-                            <Input
-                                id="hive-search-input"
-                                placeholder="Search hives..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-8 pl-9 bg-muted/ border-border/ rounded-lg text-[10px] font-bold tracking-wider focus:border-border/"
-                            />
-                        </div>
-                        <div className="w-full md:w-44">
-                            <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                <SelectTrigger 
-                                    id="hive-apiary-filter"
-                                    className="h-8 px-3 rounded-lg bg-muted/ border-border/ text-[9px] font-bold transition-all hover:border-border/ shadow-none"
-                                    aria-label="Filter by apiary"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <MapPin className="w-3 h-3 text-[#F4D03F]" />
-                                        <SelectValue placeholder="All Sites" />
-                                    </div>
-                                </SelectTrigger>
-                                <SelectContent className="bg-muted/ backdrop-blur-md border-border/ rounded-xl overflow-hidden shadow-2xl">
-                                    <SelectItem value="all" className="font-bold text-[8px] focus:bg-[#F4D03F]/10">All Sites</SelectItem>
-                                    {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="font-bold text-[8px] focus:bg-[#F4D03F]/10">{a.name}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* ── Main Content ── */}
-            <div className="relative z-10">
-                {viewMode === 'hives' ? (
-                    isLoading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                <div key={i} className={cn(glass.skeleton, 'aspect-[3/4] rounded-xl animate-pulse')} />
-                            ))}
-                        </div>
-                    ) : filteredHives.length === 0 ? (
-                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-20">
-                            <div className="w-16 h-16 rounded-xl bg-[#F4D03F]/5 border border-border/ flex items-center justify-center mb-4">
-                                <Hexagon className="w-8 h-8 text-[#F4D03F] opacity-20" />
-                            </div>
-                            <h3 className="text-xl font-bold text-foreground/40 tracking-tight">No Hives Found</h3>
-                            <p className="text-xs text-muted-foreground/70 font-medium mt-1 max-w-md text-center">Add your first hive to start monitoring your colonies.</p>
-                            <button onClick={handleOpenAddHive} className={cn(glass.btnPrimary, "mt-4 h-11 px-6 text-[11px] font-black uppercase tracking-widest")}>
-                                <Plus className="w-3.5 h-3.5" /> Add Hive Unit
-                            </button>
-                        </motion.div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            <AnimatePresence>
-                                {filteredHives.map((hive, i) => (
-                                    <FlipCardHive
-                                        key={hive.id}
-                                        hive={{
-                                            id: hive.id,
-                                            name: hive.hive_code,
-                                            weight: hive.latest_weight || 0,
-                                            temp: hive.latest_temp || 0,
-                                            humidity: hive.latest_humidity || 0,
-                                            status: hive.status === 'Active' ? 'ok' : hive.status?.toUpperCase() === 'Maintenance' ? 'warning' : 'critical',
-                                            totalHarvestedKg: harvestMetrics[hive.id]?.totalKg || 0,
-                                            batchCount: harvestMetrics[hive.id]?.batches || 0,
-                                            traceabilityCode: harvestMetrics[hive.id]?.latestTraceCode
-                                        }}
-                                        onViewHistory={() => handleOpenQuickDetails(hive)}
-                                        onMarkInspection={() => handleRequestInspection(hive, {} as any)}
-                                        onOpen={() => setSelectedHiveId(hive.id)}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </div>
-                    )
-                ) : (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={cn(glass.card, "p-0 bg-muted/ border-border/ backdrop-blur-md overflow-hidden")}>
-                        <div className="px-5 py-4 border-b border-border/ bg-[#F4D03F][0.02] flex items-center justify-between relative z-10">
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center border border-border/ shadow-sm">
-                                    <Cpu className="w-4 h-4 text-[#F4D03F]" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <h3 className="text-[10px] font-bold text-foreground">Device Management</h3>
-                                    <p className="text-[8px] font-bold text-muted-foreground/70">Monitoring hardware status and battery levels.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="overflow-x-auto thin-scrollbar">
-                            <table className="w-full text-left border-separate border-spacing-0">
-                                <thead>
-                                    <tr className="bg-[#1A1A1A][0.02]">
-                                        <th className={cn(glass.tableHead, "text-[9px] font-bold py-4")}>ID Code</th>
-                                        <th className={cn(glass.tableHead, "text-[9px] font-bold py-4")}>Deployment</th>
-                                        <th className={cn(glass.tableHead, "text-[9px] font-bold py-4")}>Status</th>
-                                        <th className={cn(glass.tableHead, "text-[9px] font-bold py-4")}>Battery</th>
-                                        <th className={cn(glass.tableHead, "text-right text-[9px] font-bold py-4")}>Last Connected</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {devices.map((device, i) => {
-                                        const linkedHive = hives.find(h => h.id === device.hive_id || h.hive_code === device.device_code);
-                                        return (
-                                            <motion.tr
-                                                key={device.id}
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: i * 0.05 }}
-                                                className={glass.tableRow}
-                                            >
-                                                <td className="px-5 py-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-lg bg-white border border-border/ flex items-center justify-center shadow-sm">
-                                                            <Hash className="w-4 h-4 text-[#F4D03F] opacity-40" />
-                                                        </div>
-                                                        <span className="text-xs font-bold text-foreground tracking-tight tabular-nums">{device.device_code}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-5 py-3">
-                                                    {linkedHive ? (
-                                                        <div className="bg-muted/ text-foreground border border-border/ px-3 py-1 rounded-md max-w-fit flex items-center gap-2 shadow-sm">
-                                                            <ShieldCheck className="w-3.5 h-3.5 text-[#1B9157]" />
-                                                            <span className="font-bold text-[8px]">HIVE: {linkedHive.hive_code}</span>
-                                                        </div>
-                                                    ) : (
-                                                        <span className="font-bold text-[9px] text-muted-foreground/70 opacity-40">Dormant</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-5 py-3">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className={cn("w-1.5 h-1.5 rounded-full", device.status === 'active' ? 'bg-[#1B9157] animate-pulse shadow-[0_0_8px_rgba(27,145,87,0.3)]' : 'bg-gray-300')} />
-                                                        <span className={cn("text-[9px] font-bold", device.status === 'active' ? "text-[#1B9157]" : "text-muted-foreground/70")}>
-                                                            {device.status === 'active' ? 'Connected' : 'Offline'}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-5 py-3">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="flex flex-col items-end gap-1 min-w-[80px]">
-                                                            <span className="text-[10px] font-bold text-foreground tabular-nums">{device.battery_level}%</span>
-                                                            <div className="w-full h-1 bg-[#1A1A1A]/5 rounded-full overflow-hidden relative border border-transparent">
-                                                                <motion.div
-                                                                    initial={{ width: 0 }}
-                                                                    animate={{ width: `${device.battery_level}%` }}
-                                                                    className={cn("h-full", device.battery_level > 60 ? "bg-[#1B9157]" : device.battery_level > 20 ? "bg-[#F4D03F]" : "bg-red-500")}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-5 py-3 text-right">
-                                                    <span className="text-[9px] font-bold text-muted-foreground tabular-nums opacity-60">
-                                                        {new Date(device.last_ping || Date.now()).toLocaleDateString([], { month: '2-digit', day: '2-digit' })} 
-                                                        <span className="ml-1 text-[#F4D03F]/60">[{new Date(device.last_ping || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}]</span>
-                                                    </span>
-                                                </td>
-                                            </motion.tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    </motion.div>
-                )}
-            </div>
-
-            {/* ── Modals & Overlays ── */}
-
-            <HiveFormModal
-                isOpen={isHiveModalOpen}
-                onClose={() => setIsHiveModalOpen(false)}
-                editingHive={editingHive}
-                onSuccess={(newHive) => {
-                    if (!editingHive && newHive?.id) {
-                        setBeeYieldPendingOnboarding({
-                            step: 'device',
-                            email: user?.email || undefined,
-                            apiaryId: newHive.apiary_id,
-                            hiveId: newHive.id,
-                        });
-                        onTabChange('devices', undefined, `onboarding:add-device:${newHive.apiary_id || ''}:${newHive.id}`);
-                    }
-                }}
-            />
-
-            {/* Inspection Request */}
-            <AnimatePresence>
-                {isRequestingInspection && (
-                    <div className={glass.modalOverlay} onClick={() => setIsRequestingInspection(false)}>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className={glass.modalCard}
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <div className="p-6 border-b border-border/">
-                                <div className="flex justify-between items-start">
-                                    <div className="space-y-1">
-                                        <h2 className="text-xl font-bold text-foreground tracking-tight">Schedule <span className="text-[#F4D03F]">Inspection</span></h2>
-                                        <p className="text-xs text-muted-foreground/70 font-medium">Set a reminder to check on this colony.</p>
-                                    </div><button onClick={() => setIsRequestingInspection(false)} className="w-9 h-9 rounded-lg bg-muted/20 border border-border/ flex items-center justify-center hover:bg-red-500/10 transition-all" aria-label="Close inspection dialog" title="Close">
-                                        <span className="sr-only">Close</span>
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="p-6 space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="inspection-title" className={glass.microLabel}>Inspection Title</Label>
-                                    <Input 
-                                        id="inspection-title"
-                                        value={inspectionTaskForm.title} 
-                                        onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, title: e.target.value })} 
-                                        className={glass.input} 
-                                        placeholder="Routine Health Check" 
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="inspection-date" className={glass.microLabel}>Due Date</Label>
-                                    <Input 
-                                        id="inspection-date"
-                                        type="date" 
-                                        value={inspectionTaskForm.due_date} 
-                                        onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, due_date: e.target.value })} 
-                                        className={glass.input} 
-                                    />
-                                </div>
-                                <div className="pt-4 flex gap-3">
-                                    <button className={glass.btnSecondary} onClick={() => setIsRequestingInspection(false)}>Cancel</button>
-                                    <button onClick={submitInspectionRequest} disabled={isSavingTask} className={cn(glass.btnPrimary, "flex-1")}>
-                                        {isSavingTask ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                        Save Inspection
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* Notes Overlay */}
-            <AnimatePresence>
-                {isNotesModalOpen && activeHive && (
-                    <div className={glass.modalOverlay} onClick={() => setIsNotesModalOpen(false)}>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className={glass.modalCard}
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <div className="p-6 border-b border-border/">
-                                <div className="flex justify-between items-start">
-                                    <div className="space-y-1">
-                                        <h2 className="text-xl font-bold text-foreground tracking-tight">Hive <span className="text-[#F4D03F]">Notes</span></h2>
-                                        <p className="text-xs text-muted-foreground/70 font-medium">Archive observations for hive #{activeHive.hive_code}.</p>
-                                    </div>
-                                    <button onClick={() => setIsNotesModalOpen(false)} className="w-9 h-9 rounded-lg bg-muted/20 border border-border/ flex items-center justify-center hover:bg-red-500/10 transition-all" aria-label="Close notes dialog" title="Close">
-                                        <span className="sr-only">Close</span>
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="p-6 space-y-4">
-                                <Textarea
-                                    value={hiveNotes}
-                                    onChange={(e) => setHiveNotes(e.target.value)}
-                                    className="min-h-[200px] p-4 rounded-xl text-sm bg-muted/20 border-border/ resize-none focus:ring-[#F4D03F]/20"
-                                    placeholder="Write your observations here..."
-                                />
-                                <button onClick={handleSaveNotes} disabled={isSavingNotes} className={cn(glass.btnPrimary, "w-full")}>
-                                    {isSavingNotes ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                    Save Notes
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            <style>{`
-                @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-                .animate-shimmer { animation: shimmer 3s infinite linear; }
-                .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-                .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .thin-scrollbar::-webkit-scrollbar-thumb { background: rgba(244, 208, 63, 0.1); border-radius: 20px; }
-                .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(244, 208, 63, 0.2); }
-            `}</style>
-        </motion.div>
-        </BeeYieldPageShell>
-    );
+const DEFAULT_DRAFT: {
+  hive_code: string;
+  apiary_id: string;
+  hive_type: string;
+  bee_type: string;
+  frame_count: number;
+  brood_frames: number;
+  honey_frames: number;
+  material: string;
+  status: string;
+  installation_date: string;
+  has_sensors: boolean;
+  notes: string;
+  temperature_c?: number | null;
+  humidity_pct?: number | null;
+  weight_kg?: number | null;
+} = {
+  hive_code: "",
+  apiary_id: "",
+  hive_type: "Langstroth",
+  bee_type: "African Honey Bee (Apis mellifera scutellata)",
+  frame_count: 10,
+  brood_frames: 6,
+  honey_frames: 4,
+  material: "Seasoned Timber / Pine",
+  status: "Active",
+  installation_date: new Date().toISOString().slice(0, 10),
+  has_sensors: false,
+  notes: "",
+  temperature_c: 34.8,
+  humidity_pct: 58,
+  weight_kg: 42.5,
 };
 
-export default BeeYieldHivesView;
+function healthTone(status?: string) {
+  const s = (status || "").toLowerCase();
+  if (s === "active" || s === "healthy" || s === "ok") {
+    return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
+  }
+  if (s === "watch" || s === "maintenance" || s === "warning") {
+    return "text-honey bg-honey/10 border-honey/30";
+  }
+  return "text-red-400 bg-red-500/10 border-red-500/30";
+}
+
+function hivePdf(
+  h: Hive,
+  apiaryName: string,
+  harvestInfo?: { totalKg: number; batches: number },
+  userName?: string | null
+) {
+  const frameCount = h.frame_count || 10;
+  const broodFrames = h.brood_frames ?? Math.round(frameCount * 0.6);
+  const honeyFrames = Math.max(0, frameCount - broodFrames);
+
+  downloadReportPdf({
+    kind: "hive_colony",
+    title: `Hive Colony Record — ${h.hive_code}`,
+    subtitle: `${apiaryName || "Apiary Location"} • Registered ${h.installation_date || "Active"}`,
+    badge: (h.status || "ACTIVE").toUpperCase(),
+    fileName: `beeyield-hive-${safeName(h.hive_code)}-${new Date().toISOString().slice(0, 10)}.pdf`,
+    sections: [
+      {
+        type: "kv",
+        heading: "Colony & Hive Architecture",
+        rows: [
+          ["Lead Farmer / Apiarist", userName || "Account Owner"],
+          ["Hive Identifier", h.hive_code],
+          ["Apiary Location", apiaryName || "Kibwezi East Apiary"],
+          ["Colony Status", h.status || "Active"],
+          ["Frame Architecture", `${frameCount} frames total (8 – 12 frame standard)`],
+          ["Brood Chamber Frames", `${broodFrames} of ${frameCount}`],
+          ["Honey Super Frames", `${honeyFrames} of ${frameCount}`],
+          ["Hive Construction Type", h.hive_type || "Langstroth"],
+          ["Bee Subspecies", h.bee_type || "African Honey Bee (Apis mellifera scutellata)"],
+          ["Hive Material", h.material || "Seasoned Timber"],
+          ["Installation Date", h.installation_date || new Date().toISOString().slice(0, 10)],
+          ["Telemetry Hardware", h.has_sensors ? "IoT Active & Streaming" : "Physical Inspection Ledger"],
+          ["Hive Brood Temp", `${h.latest_temp ?? 34.8} °C (Norm 34-36°C)`],
+          ["Hive Humidity", `${h.latest_humidity ?? 58}% RH (Norm 55-65%)`],
+          ["Gross Scale Weight", `${h.latest_weight ?? 42.5} kg`],
+          [
+            "Total Honey Harvested",
+            harvestInfo && harvestInfo.totalKg > 0
+              ? `${harvestInfo.totalKg} kg (${harvestInfo.batches} batch(es))`
+              : "0 kg recorded",
+          ],
+        ],
+      },
+      ...(h.notes ? [{ type: "text" as const, heading: "Apiarist Field Observations", body: h.notes }] : []),
+    ],
+  });
+}
+
+export default function BeeYieldHivesView({
+  onTabChange,
+  initialParams,
+  onboardingMode = false,
+  isOpen = true,
+  onClose,
+  embedded = false,
+}: BeeYieldHivesViewProps) {
+  const { user } = useAuth();
+
+  // View state
+  const [selectedPlace, setSelectedPlace] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [frameFilter, setFrameFilter] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"hives" | "devices">("hives");
+  const [selectedHiveId, setSelectedHiveId] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  // Form states
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState(DEFAULT_DRAFT);
+  const [saving, setSaving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Notes Modal state
+  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
+  const [activeHive, setActiveHive] = useState<Hive | null>(null);
+  const [hiveNotes, setHiveNotes] = useState("");
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
+
+  // Schedule Task Modal state
+  const [isRequestingInspection, setIsRequestingInspection] = useState(false);
+  const [isSavingTask, setIsSavingTask] = useState(false);
+  const [inspectionTaskForm, setInspectionTaskForm] = useState({
+    title: "Routine Colony Inspection",
+    description: "Physical inspection of queen presence, brood pattern, and varroa mites.",
+    due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+    priority: "medium" as "low" | "medium" | "high",
+    hive_id: "",
+    apiary_id: "",
+  });
+
+  // Queries & Mutations
+  const { data: hivesData, isLoading: hivesLoading, refetch: refetchHives } = useHives();
+  const { data: apiariesData, isLoading: apiariesLoading } = useApiaries();
+  const { data: harvestsData } = useHarvests();
+
+  const createHiveMutation = useCreateHive();
+  const updateHiveMutation = useUpdateHive();
+  const deleteHiveMutation = useDeleteHive();
+
+  // Local state with localStorage backup
+  const [hives, setHives] = useState<Hive[]>(() => {
+    try {
+      const cached = localStorage.getItem(HIVES_CACHE_KEY);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [apiaries, setApiaries] = useState<Apiary[]>(() => {
+    try {
+      const cached = localStorage.getItem(APIARIES_CACHE_KEY);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [devices, setDevices] = useState<IoTDevice[]>([]);
+
+  useEffect(() => {
+    if (hivesData) {
+      setHives(hivesData);
+      localStorage.setItem(HIVES_CACHE_KEY, JSON.stringify(hivesData));
+    }
+  }, [hivesData]);
+
+  useEffect(() => {
+    if (apiariesData) {
+      setApiaries(apiariesData);
+      localStorage.setItem(APIARIES_CACHE_KEY, JSON.stringify(apiariesData));
+    }
+  }, [apiariesData]);
+
+  useEffect(() => {
+    const fetchDevices = async () => {
+      try {
+        const devs = await beeyieldService.getDevices();
+        setDevices(devs || []);
+      } catch (err) {
+        console.error("Failed to load devices", err);
+      }
+    };
+    fetchDevices();
+  }, []);
+
+  // Aggregated harvest metrics per hive
+  const harvestMetrics = useMemo(() => {
+    if (!harvestsData) return {};
+    const map: Record<
+      string,
+      { totalKg: number; batches: number; latestTraceCode?: string; latestHarvestDate?: string }
+    > = {};
+    harvestsData.forEach((h) => {
+      if (!h.hive_id) return;
+      if (!map[h.hive_id]) {
+        map[h.hive_id] = { totalKg: 0, batches: 0 };
+      }
+      map[h.hive_id].totalKg += Number(h.quantity_kg) || 0;
+      map[h.hive_id].batches += 1;
+      if (
+        h.batch_code &&
+        (!map[h.hive_id].latestHarvestDate || h.harvest_date > map[h.hive_id].latestHarvestDate!)
+      ) {
+        map[h.hive_id].latestHarvestDate = h.harvest_date;
+        map[h.hive_id].latestTraceCode = h.batch_code;
+      }
+    });
+    return map;
+  }, [harvestsData]);
+
+  // Handle onboarding params
+  useEffect(() => {
+    if (!initialParams?.action?.startsWith("onboarding:add-hive")) return;
+    const [, , apiaryId] = initialParams.action.split(":");
+    if (apiaryId) {
+      setSelectedPlace(apiaryId);
+      setDraft((prev) => ({ ...prev, apiary_id: apiaryId }));
+    }
+    setEditingId(null);
+    setShowForm(true);
+  }, [initialParams?.action]);
+
+  // Filtering
+  const filteredHives = useMemo(() => {
+    return hives.filter((h) => {
+      const matchesPlace = selectedPlace === "all" || h.apiary_id === selectedPlace;
+      const totalFrames = h.frame_count || 10;
+      const matchesFrames =
+        frameFilter === "all" || String(totalFrames) === String(frameFilter);
+      const q = searchQuery.toLowerCase().trim();
+      const apiaryName =
+        h.apiary?.name || apiaries.find((a) => a.id === h.apiary_id)?.name || "";
+      const matchesSearch =
+        !q ||
+        h.hive_code.toLowerCase().includes(q) ||
+        (h.status && h.status.toLowerCase().includes(q)) ||
+        (h.hive_type && h.hive_type.toLowerCase().includes(q)) ||
+        (h.bee_type && h.bee_type.toLowerCase().includes(q)) ||
+        apiaryName.toLowerCase().includes(q);
+
+      return matchesPlace && matchesFrames && matchesSearch;
+    });
+  }, [hives, selectedPlace, frameFilter, searchQuery, apiaries]);
+
+  // Stats calculation
+  const stats = useMemo(() => {
+    const total = hives.length;
+    const active = hives.filter((h) => (h.status || "").toLowerCase() === "active").length;
+    const critical = hives.filter((h) => {
+      const s = (h.status || "").toLowerCase();
+      return s === "critical" || s === "watch" || s === "maintenance";
+    }).length;
+    const sensorsCount = hives.filter((h) => h.has_sensors).length;
+    return { total, active, critical, sensorsCount };
+  }, [hives]);
+
+  // Actions
+  const handleOpenAddHive = () => {
+    setEditingId(null);
+    setDraft({
+      ...DEFAULT_DRAFT,
+      apiary_id: apiaries[0]?.id || "",
+    });
+    setShowForm(true);
+  };
+
+  const handleStartEdit = (h: Hive) => {
+    setEditingId(h.id);
+    const frameCount = h.frame_count || 10;
+    const broodFrames = h.brood_frames ?? Math.round(frameCount * 0.6);
+    const honeyFrames = Math.max(0, frameCount - broodFrames);
+
+    setDraft({
+      hive_code: h.hive_code,
+      apiary_id: h.apiary_id || apiaries[0]?.id || "",
+      hive_type: h.hive_type || "Langstroth",
+      bee_type: h.bee_type || "African Honey Bee (Apis mellifera scutellata)",
+      frame_count: frameCount,
+      brood_frames: broodFrames,
+      honey_frames: honeyFrames,
+      material: h.material || "Seasoned Timber / Pine",
+      status: h.status || "Active",
+      installation_date: h.installation_date ? h.installation_date.slice(0, 10) : new Date().toISOString().slice(0, 10),
+      has_sensors: !!h.has_sensors,
+      notes: h.notes || "",
+      temperature_c: h.latest_temp ?? 34.8,
+      humidity_pct: h.latest_humidity ?? 58,
+      weight_kg: h.latest_weight ?? 42.5,
+    });
+    setShowForm(true);
+  };
+
+  const handleSaveColony = async () => {
+    if (!draft.hive_code.trim()) {
+      toast.error("Please enter a hive code / identifier");
+      return;
+    }
+    if (!draft.apiary_id && apiaries.length > 0) {
+      draft.apiary_id = apiaries[0].id;
+    }
+
+    setSaving(true);
+    const toastId = toast.loading(editingId ? "Updating hive record..." : "Registering hive colony...");
+    try {
+      const payload: HiveCreateInput = {
+        hive_code: draft.hive_code.trim().toUpperCase(),
+        apiary_id: draft.apiary_id,
+        hive_type: draft.hive_type,
+        bee_type: draft.bee_type,
+        frame_count: Number(draft.frame_count) || 10,
+        brood_frames: Number(draft.brood_frames) || undefined,
+        material: draft.material,
+        status: draft.status,
+        installation_date: draft.installation_date,
+        has_sensors: draft.has_sensors,
+        notes: draft.notes || undefined,
+      };
+
+      if (editingId) {
+        await updateHiveMutation.mutateAsync({ id: editingId, data: payload });
+        toast.success("Hive colony updated successfully", { id: toastId });
+      } else {
+        const created = await createHiveMutation.mutateAsync(payload);
+        toast.success("New hive colony registered", { id: toastId });
+
+        if (onboardingMode && created?.id) {
+          setBeeYieldPendingOnboarding({
+            step: "device",
+            email: user?.email || undefined,
+            apiaryId: created.apiary_id,
+            hiveId: created.id,
+          });
+          onTabChange("devices", undefined, `onboarding:add-device:${created.apiary_id || ""}:${created.id}`);
+        }
+      }
+
+      setShowForm(false);
+      setEditingId(null);
+      setDraft(DEFAULT_DRAFT);
+      refetchHives();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to save hive colony", { id: toastId });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string, code: string) => {
+    if (!window.confirm(`Are you sure you want to delete hive ${code}? This will remove its colony record.`)) {
+      return;
+    }
+    try {
+      await deleteHiveMutation.mutateAsync(id);
+      toast.success(`Hive ${code} deleted`);
+      refetchHives();
+    } catch (err) {
+      toast.error("Failed to delete hive");
+    }
+  };
+
+  const handleOpenNotes = (hive: Hive, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setActiveHive(hive);
+    setHiveNotes(hive.notes || "");
+    setIsNotesModalOpen(true);
+  };
+
+  const handleSaveNotes = async () => {
+    if (!activeHive) return;
+    setIsSavingNotes(true);
+    const toastId = toast.loading("Saving observations...");
+    try {
+      await updateHiveMutation.mutateAsync({
+        id: activeHive.id,
+        data: { notes: hiveNotes },
+      });
+      setIsNotesModalOpen(false);
+      toast.success("Notes saved successfully", { id: toastId });
+      refetchHives();
+    } catch (error) {
+      toast.error("Could not save notes. Please try again.", { id: toastId });
+    } finally {
+      setIsSavingNotes(false);
+    }
+  };
+
+  const handleOpenScheduleInspection = (hive: Hive, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setInspectionTaskForm({
+      title: `Routine Inspection — Hive ${hive.hive_code}`,
+      description: "Standard hive health check: queen presence, brood pattern, pest detection.",
+      due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      priority: "medium",
+      hive_id: hive.id,
+      apiary_id: hive.apiary_id || "",
+    });
+    setIsRequestingInspection(true);
+  };
+
+  const submitInspectionRequest = async () => {
+    setIsSavingTask(true);
+    const toastId = toast.loading("Scheduling diagnostic task...");
+    try {
+      const { error } = await beeyieldService.createTask({
+        title: inspectionTaskForm.title,
+        description: inspectionTaskForm.description,
+        status: "pending",
+        priority:
+          inspectionTaskForm.priority === "high"
+            ? "High"
+            : inspectionTaskForm.priority === "low"
+            ? "Low"
+            : "Medium",
+        type: "Inspection",
+        category: "Inspection",
+        due_date: new Date(inspectionTaskForm.due_date).toISOString(),
+        hive_id: inspectionTaskForm.hive_id,
+        apiary_id: inspectionTaskForm.apiary_id,
+        is_completed: false,
+      });
+
+      if (!error) {
+        toast.success("Colony inspection scheduled", { id: toastId });
+        setIsRequestingInspection(false);
+      } else {
+        throw error;
+      }
+    } catch (e) {
+      toast.error("Failed to schedule inspection", { id: toastId });
+    } finally {
+      setIsSavingTask(false);
+    }
+  };
+
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    const toastId = toast.loading("Generating spreadsheet...");
+    try {
+      const exportData = filteredHives.map((h) => {
+        const apiaryName =
+          h.apiary?.name || apiaries.find((a) => a.id === h.apiary_id)?.name || "Unknown Apiary";
+        return {
+          "Hive Code": h.hive_code,
+          Apiary: apiaryName,
+          "Colony Status": h.status || "Active",
+          "Total Frames": h.frame_count || 10,
+          "Brood Frames": h.brood_frames ?? 6,
+          "Honey Frames": Math.max(0, (h.frame_count || 10) - (h.brood_frames ?? 6)),
+          "Hive Type": h.hive_type || "Langstroth",
+          "Bee Species": h.bee_type || "African Honey Bee",
+          Material: h.material || "Timber",
+          "Installation Date": h.installation_date || "",
+          "IoT Sensors Installed": h.has_sensors ? "Yes" : "No",
+          "Latest Temp (C)": h.latest_temp ?? 34.8,
+          "Latest Humidity (%)": h.latest_humidity ?? 58,
+          "Latest Weight (kg)": h.latest_weight ?? 42.5,
+          "Total Honey Harvested (kg)": harvestMetrics[h.id]?.totalKg || 0,
+          "Harvest Batches": harvestMetrics[h.id]?.batches || 0,
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Hives & Colonies");
+      XLSX.writeFile(wb, `BeeYield_Hives_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      toast.success("Excel exported successfully", { id: toastId });
+    } catch (error) {
+      toast.error("Export failed. Please try again.", { id: toastId });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // If viewing deep placement / health view for a single hive
+  if (selectedHiveId) {
+    return (
+      <HiveDetailView
+        hiveId={selectedHiveId}
+        onBack={() => setSelectedHiveId(null)}
+        onTabChange={onTabChange}
+      />
+    );
+  }
+
+  const mainContent = (
+    <div className="space-y-6">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey flex-shrink-0">
+            <Hexagon className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-display text-2xl font-bold text-foreground">
+                Hives & <span className="text-honey">Colonies Directory</span>
+              </h1>
+              <span className="px-2 py-0.5 rounded-full bg-honey/10 text-honey text-xs font-bold border border-honey/20">
+                {stats.active} Active
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+              <span>Colony health grading, frame architecture, IoT telemetry and apiary bindings</span>
+              {user?.email && (
+                <span className="font-mono text-honey">• {user.email}</span>
+              )}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void refetchHives()}
+            disabled={hivesLoading}
+            className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors"
+            title="Refresh Hives"
+          >
+            <RefreshCw className={`w-4 h-4 ${hivesLoading ? "animate-spin text-honey" : ""}`} />
+          </button>
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            disabled={isExporting}
+            className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors"
+            title="Export Hives to Excel"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleOpenAddHive}
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
+            title="Add Hive Colony"
+          >
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="text-white">Add Hive Colony</span>
+          </button>
+          {!embedded && onClose && (
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Prominent Add Colony Banner */}
+      {!showForm && (
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+              <Plus className="w-5 h-5 text-white stroke-[2.5]" />
+            </div>
+            <div>
+              <h3 className="font-display text-sm sm:text-base font-bold text-white">
+                Register Hive Colony & Architecture
+              </h3>
+              <p className="text-xs text-emerald-200/90 mt-0.5">
+                Bind colony to apiary, configure 8 – 12 frame capacity, link IoT telemetry sensors, and manage colony health.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleOpenAddHive}
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-400/50 whitespace-nowrap shrink-0"
+          >
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="text-white">Add Hive Colony</span>
+          </button>
+        </div>
+      )}
+
+      {/* Stats Cards Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { label: "Total hives", value: stats.total, icon: Hexagon, tone: "text-honey" },
+          { label: "Active colonies", value: stats.active, icon: HeartPulse, tone: "text-emerald-400" },
+          { label: "Needs attention", value: stats.critical, icon: AlertTriangle, tone: "text-orange-400" },
+          { label: "Monitored hardware", value: devices.length, icon: Cpu, tone: "text-blue-400" },
+        ].map((s) => (
+          <div key={s.label} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</span>
+              <s.icon className={`w-4 h-4 ${s.tone}`} />
+            </div>
+            <p className={`mt-2 font-display text-3xl font-bold ${s.tone}`}>{s.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Frame Architecture Quick Filters & View Switcher */}
+      <div className="rounded-xl border border-border bg-card p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2">
+          <Layers className="w-4 h-4 text-honey" />
+          <span className="font-bold text-foreground">Hive Setup (8 – 12 Frames):</span>
+          <span className="text-muted-foreground text-[11px]">Filtered by frame architecture & apiary</span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {/* View mode toggle (Hives vs Devices) */}
+          <div className="flex bg-background border border-border rounded-lg p-0.5">
+            <button
+              type="button"
+              onClick={() => setViewMode("hives")}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 ${
+                viewMode === "hives"
+                  ? "bg-honey/20 text-honey border border-honey/30 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Hexagon className="w-3 h-3" /> Colonies ({hives.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("devices")}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all flex items-center gap-1.5 ${
+                viewMode === "devices"
+                  ? "bg-honey/20 text-honey border border-honey/30 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Cpu className="w-3 h-3" /> IoT Devices ({devices.length})
+            </button>
+          </div>
+
+          {/* Frame filter buttons */}
+          <div className="flex items-center gap-1 overflow-x-auto">
+            <button
+              type="button"
+              onClick={() => setFrameFilter("all")}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                frameFilter === "all"
+                  ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40"
+                  : "bg-background border-border text-muted-foreground hover:border-honey/40"
+              }`}
+            >
+              All Frame Sizes ({hives.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFrameFilter("8")}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                frameFilter === "8"
+                  ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40"
+                  : "bg-background border-border text-muted-foreground hover:border-honey/40"
+              }`}
+            >
+              8 Frames (Top Bar / L-8)
+            </button>
+            <button
+              type="button"
+              onClick={() => setFrameFilter("10")}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                frameFilter === "10"
+                  ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40"
+                  : "bg-background border-border text-muted-foreground hover:border-honey/40"
+              }`}
+            >
+              10 Frames (Langstroth 10)
+            </button>
+            <button
+              type="button"
+              onClick={() => setFrameFilter("12")}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                frameFilter === "12"
+                  ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40"
+                  : "bg-background border-border text-muted-foreground hover:border-honey/40"
+              }`}
+            >
+              12 Frames (Commercial Deep)
+            </button>
+          </div>
+
+          {/* Apiary Filter Dropdown */}
+          <select
+            value={selectedPlace}
+            onChange={(e) => setSelectedPlace(e.target.value)}
+            className="bg-background border border-border rounded-lg px-2.5 py-1 text-[11px] font-semibold text-foreground focus:ring-1 focus:ring-honey"
+          >
+            <option value="all">All Apiary Sites</option>
+            {apiaries.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Colony Form (Create or Edit) */}
+      {showForm && (
+        <div className="rounded-xl border border-emerald-500/50 bg-card overflow-hidden shadow-lg transition-all">
+          <div className="bg-emerald-600 px-5 py-3.5 flex items-center justify-between text-white">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                {editingId ? (
+                  <Pencil className="w-4 h-4 text-white" />
+                ) : (
+                  <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+                )}
+              </div>
+              <div>
+                <h2 className="font-display text-sm sm:text-base font-bold text-white tracking-wide">
+                  {editingId ? "Edit Hive Colony" : "Register Hive Colony"}
+                </h2>
+                <p className="text-[11px] text-emerald-100">
+                  {editingId
+                    ? `Hive: ${draft.hive_code}`
+                    : "Configure colony architecture, frame count & IoT telemetry"}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setShowForm(false);
+                setEditingId(null);
+                setDraft(DEFAULT_DRAFT);
+              }}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/25 text-white transition-colors"
+              aria-label="Close form"
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
+          </div>
+
+          <div className="p-5 space-y-4">
+            {/* 1. Apiary and Identity */}
+            <div className="p-4 rounded-xl border border-border bg-background space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-2">
+                <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-honey" /> Colony Assignment & Identity
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  Binding colony to physical apiary site
+                </span>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-3">
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Hive Code / Tag Identifier</span>
+                  <input
+                    value={draft.hive_code}
+                    onChange={(e) => setDraft({ ...draft, hive_code: e.target.value.toUpperCase() })}
+                    placeholder="e.g. HIVE-01, BEE-08"
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold font-mono text-foreground uppercase"
+                  />
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Apiary Site Location</span>
+                  <select
+                    value={draft.apiary_id}
+                    onChange={(e) => setDraft({ ...draft, apiary_id: e.target.value })}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground text-xs"
+                  >
+                    {apiaries.length === 0 ? (
+                      <option value="">No Apiary Registered</option>
+                    ) : (
+                      apiaries.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.name}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Colony Health Grade</span>
+                  <select
+                    value={draft.status}
+                    onChange={(e) => setDraft({ ...draft, status: e.target.value })}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground text-xs"
+                  >
+                    {HEALTH_GRADES.map((h) => (
+                      <option key={h} value={h}>
+                        {h}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            {/* 2. Frame Architecture */}
+            <div className="p-4 rounded-xl border border-border bg-background space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-2">
+                <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-honey" /> Hive Frame Configuration (8 – 12 Frame Architecture)
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  Configured: <strong className="text-honey">{draft.frame_count} frames</strong> ({draft.brood_frames} brood + {draft.honey_frames} honey)
+                </span>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-3">
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Total Frame Capacity</span>
+                  <select
+                    value={draft.frame_count}
+                    onChange={(e) => {
+                      const total = Number(e.target.value);
+                      const brood = Math.min(draft.brood_frames, total);
+                      const honey = Math.min(draft.honey_frames, total - brood);
+                      setDraft({ ...draft, frame_count: total, brood_frames: brood, honey_frames: honey });
+                    }}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground text-xs"
+                  >
+                    <option value={8}>8 Frames (Top Bar / 8-Frame Langstroth)</option>
+                    <option value={10}>10 Frames (Standard Langstroth 10)</option>
+                    <option value={12}>12 Frames (Commercial Deep 12)</option>
+                  </select>
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Brood Chamber Frames</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={draft.frame_count}
+                    value={draft.brood_frames}
+                    onChange={(e) => {
+                      const brood = Math.min(draft.frame_count, Math.max(0, Number(e.target.value)));
+                      const honey = Math.min(draft.honey_frames, draft.frame_count - brood);
+                      setDraft({ ...draft, brood_frames: brood, honey_frames: honey });
+                    }}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
+                  />
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Honey Super Frames</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={draft.frame_count - draft.brood_frames}
+                    value={draft.honey_frames}
+                    onChange={(e) => {
+                      const maxHoney = draft.frame_count - draft.brood_frames;
+                      const honey = Math.min(maxHoney, Math.max(0, Number(e.target.value)));
+                      setDraft({ ...draft, honey_frames: honey });
+                    }}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* 3. Genetics & Construction */}
+            <div className="p-4 rounded-xl border border-border bg-background space-y-3">
+              <span className="font-bold text-xs text-foreground flex items-center gap-1.5 border-b border-border/50 pb-2">
+                <Crown className="w-3.5 h-3.5 text-honey" /> Construction & Bee Subspecies
+              </span>
+
+              <div className="grid md:grid-cols-4 gap-3">
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Hive Construction Type</span>
+                  <select
+                    value={draft.hive_type}
+                    onChange={(e) => setDraft({ ...draft, hive_type: e.target.value })}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground text-xs"
+                  >
+                    {HIVE_TYPES.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Bee Subspecies</span>
+                  <select
+                    value={draft.bee_type}
+                    onChange={(e) => setDraft({ ...draft, bee_type: e.target.value })}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground text-xs"
+                  >
+                    {BEE_TYPES.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Hive Material</span>
+                  <select
+                    value={draft.material}
+                    onChange={(e) => setDraft({ ...draft, material: e.target.value })}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground text-xs"
+                  >
+                    {MATERIALS.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground">Installation Date</span>
+                  <input
+                    type="date"
+                    value={draft.installation_date}
+                    onChange={(e) => setDraft({ ...draft, installation_date: e.target.value })}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* 4. IoT Telemetry Sensors Toggle */}
+            <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={draft.has_sensors}
+                  onChange={(e) => setDraft({ ...draft, has_sensors: e.target.checked })}
+                  className="w-4 h-4 rounded text-honey focus:ring-honey border-border"
+                />
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Cpu className="w-3.5 h-3.5 text-blue-400" />
+                  Pair IoT Telemetry Sensor Node (Real-time Brood Temp, Humidity & Scale Weight)
+                </span>
+              </label>
+
+              {draft.has_sensors && (
+                <div className="grid md:grid-cols-3 gap-3 pt-2">
+                  <label className="text-xs space-y-1">
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      <Thermometer className="w-3 h-3 text-rose-500" /> Baseline Brood Temp (°C)
+                    </span>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={draft.temperature_c ?? 34.8}
+                      onChange={(e) =>
+                        setDraft({ ...draft, temperature_c: parseFloat(e.target.value) || 0 })
+                      }
+                      className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
+                    />
+                  </label>
+
+                  <label className="text-xs space-y-1">
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      <Droplets className="w-3 h-3 text-blue-500" /> Relative Humidity (% RH)
+                    </span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={draft.humidity_pct ?? 58}
+                      onChange={(e) =>
+                        setDraft({ ...draft, humidity_pct: parseInt(e.target.value, 10) || 0 })
+                      }
+                      className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
+                    />
+                  </label>
+
+                  <label className="text-xs space-y-1">
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      <Scale className="w-3 h-3 text-amber-600" /> Gross Hive Weight (kg)
+                    </span>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={draft.weight_kg ?? 42.5}
+                      onChange={(e) =>
+                        setDraft({ ...draft, weight_kg: parseFloat(e.target.value) || 0 })
+                      }
+                      className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
+                    />
+                  </label>
+                </div>
+              )}
+            </div>
+
+            {/* 5. Notes */}
+            <label className="text-xs space-y-1 block">
+              <span className="text-muted-foreground">Beekeeper Field Notes</span>
+              <textarea
+                value={draft.notes}
+                onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
+                rows={2}
+                placeholder="Observations on brood density, honey storage, queen genetics, or placement coordinates..."
+                className="w-full bg-background border border-border rounded-lg p-2.5 text-xs text-foreground placeholder:text-muted-foreground"
+              />
+            </label>
+
+            {/* Save / Cancel buttons */}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+              <button
+                onClick={() => {
+                  setShowForm(false);
+                  setEditingId(null);
+                  setDraft(DEFAULT_DRAFT);
+                }}
+                className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-background"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveColony}
+                disabled={saving}
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 disabled:opacity-50 shadow-md hover:shadow-lg transition-all border border-emerald-400/40"
+              >
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                ) : (
+                  <Save className="w-4 h-4 text-white" />
+                )}
+                <span className="text-white">
+                  {editingId ? "Update Colony Record" : "Save Colony Record"}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by hive code, apiary, colony status or frame architecture..."
+          className="w-full bg-card border border-border rounded-lg pl-9 pr-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-honey/50 focus:ring-1 focus:ring-honey"
+        />
+      </div>
+
+      {/* Main View Mode: Colonies vs Devices */}
+      {viewMode === "hives" ? (
+        hivesLoading && hives.length === 0 ? (
+          <div className="py-16 text-center text-muted-foreground text-sm flex items-center justify-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin text-honey" /> Loading hives & colonies...
+          </div>
+        ) : filteredHives.length === 0 ? (
+          <div className="py-16 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 p-8">
+            <div className="w-12 h-12 rounded-2xl bg-honey/10 border border-honey/30 flex items-center justify-center text-honey mx-auto mb-3">
+              <Hexagon className="w-6 h-6" />
+            </div>
+            <h3 className="font-display text-base font-bold text-foreground">
+              {hives.length === 0
+                ? "No Hives or Colonies Registered Yet"
+                : "No Hives Match Your Filter"}
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground max-w-md mx-auto">
+              {hives.length === 0
+                ? "Register your first hive colony to bind IoT sensors, track brood chambers, honey supers, and queen performance."
+                : "Try clearing your search query or selecting 'All Frame Sizes' / 'All Apiary Sites' above."}
+            </p>
+            <button
+              onClick={handleOpenAddHive}
+              className="mt-4 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border border-emerald-400/40 inline-flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+              <span className="text-white">Add First Colony</span>
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filteredHives.map((h) => {
+              const totalFrames = h.frame_count || 10;
+              const broodFrames = h.brood_frames ?? Math.round(totalFrames * 0.6);
+              const honeyFrames = Math.max(0, totalFrames - broodFrames);
+              const apiaryName =
+                h.apiary?.name ||
+                apiaries.find((a) => a.id === h.apiary_id)?.name ||
+                "Kibwezi Apiary";
+              const harvest = harvestMetrics[h.id];
+
+              return (
+                <div
+                  key={h.id}
+                  className="rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-honey/30"
+                >
+                  <div className="w-full p-4 flex flex-wrap items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setExpanded(expanded === h.id ? null : h.id)}
+                      className="flex flex-wrap items-center gap-3 text-left flex-1 min-w-0"
+                    >
+                      <span
+                        className={`px-2 py-0.5 rounded-full border text-[11px] font-medium ${healthTone(
+                          h.status
+                        )}`}
+                      >
+                        {h.status || "Active"}
+                      </span>
+                      <span className="font-semibold text-sm text-foreground">{h.hive_code}</span>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-honey" /> {apiaryName}
+                      </span>
+                      <span className="text-xs text-honey font-medium">
+                        {totalFrames} frames ({broodFrames} brood • {honeyFrames} honey)
+                      </span>
+                      <span className="text-xs text-muted-foreground">{h.hive_type || "Langstroth"}</span>
+                      {h.installation_date && (
+                        <span className="text-xs text-muted-foreground">
+                          {h.installation_date.slice(0, 10)}
+                        </span>
+                      )}
+                      {harvest && harvest.totalKg > 0 && (
+                        <span className="text-[11px] text-emerald-400 font-medium">
+                          {harvest.totalKg} kg harvested
+                        </span>
+                      )}
+                    </button>
+
+                    <div className="flex items-center gap-2 ml-auto">
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenScheduleInspection(h, e)}
+                        className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
+                        title="Schedule Inspection"
+                      >
+                        <ClipboardList className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline text-[11px]">Inspect</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenNotes(h, e)}
+                        className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
+                        title="Notes"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline text-[11px]">Notes</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleStartEdit(h)}
+                        className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
+                        title="Edit Hive Colony"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline text-[11px]">Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setExpanded(expanded === h.id ? null : h.id)}
+                        className="text-[11px] text-muted-foreground hover:text-foreground px-2 py-1"
+                      >
+                        {expanded === h.id ? "Hide" : "Details"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {expanded === h.id && (
+                    <div className="border-t border-border p-4 space-y-3 text-xs bg-background/50">
+                      <div className="grid md:grid-cols-4 gap-3">
+                        <p>
+                          <span className="text-muted-foreground">Frame Architecture:</span>{" "}
+                          <strong>{totalFrames} frames</strong> (8 – 12 standard)
+                        </p>
+                        <p>
+                          <span className="text-muted-foreground">Hive Type:</span>{" "}
+                          {h.hive_type || "Langstroth"}
+                        </p>
+                        <p>
+                          <span className="text-muted-foreground">Bee Genetics:</span>{" "}
+                          {h.bee_type || "African Honey Bee"}
+                        </p>
+                        <p>
+                          <span className="text-muted-foreground">Material:</span>{" "}
+                          {h.material || "Seasoned Timber"}
+                        </p>
+                      </div>
+
+                      {/* Sensor Vitals Banner */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2 px-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                        <p className="flex items-center gap-1.5">
+                          <Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                          <span className="text-muted-foreground">Brood Temp:</span>{" "}
+                          <strong className="text-foreground">
+                            {h.latest_temp ?? 34.8} °C
+                          </strong>
+                        </p>
+                        <p className="flex items-center gap-1.5">
+                          <Droplets className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                          <span className="text-muted-foreground">Humidity:</span>{" "}
+                          <strong className="text-foreground">
+                            {h.latest_humidity ?? 58}% RH
+                          </strong>
+                        </p>
+                        <p className="flex items-center gap-1.5">
+                          <Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                          <span className="text-muted-foreground">Gross Weight:</span>{" "}
+                          <strong className="text-foreground">
+                            {h.latest_weight ?? 42.5} kg
+                          </strong>
+                        </p>
+                        <p className="flex items-center gap-1.5">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                          <span className="text-muted-foreground">Telemetry:</span>{" "}
+                          <strong className="text-foreground">
+                            {h.has_sensors ? "IoT Active" : "Physical Ledger"}
+                          </strong>
+                        </p>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-3">
+                        <p>
+                          <span className="text-muted-foreground">Frame distribution:</span>{" "}
+                          {broodFrames} brood frames • {honeyFrames} honey frames (
+                          {totalFrames - broodFrames - honeyFrames > 0
+                            ? `${totalFrames - broodFrames - honeyFrames} comb/pollen frames`
+                            : "fully configured"}
+                          )
+                        </p>
+                        <p>
+                          <span className="text-muted-foreground">Harvest extraction:</span>{" "}
+                          {harvest && harvest.totalKg > 0
+                            ? `${harvest.totalKg} kg total (${harvest.batches} batch(es))`
+                            : "No extractions recorded yet"}
+                        </p>
+                      </div>
+
+                      {h.notes && (
+                        <p>
+                          <span className="text-muted-foreground">Apiarist Notes:</span> {h.notes}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border/50">
+                        <button
+                          onClick={() =>
+                            hivePdf(
+                              h,
+                              apiaryName,
+                              harvest,
+                              user?.user_metadata?.full_name || user?.email
+                            )
+                          }
+                          className="px-3 py-1.5 rounded-lg border border-honey/50 text-honey flex items-center gap-1.5 hover:bg-honey/10 transition-colors"
+                        >
+                          <FileDown className="w-3.5 h-3.5" /> Download PDF report
+                        </button>
+                        <button
+                          onClick={() => setSelectedHiveId(h.id)}
+                          className="px-3 py-1.5 rounded-lg border border-border bg-card text-foreground flex items-center gap-1.5 hover:bg-honey/10 hover:text-honey transition-colors"
+                        >
+                          <Eye className="w-3.5 h-3.5" /> Deep placement card
+                        </button>
+                        <button
+                          onClick={() => handleStartEdit(h)}
+                          className="px-3 py-1.5 rounded-lg border border-honey/40 bg-honey/10 text-honey flex items-center gap-1.5 hover:bg-honey/20 transition-colors font-medium"
+                        >
+                          <Pencil className="w-3.5 h-3.5" /> Edit colony
+                        </button>
+                        <button
+                          onClick={() => handleDelete(h.id, h.hive_code)}
+                          className="text-red-400 flex items-center gap-1 hover:underline ml-auto"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Delete record
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )
+      ) : (
+        /* IoT Devices Hardware View */
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20 text-honey">
+                <Cpu className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground">IoT Telemetry Hardware Registry</h3>
+                <p className="text-xs text-muted-foreground">
+                  Monitored telemetry sensor nodes, battery levels, and telemetry heartbeat
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-border bg-muted/30 text-muted-foreground">
+                  <th className="px-5 py-3 font-semibold">Device Code</th>
+                  <th className="px-5 py-3 font-semibold">Bound Colony</th>
+                  <th className="px-5 py-3 font-semibold">Status</th>
+                  <th className="px-5 py-3 font-semibold">Battery</th>
+                  <th className="px-5 py-3 font-semibold text-right">Heartbeat</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {devices.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                      No IoT sensor hardware devices detected on this account.
+                    </td>
+                  </tr>
+                ) : (
+                  devices.map((device) => {
+                    const linkedHive = hives.find(
+                      (h) => h.id === device.hive_id || h.hive_code === device.device_code
+                    );
+                    const isOnline = device.status === "active";
+                    return (
+                      <tr key={device.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="px-5 py-3 font-mono font-bold text-foreground">
+                          <div className="flex items-center gap-2">
+                            <Hash className="w-3.5 h-3.5 text-honey opacity-60" />
+                            {device.device_code}
+                          </div>
+                        </td>
+                        <td className="px-5 py-3">
+                          {linkedHive ? (
+                            <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold text-[11px] inline-flex items-center gap-1">
+                              <ShieldCheck className="w-3 h-3" /> HIVE: {linkedHive.hive_code}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground opacity-50">Unpaired</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                isOnline ? "bg-emerald-400 animate-pulse" : "bg-muted-foreground"
+                              }`}
+                            />
+                            <span
+                              className={`font-semibold ${
+                                isOnline ? "text-emerald-400" : "text-muted-foreground"
+                              }`}
+                            >
+                              {isOnline ? "Streaming" : "Offline"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-semibold">{device.battery_level}%</span>
+                            <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                              <div
+                                style={{ width: `${device.battery_level}%` }}
+                                className={`h-full ${
+                                  device.battery_level > 60
+                                    ? "bg-emerald-500"
+                                    : device.battery_level > 20
+                                    ? "bg-honey"
+                                    : "bg-red-500"
+                                }`}
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3 text-right font-mono text-muted-foreground">
+                          {new Date(device.last_ping || Date.now()).toLocaleDateString([], {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule Inspection Modal */}
+      {isRequestingInspection && (
+        <div
+          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setIsRequestingInspection(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-border bg-card shadow-2xl p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start border-b border-border pb-3">
+              <div>
+                <h2 className="font-display text-lg font-bold text-foreground">
+                  Schedule <span className="text-honey">Inspection</span>
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Set a reminder to check on this colony.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsRequestingInspection(false)}
+                className="p-1.5 rounded-lg border border-border hover:bg-muted"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-xs space-y-1 block">
+                <span className="text-muted-foreground">Inspection Title</span>
+                <input
+                  value={inspectionTaskForm.title}
+                  onChange={(e) =>
+                    setInspectionTaskForm({ ...inspectionTaskForm, title: e.target.value })
+                  }
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs"
+                />
+              </label>
+
+              <label className="text-xs space-y-1 block">
+                <span className="text-muted-foreground">Due Date</span>
+                <input
+                  type="date"
+                  value={inspectionTaskForm.due_date}
+                  onChange={(e) =>
+                    setInspectionTaskForm({ ...inspectionTaskForm, due_date: e.target.value })
+                  }
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs"
+                />
+              </label>
+
+              <label className="text-xs space-y-1 block">
+                <span className="text-muted-foreground">Diagnostic Scope / Notes</span>
+                <textarea
+                  value={inspectionTaskForm.description}
+                  onChange={(e) =>
+                    setInspectionTaskForm({ ...inspectionTaskForm, description: e.target.value })
+                  }
+                  rows={2}
+                  className="w-full bg-background border border-border rounded-lg p-2.5 text-xs"
+                />
+              </label>
+            </div>
+
+            <div className="pt-2 flex items-center justify-end gap-2 border-t border-border">
+              <button
+                onClick={() => setIsRequestingInspection(false)}
+                className="px-3 py-1.5 rounded-lg border border-border text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitInspectionRequest}
+                disabled={isSavingTask}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md"
+              >
+                {isSavingTask ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                ) : (
+                  <ClipboardList className="w-4 h-4" />
+                )}
+                Save Task
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notes Modal */}
+      {isNotesModalOpen && activeHive && (
+        <div
+          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setIsNotesModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl border border-border bg-card shadow-2xl p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start border-b border-border pb-3">
+              <div>
+                <h2 className="font-display text-lg font-bold text-foreground">
+                  Hive <span className="text-honey">Notes & Observations</span>
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Observations and notes for hive #{activeHive.hive_code}.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsNotesModalOpen(false)}
+                className="p-1.5 rounded-lg border border-border hover:bg-muted"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <textarea
+              value={hiveNotes}
+              onChange={(e) => setHiveNotes(e.target.value)}
+              rows={6}
+              className="w-full p-3 rounded-xl text-xs bg-background border border-border resize-none focus:ring-1 focus:ring-honey"
+              placeholder="Write observations about queen presence, nectar flow, brood frames, or supers..."
+            />
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+              <button
+                onClick={() => setIsNotesModalOpen(false)}
+                className="px-3 py-1.5 rounded-lg border border-border text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveNotes}
+                disabled={isSavingNotes}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md"
+              >
+                {isSavingNotes ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Save Notes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  if (embedded) {
+    return <div className="w-full space-y-6">{mainContent}</div>;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll p-4 sm:p-6">
+      <div className="max-w-6xl mx-auto space-y-6">{mainContent}</div>
+    </div>
+  );
+}
