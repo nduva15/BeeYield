@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition, useCallback, useMemo, memo } from "react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
@@ -368,34 +368,221 @@ const SHOP_PRODUCTS: Product[] = [
   ...getCatalogByCategory("education"),
 ];
 
+interface ProductCardProps {
+  product: Product;
+  selectedSize: string;
+  onSizeChange: (productId: string, size: string) => void;
+  onAddToCart: (product: Product, size: string) => void;
+  onToggleWishlist: (product: Product, size: string) => void;
+  isWishlisted: boolean;
+  formatPrice: (price: number) => string;
+  renderStars: (rating: number, count: number) => React.ReactNode;
+}
+
+const ProductCard = memo(({
+  product,
+  selectedSize,
+  onSizeChange,
+  onAddToCart,
+  onToggleWishlist,
+  isWishlisted,
+  formatPrice,
+  renderStars,
+}: ProductCardProps) => {
+  const currentSize = selectedSize || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
+
+  const { variant, image, inStock, currentPrice } = useMemo(() => {
+    const vIndex = product.variants ? product.variants.findIndex((v) => v.size === currentSize) : -1;
+    const v = vIndex !== -1 ? product.variants[vIndex] : product.variants?.[0] || null;
+    const img = (vIndex !== -1 && product.images && product.images[vIndex + 1])
+      ? product.images[vIndex + 1]
+      : (product.images && product.images[0]) || "/placeholder.svg";
+    const stock = !!v && v.is_available && (v.stock_quantity ?? 0) > 0;
+    const price = v?.price_kes ?? product.variants?.[0]?.price_kes ?? 0;
+    return { variant: v, variantIndex: vIndex, image: img, inStock: stock, currentPrice: price };
+  }, [product, currentSize]);
+
+  return (
+    <Card
+      key={product.id}
+      className={cn(
+        "group relative overflow-hidden border-none transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]",
+        "bg-card hover:bg-[#F9F7F2]"
+      )}
+    >
+      <div className="relative">
+        <BrandedProductImage
+          src={image}
+          alt={product.name}
+          category={product.category}
+          badge={product.badge}
+          className={cn(
+            "aspect-square m-2 rounded-[2rem] transition-all duration-700 group-hover:scale-105 group-hover:rotate-1",
+            "bg-muted"
+          )}
+        />
+
+        <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
+          <Badge className="bg-[#FFF9F0]/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-[#FFF9F0] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] tracking-wider">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Verified Quality
+          </Badge>
+        </div>
+
+        {/* Availability badge */}
+        <div className="absolute bottom-8 right-8 z-30">
+          <Badge
+            className={cn(
+              "backdrop-blur-sm shadow-sm font-black text-[10px] tracking-wider px-3 py-1.5 rounded-full border",
+              inStock
+                ? "bg-emerald-50/90 text-emerald-700 border-emerald-200"
+                : "bg-red-50/90 text-red-700 border-red-200"
+            )}
+          >
+            {inStock ? "In Stock" : "Out of stock"}
+          </Badge>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Add to wishlist"
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleWishlist(product, currentSize);
+        }}
+        className={`absolute top-6 left-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${
+          isWishlisted
+            ? "bg-primary text-primary-foreground shadow-primary/25"
+            : "bg-[#FFF9F0] text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-sm border border-border/10"
+        }`}
+      >
+        <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
+      </button>
+
+      <CardContent className="p-8 pt-4">
+        <div className="flex justify-between items-start mb-2">
+          {renderStars(product.rating, product.review_count)}
+        </div>
+
+        <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1 flex items-center gap-2">
+          {product.name}
+        </h3>
+        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10">
+          {product.description}
+        </p>
+
+        <div className="space-y-4">
+          {!product.variants || product.variants.length === 0 ? (
+            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
+              <span className="text-[10px] font-black text-muted-foreground">No variants available</span>
+            </div>
+          ) : product.variants.length > 1 ? (
+            <Select
+              value={currentSize}
+              onValueChange={(value) => onSizeChange(product.id, value)}
+            >
+              <SelectTrigger
+                type="button"
+                className="w-full h-12 bg-muted/30 border-none rounded-xl font-black text-[10px]"
+                aria-label={`Select edition for ${product.name}`}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-none shadow-glow" position="popper" sideOffset={6}>
+                {product.variants.map((v) => (
+                  <SelectItem
+                    key={v.id}
+                    value={v.size}
+                    className="font-black text-[10px] focus:bg-primary focus:text-primary-foreground"
+                  >
+                    {v.size} · {formatPrice(v.price_kes)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
+              <span className="text-[10px] font-black text-muted-foreground mr-2">Edition:</span>
+              <span className="text-xs font-black">{product.variants[0]?.size}</span>
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <p className="text-[10px] font-black text-muted-foreground mb-0.5">Price</p>
+              <p className="text-2xl font-black text-foreground">
+                {formatPrice(currentPrice)}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Button
+                type="button"
+                className={cn(
+                  "w-full h-12 rounded-2xl font-black text-[10px] transition-all duration-300 shadow-lg px-6",
+                  !inStock
+                    ? "bg-[#F9F7F2] text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
+                    : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
+                )}
+                onClick={() => onAddToCart(product, currentSize)}
+                disabled={!inStock}
+              >
+                {!inStock ? (
+                  <span className="flex items-center gap-2">
+                    <ShoppingBag className="h-3.5 w-3.5 opacity-50" />
+                    Sold Out
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <ShoppingCart className="h-3.5 w-3.5" />
+                    Add to Cart
+                  </span>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
+
+ProductCard.displayName = "ProductCard";
+
 const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [activeCategory, setActiveCategory] = useState<string>("honey");
+  const [, startTransition] = useTransition();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  const handleSizeChange = (productId: string, size: string) => {
-    const product = SHOP_PRODUCTS.find(p => p.id === productId);
-    if (!product) return;
+  const handleSizeChange = useCallback((productId: string, size: string) => {
+    // Non-blocking transition prevents event handlers on SelectTrigger from blocking UI paint
+    startTransition(() => {
+      setSelectedSizes((prev) => {
+        const product = SHOP_PRODUCTS.find((p) => p.id === productId);
+        if (!product) return prev;
 
-    if (product.category === 'honey') {
-      const newSizes = { ...selectedSizes };
-      SHOP_PRODUCTS.forEach(p => {
-        if (p.category === 'honey') {
-          const hasSize = p.variants.some(v => v.size === size);
-          if (hasSize) {
-            newSizes[p.id] = size;
-          }
+        if (product.category === "honey") {
+          const newSizes = { ...prev };
+          SHOP_PRODUCTS.forEach((p) => {
+            if (p.category === "honey") {
+              const hasSize = p.variants.some((v) => v.size === size);
+              if (hasSize) {
+                newSizes[p.id] = size;
+              }
+            }
+          });
+          return newSizes;
         }
+        return { ...prev, [productId]: size };
       });
-      setSelectedSizes(newSizes);
-    } else {
-      setSelectedSizes({ ...selectedSizes, [productId]: size });
-    }
-  };
+    });
+  }, []);
 
-  const handleAddToCart = (product: Product) => {
-    const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
+  const handleAddToCart = useCallback((product: Product, chosenSize: string) => {
+    const selectedSize = chosenSize || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
     const variant = product.variants && product.variants.length > 0
       ? (product.variants.find((v) => v.size === selectedSize) || product.variants[0])
       : null;
@@ -424,13 +611,34 @@ const Shop = () => {
     });
 
     toast.success(`Added ${product.name} to cart`);
-  };
+  }, [addToCart]);
 
-  const formatPrice = (price: number) => {
+  const handleToggleWishlist = useCallback((product: Product, chosenSize: string) => {
+    const selectedSize = chosenSize || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
+    const variantIndex = product.variants ? product.variants.findIndex((v) => v.size === selectedSize) : -1;
+    const variant = variantIndex !== -1 ? product.variants[variantIndex] : (product.variants?.[0] || null);
+
+    const image = (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
+      ? product.images[variantIndex + 1]
+      : (product.images && product.images[0]) || "/placeholder.svg";
+
+    toggleWishlist({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: variant?.price_kes || 0,
+      image: image,
+      category: product.category,
+      badge: product.badge,
+      inStock: product.variants ? product.variants.some((v) => v.stock_quantity > 0 && v.is_available) : false
+    });
+  }, [toggleWishlist]);
+
+  const formatPrice = useCallback((price: number) => {
     return `KES ${price.toLocaleString()}`;
-  };
+  }, []);
 
-  const renderStars = (rating: number, count: number) => {
+  const renderStars = useCallback((rating: number, count: number) => {
     return (
       <div className="flex items-center gap-1">
         <div className="flex items-center">
@@ -444,9 +652,11 @@ const Shop = () => {
         <span className="text-xs text-muted-foreground font-medium ml-1">{rating} ({count})</span>
       </div>
     );
-  };
+  }, []);
 
-  const visibleProducts = SHOP_PRODUCTS.filter(p => p.category === activeCategory);
+  const visibleProducts = useMemo(() => {
+    return SHOP_PRODUCTS.filter((p) => p.category === activeCategory);
+  }, [activeCategory]);
 
   return (
     <BeeYieldPageShell className="bg-background">
@@ -486,6 +696,7 @@ const Shop = () => {
           ].map((cat) => (
             <button
               key={cat.id}
+              type="button"
               onClick={() => setActiveCategory(cat.id)}
               className={cn(
                 "flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-xs transition-all duration-300 border whitespace-nowrap",
@@ -502,177 +713,17 @@ const Shop = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {visibleProducts.map((product) => (
-            <Card
+            <ProductCard
               key={product.id}
-              className={cn(
-                "group relative overflow-hidden border-none transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]",
-                "bg-card hover:bg-[#F9F7F2]0"
-              )}
-            >
-                      <div className="relative">
-                        <BrandedProductImage
-                          src={(() => {
-                            if (!product.variants || product.variants.length === 0) return (product.images && product.images[0]) || "/placeholder.svg";
-                            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-                            const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                            // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                            return (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
-                              ? product.images[variantIndex + 1]
-                              : (product.images && product.images[0]) || "/placeholder.svg";
-                          })()}
-                          alt={product.name}
-                          category={product.category}
-                          badge={product.badge}
-                          className={cn(
-                            "aspect-square m-2 rounded-[2rem] transition-all duration-700 group-hover:scale-105 group-hover:rotate-1",
-                            "bg-muted"
-                          )}
-                        />
-
-                        <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
-                          <Badge className="bg-[#FFF9F0]/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-[#FFF9F0] transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] tracking-wider">
-                            <ShieldCheck className="h-3.5 w-3.5" />
-                            Verified Quality
-                          </Badge>
-                        </div>
-
-                        {/* Availability badge */}
-                        {(() => {
-                          const selectedSize = selectedSizes[product.id] || (product.variants?.[0]?.size ?? "");
-                          const v = product.variants?.find((vv) => vv.size === selectedSize) || product.variants?.[0];
-                          const inStock = !!v && v.is_available && (v.stock_quantity ?? 0) > 0;
-                          const label = inStock ? 'In Stock' : 'Out of stock';
-                          return (
-                            <div className="absolute bottom-8 right-8 z-30">
-                              <Badge
-                                className={cn(
-                                  "backdrop-blur-sm shadow-sm font-black text-[10px] tracking-wider px-3 py-1.5 rounded-full border",
-                                  inStock
-                                    ? "bg-emerald-50/90 text-emerald-700 border-emerald-200"
-                                    : "bg-red-50/90 text-red-700 border-red-200"
-                                )}
-                              >
-                                {label}
-                              </Badge>
-                            </div>
-                          );
-                        })()}
-
-
-                      </div>
-
-                      <button
-                        aria-label="Add to wishlist"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click if any
-                          const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
-                          const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                          const variant = variantIndex !== -1 ? product.variants[variantIndex] : (product.variants[0] || null);
-
-                          // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                          const image = (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
-                            ? product.images[variantIndex + 1]
-                            : (product.images && product.images[0]) || "/placeholder.svg";
-
-                          toggleWishlist({
-                            id: product.id,
-                            name: product.name,
-                            description: product.description,
-                            price: variant?.price_kes || 0,
-                            image: image,
-                            category: product.category,
-                            badge: product.badge,
-                            inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
-                          });
-                        }}
-                        className={`absolute top-6 left-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
-                          ? "bg-primary text-primary-foreground shadow-primary/25"
-                          : "bg-[#FFF9F0] text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-sm border border-border/10"
-                          }`}
-                      >
-                        <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
-                      </button>
-
-                      <CardContent className="p-8 pt-4">
-                        <div className="flex justify-between items-start mb-2">
-                          {renderStars(product.rating, product.review_count)}
-                        </div>
-
-                        <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1 flex items-center gap-2">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10">
-                          {product.description}
-                        </p>
-
-                        <div className="space-y-4">
-                          {!product.variants || product.variants.length === 0 ? (
-                            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
-                              <span className="text-[10px] font-black text-muted-foreground">No variants available</span>
-                            </div>
-                          ) : product.variants.length > 1 ? (
-                            <Select
-                              value={selectedSizes[product.id] || product.variants[0].size}
-                              onValueChange={(value) => handleSizeChange(product.id, value)}
-                            >
-                              <SelectTrigger className="w-full h-12 bg-muted/30 border-none rounded-xl font-black text-[10px]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="rounded-xl border-none shadow-glow">
-                                {product.variants.map((v) => (
-                                  <SelectItem key={v.id} value={v.size} className="font-black text-[10px] focus:bg-primary focus:text-primary-foreground">
-                                    {v.size} — {formatPrice(v.price_kes)}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
-                              <span className="text-[10px] font-black text-muted-foreground mr-2">Edition:</span>
-                              <span className="text-xs font-black">{product.variants[0]?.size}</span>
-                            </div>
-                          )}
-
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1">
-                              <p className="text-[10px] font-black text-muted-foreground mb-0.5">Price</p>
-                              <p className="text-2xl font-black text-foreground">
-                                {formatPrice(
-                                  product.variants?.find(
-                                    (v) => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size)
-                                  )?.price_kes || product.variants?.[0]?.price_kes || 0
-                                )}
-                              </p>
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                              <Button
-                                className={cn(
-                                  "w-full h-12 rounded-2xl font-black text-[10px] transition-all duration-300 shadow-lg px-6",
-                                  (!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0)
-                                    ? "bg-[#F9F7F2] text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
-                                    : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
-                                )}
-                                onClick={() => handleAddToCart(product)}
-                                disabled={!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0}
-                              >
-                                {(!product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.is_available || (product.variants?.find(v => v.size === (selectedSizes[product.id] || product.variants?.[0]?.size))?.stock_quantity ?? 0) <= 0) ? (
-                                  <span className="flex items-center gap-2">
-                                    <ShoppingBag className="h-3.5 w-3.5 opacity-50" />
-                                    Sold Out
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center gap-2">
-                                    <ShoppingCart className="h-3.5 w-3.5" />
-                                    Add to Cart
-                                  </span>
-                                )}
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+              product={product}
+              selectedSize={selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "")}
+              onSizeChange={handleSizeChange}
+              onAddToCart={handleAddToCart}
+              onToggleWishlist={handleToggleWishlist}
+              isWishlisted={isInWishlist(product.id)}
+              formatPrice={formatPrice}
+              renderStars={renderStars}
+            />
           ))}
         </div>
       </section>
