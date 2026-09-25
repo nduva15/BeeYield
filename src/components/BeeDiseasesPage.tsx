@@ -125,6 +125,10 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
     }));
     const { error } = await supabase.from("bee_diseases").insert(payload);
     if (error) return toast.error(error.message);
+    toast.success(`Imported ${payload.length} diseases`);
+    load();
+  };
+
   const confirmDelete = async () => {
     if (!deleteRecord) return;
     const { error } = await supabase.from("bee_diseases").delete().eq("id", deleteRecord.id);

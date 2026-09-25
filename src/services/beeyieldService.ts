@@ -1104,12 +1104,12 @@ const DASHBOARD_CROP_REQUIREMENTS: CropPollinationRequirement[] = dashboardPolli
     const range = crop.optimalHivesPerAcre.match(/(\d+(\.\d+)?)\s*-\s*(\d+(\.\d+)?)/);
     const recommendedHivesPerAcre = range
         ? Number(((parseFloat(range[1]) + parseFloat(range[3])) / 2).toFixed(1))
-        : Math.max(0.5, Number((crop.targetFPA / 8).toFixed(1)));
+        : Math.max(0.5, Number(((crop.targetFPA ?? 2.5) / 8).toFixed(1)));
 
     return {
         id: `dashboard-crop-${index + 1}`,
         crop_name: crop.cropName,
-        target_fpa: crop.targetFPA,
+        target_fpa: crop.targetFPA ?? 2.5,
         hives_per_acre_recommended: recommendedHivesPerAcre,
         target_frames_per_hive: 8,
         metadata: {
@@ -1567,7 +1567,7 @@ async function getBatchesFromSupabase(filters?: { honey_type?: string; year?: nu
             hive: harvest?.hive || batch.hive,
             apiary: harvest?.apiary || batch.apiary,
             farmer: harvest?.farmer || batch.farmer,
-            hive_code: harvest?.hive?.hive_code || batch.hive_code,
+            hive_code: harvest?.hive?.hive_code || (batch as any).hive_code,
         };
     });
 }
@@ -4180,7 +4180,7 @@ export const beeyieldService = {
             if (generated?.file_url) {
                 const a = document.createElement('a');
                 a.href = generated.file_url;
-                a.download = report.file_name || generated.file_name;
+                a.download = report.file_name || generated.file_name || "report.pdf";
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -4421,11 +4421,11 @@ export const beeyieldService = {
     
 
     async getFinancialAggregate(groupBy: 'month' | 'category' = 'month'): Promise<any[]> {
-        const txs = await this.getTransactions();
+        const txs: any[] = (this as any).getTransactions ? await (this as any).getTransactions() : [];
 
         if (groupBy === 'month') {
             const months: Record<string, any> = {};
-            txs.forEach(t => {
+            txs.forEach((t: any) => {
                 const m = new Date(t.date).toLocaleString('default', { month: 'short', year: '2-digit' });
                 if (!months[m]) months[m] = { name: m, revenue: 0, costs: 0, net: 0 };
                 if (t.transaction_type === 'income') months[m].revenue += t.amount;

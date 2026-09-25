@@ -485,12 +485,11 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
           await beeyieldService.createHarvest({
             hive_id: newHiveId,
             apiary_id: targetApiaryId,
-            batch_number: hiveForm.batch_code.trim() || `BATCH-${Date.now()}`,
+            batch_code: hiveForm.batch_code.trim() || `BATCH-${Date.now()}`,
             quantity_kg: Number(hiveForm.quantity_kg),
             harvest_date: hiveForm.harvest_date,
             honey_type: hiveForm.honey_type,
-            moisture_content: Number(hiveForm.moisture_pct) || 17.2,
-            grade: 'Grade A Raw Verified',
+            moisture_content_percent: Number(hiveForm.moisture_pct) || 17.2,
             notes: `Logged during onboarding for hive ${hiveForm.hive_code}`,
           });
         } catch (harvestErr) {
@@ -523,13 +522,11 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
       const targetHiveId = createdHiveId || hives[0]?.id || 'hive-kib-001';
 
       await beeyieldService.createDevice({
-        serial: deviceForm.serial.trim().toUpperCase(),
-        device_kind: deviceForm.device_kind,
-        link_type: deviceForm.link_type,
-        label: deviceForm.label,
+        device_code: deviceForm.serial.trim().toUpperCase(),
+        device_name: deviceForm.label || `Device ${deviceForm.serial}`,
+        device_type: (deviceForm.device_kind === 'disease' || deviceForm.device_kind === 'inland') ? deviceForm.device_kind : 'infield',
         apiary_id: targetApiaryId,
         hive_id: targetHiveId,
-        status: 'active',
       });
 
       finishOnboarding(`Device ${deviceForm.serial} linked and verified!`);
