@@ -73,6 +73,7 @@ import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
 import { isTimothyUser } from "@/lib/user-hives";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
+import { AddHiveModal as PopoutAddHiveModal } from "./AddHiveModal";
 
 export interface ApiarySite {
   id: string;
@@ -4180,496 +4181,40 @@ function AddHiveModal({
   onOpenScanner: () => void;
   scannedSerial?: string;
 }) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-
-  // Step 1: Hive Details
-  const defaultNum = suggestedCode.replace(/^KIB-|^beeyield\s*/i, "");
-  const [code, setCode] = useState(defaultNum || "");
-  const [maxBroodFrames, setMaxBroodFrames] = useState<string>("10");
-  const [hasHygienicBottomBoard, setHasHygienicBottomBoard] = useState(false);
-
-  // Step 2: Queen Bee Information
-  const [queenBreedingYear, setQueenBreedingYear] = useState<number>(2022);
-  const [showYearDropdown, setShowYearDropdown] = useState(false);
-  const [queenOrigin, setQueenOrigin] = useState<string>("Own breeding");
-  const [showOriginDropdown, setShowOriginDropdown] = useState(false);
-  const [queenInsemination, setQueenInsemination] = useState<"Natural" | "Artificial" | "Unknown">("Natural");
-  const [queenNote, setQueenNote] = useState<string>("");
-
-  // Step 3: Hardware / Sensor Setup
-  const [sensorCategory, setSensorCategory] = useState<"vitalsensor" | "scale" | "acoustic_varroa" | "none">("vitalsensor");
-  const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
-  const [prevScannedSerial, setPrevScannedSerial] = useState(scannedSerial);
-
-  if (scannedSerial !== prevScannedSerial) {
-    setPrevScannedSerial(scannedSerial);
-    if (scannedSerial) {
-      setSensorSerial(scannedSerial);
-    }
-  }
-
-  if (!isOpen) return null;
-
-  const queenColor = getQueenYearColor(queenBreedingYear);
-  const cleanDisplayNum = code.trim().replace(/^beeyield\s*/i, "").replace(/^kib-/i, "");
-  const cleanDisplayCode = cleanDisplayNum ? `beeyield ${cleanDisplayNum.padStart(3, "0")}` : "beeyield New";
-
-  const handleFinalSubmit = () => {
-    if (!code.trim()) {
-      toast.error("Please enter a hive number/code");
-      setStep(1);
-      return;
-    }
-
-    const parsedMaxBrood = maxBroodFrames !== "" && !isNaN(Number(maxBroodFrames)) ? Number(maxBroodFrames) : 10;
-    const finalCode = `beeyield ${cleanDisplayNum.padStart(3, "0")}`;
-
-    const newHiveItem: ApiaryHiveItem = {
-      id: `hive-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-      code: finalCode,
-      name: finalCode,
-      hiveType: "Langstroth 10-Frame",
-      queenPresent: true,
-      queenBreedingYear,
-      queenStatus: `Active Laying Queen (${queenColor.name})`,
-      broodFrames: parsedMaxBrood,
-      maxBroodFrames: parsedMaxBrood,
-      hasHygienicBottomBoard,
-      queenOrigin,
-      queenInsemination,
-      queenNote: queenNote.trim() || undefined,
-      honeyFrames: 4,
-      colonyStrength: "Strong (8–10 Frames Brood & Bees)",
-      colonyAvailability: "Dedicated Honey Production",
-      sensorSerial: sensorCategory !== "none" && sensorSerial.trim() ? sensorSerial.trim() : undefined,
-      deviceCategory:
-        sensorCategory !== "none" && sensorSerial.trim()
-          ? sensorCategory === "acoustic_varroa"
-            ? "disease_devices"
-            : "in_hive"
-          : undefined,
-      deviceType:
-        sensorCategory !== "none" && sensorSerial.trim()
-          ? sensorCategory === "scale"
-            ? "Hive Weight Scale (Telemetry Load Cell)"
-            : sensorCategory === "acoustic_varroa"
-            ? "Apisense Acoustic Disease Detector"
-            : "VitalSensor Hive Pro"
-          : undefined,
-      batches: [],
-    };
-
-    onAddHive(newHiveItem);
-    toast.success(`Hive "${finalCode}" successfully registered in ${normalizeApiaryName(apiary.name)}`);
-    onClose();
-  };
-
   return (
-    <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 overflow-y-auto animate-in fade-in">
-      <div className="w-full sm:max-w-md bg-[#FAF4EE] min-h-screen sm:min-h-[580px] sm:max-h-[92vh] sm:rounded-3xl shadow-2xl overflow-y-auto flex flex-col p-6 text-stone-900 border border-stone-300/40 relative">
-        {/* Top Header */}
-        <div className="relative flex items-center justify-between pb-6">
-          <button
-            type="button"
-            onClick={() => {
-              if (step === 1) onClose();
-              else setStep((step - 1) as any);
-            }}
-            className="p-1 -ml-1 text-stone-800 hover:text-stone-950 transition-colors"
-            aria-label="Back"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <h2 className="text-xl font-normal text-stone-900 absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
-            Add Hive
-          </h2>
-          <div className="w-6" />
-        </div>
-
-        {/* STEP 1: Hive Details (Screenshot 1) */}
-        {step === 1 && (
-          <div className="flex flex-col flex-1">
-            <h3 className="text-base font-semibold text-stone-900 pt-2 mb-6">Hive details</h3>
-
-            {/* Field 1: Hive Code/Number */}
-            <div className="space-y-1">
-              <input
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="e.g. 01"
-                autoFocus
-                className="w-full bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal placeholder:text-stone-500 focus:outline-none focus:border-amber-600 transition-colors"
-              />
-            </div>
-
-            {/* Field 2: Maximum number of brood chamber frames */}
-            <div className="space-y-1 mt-7">
-              <input
-                type="number"
-                min="1"
-                max="30"
-                value={maxBroodFrames}
-                onChange={(e) => setMaxBroodFrames(e.target.value)}
-                placeholder="Maximum number of brood chamber frames"
-                className="w-full bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal placeholder:text-stone-500 focus:outline-none focus:border-amber-600 transition-colors"
-              />
-            </div>
-
-            {/* Field 3: Hygienic Bottom Board Checkbox */}
-            <div
-              className="mt-8 flex items-center justify-between cursor-pointer select-none"
-              onClick={() => setHasHygienicBottomBoard(!hasHygienicBottomBoard)}
-            >
-              <span className="text-sm font-normal text-stone-900">Hive has hygienic bottom board</span>
-              <div
-                className={`w-5 h-5 rounded border border-stone-800 flex items-center justify-center transition-colors ${
-                  hasHygienicBottomBoard ? "bg-stone-900 text-white" : "bg-transparent"
-                }`}
-              >
-                {hasHygienicBottomBoard && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-              </div>
-            </div>
-
-            {/* Bottom Actions */}
-            <div className="mt-auto pt-8 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-7 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (!code.trim()) {
-                    toast.error("Please enter a hive number or code (e.g. 01)");
-                    return;
-                  }
-                  setStep(2);
-                }}
-                className="px-8 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-sm transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: Queen Bee Information (Screenshots 2 & 3) */}
-        {step === 2 && (
-          <div className="flex flex-col flex-1">
-            <h3 className="text-base font-semibold text-stone-900 pt-2 mb-4">Queen bee information</h3>
-
-            {/* Queen Breeding Year Dropdown */}
-            <div className="relative pt-1">
-              <label className="text-xs text-stone-600 block mb-1">Queen breeding year</label>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowYearDropdown(!showYearDropdown);
-                  setShowOriginDropdown(false);
-                }}
-                className="w-full flex items-center justify-between bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal focus:outline-none"
-              >
-                <span className="flex items-center gap-2">
-                  <span>{queenBreedingYear}</span>
-                  <span
-                    className={`w-3.5 h-3.5 rounded-full inline-block ${
-                      queenBreedingYear % 10 === 2 || queenBreedingYear % 10 === 7
-                        ? "bg-[#FFB800]"
-                        : queenBreedingYear % 10 === 0 || queenBreedingYear % 10 === 5
-                        ? "bg-blue-500"
-                        : queenBreedingYear % 10 === 4 || queenBreedingYear % 10 === 9
-                        ? "bg-emerald-500"
-                        : queenBreedingYear % 10 === 3 || queenBreedingYear % 10 === 8
-                        ? "bg-red-500"
-                        : "bg-stone-100 border border-stone-400"
-                    }`}
-                  />
-                </span>
-                <ChevronDown className="w-5 h-5 text-stone-800" />
-              </button>
-
-              {/* Year Dropdown Menu */}
-              {showYearDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-[#FAF4EE] border border-stone-300 rounded-2xl shadow-xl z-20 py-1.5 overflow-hidden">
-                  {[2026, 2025, 2024, 2023, 2022, 2021].map((yr) => {
-                    const c = getQueenYearColor(yr);
-                    return (
-                      <button
-                        key={yr}
-                        type="button"
-                        onClick={() => {
-                          setQueenBreedingYear(yr);
-                          setShowYearDropdown(false);
-                        }}
-                        className={`w-full px-4 py-2 text-left text-sm flex items-center justify-between hover:bg-[#EFE7DB] transition-colors ${
-                          queenBreedingYear === yr ? "bg-[#EFE7DB] font-bold" : ""
-                        }`}
-                      >
-                        <span>{yr}</span>
-                        <span className={`w-3 h-3 rounded-full ${c.dot}`} />
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-              <p className="text-xs text-stone-600 mt-1">Year color will be visible in the "hive shortcut" icon</p>
-            </div>
-
-            {/* Queen Origin Dropdown (Screenshot 3 Menu) */}
-            <div className="relative mt-5">
-              <label className="text-xs text-stone-600 block mb-1">Queen origin</label>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowOriginDropdown(!showOriginDropdown);
-                  setShowYearDropdown(false);
-                }}
-                className="w-full flex items-center justify-between bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal focus:outline-none"
-              >
-                <span>{queenOrigin || "Select origin"}</span>
-                <ChevronDown className="w-5 h-5 text-stone-800" />
-              </button>
-
-              {/* Floating Menu matching Screenshot 3 */}
-              {showOriginDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-[#FAF4EE] border border-stone-300 rounded-2xl shadow-2xl z-30 py-1 overflow-hidden">
-                  {["Own breeding", "Purchase domestic", "Purchase foreign", "Unknown"].map((origin) => (
-                    <button
-                      key={origin}
-                      type="button"
-                      onClick={() => {
-                        setQueenOrigin(origin);
-                        setShowOriginDropdown(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left text-sm transition-colors ${
-                        queenOrigin === origin
-                          ? "bg-[#E4DBD0] font-semibold text-stone-950"
-                          : "hover:bg-[#EFE7DB] text-stone-800"
-                      }`}
-                    >
-                      {origin}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Queen Insemination Method Radio Group */}
-            <div className="mt-6">
-              <p className="text-xs text-stone-600 mb-2">Queen insemination method</p>
-              <div className="space-y-1">
-                {(["Natural", "Artificial", "Unknown"] as const).map((method) => (
-                  <div
-                    key={method}
-                    onClick={() => setQueenInsemination(method)}
-                    className="flex items-center justify-between py-2 cursor-pointer select-none"
-                  >
-                    <span className="text-sm font-normal text-stone-900">{method}</span>
-                    <div
-                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                        queenInsemination === method ? "border-stone-900" : "border-stone-400"
-                      }`}
-                    >
-                      {queenInsemination === method && <div className="w-2.5 h-2.5 rounded-full bg-stone-900" />}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Beekeeper's Note Input with 0/1000 counter */}
-            <div className="mt-6">
-              <label className="text-xs text-stone-600 block mb-1">Beekeeper's note</label>
-              <input
-                type="text"
-                maxLength={1000}
-                value={queenNote}
-                onChange={(e) => setQueenNote(e.target.value)}
-                placeholder="e.g. gentle, bought locally, marked white"
-                className="w-full bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1 text-sm font-normal placeholder:text-stone-400 focus:outline-none focus:border-amber-600 transition-colors"
-              />
-              <span className="text-xs text-stone-500 mt-1 block">{queenNote.length}/1000</span>
-            </div>
-
-            {/* Bottom Actions */}
-            <div className="mt-auto pt-8 flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-5 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="px-5 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep(3)}
-                className="px-7 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-sm transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: Sensor / Device Setup & Complete (User Request #1) */}
-        {step === 3 && (
-          <div className="flex flex-col flex-1">
-            <h3 className="text-base font-semibold text-stone-900 pt-2 mb-1">Pair Device or Sensor</h3>
-            <p className="text-xs text-stone-600 mb-4">
-              Connect 24/7 telemetry monitoring to {cleanDisplayCode}, or continue in digital journal mode.
-            </p>
-
-            {/* Hardware Category Pills */}
-            <div className="space-y-1 mb-4">
-              <label className="text-xs font-semibold text-stone-800">Select Hardware Type:</label>
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSensorCategory("vitalsensor");
-                    if (!sensorSerial) setSensorSerial(`VS-KBZ-${cleanDisplayNum.padStart(3, "0")}`);
-                  }}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    sensorCategory === "vitalsensor"
-                      ? "border-stone-900 bg-[#EFE7DB] text-stone-950 shadow-sm"
-                      : "border-stone-300 bg-transparent text-stone-700 hover:border-stone-400"
-                  }`}
-                >
-                  <div className="text-xs font-bold">VitalSensor Pro</div>
-                  <div className="text-[11px] text-stone-600">Temp, Humidity, Acoustics</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSensorCategory("scale");
-                    if (!sensorSerial || sensorSerial.startsWith("VS-")) setSensorSerial(`SCALE-KBZ-0${cleanDisplayNum.slice(-1) || "1"}`);
-                  }}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    sensorCategory === "scale"
-                      ? "border-stone-900 bg-[#EFE7DB] text-stone-950 shadow-sm"
-                      : "border-stone-300 bg-transparent text-stone-700 hover:border-stone-400"
-                  }`}
-                >
-                  <div className="text-xs font-bold">HoneyScale Load Cell</div>
-                  <div className="text-[11px] text-stone-600">Weight & Nectar flow</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSensorCategory("acoustic_varroa");
-                    if (!sensorSerial) setSensorSerial(`APISENSE-KBZ-0${cleanDisplayNum.slice(-1) || "1"}`);
-                  }}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    sensorCategory === "acoustic_varroa"
-                      ? "border-stone-900 bg-[#EFE7DB] text-stone-950 shadow-sm"
-                      : "border-stone-300 bg-transparent text-stone-700 hover:border-stone-400"
-                  }`}
-                >
-                  <div className="text-xs font-bold">Apisense Varroa</div>
-                  <div className="text-[11px] text-stone-600">Acoustic pest detector</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSensorCategory("none");
-                    setSensorSerial("");
-                  }}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    sensorCategory === "none"
-                      ? "border-stone-900 bg-[#EFE7DB] text-stone-950 shadow-sm"
-                      : "border-stone-300 bg-transparent text-stone-700 hover:border-stone-400"
-                  }`}
-                >
-                  <div className="text-xs font-bold">No Sensor</div>
-                  <div className="text-[11px] text-stone-600">Manual journal only</div>
-                </button>
-              </div>
-            </div>
-
-            {/* Sensor Code / Scanner */}
-            {sensorCategory !== "none" && (
-              <div className="p-3.5 bg-white rounded-2xl border border-stone-300/70 space-y-2.5 shadow-sm mb-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                    <ScanLine className="w-4 h-4 text-amber-600" /> Sensor Serial Code
-                  </span>
-                  <button
-                    type="button"
-                    onClick={onOpenScanner}
-                    className="text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300 flex items-center gap-1 transition-colors active:scale-95"
-                  >
-                    <QrCode className="w-3.5 h-3.5" /> Scan QR Camera
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  value={sensorSerial}
-                  onChange={(e) => setSensorSerial(e.target.value)}
-                  placeholder="e.g. VS-KBZ-003 or SCALE-KBZ-01"
-                  className="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs font-mono font-bold text-stone-900 focus:outline-none focus:border-amber-600"
-                />
-              </div>
-            )}
-
-            {/* Hive Summary Card */}
-            <div className="bg-[#EFE7DB]/70 rounded-2xl p-3.5 text-xs text-stone-800 space-y-1.5 border border-stone-300/40">
-              <div className="flex items-center justify-between font-bold text-stone-900 pb-1 border-b border-stone-300/50">
-                <span>{cleanDisplayCode}</span>
-                <span className="flex items-center gap-1 text-[11px] font-medium">
-                  <span>Queen {queenBreedingYear}</span>
-                  <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-1 text-[11px] text-stone-600 pt-0.5">
-                <div>Max Frames: <span className="font-semibold text-stone-900">{maxBroodFrames || 10}</span></div>
-                <div>Bottom Board: <span className="font-semibold text-stone-900">{hasHygienicBottomBoard ? "Hygienic" : "Standard"}</span></div>
-                <div>Origin: <span className="font-semibold text-stone-900">{queenOrigin}</span></div>
-                <div>Insemination: <span className="font-semibold text-stone-900">{queenInsemination}</span></div>
-              </div>
-            </div>
-
-            {/* Bottom Actions */}
-            <div className="mt-auto pt-8 flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-5 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="px-5 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={handleFinalSubmit}
-                className="px-7 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-sm transition-colors"
-              >
-                Add Hive
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <PopoutAddHiveModal
+      isOpen={isOpen}
+      onClose={onClose}
+      apiary={apiary}
+      suggestedCode={suggestedCode}
+      onAddHive={(hiveData) => {
+        const item: ApiaryHiveItem = {
+          id: hiveData.id,
+          code: hiveData.code,
+          name: hiveData.name,
+          hiveType: hiveData.hiveType,
+          queenPresent: hiveData.queenPresent,
+          queenBreedingYear: hiveData.queenBreedingYear,
+          queenStatus: hiveData.queenStatus,
+          broodFrames: hiveData.broodFrames,
+          maxBroodFrames: hiveData.maxBroodFrames,
+          hasHygienicBottomBoard: hiveData.hasHygienicBottomBoard,
+          queenOrigin: hiveData.queenOrigin,
+          queenInsemination: hiveData.queenInsemination,
+          queenNote: hiveData.queenNote,
+          honeyFrames: hiveData.honeyFrames || 4,
+          colonyStrength: hiveData.colonyStrength || "Strong (8–10 Frames Brood & Bees)",
+          colonyAvailability: hiveData.colonyAvailability || "Dedicated Honey Production",
+          sensorSerial: hiveData.sensorSerial,
+          deviceCategory: hiveData.deviceCategory as any,
+          deviceType: hiveData.deviceType,
+          batches: hiveData.batches || [],
+        };
+        onAddHive(item);
+      }}
+      onOpenScanner={onOpenScanner}
+      scannedSerial={scannedSerial}
+    />
   );
 }
 
@@ -7249,6 +6794,46 @@ export default function ApiariesPage({
   const [addDeviceCategory, setAddDeviceCategory] = useState<DeviceCategory>("in_hive");
   const [scannedSensorCode, setScannedSensorCode] = useState<string>("");
   const [attachedDevices, setAttachedDevices] = useState<ApiaryDeviceItem[]>([]);
+  const [isDetectingGps, setIsDetectingGps] = useState(false);
+
+  // Live GPS Coordinates detector
+  const handleDetectGps = () => {
+    setIsDetectingGps(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setFormData((prev) => ({
+            ...prev,
+            latitude: Number(pos.coords.latitude.toFixed(4)),
+            longitude: Number(pos.coords.longitude.toFixed(4)),
+          }));
+          setIsDetectingGps(false);
+          toast.success(`GPS detected: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
+        },
+        () => {
+          setIsDetectingGps(false);
+          toast.info("Could not fetch GPS. Retaining current coordinates.");
+        },
+        { timeout: 8000, enableHighAccuracy: true }
+      );
+    } else {
+      setIsDetectingGps(false);
+      toast.error("Geolocation is not supported by your browser");
+    }
+  };
+
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!showAddModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowAddModal(false);
+        setEditingApiary(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showAddModal]);
 
   // New Apiary Form state
   const [formData, setFormData] = useState({
@@ -7752,94 +7337,148 @@ export default function ApiariesPage({
         </div>
 
         {/* Modal: Add or Edit Apiary */}
-        {showAddModal && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 animate-in fade-in">
-            <div className="w-full sm:max-w-md bg-[#FAF4EE] min-h-screen sm:min-h-[620px] sm:max-h-[92vh] sm:rounded-3xl shadow-2xl overflow-y-auto flex flex-col p-6 text-stone-900 border border-stone-300/40 relative">
-              {/* Step 1: Matching Mobile Companion Screenshot */}
+        {showAddModal && typeof document !== "undefined" && createPortal(
+          <div
+            className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200"
+            onClick={() => {
+              setShowAddModal(false);
+              setEditingApiary(null);
+            }}
+          >
+            <div
+              className="w-full sm:max-w-xl bg-[#FAF4EE] text-stone-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-stone-300 relative my-auto max-h-[92vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Step 1: Name and Mode Selection (With / Without Devices) */}
               {!editingApiary && addApiaryStep === 1 && (
-                <div className="flex flex-col flex-1">
-                  {/* Top Bar with back arrow and centered title */}
-                  <div className="relative flex items-center justify-between pb-6">
+                <div className="flex flex-col flex-1 p-6 sm:p-7 overflow-y-auto">
+                  {/* Top Bar */}
+                  <div className="relative flex items-center justify-between pb-5 border-b border-stone-300/60">
                     <button
                       type="button"
                       onClick={() => setShowAddModal(false)}
-                      className="p-1 -ml-1 text-stone-800 hover:text-stone-950 transition-colors"
+                      className="p-1.5 -ml-1.5 text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 rounded-xl transition-colors"
                       aria-label="Back"
                     >
-                      <ArrowLeft className="w-6 h-6" />
+                      <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <h2 className="text-xl font-normal text-stone-900 absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
-                      Add apiary
-                    </h2>
-                    <div className="w-6" />
+                    <div className="text-center">
+                      <h2 className="text-lg sm:text-xl font-bold text-stone-900">Add Apiary</h2>
+                      <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">
+                        Step 1 of 2 • Basic Setup
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      className="p-1.5 -mr-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 rounded-xl transition-colors"
+                      aria-label="Close"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
 
-                  {/* Name field with clean underline */}
-                  <div className="space-y-1 pt-2">
-                    <label className="text-sm font-medium text-stone-700 block">Name</label>
+                  {/* Name field */}
+                  <div className="space-y-1.5 pt-5">
+                    <label className="text-xs font-bold text-stone-700 block uppercase tracking-wider">
+                      Apiary Name <span className="text-amber-600">*</span>
+                    </label>
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder=""
+                      placeholder="e.g. Kibwezi Commercial Apiary Site"
                       autoFocus
-                      className="w-full bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal focus:outline-none focus:border-amber-600 transition-colors"
+                      className="w-full bg-white border border-stone-300 focus:border-amber-600 rounded-2xl px-4 py-3 text-sm font-semibold text-stone-900 shadow-sm focus:outline-none transition-colors"
                     />
                   </div>
 
                   {/* Subtitle */}
-                  <p className="text-sm text-stone-800 font-medium mt-6 mb-3">
-                    How do you want to add the apiary?
-                  </p>
+                  <div className="pt-6 pb-2">
+                    <label className="text-xs font-bold text-stone-800 block uppercase tracking-wider">
+                      How do you want to add the apiary?
+                    </label>
+                    <p className="text-xs text-stone-600 mt-0.5">
+                      Choose whether this apiary station is integrated with live IoT hardware telemetry or registered as a digital journal.
+                    </p>
+                  </div>
 
                   {/* Option 1: With devices */}
-                  <div className="space-y-2">
+                  <div className="space-y-2 mt-2">
                     <button
                       type="button"
                       onClick={() => setAddApiaryMode("with_devices")}
-                      className={`w-full py-3.5 px-4 rounded-2xl border text-center font-medium text-sm transition-all ${
+                      className={`w-full p-4 rounded-2xl border text-left font-medium text-sm transition-all flex items-start gap-3.5 ${
                         addApiaryMode === "with_devices"
-                          ? "border-stone-800 bg-[#EFE7DB] text-stone-950 shadow-sm"
-                          : "border-stone-300/80 bg-transparent text-stone-800 hover:border-stone-400"
+                          ? "border-amber-600 bg-amber-500/10 text-stone-950 ring-2 ring-amber-600/30 shadow-sm"
+                          : "border-stone-300/80 bg-white/70 text-stone-800 hover:border-stone-400"
                       }`}
                     >
-                      With devices
+                      <div className={`p-2 rounded-xl mt-0.5 ${
+                        addApiaryMode === "with_devices" ? "bg-amber-500 text-stone-950" : "bg-stone-200 text-stone-600"
+                      }`}>
+                        <Radio className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-sm text-stone-950">With devices</span>
+                          {addApiaryMode === "with_devices" && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-600 text-white">
+                              Selected
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-stone-600 leading-relaxed font-normal mt-1">
+                          A digital beekeeper's journal (notes, inspections and more), 24/7 monitoring, parameter charts and disease detection — an apiary with a Hub, hives with VitalSensor and Scale.
+                        </p>
+                      </div>
                     </button>
-                    <div className="bg-[#EFE7DB]/70 rounded-2xl p-4 text-[13px] text-stone-700 leading-relaxed font-normal">
-                      A digital beekeeper's journal (notes, inspections and more), 24/7 monitoring, parameter charts and disease detection — an apiary with a Hub, hives with VitalSensor and Scale.
-                    </div>
                   </div>
 
                   {/* Option 2: Without devices */}
-                  <div className="space-y-2 mt-4">
+                  <div className="space-y-2 mt-3">
                     <button
                       type="button"
                       onClick={() => setAddApiaryMode("without_devices")}
-                      className={`w-full py-3.5 px-4 rounded-2xl border text-center font-medium text-sm transition-all ${
+                      className={`w-full p-4 rounded-2xl border text-left font-medium text-sm transition-all flex items-start gap-3.5 ${
                         addApiaryMode === "without_devices"
-                          ? "border-stone-800 bg-[#EFE7DB] text-stone-950 shadow-sm"
-                          : "border-stone-300/80 bg-transparent text-stone-800 hover:border-stone-400"
+                          ? "border-stone-900 bg-stone-900/5 text-stone-950 ring-2 ring-stone-900/20 shadow-sm"
+                          : "border-stone-300/80 bg-white/70 text-stone-800 hover:border-stone-400"
                       }`}
                     >
-                      Without devices
+                      <div className={`p-2 rounded-xl mt-0.5 ${
+                        addApiaryMode === "without_devices" ? "bg-stone-900 text-white" : "bg-stone-200 text-stone-600"
+                      }`}>
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-sm text-stone-950">Without devices</span>
+                          {addApiaryMode === "without_devices" && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-800 text-white">
+                              Selected
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-stone-600 leading-relaxed font-normal mt-1">
+                          A digital beekeeper's journal (notes, inspections and more), without measurements or disease detection — an apiary without a Hub, hives without VitalSensor or Scale.
+                        </p>
+                      </div>
                     </button>
-                    <div className="bg-[#EFE7DB]/70 rounded-2xl p-4 text-[13px] text-stone-700 leading-relaxed font-normal">
-                      A digital beekeeper's journal (notes, inspections and more), without measurements or disease detection — an apiary without a Hub, hives without VitalSensor or Scale.
-                    </div>
                   </div>
 
                   {/* Hint */}
-                  <div className="mt-5 flex items-center justify-center gap-1.5 text-xs text-stone-700">
-                    <Info className="w-4 h-4 text-stone-700 flex-shrink-0" />
-                    <span className="underline cursor-pointer">You can always add devices later.</span>
+                  <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-stone-600">
+                    <Info className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                    <span>You can always link or pair IoT devices to this apiary later.</span>
                   </div>
 
                   {/* Bottom Action Bar */}
-                  <div className="mt-auto pt-8 flex items-center justify-end gap-3">
+                  <div className="mt-8 pt-5 flex items-center justify-end gap-3 border-t border-stone-300/60">
                     <button
                       type="button"
                       onClick={() => setShowAddModal(false)}
-                      className="px-7 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+                      className="px-6 py-2.5 rounded-full border border-stone-400 text-stone-700 font-bold text-xs hover:bg-stone-200/50 transition-colors"
                     >
                       Cancel
                     </button>
@@ -7847,117 +7486,344 @@ export default function ApiariesPage({
                       type="button"
                       onClick={() => {
                         if (!formData.name.trim()) {
-                          toast.error("Please enter an apiary name");
+                          toast.error("Please enter an apiary name first");
                           return;
                         }
                         setAddApiaryStep(2);
                       }}
-                      className={`px-7 py-2.5 rounded-full font-medium text-sm transition-colors ${
+                      className={`px-7 py-2.5 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all ${
                         formData.name.trim()
-                          ? "bg-[#D8D0C5] text-stone-900 hover:bg-stone-900 hover:text-white"
-                          : "bg-[#D8D0C5]/60 text-stone-500 cursor-not-allowed"
+                          ? "bg-amber-500 hover:bg-amber-600 text-stone-950"
+                          : "bg-stone-300 text-stone-500 cursor-not-allowed"
                       }`}
                     >
-                      Next
+                      Next Step <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Step 2: Configure Devices & Location */}
+              {/* Step 2: Location, Coordinates, Acres, Hives Total, Florage, Notes (+ Devices if enabled) */}
               {!editingApiary && addApiaryStep === 2 && (
-                <div className="flex flex-col flex-1">
-                  {/* Top Bar with back arrow */}
+                <div className="flex flex-col flex-1 p-6 sm:p-7 overflow-y-auto">
+                  {/* Top Bar */}
                   <div className="relative flex items-center justify-between pb-4 border-b border-stone-300/60">
                     <button
                       type="button"
                       onClick={() => setAddApiaryStep(1)}
-                      className="p-1 -ml-1 text-stone-800 hover:text-stone-950 transition-colors"
+                      className="p-1.5 -ml-1.5 text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 rounded-xl transition-colors"
                       aria-label="Back"
                     >
-                      <ArrowLeft className="w-6 h-6" />
+                      <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <h2 className="text-lg font-medium text-stone-900 absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
-                      {addApiaryMode === "with_devices" ? "Connect Devices" : "Apiary Details"}
-                    </h2>
-                    <div className="w-6" />
+                    <div className="text-center">
+                      <h2 className="text-lg sm:text-xl font-bold text-stone-900">Apiary Parameters</h2>
+                      <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">
+                        Step 2 of 2 • Site Details
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      className="p-1.5 -mr-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 rounded-xl transition-colors"
+                      aria-label="Close"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
 
-                  <div className="pt-4 space-y-4 flex-1">
-                    {/* Apiary Summary Card */}
-                    <div className="bg-[#EFE7DB]/80 rounded-2xl p-4 space-y-2 border border-stone-300/50">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-stone-900">{formData.name}</span>
-                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-900">
-                          {addApiaryMode === "with_devices" ? "With Devices" : "Digital Journal"}
-                        </span>
+                  {/* Apiary Summary Pill */}
+                  <div className="mt-4 p-3 bg-[#EFE7DB] rounded-2xl border border-stone-300 flex items-center justify-between">
+                    <div className="min-w-0 pr-2">
+                      <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">Apiary Name</span>
+                      <span className="font-bold text-sm text-stone-900 truncate block">{formData.name}</span>
+                    </div>
+                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-900 whitespace-nowrap border border-amber-500/30">
+                      {addApiaryMode === "with_devices" ? "With Devices" : "Without Devices"}
+                    </span>
+                  </div>
+
+                  <form onSubmit={handleSaveApiary} className="pt-4 space-y-4">
+                    {/* 1. LOCATION */}
+                    <div className="space-y-2 bg-white/70 p-3.5 rounded-2xl border border-stone-300/70">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800 uppercase tracking-wider">
+                        <MapPin className="w-4 h-4 text-amber-600" />
+                        <span>Location <span className="text-amber-600">*</span></span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs text-stone-700 pt-1">
+                      <input
+                        type="text"
+                        required
+                        value={formData.location_name}
+                        onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
+                        placeholder="e.g. Kibwezi, Makueni, Kenya"
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold text-stone-900 focus:outline-none focus:border-amber-600"
+                      />
+                      <div className="grid grid-cols-2 gap-2 pt-1">
                         <div>
-                          <span className="text-[10px] text-stone-500 block">Location</span>
-                          <span className="font-medium">{formData.location_name}</span>
+                          <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                            County
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.county}
+                            onChange={(e) => setFormData({ ...formData, county: e.target.value })}
+                            placeholder="e.g. Makueni"
+                            className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                          />
                         </div>
                         <div>
-                          <span className="text-[10px] text-stone-500 block">Land Size</span>
-                          <span className="font-medium">{formData.size_acres} Acres (Timothy Nduva)</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-stone-500 block">Active Hives</span>
-                          <span className="font-medium">{formData.active_hives} Langstroth</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] text-stone-500 block">Region</span>
-                          <span className="font-medium">{formData.region}</span>
+                          <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                            Region / Sub-County
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.region}
+                            onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+                            placeholder="e.g. Kibwezi East"
+                            className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                          />
                         </div>
                       </div>
                     </div>
 
-                    {/* WITH DEVICES: Category Selection & Sensor Scanner */}
-                    {addApiaryMode === "with_devices" && (
-                      <div className="space-y-3">
-                        <div className="space-y-1">
-                          <label className="text-xs font-semibold text-stone-800">
-                            Choose Device Category:
+                    {/* 2. COORDINATES */}
+                    <div className="space-y-2 bg-white/70 p-3.5 rounded-2xl border border-stone-300/70">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800 uppercase tracking-wider">
+                          <Navigation className="w-4 h-4 text-amber-600" />
+                          <span>Coordinates (GPS) <span className="text-amber-600">*</span></span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleDetectGps}
+                          disabled={isDetectingGps}
+                          className="px-2.5 py-1 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-600/30 text-amber-900 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1"
+                        >
+                          <Compass className={`w-3.5 h-3.5 ${isDetectingGps ? "animate-spin text-amber-700" : ""}`} />
+                          {isDetectingGps ? "Detecting GPS..." : "Detect Live GPS"}
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                            Latitude
                           </label>
-                          <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-200/60 rounded-xl">
-                            <button
-                              type="button"
-                              onClick={() => setAddDeviceCategory("in_land")}
-                              className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
-                                addDeviceCategory === "in_land"
-                                  ? "bg-white text-stone-950 shadow-sm font-bold"
-                                  : "text-stone-600 hover:text-stone-950"
-                              }`}
-                            >
-                              In land
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setAddDeviceCategory("in_hive")}
-                              className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
-                                addDeviceCategory === "in_hive"
-                                  ? "bg-white text-stone-950 shadow-sm font-bold"
-                                  : "text-stone-600 hover:text-stone-950"
-                              }`}
-                            >
-                              In hive
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setAddDeviceCategory("disease_devices")}
-                              className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
-                                addDeviceCategory === "disease_devices"
-                                  ? "bg-white text-stone-950 shadow-sm font-bold"
-                                  : "text-stone-600 hover:text-stone-950"
-                              }`}
-                            >
-                              Disease
-                            </button>
-                          </div>
+                          <input
+                            type="number"
+                            step="any"
+                            required
+                            value={formData.latitude}
+                            onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })}
+                            placeholder="-2.4090"
+                            className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
+                            Longitude
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            required
+                            value={formData.longitude}
+                            onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })}
+                            placeholder="37.9670"
+                            className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. ACRES & 4. HIVES TOTAL */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-white/70 p-3.5 rounded-2xl border border-stone-300/70">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1 text-[11px] font-bold text-stone-800 uppercase tracking-wider">
+                          <Layers className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Acres <span className="text-amber-600">*</span></span>
+                        </div>
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0.1"
+                          required
+                          value={formData.size_acres}
+                          onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 1 })}
+                          placeholder="5.0"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-amber-600"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1 text-[11px] font-bold text-stone-800 uppercase tracking-wider">
+                          <Box className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Hives Total <span className="text-amber-600">*</span></span>
+                        </div>
+                        <input
+                          type="number"
+                          min="1"
+                          required
+                          value={formData.total_hives}
+                          onChange={(e) => setFormData({ ...formData, total_hives: parseInt(e.target.value, 10) || 1 })}
+                          placeholder="184"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-amber-600"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1 text-[11px] font-bold text-stone-800 uppercase tracking-wider">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Active Colonized</span>
+                        </div>
+                        <input
+                          type="number"
+                          min="0"
+                          value={formData.active_hives}
+                          onChange={(e) => setFormData({ ...formData, active_hives: parseInt(e.target.value, 10) || 0 })}
+                          placeholder="150"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-amber-600"
+                        />
+                      </div>
+                    </div>
+
+                    {/* 5. FLORAGE */}
+                    <div className="space-y-2 bg-white/70 p-3.5 rounded-2xl border border-stone-300/70">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800 uppercase tracking-wider">
+                        <Sprout className="w-4 h-4 text-emerald-600" />
+                        <span>Florage / Forage Ecosystem <span className="text-amber-600">*</span></span>
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={formData.forage_type}
+                        onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
+                        placeholder="e.g. Acacia, Neem, Maize, Mango & Forest Multifloral"
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                      />
+                      {/* Flora Quick-Add Suggestion Chips */}
+                      <div className="pt-1">
+                        <span className="text-[10px] text-stone-500 font-semibold block mb-1">
+                          Click to add/remove flora tags:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {[
+                            "Acacia",
+                            "Neem",
+                            "Balanites (Desert Date)",
+                            "Wildflowers",
+                            "Sunflower",
+                            "Mango",
+                            "Eucalyptus",
+                            "Multifloral",
+                            "Coffee",
+                            "Baobab",
+                          ].map((chip) => {
+                            const isIncluded = formData.forage_type
+                              .toLowerCase()
+                              .includes(chip.toLowerCase());
+                            return (
+                              <button
+                                key={chip}
+                                type="button"
+                                onClick={() => {
+                                  const current = formData.forage_type.trim();
+                                  if (!current) {
+                                    setFormData({ ...formData, forage_type: chip });
+                                    return;
+                                  }
+                                  const parts = current
+                                    .split(",")
+                                    .map((s) => s.trim())
+                                    .filter(Boolean);
+                                  if (parts.some((p) => p.toLowerCase() === chip.toLowerCase())) {
+                                    const nextParts = parts.filter(
+                                      (p) => p.toLowerCase() !== chip.toLowerCase()
+                                    );
+                                    setFormData({ ...formData, forage_type: nextParts.join(", ") });
+                                  } else {
+                                    setFormData({
+                                      ...formData,
+                                      forage_type: [...parts, chip].join(", "),
+                                    });
+                                  }
+                                }}
+                                className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold transition-all border ${
+                                  isIncluded
+                                    ? "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold"
+                                    : "bg-stone-100 text-stone-600 border-stone-200 hover:border-stone-400"
+                                }`}
+                              >
+                                {isIncluded ? "✓ " : "+ "}
+                                {chip}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 6. NOTES */}
+                    <div className="space-y-1.5 bg-white/70 p-3.5 rounded-2xl border border-stone-300/70">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-stone-800 uppercase tracking-wider">
+                        <FileText className="w-4 h-4 text-amber-600" />
+                        <span>Notes & Beekeeper Info</span>
+                      </div>
+                      <textarea
+                        rows={2}
+                        value={formData.notes}
+                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        placeholder="Lead Beekeeper details, terrain traits, stand positions, queen lineage, water access..."
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-amber-600 leading-relaxed"
+                      />
+                    </div>
+
+                    {/* WITH DEVICES: IoT Hardware Pairing Section */}
+                    {addApiaryMode === "with_devices" && (
+                      <div className="space-y-3 pt-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-bold text-stone-800 uppercase tracking-wider">
+                            Attach IoT Hardware Devices
+                          </label>
+                          <span className="text-[11px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                            {attachedDevices.length} attached
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-200/60 rounded-xl">
+                          <button
+                            type="button"
+                            onClick={() => setAddDeviceCategory("in_land")}
+                            className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
+                              addDeviceCategory === "in_land"
+                                ? "bg-white text-stone-950 shadow-sm font-bold"
+                                : "text-stone-600 hover:text-stone-950"
+                            }`}
+                          >
+                            In land (Hub)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setAddDeviceCategory("in_hive")}
+                            className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
+                              addDeviceCategory === "in_hive"
+                                ? "bg-white text-stone-950 shadow-sm font-bold"
+                                : "text-stone-600 hover:text-stone-950"
+                            }`}
+                          >
+                            In hive (Sensor)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setAddDeviceCategory("disease_devices")}
+                            className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
+                              addDeviceCategory === "disease_devices"
+                                ? "bg-white text-stone-950 shadow-sm font-bold"
+                                : "text-stone-600 hover:text-stone-950"
+                            }`}
+                          >
+                            Disease (Apisense)
+                          </button>
                         </div>
 
                         {/* Scanner / Manual Code Entry */}
-                        <div className="p-3.5 bg-white rounded-2xl border border-stone-300/70 space-y-3 shadow-sm">
+                        <div className="p-3 bg-white rounded-2xl border border-stone-300 space-y-2.5 shadow-sm">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
                               <ScanLine className="w-4 h-4 text-amber-600" />
@@ -7979,7 +7845,7 @@ export default function ApiariesPage({
                                 setScannedSensorCode(randomCode);
                                 toast.success(`Scanned QR Barcode: ${randomCode}`);
                               }}
-                              className="text-[11px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300 transition-colors flex items-center gap-1"
+                              className="text-[11px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-300 transition-colors flex items-center gap-1"
                             >
                               <QrCode className="w-3.5 h-3.5" /> Scan Sensor
                             </button>
@@ -7997,7 +7863,7 @@ export default function ApiariesPage({
                                   ? "e.g. APISENSE-KBZ-01"
                                   : "e.g. VS-KBZ-001 or SCALE-KBZ-01"
                               }
-                              className="flex-1 bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
+                              className="flex-1 bg-stone-50 border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
                             />
                             <button
                               type="button"
@@ -8034,7 +7900,7 @@ export default function ApiariesPage({
                                 setScannedSensorCode("");
                                 toast.success(`Attached ${newDev.name} (${newDev.serial})`);
                               }}
-                              className="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold transition-colors"
+                              className="px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold transition-colors"
                             >
                               Add
                             </button>
@@ -8108,7 +7974,7 @@ export default function ApiariesPage({
                               setAttachedDevices(standardPack);
                               toast.success("Loaded Kibwezi IoT Device Pack (Hub, VitalSensors, Scale & Apisense)");
                             }}
-                            className="w-full py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-[11px] font-bold transition-colors flex items-center justify-center gap-1.5"
+                            className="w-full py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-[11px] font-bold transition-colors flex items-center justify-center gap-1.5"
                           >
                             <Sparkles className="w-3.5 h-3.5 text-amber-700" /> Preload Full Kibwezi IoT Pack (5 Devices)
                           </button>
@@ -8117,14 +7983,14 @@ export default function ApiariesPage({
                         {/* Attached Devices Preview */}
                         {attachedDevices.length > 0 && (
                           <div className="space-y-1.5">
-                            <span className="text-[11px] font-semibold text-stone-700">
+                            <span className="text-[11px] font-bold text-stone-700">
                               Attached Devices ({attachedDevices.length}):
                             </span>
-                            <div className="max-h-36 overflow-y-auto space-y-1 pr-1">
+                            <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
                               {attachedDevices.map((d) => (
                                 <div
                                   key={d.id}
-                                  className="flex items-center justify-between p-2 bg-[#EFE7DB]/60 rounded-xl text-xs text-stone-800 border border-stone-300/40"
+                                  className="flex items-center justify-between p-2 bg-[#EFE7DB]/70 rounded-xl text-xs text-stone-800 border border-stone-300"
                                 >
                                   <div className="flex items-center gap-2 min-w-0">
                                     <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
@@ -8148,45 +8014,48 @@ export default function ApiariesPage({
 
                     {/* WITHOUT DEVICES: Digital Journal Note */}
                     {addApiaryMode === "without_devices" && (
-                      <div className="bg-[#EFE7DB]/50 rounded-2xl p-4 text-xs text-stone-700 leading-relaxed space-y-2 border border-stone-300/40">
-                        <p className="font-semibold text-stone-900">Digital Beekeeper's Journal</p>
-                        <p>
-                          This apiary site will be registered in offline / journal mode. You can record hive notes, track inspections, monitor weather conditions, and perform manual yield calculations.
+                      <div className="bg-[#EFE7DB]/60 rounded-2xl p-4 text-xs text-stone-700 leading-relaxed space-y-2 border border-stone-300">
+                        <p className="font-bold text-stone-900 flex items-center gap-1.5">
+                          <Check className="w-4 h-4 text-emerald-600" /> Digital Beekeeper's Journal Mode
                         </p>
-                        <div className="pt-2 flex items-center gap-1.5 text-amber-800 font-medium">
-                          <Info className="w-4 h-4 flex-shrink-0" />
-                          <span>Hardware sensors (VitalSensor, Scales, Hub) can be paired at any point later.</span>
-                        </div>
+                        <p>
+                          This apiary site will be registered in digital journal mode. You can track inspections, calculate honey harvests, monitor weather, and log hive notes. Physical sensors (Hub, VitalSensor, Scales) can be paired at any point later.
+                        </p>
                       </div>
                     )}
-                  </div>
 
-                  {/* Bottom Action Bar */}
-                  <div className="mt-auto pt-6 flex items-center justify-between gap-3 border-t border-stone-300/50">
-                    <button
-                      type="button"
-                      onClick={() => setAddApiaryStep(1)}
-                      className="px-6 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
-                    >
-                      Back
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
-                        handleSaveApiary(fakeEvent);
-                      }}
-                      className="px-7 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-medium text-sm transition-colors shadow-sm"
-                    >
-                      {addApiaryMode === "with_devices" ? "Register & Sync" : "Register Apiary"}
-                    </button>
-                  </div>
+                    {/* Bottom Action Bar */}
+                    <div className="pt-5 flex items-center justify-between gap-3 border-t border-stone-300/60">
+                      <button
+                        type="button"
+                        onClick={() => setAddApiaryStep(1)}
+                        className="px-6 py-2.5 rounded-full border border-stone-400 text-stone-700 font-bold text-xs hover:bg-stone-200/50 transition-colors"
+                      >
+                        Back
+                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setShowAddModal(false)}
+                          className="px-5 py-2.5 rounded-full border border-stone-300 text-stone-600 font-semibold text-xs hover:bg-stone-200/50 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-7 py-2.5 rounded-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs transition-colors shadow-sm"
+                        >
+                          {addApiaryMode === "with_devices" ? "Register & Sync Devices" : "Register Apiary"}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               )}
 
               {/* Edit Apiary Mode */}
               {editingApiary && (
-                <div className="flex flex-col flex-1">
+                <div className="flex flex-col flex-1 p-6 sm:p-7 overflow-y-auto">
                   <div className="relative flex items-center justify-between pb-4 border-b border-stone-300/60">
                     <button
                       type="button"
@@ -8194,119 +8063,204 @@ export default function ApiariesPage({
                         setShowAddModal(false);
                         setEditingApiary(null);
                       }}
-                      className="p-1 -ml-1 text-stone-800 hover:text-stone-950 transition-colors"
+                      className="p-1.5 -ml-1.5 text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 rounded-xl transition-colors"
                       aria-label="Back"
                     >
-                      <ArrowLeft className="w-6 h-6" />
+                      <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <h2 className="text-lg font-medium text-stone-900 absolute left-1/2 -translate-x-1/2">
-                      Edit Apiary Station
-                    </h2>
-                    <div className="w-6" />
+                    <div className="text-center">
+                      <h2 className="text-lg sm:text-xl font-bold text-stone-900">Edit Apiary Station</h2>
+                      <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">
+                        Update Site Parameters
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAddModal(false);
+                        setEditingApiary(null);
+                      }}
+                      className="p-1.5 -mr-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 rounded-xl transition-colors"
+                      aria-label="Close"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
 
                   <form onSubmit={handleSaveApiary} className="pt-4 space-y-3.5 flex-1">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-stone-800">Apiary Station Name</label>
+                      <label className="text-xs font-bold text-stone-800 uppercase tracking-wider">
+                        Apiary Station Name <span className="text-amber-600">*</span>
+                      </label>
                       <input
                         type="text"
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold text-stone-900"
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold text-stone-900 focus:outline-none focus:border-amber-600"
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-stone-800">Location Name</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div className="space-y-1 sm:col-span-1">
+                        <label className="text-[11px] font-bold text-stone-800 uppercase tracking-wider">
+                          Location Name <span className="text-amber-600">*</span>
+                        </label>
                         <input
                           type="text"
                           required
                           value={formData.location_name}
                           onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
-                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:border-amber-600"
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-semibold text-stone-800">County</label>
+                        <label className="text-[11px] font-bold text-stone-800 uppercase tracking-wider">County</label>
                         <input
                           type="text"
                           value={formData.county}
                           onChange={(e) => setFormData({ ...formData, county: e.target.value })}
-                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-stone-800 uppercase tracking-wider">Region</label>
+                        <input
+                          type="text"
+                          value={formData.region}
+                          onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 p-3 bg-white/70 rounded-2xl border border-stone-300/70">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1">
+                          <Navigation className="w-3.5 h-3.5 text-amber-600" /> Coordinates (GPS)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleDetectGps}
+                          disabled={isDetectingGps}
+                          className="px-2 py-0.5 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-600/30 text-amber-900 rounded text-[10px] font-bold transition-all flex items-center gap-1"
+                        >
+                          <Compass className={`w-3 h-3 ${isDetectingGps ? "animate-spin" : ""}`} />
+                          {isDetectingGps ? "Detecting..." : "Detect Live GPS"}
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="number"
+                          step="any"
+                          value={formData.latitude}
+                          onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })}
+                          placeholder="Latitude"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
+                        />
+                        <input
+                          type="number"
+                          step="any"
+                          value={formData.longitude}
+                          onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })}
+                          placeholder="Longitude"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-stone-800">Active Hives</label>
+                        <label className="text-[11px] font-bold text-stone-800 uppercase tracking-wider">Active Hives</label>
                         <input
                           type="number"
                           min={0}
                           value={formData.active_hives}
                           onChange={(e) => setFormData({ ...formData, active_hives: parseInt(e.target.value, 10) || 0 })}
-                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-amber-600"
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-stone-800">Total Capacity</label>
+                        <label className="text-[11px] font-bold text-stone-800 uppercase tracking-wider">Total Capacity</label>
                         <input
                           type="number"
                           min={1}
                           value={formData.total_hives}
                           onChange={(e) => setFormData({ ...formData, total_hives: parseInt(e.target.value, 10) || 1 })}
-                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-amber-600"
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-stone-800">Size (Acres)</label>
+                        <label className="text-[11px] font-bold text-stone-800 uppercase tracking-wider">Size (Acres)</label>
                         <input
                           type="number"
-                          min={0.5}
+                          min={0.1}
                           step="0.5"
                           value={formData.size_acres}
                           onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 1 })}
-                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900"
+                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900 focus:outline-none focus:border-amber-600"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-stone-800">Forage Flora</label>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-stone-800 uppercase tracking-wider">Forage Flora</label>
                       <input
                         type="text"
                         value={formData.forage_type}
                         onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
-                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900"
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:border-amber-600"
                       />
+                      <div className="flex flex-wrap gap-1">
+                        {["Acacia", "Neem", "Wildflowers", "Sunflower", "Mango", "Eucalyptus", "Multifloral", "Coffee"].map(
+                          (chip) => (
+                            <button
+                              key={chip}
+                              type="button"
+                              onClick={() => {
+                                const current = formData.forage_type.trim();
+                                if (!current) {
+                                  setFormData({ ...formData, forage_type: chip });
+                                  return;
+                                }
+                                const parts = current.split(",").map((s) => s.trim()).filter(Boolean);
+                                if (!parts.some((p) => p.toLowerCase() === chip.toLowerCase())) {
+                                  setFormData({ ...formData, forage_type: [...parts, chip].join(", ") });
+                                }
+                              }}
+                              className="px-2 py-0.5 rounded text-[10px] font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200"
+                            >
+                              + {chip}
+                            </button>
+                          )
+                        )}
+                      </div>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-stone-800">Notes & Beekeeper Info</label>
+                      <label className="text-xs font-bold text-stone-800 uppercase tracking-wider">Notes & Beekeeper Info</label>
                       <textarea
                         rows={2}
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900"
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-1.5 text-xs text-stone-900 focus:outline-none focus:border-amber-600"
                       />
                     </div>
 
-                    <div className="mt-auto pt-6 flex items-center justify-end gap-3 border-t border-stone-300/50">
+                    <div className="mt-auto pt-5 flex items-center justify-end gap-3 border-t border-stone-300/50">
                       <button
                         type="button"
                         onClick={() => {
                           setShowAddModal(false);
                           setEditingApiary(null);
                         }}
-                        className="px-6 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+                        className="px-6 py-2.5 rounded-full border border-stone-400 text-stone-700 font-bold text-xs hover:bg-stone-200/50 transition-colors"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="px-7 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-medium text-sm transition-colors shadow-sm"
+                        className="px-7 py-2.5 rounded-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs transition-colors shadow-sm"
                       >
                         Save Changes
                       </button>
