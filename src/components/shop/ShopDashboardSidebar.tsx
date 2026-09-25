@@ -131,7 +131,7 @@ const ShopDashboardSidebar: React.FC<SidebarProps> = ({
                                     "w-[18px] h-[18px] flex-shrink-0",
                                     isActive ? "text-[#B78103]" : "opacity-50 group-hover:opacity-80"
                                 )} />
-                                <span className="truncate">
+                                <span className="truncate pointer-events-none select-none">
                                     {item.label}
                                 </span>
                             </div>

@@ -4496,8 +4496,10 @@ function EditHiveModal({
                     key={cat.id}
                     type="button"
                     onClick={() => {
-                      setDeviceCategory(cat.id);
-                      setDeviceType(cat.defaultTypes[0]);
+                      React.startTransition(() => {
+                        setDeviceCategory(cat.id);
+                        setDeviceType(cat.defaultTypes[0]);
+                      });
                     }}
                     className={`py-1.5 px-2 rounded-xl border text-center transition-all flex items-center justify-center gap-1 text-[11px] font-bold ${
                       deviceCategory === cat.id
@@ -4506,7 +4508,7 @@ function EditHiveModal({
                     }`}
                   >
                     <span>{cat.icon}</span>
-                    <span className="truncate">{cat.label.replace(" Devices", "")}</span>
+                    <span className="truncate pointer-events-none select-none">{cat.label.replace(" Devices", "")}</span>
                   </button>
                 ))}
               </div>
@@ -5554,7 +5556,7 @@ function ApiaryDetailModal({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-muted/60 dark:bg-muted/30 rounded-2xl border border-border/80 text-xs font-bold">
             <button
               type="button"
-              onClick={() => setActiveTab("hives")}
+              onClick={() => { if (typeof window !== "undefined" && "requestAnimationFrame" in window) { window.requestAnimationFrame(() => React.startTransition(() => setActiveTab("hives"))); } else { React.startTransition(() => setActiveTab("hives")); } }}
               className={`py-2 px-2 text-center rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === "hives"
                   ? "bg-amber-500 text-stone-950 shadow-sm"
@@ -5562,11 +5564,11 @@ function ApiaryDetailModal({
               }`}
             >
               <Layers className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">Hives ({hivesList.length})</span>
+              <span className="truncate pointer-events-none select-none">Hives ({hivesList.length})</span>
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab("devices")}
+              onClick={() => { if (typeof window !== "undefined" && "requestAnimationFrame" in window) { window.requestAnimationFrame(() => React.startTransition(() => setActiveTab("devices"))); } else { React.startTransition(() => setActiveTab("devices")); } }}
               className={`py-2 px-2 text-center rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === "devices"
                   ? "bg-amber-500 text-stone-950 shadow-sm"
@@ -5574,11 +5576,11 @@ function ApiaryDetailModal({
               }`}
             >
               <Radio className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">IoT Devices ({devicesList.length})</span>
+              <span className="truncate pointer-events-none select-none">IoT Devices ({devicesList.length})</span>
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab("forage")}
+              onClick={() => { if (typeof window !== "undefined" && "requestAnimationFrame" in window) { window.requestAnimationFrame(() => React.startTransition(() => setActiveTab("forage"))); } else { React.startTransition(() => setActiveTab("forage")); } }}
               className={`py-2 px-2 text-center rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === "forage"
                   ? "bg-amber-500 text-stone-950 shadow-sm"
@@ -5586,11 +5588,11 @@ function ApiaryDetailModal({
               }`}
             >
               <Sprout className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">Forage & Flora</span>
+              <span className="truncate pointer-events-none select-none">Forage & Flora</span>
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab("harvests")}
+              onClick={() => { if (typeof window !== "undefined" && "requestAnimationFrame" in window) { window.requestAnimationFrame(() => React.startTransition(() => setActiveTab("harvests"))); } else { React.startTransition(() => setActiveTab("harvests")); } }}
               className={`py-2 px-2 text-center rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === "harvests"
                   ? "bg-amber-500 text-stone-950 shadow-sm"
@@ -5598,7 +5600,7 @@ function ApiaryDetailModal({
               }`}
             >
               <Scale className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">Harvests ({totalHoneyKg.toFixed(0)} kg)</span>
+              <span className="truncate pointer-events-none select-none">Harvests ({totalHoneyKg.toFixed(0)} kg)</span>
             </button>
           </div>
         </div>
@@ -7970,7 +7972,7 @@ export default function ApiariesPage({
                                 >
                                   <div className="flex items-center gap-2 min-w-0">
                                     <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
-                                    <span className="font-semibold truncate">{d.name}</span>
+                                    <span className="font-semibold truncate pointer-events-none select-none">{d.name}</span>
                                     <span className="font-mono text-[10px] text-stone-500">[{d.serial}]</span>
                                   </div>
                                   <button

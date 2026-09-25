@@ -260,7 +260,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                 <CurrentIcon className="w-3.5 h-3.5" />
                             </div>
                             <span className="text-xs sm:text-sm font-bold tracking-tight text-stone-900 dark:text-white flex items-center gap-1.5 leading-none">
-                                <span className="truncate max-w-[110px] sm:max-w-[180px]">{currentLabel}</span>
+                                <span className="truncate max-w-[110px] sm:max-w-[180px] pointer-events-none select-none">{currentLabel}</span>
                                 <ChevronDown className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-500 group-data-[state=open]:rotate-180 transition-transform duration-200 shrink-0" />
                             </span>
                         </button>
@@ -306,10 +306,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                 return (
                                                     <DropdownMenuItem
                                                         key={item.id}
-                                                        onClick={() => {
-                                                            onTabChange(item.id);
-                                                            setDropdownOpen(false);
-                                                        }}
+                                                        onClick={() => handleTabSelect(item.id)}
                                                         className={cn(
                                                             "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs cursor-pointer transition-all",
                                                             isActive
@@ -318,7 +315,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                         )}
                                                     >
                                                         <ItemIcon className="w-4 h-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
-                                                        <span className="truncate flex-1 font-medium">{item.label}</span>
+                                                        <span className="truncate flex-1 font-medium pointer-events-none select-none">{item.label}</span>
                                                         {isActive && (
                                                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                                                         )}
@@ -433,7 +430,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                 </div>
                                 <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-1.5 ring-white dark:ring-stone-900 animate-pulse" />
                             </div>
-                            <span className="hidden md:block text-xs font-bold text-stone-800 dark:text-stone-200 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors truncate max-w-[100px]">
+                            <span className="hidden md:block text-xs font-bold text-stone-800 dark:text-stone-200 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors truncate max-w-[100px] pointer-events-none select-none">
                                 {userName}
                             </span>
                             <ChevronDown className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-500 group-data-[state=open]:rotate-180 transition-transform duration-200 shrink-0" />
@@ -502,7 +499,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                 </div>
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                                onClick={() => onTabChange('settings')}
+                                onClick={() => handleTabSelect('settings')}
                                 className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-stone-800 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white hover:bg-amber-500/10 dark:hover:bg-amber-500/15 focus:bg-amber-500/10 dark:focus:bg-amber-500/15 group"
                             >
                                 <div className="w-8 h-8 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -515,7 +512,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
-                                onClick={() => onTabChange('apiaries-weather')}
+                                onClick={() => handleTabSelect('apiaries-weather')}
                                 className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-stone-800 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white hover:bg-amber-500/10 dark:hover:bg-amber-500/15 focus:bg-amber-500/10 dark:focus:bg-amber-500/15 group"
                             >
                                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -528,7 +525,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
-                                onClick={() => onTabChange('support')}
+                                onClick={() => handleTabSelect('support')}
                                 className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-stone-800 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white hover:bg-amber-500/10 dark:hover:bg-amber-500/15 focus:bg-amber-500/10 dark:focus:bg-amber-500/15 group"
                             >
                                 <div className="w-8 h-8 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">

@@ -125,7 +125,7 @@ export default function ToolSidebar({
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <item.icon className={cn("w-4 h-4 flex-shrink-0", isActive ? "text-[#f59e0b]" : "text-[#f59e0b]/80")} />
-                        <span className="truncate">{item.label}</span>
+                        <span className="truncate pointer-events-none select-none">{item.label}</span>
                       </div>
                       {isActive && (
                         <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />

@@ -208,7 +208,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                                                 )}>
                                                                                     <SubIcon className="w-3.5 h-3.5" />
                                                                                 </div>
-                                                                                <span className="truncate font-semibold">{subItem.label}</span>
+                                                                                <span className="truncate font-semibold pointer-events-none select-none">{subItem.label}</span>
                                                                             </div>
                                                                             {isSubActive && (
                                                                                 <span className="w-2 h-2 rounded-full bg-[#F4D03F] shrink-0" />
@@ -242,7 +242,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                                             )}>
                                                                 <SubIcon className="w-3.5 h-3.5" />
                                                             </div>
-                                                            <span className="truncate font-semibold">{sub.label}</span>
+                                                            <span className="truncate font-semibold pointer-events-none select-none">{sub.label}</span>
                                                         </div>
                                                         {isSubActive && (
                                                             <span className="w-2 h-2 rounded-full bg-[#F4D03F] shrink-0" />

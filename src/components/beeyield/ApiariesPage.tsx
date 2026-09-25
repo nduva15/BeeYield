@@ -2137,7 +2137,7 @@ export default function ApiariesPage({
                                 >
                                   <div className="flex items-center gap-2 min-w-0">
                                     <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
-                                    <span className="font-semibold truncate">{d.name}</span>
+                                    <span className="font-semibold truncate pointer-events-none select-none">{d.name}</span>
                                     <span className="font-mono text-[10px] text-stone-500">[{d.serial}]</span>
                                   </div>
                                   <button

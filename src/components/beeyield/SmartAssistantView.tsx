@@ -403,7 +403,7 @@ export default function SmartAssistantView({ onTabChange, initialMessage, onInit
                                     onClick={() => send(s)}
                                     className="text-left px-4 py-3 rounded-lg text-[11px] border border-border/ bg-card hover:border-border/ hover:bg-[#F4D03F]/5 transition-all text-foreground/60 hover:text-foreground leading-relaxed font-semibold shadow-sm group flex items-center justify-between"
                                 >
-                                    <span className="truncate mr-4">{s}</span>
+                                    <span className="truncate mr-4 pointer-events-none select-none">{s}</span>
                                     <Send className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all text-[#F4D03F]" />
                                 </button>
                             ))}

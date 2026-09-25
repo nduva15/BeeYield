@@ -1207,7 +1207,7 @@ export default function YieldProjection({
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Hardware Link Status</label>
             <div className="h-9 px-3 rounded-xl border border-border bg-muted/30 flex items-center justify-between text-xs">
-              <span className="text-muted-foreground truncate">
+              <span className="text-muted-foreground truncate pointer-events-none select-none">
                 {selectedHiveId === "all"
                   ? hivesList.length > 0
                     ? `Aggregated Fleet (${hivesList.length} Colonies)`
@@ -1887,7 +1887,7 @@ export default function YieldProjection({
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-1.5 font-medium text-emerald-700">
                                       <Cpu className="w-3.5 h-3.5 text-emerald-600" />
-                                      <span className="truncate">
+                                      <span className="truncate pointer-events-none select-none">
                                         {hive.device?.label || "Connected Hardware"}
                                       </span>
                                     </div>
