@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, useId } from "react";
 import {
   X,
   HeartPulse,
@@ -21,6 +21,12 @@ import {
   Radio,
   QrCode,
   UserCheck,
+  ScanLine,
+  Camera,
+  Check,
+  Upload,
+  Trash2,
+  Cpu,
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -30,6 +36,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
+import { Html5Qrcode } from "html5-qrcode";
+import { cn } from "@/lib/utils";
 import { resolveUserHives, isTimothyUser, TIMOTHY_DEFAULT_HEALTH_RECORDS } from "@/lib/user-hives";
 
 export interface HiveHealthDashboardProps {
@@ -85,6 +93,160 @@ export const COLONY_AVAILABILITY_OPTIONS = [
 
 // Strictly zero hardcoded mock hives - real logged-in user data only
 export const BEE_KNOWLEDGE_HIVES: HiveItemInfo[] = [];
+
+
+/* ------------------------------------------------------------------ VitalSensor QR & Scanner */
+
+function extractSensorSerial(raw: string): string {
+  const text = raw.trim();
+  if (text.startsWith("{") && text.endsWith("}")) {
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed.serial) return String(parsed.serial).toUpperCase();
+      if (parsed.id) return String(parsed.id).toUpperCase();
+    } catch {}
+  }
+  if (text.includes("http://") || text.includes("https://")) {
+    try {
+      const url = new URL(text);
+      const serialParam = url.searchParams.get("serial") || url.searchParams.get("code") || url.searchParams.get("id");
+      if (serialParam) return serialParam.toUpperCase();
+      const parts = url.pathname.split("/").filter(Boolean);
+      if (parts.length > 0) return parts[parts.length - 1].toUpperCase();
+    } catch {}
+  }
+  return text.toUpperCase();
+}
+
+function VitalSensorScannerView({
+  onScanSuccess,
+  onCancel,
+}: {
+  onScanSuccess: (decoded: string) => void;
+  onCancel: () => void;
+}) {
+  const reactId = useId();
+  const containerId = `vitalsensor-qr-${reactId.replace(/[^a-zA-Z0-9]/g, "")}`;
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    let html5QrCode: Html5Qrcode | null = null;
+
+    const startScanner = async () => {
+      try {
+        html5QrCode = new Html5Qrcode(containerId);
+        scannerRef.current = html5QrCode;
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
+          (decodedText) => {
+            if (mounted) {
+              if (typeof navigator !== "undefined" && navigator.vibrate) {
+                try { navigator.vibrate([50, 50, 100]); } catch {}
+              }
+              void html5QrCode?.stop().catch(() => undefined);
+              onScanSuccess(decodedText.trim());
+            }
+          },
+          () => undefined
+        );
+        if (mounted) setIsReady(true);
+      } catch (err: any) {
+        if (mounted) {
+          setErrorMsg(err?.message || "Camera access not available. Please allow camera permissions or enter serial code manually.");
+        }
+      }
+    };
+
+    const timer = setTimeout(startScanner, 200);
+
+    return () => {
+      mounted = false;
+      clearTimeout(timer);
+      if (html5QrCode && html5QrCode.isScanning) {
+        void html5QrCode.stop().catch(() => undefined);
+      }
+    };
+  }, [containerId, onScanSuccess]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      let scanner = scannerRef.current;
+      if (!scanner) {
+        scanner = new Html5Qrcode(containerId);
+        scannerRef.current = scanner;
+      }
+      const result = await scanner.scanFile(file, true);
+      onScanSuccess(result.trim());
+    } catch {
+      toast.error("No valid QR code or barcode found in selected image");
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="relative rounded-2xl overflow-hidden bg-stone-950 border-2 border-amber-500/60 shadow-inner w-full min-h-[240px] max-h-[260px] flex items-center justify-center">
+        <div id={containerId} className="w-full h-full" />
+        
+        {/* Viewfinder Target Reticle Overlay */}
+        <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-4">
+          <div className="relative w-44 h-44 sm:w-48 sm:h-48 border border-white/20 rounded-2xl flex items-center justify-center">
+            {/* 4 Corner Markers */}
+            <div className="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-amber-400 rounded-tl" />
+            <div className="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-amber-400 rounded-tr" />
+            <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-amber-400 rounded-bl" />
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-amber-400 rounded-br" />
+            
+            {/* Animated Laser Scanning Line */}
+            <div className="absolute inset-x-2 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent animate-pulse shadow-[0_0_12px_#f59e0b]" />
+          </div>
+          <span className="text-[10px] font-semibold text-white/90 bg-black/70 px-2.5 py-0.5 rounded-full mt-2 tracking-wide">
+            {isReady ? "Align VitalSensor QR code within frame" : "Initializing camera..."}
+          </span>
+        </div>
+      </div>
+
+      {errorMsg && (
+        <div className="p-2.5 rounded-xl bg-destructive/10 border border-destructive/20 text-[11px] text-destructive space-y-1">
+          <p className="font-semibold">Camera Notice</p>
+          <p>{errorMsg}</p>
+        </div>
+      )}
+
+      {/* Upload image / Photo fallback */}
+      <div className="flex items-center justify-between gap-2 pt-1">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileUpload}
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="px-3 py-1.5 rounded-xl border border-border bg-stone-50 hover:bg-stone-100 text-stone-700 text-[11px] font-semibold flex items-center gap-1.5 transition-colors"
+        >
+          <Upload className="w-3.5 h-3.5 text-amber-600" />
+          Upload QR photo / image
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-[11px] text-muted-foreground hover:text-foreground underline decoration-dotted"
+        >
+          Switch to manual code
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function HiveHealthDashboard({ isOpen, onClose, embedded = false }: HiveHealthDashboardProps) {
   const { user, profile } = useAuth();
@@ -180,6 +342,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
   // Modal for Quick Sensor Pairing
   const [pairSensorModalOpen, setPairSensorModalOpen] = useState<boolean>(false);
+  const [pairScanMode, setPairScanMode] = useState<"scan" | "manual">("scan");
   const [pairingHive, setPairingHive] = useState<string>("");
   const [pairingSerial, setPairingSerial] = useState<string>("");
 
@@ -531,6 +694,27 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     setRecordNotes("");
   };
 
+  const handleUnpairSensor = (targetHiveName: string) => {
+    const updatedHives = hivesList.map((h) => {
+      if (h.name === targetHiveName) {
+        return {
+          ...h,
+          hasSensor: false,
+          sensorSerial: undefined,
+        };
+      }
+      return h;
+    });
+    setHivesList(updatedHives);
+
+    try {
+      localStorage.setItem(`beeyield_cached_hives_${userKey}`, JSON.stringify(updatedHives));
+    } catch {}
+
+    toast.success(`Unpaired VitalSensor from ${targetHiveName}`);
+    setPairSensorModalOpen(false);
+  };
+
   // Confirm VitalSensor Quick Pairing
   const handleConfirmPairSensor = (e: React.FormEvent) => {
     e.preventDefault();
@@ -721,8 +905,10 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
               <div className="flex items-center gap-2 self-start sm:self-center">
                 <button
+                  type="button"
                   onClick={() => {
                     setPairingHive(selectedHive === "all" ? (hivesList[0]?.name || "") : selectedHive);
+                    setPairScanMode("scan");
                     setPairSensorModalOpen(true);
                   }}
                   className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 text-[11px] font-semibold flex items-center gap-1 transition-all"
@@ -1530,31 +1716,116 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         </div>
       )}
 
-      {/* Quick Pair VitalSensor Modal */}
+      {/* Quick Pair VitalSensor Modal with Live QR Scanner */}
       {pairSensorModalOpen && (
-        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-border w-full max-w-md p-6 shadow-2xl space-y-4 my-auto">
-            <div className="flex items-center justify-between border-b pb-3">
-              <div className="flex items-center gap-2">
-                <QrCode className="w-5 h-5 text-amber-500" />
-                <h3 className="font-bold text-base text-foreground">Pair VitalSensor Hardware</h3>
+        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in-50">
+          <div className="bg-white rounded-3xl border border-border w-full max-w-lg p-5 sm:p-6 shadow-2xl space-y-4 my-auto">
+            {/* Header */}
+            <div className="flex items-start justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shrink-0">
+                  <ScanLine className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-foreground leading-tight">
+                    Scan & Pair VitalSensor Hardware
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Scan device QR code or enter waterproof casing serial
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setPairSensorModalOpen(false)}
                 className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleConfirmPairSensor} className="space-y-4 text-xs">
+            {/* Mode Switcher Tabs */}
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-muted/50 rounded-xl border border-border/80">
+              <button
+                type="button"
+                onClick={() => setPairScanMode("scan")}
+                className={cn(
+                  "py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all",
+                  pairScanMode === "scan"
+                    ? "bg-white text-stone-900 shadow-xs border border-border"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Camera className="w-3.5 h-3.5 text-amber-600" />
+                <span>Live Camera Scan</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPairScanMode("manual")}
+                className={cn(
+                  "py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all",
+                  pairScanMode === "manual"
+                    ? "bg-white text-stone-900 shadow-xs border border-border"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Cpu className="w-3.5 h-3.5 text-amber-600" />
+                <span>Manual Serial Entry</span>
+              </button>
+            </div>
+
+            {/* Live Camera Viewfinder */}
+            {pairScanMode === "scan" && (
+              <VitalSensorScannerView
+                onScanSuccess={(decoded) => {
+                  const serial = extractSensorSerial(decoded);
+                  setPairingSerial(serial);
+                  toast.success(`Scanned VitalSensor code: ${serial}`);
+                  setPairScanMode("manual");
+                }}
+                onCancel={() => setPairScanMode("manual")}
+              />
+            )}
+
+            {/* Scanned Hardware Confirmation Badge */}
+            {pairingSerial && (
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-2 animate-in fade-in">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-700 flex items-center justify-center shrink-0">
+                    <Check className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider">
+                      Detected Sensor Hardware
+                    </span>
+                    <p className="font-mono text-sm font-bold text-emerald-950 leading-none">
+                      {pairingSerial}
+                    </p>
+                  </div>
+                </div>
+                {pairScanMode === "manual" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPairingSerial("");
+                      setPairScanMode("scan");
+                    }}
+                    className="text-[11px] text-amber-700 font-semibold hover:underline"
+                  >
+                    Rescan QR
+                  </button>
+                )}
+              </div>
+            )}
+
+            <form onSubmit={handleConfirmPairSensor} className="space-y-3.5 text-xs">
               <div className="space-y-1">
                 <Label className="text-xs font-bold text-foreground">Select Hive to Mount</Label>
                 <select
                   value={pairingHive || (hivesList[0]?.name ?? "")}
                   onChange={(e) => setPairingHive(e.target.value)}
-                  className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-semibold"
+                  className="w-full h-9 rounded-xl border border-border bg-background px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-500"
                 >
                   {hivesList.length === 0 ? (
                     <option value="Primary Hive">Primary Hive</option>
@@ -1572,25 +1843,76 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                 <Label className="text-xs font-bold text-foreground">
                   VitalSensor Serial Number / QR Code
                 </Label>
-                <Input
-                  required
-                  value={pairingSerial}
-                  onChange={(e) => setPairingSerial(e.target.value)}
-                  placeholder="e.g. VS-KBZ-042 or scan QR"
-                  className="h-9 font-mono uppercase"
-                />
+                <div className="relative">
+                  <Input
+                    required
+                    value={pairingSerial}
+                    onChange={(e) => setPairingSerial(e.target.value.toUpperCase())}
+                    placeholder="e.g. VS-KBZ-042 or scan QR"
+                    className="h-9 font-mono uppercase pr-9"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPairScanMode("scan")}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-amber-600 transition-colors"
+                    title="Open Camera QR Scanner"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </button>
+                </div>
                 <p className="text-[10px] text-muted-foreground">
-                  Serial code printed on the bottom of the waterproof sensor casing.
+                  Serial code printed on the bottom of the waterproof sensor casing or encoded in QR label.
                 </p>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button type="button" variant="outline" size="sm" onClick={() => setPairSensorModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
-                  Confirm Pairing
-                </Button>
+              {/* Quick sample chips */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <span className="text-[10px] text-muted-foreground font-medium">Quick serials:</span>
+                {["VS-KBZ-042", "VS-KBZ-089", "VS-TAITA-012"].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setPairingSerial(s)}
+                    className="px-2 py-0.5 rounded-md bg-stone-100 hover:bg-amber-100 hover:text-amber-900 border border-stone-200 text-[10px] font-mono transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+
+              {/* Footer actions */}
+              <div className="flex items-center justify-between gap-2 pt-3 border-t">
+                {(() => {
+                  const targetHiveName = pairingHive || (hivesList[0]?.name ?? "Primary Hive");
+                  const targetHiveObj = hivesList.find((h) => h.name === targetHiveName);
+                  if (targetHiveObj?.hasSensor) {
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => handleUnpairSensor(targetHiveName)}
+                        className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Unpair Sensor
+                      </button>
+                    );
+                  }
+                  return <div />;
+                })()}
+                <div className="flex items-center gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => setPairSensorModalOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={!pairingSerial.trim()}
+                    className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold flex items-center gap-1.5 shadow-sm"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    Confirm Pairing
+                  </Button>
+                </div>
               </div>
             </form>
           </div>
