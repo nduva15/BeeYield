@@ -73,6 +73,13 @@ const Layout = ({ children }: LayoutProps) => {
     '/landing',
     '/hive',
     '/hives',
+    '/in-hive',
+    '/in-hive-pollination',
+    '/inhive',
+    '/precision-pollination',
+    '/pollination-solutions',
+    '/pollination-request',
+    '/global-hive-network',
     '/diseases',
     '/bee-diseases',
     '/verify',
@@ -80,11 +87,20 @@ const Layout = ({ children }: LayoutProps) => {
     '/panda-miti', // already the dedicated Panda Miti page
   ];
 
+  const normalizedPath = (pathname || "").toLowerCase().replace(/\/+$/, "");
+
   const shouldRenderPandaMiti =
     !isStandalone &&
-    !excludedPandaMitiPaths.some(
-      (excluded) => pathname === excluded || pathname.startsWith(`${excluded}/`)
-    );
+    !excludedPandaMitiPaths.some((excluded) => {
+      const normExcluded = excluded.toLowerCase().replace(/\/+$/, "");
+      return (
+        normalizedPath === normExcluded ||
+        normalizedPath.startsWith(`${normExcluded}/`)
+      );
+    }) &&
+    !normalizedPath.includes("in-hive") &&
+    !normalizedPath.includes("inhive") &&
+    !normalizedPath.includes("precision-pollination");
 
   return (
     <div className="flex min-h-screen flex-col">
