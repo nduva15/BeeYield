@@ -87,7 +87,12 @@ export default function ToolSidebar({
               <p className="px-2 mb-1 text-[10px] uppercase font-bold tracking-wider text-[#f59e0b]">{g.label}</p>
               <div className="space-y-0.5">
                 {g.items.map((item) => {
-                  const isActive = activeTab && item.id === activeTab;
+                  const isActive = Boolean(
+                    activeTab && (
+                      item.id === activeTab ||
+                      ((activeTab === 'beeyield' || activeTab === 'hives') && (item.id === 'beeyield' || item.id === 'hives'))
+                    )
+                  );
                   return (
                     <button
                       key={item.label}

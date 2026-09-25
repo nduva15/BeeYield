@@ -413,6 +413,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     const renderBaseContent = () => {
         switch (activeTab) {
+            case 'dashboard':
             case 'home': return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'assistant':
             case 'agro-intelligence': return (
@@ -478,6 +479,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'hive-health': return renderEmbedded(<HiveHealthDashboard isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'sensor-vitals': return <SensorHealthView onTabChange={handleTabChange} />;
             case 'places': return <MyPlacesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'apiary'} />;
+            case 'hives':
             case 'beeyield': return <BeeYieldHivesView onTabChange={handleTabChange} initialParams={viewParams} onboardingMode={onboardingStep === 'hive'} />;
             case 'inspections': return renderEmbedded(<InspectionsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'harvests-page':

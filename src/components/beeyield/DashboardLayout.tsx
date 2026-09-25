@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import {
-    Compass, Hexagon, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
+    Home, Compass, Hexagon, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
     Calculator, Layers, Package, BarChart3, Target, Flower2, Sprout,
     Plane, HeartPulse, Info, Download, Plug, Cpu, LifeBuoy,
     Settings, LogIn, LogOut, Tag, FileBarChart, Navigation
@@ -68,6 +68,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {
             label: "Apiary operations",
             items: [
+                { id: 'home', label: "Dashboard Home", icon: Home, onClick: () => onTabChange('home') },
+                { id: 'beeyield', label: "Hives & Colonies", icon: Hexagon, onClick: () => onTabChange('beeyield') },
                 { id: 'assistant', label: "BeeYield AI", icon: Hexagon, onClick: () => onTabChange('assistant') },
                 { id: 'apiaries-weather', label: "Apiaries & Live Weather", icon: Compass, onClick: () => onTabChange('apiaries-weather') },
                 { id: 'hive-health', label: "Hive Health Dashboard", icon: HeartPulse, onClick: () => onTabChange('hive-health') },
@@ -91,8 +93,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 { id: 'pollination-calcs', label: "Pollination Calcs", icon: Calculator, onClick: () => onTabChange('pollination-calcs') },
                 { id: 'pollination-analytics', label: "Pollination Data & Charts", icon: BarChart3, onClick: () => onTabChange('pollination-analytics') },
                 { id: 'pollination-lookup', label: "Stocking Density Lookup", icon: Flower2, onClick: () => onTabChange('pollination-lookup') },
-                { label: "MOA — Multi-Objective View", icon: Layers, onClick: () => onTabChange('moa-view') },
-                { label: "MOA Run Comparison", icon: Layers, onClick: () => onTabChange('moa-compare') },
+                { id: 'moa-view', label: "MOA — Multi-Objective View", icon: Layers, onClick: () => onTabChange('moa-view') },
+                { id: 'moa-compare', label: "MOA Run Comparison", icon: Layers, onClick: () => onTabChange('moa-compare') },
             ]
         },
         {
@@ -122,11 +124,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             label: "Business & devices",
             items: [
                 { id: 'label-generator', label: "Label Generator & QR Codes", icon: Tag, onClick: () => onTabChange('label-generator') },
-                { label: "Integrations (Shopify, QuickBooks, eTIMS)", icon: Plug, onClick: () => onTabChange('integrations') },
-                { label: "My Devices, USB, Bluetooth & Online", icon: Cpu, onClick: () => onTabChange('measurement-tools') },
-                { label: "Support & Tickets", icon: LifeBuoy, onClick: () => onTabChange('support') },
-                { label: "Settings — Control Center", icon: Settings, onClick: () => onTabChange('settings') },
-                { label: "About Beeyield AI", icon: Info, onClick: () => onTabChange('about-ai') },
+                { id: 'integrations', label: "Integrations (Shopify, QuickBooks, eTIMS)", icon: Plug, onClick: () => onTabChange('integrations') },
+                { id: 'measurement-tools', label: "My Devices, USB, Bluetooth & Online", icon: Cpu, onClick: () => onTabChange('measurement-tools') },
+                { id: 'support', label: "Support & Tickets", icon: LifeBuoy, onClick: () => onTabChange('support') },
+                { id: 'settings', label: "Settings — Control Center", icon: Settings, onClick: () => onTabChange('settings') },
+                { id: 'about-ai', label: "About Beeyield AI", icon: Info, onClick: () => onTabChange('about-ai') },
                 currentUser ? {
                     label: `Sign out (${currentUser.email || 'Logged in'})`,
                     icon: LogOut,
@@ -159,6 +161,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 groups={toolGroups}
                 open={toolsDrawerOpen}
                 onClose={() => setToolsDrawerOpen(false)}
+                activeTab={activeTab}
             />
 
             {/* Main content */}
