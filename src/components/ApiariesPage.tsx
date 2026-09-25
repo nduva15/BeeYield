@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Eye,
@@ -396,7 +397,7 @@ export const DEFAULT_APIARIES: ApiarySite[] = [
     active_hives: 150,
     total_hives: 184,
     size_acres: 5,
-    forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
+    forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
     notes: "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands on 5 acres in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
     created_at: "2020-01-01T08:00:00Z",
   },
@@ -725,9 +726,9 @@ export const CANONICAL_KIBWEZI_DEVICES: ApiaryDeviceItem[] = [
 export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   {
     id: "harv-kib-2026-01",
-    batch: "BEE-2026-01",
-    harvested_on: "2026-01-10",
-    honey_type: "Early Spring Acacia Blossom",
+    batch: "BEE-20260103",
+    harvested_on: "2026-01-03",
+    honey_type: "Early Spring Acacia Blossom (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     quantity_kg: 60.0,
     moisture_pct: 16.8,
     color_grade: "Extra Light Amber",
@@ -735,9 +736,9 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   },
   {
     id: "harv-kib-2025-02",
-    batch: "BEE-2025-02",
-    harvested_on: "2025-11-20",
-    honey_type: "Forest Multifloral & Bush Flora",
+    batch: "BEE-20250615",
+    harvested_on: "2025-06-15",
+    honey_type: "Forest Multifloral (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     quantity_kg: 300.0,
     moisture_pct: 16.9,
     color_grade: "Dark Amber",
@@ -745,9 +746,9 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   },
   {
     id: "harv-kib-2024-01",
-    batch: "BEE-2024-01",
-    harvested_on: "2024-11-15",
-    honey_type: "Wildflower & Acacia Blossom",
+    batch: "BEE-20240615",
+    harvested_on: "2024-06-15",
+    honey_type: "Wildflower & Acacia (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     quantity_kg: 250.0,
     moisture_pct: 17.0,
     color_grade: "Extra White",
@@ -755,9 +756,9 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   },
   {
     id: "harv-kib-2023-01",
-    batch: "BEE-2023-01",
-    harvested_on: "2023-11-18",
-    honey_type: "Dryland Flora & Balanites",
+    batch: "BEE-20230615",
+    harvested_on: "2023-06-15",
+    honey_type: "Wildflower (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     quantity_kg: 105.0,
     moisture_pct: 16.8,
     color_grade: "Water White",
@@ -765,9 +766,9 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   },
   {
     id: "harv-kib-2022-01",
-    batch: "BEE-2022-01",
-    harvested_on: "2022-11-12",
-    honey_type: "Forest Acacia Blossom",
+    batch: "BEE-20220615",
+    harvested_on: "2022-06-15",
+    honey_type: "Forest Acacia (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     quantity_kg: 55.0,
     moisture_pct: 17.5,
     color_grade: "Amber",
@@ -775,9 +776,9 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   },
   {
     id: "harv-kib-2021-01",
-    batch: "BEE-2021-01",
-    harvested_on: "2021-11-15",
-    honey_type: "Wildflower Harvest",
+    batch: "BEE-20210615",
+    harvested_on: "2021-06-15",
+    honey_type: "Wildflower (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     quantity_kg: 60.0,
     moisture_pct: 17.1,
     color_grade: "Light Amber",
@@ -785,15 +786,16 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   },
   {
     id: "harv-kib-2020-01",
-    batch: "BEE-2020-01",
-    harvested_on: "2020-10-10",
-    honey_type: "Founding Wildflower Pioneer",
+    batch: "BEE-20200615",
+    harvested_on: "2020-06-15",
+    honey_type: "Wildflower Pioneer (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     quantity_kg: 13.0,
     moisture_pct: 17.4,
     color_grade: "Amber",
     quality_grade: "Export Grade A Raw (<18% moisture)",
   },
 ];
+
 
 // Helper to generate verified harvest batches matching Timothy Nduva's 423 ledger batches
 function getCanonicalBatchesForHive(hiveIndex: number): HiveHarvestBatch[] {
@@ -1119,9 +1121,17 @@ export function QrScannerModal({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 animate-in fade-in">
-      <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-5 space-y-4">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[120] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 animate-in fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-5 space-y-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2">
             <ScanLine className="w-5 h-5 text-amber-500" />
@@ -1193,7 +1203,8 @@ export function QrScannerModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -1249,6 +1260,7 @@ function downloadHarvestCert(harvest: ApiaryHarvestItem, apiaryName?: string, lo
       { label: "Date of Extraction", value: harvest.harvested_on },
       { label: "Hive Identifier", value: harvest.hiveCode || "Colony Lot" },
       { label: "Batch Lot Number", value: harvest.batch },
+      { label: "Florage & Nectar Source", value: "Acacia, Neem, Maize, Mango & Forest Multifloral" },
       { label: "Apiary Site", value: normalizeApiaryName(apiaryName) },
       { label: "Location", value: normalizeApiaryLocation(locationName) },
       { label: "Net Volume Extracted", value: `${harvest.quantity_kg.toFixed(1)} kg` },
@@ -1256,6 +1268,7 @@ function downloadHarvestCert(harvest: ApiaryHarvestItem, apiaryName?: string, lo
       { label: "Color Classification", value: harvest.color_grade },
       { label: "Official Quality Standard", value: harvest.quality_grade },
       { label: "Fair Trade Beekeeper Value", value: `KES ${(harvest.quantity_kg * 1000).toLocaleString()}` },
+      { label: "Cumulative Certified Yield", value: "843.0 kg KEBS Certified" },
     ],
     sections: [
       {
@@ -1837,6 +1850,253 @@ export function CompanionSensorChart({
 }
 
 // ----------------------------------------------------------------------
+// Dedicated Pair VitalSensor Hardware Modal (Full Pop-Out Dialog)
+// ----------------------------------------------------------------------
+function PairVitalSensorModal({
+  isOpen,
+  hiveCode,
+  hiveName,
+  currentSerial,
+  onClose,
+  onPair,
+}: {
+  isOpen: boolean;
+  hiveCode: string;
+  hiveName: string;
+  currentSerial?: string;
+  onClose: () => void;
+  onPair: (serial: string, deviceType: string) => void;
+}) {
+  const [deviceType, setDeviceType] = useState<string>("Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)");
+  const [serial, setSerial] = useState(currentSerial || "");
+  const [showCamera, setShowCamera] = useState(false);
+  const containerId = "pair-vitalsensor-qr-scanner-portal";
+
+  useEffect(() => {
+    if (currentSerial) setSerial(currentSerial);
+  }, [currentSerial]);
+
+  // Escape key dismiss
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Live QR Camera Scanner logic
+  useEffect(() => {
+    if (!isOpen || !showCamera) return;
+    let html5QrCode: Html5Qrcode | null = null;
+    let isMounted = true;
+
+    const startScanner = async () => {
+      try {
+        html5QrCode = new Html5Qrcode(containerId);
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          (decodedText) => {
+            if (isMounted) {
+              const cleaned = decodedText.trim().toUpperCase();
+              setSerial(cleaned);
+              setShowCamera(false);
+              toast.success(`Scanned hardware code: ${cleaned}`);
+              void html5QrCode?.stop().catch(() => undefined);
+            }
+          },
+          () => {}
+        );
+      } catch (err) {
+        toast.error("Camera scanner unavailable. Please enter code manually.");
+        setShowCamera(false);
+      }
+    };
+
+    void startScanner();
+
+    return () => {
+      isMounted = false;
+      if (html5QrCode && html5QrCode.isScanning) {
+        void html5QrCode.stop().catch(() => undefined);
+      }
+    };
+  }, [isOpen, showCamera]);
+
+  if (!isOpen) return null;
+  if (typeof document === "undefined") return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const final = serial.trim().toUpperCase();
+    if (!final) {
+      toast.error("Please enter or scan a sensor serial");
+      return;
+    }
+    onPair(final, deviceType);
+    onClose();
+  };
+
+  const cleanNum = hiveCode.replace(/^KIB-?/i, "").padStart(3, "0") || "001";
+  const quickSerials = [`VS-KBZ-${cleanNum}`, `VS-KBZ-042`, `SCALE-KBZ-150`];
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[120] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-md bg-[#FBF8F4] dark:bg-[#181614] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4 my-auto animate-in zoom-in-95 duration-200 text-[#2E2A25] dark:text-stone-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-[#EAE3DA] dark:border-stone-800 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 font-bold shrink-0">
+              <ScanLine className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-foreground leading-tight">
+                Pair VitalSensor Hardware
+              </h3>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Mount hardware node to <strong className="text-amber-700 dark:text-amber-400">{hiveName}</strong> ({hiveCode})
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {showCamera ? (
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground text-center">
+              Align VitalSensor QR code within camera viewfinder:
+            </p>
+            <div
+              id={containerId}
+              className="w-full h-56 rounded-2xl overflow-hidden bg-black/95 border-2 border-dashed border-amber-500/60 flex items-center justify-center relative shadow-inner"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCamera(false)}
+              className="w-full py-2 rounded-xl border border-border text-xs font-semibold hover:bg-muted transition-colors"
+            >
+              Cancel Camera Scan (Enter Manually)
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            <div className="space-y-1.5">
+              <label className="font-bold text-foreground block">
+                Hardware Device Model
+              </label>
+              <select
+                value={deviceType}
+                onChange={(e) => setDeviceType(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-500"
+              >
+                <option value="Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)">
+                  Apisense VitalSensor v2.4 (Cluster Temp & Acoustics)
+                </option>
+                <option value="Apisense Pro Scale 150kg (Continuous Honey Yield Telemetry)">
+                  Apisense Pro Scale 150kg (Telemetry Load Cell)
+                </option>
+                <option value="ApiSense VarroaSense Acoustic AI (Pathogen & Swarm Detection)">
+                  ApiSense VarroaSense Acoustic AI (Optical/Acoustic)
+                </option>
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="font-bold text-foreground">
+                  VitalSensor Serial / QR Code *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowCamera(true)}
+                  className="text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center gap-1 hover:underline"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>Scan with Camera</span>
+                </button>
+              </div>
+
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  value={serial}
+                  onChange={(e) => setSerial(e.target.value.toUpperCase())}
+                  placeholder="e.g. VS-KBZ-002 or SENSOR-9824"
+                  className="w-full bg-background border border-border rounded-xl px-3 py-2 font-mono text-xs font-bold uppercase focus:outline-none focus:ring-1 focus:ring-amber-500 pr-9"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCamera(true)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-amber-600 transition-colors"
+                  title="Scan with Camera"
+                >
+                  <Camera className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Found on the waterproof casing label or QR barcode sticker.
+              </p>
+            </div>
+
+            {/* Quick serial chips */}
+            <div className="space-y-1 pt-1">
+              <span className="text-[10px] text-muted-foreground font-semibold block">
+                Quick sample codes:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {quickSerials.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setSerial(s)}
+                    className="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:text-amber-800 dark:hover:text-amber-300 border border-border text-[10px] font-mono font-bold transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#EAE3DA] dark:border-stone-800">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-xl border border-border text-xs font-semibold hover:bg-muted transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!serial.trim()}
+                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
+              >
+                <Check className="w-4 h-4" />
+                Confirm & Pair Sensor
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ----------------------------------------------------------------------
 // Interactive Clickable Hive Detail Modal
 // ----------------------------------------------------------------------
 function HiveDetailModal({
@@ -1876,6 +2136,46 @@ function HiveDetailModal({
   const { user } = useAuth();
   const hive = activeHive;
   const [activeTab, setActiveTab] = useState<"hive_state" | "syrup" | "framesense" | "notes" | "inspections">(initialTab);
+  const [activeSubScreen, setActiveSubScreen] = useState<"main" | "colony_strength">("main");
+
+  // Sync state if initialHive or initialTab change
+  useEffect(() => {
+    setActiveHive(initialHive);
+  }, [initialHive]);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
+  // Keyboard navigation & Esc listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (activeSubScreen !== "main") {
+          setActiveSubScreen("main");
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeSubScreen, onClose]);
+
+  // Hive paging in modal
+  const currentIndex = allHives ? allHives.findIndex((h) => h.id === hive.id || h.code === hive.code) : -1;
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex !== -1 && allHives && currentIndex < allHives.length - 1;
+  const handlePrevHive = () => {
+    if (hasPrev && allHives) {
+      setActiveHive(allHives[currentIndex - 1]);
+    }
+  };
+  const handleNextHive = () => {
+    if (hasNext && allHives) {
+      setActiveHive(allHives[currentIndex + 1]);
+    }
+  };
   
   // Find latest physical inspection for this hive
   const cleanCodeNum = hive.code.replace(/^KIB-?/i, "").replace(/^0+/, "");
@@ -1895,12 +2195,12 @@ function HiveDetailModal({
     varroaCount: 0,
     notes: "",
   });
-  const [activeSubScreen, setActiveSubScreen] = useState<"main" | "colony_strength">("main");
   const [editingBroodFrames, setEditingBroodFrames] = useState(false);
   const [tempBroodFrames, setTempBroodFrames] = useState(hive.broodFrames !== undefined ? String(hive.broodFrames) : "");
   const [editingNote, setEditingNote] = useState(false);
   const [beekeeperNote, setBeekeeperNote] = useState(hive.queenStatus || "");
   const [showMenu, setShowMenu] = useState(false);
+  const [showPairVitalSensorModal, setShowPairVitalSensorModal] = useState(false);
   const [showAddHarvestForm, setShowAddHarvestForm] = useState(false);
   const [editingBatch, setEditingBatch] = useState<HiveHarvestBatch | null>(null);
   const [expandedMetric, setExpandedMetric] = useState<
@@ -2108,26 +2408,51 @@ function HiveDetailModal({
     toast.success(`Recorded ${syrupLiters} L syrup feed`);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-[#FBF8F4] dark:bg-[#181614] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[92vh] transition-all text-[#2E2A25] dark:text-stone-200">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-5 overflow-y-auto animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="relative bg-[#FBF8F4] dark:bg-[#181614] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] my-auto animate-in zoom-in-95 duration-200 text-[#2E2A25] dark:text-stone-200"
+        onClick={(e) => e.stopPropagation()}
+      >
 
         {/* SCREEN 2: COLONY STRENGTH SUB-SCREEN (Screenshot 5) */}
         {activeSubScreen === "colony_strength" ? (
           <div className="flex flex-col flex-1 overflow-y-auto">
             {/* Sub-screen Header */}
-            <div className="p-4 sm:px-6 flex items-center gap-3 border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917]">
+            <div className="p-4 sm:px-6 flex items-center justify-between border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917]">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveSubScreen("main")}
+                  className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  aria-label="Back to hive state"
+                  title="Back to hive overview"
+                >
+                  <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
+                </button>
+                <div>
+                  <span className="text-[11px] text-[#8E8880] font-semibold block leading-none">
+                    {displayName}
+                  </span>
+                  <h2 className="text-xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100 mt-0.5">
+                    Colony strength
+                  </h2>
+                </div>
+              </div>
               <button
                 type="button"
-                onClick={() => setActiveSubScreen("main")}
-                className="p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                aria-label="Back to hive state"
+                onClick={onClose}
+                className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-[#2E2A25] dark:text-stone-100"
+                aria-label="Close"
+                title="Close (Esc)"
               >
-                <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
+                <X className="w-5 h-5" />
               </button>
-              <h2 className="text-xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
-                Colony strength
-              </h2>
             </div>
 
             {/* Sub-header with Hive Name */}
@@ -2220,69 +2545,120 @@ function HiveDetailModal({
         ) : (
           /* SCREEN 1: MAIN HIVE VIEW (Screenshots 2, 3, 4) */
           <div className="flex flex-col flex-1 overflow-hidden">
-            {/* Top Bar with Back Arrow, Title, More Menu */}
+            {/* Top Bar with Back Arrow, Title, Navigation Pager, More Menu & Close Button */}
             <div className="p-4 sm:px-6 flex items-center justify-between border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917]">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                  aria-label="Back"
+                  className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors shrink-0"
+                  aria-label="Back to apiary"
+                  title="Back to apiary"
                 >
                   <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
                 </button>
-                <h1 className="text-2xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
-                  {displayName}
-                </h1>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-[11px] text-[#8E8880] font-semibold leading-none truncate">
+                    <span>{apiary.name.toLowerCase() === "beeyield main apiary" ? "beeyield apiary" : apiary.name}</span>
+                    <span>•</span>
+                    <span className="capitalize">{hive.hiveType || "Langstroth"}</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 mt-1 flex-wrap">
+                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
+                      {displayName}
+                    </h1>
+                    <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300/40 px-2 py-0.5 rounded-full shrink-0">
+                      {hive.queenPresent ? "Queenright" : "Standby"}
+                    </span>
+                    {allHives && allHives.length > 1 && currentIndex !== -1 && (
+                      <div className="flex items-center gap-0.5 bg-black/5 dark:bg-white/5 rounded-xl p-0.5 border border-stone-200/50 dark:border-stone-800 shrink-0">
+                        <button
+                          type="button"
+                          disabled={!hasPrev}
+                          onClick={handlePrevHive}
+                          className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
+                          title="Previous hive"
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-[10px] font-mono font-bold px-1 text-muted-foreground">
+                          {currentIndex + 1}/{allHives.length}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={!hasNext}
+                          onClick={handleNextHive}
+                          className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
+                          title="Next hive"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShowMenu((v) => !v)}
-                  className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                  aria-label="More options"
-                >
-                  <MoreVertical className="w-5 h-5 text-[#2E2A25] dark:text-stone-100" />
-                </button>
+              <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowMenu((v) => !v)}
+                    className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                    aria-label="More options"
+                    title="Hive actions"
+                  >
+                    <MoreVertical className="w-5 h-5 text-[#2E2A25] dark:text-stone-100" />
+                  </button>
 
-                {showMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-stone-900 border border-border rounded-2xl shadow-xl py-2 z-50 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowMenu(false);
-                        if (onEditHive) onEditHive(hive);
-                      }}
-                      className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2 font-medium"
-                    >
-                      <Pencil className="w-3.5 h-3.5" /> Edit Hive Info
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowMenu(false);
-                        onOpenScanner();
-                      }}
-                      className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2 font-medium"
-                    >
-                      <Camera className="w-3.5 h-3.5 text-amber-500" /> Scan / Pair Sensor
-                    </button>
-                    {onDeleteHive && (
+                  {showMenu && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-stone-900 border border-border rounded-2xl shadow-xl py-2 z-50 text-xs">
                       <button
                         type="button"
                         onClick={() => {
                           setShowMenu(false);
-                          onDeleteHive(hive.id, hive.code);
-                          onClose();
+                          if (onEditHive) onEditHive(hive);
                         }}
-                        className="w-full px-4 py-2 text-left hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 flex items-center gap-2 font-bold"
+                        className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2 font-medium"
                       >
-                        <Trash2 className="w-3.5 h-3.5" /> Delete Hive
+                        <Pencil className="w-3.5 h-3.5" /> Edit Hive Info
                       </button>
-                    )}
-                  </div>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowMenu(false);
+                          onOpenScanner();
+                        }}
+                        className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2 font-medium"
+                      >
+                        <Camera className="w-3.5 h-3.5 text-amber-500" /> Scan / Pair Sensor
+                      </button>
+                      {onDeleteHive && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowMenu(false);
+                            onDeleteHive(hive.id, hive.code);
+                            onClose();
+                          }}
+                          className="w-full px-4 py-2 text-left hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 flex items-center gap-2 font-bold"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Delete Hive
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-[#2E2A25] dark:text-stone-100"
+                  aria-label="Close hive details"
+                  title="Close (Esc)"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
@@ -3427,37 +3803,59 @@ function HiveDetailModal({
                   </div>
 
                   {/* Sensor Pairing */}
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 border border-[#EFE8DE] dark:border-stone-800 space-y-2">
+                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 border border-[#EFE8DE] dark:border-stone-800 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold uppercase tracking-wider text-[#8E8880] flex items-center gap-1.5">
                         <ScanLine className="w-4 h-4 text-amber-500" /> Sensor Pairing
                       </span>
-                      {hive.sensorSerial && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          Active Link
+                      {hive.sensorSerial ? (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          VitalSensor Active
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-border">
+                          Unpaired
                         </span>
                       )}
                     </div>
                     {hive.sensorSerial ? (
                       <div className="p-3 rounded-xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-300 dark:border-emerald-800 flex items-center justify-between text-xs">
-                        <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                          {hive.sensorSerial}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => onUpdateHive({ ...hive, sensorSerial: undefined })}
-                          className="px-2 py-1 rounded border text-[11px]"
-                        >
-                          Unpair
-                        </button>
+                        <div>
+                          <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400 block">
+                            {hive.sensorSerial}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">Paired VitalSensor Hardware</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowPairVitalSensorModal(true)}
+                            className="px-2.5 py-1 rounded-lg border border-amber-400/50 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[11px] font-bold hover:bg-amber-500 hover:text-stone-950 transition-colors"
+                          >
+                            Change
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onUpdateHive({ ...hive, sensorSerial: undefined });
+                              setActiveHive((prev) => ({ ...prev, sensorSerial: undefined }));
+                              toast.success(`Unpaired sensor from ${displayName}`);
+                            }}
+                            className="px-2 py-1 rounded-lg border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-400 text-[11px] hover:text-rose-600 transition-colors"
+                          >
+                            Unpair
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       <button
                         type="button"
-                        onClick={onOpenScanner}
-                        className="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-1.5"
+                        onClick={() => setShowPairVitalSensorModal(true)}
+                        className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
                       >
-                        <Camera className="w-4 h-4" /> Scan Sensor QR Code
+                        <QrCode className="w-4 h-4" />
+                        <span>+ Pair VitalSensor Hardware</span>
                       </button>
                     )}
                   </div>
@@ -3477,8 +3875,25 @@ function HiveDetailModal({
             onSave={handleSaveBatch}
           />
         )}
+
+        {showPairVitalSensorModal && (
+          <PairVitalSensorModal
+            isOpen={showPairVitalSensorModal}
+            hiveCode={hive.code}
+            hiveName={displayName}
+            currentSerial={hive.sensorSerial}
+            onClose={() => setShowPairVitalSensorModal(false)}
+            onPair={(serial, dType) => {
+              const updated = { ...hive, sensorSerial: serial };
+              onUpdateHive(updated);
+              setActiveHive(updated);
+              toast.success(`VitalSensor ${serial} paired to ${displayName}`);
+            }}
+          />
+        )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -3517,6 +3932,15 @@ function AddDeviceModal({
       setDeviceCode(scannedCode);
     }
   }, [scannedCode]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setCategory(preselectedCategory);
+      if (preselectedHiveCode) {
+        setTargetHive(preselectedHiveCode);
+      }
+    }
+  }, [isOpen, preselectedCategory, preselectedHiveCode]);
 
   useEffect(() => {
     if (category === "in_hive") {
@@ -3568,9 +3992,17 @@ function AddDeviceModal({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
-      <div className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-4 bg-amber-500 text-stone-950 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Radio className="w-5 h-5 font-black" />
@@ -3723,7 +4155,8 @@ function AddDeviceModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -4316,9 +4749,17 @@ function EditHiveModal({
 
   const queenColor = getQueenYearColor(queenBreedingYear);
 
-  return (
-    <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
-      <div className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-4 bg-amber-500 text-stone-950 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Pencil className="w-5 h-5 font-black" />
@@ -4585,7 +5026,8 @@ function EditHiveModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -4627,9 +5069,17 @@ function EditBatchModal({
     });
   };
 
-  return (
-    <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-card border border-border w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="bg-card border border-border w-full max-w-md rounded-3xl p-5 shadow-2xl space-y-4 my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 font-bold">
@@ -4729,7 +5179,8 @@ function EditBatchModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -4775,9 +5226,17 @@ function EditHarvestModal({
     });
   };
 
-  return (
-    <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-card border border-border w-full max-w-lg rounded-3xl p-5 shadow-2xl space-y-4">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="bg-card border border-border w-full max-w-lg rounded-3xl p-5 shadow-2xl space-y-4 my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 font-bold">
@@ -4907,7 +5366,8 @@ function EditHarvestModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -5436,9 +5896,17 @@ function ApiaryDetailModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-5xl max-h-[94vh] bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-5xl max-h-[94vh] bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-border bg-card/95 backdrop-blur flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -6108,6 +6576,7 @@ function ApiaryDetailModal({
                       type="button"
                       onClick={() => {
                         setTempScannedDeviceCode("");
+                        setPreselectedCategoryForDevice("in_hive");
                         setShowAddDeviceModal(true);
                       }}
                       className="px-5 py-2.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-xs flex items-center gap-2 shadow-sm transition-all"
@@ -6326,6 +6795,8 @@ function ApiaryDetailModal({
             weather={modalWeather || weather}
             initialTab="framesense"
             allHives={hivesList}
+            allInspections={allInspections}
+            onInspectionLogged={reloadInspections}
             onClose={() => setSelectedHiveForFrameSense(null)}
             onUpdateHive={handleUpdateHive}
             onAddHarvestToHive={handleAddHarvestToHive}
@@ -6346,6 +6817,8 @@ function ApiaryDetailModal({
             weather={modalWeather || weather}
             initialTab="syrup"
             allHives={hivesList}
+            allInspections={allInspections}
+            onInspectionLogged={reloadInspections}
             onClose={() => setSelectedHiveForSyrup(null)}
             onUpdateHive={handleUpdateHive}
             onAddHarvestToHive={handleAddHarvestToHive}
@@ -6364,6 +6837,7 @@ function ApiaryDetailModal({
             hive={selectedHiveForDetail}
             apiary={apiary}
             weather={modalWeather || weather}
+            allHives={hivesList}
             allInspections={allInspections}
             onInspectionLogged={reloadInspections}
             onClose={() => setSelectedHiveForDetail(null)}
@@ -6482,7 +6956,8 @@ function ApiaryDetailModal({
           />
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -6784,12 +7259,12 @@ export default function ApiariesPage({
     latitude: -2.409,
     longitude: 37.967,
     type: "Commercial Apiary",
-    active_hives: 184,
+    active_hives: 150,
     total_hives: 184,
     size_acres: 5,
-    forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
+    forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
     status: "Optimal" as "Optimal" | "Threatened" | "Watch" | "Maintenance",
-    notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
+    notes: "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
   });
 
   // Load user apiaries from Supabase and sync with localStorage
@@ -6842,7 +7317,7 @@ export default function ApiariesPage({
               active_hives: activeCount,
               total_hives: Math.max(Number(d.expected_hives ?? d.total_hives ?? 0), activeCount),
               size_acres: Number(d.size_acres || 18),
-              forage_type: d.forage_type || d.primary_forage || "Acacia Tortilis, Desert Date & Citrus Blossom",
+              forage_type: d.forage_type || d.primary_forage || "Acacia, Neem, Maize, Mango & Forest Multifloral",
               notes: d.notes || "",
               created_at: d.created_at || new Date().toISOString(),
             };
@@ -7173,12 +7648,12 @@ export default function ApiariesPage({
                   latitude: -2.409,
                   longitude: 37.967,
                   type: "Commercial Apiary",
-                  active_hives: 184,
+                  active_hives: 150,
                   total_hives: 184,
                   size_acres: 5,
-                  forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
+                  forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
                   status: "Optimal",
-                  notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
+                  notes: "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
                 });
                 setShowAddModal(true);
               }}
