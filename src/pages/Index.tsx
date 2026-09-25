@@ -36,6 +36,7 @@ import {
   Trees,
   CheckSquare,
   Compass,
+  Sparkles,
 } from "lucide-react";
 import {
   DropdownMenu,

@@ -748,7 +748,7 @@ ESG Page (beeyield.com/esg):
 - Title: "Governance by Integrity."
 - Subtitle: "The BeeYield ESG framework is an immutable commitment to transparency, ecological restoration, and tactical precision in apiculture."
 - Downloadable ESG Report 2026 (PDF).
-- Live Impact Stats: 20+ Custodians, 105 and counting acres pollinated, over 2,000 data points daily and growing, 2,500+ Trees, 184 Smart Hives, 943kg Yield, 2.4M+ Pollinators.
+- Live Impact Stats: 20+ Custodians, 105 and counting acres pollinated, over 2,000 data points daily and growing, 2,500+ Trees, 184 Managed Langstroth Hives (150 Active Colonies), 843kg Certified Yield, 2.4M+ Pollinators.
 - Four ESG Strategic Pillars:
   1. Ecological Intelligence: Acoustic analysis, real-time hive snapshots (Temp, Humidity, Mass), predictive swarming analytics, automated health scoring. Impact: 15% increase in colony resilience.
   2. Radical Transparency: Wasm-powered cryptographic batch verification, immutable records, Hive ID to jar tracking, QR-based public access. Impact: 100% elimination of harvest fraud.

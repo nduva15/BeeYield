@@ -84,7 +84,20 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
   const [csvText, setCsvText] = useState("");
   const [csvErrors, setCsvErrors] = useState<string[]>([]);
   const [csvPreview, setCsvPreview] = useState<typeof EMPTY_DRAFT[]>([]);
+  const [deletePlant, setDeletePlant] = useState<FloragePlant | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const confirmDelete = async () => {
+    if (!deletePlant) return;
+    const { error } = await supabase.from("florage_plants").delete().eq("id", deletePlant.id);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Plant record deleted");
+      load();
+    }
+    setDeletePlant(null);
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
