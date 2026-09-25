@@ -591,7 +591,11 @@ export const initializeCheckout = async (orderData: CheckoutOrder, _accessToken?
                     variant_id: item.variant_id,
                     quantity: item.quantity,
                 }));
-                await supabaseShop.from("order_items").insert(orderItems).catch(() => {});
+                try {
+                    await supabaseShop.from("order_items").insert(orderItems);
+                } catch {
+                    // non-blocking
+                }
             }
         } catch (sbErr) {
             console.warn("Supabase orders table unavailable, proceeding with local settlement:", sbErr);
@@ -1021,7 +1025,7 @@ export const getOrderTracking = async (orderId: string): Promise<TrackingInfo> =
             carrier: "BeeYield Express Logistics (Wells Fargo Certified Cold-Chain)",
             origin: "Kibwezi Apiary Centre, Makueni County",
             destination: `${customerCity}, Kenya`,
-            temperature_profile: "Ambient Cold-Chain (19.4°C - 21.8°C)",
+            temperature_profile: "Ambient Cold-Chain (19.4┬░C - 21.8┬░C)",
             events: [
                 {
                     status: "Order Confirmed & Logged",
