@@ -1509,6 +1509,14 @@ export default function ApiariesPage({
     setShowAddModal(true);
   };
 
+  const confirmAsync = (msg: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+      }, 25);
+    });
+  };
+
   const handleDeleteApiary = async (apiaryId: string, apiaryName: string) => {
     if (!await confirmAsync(`Are you sure you want to remove apiary "${apiaryName}"?`)) {
       return;
