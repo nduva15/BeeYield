@@ -1538,7 +1538,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       </div>
 
       {/* New Record Modal (Full Form with Colony Strength & Colony Availability) */}
-      {newRecordOpen && (
+      {newRecordOpen && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl border border-border w-full max-w-lg p-6 shadow-2xl space-y-4 my-auto">
             <div className="flex items-center justify-between border-b pb-3">
@@ -1956,7 +1956,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

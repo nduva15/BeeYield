@@ -2136,6 +2136,7 @@ function HiveDetailModal({
   const { user } = useAuth();
   const hive = activeHive;
   const [activeTab, setActiveTab] = useState<"hive_state" | "syrup" | "framesense" | "notes" | "inspections">(initialTab);
+  const [activeSubScreen, setActiveSubScreen] = useState<"main" | "colony_strength">("main");
 
   // Sync state if initialHive or initialTab change
   useEffect(() => {
@@ -2194,7 +2195,6 @@ function HiveDetailModal({
     varroaCount: 0,
     notes: "",
   });
-  const [activeSubScreen, setActiveSubScreen] = useState<"main" | "colony_strength">("main");
   const [editingBroodFrames, setEditingBroodFrames] = useState(false);
   const [tempBroodFrames, setTempBroodFrames] = useState(hive.broodFrames !== undefined ? String(hive.broodFrames) : "");
   const [editingNote, setEditingNote] = useState(false);
@@ -5179,7 +5179,8 @@ function EditBatchModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -5365,7 +5366,8 @@ function EditHarvestModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

@@ -297,15 +297,31 @@ export default function HarvestsPage({
 
   // Hives breakdown calculation (batches per hive)
   const hivesSummary = useMemo(() => {
-    const map = new Map<string, { batches: number; kg: number; avgMoisture: number; lastDate: string; honeyTypes: Set<string> }>();
+    const map = new Map<string, { batches: number; kg: number; avgMoisture: number; lastDate: string; honeyTypes: Set<string>; hasColony: boolean }>();
+    
+    // Seed Timothy's 184 hives so standby boxes (KIB-151 to KIB-184) are represented
+    if (isTimothy) {
+      TIMOTHY_HIVES.forEach((label, i) => {
+        const hasColony = i < 150;
+        map.set(label, {
+          batches: 0,
+          kg: 0,
+          avgMoisture: 0,
+          lastDate: hasColony ? "—" : "Standby (No Extraction)",
+          honeyTypes: new Set(),
+          hasColony,
+        });
+      });
+    }
+
     rows.forEach(r => {
-      const label = r.hive_label || "BEE-001 (Langstroth 10)";
-      const existing = map.get(label) || { batches: 0, kg: 0, avgMoisture: 0, lastDate: r.harvested_on, honeyTypes: new Set() };
+      const label = r.hive_label || "KIB-001 (Langstroth 10)";
+      const existing = map.get(label) || { batches: 0, kg: 0, avgMoisture: 0, lastDate: r.harvested_on, honeyTypes: new Set(), hasColony: true };
       existing.batches += 1;
       existing.kg += r.quantity_kg || 0;
       existing.avgMoisture += r.moisture_pct || 17.2;
       existing.honeyTypes.add(r.honey_type);
-      if (r.harvested_on > existing.lastDate) {
+      if (r.harvested_on > existing.lastDate || existing.lastDate === "—" || existing.lastDate.startsWith("Standby")) {
         existing.lastDate = r.harvested_on;
       }
       map.set(label, existing);
@@ -317,9 +333,10 @@ export default function HarvestsPage({
         code: name.split(" ")[0],
         batches: data.batches,
         kg: parseFloat(data.kg.toFixed(1)),
-        avgMoisture: parseFloat((data.avgMoisture / data.batches).toFixed(1)),
+        avgMoisture: data.batches > 0 ? parseFloat((data.avgMoisture / data.batches).toFixed(1)) : 0,
         lastDate: data.lastDate,
-        types: Array.from(data.honeyTypes).slice(0, 2).join(", "),
+        types: data.honeyTypes.size > 0 ? Array.from(data.honeyTypes).slice(0, 2).join(", ") : (data.hasColony ? "Awaiting Flow" : "Standby Stand"),
+        hasColony: data.hasColony,
       }));
 
     if (hiveSort === "yield") {
@@ -329,7 +346,7 @@ export default function HarvestsPage({
       return list.sort((a, b) => b.batches - a.batches || a.name.localeCompare(b.name));
     }
     return list.sort((a, b) => a.code.localeCompare(b.code));
-  }, [rows, hiveSort]);
+  }, [rows, hiveSort, isTimothy]);
 
   const stats = useMemo(() => {
     const seen = new Set<string>();
@@ -354,9 +371,10 @@ export default function HarvestsPage({
       avgMoisture: `${avgMoisture}%`,
       marketValue: `KES ${marketValueKes.toLocaleString()}`,
       totalBatches: uniqueRows.length,
-      managedHives: hivesSummary.length,
+      managedHives: isTimothy ? 184 : hivesSummary.length,
+      activeColonies: isTimothy ? 150 : hivesSummary.filter(h => h.hasColony).length,
     };
-  }, [rows, hivesSummary]);
+  }, [rows, hivesSummary, isTimothy]);
 
   const filtered = useMemo(() => {
     let result = rows;
@@ -382,9 +400,11 @@ export default function HarvestsPage({
   }, [rows, query, selectedYear, selectedHive]);
 
   const toggleAction = (item: string) =>
-    setDraft((d) => ({
+    setDraft((d: any) => ({
       ...d,
-      actions: d.actions.includes(item) ? d.actions.filter((v) => v !== item) : [...d.actions, item],
+      actions: (d.actions || []).includes(item)
+        ? (d.actions || []).filter((v: string) => v !== item)
+        : [...(d.actions || []), item],
     }));
 
   const startEdit = (r: Harvest) => {
@@ -603,18 +623,18 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
 
   const mainContent = (
     <div className="space-y-6">
-      {/* Timothy Nduva Certified Producer Banner */}
+      {/* Certified Producer Banner */}
       <div className="rounded-2xl border border-honey/30 bg-gradient-to-br from-honey/15 via-background to-card p-5 sm:p-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-honey/20 text-foreground border border-honey/30">
                 <User className="w-3.5 h-3.5 text-honey" />
-                Timothy Nduva • Master Beekeeper
+                {isTimothy ? "Timothy Nduva • Master Beekeeper" : (profile?.full_name || "Certified Apiarist")}
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                 <Award className="w-3 h-3 text-emerald-500" />
-                KEBS Certified 843 kg
+                {isTimothy ? "KEBS Certified 843.0 kg" : `${stats.totalYield} kg Certified`}
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-muted text-muted-foreground border border-border">
                 <MapPin className="w-3 h-3 text-honey" />
@@ -625,7 +645,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
               Harvest Batches & Production Ledger
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-              Cryptographically verified batch extractions across <strong className="text-foreground">184 managed Langstroth hives</strong>. Cumulative extraction total: <strong className="text-honey font-bold">843.0 kg</strong> export-grade raw honey.
+              Cryptographically verified batch extractions across <strong className="text-foreground">{isTimothy ? "184 managed Langstroth hives (150 Active Colonies, 34 Standby Stands)" : `${stats.managedHives} managed hives`}</strong>. Cumulative extraction total: <strong className="text-honey font-bold">{isTimothy ? "843.0 kg" : `${stats.totalYield} kg`}</strong> export-grade raw honey. Primary Forage: <strong className="text-foreground">Acacia, Neem, Maize, Mango & Forest Multifloral</strong>.
             </p>
           </div>
 
@@ -655,11 +675,11 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
         <div className="mt-5 pt-4 border-t border-border/60 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Certified Total</span>
-            <p className="font-bold text-base font-display text-honey">843.0 kg</p>
+            <p className="font-bold text-base font-display text-honey">{isTimothy ? "843.0 kg" : `${stats.totalYield} kg`}</p>
           </div>
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Managed Hives</span>
-            <p className="font-bold text-base font-display text-foreground">184 Hives</p>
+            <p className="font-bold text-base font-display text-foreground">{isTimothy ? "184 Hives (150 Active)" : `${stats.managedHives} Hives`}</p>
           </div>
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Standard Batch</span>
@@ -795,17 +815,23 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                   value={draft.hive_label}
                   onChange={(e) => {
                     const label = e.target.value;
-                    const code = label.split(" ")[0].slice(-3);
+                    const codeMatch = label.match(/KIB-(\d{3})/);
+                    const code = codeMatch ? codeMatch[1] : "001";
                     const yyyymmdd = draft.harvested_on.replace(/-/g, "");
                     setDraft({
                       ...draft,
                       hive_label: label,
                       batch: `BEE-${yyyymmdd}-${code}`,
+                      traceability_code: `TRC-${draft.harvested_on.slice(0, 4)}-${code}-${String(Math.floor(Math.random() * 900) + 100)}`,
                     });
                   }}
                   className="w-full bg-background border border-border rounded-lg px-2.5 py-2 font-semibold text-foreground"
                 >
-                  {TIMOTHY_HIVES.map((h) => <option key={h} value={h}>{h}</option>)}
+                  {TIMOTHY_HIVES.map((h, i) => (
+                    <option key={h} value={h}>
+                      {h} {i >= 150 ? "• Standby Stand (Unoccupied)" : "• Active Producing Colony"}
+                    </option>
+                  ))}
                 </select>
               </label>
             </div>
@@ -820,13 +846,13 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                 />
               </label>
               <label className="text-xs space-y-1">
-                <span className="text-muted-foreground">Floral Source</span>
+                <span className="text-muted-foreground">Floral / Forage Source</span>
                 <select
                   value={draft.honey_type}
-                  onChange={(e) => setDraft({ ...draft, honey_type: e.target.value })}
+                  onChange={(e) => setDraft({ ...draft, honey_type: e.target.value, florage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral" })}
                   className="w-full bg-background border border-border rounded-lg px-2.5 py-2 font-medium text-foreground"
                 >
-                  {HONEY_TYPES.map((h) => <option key={h}>{h}</option>)}
+                  {HONEY_TYPES.map((h) => <option key={h} value={h}>{h}</option>)}
                 </select>
               </label>
               <label className="text-xs space-y-1">
@@ -1018,12 +1044,16 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                 <select
                   value={selectedHive}
                   onChange={(e) => setSelectedHive(e.target.value)}
-                  className="bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-semibold text-foreground max-w-[280px] truncate"
+                  className="bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-semibold text-foreground max-w-[320px] truncate"
                 >
-                  <option value="all">All 184 Hives ({rows.length} batches)</option>
+                  <option value="all">
+                    {isTimothy
+                      ? `All 184 Stands (${rows.length} verified batches • 843.0 kg)`
+                      : `All Hives (${rows.length} batches • ${stats.totalYield} kg)`}
+                  </option>
                   {hivesSummary.map((h) => (
                     <option key={h.name} value={h.name}>
-                      {h.name} • {h.batches} batches ({h.kg} kg)
+                      {h.name} • {h.hasColony ? `${h.batches} batches (${h.kg} kg)` : "Standby Stand (0 batches)"}
                     </option>
                   ))}
                 </select>
@@ -1115,7 +1145,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                   {/* Expanded Detail Accordion */}
                   {expanded === r.id && (
                     <div className="px-4 pb-4 pt-2 border-t border-border/60 bg-muted/20 space-y-3 text-xs">
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                         <div>
                           <span className="text-[10px] uppercase text-muted-foreground">Beekeeper</span>
                           <p className="font-bold text-foreground">{r.beekeeper || "Timothy Nduva"}</p>
@@ -1127,6 +1157,12 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                         <div>
                           <span className="text-[10px] uppercase text-muted-foreground">Color Classification</span>
                           <p className="font-bold text-foreground">{r.color_grade}</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] uppercase text-muted-foreground">Botanical Florage</span>
+                          <p className="font-bold text-emerald-600 dark:text-emerald-400 truncate" title="Acacia, Neem, Maize, Mango & Forest Multifloral">
+                            {(r as any).florage_type || (r as any).nectar_source || "Acacia, Neem, Maize, Mango & Forest Multifloral"}
+                          </p>
                         </div>
                         <div>
                           <span className="text-[10px] uppercase text-muted-foreground">Traceability Code</span>
@@ -1193,17 +1229,25 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
               {hivesSummary.map((h, idx) => (
                 <div
                   key={h.name}
-                  className="rounded-xl border border-border bg-background/50 hover:bg-background hover:border-honey/40 transition-all p-3.5 space-y-2.5"
+                  className={`rounded-xl border p-3.5 space-y-2.5 transition-all ${
+                    h.hasColony
+                      ? "border-border bg-background/50 hover:bg-background hover:border-honey/40"
+                      : "border-dashed border-border/80 bg-muted/20 opacity-80 hover:opacity-100"
+                  }`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm text-foreground">{h.code}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                          Rank #{idx + 1}
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${
+                          h.hasColony ? "bg-muted text-muted-foreground" : "bg-amber-500/10 text-amber-500 border border-amber-500/30"
+                        }`}>
+                          {h.hasColony ? `Rank #${idx + 1}` : "Standby Stand"}
                         </span>
                       </div>
-                      <p className="text-[11px] text-muted-foreground">Langstroth 10 • Permanent</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {h.hasColony ? "Langstroth 10 • Active Colony" : "Langstroth 10 • Awaiting Swarm"}
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="font-mono font-black text-sm text-honey">{h.kg} kg</p>
@@ -1212,21 +1256,27 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                   </div>
 
                   <div className="pt-2 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span>Avg {h.avgMoisture}% moisture</span>
-                    <span>Last: {h.lastDate}</span>
+                    <span>{h.hasColony ? `Avg ${h.avgMoisture}% moisture` : "Empty / Unoccupied"}</span>
+                    <span>{h.hasColony ? `Last: ${h.lastDate}` : "0 Harvests"}</span>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedHive(h.name);
-                      setSelectedYear("all");
-                      setActiveView("batches");
-                    }}
-                    className="w-full py-1.5 rounded-lg bg-honey/10 hover:bg-honey/20 text-honey font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    View Hive Batches ({h.batches}) <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
+                  {h.batches > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedHive(h.name);
+                        setSelectedYear("all");
+                        setActiveView("batches");
+                      }}
+                      className="w-full py-1.5 rounded-lg bg-honey/10 hover:bg-honey/20 text-honey font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      View Hive Batches ({h.batches}) <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <div className="w-full py-1.5 rounded-lg bg-muted/30 text-center text-[11px] text-muted-foreground font-medium">
+                      Standby Stand (Awaiting Swarm)
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -1288,11 +1338,11 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                   ))}
                   <tr className="bg-honey/10 font-bold">
                     <td className="py-3 px-3 text-foreground">Cumulative Total</td>
-                    <td className="py-3 px-3 text-foreground">Multi-Origin Acacia & Forest</td>
-                    <td className="py-3 px-3 font-mono">425 extraction lots</td>
-                    <td className="py-3 px-3 font-mono font-black text-honey text-sm">843.0 kg</td>
+                    <td className="py-3 px-3 text-foreground">Acacia, Neem, Maize, Mango & Forest Multifloral</td>
+                    <td className="py-3 px-3 font-mono">{isTimothy ? "423 extraction lots" : `${stats.totalBatches} extraction lots`}</td>
+                    <td className="py-3 px-3 font-mono font-black text-honey text-sm">{isTimothy ? "843.0 kg" : `${stats.totalYield} kg`}</td>
                     <td className="py-3 px-3 text-emerald-600 dark:text-emerald-400">100% KEBS Certified</td>
-                    <td className="py-3 px-3 text-right text-muted-foreground">Timothy Nduva</td>
+                    <td className="py-3 px-3 text-right text-muted-foreground">{isTimothy ? "Timothy Nduva" : (profile?.full_name || "Apiary Ledger")}</td>
                   </tr>
                 </tbody>
               </table>
