@@ -62,6 +62,7 @@ import {
   Bell,
   ChevronDown,
   ChevronUp,
+  ArrowLeft,
 } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "sonner";
@@ -6365,6 +6366,11 @@ export default function ApiariesPage({
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingApiary, setEditingApiary] = useState<ApiarySite | null>(null);
   const [selectedDetailApiary, setSelectedDetailApiary] = useState<ApiarySite | null>(null);
+  const [addApiaryStep, setAddApiaryStep] = useState<1 | 2>(1);
+  const [addApiaryMode, setAddApiaryMode] = useState<"with_devices" | "without_devices">("with_devices");
+  const [addDeviceCategory, setAddDeviceCategory] = useState<DeviceCategory>("in_hive");
+  const [scannedSensorCode, setScannedSensorCode] = useState<string>("");
+  const [attachedDevices, setAttachedDevices] = useState<ApiaryDeviceItem[]>([]);
 
   // New Apiary Form state
   const [formData, setFormData] = useState({
@@ -6576,7 +6582,17 @@ export default function ApiariesPage({
       toast.success("Apiary details updated successfully");
     } else {
       updatedList = [newSite, ...apiaries];
-      toast.success("New apiary site registered with live weather sync");
+      if (attachedDevices.length > 0) {
+        try {
+          localStorage.setItem(getStorageKey(userKey, newSite.id, "devices"), JSON.stringify(attachedDevices));
+        } catch { void 0; }
+      }
+      toast.success(
+        addApiaryMode === "with_devices"
+          ? `Apiary "${newSite.name}" registered with 24/7 device monitoring`
+          : `Apiary "${newSite.name}" registered in Digital Journal mode`
+      );
+      setSelectedDetailApiary(newSite);
     }
 
     setApiaries(updatedList);
@@ -6588,10 +6604,13 @@ export default function ApiariesPage({
 
     setShowAddModal(false);
     setEditingApiary(null);
+    setAddApiaryStep(1);
+    setAttachedDevices([]);
   };
 
   const handleEdit = (site: ApiarySite) => {
     setEditingApiary(site);
+    setAddApiaryStep(1);
     setFormData({
       name: site.name,
       location_name: site.location_name,
@@ -6738,8 +6757,12 @@ export default function ApiariesPage({
             <button
               onClick={() => {
                 setEditingApiary(null);
+                setAddApiaryStep(1);
+                setAddApiaryMode("with_devices");
+                setAttachedDevices([]);
+                setScannedSensorCode("");
                 setFormData({
-                  name: "BeeYield Apiary in Kibwezi Kenya",
+                  name: "",
                   location_name: "Kibwezi, Makueni, Kenya",
                   county: "Makueni",
                   region: "Kibwezi East",
@@ -6747,8 +6770,8 @@ export default function ApiariesPage({
                   longitude: 37.967,
                   type: "Commercial Apiary",
                   active_hives: 184,
-    total_hives: 184,
-    size_acres: 5,
+                  total_hives: 184,
+                  size_acres: 5,
                   forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
                   status: "Optimal",
                   notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem, Kenya.",
@@ -6851,184 +6874,567 @@ export default function ApiariesPage({
 
         {/* Modal: Add or Edit Apiary */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 animate-in fade-in zoom-in-95">
-            <div className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
-              <div className="p-4 bg-amber-500 text-stone-950 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5" />
-                  <h3 className="font-bold text-sm">
-                    {editingApiary ? "Edit Apiary Station" : "Register New Apiary Station"}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="p-1 rounded-lg hover:bg-black/10 text-stone-950 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSaveApiary} className="p-5 space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-foreground">Apiary Station Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. BeeYield Apiary in Kibwezi Kenya..."
-                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-semibold"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-foreground">Location Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.location_name}
-                      onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
-                      placeholder="e.g. Kibwezi, Makueni, Kenya..."
-                      className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-foreground">County / Country</label>
-                    <input
-                      type="text"
-                      value={formData.county}
-                      onChange={(e) => setFormData({ ...formData, county: e.target.value })}
-                      placeholder="e.g. Makueni..."
-                      className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs"
-                    />
-                  </div>
-                </div>
-
-                {/* GPS Coordinates with Location Auto-Detect */}
-                <div className="p-3 rounded-xl border border-border bg-background space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-foreground flex items-center gap-1">
-                      <Navigation className="w-3.5 h-3.5 text-emerald-500" /> GPS Geolocation
-                    </span>
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 animate-in fade-in">
+            <div className="w-full sm:max-w-md bg-[#FAF4EE] min-h-screen sm:min-h-[620px] sm:max-h-[92vh] sm:rounded-3xl shadow-2xl overflow-y-auto flex flex-col p-6 text-stone-900 border border-stone-300/40 relative">
+              {/* Step 1: Matching Mobile Companion Screenshot */}
+              {!editingApiary && addApiaryStep === 1 && (
+                <div className="flex flex-col flex-1">
+                  {/* Top Bar with back arrow and centered title */}
+                  <div className="relative flex items-center justify-between pb-6">
                     <button
                       type="button"
-                      onClick={detectCurrentLocation}
-                      className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                      onClick={() => setShowAddModal(false)}
+                      className="p-1 -ml-1 text-stone-800 hover:text-stone-950 transition-colors"
+                      aria-label="Back"
                     >
-                      Detect Live GPS
+                      <ArrowLeft className="w-6 h-6" />
                     </button>
+                    <h2 className="text-xl font-normal text-stone-900 absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
+                      Add apiary
+                    </h2>
+                    <div className="w-6" />
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <span className="text-[10px] text-muted-foreground">Latitude</span>
-                      <input
-                        type="number"
-                        step="0.0001"
-                        value={formData.latitude}
-                        onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })}
-                        className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono"
-                      />
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-muted-foreground">Longitude</span>
-                      <input
-                        type="number"
-                        step="0.0001"
-                        value={formData.longitude}
-                        onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })}
-                        className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-foreground">Active Hives</label>
-                    <input
-                      type="number"
-                      min={0}
-                      value={formData.active_hives}
-                      onChange={(e) => setFormData({ ...formData, active_hives: parseInt(e.target.value, 10) || 0 })}
-                      className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-foreground">Total Capacity</label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={formData.total_hives}
-                      onChange={(e) => setFormData({ ...formData, total_hives: parseInt(e.target.value, 10) || 1 })}
-                      className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-foreground">Size (Acres)</label>
-                    <input
-                      type="number"
-                      min={0.5}
-                      step="0.5"
-                      value={formData.size_acres}
-                      onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 1 })}
-                      className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-foreground">Forage Flora</label>
+                  {/* Name field with clean underline */}
+                  <div className="space-y-1 pt-2">
+                    <label className="text-sm font-medium text-stone-700 block">Name</label>
                     <input
                       type="text"
-                      value={formData.forage_type}
-                      onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
-                      placeholder="e.g. Acacia, Citrus..."
-                      className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-xs"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder=""
+                      autoFocus
+                      className="w-full bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal focus:outline-none focus:border-amber-600 transition-colors"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-foreground">Status</label>
-                    <select
-                      value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                      className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-bold"
+
+                  {/* Subtitle */}
+                  <p className="text-sm text-stone-800 font-medium mt-6 mb-3">
+                    How do you want to add the apiary?
+                  </p>
+
+                  {/* Option 1: With devices */}
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => setAddApiaryMode("with_devices")}
+                      className={`w-full py-3.5 px-4 rounded-2xl border text-center font-medium text-sm transition-all ${
+                        addApiaryMode === "with_devices"
+                          ? "border-stone-800 bg-[#EFE7DB] text-stone-950 shadow-sm"
+                          : "border-stone-300/80 bg-transparent text-stone-800 hover:border-stone-400"
+                      }`}
                     >
-                      <option value="Optimal">Optimal (Healthy)</option>
-                      <option value="Watch">Watch</option>
-                      <option value="Maintenance">Maintenance</option>
-                    </select>
+                      With devices
+                    </button>
+                    <div className="bg-[#EFE7DB]/70 rounded-2xl p-4 text-[13px] text-stone-700 leading-relaxed font-normal">
+                      A digital beekeeper's journal (notes, inspections and more), 24/7 monitoring, parameter charts and disease detection — an apiary with a Hub, hives with VitalSensor and Scale.
+                    </div>
+                  </div>
+
+                  {/* Option 2: Without devices */}
+                  <div className="space-y-2 mt-4">
+                    <button
+                      type="button"
+                      onClick={() => setAddApiaryMode("without_devices")}
+                      className={`w-full py-3.5 px-4 rounded-2xl border text-center font-medium text-sm transition-all ${
+                        addApiaryMode === "without_devices"
+                          ? "border-stone-800 bg-[#EFE7DB] text-stone-950 shadow-sm"
+                          : "border-stone-300/80 bg-transparent text-stone-800 hover:border-stone-400"
+                      }`}
+                    >
+                      Without devices
+                    </button>
+                    <div className="bg-[#EFE7DB]/70 rounded-2xl p-4 text-[13px] text-stone-700 leading-relaxed font-normal">
+                      A digital beekeeper's journal (notes, inspections and more), without measurements or disease detection — an apiary without a Hub, hives without VitalSensor or Scale.
+                    </div>
+                  </div>
+
+                  {/* Hint */}
+                  <div className="mt-5 flex items-center justify-center gap-1.5 text-xs text-stone-700">
+                    <Info className="w-4 h-4 text-stone-700 flex-shrink-0" />
+                    <span className="underline cursor-pointer">You can always add devices later.</span>
+                  </div>
+
+                  {/* Bottom Action Bar */}
+                  <div className="mt-auto pt-8 flex items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      className="px-7 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!formData.name.trim()) {
+                          toast.error("Please enter an apiary name");
+                          return;
+                        }
+                        setAddApiaryStep(2);
+                      }}
+                      className={`px-7 py-2.5 rounded-full font-medium text-sm transition-colors ${
+                        formData.name.trim()
+                          ? "bg-[#D8D0C5] text-stone-900 hover:bg-stone-900 hover:text-white"
+                          : "bg-[#D8D0C5]/60 text-stone-500 cursor-not-allowed"
+                      }`}
+                    >
+                      Next
+                    </button>
                   </div>
                 </div>
+              )}
 
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-foreground">Notes & Beekeeper Info</label>
-                  <textarea
-                    rows={2}
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    placeholder="e.g. Lead Beekeeper: Timothy Nduva..."
-                    className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-xs"
-                  />
-                </div>
+              {/* Step 2: Configure Devices & Location */}
+              {!editingApiary && addApiaryStep === 2 && (
+                <div className="flex flex-col flex-1">
+                  {/* Top Bar with back arrow */}
+                  <div className="relative flex items-center justify-between pb-4 border-b border-stone-300/60">
+                    <button
+                      type="button"
+                      onClick={() => setAddApiaryStep(1)}
+                      className="p-1 -ml-1 text-stone-800 hover:text-stone-950 transition-colors"
+                      aria-label="Back"
+                    >
+                      <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <h2 className="text-lg font-medium text-stone-900 absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
+                      {addApiaryMode === "with_devices" ? "Connect Devices" : "Apiary Details"}
+                    </h2>
+                    <div className="w-6" />
+                  </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 rounded-xl border border-border text-xs font-semibold text-foreground hover:bg-muted transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold transition-all shadow-sm"
-                  >
-                    {editingApiary ? "Save Changes" : "Register Apiary"}
-                  </button>
+                  <div className="pt-4 space-y-4 flex-1">
+                    {/* Apiary Summary Card */}
+                    <div className="bg-[#EFE7DB]/80 rounded-2xl p-4 space-y-2 border border-stone-300/50">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm text-stone-900">{formData.name}</span>
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-900">
+                          {addApiaryMode === "with_devices" ? "With Devices" : "Digital Journal"}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-stone-700 pt-1">
+                        <div>
+                          <span className="text-[10px] text-stone-500 block">Location</span>
+                          <span className="font-medium">{formData.location_name}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-stone-500 block">Land Size</span>
+                          <span className="font-medium">{formData.size_acres} Acres (Timothy Nduva)</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-stone-500 block">Active Hives</span>
+                          <span className="font-medium">{formData.active_hives} Langstroth</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-stone-500 block">Region</span>
+                          <span className="font-medium">{formData.region}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* WITH DEVICES: Category Selection & Sensor Scanner */}
+                    {addApiaryMode === "with_devices" && (
+                      <div className="space-y-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-semibold text-stone-800">
+                            Choose Device Category:
+                          </label>
+                          <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-200/60 rounded-xl">
+                            <button
+                              type="button"
+                              onClick={() => setAddDeviceCategory("in_land")}
+                              className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
+                                addDeviceCategory === "in_land"
+                                  ? "bg-white text-stone-950 shadow-sm font-bold"
+                                  : "text-stone-600 hover:text-stone-950"
+                              }`}
+                            >
+                              In land
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setAddDeviceCategory("in_hive")}
+                              className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
+                                addDeviceCategory === "in_hive"
+                                  ? "bg-white text-stone-950 shadow-sm font-bold"
+                                  : "text-stone-600 hover:text-stone-950"
+                              }`}
+                            >
+                              In hive
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setAddDeviceCategory("disease_devices")}
+                              className={`py-1.5 text-xs font-medium rounded-lg transition-all ${
+                                addDeviceCategory === "disease_devices"
+                                  ? "bg-white text-stone-950 shadow-sm font-bold"
+                                  : "text-stone-600 hover:text-stone-950"
+                              }`}
+                            >
+                              Disease
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Scanner / Manual Code Entry */}
+                        <div className="p-3.5 bg-white rounded-2xl border border-stone-300/70 space-y-3 shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                              <ScanLine className="w-4 h-4 text-amber-600" />
+                              {addDeviceCategory === "in_land" && "Gateway Hub / LoRa Station"}
+                              {addDeviceCategory === "in_hive" && "VitalSensor / Weight Scale"}
+                              {addDeviceCategory === "disease_devices" && "Apisense Varroa Detector"}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const randomCode =
+                                  addDeviceCategory === "in_land"
+                                    ? `HUB-KBZ-${Math.floor(10 + Math.random() * 90)}`
+                                    : addDeviceCategory === "disease_devices"
+                                    ? `APISENSE-KBZ-${Math.floor(10 + Math.random() * 90)}`
+                                    : Math.random() > 0.5
+                                    ? `VS-KBZ-${Math.floor(100 + Math.random() * 900)}`
+                                    : `SCALE-KBZ-0${Math.floor(1 + Math.random() * 5)}`;
+                                setScannedSensorCode(randomCode);
+                                toast.success(`Scanned QR Barcode: ${randomCode}`);
+                              }}
+                              className="text-[11px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300 transition-colors flex items-center gap-1"
+                            >
+                              <QrCode className="w-3.5 h-3.5" /> Scan Sensor
+                            </button>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={scannedSensorCode}
+                              onChange={(e) => setScannedSensorCode(e.target.value)}
+                              placeholder={
+                                addDeviceCategory === "in_land"
+                                  ? "e.g. HUB-KBZ-01"
+                                  : addDeviceCategory === "disease_devices"
+                                  ? "e.g. APISENSE-KBZ-01"
+                                  : "e.g. VS-KBZ-001 or SCALE-KBZ-01"
+                              }
+                              className="flex-1 bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const code = scannedSensorCode.trim() || `DEV-${Math.floor(1000 + Math.random() * 9000)}`;
+                                const isScale = code.toUpperCase().includes("SCALE") || code.toUpperCase().includes("SC-");
+                                const newDev: ApiaryDeviceItem = {
+                                  id: `dev-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+                                  name:
+                                    addDeviceCategory === "in_land"
+                                      ? "Kibwezi LoRa Gateway Hub"
+                                      : addDeviceCategory === "disease_devices"
+                                      ? "Apisense Acoustic Varroa Detector"
+                                      : isScale
+                                      ? "HoneyScale Weight Telemetry"
+                                      : "VitalSensor Pro In-Hive",
+                                  category: addDeviceCategory,
+                                  deviceType:
+                                    addDeviceCategory === "in_land"
+                                      ? "gateway"
+                                      : addDeviceCategory === "disease_devices"
+                                      ? "acoustic_varroa"
+                                      : isScale
+                                      ? "scale"
+                                      : "vitalsensor",
+                                  serial: code,
+                                  status: "online",
+                                  batteryPct: 98,
+                                  signalStrength: "excellent",
+                                  lastPing: "Just now",
+                                  firmwareVersion: "v3.2.0",
+                                };
+                                setAttachedDevices([newDev, ...attachedDevices]);
+                                setScannedSensorCode("");
+                                toast.success(`Attached ${newDev.name} (${newDev.serial})`);
+                              }}
+                              className="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold transition-colors"
+                            >
+                              Add
+                            </button>
+                          </div>
+
+                          {/* Quick Pack Preload */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const standardPack: ApiaryDeviceItem[] = [
+                                {
+                                  id: "dev-hub-kibwezi",
+                                  name: "Kibwezi Commercial Gateway Hub",
+                                  category: "in_land",
+                                  deviceType: "gateway",
+                                  serial: "HUB-KBZ-01",
+                                  status: "online",
+                                  batteryPct: 100,
+                                  signalStrength: "excellent",
+                                  lastPing: "Just now",
+                                  firmwareVersion: "v3.4.1",
+                                },
+                                {
+                                  id: "dev-vs-001",
+                                  name: "VitalSensor Hive 001",
+                                  category: "in_hive",
+                                  deviceType: "vitalsensor",
+                                  serial: "VS-KBZ-001",
+                                  status: "online",
+                                  batteryPct: 98,
+                                  signalStrength: "excellent",
+                                  lastPing: "Just now",
+                                  hiveCode: "beeyield 001",
+                                },
+                                {
+                                  id: "dev-vs-002",
+                                  name: "VitalSensor Hive 002",
+                                  category: "in_hive",
+                                  deviceType: "vitalsensor",
+                                  serial: "VS-KBZ-002",
+                                  status: "online",
+                                  batteryPct: 96,
+                                  signalStrength: "good",
+                                  lastPing: "Just now",
+                                  hiveCode: "beeyield 002",
+                                },
+                                {
+                                  id: "dev-scale-01",
+                                  name: "HoneyScale 4-Cell Telemetry",
+                                  category: "in_hive",
+                                  deviceType: "scale",
+                                  serial: "SCALE-KBZ-01",
+                                  status: "online",
+                                  batteryPct: 100,
+                                  signalStrength: "excellent",
+                                  lastPing: "Just now",
+                                  hiveCode: "beeyield 001",
+                                },
+                                {
+                                  id: "dev-apisense-01",
+                                  name: "Apisense Acoustic Varroa Detector",
+                                  category: "disease_devices",
+                                  deviceType: "acoustic_varroa",
+                                  serial: "APISENSE-KBZ-01",
+                                  status: "online",
+                                  batteryPct: 94,
+                                  signalStrength: "excellent",
+                                  lastPing: "Just now",
+                                },
+                              ];
+                              setAttachedDevices(standardPack);
+                              toast.success("Loaded Kibwezi IoT Device Pack (Hub, VitalSensors, Scale & Apisense)");
+                            }}
+                            className="w-full py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-[11px] font-bold transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-amber-700" /> Preload Full Kibwezi IoT Pack (5 Devices)
+                          </button>
+                        </div>
+
+                        {/* Attached Devices Preview */}
+                        {attachedDevices.length > 0 && (
+                          <div className="space-y-1.5">
+                            <span className="text-[11px] font-semibold text-stone-700">
+                              Attached Devices ({attachedDevices.length}):
+                            </span>
+                            <div className="max-h-36 overflow-y-auto space-y-1 pr-1">
+                              {attachedDevices.map((d) => (
+                                <div
+                                  key={d.id}
+                                  className="flex items-center justify-between p-2 bg-[#EFE7DB]/60 rounded-xl text-xs text-stone-800 border border-stone-300/40"
+                                >
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                                    <span className="font-semibold truncate">{d.name}</span>
+                                    <span className="font-mono text-[10px] text-stone-500">[{d.serial}]</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setAttachedDevices(attachedDevices.filter((x) => x.id !== d.id))}
+                                    className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* WITHOUT DEVICES: Digital Journal Note */}
+                    {addApiaryMode === "without_devices" && (
+                      <div className="bg-[#EFE7DB]/50 rounded-2xl p-4 text-xs text-stone-700 leading-relaxed space-y-2 border border-stone-300/40">
+                        <p className="font-semibold text-stone-900">Digital Beekeeper's Journal</p>
+                        <p>
+                          This apiary site will be registered in offline / journal mode. You can record hive notes, track inspections, monitor weather conditions, and perform manual yield calculations.
+                        </p>
+                        <div className="pt-2 flex items-center gap-1.5 text-amber-800 font-medium">
+                          <Info className="w-4 h-4 flex-shrink-0" />
+                          <span>Hardware sensors (VitalSensor, Scales, Hub) can be paired at any point later.</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottom Action Bar */}
+                  <div className="mt-auto pt-6 flex items-center justify-between gap-3 border-t border-stone-300/50">
+                    <button
+                      type="button"
+                      onClick={() => setAddApiaryStep(1)}
+                      className="px-6 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+                        handleSaveApiary(fakeEvent);
+                      }}
+                      className="px-7 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-medium text-sm transition-colors shadow-sm"
+                    >
+                      {addApiaryMode === "with_devices" ? "Register & Sync" : "Register Apiary"}
+                    </button>
+                  </div>
                 </div>
-              </form>
+              )}
+
+              {/* Edit Apiary Mode */}
+              {editingApiary && (
+                <div className="flex flex-col flex-1">
+                  <div className="relative flex items-center justify-between pb-4 border-b border-stone-300/60">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAddModal(false);
+                        setEditingApiary(null);
+                      }}
+                      className="p-1 -ml-1 text-stone-800 hover:text-stone-950 transition-colors"
+                      aria-label="Back"
+                    >
+                      <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <h2 className="text-lg font-medium text-stone-900 absolute left-1/2 -translate-x-1/2">
+                      Edit Apiary Station
+                    </h2>
+                    <div className="w-6" />
+                  </div>
+
+                  <form onSubmit={handleSaveApiary} className="pt-4 space-y-3.5 flex-1">
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-stone-800">Apiary Station Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs font-semibold text-stone-900"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-stone-800">Location Name</label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.location_name}
+                          onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-stone-800">County</label>
+                        <input
+                          type="text"
+                          value={formData.county}
+                          onChange={(e) => setFormData({ ...formData, county: e.target.value })}
+                          className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-semibold text-stone-800">Active Hives</label>
+                        <input
+                          type="number"
+                          min={0}
+                          value={formData.active_hives}
+                          onChange={(e) => setFormData({ ...formData, active_hives: parseInt(e.target.value, 10) || 0 })}
+                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-semibold text-stone-800">Total Capacity</label>
+                        <input
+                          type="number"
+                          min={1}
+                          value={formData.total_hives}
+                          onChange={(e) => setFormData({ ...formData, total_hives: parseInt(e.target.value, 10) || 1 })}
+                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-semibold text-stone-800">Size (Acres)</label>
+                        <input
+                          type="number"
+                          min={0.5}
+                          step="0.5"
+                          value={formData.size_acres}
+                          onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 1 })}
+                          className="w-full bg-white border border-stone-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-stone-900"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-stone-800">Forage Flora</label>
+                      <input
+                        type="text"
+                        value={formData.forage_type}
+                        onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-semibold text-stone-800">Notes & Beekeeper Info</label>
+                      <textarea
+                        rows={2}
+                        value={formData.notes}
+                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900"
+                      />
+                    </div>
+
+                    <div className="mt-auto pt-6 flex items-center justify-end gap-3 border-t border-stone-300/50">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowAddModal(false);
+                          setEditingApiary(null);
+                        }}
+                        className="px-6 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-7 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-medium text-sm transition-colors shadow-sm"
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
             </div>
           </div>
         )}
