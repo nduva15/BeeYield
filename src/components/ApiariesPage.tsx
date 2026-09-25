@@ -160,6 +160,11 @@ export interface ApiaryHiveItem {
   queenBreedingYear: number;
   queenStatus: string;
   broodFrames?: number;
+  maxBroodFrames?: number;
+  hasHygienicBottomBoard?: boolean;
+  queenOrigin?: string;
+  queenInsemination?: string;
+  queenNote?: string;
   honeyFrames?: number;
   colonyStrength?: string;
   colonyAvailability?: string;
@@ -3555,23 +3560,25 @@ function AddHiveModal({
   onOpenScanner: () => void;
   scannedSerial?: string;
 }) {
-  const [code, setCode] = useState(suggestedCode);
-  const [hiveType, setHiveType] = useState("Langstroth 10-Frame");
-  const [queenPresent, setQueenPresent] = useState(true);
-  const [queenBreedingYear, setQueenBreedingYear] = useState(2025);
-  const [colonyStrength, setColonyStrength] = useState("Strong (8–10 Frames Brood & Bees)");
-  const [colonyAvailability, setColonyAvailability] = useState("Dedicated Honey Production");
-  const [broodFrames, setBroodFrames] = useState<number | "">("");
-  const [honeyFrames, setHoneyFrames] = useState<number | "">("");
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+
+  // Step 1: Hive Details
+  const defaultNum = suggestedCode.replace(/^KIB-|^beeyield\s*/i, "");
+  const [code, setCode] = useState(defaultNum || "");
+  const [maxBroodFrames, setMaxBroodFrames] = useState<string>("10");
+  const [hasHygienicBottomBoard, setHasHygienicBottomBoard] = useState(false);
+
+  // Step 2: Queen Bee Information
+  const [queenBreedingYear, setQueenBreedingYear] = useState<number>(2022);
+  const [showYearDropdown, setShowYearDropdown] = useState(false);
+  const [queenOrigin, setQueenOrigin] = useState<string>("Own breeding");
+  const [showOriginDropdown, setShowOriginDropdown] = useState(false);
+  const [queenInsemination, setQueenInsemination] = useState<"Natural" | "Artificial" | "Unknown">("Natural");
+  const [queenNote, setQueenNote] = useState<string>("");
+
+  // Step 3: Hardware / Sensor Setup
+  const [sensorCategory, setSensorCategory] = useState<"vitalsensor" | "scale" | "acoustic_varroa" | "none">("vitalsensor");
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
-  const [deviceCategory, setDeviceCategory] = useState<DeviceCategory>("in_hive");
-  const [deviceType, setDeviceType] = useState<string>("Hive Weight Scale (Telemetry Load Cell)");
-  const [addHarvest, setAddHarvest] = useState(false);
-  const [batchCode, setBatchCode] = useState(`KBZ-${new Date().getFullYear()}-01`);
-  const [harvestDate, setHarvestDate] = useState(new Date().toISOString().split("T")[0]);
-  const [honeyType, setHoneyType] = useState("Raw Acacia Blossom");
-  const [quantityKg, setQuantityKg] = useState(15.0);
-  const [moisturePct, setMoisturePct] = useState(17.1);
 
   useEffect(() => {
     if (scannedSerial) {
@@ -3581,400 +3588,473 @@ function AddHiveModal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const queenColor = getQueenYearColor(queenBreedingYear);
+  const cleanDisplayNum = code.trim().replace(/^beeyield\s*/i, "").replace(/^kib-/i, "");
+  const cleanDisplayCode = cleanDisplayNum ? `beeyield ${cleanDisplayNum.padStart(3, "0")}` : "beeyield New";
+
+  const handleFinalSubmit = () => {
     if (!code.trim()) {
-      toast.error("Please enter a hive code");
+      toast.error("Please enter a hive number/code");
+      setStep(1);
       return;
     }
 
-    const parsedBrood = broodFrames !== "" && !isNaN(Number(broodFrames)) ? Number(broodFrames) : undefined;
-    const parsedHoney = honeyFrames !== "" && !isNaN(Number(honeyFrames)) ? Number(honeyFrames) : undefined;
+    const parsedMaxBrood = maxBroodFrames !== "" && !isNaN(Number(maxBroodFrames)) ? Number(maxBroodFrames) : 10;
+    const finalCode = `beeyield ${cleanDisplayNum.padStart(3, "0")}`;
 
     const newHiveItem: ApiaryHiveItem = {
-      id: `hive-${code.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${Date.now()}`,
-      code: code.trim().toUpperCase(),
-      name: `${code.trim().toUpperCase()} (${hiveType})`,
-      hiveType,
-      queenPresent,
+      id: `hive-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      code: finalCode,
+      name: finalCode,
+      hiveType: "Langstroth 10-Frame",
+      queenPresent: true,
       queenBreedingYear,
-      queenStatus: queenPresent ? "Active Laying Queen (Marked)" : "Queenless Colony",
-      broodFrames: parsedBrood,
-      honeyFrames: parsedHoney,
-      colonyStrength,
-      colonyAvailability,
-      sensorSerial: sensorSerial.trim() || undefined,
-      deviceCategory: sensorSerial.trim() ? deviceCategory : undefined,
-      deviceType: sensorSerial.trim() ? deviceType : undefined,
+      queenStatus: `Active Laying Queen (${queenColor.name})`,
+      broodFrames: parsedMaxBrood,
+      maxBroodFrames: parsedMaxBrood,
+      hasHygienicBottomBoard,
+      queenOrigin,
+      queenInsemination,
+      queenNote: queenNote.trim() || undefined,
+      honeyFrames: 4,
+      colonyStrength: "Strong (8–10 Frames Brood & Bees)",
+      colonyAvailability: "Dedicated Honey Production",
+      sensorSerial: sensorCategory !== "none" && sensorSerial.trim() ? sensorSerial.trim() : undefined,
+      deviceCategory:
+        sensorCategory !== "none" && sensorSerial.trim()
+          ? sensorCategory === "acoustic_varroa"
+            ? "disease_devices"
+            : "in_hive"
+          : undefined,
+      deviceType:
+        sensorCategory !== "none" && sensorSerial.trim()
+          ? sensorCategory === "scale"
+            ? "Hive Weight Scale (Telemetry Load Cell)"
+            : sensorCategory === "acoustic_varroa"
+            ? "Apisense Acoustic Disease Detector"
+            : "VitalSensor Hive Pro"
+          : undefined,
       batches: [],
     };
 
-    let initialBatch: Omit<HiveHarvestBatch, "id"> | undefined = undefined;
-    if (addHarvest && quantityKg > 0) {
-      initialBatch = {
-        batchCode: batchCode.trim(),
-        date: harvestDate,
-        quantityKg: Number(quantityKg),
-        honeyType: honeyType.trim(),
-        moisturePct: Number(moisturePct) || 17.1,
-      };
-      newHiveItem.batches.push({
-        ...initialBatch,
-        id: `batch-${Date.now()}`,
-      });
-    }
-
-    onAddHive(newHiveItem, initialBatch);
-    toast.success(`Hive ${newHiveItem.code} successfully registered in ${normalizeApiaryName(apiary.name)}`);
+    onAddHive(newHiveItem);
+    toast.success(`Hive "${finalCode}" successfully registered in ${normalizeApiaryName(apiary.name)}`);
     onClose();
   };
 
-  const queenColor = getQueenYearColor(queenBreedingYear);
-
   return (
-    <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in">
-      <div className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-        <div className="p-4 bg-amber-500 text-stone-950 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Plus className="w-5 h-5 font-black" />
-            <h3 className="font-bold text-sm">Add New Hive to {normalizeApiaryName(apiary.name)}</h3>
-          </div>
-          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-black/10 transition-colors">
-            <X className="w-5 h-5" />
+    <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4 overflow-y-auto animate-in fade-in">
+      <div className="w-full sm:max-w-md bg-[#FAF4EE] min-h-screen sm:min-h-[580px] sm:max-h-[92vh] sm:rounded-3xl shadow-2xl overflow-y-auto flex flex-col p-6 text-stone-900 border border-stone-300/40 relative">
+        {/* Top Header */}
+        <div className="relative flex items-center justify-between pb-6">
+          <button
+            type="button"
+            onClick={() => {
+              if (step === 1) onClose();
+              else setStep((step - 1) as any);
+            }}
+            className="p-1 -ml-1 text-stone-800 hover:text-stone-950 transition-colors"
+            aria-label="Back"
+          >
+            <ArrowLeft className="w-6 h-6" />
           </button>
+          <h2 className="text-xl font-normal text-stone-900 absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
+            Add Hive
+          </h2>
+          <div className="w-6" />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+        {/* STEP 1: Hive Details (Screenshot 1) */}
+        {step === 1 && (
+          <div className="flex flex-col flex-1">
+            <h3 className="text-base font-semibold text-stone-900 pt-2 mb-6">Hive details</h3>
+
+            {/* Field 1: Hive Code/Number */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-foreground">Hive Code</label>
               <input
                 type="text"
-                required
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                placeholder="e.g. KIB-185"
-                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-mono font-bold"
+                placeholder="e.g. 01"
+                autoFocus
+                className="w-full bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal placeholder:text-stone-500 focus:outline-none focus:border-amber-600 transition-colors"
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-foreground">Hive Architecture</label>
-              <select
-                value={hiveType}
-                onChange={(e) => setHiveType(e.target.value)}
-                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-medium"
+            {/* Field 2: Maximum number of brood chamber frames */}
+            <div className="space-y-1 mt-7">
+              <input
+                type="number"
+                min="1"
+                max="30"
+                value={maxBroodFrames}
+                onChange={(e) => setMaxBroodFrames(e.target.value)}
+                placeholder="Maximum number of brood chamber frames"
+                className="w-full bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal placeholder:text-stone-500 focus:outline-none focus:border-amber-600 transition-colors"
+              />
+            </div>
+
+            {/* Field 3: Hygienic Bottom Board Checkbox */}
+            <div
+              className="mt-8 flex items-center justify-between cursor-pointer select-none"
+              onClick={() => setHasHygienicBottomBoard(!hasHygienicBottomBoard)}
+            >
+              <span className="text-sm font-normal text-stone-900">Hive has hygienic bottom board</span>
+              <div
+                className={`w-5 h-5 rounded border border-stone-800 flex items-center justify-center transition-colors ${
+                  hasHygienicBottomBoard ? "bg-stone-900 text-white" : "bg-transparent"
+                }`}
               >
-                <option value="Langstroth 10-Frame">Langstroth 10-Frame</option>
-                <option value="Top Bar Hive (KTBH)">Top Bar Hive (KTBH)</option>
-                <option value="Dadant 12-Frame">Dadant 12-Frame</option>
-                <option value="Warre Hive">Warre Hive</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Brood Frames & Food Stores (Owner Configured - No Guessing) */}
-          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <Layers className="w-4 h-4 text-amber-500" /> Brood Chamber Frames (Owner Count)
-              </span>
-              <span className="text-[10px] font-semibold text-muted-foreground">Optional</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-muted-foreground">Brood Frames</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="30"
-                  value={broodFrames}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setBroodFrames(val === "" ? "" : Math.max(0, parseInt(val, 10) || 0));
-                  }}
-                  placeholder="e.g. 6 (or leave blank)"
-                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold font-mono"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-muted-foreground">Honey / Food Frames</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="30"
-                  value={honeyFrames}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setHoneyFrames(val === "" ? "" : Math.max(0, parseInt(val, 10) || 0));
-                  }}
-                  placeholder="e.g. 4 (optional)"
-                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold font-mono"
-                />
+                {hasHygienicBottomBoard && <Check className="w-3.5 h-3.5 stroke-[3]" />}
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground leading-normal">
-              Enter the audited brood frames if known. If you have not inspected or added this count yet, leave it blank and it will not be shown.
-            </p>
-          </div>
 
-          {/* Queen Status & Breeding Year */}
-          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
-            <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-              <Crown className="w-4 h-4 text-amber-500" /> Queen Status & Breeding Details
-            </span>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-muted-foreground">Queen Present?</label>
-                <select
-                  value={queenPresent ? "yes" : "no"}
-                  onChange={(e) => setQueenPresent(e.target.value === "yes")}
-                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
-                >
-                  <option value="yes">✓ Queen Present (Queenright)</option>
-                  <option value="no">✕ Queenless</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-semibold text-muted-foreground">Breeding Year</label>
-                  <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
-                </div>
-                <select
-                  value={queenBreedingYear}
-                  onChange={(e) => setQueenBreedingYear(parseInt(e.target.value, 10))}
-                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-bold"
-                >
-                  <option value={2026}>2026 (White)</option>
-                  <option value={2025}>2025 (Blue)</option>
-                  <option value={2024}>2024 (Green)</option>
-                  <option value={2023}>2023 (Red)</option>
-                  <option value={2022}>2022 (Yellow)</option>
-                  <option value={2021}>2021 (White)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Colony Strength & Availability (Added by Owner) */}
-          <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/50 space-y-3">
-            <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-amber-600" /> Colony Strength & Operational Availability
-            </span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-amber-900">Colony Strength</label>
-                <select
-                  value={colonyStrength}
-                  onChange={(e) => setColonyStrength(e.target.value)}
-                  className="w-full bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-amber-950"
-                >
-                  <option value="Strong (8–10 Frames Brood & Bees)">Strong (8–10 Frames)</option>
-                  <option value="Moderate (5–7 Frames)">Moderate (5–7 Frames)</option>
-                  <option value="Weak / Nucleus (<5 Frames)">Weak / Nucleus (&lt;5 Frames)</option>
-                  <option value="Very Strong / Swarm-Prone (>10 Frames)">Very Strong (&gt;10 Frames)</option>
-                  <option value="Critical / Queenless (<3 Frames)">Critical (&lt;3 Frames)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-amber-900">Colony Availability</label>
-                <select
-                  value={colonyAvailability}
-                  onChange={(e) => setColonyAvailability(e.target.value)}
-                  className="w-full bg-white border border-amber-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-amber-950"
-                >
-                  <option value="Dedicated Honey Production">Dedicated Honey Production</option>
-                  <option value="Available for Pollination Contracts">Pollination Contracts</option>
-                  <option value="Queen Rearing & Breeding">Queen Rearing & Breeding</option>
-                  <option value="Splits & Nucleus Production">Splits & Nucleus Production</option>
-                  <option value="Under Quarantine / Medical Observation">Under Quarantine</option>
-                  <option value="Wintering / Seasonal Rest">Wintering / Seasonal Rest</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Sensor Pairing with QR Scanner & Category Selection */}
-          <div className="p-3.5 rounded-2xl border border-border bg-background space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <Radio className="w-4 h-4 text-amber-500" /> Pair IoT Device / Sensor (Optional)
-              </span>
+            {/* Bottom Actions */}
+            <div className="mt-auto pt-8 flex items-center justify-end gap-3">
               <button
                 type="button"
-                onClick={onOpenScanner}
-                className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all"
+                onClick={onClose}
+                className="px-7 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
               >
-                <Camera className="w-3.5 h-3.5" /> Scan Sensor (Camera)
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!code.trim()) {
+                    toast.error("Please enter a hive number or code (e.g. 01)");
+                    return;
+                  }
+                  setStep(2);
+                }}
+                className="px-8 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-sm transition-colors"
+              >
+                Next
               </button>
             </div>
+          </div>
+        )}
 
-            {/* Choose Device Category */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-muted-foreground">Select Device Category:</label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {DEVICE_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => {
-                      setDeviceCategory(cat.id);
-                      setDeviceType(cat.defaultTypes[0]);
-                    }}
-                    className={`py-1.5 px-2 rounded-xl border text-center transition-all flex items-center justify-center gap-1 text-[11px] font-bold ${
-                      deviceCategory === cat.id
-                        ? "border-amber-500 bg-amber-500/15 text-foreground ring-1 ring-amber-500/30"
-                        : "border-border hover:border-amber-500/40 text-muted-foreground"
+        {/* STEP 2: Queen Bee Information (Screenshots 2 & 3) */}
+        {step === 2 && (
+          <div className="flex flex-col flex-1">
+            <h3 className="text-base font-semibold text-stone-900 pt-2 mb-4">Queen bee information</h3>
+
+            {/* Queen Breeding Year Dropdown */}
+            <div className="relative pt-1">
+              <label className="text-xs text-stone-600 block mb-1">Queen breeding year</label>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowYearDropdown(!showYearDropdown);
+                  setShowOriginDropdown(false);
+                }}
+                className="w-full flex items-center justify-between bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal focus:outline-none"
+              >
+                <span className="flex items-center gap-2">
+                  <span>{queenBreedingYear}</span>
+                  <span
+                    className={`w-3.5 h-3.5 rounded-full inline-block ${
+                      queenBreedingYear % 10 === 2 || queenBreedingYear % 10 === 7
+                        ? "bg-[#FFB800]"
+                        : queenBreedingYear % 10 === 0 || queenBreedingYear % 10 === 5
+                        ? "bg-blue-500"
+                        : queenBreedingYear % 10 === 4 || queenBreedingYear % 10 === 9
+                        ? "bg-emerald-500"
+                        : queenBreedingYear % 10 === 3 || queenBreedingYear % 10 === 8
+                        ? "bg-red-500"
+                        : "bg-stone-100 border border-stone-400"
                     }`}
+                  />
+                </span>
+                <ChevronDown className="w-5 h-5 text-stone-800" />
+              </button>
+
+              {/* Year Dropdown Menu */}
+              {showYearDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-[#FAF4EE] border border-stone-300 rounded-2xl shadow-xl z-20 py-1.5 overflow-hidden">
+                  {[2026, 2025, 2024, 2023, 2022, 2021].map((yr) => {
+                    const c = getQueenYearColor(yr);
+                    return (
+                      <button
+                        key={yr}
+                        type="button"
+                        onClick={() => {
+                          setQueenBreedingYear(yr);
+                          setShowYearDropdown(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left text-sm flex items-center justify-between hover:bg-[#EFE7DB] transition-colors ${
+                          queenBreedingYear === yr ? "bg-[#EFE7DB] font-bold" : ""
+                        }`}
+                      >
+                        <span>{yr}</span>
+                        <span className={`w-3 h-3 rounded-full ${c.dot}`} />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              <p className="text-xs text-stone-600 mt-1">Year color will be visible in the "hive shortcut" icon</p>
+            </div>
+
+            {/* Queen Origin Dropdown (Screenshot 3 Menu) */}
+            <div className="relative mt-5">
+              <label className="text-xs text-stone-600 block mb-1">Queen origin</label>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowOriginDropdown(!showOriginDropdown);
+                  setShowYearDropdown(false);
+                }}
+                className="w-full flex items-center justify-between bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1.5 text-base font-normal focus:outline-none"
+              >
+                <span>{queenOrigin || "Select origin"}</span>
+                <ChevronDown className="w-5 h-5 text-stone-800" />
+              </button>
+
+              {/* Floating Menu matching Screenshot 3 */}
+              {showOriginDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-[#FAF4EE] border border-stone-300 rounded-2xl shadow-2xl z-30 py-1 overflow-hidden">
+                  {["Own breeding", "Purchase domestic", "Purchase foreign", "Unknown"].map((origin) => (
+                    <button
+                      key={origin}
+                      type="button"
+                      onClick={() => {
+                        setQueenOrigin(origin);
+                        setShowOriginDropdown(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left text-sm transition-colors ${
+                        queenOrigin === origin
+                          ? "bg-[#E4DBD0] font-semibold text-stone-950"
+                          : "hover:bg-[#EFE7DB] text-stone-800"
+                      }`}
+                    >
+                      {origin}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Queen Insemination Method Radio Group */}
+            <div className="mt-6">
+              <p className="text-xs text-stone-600 mb-2">Queen insemination method</p>
+              <div className="space-y-1">
+                {(["Natural", "Artificial", "Unknown"] as const).map((method) => (
+                  <div
+                    key={method}
+                    onClick={() => setQueenInsemination(method)}
+                    className="flex items-center justify-between py-2 cursor-pointer select-none"
                   >
-                    <span>{cat.icon}</span>
-                    <span className="truncate">{cat.label.replace(" Devices", "")}</span>
-                  </button>
+                    <span className="text-sm font-normal text-stone-900">{method}</span>
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        queenInsemination === method ? "border-stone-900" : "border-stone-400"
+                      }`}
+                    >
+                      {queenInsemination === method && <div className="w-2.5 h-2.5 rounded-full bg-stone-900" />}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
 
-            {/* Device Hardware Model */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-muted-foreground">Device Hardware Type:</label>
-              <select
-                value={deviceType}
-                onChange={(e) => setDeviceType(e.target.value)}
-                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-semibold"
-              >
-                {(DEVICE_CATEGORIES.find((c) => c.id === deviceCategory) || DEVICE_CATEGORIES[1]).defaultTypes.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+            {/* Beekeeper's Note Input with 0/1000 counter */}
+            <div className="mt-6">
+              <label className="text-xs text-stone-600 block mb-1">Beekeeper's note</label>
+              <input
+                type="text"
+                maxLength={1000}
+                value={queenNote}
+                onChange={(e) => setQueenNote(e.target.value)}
+                placeholder="e.g. gentle, bought locally, marked white"
+                className="w-full bg-transparent border-0 border-b border-stone-800 text-stone-900 pb-1 text-sm font-normal placeholder:text-stone-400 focus:outline-none focus:border-amber-600 transition-colors"
+              />
+              <span className="text-xs text-stone-500 mt-1 block">{queenNote.length}/1000</span>
             </div>
 
-            {/* Scan or Enter Code */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-muted-foreground">
-                Scan QR or Enter Code (Weight Scales, VitalSensors, etc.):
-              </label>
-              <div className="flex items-center gap-2">
+            {/* Bottom Actions */}
+            <div className="mt-auto pt-8 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-5 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="px-5 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                className="px-7 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-sm transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: Sensor / Device Setup & Complete (User Request #1) */}
+        {step === 3 && (
+          <div className="flex flex-col flex-1">
+            <h3 className="text-base font-semibold text-stone-900 pt-2 mb-1">Pair Device or Sensor</h3>
+            <p className="text-xs text-stone-600 mb-4">
+              Connect 24/7 telemetry monitoring to {cleanDisplayCode}, or continue in digital journal mode.
+            </p>
+
+            {/* Hardware Category Pills */}
+            <div className="space-y-1 mb-4">
+              <label className="text-xs font-semibold text-stone-800">Select Hardware Type:</label>
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSensorCategory("vitalsensor");
+                    if (!sensorSerial) setSensorSerial(`VS-KBZ-${cleanDisplayNum.padStart(3, "0")}`);
+                  }}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    sensorCategory === "vitalsensor"
+                      ? "border-stone-900 bg-[#EFE7DB] text-stone-950 shadow-sm"
+                      : "border-stone-300 bg-transparent text-stone-700 hover:border-stone-400"
+                  }`}
+                >
+                  <div className="text-xs font-bold">VitalSensor Pro</div>
+                  <div className="text-[11px] text-stone-600">Temp, Humidity, Acoustics</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSensorCategory("scale");
+                    if (!sensorSerial || sensorSerial.startsWith("VS-")) setSensorSerial(`SCALE-KBZ-0${cleanDisplayNum.slice(-1) || "1"}`);
+                  }}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    sensorCategory === "scale"
+                      ? "border-stone-900 bg-[#EFE7DB] text-stone-950 shadow-sm"
+                      : "border-stone-300 bg-transparent text-stone-700 hover:border-stone-400"
+                  }`}
+                >
+                  <div className="text-xs font-bold">HoneyScale Load Cell</div>
+                  <div className="text-[11px] text-stone-600">Weight & Nectar flow</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSensorCategory("acoustic_varroa");
+                    if (!sensorSerial) setSensorSerial(`APISENSE-KBZ-0${cleanDisplayNum.slice(-1) || "1"}`);
+                  }}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    sensorCategory === "acoustic_varroa"
+                      ? "border-stone-900 bg-[#EFE7DB] text-stone-950 shadow-sm"
+                      : "border-stone-300 bg-transparent text-stone-700 hover:border-stone-400"
+                  }`}
+                >
+                  <div className="text-xs font-bold">Apisense Varroa</div>
+                  <div className="text-[11px] text-stone-600">Acoustic pest detector</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSensorCategory("none");
+                    setSensorSerial("");
+                  }}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    sensorCategory === "none"
+                      ? "border-stone-900 bg-[#EFE7DB] text-stone-950 shadow-sm"
+                      : "border-stone-300 bg-transparent text-stone-700 hover:border-stone-400"
+                  }`}
+                >
+                  <div className="text-xs font-bold">No Sensor</div>
+                  <div className="text-[11px] text-stone-600">Manual journal only</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Sensor Code / Scanner */}
+            {sensorCategory !== "none" && (
+              <div className="p-3.5 bg-white rounded-2xl border border-stone-300/70 space-y-2.5 shadow-sm mb-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                    <ScanLine className="w-4 h-4 text-amber-600" /> Sensor Serial Code
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const sample =
+                        sensorCategory === "scale"
+                          ? `SCALE-KBZ-0${cleanDisplayNum.slice(-1) || "1"}`
+                          : sensorCategory === "acoustic_varroa"
+                          ? `APISENSE-KBZ-0${cleanDisplayNum.slice(-1) || "1"}`
+                          : `VS-KBZ-${cleanDisplayNum.padStart(3, "0")}`;
+                      setSensorSerial(sample);
+                      toast.success(`Scanned Sensor Barcode: ${sample}`);
+                    }}
+                    className="text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300 flex items-center gap-1 transition-colors"
+                  >
+                    <QrCode className="w-3.5 h-3.5" /> Scan QR
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={sensorSerial}
                   onChange={(e) => setSensorSerial(e.target.value)}
-                  placeholder={
-                    deviceCategory === "in_hive" && deviceType.toLowerCase().includes("scale")
-                      ? "e.g. SCALE-KBZ-001"
-                      : "Scan QR or type code (e.g. VS-KBZ-001)"
-                  }
-                  className="flex-1 bg-card border border-border rounded-lg px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider"
+                  placeholder="e.g. VS-KBZ-003 or SCALE-KBZ-01"
+                  className="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs font-mono font-bold text-stone-900 focus:outline-none focus:border-amber-600"
                 />
-                <button
-                  type="button"
-                  onClick={onOpenScanner}
-                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold flex items-center gap-1 shrink-0"
-                >
-                  <ScanLine className="w-3.5 h-3.5" /> Scan
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Add Initial Harvest Toggle */}
-          <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-foreground cursor-pointer flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={addHarvest}
-                  onChange={(e) => setAddHarvest(e.target.checked)}
-                  className="rounded text-amber-500 focus:ring-amber-500"
-                />
-                Log Initial Harvest Batch For This Hive
-              </label>
-              <span className="text-[10px] text-muted-foreground">Optional</span>
-            </div>
-
-            {addHarvest && (
-              <div className="pt-2 border-t border-border/60 space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-[10px] text-muted-foreground font-semibold">Batch Code</span>
-                    <input
-                      type="text"
-                      value={batchCode}
-                      onChange={(e) => setBatchCode(e.target.value)}
-                      className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs font-mono font-bold"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-muted-foreground font-semibold">Quantity (kg)</span>
-                    <input
-                      type="number"
-                      step="0.5"
-                      min="0.5"
-                      value={quantityKg}
-                      onChange={(e) => setQuantityKg(parseFloat(e.target.value) || 0)}
-                      className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs font-bold"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-[10px] text-muted-foreground font-semibold">Harvest Date</span>
-                    <input
-                      type="date"
-                      value={harvestDate}
-                      onChange={(e) => setHarvestDate(e.target.value)}
-                      className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-muted-foreground font-semibold">Moisture %</span>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={moisturePct}
-                      onChange={(e) => setMoisturePct(parseFloat(e.target.value) || 17.1)}
-                      className="w-full bg-card border border-border rounded-lg px-2 py-1 text-xs font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <span className="text-[10px] text-muted-foreground font-semibold">Botanical Honey Type</span>
-                  <input
-                    type="text"
-                    value={honeyType}
-                    onChange={(e) => setHoneyType(e.target.value)}
-                    placeholder="e.g. Raw Acacia Blossom"
-                    className="w-full bg-card border border-border rounded-lg px-2.5 py-1 text-xs"
-                  />
-                </div>
               </div>
             )}
-          </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-border text-xs font-semibold text-foreground hover:bg-muted"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold shadow-sm"
-            >
-              Register Hive
-            </button>
+            {/* Hive Summary Card */}
+            <div className="bg-[#EFE7DB]/70 rounded-2xl p-3.5 text-xs text-stone-800 space-y-1.5 border border-stone-300/40">
+              <div className="flex items-center justify-between font-bold text-stone-900 pb-1 border-b border-stone-300/50">
+                <span>{cleanDisplayCode}</span>
+                <span className="flex items-center gap-1 text-[11px] font-medium">
+                  <span>Queen {queenBreedingYear}</span>
+                  <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-1 text-[11px] text-stone-600 pt-0.5">
+                <div>Max Frames: <span className="font-semibold text-stone-900">{maxBroodFrames || 10}</span></div>
+                <div>Bottom Board: <span className="font-semibold text-stone-900">{hasHygienicBottomBoard ? "Hygienic" : "Standard"}</span></div>
+                <div>Origin: <span className="font-semibold text-stone-900">{queenOrigin}</span></div>
+                <div>Insemination: <span className="font-semibold text-stone-900">{queenInsemination}</span></div>
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="mt-auto pt-8 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-5 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="px-5 py-2.5 rounded-full border border-stone-800 text-stone-900 font-medium text-sm hover:bg-stone-200/50 transition-colors"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={handleFinalSubmit}
+                className="px-7 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-sm transition-colors"
+              >
+                Add Hive
+              </button>
+            </div>
           </div>
-        </form>
+        )}
       </div>
     </div>
   );
