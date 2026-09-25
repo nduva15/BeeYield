@@ -1,9 +1,8 @@
 import { supportTicketService } from "@/services/supportTicketService";
-import { useState, useEffect, useId } from "react";
+import { useState, useEffect } from "react";
 import {
   X,
   ChevronRight,
-  Headphones,
   Mail,
   Phone,
   MapPin,
@@ -14,7 +13,8 @@ import {
   Loader2,
   ShieldCheck,
   Plus,
-  AlertCircle
+  Trash2,
+  CheckCircle2
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ type SupportTicket = {
   created_at: string;
 };
 
-export default function SupportPageModal({ isOpen, onClose, onTabChange, embedded = false }: SupportPageModalProps) {
+export default function SupportPageModal({ isOpen, onClose, embedded = false }: SupportPageModalProps) {
   const [activeTab, setActiveTab] = useState<"all" | "new" | "in_progress" | "resolved">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
@@ -53,32 +53,35 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
     priority: "medium" as "low" | "medium" | "high" | "critical",
   });
 
-  useEffect(() => {
-    let mounted = true;
-    supportTicketService.getTickets().then((data) => {
-      if (mounted && Array.isArray(data)) {
+  const loadTickets = async () => {
+    try {
+      const data = await supportTicketService.getTickets();
+      if (Array.isArray(data)) {
         setTickets(data.map((t) => ({
           id: t.id,
           category: t.category,
           subject: t.subject,
           description: t.body || (t as any).description || "",
           priority: (t.priority as any) || "medium",
-          status: (t.status as any) || "new",
+          status: (t.status === "in progress" ? "in_progress" : (t.status as any)) || "new",
           created_at: t.created_at,
         })));
       }
-    }).catch(() => {
+    } catch {
       const saved = localStorage.getItem("beeyield_support_tickets");
-      if (saved && mounted) {
+      if (saved) {
         try { setTickets(JSON.parse(saved)); } catch {}
       }
-    });
-    return () => { mounted = false; };
-  }, [isOpen]);
+    }
+  };
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen || embedded) {
+      loadTickets();
+    }
+  }, [isOpen, embedded]);
 
-  const handleCreateTicket = (e: React.FormEvent) => {
+  const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.subject.trim() || !formData.description.trim()) {
       toast.error("Please provide both subject and description.");
@@ -86,9 +89,16 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      const res = await supportTicketService.createTicket({
+        category: formData.category,
+        subject: formData.subject.trim(),
+        body: formData.description.trim(),
+        priority: formData.priority,
+      });
+
       const newTicket: SupportTicket = {
-        id: "TICK-" + Math.floor(1000 + Math.random() * 9000),
+        id: res.data?.id || ("TICK-" + Math.floor(1000 + Math.random() * 9000)),
         category: formData.category,
         subject: formData.subject.trim(),
         description: formData.description.trim(),
@@ -97,13 +107,9 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
         created_at: new Date().toISOString(),
       };
 
-      const updated = [newTicket, ...tickets];
+      const updated = [newTicket, ...tickets.filter((t) => t.id !== newTicket.id)];
       setTickets(updated);
-      try {
-        localStorage.setItem("beeyield_support_tickets", JSON.stringify(updated));
-      } catch { /* localStorage quota exceeded – ignore */ }
 
-      setIsSubmitting(false);
       setIsNewTicketOpen(false);
       setFormData({
         category: "Hardware Calibration",
@@ -112,7 +118,54 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
         priority: "medium",
       });
       toast.success("Support ticket dispatched successfully. SLA < 2 Hours.");
-    }, 400);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to dispatch ticket.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAdvanceStatus = async (ticket: SupportTicket) => {
+    const nextStatus = ticket.status === "new" ? "in progress" : "resolved";
+    try {
+      await supportTicketService.advanceTicket({
+        id: ticket.id,
+        device_id: "anonymous",
+        subject: ticket.subject,
+        category: ticket.category,
+        priority: ticket.priority,
+        status: ticket.status === "new" ? "new" : "in progress",
+        hive_label: null,
+        body: ticket.description,
+        contact_email: null,
+        contact_phone: null,
+        last_contact_at: null,
+        resolution: null,
+        created_at: ticket.created_at,
+      });
+
+      setTickets((prev) =>
+        prev.map((t) =>
+          t.id === ticket.id
+            ? { ...t, status: (nextStatus === "in progress" ? "in_progress" : "resolved") as any }
+            : t
+        )
+      );
+      toast.success(`Ticket marked as ${nextStatus}`);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update ticket status.");
+    }
+  };
+
+  const handleDeleteTicket = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this ticket?")) return;
+    try {
+      await supportTicketService.deleteTicket(id);
+      setTickets((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Ticket deleted.");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to delete ticket.");
+    }
   };
 
   const filteredTickets = tickets.filter((t) => {
@@ -133,34 +186,34 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
   const content = (
     <>
       <div className="flex flex-col h-full w-full">
-      {/* Top Header */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-[#12110E]">
-        <div>
-          <h1 className="text-xl font-bold font-display tracking-tight text-white flex items-center gap-1.5">
-            Support <span className="text-[#F4D03F]">Page View</span>
-          </h1>
-          <p className="text-xs text-white/60 mt-0.5">
-            High-priority assistance for your apiculture operations.
-          </p>
-        </div>
+        {/* Top Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-[#12110E]">
+          <div>
+            <h1 className="text-xl font-bold font-display tracking-tight text-white flex items-center gap-1.5">
+              Support <span className="text-[#F4D03F]">Page View</span>
+            </h1>
+            <p className="text-xs text-white/60 mt-0.5">
+              High-priority assistance for your apiculture operations.
+            </p>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsNewTicketOpen(true)}
-            className="h-9 px-4 rounded-xl font-bold text-xs bg-[#F59E0B] hover:bg-[#EAB308] text-black flex items-center gap-1.5 transition-all shadow-md active:scale-95"
-          >
-            + New Ticket <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-          {!embedded && (
+          <div className="flex items-center gap-2">
             <button
-              onClick={onClose}
-              className="w-9 h-9 rounded-xl border border-white/10 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all shadow-sm"
+              onClick={() => setIsNewTicketOpen(true)}
+              className="h-9 px-4 rounded-xl font-bold text-xs bg-[#F59E0B] hover:bg-[#EAB308] text-black flex items-center gap-1.5 transition-all shadow-md active:scale-95"
             >
-              <X className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" /> New Ticket <ChevronRight className="w-3.5 h-3.5" />
             </button>
-          )}
+            {!embedded && (
+              <button
+                onClick={onClose}
+                className="w-9 h-9 rounded-xl border border-white/10 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all shadow-sm"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
 
         {/* Scrollable Body */}
         <div className="p-6 space-y-6 overflow-y-auto custom-scroll">
@@ -312,8 +365,8 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
                   key={ticket.id}
                   className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="font-mono text-xs text-amber-400 font-bold">{ticket.id}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-white/80">
                         {ticket.category}
@@ -327,12 +380,40 @@ export default function SupportPageModal({ isOpen, onClose, onTabChange, embedde
                       }`}>
                         {ticket.priority}
                       </span>
+                      <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                        ticket.status === "resolved"
+                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                          : ticket.status === "in_progress"
+                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                          : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                      }`}>
+                        {ticket.status.replace("_", " ")}
+                      </span>
                     </div>
                     <h4 className="font-semibold text-sm text-white">{ticket.subject}</h4>
-                    <p className="text-xs text-white/60 line-clamp-1 mt-0.5">{ticket.description}</p>
+                    <p className="text-xs text-white/60 line-clamp-2 mt-0.5">{ticket.description}</p>
                   </div>
-                  <div className="text-right text-xs text-white/40">
-                    {new Date(ticket.created_at).toLocaleDateString()}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {ticket.status !== "resolved" && (
+                      <button
+                        onClick={() => handleAdvanceStatus(ticket)}
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/10 hover:bg-white/20 text-white flex items-center gap-1 transition-all"
+                        title="Advance Status"
+                      >
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        {ticket.status === "new" ? "Start" : "Resolve"}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDeleteTicket(ticket.id)}
+                      className="p-1.5 rounded-lg border border-red-500/20 hover:bg-red-500/20 text-red-400 transition-all"
+                      title="Delete Ticket"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                    <div className="text-right text-xs text-white/40 pl-2 border-l border-white/10">
+                      {new Date(ticket.created_at).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               ))}

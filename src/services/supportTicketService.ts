@@ -92,11 +92,18 @@ export const supportTicketService = {
       }
     }
 
-    // 3. Fetch from FastAPI Backend (/api/v1/beeyield/requests)
+    // 3. Fetch from FastAPI Backend (/api/v1/support/tickets or /api/v1/beeyield/requests)
     try {
-      const backendRequests = await apiGet<any[]>("beeyield/requests");
-      if (Array.isArray(backendRequests)) {
-        backendRequests.forEach((req: any) => {
+      const queryParam = deviceId ? `?device_id=${encodeURIComponent(deviceId)}` : "";
+      let backendTickets: any[] = [];
+      try {
+        backendTickets = (await apiGet<any[]>(`support/tickets${queryParam}`)) || [];
+      } catch {
+        backendTickets = (await apiGet<any[]>(`beeyield/requests${queryParam}`)) || [];
+      }
+
+      if (Array.isArray(backendTickets)) {
+        backendTickets.forEach((req: any) => {
           const reqId = String(req.id || "");
           if (!reqId) return;
 
@@ -108,17 +115,17 @@ export const supportTicketService = {
 
           const mappedTicket: Ticket = {
             id: reqId,
-            device_id: deviceId || "default_device",
+            device_id: req.device_id || deviceId || "default_device",
             subject: req.subject || "Support Ticket",
             category: req.category || "General",
             priority: (req.priority || "normal").toLowerCase(),
             status: mappedStatus,
-            hive_label: req.hive_id || req.hive_label || null,
-            body: req.description || req.body || "",
-            contact_email: null,
-            contact_phone: null,
-            last_contact_at: req.updated_at || req.created_at || new Date().toISOString(),
-            resolution: null,
+            hive_label: req.hive_label || req.hive_id || null,
+            body: req.body || req.description || "",
+            contact_email: req.contact_email || null,
+            contact_phone: req.contact_phone || null,
+            last_contact_at: req.last_contact_at || req.updated_at || req.created_at || new Date().toISOString(),
+            resolution: req.resolution || null,
             created_at: req.created_at || new Date().toISOString(),
           };
 
@@ -193,28 +200,30 @@ export const supportTicketService = {
 
     // 2. Synchronize with FastAPI backend API
     try {
-      const priorityFormatted =
-        newTicket.priority === "urgent" || newTicket.priority === "critical" ? "Critical" :
-        newTicket.priority === "high" ? "High" :
-        newTicket.priority === "low" ? "Low" :
-        "Medium";
-
-      await apiPost("beeyield/requests", {
-        subject: newTicket.subject,
-        description: newTicket.body,
-        type: "support",
-        category: newTicket.category,
-        priority: priorityFormatted,
-        status: "Open",
-      });
+      await apiPost("support/tickets", newTicket);
     } catch (apiErr) {
-      console.warn("Backend API request creation notice:", apiErr);
+      try {
+        const priorityFormatted =
+          newTicket.priority === "urgent" || newTicket.priority === "critical" ? "Critical" :
+          newTicket.priority === "high" ? "High" :
+          newTicket.priority === "low" ? "Low" :
+          "Medium";
+
+        await apiPost("beeyield/requests", {
+          subject: newTicket.subject,
+          description: newTicket.body,
+          type: "support",
+          category: newTicket.category,
+          priority: priorityFormatted,
+          status: "Open",
+        });
+      } catch {}
     }
 
     // 3. Synchronize with Supabase support_tickets table
     if (supabase) {
       try {
-        const { error } = await supabase.from("support_tickets").insert({
+        await supabase.from("support_tickets").insert({
           id: newTicket.id,
           device_id: newTicket.device_id,
           subject: newTicket.subject,
@@ -227,11 +236,8 @@ export const supportTicketService = {
           contact_phone: newTicket.contact_phone,
           last_contact_at: newTicket.last_contact_at,
         });
-        if (error) {
-          console.warn("Supabase support_tickets insert notice:", error.message);
-        }
       } catch (sbErr) {
-        console.warn("Supabase insert exception (ticket saved locally and backend):", sbErr);
+        console.warn("Supabase insert notice (ticket persisted to backend and local store):", sbErr);
       }
     }
 
@@ -249,37 +255,31 @@ export const supportTicketService = {
     return { data: newTicket, error: null };
   },
 
-  async advanceTicket(ticket: Ticket, deviceId: string): Promise<Ticket> {
-    const nextStatus =
-      ticket.status === "new" ? "in progress" :
-      ticket.status === "in progress" ? "resolved" :
-      "new";
-
+  async updateTicket(ticket: Partial<Ticket> & { id: string }, deviceId?: string): Promise<Ticket> {
     const now = new Date().toISOString();
+    const current = readLocalTickets(deviceId);
+    const existing = current.find((t) => t.id === ticket.id);
     const updatedTicket: Ticket = {
+      ...(existing || ({} as Ticket)),
       ...ticket,
-      status: nextStatus,
-      last_contact_at: now,
       updated_at: now,
+      last_contact_at: now,
     };
 
     // 1. Update local storage
-    const current = readLocalTickets(deviceId);
     const updated = current.map((t) => (t.id === ticket.id ? updatedTicket : t));
+    if (!current.some((t) => t.id === ticket.id)) {
+      updated.unshift(updatedTicket);
+    }
     saveLocalTickets(updated, deviceId);
 
     // 2. Synchronize with Backend API
     try {
-      const backendStatus =
-        nextStatus === "resolved" ? "Resolved" :
-        nextStatus === "in progress" ? "In Progress" :
-        "Open";
-
-      await apiPatch(`beeyield/requests/${ticket.id}`, {
-        status: backendStatus,
-      });
+      await apiPatch(`support/tickets/${ticket.id}`, ticket);
     } catch (apiErr) {
-      console.warn("Backend API request status patch notice:", apiErr);
+      try {
+        await apiPatch(`beeyield/requests/${ticket.id}`, ticket);
+      } catch {}
     }
 
     // 3. Synchronize with Supabase
@@ -288,26 +288,35 @@ export const supportTicketService = {
         await supabase
           .from("support_tickets")
           .update({
-            status: nextStatus,
+            ...ticket,
+            updated_at: now,
             last_contact_at: now,
           })
           .eq("id", ticket.id);
       } catch (sbErr) {
-        console.warn("Supabase status update notice:", sbErr);
+        console.warn("Supabase update notice:", sbErr);
       }
     }
-
-    // 4. Update beeyieldService
-    try {
-      await beeyieldService.updateRequest(ticket.id, {
-        status: nextStatus,
-      });
-    } catch {}
 
     return updatedTicket;
   },
 
-  async deleteTicket(id: string, deviceId: string): Promise<boolean> {
+  async advanceTicket(ticket: Ticket, deviceId?: string): Promise<Ticket> {
+    const nextStatus =
+      ticket.status === "new" ? "in progress" :
+      ticket.status === "in progress" ? "resolved" :
+      "new";
+
+    return this.updateTicket(
+      {
+        id: ticket.id,
+        status: nextStatus,
+      },
+      deviceId
+    );
+  },
+
+  async deleteTicket(id: string, deviceId?: string): Promise<boolean> {
     // 1. Remove from local storage
     const current = readLocalTickets(deviceId);
     const filtered = current.filter((t) => t.id !== id);
@@ -315,9 +324,11 @@ export const supportTicketService = {
 
     // 2. Synchronize with Backend API
     try {
-      await apiDelete(`beeyield/requests/${id}`);
+      await apiDelete(`support/tickets/${id}`);
     } catch (apiErr) {
-      console.warn("Backend API request delete notice:", apiErr);
+      try {
+        await apiDelete(`beeyield/requests/${id}`);
+      } catch {}
     }
 
     // 3. Synchronize with Supabase

@@ -90,11 +90,11 @@ function normalizeResult(table: string, context: GuardContext, result: any) {
     };
   }
 
-  // If table is optional or app_settings, suppress the mutation error so UI does not show schema cache error toast
-  if (OPTIONAL_TABLES.has(table) || table === "app_settings") {
+  // If table is optional, app_settings, or support_tickets/requests, suppress error and provide clean fallback
+  if (OPTIONAL_TABLES.has(table) || table === "app_settings" || table === "support_tickets" || table === "requests") {
     return {
       ...result,
-      data: null,
+      data: context.op === "select" ? makeReadFallback(context.shape) : (result.data || null),
       error: null,
       status: 200,
       statusText: "OK",
@@ -166,7 +166,7 @@ function createMissingBuilder(table: string, context: GuardContext = { op: "sele
   };
 
   const response =
-    context.op === "select" || OPTIONAL_TABLES.has(table) || table === "app_settings"
+    context.op === "select" || OPTIONAL_TABLES.has(table) || table === "app_settings" || table === "support_tickets" || table === "requests"
       ? {
           data: makeReadFallback(context.shape),
           error: null,
@@ -210,6 +210,10 @@ export function wrapSupabaseClient<T extends { from: (table: string) => any }>(c
       if (prop !== "from") return Reflect.get(target, prop, receiver);
 
       return (table: string) => {
+        if (table === "support_tickets" || table === "requests") {
+          missingTables.delete(table);
+        }
+
         if (missingTables.has(table)) {
           return createMissingBuilder(table);
         }

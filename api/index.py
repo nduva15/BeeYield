@@ -1,3 +1,6 @@
+import urllib.request
+import uuid
+from datetime import datetime, timezone
 import sys
 import os
 import json
@@ -444,6 +447,139 @@ async def vercel_harvests_options():
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "*",
     })
+
+# ==========================================
+# SUPPORT TICKETS & REQUESTS ENGINE (FULL CRUD)
+# ==========================================
+
+SUPABASE_REST_URL = os.environ.get("SUPABASE_URL", "https://hfpirscejvndthojcuug.supabase.co")
+SUPABASE_REST_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_PUBLISHABLE_KEY") or os.environ.get("VITE_SUPABASE_PUBLISHABLE_KEY") or "sb_publishable_vErAgK4_MP7NoIZdaUYhHQ_qwan7Hbi"
+
+def _query_supabase_tickets(path: str, method: str = "GET", body: dict = None):
+    url = f"{SUPABASE_REST_URL}/rest/v1/{path}"
+    headers = {
+        "apikey": SUPABASE_REST_KEY,
+        "Authorization": f"Bearer {SUPABASE_REST_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+    }
+    data = json.dumps(body).encode("utf-8") if body is not None else None
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req) as resp:
+            raw = resp.read().decode("utf-8")
+            return resp.status, json.loads(raw) if raw else []
+    except urllib.error.HTTPError as e:
+        err_msg = e.read().decode("utf-8")
+        try:
+            return e.code, json.loads(err_msg)
+        except Exception:
+            return e.code, {"error": err_msg}
+    except Exception as e:
+        return 500, {"error": str(e)}
+
+SUPPORT_CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "*",
+}
+
+@app.get("/api/v1/support/tickets")
+@app.get("/api/v1/support/tickets/")
+@app.get("/api/v1/beeyield/requests")
+@app.get("/api/v1/beeyield/requests/")
+@app.get("/api/v1/requests")
+@app.get("/api/v1/requests/")
+async def vercel_list_support_tickets(request: Request):
+    device_id = request.query_params.get("device_id")
+    endpoint = "support_tickets?select=*&order=created_at.desc"
+    if device_id:
+        endpoint = f"support_tickets?select=*&device_id=eq.{device_id}&order=created_at.desc"
+    status_code, data = _query_supabase_tickets(endpoint, method="GET")
+    if status_code >= 400 or not isinstance(data, list):
+        data = []
+    return JSONResponse(content=data, headers=SUPPORT_CORS_HEADERS)
+
+@app.post("/api/v1/support/tickets")
+@app.post("/api/v1/support/tickets/")
+@app.post("/api/v1/beeyield/requests")
+@app.post("/api/v1/beeyield/requests/")
+@app.post("/api/v1/requests")
+@app.post("/api/v1/requests/")
+async def vercel_create_support_ticket(request: Request):
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    ticket_id = body.get("id") or str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+    record = {
+        "id": ticket_id,
+        "device_id": body.get("device_id") or "default_device",
+        "subject": body.get("subject", "Support Ticket"),
+        "category": body.get("category", "General"),
+        "priority": str(body.get("priority", "normal")).lower(),
+        "status": str(body.get("status", "new")).lower(),
+        "hive_label": body.get("hive_label") or body.get("hive_id"),
+        "body": body.get("body") or body.get("description", ""),
+        "contact_email": body.get("contact_email"),
+        "contact_phone": body.get("contact_phone"),
+        "last_contact_at": now,
+        "created_at": now,
+        "updated_at": now
+    }
+    status_code, resp_data = _query_supabase_tickets("support_tickets", method="POST", body=record)
+    created = resp_data[0] if isinstance(resp_data, list) and len(resp_data) > 0 else record
+    return JSONResponse(status_code=201, content=created, headers=SUPPORT_CORS_HEADERS)
+
+@app.patch("/api/v1/support/tickets/{ticket_id}")
+@app.patch("/api/v1/support/tickets/{ticket_id}/")
+@app.patch("/api/v1/beeyield/requests/{ticket_id}")
+@app.patch("/api/v1/beeyield/requests/{ticket_id}/")
+@app.put("/api/v1/support/tickets/{ticket_id}")
+@app.put("/api/v1/support/tickets/{ticket_id}/")
+async def vercel_update_support_ticket(ticket_id: str, request: Request):
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    now = datetime.now(timezone.utc).isoformat()
+    patch_payload = {}
+    for key in ["subject", "category", "priority", "status", "hive_label", "body", "contact_email", "contact_phone", "resolution"]:
+        if key in body:
+            patch_payload[key] = body[key]
+    if "description" in body and "body" not in patch_payload:
+        patch_payload["body"] = body["description"]
+    patch_payload["updated_at"] = now
+    patch_payload["last_contact_at"] = now
+
+    status_code, resp_data = _query_supabase_tickets(f"support_tickets?id=eq.{ticket_id}", method="PATCH", body=patch_payload)
+    updated = resp_data[0] if isinstance(resp_data, list) and len(resp_data) > 0 else {"id": ticket_id, **patch_payload}
+    return JSONResponse(status_code=200, content=updated, headers=SUPPORT_CORS_HEADERS)
+
+@app.delete("/api/v1/support/tickets/{ticket_id}")
+@app.delete("/api/v1/support/tickets/{ticket_id}/")
+@app.delete("/api/v1/beeyield/requests/{ticket_id}")
+@app.delete("/api/v1/beeyield/requests/{ticket_id}/")
+async def vercel_delete_support_ticket(ticket_id: str):
+    _query_supabase_tickets(f"support_tickets?id=eq.{ticket_id}", method="DELETE")
+    return JSONResponse(status_code=200, content={"status": "success", "id": ticket_id}, headers=SUPPORT_CORS_HEADERS)
+
+@app.options("/api/v1/support/tickets")
+@app.options("/api/v1/support/tickets/")
+@app.options("/api/v1/support/tickets/{ticket_id}")
+@app.options("/api/v1/support/tickets/{ticket_id}/")
+@app.options("/api/v1/beeyield/requests")
+@app.options("/api/v1/beeyield/requests/")
+@app.options("/api/v1/beeyield/requests/{ticket_id}")
+@app.options("/api/v1/beeyield/requests/{ticket_id}/")
+@app.options("/api/v1/requests")
+@app.options("/api/v1/requests/")
+@app.options("/api/v1/requests/{ticket_id}")
+@app.options("/api/v1/requests/{ticket_id}/")
+async def vercel_support_options(ticket_id: str = ""):
+    return Response(status_code=200, headers=SUPPORT_CORS_HEADERS)
+
 
 
 # ==========================================
