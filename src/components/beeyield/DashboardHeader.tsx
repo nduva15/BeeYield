@@ -234,7 +234,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 )}
 
                 {/* Directory Views Dropdown - Perfectly matching pill trigger */}
-                <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                <DropdownMenu modal={false} open={dropdownOpen} onOpenChange={setDropdownOpen}>
                     <DropdownMenuTrigger asChild>
                         <button
                             className="flex items-center gap-2 sm:gap-2.5 h-10 px-3 sm:px-3.5 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl transition-all group outline-none shrink-0 shadow-xs text-stone-900 dark:text-white active:scale-95"
@@ -341,7 +341,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 </button>
 
                 {/* Notifications Dropdown */}
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                         <button
                             className="relative h-10 w-10 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl flex items-center justify-center transition-all group shadow-xs shrink-0 active:scale-95"
@@ -399,7 +399,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 </DropdownMenu>
 
                 {/* Profile Avatar Dropdown (Ultra-Polished Premium UI/UX) */}
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                         <button
                             className="flex items-center gap-2 sm:gap-2.5 h-10 pl-1.5 pr-2.5 sm:pr-3 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl transition-all group shadow-xs shrink-0 focus:outline-none focus:ring-2 focus:ring-amber-500/30 active:scale-95"
