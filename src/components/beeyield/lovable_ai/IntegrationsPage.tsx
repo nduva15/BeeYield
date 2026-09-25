@@ -226,8 +226,16 @@ export default function IntegrationsPage({ isOpen = true, onClose, embedded = fa
     } finally { setBusy(""); }
   };
 
+  const confirmAsync = (msg: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+      }, 25);
+    });
+  };
+
   const doDisconnect = async () => {
-    if (!confirm(`Disconnect ${meta.name} and delete its stored credentials?`)) return;
+    if (!await confirmAsync(`Disconnect ${meta.name} and delete its stored credentials?`)) return;
     setBusy("disconnect");
     try {
       await disconnectIntegration({ data: { deviceId, provider: active } });

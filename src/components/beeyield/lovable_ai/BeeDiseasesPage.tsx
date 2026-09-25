@@ -46,6 +46,7 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
   const [draft, setDraft] = useState<typeof EMPTY>(EMPTY);
   const [showForm, setShowForm] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [deleteRecord, setDeleteRecord] = useState<Disease | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -94,9 +95,17 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
     setShowForm(false); setEditing(null); load();
   };
 
+  const confirmAsync = (msg: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+      }, 25);
+    });
+  };
+
   const remove = async (r: Disease) => {
     if (r.is_default && r.device_id === "global") { toast.error("Default rows can't be deleted"); return; }
-    if (!confirm(`Delete "${r.name}"?`)) return;
+    if (!await confirmAsync(`Delete "${r.name}"?`)) return;
     const { error } = await supabase.from("bee_diseases").delete().eq("id", r.id);
     if (error) return toast.error(error.message);
     toast.success("Deleted"); load();
@@ -124,7 +133,20 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
     }));
     const { error } = await supabase.from("bee_diseases").insert(payload);
     if (error) return toast.error(error.message);
-    toast.success(`Imported ${payload.length} diseases`); load();
+    toast.success(`Imported ${payload.length} diseases`);
+    load();
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteRecord) return;
+    const { error } = await supabase.from("bee_diseases").delete().eq("id", deleteRecord.id);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Disease record deleted");
+      load();
+    }
+    setDeleteRecord(null);
   };
 
   if (!isOpen) return null;

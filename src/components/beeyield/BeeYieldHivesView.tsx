@@ -598,8 +598,16 @@ export default function BeeYieldHivesView({
     }
   };
 
+  const confirmAsync = (msg: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+      }, 25);
+    });
+  };
+
   const handleDelete = async (id: string, code: string) => {
-    if (!window.confirm(`Are you sure you want to delete hive ${code}? This will remove its colony record.`)) {
+    if (!await confirmAsync(`Are you sure you want to delete hive ${code}? This will remove its colony record.`)) {
       return;
     }
     try {

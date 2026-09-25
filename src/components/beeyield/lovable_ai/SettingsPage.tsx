@@ -3,7 +3,7 @@ import {
   X, Settings as SettingsIcon, User, Blocks, BellRing, ShieldCheck, Wifi,
   Loader2, Save, Link2, Trash2, Copy, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw,
   CreditCard, Clock, Plus, Lock, Calendar, FileText, Download, CheckCircle, ArrowUpRight, TrendingUp,
-  TrendingDown, Wallet, ExternalLink, ShieldAlert
+  TrendingDown, Wallet, ExternalLink, ShieldAlert, Camera, Upload
 } from "lucide-react";
 import {
   Dialog,
@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import AvatarPickerDialog from "@/components/beeyield/AvatarPickerDialog";
+import { PRESET_AVATARS } from "@/lib/preset-avatars";
 
 type Tab = "profile" | "modules" | "alerting" | "security" | "billing";
 
@@ -42,6 +44,14 @@ const ALERTS: { key: string; label: string; help: string }[] = [
   { key: "inspection_due", label: "Inspection reminders", help: "Colonies uninspected past their recommended interval." },
   { key: "battery_low", label: "Sensor telemetry", help: "Device battery below 15% or solar node offline." },
 ];
+
+const confirmAsync = (msg: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+    }, 25);
+  });
+};
 
 const DEFAULT_MODULES: Record<string, boolean> = {
   commercial: true,
@@ -106,13 +116,22 @@ function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange:
 
 export default function SettingsPage({ isOpen = true, onClose, embedded = false }: { isOpen?: boolean; onClose?: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
-  const { user, profile, refreshProfile, signOut } = useAuth();
+  const { user, profile, refreshProfile, signOut, updateAvatar } = useAuth();
   const [tab, setTab] = useState<Tab>("profile");
+  const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
 
   const [fullName, setFullName] = useState(profile?.full_name ?? "");
   const [phone, setPhone] = useState(profile?.phone ?? "");
   const [country, setCountry] = useState(profile?.country ?? "");
   const [savingProfile, setSavingProfile] = useState(false);
+
+  const avatarUrl =
+    profile?.avatar_url ||
+    user?.user_metadata?.avatar_url ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem(`beeyield_user_avatar_${user?.id || profile?.id || "usr_kibwezi_owner_01"}`) ||
+        localStorage.getItem("beeyield_user_avatar")
+      : null);
 
   const [modules, setModules] = useState<Record<string, boolean>>(DEFAULT_MODULES);
   const [alerts, setAlerts] = useState<Record<string, boolean>>(DEFAULT_ALERTS);
@@ -410,6 +429,70 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
           <form onSubmit={saveProfile} className="rounded-xl border border-border bg-card p-5 space-y-4">
             <h2 className="font-display text-lg text-honey">User Profile</h2>
             <p className="text-xs text-muted-foreground">Manage your operator credentials, contact info, and role assignment.</p>
+
+            {/* Avatar & Profile Photo Section */}
+            <div className="p-4 rounded-2xl border border-border bg-background/50 flex flex-col sm:flex-row items-center gap-4">
+              <div
+                onClick={() => setIsAvatarPickerOpen(true)}
+                className="relative group cursor-pointer"
+                title="Change profile avatar or upload photo"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 p-0.5 shadow-md overflow-hidden group-hover:ring-4 group-hover:ring-amber-500/30 transition-all">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={fullName || "User"} className="w-full h-full object-cover rounded-[14px]" />
+                  ) : (
+                    <div className="w-full h-full rounded-[14px] bg-amber-500 flex items-center justify-center text-white font-black text-2xl">
+                      {(fullName || "T").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white">
+                  <Camera className="w-5 h-5" />
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-background" />
+              </div>
+
+              <div className="flex-1 text-center sm:text-left space-y-1">
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                  <h3 className="text-sm font-bold text-foreground">Profile Avatar & Photo</h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                    Live Synced
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Personalize your beekeeper profile with an apiculture avatar or upload your photo.
+                </p>
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsAvatarPickerOpen(true)}
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all active:scale-95"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                    <span>Choose / Upload Avatar</span>
+                  </button>
+                  {/* Quick Preview Thumbnails */}
+                  <div className="hidden md:flex items-center gap-1 pl-2 border-l border-border">
+                    <span className="text-[10px] text-muted-foreground mr-1">Presets:</span>
+                    {PRESET_AVATARS.slice(0, 4).map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => {
+                          void updateAvatar(p.svg);
+                          toast.success(`Avatar updated to "${p.name}"!`);
+                        }}
+                        className="w-6 h-6 rounded-lg overflow-hidden border border-border hover:scale-110 hover:border-amber-500 transition-all shadow-xs"
+                        title={p.name}
+                      >
+                        <img src={p.svg} alt={p.name} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground">Full Name</label>
@@ -566,7 +649,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               <button
                 type="button"
                 onClick={async () => {
-                  if (!confirm("Delete all local apiary records for this device? This cannot be undone.")) return;
+                  if (!await confirmAsync("Delete all local apiary records for this device? This cannot be undone.")) return;
                   const tables = ["inspections", "sound_analyses", "app_settings", "integration_connections", "integration_sync_logs"] as const;
                   for (const t of tables) {
                     try {
@@ -947,6 +1030,13 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       <div className="max-w-5xl mx-auto">
         {mainContent}
       </div>
+      <AvatarPickerDialog
+        isOpen={isAvatarPickerOpen}
+        onClose={() => setIsAvatarPickerOpen(false)}
+        currentAvatarUrl={avatarUrl}
+        userName={fullName || profile?.full_name || "Timothy"}
+        userId={user?.id || profile?.id}
+      />
     </div>
   );
 }

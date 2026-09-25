@@ -164,8 +164,16 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
     load();
   };
 
+  const confirmAsync = (msg: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+      }, 25);
+    });
+  };
+
   const remove = async (p: FloragePlant) => {
-    if (!confirm(`Delete ${p.name}?`)) return;
+    if (!await confirmAsync(`Delete ${p.name}?`)) return;
     const { error } = await supabase.from("florage_plants").delete().eq("id", p.id);
     if (error) { toast.error(error.message); return; }
     toast.success("Deleted");
