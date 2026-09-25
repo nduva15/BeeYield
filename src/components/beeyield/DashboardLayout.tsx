@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import {
-    Compass, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
+    Compass, Hexagon, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
     Calculator, Layers, Package, BarChart3, Target, Flower2, Sprout,
     Plane, HeartPulse, Info, Download, Plug, Cpu, LifeBuoy,
     Settings, LogIn, LogOut, Tag, FileBarChart, Navigation
@@ -68,6 +68,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {
             label: "Apiary operations",
             items: [
+                { id: 'assistant', label: "BeeYield AI", icon: Hexagon, onClick: () => onTabChange('assistant') },
                 { id: 'apiaries-weather', label: "Apiaries & Live Weather", icon: Compass, onClick: () => onTabChange('apiaries-weather') },
                 { id: 'hive-health', label: "Hive Health Dashboard", icon: HeartPulse, onClick: () => onTabChange('hive-health') },
                 { id: 'inspections', label: "Inspections & Diagnostics", icon: ClipboardList, onClick: () => onTabChange('inspections') },

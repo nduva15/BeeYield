@@ -51,7 +51,8 @@ import {
     Plug,
     Package,
     AudioLines,
-    BarChart3
+    BarChart3,
+    Tag
 } from 'lucide-react';
 import { NavItem } from './DashboardSidebar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -129,6 +130,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             title: "APIARY OPERATIONS",
             items: [
                 { id: 'home', label: 'Dashboard Home', icon: Home },
+                { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
                 { id: 'apiaries-weather', label: 'Apiaries & Live Weather', icon: Compass },
                 { id: 'hive-health', label: 'Hive Health Dashboard', icon: HeartPulse },
                 { id: 'inspections', label: 'Inspections & Diagnostics', icon: ClipboardList },
@@ -169,6 +171,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         {
             title: "KNOWLEDGE & REFERENCE",
             items: [
+                { id: 'reports-exports', label: 'Reports & Exports', icon: BarChart3 },
                 { id: 'bee-diseases', label: 'Bee Diseases (Editable)', icon: HeartPulse },
                 { id: 'varroa-simulator', label: 'Varroa Simulator', icon: HeartPulse },
                 { id: 'beeyield-calculators', label: 'Beeyield Calculators', icon: Calculator },
@@ -179,6 +182,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         {
             title: "BUSINESS & DEVICES",
             items: [
+                { id: 'label-generator', label: 'Label Generator & QR Codes', icon: Tag },
                 { id: 'integrations', label: 'Integrations (Shopify, QuickBooks, eTIMS)', icon: Plug },
                 { id: 'measurement-tools', label: 'My Devices, USB, Bluetooth & Online', icon: Cpu },
                 { id: 'support', label: 'Support & Tickets', icon: LifeBuoy },
