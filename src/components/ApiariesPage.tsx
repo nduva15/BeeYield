@@ -3579,12 +3579,14 @@ function AddHiveModal({
   // Step 3: Hardware / Sensor Setup
   const [sensorCategory, setSensorCategory] = useState<"vitalsensor" | "scale" | "acoustic_varroa" | "none">("vitalsensor");
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
+  const [prevScannedSerial, setPrevScannedSerial] = useState(scannedSerial);
 
-  useEffect(() => {
+  if (scannedSerial !== prevScannedSerial) {
+    setPrevScannedSerial(scannedSerial);
     if (scannedSerial) {
       setSensorSerial(scannedSerial);
     }
-  }, [scannedSerial]);
+  }
 
   if (!isOpen) return null;
 
@@ -4089,14 +4091,16 @@ function EditHiveModal({
   const [broodFrames, setBroodFrames] = useState<number | "">(typeof hive.broodFrames === "number" ? hive.broodFrames : "");
   const [honeyFrames, setHoneyFrames] = useState<number | "">(typeof hive.honeyFrames === "number" ? hive.honeyFrames : "");
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || hive.sensorSerial || "");
+  const [prevScannedSerial, setPrevScannedSerial] = useState(scannedSerial);
   const [deviceCategory, setDeviceCategory] = useState<DeviceCategory>(hive.deviceCategory || "in_hive");
   const [deviceType, setDeviceType] = useState<string>(hive.deviceType || "Hive Weight Scale (Telemetry Load Cell)");
 
-  useEffect(() => {
+  if (scannedSerial !== prevScannedSerial) {
+    setPrevScannedSerial(scannedSerial);
     if (scannedSerial) {
       setSensorSerial(scannedSerial);
     }
-  }, [scannedSerial]);
+  }
 
   if (!isOpen) return null;
 

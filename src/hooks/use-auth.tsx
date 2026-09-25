@@ -32,23 +32,29 @@ const Ctx = createContext<AuthCtx>({
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Restore local user if available
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
     try {
-      const stored = localStorage.getItem("beeyield_local_user");
+      const stored =
+        typeof window !== "undefined" ? localStorage.getItem("beeyield_local_user") : null;
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed?.user && parsed?.profile) {
-          setUser(parsed.user);
-          setProfile(parsed.profile);
-        }
+        if (parsed?.user) return parsed.user;
       }
     } catch {}
-  }, []);
+    return null;
+  });
+  const [profile, setProfile] = useState<Profile | null>(() => {
+    try {
+      const stored =
+        typeof window !== "undefined" ? localStorage.getItem("beeyield_local_user") : null;
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.profile) return parsed.profile;
+      }
+    } catch {}
+    return null;
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
@@ -98,7 +104,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    if (session?.user?.id) void loadProfile(session.user.id);
+    let ignore = false;
+    const uid = session?.user?.id;
+    if (!uid) return;
+
+    void supabase
+      .from("profiles")
+      .select("id,email,full_name,phone,country")
+      .eq("id", uid)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (!ignore && data && !error) {
+          setProfile(data as Profile);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [session?.user?.id]);
 
   const signInDemoOwner = (email = "timothy@beeyield.com", name = "Timothy (Owner)") => {
@@ -127,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(
         "beeyield_local_user",
-        JSON.stringify({ user: demoUser, profile: demoProfile })
+        JSON.stringify({ user: demoUser, profile: demoProfile }),
       );
     } catch {}
 
@@ -166,7 +189,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(Ctx);
 }
