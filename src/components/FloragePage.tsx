@@ -16,6 +16,11 @@ import { toast } from "sonner";
 
 // Default seed (40 expert melliferous plants). Inserted on first load per device.
 const DEFAULT_FLORAGE = [
+  { name: "Acacia (Tortilis / Senegal)", latin: "Acacia tortilis", bloom: "Nov–Feb & Jul–Aug", nectar: 10, pollen: 8, radius: 2500, notes: "Premier dryland African acacia; water-white to extra light amber single-source export honey" },
+  { name: "Neem (Mwarobaini)", latin: "Azadirachta indica", bloom: "Mar–May & Sep–Nov", nectar: 9, pollen: 7, radius: 1500, notes: "Antimicrobial medicinal honey; consistent heavy nectar and pollen pulses in warm ecosystems" },
+  { name: "Maize (Corn Tassel)", latin: "Zea mays", bloom: "Jun–Aug & Dec–Jan", nectar: 4, pollen: 10, radius: 1200, notes: "Massive seasonal protein pollen pulse for rapid colony buildup, wax building and brood rearing" },
+  { name: "Mango (Blossom Flow)", latin: "Mangifera indica", bloom: "Jul–Sep (Eastern Kenya)", nectar: 8, pollen: 8, radius: 1000, notes: "Fragrant tropical blossom nectar; high pollinator density driver in dryland agroforestry" },
+  { name: "Forest Multifloral (Savannah Flora)", latin: "Acacia + Combretum + Terminalia", bloom: "Year-round post-rains", nectar: 9, pollen: 9, radius: 3000, notes: "Complex dryland bush multifloral blend; rich antioxidant profile and dark amber hue" },
   { name: "Black Locust", latin: "Robinia pseudoacacia", bloom: "May–Jun", nectar: 10, pollen: 4, radius: 1500, notes: "Premium acacia honey; 10–14 day bloom; cold-sensitive" },
   { name: "Manuka", latin: "Leptospermum scoparium", bloom: "Nov–Feb (S.Hem)", nectar: 9, pollen: 5, radius: 1200, notes: "MGO-rich antibacterial honey; NZ/Aus" },
   { name: "Sidr (Christ's Thorn)", latin: "Ziziphus spina-christi", bloom: "Oct–Dec", nectar: 10, pollen: 6, radius: 1500, notes: "Premium arid-zone honey; Yemen/Saudi/Kenya" },
