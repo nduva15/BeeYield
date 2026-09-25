@@ -69,6 +69,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
+import { isTimothyUser } from "@/lib/user-hives";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 
 export interface ApiarySite {
@@ -1119,7 +1120,7 @@ function downloadBatchCert(batch: HiveHarvestBatch, hiveCode: string, apiaryName
       { label: "Refractometer Moisture", value: `${moisture}%` },
       { label: "Botanical Floral Source", value: batch.honeyType },
       { label: "Official Quality Standard", value: isExport ? "KEBS KS 05-344 Compliant (Grade A Raw)" : "Standard Grade Honey" },
-      { label: "Fair Trade Beekeeper Value", value: `KES ${(batch.quantityKg * 1250).toLocaleString()}` },
+      { label: "Fair Trade Beekeeper Value", value: `KES ${(batch.quantityKg * 1000).toLocaleString()}` },
     ],
     sections: [
       {
@@ -1156,7 +1157,7 @@ function downloadHarvestCert(harvest: ApiaryHarvestItem, apiaryName?: string, lo
       { label: "Refractometer Moisture", value: `${harvest.moisture_pct}%` },
       { label: "Color Classification", value: harvest.color_grade },
       { label: "Official Quality Standard", value: harvest.quality_grade },
-      { label: "Fair Trade Beekeeper Value", value: `KES ${(harvest.quantity_kg * 1250).toLocaleString()}` },
+      { label: "Fair Trade Beekeeper Value", value: `KES ${(harvest.quantity_kg * 1000).toLocaleString()}` },
     ],
     sections: [
       {
@@ -4753,7 +4754,7 @@ function ApiaryDetailModal({
   onDelete?: (apiaryId: string, apiaryName: string) => void;
   onHivesCountChanged?: (apiaryId: string, count: number) => void;
 }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const deviceId = useDeviceId();
   const userKey = user?.id || deviceId || "default_user";
 
@@ -4766,7 +4767,7 @@ function ApiaryDetailModal({
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch {}
-    return CANONICAL_KIBWEZI_DEVICES;
+    return (isTimothyUser(user, profile) || !user) ? CANONICAL_KIBWEZI_DEVICES : [];
   });
 
   const saveDevicesUserScoped = (nextDevices: ApiaryDeviceItem[]) => {
@@ -4851,7 +4852,7 @@ function ApiaryDetailModal({
     } catch {
       // fallback
     }
-    return user ? [] : CANONICAL_KIBWEZI_HIVES;
+    return (isTimothyUser(user, profile) || !user) ? CANONICAL_KIBWEZI_HIVES : [];
   });
 
   // Load user-specific harvests with fallback
@@ -4865,7 +4866,7 @@ function ApiaryDetailModal({
     } catch {
       // fallback
     }
-    return user ? [] : CANONICAL_KIBWEZI_HARVESTS;
+    return (isTimothyUser(user, profile) || !user) ? CANONICAL_KIBWEZI_HARVESTS : [];
   });
 
   // Sync to Supabase & localStorage whenever hives change
@@ -6404,7 +6405,7 @@ export default function ApiariesPage({
   embedded?: boolean;
   onSelectApiary?: (apiary: ApiarySite) => void;
 }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const deviceId = useDeviceId();
   const userKey = user?.id || deviceId || "default_user";
 
@@ -6429,9 +6430,8 @@ export default function ApiariesPage({
     } catch {
       // fallback
     }
-    return user?.id
-      ? []
-      : deduplicateApiaries(
+    return (isTimothyUser(user, profile) || !user?.id)
+      ? deduplicateApiaries(
           DEFAULT_APIARIES.map((item) => {
             const normalized = normalizeApiarySite(item);
             const userHives = getUserHivesCount(userKey, normalized.id, normalized.active_hives);
@@ -6441,7 +6441,8 @@ export default function ApiariesPage({
               total_hives: Math.max(normalized.total_hives, userHives),
             };
           })
-        );
+        )
+      : [];
   });
 
   const [weatherMap, setWeatherMap] = useState<Record<string, LiveWeatherData>>({});

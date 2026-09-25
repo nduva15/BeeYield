@@ -131,7 +131,7 @@ function generateTimothyHarvestBatches(): Harvest[] {
 - **Beekeeper:** **Timothy Nduva (Certified Master Apiculturist)**.
 - **Quality Classification:** **Export Grade A Verified (99% confidence)**.
 - **Moisture Index:** **${moisture}%** meets international Codex Alimentarius standards (max 20%) and KEBS export standard (max 18.5%).
-- **Asset Valuation:** ${quantity} kg batch lot recognized at **KES ${(quantity * 1250).toLocaleString()}** wholesale asset baseline.
+- **Asset Valuation:** ${quantity} kg batch lot recognized at **KES ${(quantity * 1000).toLocaleString()}** (Shop baseline @ KES 1,000/kg).
 - **Enzyme Preservation:** Cold extracted below 35 °C with active diastase & invertase preserved.`,
         created_at: `${dateStr}T10:00:00.000Z`,
       });
@@ -187,7 +187,7 @@ function harvestPdf(r: Harvest) {
       { label: "Official Quality Standard", value: r.quality_grade },
       { label: "Traceability QR Hash", value: r.traceability_code },
       { label: "Ambient Extraction Weather", value: r.weather || "28 °C, dry harvest" },
-      { label: "Fair Trade Beekeeper Value", value: `KES ${(r.quantity_kg * 1250).toLocaleString()}` },
+      { label: "Fair Trade Beekeeper Value", value: `KES ${(r.quantity_kg * 1000).toLocaleString()}` },
       { label: "Cumulative Certified Yield", value: "843.0 kg KEBS Certified" },
     ],
     sections: [
@@ -381,7 +381,7 @@ export default function HarvestsPage({
     const avgMoisture = uniqueRows.length
       ? (uniqueRows.reduce((s, r) => s + (r.moisture_pct || 17.2), 0) / uniqueRows.length).toFixed(1)
       : "17.1";
-    const marketValueKes = Math.round(totalYield * 1250);
+    const marketValueKes = Math.round(totalYield * 1000);
     return {
       totalYield: Number(totalYield.toFixed(1)),
       gradeACount,
@@ -460,7 +460,7 @@ Color Classification: ${draft.color_grade} • Quality Category: ${draft.quality
 Processing Protocol Applied: ${draft.actions.join(", ") || "Cold extracted"}
 Extraction Notes: ${draft.notes || "None"}
 
-Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moisture analysis, (3) Diastase/enzyme preservation verification, (4) Commercial wholesale asset value (KES 1,250/kg benchmark), (5) Traceability recommendation.`;
+Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moisture analysis, (3) Diastase/enzyme preservation verification, (4) Commercial honey valuation (KES 1,000/kg shop benchmark: 250 KES/250g, 500 KES/500g), (5) Traceability recommendation.`;
       await streamBeeGpt(prompt, setAiText);
     } catch {
       setAiText(`### BeeYield AI Quality & Yield Verification
@@ -468,7 +468,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
 - **Compliance Verdict:** **${draft.quality_grade} (99% verification confidence)**.
 - **Moisture Evaluation:** ${draft.moisture_pct}% moisture content is ${draft.moisture_pct <= 18 ? "fully compliant with international export criteria (<18%) and KEBS standard" : "standard grade"}.
 - **Enzyme Preservation:** Cold extraction below 35 °C maintains active glucose oxidase, invertase, and natural bio-compounds.
-- **Asset Valuation:** Lot recognized at **KES ${(draft.quantity_kg * 1250).toLocaleString()}** (${draft.quantity_kg} kg @ KES 1,250/kg).
+- **Asset Valuation:** Lot recognized at **KES ${(draft.quantity_kg * 1000).toLocaleString()}** (${draft.quantity_kg} kg @ KES 1,000/kg).
 - **Apiary Heritage:** Part of Timothy Nduva's 843.0 kg historical certified honey yield (2020-2026).`);
       toast.info("Offline harvest assessment loaded");
     } finally {
@@ -696,8 +696,8 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
             <p className="font-bold text-base font-display text-foreground">2.0 kg / 2 Frames</p>
           </div>
           <div>
-            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Wholesale Value</span>
-            <p className="font-bold text-base font-display text-emerald-500">{stats.marketValue}</p>
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Average Moisture</span>
+            <p className="font-bold text-base font-display text-emerald-500">{stats.avgMoisture} (Grade A)</p>
           </div>
         </div>
       </div>

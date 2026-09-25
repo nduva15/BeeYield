@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
+import { resolveUserHives, isTimothyUser, TIMOTHY_DEFAULT_HEALTH_RECORDS } from "@/lib/user-hives";
 
 export interface HiveHealthDashboardProps {
   isOpen: boolean;
@@ -119,59 +120,49 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     gust: number;
   }>>([]);
 
-  // Hive list with owner-managed Colony Strength, Availability and Sensor status (strictly real user hives)
+  // Hive list with owner-managed Colony Strength, Availability and Sensor status (user-specific with Timothy 184 hives)
   const [hivesList, setHivesList] = useState<HiveItemInfo[]>(() => {
+    let customList: any[] = [];
     try {
       const cached = localStorage.getItem(`beeyield_cached_hives_${userKey}`);
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const clean = parsed.filter(
-            (item: any) =>
-              !String(item?.id || "").startsWith("hive-kib-") &&
-              !String(item?.name || "").includes("KIB-00")
-          );
-          if (clean.length > 0) {
-            return clean.map((item: any) => ({
-              ...item,
-              apiary: normalizeApiaryName(item.apiary),
-              hasSensor: Boolean(item.hasSensor || item.sensorSerial),
-              colonyStrength: item.colonyStrength || "Strong (8–10 Frames Brood & Bees)",
-              colonyAvailability: item.colonyAvailability || "Dedicated Honey Production",
-            }));
-          }
+          customList = parsed;
         }
       }
     } catch {}
-    return [];
+
+    const resolved = resolveUserHives(user, profile, customList);
+    return resolved.map((item: any) => ({
+      id: item.id,
+      name: item.name || item.code || `Hive ${item.id}`,
+      apiary: normalizeApiaryName(item.apiary || item.apiary_name),
+      hasSensor: Boolean(item.hasSensor || item.sensorSerial),
+      sensorSerial: item.sensorSerial,
+      colonyStrength: item.colonyStrength || "Strong (8–10 Frames Brood & Bees)",
+      colonyAvailability: item.colonyAvailability || "Dedicated Honey Production",
+    }));
   });
 
-  // User-logged physical and sensor records (strictly purging legacy mock data)
+  // User-logged physical and sensor records
   const [records, setRecords] = useState<HiveRecord[]>(() => {
     try {
       const cached = localStorage.getItem(`beeyield_hive_health_records_${userKey}`);
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           const clean = parsed.filter((r: any) => {
             const id = String(r?.id || "");
-            const name = String(r?.hive_name || "");
-            return (
-              !id.startsWith("rec_default") &&
-              !id.startsWith("mock_") &&
-              !id.startsWith("fake_") &&
-              !id.startsWith("insp-0") &&
-              !id.startsWith("insp-kib-") &&
-              !name.includes("KIB-00")
-            );
+            return !id.startsWith("mock_") && !id.startsWith("fake_");
           });
-          if (clean.length !== parsed.length) {
-            localStorage.setItem(`beeyield_hive_health_records_${userKey}`, JSON.stringify(clean));
-          }
-          return clean;
+          if (clean.length > 0) return clean;
         }
       }
     } catch {}
+    if (isTimothyUser(user, profile) || !user) {
+      return TIMOTHY_DEFAULT_HEALTH_RECORDS as HiveRecord[];
+    }
     return [];
   });
 
@@ -329,45 +320,47 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       const rawHives = hivesResult.status === "fulfilled" ? hivesResult.value : [];
       const pairedDevices = devicesResult.status === "fulfilled" ? devicesResult.value : [];
 
-      if (rawHives && rawHives.length > 0) {
-        const pulledHives: HiveItemInfo[] = rawHives
-          .filter((h: any) => {
-            const label = h.name || h.hive_code || h.nickname || h.hive_label || "";
-            return !String(h.id || "").startsWith("hive-kib-") && !label.includes("KIB-00");
-          })
-          .map((h: any) => {
-            const paired = pairedDevices.find((d: any) => d.hive_id === h.id && d.status === "active");
-            let parsedStrength = "Strong (8–10 Frames Brood & Bees)";
-            let parsedAvailability = "Dedicated Honey Production";
-            try {
-              if (h.notes?.startsWith("{")) {
-                const json = JSON.parse(h.notes);
-                if (json.colonyStrength) parsedStrength = json.colonyStrength;
-                if (json.colonyAvailability) parsedAvailability = json.colonyAvailability;
-              }
-            } catch {}
-
-            return {
-              id: h.id,
-              name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${h.id.slice(0, 5)}`,
-              apiary: normalizeApiaryName(h.apiaries?.name || h.apiary_name || targetApiaryName),
-              hasSensor: Boolean(paired?.serial),
-              sensorSerial: paired?.serial || undefined,
-              colonyStrength: parsedStrength,
-              colonyAvailability: parsedAvailability,
-            };
-          });
-
-        setHivesList(pulledHives);
+      const mappedRemote: any[] = (rawHives || []).map((h: any) => {
+        const paired = pairedDevices.find((d: any) => d.hive_id === h.id && d.status === "active");
+        let parsedStrength = "Strong (8–10 Frames Brood & Bees)";
+        let parsedAvailability = "Dedicated Honey Production";
         try {
-          localStorage.setItem(`beeyield_cached_hives_${userKey}`, JSON.stringify(pulledHives));
+          if (h.notes?.startsWith("{")) {
+            const json = JSON.parse(h.notes);
+            if (json.colonyStrength) parsedStrength = json.colonyStrength;
+            if (json.colonyAvailability) parsedAvailability = json.colonyAvailability;
+          }
         } catch {}
-      } else {
-        setHivesList([]);
-        try {
-          localStorage.removeItem(`beeyield_cached_hives_${userKey}`);
-        } catch {}
-      }
+
+        return {
+          id: h.id,
+          name: h.name || h.hive_code || h.nickname || h.hive_label || `Hive ${h.id.slice(0, 5)}`,
+          hive_code: h.hive_code || h.code,
+          code: h.hive_code || h.code,
+          apiary: normalizeApiaryName(h.apiaries?.name || h.apiary_name || targetApiaryName),
+          apiary_name: normalizeApiaryName(h.apiaries?.name || h.apiary_name || targetApiaryName),
+          hasSensor: Boolean(paired?.serial),
+          sensorSerial: paired?.serial || undefined,
+          colonyStrength: parsedStrength,
+          colonyAvailability: parsedAvailability,
+        };
+      });
+
+      const resolved = resolveUserHives(user, profile, mappedRemote);
+      const pulledHives: HiveItemInfo[] = resolved.map((h: any) => ({
+        id: h.id,
+        name: h.name,
+        apiary: normalizeApiaryName(h.apiary || h.apiary_name || targetApiaryName),
+        hasSensor: Boolean(h.hasSensor || h.sensorSerial),
+        sensorSerial: h.sensorSerial,
+        colonyStrength: h.colonyStrength || "Strong (8–10 Frames Brood & Bees)",
+        colonyAvailability: h.colonyAvailability || "Dedicated Honey Production",
+      }));
+
+      setHivesList(pulledHives);
+      try {
+        localStorage.setItem(`beeyield_cached_hives_${userKey}`, JSON.stringify(pulledHives));
+      } catch {}
 
       // 3. User Inspections (strictly real logged records)
       const rawInspections = inspResult.status === "fulfilled" ? inspResult.value : [];
@@ -375,9 +368,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
       if (rawInspections && rawInspections.length > 0) {
         rawInspections.forEach((ins: any) => {
-          if (String(ins.id).startsWith("insp-0") || String(ins.id).startsWith("insp-kib-")) return;
+          if (String(ins.id).startsWith("insp-0")) return;
           const label = ins.hive_label || ins.hive_code || "Hive";
-          if (label.includes("KIB-001") || label.includes("KIB-002") || label.includes("KIB-005")) return;
 
           const healthScore =
             ins.colony_health === "Healthy" || ins.colony_health === "Thriving"
@@ -411,14 +403,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
             parsed.forEach((ins: any) => {
               const id = String(ins.id || "");
               const label = ins.hive_label || ins.hive_code || "Hive";
-              if (
-                id.startsWith("insp-0") ||
-                id.startsWith("insp-kib-") ||
-                label.includes("KIB-00") ||
-                label.includes("KIB-")
-              ) {
-                return;
-              }
+              if (id.startsWith("insp-0")) return;
               const healthScore =
                 ins.colony_health === "Healthy" || ins.colony_health === "Thriving"
                   ? 92
@@ -442,7 +427,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         }
       } catch {}
 
-      // 5. Retrieve locally saved records and merge (purging legacy mock records)
+      // 5. Retrieve locally saved records and merge
       const localCachedStr = localStorage.getItem(`beeyield_hive_health_records_${userKey}`);
       let localRecords: HiveRecord[] = [];
       if (localCachedStr) {
@@ -451,15 +436,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
           if (Array.isArray(parsed)) {
             localRecords = parsed.filter((r: any) => {
               const id = String(r?.id || "");
-              const name = String(r?.hive_name || "");
-              return (
-                !id.startsWith("rec_default") &&
-                !id.startsWith("mock_") &&
-                !id.startsWith("fake_") &&
-                !id.startsWith("insp-0") &&
-                !id.startsWith("insp-kib-") &&
-                !name.includes("KIB-00")
-              );
+              return !id.startsWith("mock_") && !id.startsWith("fake_");
             });
           }
         } catch {}
@@ -472,9 +449,13 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
       const combinedMap = new Map<string, HiveRecord>();
       [...localRecords, ...dbRecords].forEach((r) => combinedMap.set(r.id, r));
-      const combined = Array.from(combinedMap.values()).sort(
+      let combined = Array.from(combinedMap.values()).sort(
         (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime()
       );
+
+      if (combined.length === 0 && (isTimothyUser(user, profile) || !user)) {
+        combined = TIMOTHY_DEFAULT_HEALTH_RECORDS as HiveRecord[];
+      }
 
       setRecords(combined);
       try {

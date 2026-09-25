@@ -34,6 +34,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
+import { isTimothyUser, CANONICAL_TIMOTHY_HIVES } from "@/lib/user-hives";
 import {
   AreaChart,
   Area,
@@ -213,7 +214,7 @@ export default function YieldProjection({
   onClose,
   embedded = false,
 }: YieldProjectionProps) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const deviceId = useDeviceId();
   const calculatorRef = useRef<HTMLDivElement>(null);
 
@@ -560,8 +561,54 @@ export default function YieldProjection({
         if (flattenedHives.length > 0 && selectedHiveId === "all") {
           setHivesCount(flattenedHives.length);
         }
+      } else if (isTimothyUser(user, profile) || !user) {
+        const timothyHives: HiveOption[] = CANONICAL_TIMOTHY_HIVES.map((h) => ({
+          id: h.id,
+          name: h.name,
+          hive_code: h.code,
+          max_brood_frames: 10,
+          apiary_name: CANONICAL_APIARY_NAME,
+        }));
+        setHivesList(timothyHives);
+        setApiaryHistoryList([
+          {
+            id: "apiary-kibwezi",
+            name: CANONICAL_APIARY_NAME,
+            latitude: -2.409,
+            longitude: 37.967,
+            notes: "Kibwezi research and commercial production apiary",
+            hives: CANONICAL_TIMOTHY_HIVES.map((h) => ({
+              id: h.id,
+              apiary_id: "apiary-kibwezi",
+              apiary_name: CANONICAL_APIARY_NAME,
+              name: h.name,
+              hive_code: h.code,
+              max_brood_frames: 10,
+              notes: null,
+              queen_breeding_year: h.queenBreedingYear ?? 2025,
+              queen_origin: "Active Laying Queen (Marked)",
+              device: h.sensorSerial ? {
+                id: `dev-${h.id}`,
+                label: `${h.name} VitalSensor`,
+                serial: h.sensorSerial,
+                hive_id: h.id,
+                device_kind: "vitalsensor",
+                link_type: "bluetooth",
+                status: "optimal",
+                battery_pct: 95,
+                last_seen_at: new Date().toISOString(),
+              } : null,
+              latestMeasurement: null,
+              measurementsHistory: [],
+              harvestSummary: null,
+            })),
+          },
+        ]);
+        if (selectedHiveId === "all") {
+          setHivesCount(timothyHives.length);
+        }
       } else {
-        // DO NOT GUESS! If user has no logged records, leave empty with clean manual defaults
+        // If non-Timothy user has no logged records, leave empty with clean manual defaults
         setApiaryHistoryList([]);
         setHivesList([]);
         setDevicesList([]);
@@ -579,7 +626,7 @@ export default function YieldProjection({
       setIsLoadingHistory(false);
       setIsLoadingHives(false);
     }
-  }, [user?.id, selectedHiveId]);
+  }, [user?.id, user, profile, selectedHiveId]);
 
   useEffect(() => {
     if (isOpen || embedded) {

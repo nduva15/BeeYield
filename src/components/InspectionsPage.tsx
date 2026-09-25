@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { normalizeApiaryName, deduplicateApiaries, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
+import { isTimothyUser, CANONICAL_TIMOTHY_HIVES, CANONICAL_TIMOTHY_APIARY } from "@/lib/user-hives";
 
 export type Inspection = {
   id: string;
@@ -63,7 +64,14 @@ export interface ApiaryOption {
   county: string;
 }
 
-export const CANONICAL_APIARIES: ApiaryOption[] = [];
+export const CANONICAL_APIARIES: ApiaryOption[] = [
+  {
+    id: "apiary-kibwezi",
+    name: CANONICAL_APIARY_NAME,
+    region: "Makueni",
+    county: "Kibwezi",
+  },
+];
 
 export interface HiveOption {
   id: string;
@@ -74,7 +82,14 @@ export interface HiveOption {
   frame_count: number;
 }
 
-export const CANONICAL_HIVES: HiveOption[] = [];
+export const CANONICAL_HIVES: HiveOption[] = CANONICAL_TIMOTHY_HIVES.map((h) => ({
+  id: h.id,
+  hive_code: h.code || h.hive_code || "KIB-001",
+  name: h.name,
+  apiary_id: "apiary-kibwezi",
+  apiary_name: CANONICAL_APIARY_NAME,
+  frame_count: h.frame_count || 10,
+}));
 
 // Telemetry context is fetched dynamically from real sensor_readings for the specific hive
 export function getHiveTelemetry(_hiveCode: string, _apiaryName: string) {
@@ -190,7 +205,7 @@ function inspectionPdf(r: Inspection, userName?: string | null) {
 
 export default function InspectionsPage({ isOpen = true, onClose, embedded = false }: { isOpen?: boolean; onClose?: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [rows, setRows] = useState<Inspection[]>([]);
   const [query, setQuery] = useState("");
   const [frameFilter, setFrameFilter] = useState<string>("all");
@@ -384,7 +399,9 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
         apiariesQuery = apiariesQuery.eq("user_id", user.id);
       }
       const [hivesRes, apiariesRes] = await Promise.all([hivesQuery, apiariesQuery]);
-      if (hivesRes.data) {
+      const isTimothy = isTimothyUser(user, profile);
+      const isGuest = !user?.id;
+      if (hivesRes.data && hivesRes.data.length > 0) {
         setUserHives(
           hivesRes.data.map((h: any) => ({
             id: h.id,
@@ -393,14 +410,22 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
             apiary_name: normalizeApiaryName(h.apiaries?.name || CANONICAL_APIARY_NAME),
           }))
         );
+      } else if (isTimothy || isGuest) {
+        setUserHives(CANONICAL_HIVES);
+      } else {
+        setUserHives([]);
       }
-      if (apiariesRes.data) {
+      if (apiariesRes.data && apiariesRes.data.length > 0) {
         setUserApiaries(apiariesRes.data.map((a: any) => ({ id: a.id, name: normalizeApiaryName(a.name) })));
+      } else if (isTimothy || isGuest) {
+        setUserApiaries(CANONICAL_APIARIES);
+      } else {
+        setUserApiaries([]);
       }
     } catch {
       // non-blocking
     }
-  }, [user?.id]);
+  }, [user?.id, user, profile]);
 
   const load = useCallback(async () => {
     setLoading(true);

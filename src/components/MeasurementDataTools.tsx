@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { isTimothyUser, CANONICAL_TIMOTHY_HIVES, CANONICAL_TIMOTHY_APIARY } from "@/lib/user-hives";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -508,7 +509,7 @@ function BluetoothPanel({ onPaired }: { onPaired: (name: string, id: string) => 
 type Tab = "devices" | "usb" | "bluetooth" | "online";
 
 export default function MeasurementDataTools({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [tab, setTab] = useState<Tab>("devices");
   const [apiaries, setApiaries] = useState<Apiary[]>([]);
   const [hives, setHives] = useState<Hive[]>([]);
@@ -528,12 +529,43 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
       supabase.from("devices").select("id,apiary_id,hive_id,device_kind,link_type,serial,label,status,battery_pct,last_seen_at").order("created_at"),
       supabase.from("device_measurements").select("id,device_id,hive_id,recorded_at,source,temperature_c,humidity_pct,weight_kg,battery_pct").order("recorded_at", { ascending: false }).limit(100),
     ]);
-    setApiaries((a.data as Apiary[]) ?? []);
-    setHives((h.data as Hive[]) ?? []);
+    const isTimothy = isTimothyUser(user, profile);
+    const isGuest = !user?.id;
+
+    let apiariesData = (a.data as Apiary[]) ?? [];
+    let hivesData = (h.data as Hive[]) ?? [];
+
+    if (hivesData.length === 0 && (isTimothy || isGuest)) {
+      hivesData = CANONICAL_TIMOTHY_HIVES.map((th) => ({
+        id: th.id,
+        apiary_id: "apiary-kibwezi",
+        name: th.name,
+        max_brood_frames: 10,
+        hygienic_bottom_board: true,
+        queen_breeding_year: th.queenBreedingYear ?? 2025,
+        queen_origin: "Active Laying Queen (Marked)",
+        queen_insemination: "Natural",
+      }));
+    }
+
+    if (apiariesData.length === 0 && (isTimothy || isGuest)) {
+      apiariesData = [
+        {
+          id: CANONICAL_TIMOTHY_APIARY.id,
+          name: CANONICAL_TIMOTHY_APIARY.name,
+          add_mode: "standard",
+          latitude: CANONICAL_TIMOTHY_APIARY.latitude ?? -2.409,
+          longitude: CANONICAL_TIMOTHY_APIARY.longitude ?? 37.967,
+        },
+      ];
+    }
+
+    setApiaries(apiariesData);
+    setHives(hivesData);
     setDevices((d.data as Device[]) ?? []);
     setMeasurements((m.data as Measurement[]) ?? []);
     setLoading(false);
-  }, [user]);
+  }, [user, profile]);
 
   useEffect(() => { if (isOpen) void load(); }, [isOpen, load]);
 

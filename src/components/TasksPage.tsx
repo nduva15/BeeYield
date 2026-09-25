@@ -11,6 +11,7 @@ import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
+import { isTimothyUser, CANONICAL_TIMOTHY_HIVES, CANONICAL_TIMOTHY_APIARY } from "@/lib/user-hives";
 
 export type TaskItem = {
   id: string;
@@ -81,7 +82,7 @@ export default function TasksPage({
   embedded?: boolean;
 }) {
   const deviceId = useDeviceId();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   const [rows, setRows] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -105,18 +106,36 @@ export default function TasksPage({
 
   const loadUserHivesAndApiaries = useCallback(async () => {
     try {
+      let remoteApiaries: any[] = [];
+      let remoteHives: any[] = [];
       if (user?.id) {
-        const { data: apiaryData } = await supabase.from("apiaries").select("id, name").eq("user_id", user.id);
-        if (apiaryData && apiaryData.length > 0) {
-          setUserApiaries(apiaryData);
-        }
-        const { data: hiveData } = await supabase.from("hives").select("id, name, apiary_id").eq("user_id", user.id);
-        if (hiveData && hiveData.length > 0) {
-          setUserHives(hiveData.map((h: any) => ({ id: h.id, name: h.name, apiary: h.apiary_id })));
-        }
+        const [aRes, hRes] = await Promise.all([
+          supabase.from("apiaries").select("id, name").eq("user_id", user.id),
+          supabase.from("hives").select("id, name, apiary_id").eq("user_id", user.id),
+        ]);
+        remoteApiaries = aRes.data || [];
+        remoteHives = hRes.data || [];
+      }
+      const isTimothy = isTimothyUser(user, profile);
+      const isGuest = !user?.id;
+
+      if (remoteHives.length > 0) {
+        setUserHives(remoteHives.map((h: any) => ({ id: h.id, name: h.name, apiary: h.apiary_id })));
+      } else if (isTimothy || isGuest) {
+        setUserHives(CANONICAL_TIMOTHY_HIVES.map((h) => ({ id: h.id, name: h.name, apiary: "apiary-kibwezi" })));
+      } else {
+        setUserHives([]);
+      }
+
+      if (remoteApiaries.length > 0) {
+        setUserApiaries(remoteApiaries);
+      } else if (isTimothy || isGuest) {
+        setUserApiaries([{ id: CANONICAL_TIMOTHY_APIARY.id, name: CANONICAL_TIMOTHY_APIARY.name }]);
+      } else {
+        setUserApiaries([]);
       }
     } catch { void 0; }
-  }, [user?.id]);
+  }, [user?.id, user, profile]);
 
   const load = useCallback(async () => {
     setLoading(true);
