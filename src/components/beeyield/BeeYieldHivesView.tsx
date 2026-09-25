@@ -50,6 +50,8 @@ import { setBeeYieldPendingOnboarding } from "@/lib/beeyieldOnboarding";
 import { CANONICAL_TIMOTHY_HARVESTS } from "@/data/canonicalHarvests";
 import { CANONICAL_TIMOTHY_HIVES, isTimothyUser } from "@/lib/user-hives";
 import { AddHiveModal, AddHiveSubmitData } from "../AddHiveModal";
+import FrameSenseToolPage from "../FrameSenseToolPage";
+import SyrupFeedingToolPage from "../SyrupFeedingToolPage";
 import HiveDetailView from "./HiveDetailView";
 
 export interface BeeYieldHivesViewProps {
@@ -217,6 +219,23 @@ export default function BeeYieldHivesView({
   const [activeHive, setActiveHive] = useState<Hive | null>(null);
   const [hiveNotes, setHiveNotes] = useState("");
   const [isSavingNotes, setIsSavingNotes] = useState(false);
+
+  // FrameSense and Syrup Tools state (Synced to hive)
+  const [frameSenseOpen, setFrameSenseOpen] = useState(false);
+  const [syrupToolOpen, setSyrupToolOpen] = useState(false);
+  const [activeToolHiveId, setActiveToolHiveId] = useState<string | undefined>(undefined);
+
+  const handleOpenFrameSense = (hiveId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setActiveToolHiveId(hiveId);
+    setFrameSenseOpen(true);
+  };
+
+  const handleOpenSyrup = (hiveId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setActiveToolHiveId(hiveId);
+    setSyrupToolOpen(true);
+  };
 
   // Schedule Task Modal state
   const [isRequestingInspection, setIsRequestingInspection] = useState(false);
@@ -1394,6 +1413,24 @@ export default function BeeYieldHivesView({
                       </button>
                       <button
                         type="button"
+                        onClick={(e) => handleOpenFrameSense(h.id, e)}
+                        className="p-1.5 rounded-lg border border-amber-500/40 hover:bg-amber-500/10 text-amber-800 dark:text-amber-300 transition-colors text-xs flex items-center gap-1 font-semibold"
+                        title="FrameSense AI Comb Analysis"
+                      >
+                        <Layers className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                        <span className="hidden md:inline text-[11px]">FrameSense</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenSyrup(h.id, e)}
+                        className="p-1.5 rounded-lg border border-blue-500/40 hover:bg-blue-500/10 text-blue-800 dark:text-blue-300 transition-colors text-xs flex items-center gap-1 font-semibold"
+                        title="Syrup Nutrition Calculator"
+                      >
+                        <Droplets className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                        <span className="hidden md:inline text-[11px]">Syrup</span>
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleStartEdit(h)}
                         className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
                         title="Edit Hive Colony"
@@ -1513,6 +1550,18 @@ export default function BeeYieldHivesView({
                           className="px-3 py-1.5 rounded-lg border border-border bg-card text-foreground flex items-center gap-1.5 hover:bg-honey/10 hover:text-honey transition-colors"
                         >
                           <Eye className="w-3.5 h-3.5" /> Deep placement card
+                        </button>
+                        <button
+                          onClick={() => handleOpenFrameSense(h.id)}
+                          className="px-3 py-1.5 rounded-lg border border-amber-500/50 bg-amber-500/10 text-amber-900 dark:text-amber-200 flex items-center gap-1.5 hover:bg-amber-500/20 transition-colors font-medium"
+                        >
+                          <Layers className="w-3.5 h-3.5 text-amber-600" /> FrameSense AI Scan
+                        </button>
+                        <button
+                          onClick={() => handleOpenSyrup(h.id)}
+                          className="px-3 py-1.5 rounded-lg border border-blue-500/50 bg-blue-500/10 text-blue-900 dark:text-blue-200 flex items-center gap-1.5 hover:bg-blue-500/20 transition-colors font-medium"
+                        >
+                          <Droplets className="w-3.5 h-3.5 text-blue-600" /> Syrup Nutrition
                         </button>
                         <button
                           onClick={() => handleStartEdit(h)}
@@ -1796,6 +1845,24 @@ export default function BeeYieldHivesView({
           apiaries={apiaries.map((a) => ({ id: a.id, name: a.name }))}
           suggestedCode={`KIB-${String(stats.total + 1).padStart(3, "0")}`}
           onAddHive={handleAddHiveSubmit}
+        />
+      )}
+
+      {/* FrameSense AI Tool Modal (Synced to hive) */}
+      {frameSenseOpen && (
+        <FrameSenseToolPage
+          isOpen={frameSenseOpen}
+          onClose={() => setFrameSenseOpen(false)}
+          initialHiveId={activeToolHiveId}
+        />
+      )}
+
+      {/* Syrup Feeding Tool Modal (Synced to hive) */}
+      {syrupToolOpen && (
+        <SyrupFeedingToolPage
+          isOpen={syrupToolOpen}
+          onClose={() => setSyrupToolOpen(false)}
+          initialHiveId={activeToolHiveId}
         />
       )}
     </div>
