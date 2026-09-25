@@ -427,7 +427,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     } catch {
       // non-blocking
     }
-  }, [user?.id, user, profile]);
+  }, [user, profile]);
 
   const load = useCallback(async () => {
     setLoading(true);
