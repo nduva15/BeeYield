@@ -1,3 +1,13 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, CheckSquare, Plus, Search, Trash2, Clock, CheckCircle2, AlertCircle,
@@ -508,8 +518,12 @@ Provide concise, bulleted steps:
     setAiText("");
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this task?")) return;
+  const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
+
+  const confirmDeleteTask = async () => {
+    if (!deleteTaskId) return;
+    const id = deleteTaskId;
+    setDeleteTaskId(null);
 
     // 1. Backend API
     try {
@@ -1034,7 +1048,7 @@ Provide concise, bulleted steps:
 
                     <button
                       type="button"
-                      onClick={() => remove(t.id)}
+                      onClick={() => setDeleteTaskId(t.id)}
                       className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                       title="Delete Task"
                     >

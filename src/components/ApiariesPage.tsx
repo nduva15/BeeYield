@@ -392,11 +392,11 @@ export const DEFAULT_APIARIES: ApiarySite[] = [
     longitude: 37.967,
     type: "Commercial Apiary",
     status: "Optimal",
-    active_hives: 184,
+    active_hives: 150,
     total_hives: 184,
     size_acres: 5,
     forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
-    notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives on 5 acres in Kibwezi ecosystem, Kenya.",
+    notes: "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands on 5 acres in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
     created_at: "2020-01-01T08:00:00Z",
   },
 ];
@@ -720,21 +720,21 @@ export const CANONICAL_KIBWEZI_DEVICES: ApiaryDeviceItem[] = [
   },
 ];
 
-// Canonical Harvests for BeeYield Apiary (943.0 kg across 5 Verified Harvest Cycles)
+// Canonical Harvests for BeeYield Apiary (843.0 kg across 7 Verified Harvest Cycles, matching 423 batches)
 export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   {
     id: "harv-kib-2026-01",
-    batch: "KBZ-2026-01",
+    batch: "BEE-2026-01",
     harvested_on: "2026-01-10",
     honey_type: "Early Spring Acacia Blossom",
     quantity_kg: 60.0,
-    moisture_pct: 17.2,
+    moisture_pct: 16.8,
     color_grade: "Extra Light Amber",
     quality_grade: "Export Grade A Raw (<18% moisture)",
   },
   {
     id: "harv-kib-2025-02",
-    batch: "KBZ-2025-02",
+    batch: "BEE-2025-02",
     harvested_on: "2025-11-20",
     honey_type: "Forest Multifloral & Bush Flora",
     quantity_kg: 300.0,
@@ -744,7 +744,7 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   },
   {
     id: "harv-kib-2024-01",
-    batch: "KBZ-2024-01",
+    batch: "BEE-2024-01",
     harvested_on: "2024-11-15",
     honey_type: "Wildflower & Acacia Blossom",
     quantity_kg: 250.0,
@@ -754,84 +754,176 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
   },
   {
     id: "harv-kib-2023-01",
-    batch: "KBZ-2023-01",
+    batch: "BEE-2023-01",
     harvested_on: "2023-11-18",
     honey_type: "Dryland Flora & Balanites",
-    quantity_kg: 215.0,
+    quantity_kg: 105.0,
     moisture_pct: 16.8,
     color_grade: "Water White",
     quality_grade: "Export Grade A Raw (<18% moisture)",
   },
   {
     id: "harv-kib-2022-01",
-    batch: "KBZ-2022-01",
+    batch: "BEE-2022-01",
     harvested_on: "2022-11-12",
     honey_type: "Forest Acacia Blossom",
-    quantity_kg: 118.0,
+    quantity_kg: 55.0,
     moisture_pct: 17.5,
+    color_grade: "Amber",
+    quality_grade: "Export Grade A Raw (<18% moisture)",
+  },
+  {
+    id: "harv-kib-2021-01",
+    batch: "BEE-2021-01",
+    harvested_on: "2021-11-15",
+    honey_type: "Wildflower Harvest",
+    quantity_kg: 60.0,
+    moisture_pct: 17.1,
+    color_grade: "Light Amber",
+    quality_grade: "Export Grade A Raw (<18% moisture)",
+  },
+  {
+    id: "harv-kib-2020-01",
+    batch: "BEE-2020-01",
+    harvested_on: "2020-10-10",
+    honey_type: "Founding Wildflower Pioneer",
+    quantity_kg: 13.0,
+    moisture_pct: 17.4,
     color_grade: "Amber",
     quality_grade: "Export Grade A Raw (<18% moisture)",
   },
 ];
 
-// Initial Hives with Queen Details and Harvest Batches
-export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 184 }, (_, i) => {
-  const code = `KIB-${String(i + 1).padStart(3, "0")}`;
-  const breedingYear = i % 6 === 0 ? 2024 : i % 11 === 0 ? 2023 : 2025;
-  const isSpecial = i % 12 === 0;
+// Helper to generate verified harvest batches matching Timothy Nduva's 423 ledger batches
+function getCanonicalBatchesForHive(hiveIndex: number): HiveHarvestBatch[] {
+  const result: HiveHarvestBatch[] = [];
+  const pad = String(hiveIndex + 1).padStart(3, "0");
+  const code = `KIB-${pad}`;
 
-  const batches: HiveHarvestBatch[] = [];
-  if (i < 5) {
-    batches.push(
-      {
-        id: `batch-${code}-1`,
-        batchCode: "KBZ-2026-01",
-        date: "2026-01-10",
-        quantityKg: 12.0,
-        honeyType: "Early Spring Acacia Blossom",
-        moisturePct: 17.2,
-      },
-      {
-        id: `batch-${code}-2`,
-        batchCode: "KBZ-2025-02",
-        date: "2025-11-20",
-        quantityKg: 28.5,
-        honeyType: "Forest Multifloral & Bush Flora",
-        moisturePct: 16.9,
-      }
-    );
-  } else if (i < 20) {
-    batches.push({
-      id: `batch-${code}-1`,
-      batchCode: "KBZ-2025-02",
-      date: "2025-11-20",
-      quantityKg: 18.0 + (i % 5),
-      honeyType: "Forest Multifloral & Bush Flora",
+  // 2026: 30 batches (hives 1..30)
+  if (hiveIndex < 30) {
+    result.push({
+      id: `batch-${code}-2026`,
+      batchCode: `BEE-20260103-${pad}`,
+      date: "2026-01-03",
+      quantityKg: 2.0,
+      honeyType: "Early Spring Acacia Blossom",
+      moisturePct: 16.8,
+    });
+  }
+
+  // 2025: 150 batches (hives 1..150)
+  if (hiveIndex < 150) {
+    result.push({
+      id: `batch-${code}-2025`,
+      batchCode: `BEE-20250615-${pad}`,
+      date: "2025-06-15",
+      quantityKg: 2.0,
+      honeyType: "Forest Multifloral",
       moisturePct: 16.9,
     });
-  } else if (i < 50) {
-    batches.push({
-      id: `batch-${code}-1`,
-      batchCode: "KBZ-2024-01",
-      date: "2024-11-15",
-      quantityKg: 14.5 + (i % 3),
-      honeyType: "Wildflower & Acacia Blossom",
+  }
+
+  // 2024: 125 batches (hives 1..125)
+  if (hiveIndex < 125) {
+    result.push({
+      id: `batch-${code}-2024`,
+      batchCode: `BEE-20240615-${pad}`,
+      date: "2024-06-15",
+      quantityKg: 2.0,
+      honeyType: "Wildflower & Acacia",
       moisturePct: 17.0,
     });
   }
+
+  // 2023: 53 batches (hives 1..53)
+  if (hiveIndex < 53) {
+    result.push({
+      id: `batch-${code}-2023`,
+      batchCode: `BEE-20230615-${pad}`,
+      date: "2023-06-15",
+      quantityKg: hiveIndex === 52 ? 1.0 : 2.0,
+      honeyType: "Wildflower",
+      moisturePct: 16.8,
+    });
+  }
+
+  // 2022: 28 batches (hives 1..28)
+  if (hiveIndex < 28) {
+    result.push({
+      id: `batch-${code}-2022`,
+      batchCode: `BEE-20220615-${pad}`,
+      date: "2022-06-15",
+      quantityKg: hiveIndex === 27 ? 1.0 : 2.0,
+      honeyType: "Forest Acacia",
+      moisturePct: 17.5,
+    });
+  }
+
+  // 2021: 30 batches (hives 1..30)
+  if (hiveIndex < 30) {
+    result.push({
+      id: `batch-${code}-2021`,
+      batchCode: `BEE-20210615-${pad}`,
+      date: "2021-06-15",
+      quantityKg: 2.0,
+      honeyType: "Wildflower",
+      moisturePct: 17.1,
+    });
+  }
+
+  // 2020: 7 batches (hives 1..7)
+  if (hiveIndex < 7) {
+    result.push({
+      id: `batch-${code}-2020`,
+      batchCode: `BEE-20200615-${pad}`,
+      date: "2020-06-15",
+      quantityKg: hiveIndex === 6 ? 1.0 : 2.0,
+      honeyType: "Wildflower Pioneer",
+      moisturePct: 17.4,
+    });
+  }
+
+  return result;
+}
+
+// Initial Hives with Queen Details and Harvest Batches
+// Differentiates 150 active producing colonies from 34 standby/empty stands (KIB-151..184)
+export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 184 }, (_, i) => {
+  const code = `KIB-${String(i + 1).padStart(3, "0")}`;
+  const hasColony = i < 150;
+  const breedingYear = hasColony ? (i % 6 === 0 ? 2024 : i % 11 === 0 ? 2023 : 2025) : 0;
+  const isSpecial = hasColony && (i % 12 === 0);
+  const batches = getCanonicalBatchesForHive(i);
 
   return {
     id: `hive-kib-${String(i + 1).padStart(3, "0")}`,
     code,
     name: `${code} (Langstroth 10)`,
     hiveType: "Langstroth 10-Frame",
-    queenPresent: true,
+    queenPresent: hasColony,
     queenBreedingYear: breedingYear,
-    queenStatus: isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)",
-    broodFrames: 6,
-    honeyFrames: 4,
-    colonyStrength: i % 4 === 0 ? "Strong (8–10 Frames Brood & Bees)" : i % 7 === 0 ? "Moderate (5–7 Frames)" : "Strong (8–10 Frames Brood & Bees)",
-    colonyAvailability: i % 5 === 0 ? "Available for Pollination Contracts" : "Dedicated Honey Production",
+    queenStatus: hasColony
+      ? (isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)")
+      : "No Queen (Standby Box)",
+    broodFrames: hasColony ? 6 : 0,
+    honeyFrames: hasColony ? 4 : 0,
+    colonyStrength: hasColony
+      ? (i < 30
+          ? "Strong (8–10 Frames Brood & Bees)"
+          : i % 4 === 0
+          ? "Strong (8–10 Frames Brood & Bees)"
+          : i % 7 === 0
+          ? "Moderate (5–7 Frames)"
+          : "Strong (8–10 Frames Brood & Bees)")
+      : "Empty Stand (Awaiting Swarm / Colonization)",
+    colonyAvailability: hasColony
+      ? (i < 30
+          ? "Active Early Spring Production & Pollination"
+          : i % 5 === 0
+          ? "Available for Pollination Contracts"
+          : "Dedicated Honey Production")
+      : "Standby Stand (Unoccupied)",
     batches,
   };
 });
@@ -1919,7 +2011,7 @@ function HiveDetailModal({
   const displayName = hive.code.startsWith("KIB-") ? `beeyield ${hive.code.replace("KIB-", "")}` : hive.code;
 
   const handleDeleteBatch = (batchId: string) => {
-    if (!window.confirm("Are you sure you want to delete this harvest batch?")) return;
+    if (!await confirmAsync("Are you sure you want to delete this harvest batch?")) return;
     if (onDeleteBatch) {
       onDeleteBatch(batchId);
     } else {
@@ -4823,7 +4915,7 @@ function ApiaryDetailModal({
   };
 
   const handleDeleteDevice = (deviceId: string, serial: string) => {
-    if (!window.confirm(`Are you sure you want to unpair and remove device "${serial}"?`)) return;
+    if (!await confirmAsync(`Are you sure you want to unpair and remove device "${serial}"?`)) return;
     const nextDevices = devicesList.filter((d) => d.id !== deviceId);
     saveDevicesUserScoped(nextDevices);
 
@@ -5049,7 +5141,7 @@ function ApiaryDetailModal({
   };
 
   const handleDeleteHive = async (hiveId: string, hiveCode: string) => {
-    if (!window.confirm(`Are you sure you want to delete hive "${hiveCode}"? This will permanently remove its records.`)) {
+    if (!await confirmAsync(`Are you sure you want to delete hive "${hiveCode}"? This will permanently remove its records.`)) {
       return;
     }
     const nextHives = hivesList.filter((h) => h.id !== hiveId);
@@ -5105,7 +5197,7 @@ function ApiaryDetailModal({
   const [editingHarvest, setEditingHarvest] = useState<ApiaryHarvestItem | null>(null);
 
   const handleDeleteHarvest = (harvestId: string) => {
-    if (!window.confirm("Are you sure you want to delete this harvest record?")) return;
+    if (!await confirmAsync("Are you sure you want to delete this harvest record?")) return;
     const target = harvestsList.find((h) => h.id === harvestId);
     const updatedHarvests = harvestsList.filter((h) => h.id !== harvestId);
     saveHarvestsUserScoped(updatedHarvests);
@@ -6537,6 +6629,15 @@ export function ApisenseWeatherCard({
 // ----------------------------------------------------------------------
 // Main Apiaries Modal & Standalone Page
 // ----------------------------------------------------------------------
+
+const confirmAsync = (msg: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+    }, 25);
+  });
+};
+
 export default function ApiariesPage({
   isOpen = true,
   onClose,
@@ -6858,7 +6959,7 @@ export default function ApiariesPage({
   };
 
   const handleDeleteApiary = async (apiaryId: string, apiaryName: string) => {
-    if (!window.confirm(`Are you sure you want to remove apiary "${apiaryName}"?`)) {
+    if (!await confirmAsync(`Are you sure you want to remove apiary "${apiaryName}"?`)) {
       return;
     }
     const nextApiaries = apiaries.filter((a) => a.id !== apiaryId);

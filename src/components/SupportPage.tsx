@@ -1,3 +1,13 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, LifeBuoy, Plus, Search, Mail, Phone, MapPin, Activity, Printer, Send,
@@ -189,14 +199,19 @@ export default function SupportPage({
     }
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this ticket?")) return;
+  const [deleteTicketId, setDeleteTicketId] = useState<string | null>(null);
+
+  const confirmDeleteTicket = async () => {
+    if (!deleteTicketId) return;
+    const id = deleteTicketId;
+    setDeleteTicketId(null);
     try {
       await supportTicketService.deleteTicket(id, deviceId);
       setTickets((prev) => prev.filter((t) => t.id !== id));
       toast.info("Ticket removed");
     } catch (err) {
       console.error("Delete error:", err);
+      toast.error("Failed to delete ticket");
     }
   };
 
@@ -540,12 +555,12 @@ export default function SupportPage({
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => remove(t.id)}
+                        onClick={() => setDeleteTicketId(t.id)}
                         aria-label="Delete ticket"
-                        className="p-1.5 rounded-md hover:bg-red-500/10 text-muted-foreground hover:text-red-400 border border-border"
+                        className="p-1.5 rounded-md hover:bg-red-500/10 text-muted-foreground hover:text-red-400 border border-border transition-colors active:scale-95"
                         title="Delete ticket"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 pointer-events-none" />
                       </button>
                     </div>
                   </div>
@@ -686,6 +701,25 @@ export default function SupportPage({
           </div>
         </div>
       )}
+          <AlertDialog open={!!deleteTicketId} onOpenChange={(open) => !open && setDeleteTicketId(null)}>
+        <AlertDialogContent className="rounded-2xl border bg-background/95 backdrop-blur-md shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Support Ticket?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this ticket? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteTicket}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Ticket
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

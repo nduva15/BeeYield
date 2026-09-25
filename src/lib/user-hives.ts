@@ -17,6 +17,8 @@ export interface UnifiedHive {
   name: string;
   hive_code?: string;
   code?: string;
+  status?: string;
+  hasColony?: boolean;
   apiary_id?: string;
   apiary_name?: string;
   apiary?: string;
@@ -63,16 +65,19 @@ export function isTimothyUser(user?: UserLike | null, profile?: ProfileLike | nu
   );
 }
 
-// Timothy Nduva operates 184 managed Langstroth hives in Kibwezi with zero hardware IoT sensors connected so far
+// Timothy Nduva operates 184 managed Langstroth hive stands in Kibwezi with zero hardware IoT sensors connected so far
 const KIBWEZI_DEVICE_MAP: Record<string, { serial: string; hasSensor: boolean }> = {};
 
 /**
  * Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi, Makueni County
+ * Note: Based on verified production records, 150 stands have active producing colonies,
+ * and 34 stands (KIB-151 to KIB-184) are standby boxes / awaiting swarms.
  */
 export const CANONICAL_TIMOTHY_HIVES: UnifiedHive[] = Array.from({ length: 184 }, (_, i) => {
   const code = `KIB-${String(i + 1).padStart(3, "0")}`;
-  const breedingYear = i % 6 === 0 ? 2024 : i % 11 === 0 ? 2023 : 2025;
-  const isSpecial = i % 12 === 0;
+  const hasColony = i < 150;
+  const breedingYear = hasColony ? (i % 6 === 0 ? 2024 : i % 11 === 0 ? 2023 : 2025) : undefined;
+  const isSpecial = hasColony && (i % 12 === 0);
   const dev = KIBWEZI_DEVICE_MAP[code];
 
   return {
@@ -80,30 +85,41 @@ export const CANONICAL_TIMOTHY_HIVES: UnifiedHive[] = Array.from({ length: 184 }
     code,
     hive_code: code,
     name: `${code} (Langstroth 10)`,
+    status: hasColony ? "ACTIVE" : "STANDBY",
+    hasColony,
     apiary_id: "apiary-kibwezi",
     apiary_name: CANONICAL_APIARY_NAME,
     apiary: CANONICAL_APIARY_NAME,
     hasSensor: Boolean(dev?.hasSensor),
     sensorSerial: dev?.serial,
-    colonyStrength:
-      i % 4 === 0
-        ? "Strong (8–10 Frames Brood & Bees)"
-        : i % 7 === 0
-        ? "Moderate (5–7 Frames)"
-        : "Strong (8–10 Frames Brood & Bees)",
-    colonyAvailability:
-      i % 5 === 0
-        ? "Available for Pollination Contracts"
-        : "Dedicated Honey Production",
+    colonyStrength: hasColony
+      ? (i < 30
+          ? "Strong (8–10 Frames Brood & Bees)"
+          : i % 4 === 0
+          ? "Strong (8–10 Frames Brood & Bees)"
+          : i % 7 === 0
+          ? "Moderate (5–7 Frames)"
+          : "Strong (8–10 Frames Brood & Bees)")
+      : "Empty Stand (Awaiting Swarm / Colonization)",
+    colonyAvailability: hasColony
+      ? (i < 30
+          ? "Active Early Spring Production & Pollination"
+          : i % 5 === 0
+          ? "Available for Pollination Contracts"
+          : "Dedicated Honey Production")
+      : "Standby Stand (Unoccupied)",
     queenBreedingYear: breedingYear,
-    queenStatus: isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)",
-    max_brood_frames: 10,
+    queenStatus: hasColony
+      ? (isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)")
+      : "No Queen (Standby Box)",
+    max_brood_frames: hasColony ? 10 : 0,
     frame_count: 10,
   };
 });
 
 /**
- * Timothy Nduva's Canonical Apiary in Kibwezi
+ * Timothy Nduva's Canonical Apiary in Kibwezi:
+ * 150 Active Producing Colonies across 184 Managed Langstroth Hive Stands
  */
 export const CANONICAL_TIMOTHY_APIARY: UnifiedApiary = {
   id: "apiary-kibwezi",
@@ -114,7 +130,7 @@ export const CANONICAL_TIMOTHY_APIARY: UnifiedApiary = {
   county: "Kibwezi",
   latitude: -2.409,
   longitude: 37.967,
-  active_hives: 184,
+  active_hives: 150,
   total_hives: 184,
   acres: 5,
 };

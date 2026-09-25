@@ -1,3 +1,13 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, Package, Plus, Search, Trash2, Droplets, ShieldCheck, Scale,
@@ -62,8 +72,8 @@ export const YEAR_PLANS = [
   { year: 2020, totalKg: 13.0, start: "2020-06-15", end: "2020-12-15", honeyType: "Wildflower", nectarSource: "Wildflower Pioneer", colorGrade: "Amber" },
 ];
 
-// Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi
-export const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `BEE-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
+// Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi (150 Active Colonies, 34 Standby Stands)
+export const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `KIB-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
 
 function generateTimothyHarvestBatches(): Harvest[] {
   const batches: Harvest[] = [];
@@ -83,28 +93,28 @@ function generateTimothyHarvestBatches(): Harvest[] {
       const dateStr = batchDate.toISOString().slice(0, 10);
       const yyyymmdd = dateStr.replace(/-/g, "");
 
-      // Accurate historical hive distribution across Timothy Nduva's 184 Langstroth hives:
+      // Accurate historical hive distribution across Timothy Nduva's active colonies (hives 1..150):
       let hiveIndex: number;
       if (plan.year === 2026) {
-        hiveIndex = (seq - 1) % 30; // BEE-001 to BEE-030 (Jan 2026 current season)
+        hiveIndex = (seq - 1) % 30; // KIB-001 to KIB-030 (Jan 2026 current season)
       } else if (plan.year === 2025) {
-        hiveIndex = (seq - 1) % 150; // BEE-001 to BEE-150 (2025 major harvest)
+        hiveIndex = (seq - 1) % 150; // KIB-001 to KIB-150 (2025 major harvest)
       } else if (plan.year === 2024) {
-        hiveIndex = (seq - 1 + 59) % 184; // BEE-060 to BEE-184 (2024 harvest)
+        hiveIndex = (seq - 1) % 125; // KIB-001 to KIB-125 (2024 harvest)
       } else if (plan.year === 2023) {
-        hiveIndex = (seq - 1 + 90) % 184; // BEE-091 to BEE-143 (2023 harvest)
+        hiveIndex = (seq - 1) % 53; // KIB-001 to KIB-053 (2023 harvest)
       } else if (plan.year === 2022) {
-        hiveIndex = (seq - 1 + 130) % 184; // BEE-131 to BEE-158 (2022 harvest)
+        hiveIndex = (seq - 1) % 28; // KIB-001 to KIB-028 (2022 harvest)
       } else if (plan.year === 2021) {
-        hiveIndex = (seq - 1 + 25) % 184; // BEE-026 to BEE-055 (2021 harvest)
+        hiveIndex = (seq - 1) % 30; // KIB-001 to KIB-030 (2021 harvest)
       } else {
-        hiveIndex = (seq - 1) % 7; // BEE-001 to BEE-007 (2020 pioneer founding stands)
+        hiveIndex = (seq - 1) % 7; // KIB-001 to KIB-007 (2020 pioneer founding stands)
       }
 
       const hiveLabel = TIMOTHY_HIVES[hiveIndex];
-      const hiveCode = `BEE-${String(hiveIndex + 1).padStart(3, "0")}`;
+      const hiveCode = `KIB-${String(hiveIndex + 1).padStart(3, "0")}`;
 
-      const batchCode = `BEE-${yyyymmdd}-${hiveCode.slice(-3)}`;
+      const batchCode = `BEE-${yyyymmdd}-${String(hiveIndex + 1).padStart(3, "0")}`;
       const traceCode = `TRC-${plan.year}-${hiveCode.slice(-3)}-${String(seq).padStart(3, "0")}`;
       const moisture = plan.year === 2026 ? 16.8 : Number((17.0 + ((seq % 5) * 0.1)).toFixed(1));
 
@@ -599,8 +609,12 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
     setAiText("");
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this harvest record?")) return;
+  const [deleteHarvestId, setDeleteHarvestId] = useState<string | null>(null);
+
+  const confirmDeleteHarvest = async () => {
+    if (!deleteHarvestId) return;
+    const id = deleteHarvestId;
+    setDeleteHarvestId(null);
     
     // 1. Backend API Delete
     try {
@@ -1132,7 +1146,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                       </button>
                       <button
                         type="button"
-                        onClick={() => remove(r.id)}
+                        onClick={() => setDeleteHarvestId(r.id)}
                         className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30 transition-colors bg-background/50 shadow-sm"
                         title="Delete Batch"
                       >

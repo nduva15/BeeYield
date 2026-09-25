@@ -1,3 +1,13 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { X, Sprout, Flower2, Plus, Pencil, Trash2, Upload, Download, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -305,7 +315,7 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
                     <td className="p-3 text-xs text-muted-foreground max-w-xs truncate">{p.notes}</td>
                     <td className="p-3 text-right whitespace-nowrap">
                       <button onClick={() => startEdit(p)} className="p-1.5 rounded hover:bg-muted" title="Edit"><Pencil className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => remove(p)} className="p-1.5 rounded hover:bg-destructive/10 text-destructive" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => setDeletePlant(p)} className="p-1.5 rounded hover:bg-destructive/10 text-destructive" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
                     </td>
                   </tr>
                 ))}
@@ -318,6 +328,25 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
           <b className="text-honey">Linked tools:</b> Florage scores feed Pollination Planning (florage diversity multiplier), MOA View (florage radius overlay), and Activity Forecaster (expected bees/min × florage abundance).
         </div>
       </div>
+      <AlertDialog open={!!deletePlant} onOpenChange={(open) => !open && setDeletePlant(null)}>
+        <AlertDialogContent className="rounded-2xl border bg-background/95 backdrop-blur-md shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Plant Record?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove the forage record for "{deletePlant?.name}"?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
