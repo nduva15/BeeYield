@@ -7,7 +7,7 @@ export const YEAR_PLANS = [
     start: "2026-01-03",
     end: "2026-01-10",
     honeyType: "Early Spring Acacia Blossom",
-    nectarSource: "Acacia, Neem, Mango Bloom & Forest Multifloral",
+    nectarSource: "Acacia, Neem, Maize, Mango & Forest Multifloral",
     colorGrade: "Extra Light Amber",
     batchesCount: 30,
   },
@@ -17,7 +17,7 @@ export const YEAR_PLANS = [
     start: "2025-06-15",
     end: "2025-12-15",
     honeyType: "Forest Multifloral",
-    nectarSource: "Forest Multifloral, Acacia, Neem & Mango Bloom",
+    nectarSource: "Forest Multifloral, Acacia, Neem, Maize & Mango",
     colorGrade: "Dark Amber",
     batchesCount: 150,
   },
@@ -27,7 +27,7 @@ export const YEAR_PLANS = [
     start: "2024-06-15",
     end: "2024-12-15",
     honeyType: "Wildflower & Acacia",
-    nectarSource: "Wildflower & Acacia (Neem, Maize Tassel & Bush Flora)",
+    nectarSource: "Wildflower & Acacia (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     colorGrade: "Extra White",
     batchesCount: 125,
   },
@@ -37,7 +37,7 @@ export const YEAR_PLANS = [
     start: "2023-06-15",
     end: "2023-12-15",
     honeyType: "Wildflower",
-    nectarSource: "Wildflower (Acacia, Neem & Savannah Dryland Flora)",
+    nectarSource: "Wildflower (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     colorGrade: "Water White",
     batchesCount: 53,
   },
@@ -47,7 +47,7 @@ export const YEAR_PLANS = [
     start: "2022-06-15",
     end: "2022-12-15",
     honeyType: "Forest Acacia",
-    nectarSource: "Forest Acacia, Neem & Riverine Flora",
+    nectarSource: "Forest Acacia, Neem, Maize, Mango & Forest Multifloral",
     colorGrade: "Amber",
     batchesCount: 28,
   },
@@ -57,7 +57,7 @@ export const YEAR_PLANS = [
     start: "2021-06-15",
     end: "2021-12-15",
     honeyType: "Wildflower",
-    nectarSource: "Wildflower, Acacia & Neem Blossom",
+    nectarSource: "Wildflower (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     colorGrade: "Light Amber",
     batchesCount: 30,
   },
@@ -67,7 +67,7 @@ export const YEAR_PLANS = [
     start: "2020-06-15",
     end: "2020-12-15",
     honeyType: "Wildflower Pioneer",
-    nectarSource: "Wildflower Pioneer (Founding Acacia, Neem & Savannah Bush)",
+    nectarSource: "Wildflower Pioneer (Acacia, Neem, Maize, Mango & Forest Multifloral)",
     colorGrade: "Amber",
     batchesCount: 7,
   },
@@ -129,6 +129,8 @@ export function generateTimothyHarvestBatches(): Harvest[] {
         batch: batchCode,
         batch_code: batchCode,
         honey_type: plan.honeyType,
+        nectar_source: plan.nectarSource,
+        florage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
         quantity_kg: quantity,
         weight_kg: quantity,
         frames_harvested: quantity >= 2 ? 2 : 1,
@@ -147,10 +149,10 @@ export function generateTimothyHarvestBatches(): Harvest[] {
         weather: "28 °C, 40% RH, clear dry extraction conditions",
         notes:
           plan.year === 2026
-            ? `Timothy Nduva - Current Season Jan Harvest Window batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel})`
-            : `Timothy Nduva - Production Record ${plan.year} batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel})`,
+            ? `Timothy Nduva - Current Season Jan Harvest Window batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel}). Florage: ${plan.nectarSource}`
+            : `Timothy Nduva - Production Record ${plan.year} batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel}). Florage: ${plan.nectarSource}`,
         created_at: `${dateStr}T10:00:00.000Z`,
-      });
+      } as any);
     }
   }
 

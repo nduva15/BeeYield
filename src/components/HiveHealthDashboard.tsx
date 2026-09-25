@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useState, useEffect, useCallback, useRef, useId } from "react";
 import {
   X,
@@ -343,6 +344,17 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
   // Modal for Quick Sensor Pairing
   const [pairSensorModalOpen, setPairSensorModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!pairSensorModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setPairSensorModalOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [pairSensorModalOpen]);
   const [pairScanMode, setPairScanMode] = useState<"scan" | "manual">("scan");
   const [pairingHive, setPairingHive] = useState<string>("");
   const [pairingSerial, setPairingSerial] = useState<string>("");
@@ -909,7 +921,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   type="button"
                   onClick={() => {
                     setPairingHive(selectedHive === "all" ? (hivesList[0]?.name || "") : selectedHive);
-                    setPairScanMode("scan");
+                    setPairScanMode("manual");
                     setPairSensorModalOpen(true);
                   }}
                   className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 text-[11px] font-semibold flex items-center gap-1 transition-all"
@@ -1078,7 +1090,15 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               </div>
 
               {/* VitalSensor Link */}
-              <div className="rounded-2xl border border-border/80 bg-white p-3.5 shadow-sm flex items-center gap-3">
+              <div
+                onClick={() => {
+                  setPairingHive(selectedHive === "all" ? (hivesList[0]?.name || "") : selectedHive);
+                  setPairScanMode("manual");
+                  setPairSensorModalOpen(true);
+                }}
+                className="rounded-2xl border border-border/80 bg-white p-3.5 shadow-sm flex items-center gap-3 cursor-pointer hover:border-amber-400 transition-colors"
+                title={isHardwareSensorConnected ? "Manage paired sensor" : "Click to pair VitalSensor hardware"}
+              >
                 <div
                   className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                     isHardwareSensorConnected
@@ -1726,13 +1746,20 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Quick Pair VitalSensor Modal with Live QR Scanner */}
-      {pairSensorModalOpen && (
-        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in-50">
-          <div className="bg-white rounded-3xl border border-border w-full max-w-lg p-5 sm:p-6 shadow-2xl space-y-4 my-auto">
+      {pairSensorModalOpen && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
+          onClick={() => setPairSensorModalOpen(false)}
+        >
+          <div
+            className="bg-card text-card-foreground rounded-3xl border border-border w-full max-w-lg p-5 sm:p-6 shadow-2xl space-y-4 my-auto animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
             <div className="flex items-start justify-between border-b pb-3">
               <div className="flex items-center gap-2.5">

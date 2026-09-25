@@ -44,6 +44,7 @@ export interface UnifiedApiary {
   active_hives?: number;
   total_hives?: number;
   acres?: number;
+  forage_type?: string;
 }
 
 /**
@@ -133,6 +134,7 @@ export const CANONICAL_TIMOTHY_APIARY: UnifiedApiary = {
   active_hives: 150,
   total_hives: 184,
   acres: 5,
+  forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
 };
 
 /**

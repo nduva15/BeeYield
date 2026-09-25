@@ -21,14 +21,28 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
+import { useAuth } from "@/hooks/use-auth";
+import { isTimothyUser } from "@/lib/user-hives";
+import {
+  YEAR_PLANS,
+  TIMOTHY_HIVES,
+  CANONICAL_TIMOTHY_HARVESTS,
+} from "@/data/canonicalHarvests";
 
 export type Harvest = {
   id: string;
   harvested_on: string;
+  harvest_date?: string;
   location: string;
   hive_label: string;
+  hive_code?: string;
+  hive_id?: string;
   batch: string;
+  batch_code?: string;
   honey_type: string;
+  nectar_source?: string;
+  florage_type?: string;
+  forage_type?: string;
   quantity_kg: number;
   frames_harvested: number;
   moisture_pct: number;
@@ -44,8 +58,14 @@ export type Harvest = {
 };
 
 const HONEY_TYPES = [
-  "Early Spring Acacia Blossom", "Forest Multifloral", "Wild Flora & Bush", "Eucalyptus",
-  "Sunflower", "Avocado Bloom", "Macadamia Floral", "Comb Honey", "Acacia Blossom",
+  "Early Spring Acacia Blossom",
+  "Forest Multifloral",
+  "Wildflower & Acacia",
+  "Wildflower",
+  "Forest Acacia",
+  "Wildflower Pioneer",
+  "Acacia, Neem, Maize, Mango & Forest Multifloral",
+  "Comb Honey",
 ];
 
 const QUALITY_GRADES = [
@@ -62,104 +82,16 @@ const PROCESSING_OPTIONS = [
   "QuickBooks asset recognized", "Moisture certified", "Wax cappings rendered",
 ];
 
-export const YEAR_PLANS = [
-  { year: 2026, totalKg: 60.0, start: "2026-01-03", end: "2026-01-10", honeyType: "Early Spring Acacia Blossom", nectarSource: "Acacia & Wild Blossom", colorGrade: "Extra Light Amber" },
-  { year: 2025, totalKg: 300.0, start: "2025-06-15", end: "2025-12-15", honeyType: "Forest Multifloral", nectarSource: "Forest Flora", colorGrade: "Dark Amber" },
-  { year: 2024, totalKg: 250.0, start: "2024-06-15", end: "2024-12-15", honeyType: "Wildflower & Acacia", nectarSource: "Acacia & Feral Bush", colorGrade: "Extra White" },
-  { year: 2023, totalKg: 105.0, start: "2023-06-15", end: "2023-12-15", honeyType: "Wildflower", nectarSource: "Dryland Flora", colorGrade: "Water White" },
-  { year: 2022, totalKg: 55.0, start: "2022-06-15", end: "2022-12-15", honeyType: "Forest Acacia", nectarSource: "Acacia & Riverine", colorGrade: "Amber" },
-  { year: 2021, totalKg: 60.0, start: "2021-06-15", end: "2021-12-15", honeyType: "Wildflower", nectarSource: "Wildflower", colorGrade: "Light Amber" },
-  { year: 2020, totalKg: 13.0, start: "2020-06-15", end: "2020-12-15", honeyType: "Wildflower", nectarSource: "Wildflower Pioneer", colorGrade: "Amber" },
-];
+const DEFAULT_HARVESTS: Harvest[] = CANONICAL_TIMOTHY_HARVESTS as unknown as Harvest[];
 
-// Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi (150 Active Colonies, 34 Standby Stands)
-export const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `KIB-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
-
-function generateTimothyHarvestBatches(): Harvest[] {
-  const batches: Harvest[] = [];
-  for (const plan of YEAR_PLANS) {
-    const fullBatches = Math.floor(plan.totalKg / 2.0);
-    const remainder = Number((plan.totalKg - (fullBatches * 2.0)).toFixed(1));
-    const totalBatches = fullBatches + (remainder > 0 ? 1 : 0);
-
-    const startDate = new Date(plan.start + "T12:00:00Z");
-    const endDate = new Date(plan.end + "T12:00:00Z");
-    const daySpan = Math.max(Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1, 1);
-
-    for (let seq = 1; seq <= totalBatches; seq++) {
-      const quantity = seq <= fullBatches ? 2.0 : remainder;
-      const dayOffset = (seq - 1) % daySpan;
-      const batchDate = new Date(startDate.getTime() + dayOffset * 24 * 60 * 60 * 1000);
-      const dateStr = batchDate.toISOString().slice(0, 10);
-      const yyyymmdd = dateStr.replace(/-/g, "");
-
-      // Accurate historical hive distribution across Timothy Nduva's active colonies (hives 1..150):
-      let hiveIndex: number;
-      if (plan.year === 2026) {
-        hiveIndex = (seq - 1) % 30; // KIB-001 to KIB-030 (Jan 2026 current season)
-      } else if (plan.year === 2025) {
-        hiveIndex = (seq - 1) % 150; // KIB-001 to KIB-150 (2025 major harvest)
-      } else if (plan.year === 2024) {
-        hiveIndex = (seq - 1) % 125; // KIB-001 to KIB-125 (2024 harvest)
-      } else if (plan.year === 2023) {
-        hiveIndex = (seq - 1) % 53; // KIB-001 to KIB-053 (2023 harvest)
-      } else if (plan.year === 2022) {
-        hiveIndex = (seq - 1) % 28; // KIB-001 to KIB-028 (2022 harvest)
-      } else if (plan.year === 2021) {
-        hiveIndex = (seq - 1) % 30; // KIB-001 to KIB-030 (2021 harvest)
-      } else {
-        hiveIndex = (seq - 1) % 7; // KIB-001 to KIB-007 (2020 pioneer founding stands)
-      }
-
-      const hiveLabel = TIMOTHY_HIVES[hiveIndex];
-      const hiveCode = `KIB-${String(hiveIndex + 1).padStart(3, "0")}`;
-
-      const batchCode = `BEE-${yyyymmdd}-${String(hiveIndex + 1).padStart(3, "0")}`;
-      const traceCode = `TRC-${plan.year}-${hiveCode.slice(-3)}-${String(seq).padStart(3, "0")}`;
-      const moisture = plan.year === 2026 ? 16.8 : Number((17.0 + ((seq % 5) * 0.1)).toFixed(1));
-
-      batches.push({
-        id: `harv-${plan.year}-${String(seq).padStart(3, "0")}`,
-        harvested_on: dateStr,
-        location: "BeeYield Apiary in Kibwezi Kenya",
-        hive_label: hiveLabel,
-        batch: batchCode,
-        honey_type: plan.honeyType,
-        quantity_kg: quantity,
-        frames_harvested: quantity >= 2 ? 2 : 1,
-        moisture_pct: moisture,
-        color_grade: plan.colorGrade,
-        quality_grade: "Export Grade A (&lt;18% moisture)",
-        traceability_code: traceCode,
-        beekeeper: "Timothy Nduva",
-        actions: ["Cold extracted (<35 °C)", "Double strained (200µm)", "Refractometer tested", "Batch sealed in SS304"],
-        weather: "28 °C, 40% RH, clear dry extraction conditions",
-        notes: plan.year === 2026
-          ? `Timothy Nduva - Current Season Jan Harvest Window batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel})`
-          : `Timothy Nduva - Production Record ${plan.year} batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel})`,
-        ai_insights: `### BeeYield AI Quality & Yield Verification
-- **Beekeeper:** **Timothy Nduva (Certified Master Apiculturist)**.
-- **Quality Classification:** **Export Grade A Verified (99% confidence)**.
-- **Moisture Index:** **${moisture}%** meets international Codex Alimentarius standards (max 20%) and KEBS export standard (max 18.5%).
-- **Asset Valuation:** ${quantity} kg batch lot recognized at **KES ${(quantity * 1000).toLocaleString()}** (Shop baseline @ KES 1,000/kg).
-- **Enzyme Preservation:** Cold extracted below 35 °C with active diastase & invertase preserved.`,
-        created_at: `${dateStr}T10:00:00.000Z`,
-      });
-    }
-  }
-
-  batches.sort((a, b) => b.harvested_on.localeCompare(a.harvested_on));
-  return batches;
-}
-
-const DEFAULT_HARVESTS: Harvest[] = generateTimothyHarvestBatches();
-
-const EMPTY_HARVEST = {
+const EMPTY_HARVEST: Omit<Harvest, "id"> = {
   harvested_on: new Date().toISOString().slice(0, 10),
   location: "BeeYield Apiary in Kibwezi Kenya",
-  hive_label: "BEE-001 (Langstroth 10)",
+  hive_label: "KIB-001 (Langstroth 10)",
   batch: `BEE-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-001`,
   honey_type: "Early Spring Acacia Blossom",
+  florage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
+  nectar_source: "Acacia, Neem, Maize, Mango & Forest Multifloral",
   quantity_kg: 2.0,
   frames_harvested: 2,
   moisture_pct: 16.8,
@@ -168,8 +100,10 @@ const EMPTY_HARVEST = {
   traceability_code: `TRC-2026-001-${String(Math.floor(Math.random() * 900) + 100)}`,
   actions: ["Cold extracted (<35 °C)", "Double strained (200µm)", "Refractometer tested", "Batch sealed in SS304"],
   weather: "28 °C, dry harvest",
-  notes: "Extracted under optimal conditions by Timothy Nduva.",
+  notes: "Extracted under optimal conditions by Timothy Nduva. Dominant forage: Acacia, Neem, Maize, Mango & Forest Multifloral.",
   beekeeper: "Timothy Nduva",
+  created_at: new Date().toISOString(),
+  ai_insights: null,
 };
 
 function gradeTone(grade: string, moisture?: number) {
@@ -195,6 +129,7 @@ function harvestPdf(r: Harvest) {
         { label: "Date of Extraction", value: r.harvested_on },
         { label: "Hive Identifier", value: r.hive_label },
         { label: "Batch Lot Number", value: r.batch },
+        { label: "Botanical Florage & Nectar", value: r.florage_type || r.nectar_source || "Acacia, Neem, Maize, Mango & Forest Multifloral" },
         { label: "Apiary Location", value: r.location || "BeeYield Apiary in Kibwezi Kenya" },
         { label: "Net Volume Extracted", value: `${r.quantity_kg} kg` },
         { label: "Frames Harvested", value: `${r.frames_harvested} frames` },
@@ -212,6 +147,7 @@ function harvestPdf(r: Harvest) {
           heading: "Commercial Compliance & Laboratory Specifications",
           rows: [
             ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
+            ["Botanical Melliferous Forage", "Acacia, Neem, Maize, Mango & Forest Multifloral"],
             ["Moisture Content (Max 20%)", `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade A" : "Standard Raw"})`],
             ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
             ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
@@ -242,8 +178,12 @@ export default function HarvestsPage({
   embedded?: boolean;
   onTabChange?: (tab: string, message?: string, action?: string) => void;
 }) {
+  const { user, profile } = useAuth();
+  const isTimothy = isTimothyUser(user, profile) || !user;
   const deviceId = useDeviceId();
-  const [rows, setRows] = useState<Harvest[]>(DEFAULT_HARVESTS);
+  const [rows, setRows] = useState<Harvest[]>(() =>
+    isTimothy ? DEFAULT_HARVESTS : []
+  );
   const [query, setQuery] = useState("");
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [selectedHive, setSelectedHive] = useState<string>("all");
@@ -251,7 +191,7 @@ export default function HarvestsPage({
   const [hiveSort, setHiveSort] = useState<"yield" | "batches" | "code">("yield");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState(EMPTY_HARVEST);
+  const [draft, setDraft] = useState<any>(EMPTY_HARVEST);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [aiText, setAiText] = useState("");
@@ -290,33 +230,38 @@ export default function HarvestsPage({
         }
       } catch { /* ignore */ }
 
-      // 3. Deduplicate strictly by batch code and ID to guarantee exactly 843.0 kg and 423 batches
-      const seenBatchKeys = new Set<string>();
-      const canonicalDeduplicated: Harvest[] = [];
+      if (isTimothy) {
+        // 3. Timothy / Guest: Deduplicate strictly by batch code to guarantee exactly 843.0 kg and 423 batches
+        const seenBatchKeys = new Set<string>();
+        const canonicalDeduplicated: Harvest[] = [];
 
-      userCustomBatches.forEach((b) => {
-        const k = b.batch || b.id;
-        if (!seenBatchKeys.has(k)) {
-          seenBatchKeys.add(k);
-          canonicalDeduplicated.push(b);
-        }
-      });
+        userCustomBatches.forEach((b) => {
+          const k = b.batch || b.id;
+          if (!seenBatchKeys.has(k)) {
+            seenBatchKeys.add(k);
+            canonicalDeduplicated.push(b);
+          }
+        });
 
-      DEFAULT_HARVESTS.forEach((d) => {
-        const k = d.batch || d.id;
-        if (!seenBatchKeys.has(k)) {
-          seenBatchKeys.add(k);
-          canonicalDeduplicated.push(d);
-        }
-      });
+        DEFAULT_HARVESTS.forEach((d) => {
+          const k = d.batch || d.id;
+          if (!seenBatchKeys.has(k)) {
+            seenBatchKeys.add(k);
+            canonicalDeduplicated.push(d);
+          }
+        });
 
-      setRows(canonicalDeduplicated);
+        setRows(canonicalDeduplicated);
+      } else {
+        // Non-Timothy logged-in user: only their own user batches
+        setRows(userCustomBatches);
+      }
     } catch {
-      setRows(DEFAULT_HARVESTS);
+      setRows(isTimothy ? DEFAULT_HARVESTS : []);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isTimothy]);
 
   // Run load on mount and whenever component opens or is embedded
   useEffect(() => {
