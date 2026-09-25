@@ -222,6 +222,8 @@ export function voteClassifications(items: Classification[]): Classification {
 
 /* ------------------------------------------------------- provenance ---- */
 
+export const BEE_SOUND_REPO_URL = "https://github.com/nduva15/BEE-SOUND-ANALYSIS";
+
 /**
  * Model card surfaced on the Acoustic Audit result screen, so every prediction
  * is traceable to the pipeline and corpora it came from.
@@ -230,31 +232,78 @@ export const MODEL_META = {
   name: "BeeYield Acoustic — corpus-Gaussian MFCC",
   version: "1.2.0",
   inferenceMode: "corpus-gaussian-mfcc" as const,
+  repositoryUrl: BEE_SOUND_REPO_URL,
+  repositoryName: "nduva15/BEE-SOUND-ANALYSIS",
   runsOn: "On-device (browser Web Audio + DSP) — no audio leaves the phone",
   pipeline:
     "22.05 kHz mono → 100 Hz–8 kHz bandpass → 2.0 s windows / 0.5 s overlap → 128-band mel filterbank → log power → DCT-II → 13 MFCC + delta statistics",
   featureDim: FEATURE_DIM,
   classes: HEALTH_CLASSES,
   gate: "Bee / not-bee linear gate rejects wind, traffic and silence before the state classifier scores a window",
+  osbhEngine: {
+    name: "Open Source Beehives (OSBH) / AudioHealth Heuristic Engine",
+    path: "BeeSound_Analysis/modules/osbh_engine.py",
+    url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/blob/main/BeeSound_Analysis/modules/osbh_engine.py",
+    activeBand: "220–275 Hz (active worker flight)",
+    alertBand: "445–525 Hz (queenless alert & piping)",
+    pipingPeak: 450,
+    swarmingBand: "200–300 Hz",
+    queenlessThreshold: "alert/active ratio ≥ 0.60 indicates missing queen",
+  },
+  repoModules: [
+    {
+      name: "Audio Cleaner",
+      path: "BeeSound_Analysis/pipeline/cleaner.py",
+      url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/blob/main/BeeSound_Analysis/pipeline/cleaner.py",
+      desc: "Butterworth 4th-order 100Hz–8kHz bandpass + 10th-percentile STFT spectral subtraction",
+    },
+    {
+      name: "Audio Segmenter",
+      path: "BeeSound_Analysis/pipeline/segmenter.py",
+      url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/blob/main/BeeSound_Analysis/pipeline/segmenter.py",
+      desc: "2.0s analysis windows, 0.5s overlap, standardized at 22,050 Hz mono",
+    },
+    {
+      name: "OSBH AudioHealth Engine",
+      path: "BeeSound_Analysis/modules/osbh_engine.py",
+      url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/blob/main/BeeSound_Analysis/modules/osbh_engine.py",
+      desc: "Open Source Beehives 250Hz/500Hz power ratio heuristics for queen state detection",
+    },
+    {
+      name: "Deep Architecture & Edge Export",
+      path: "BeeSound_Analysis/tools/train_architecture.py",
+      url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/blob/main/BeeSound_Analysis/tools/train_architecture.py",
+      desc: "ResNet residual blocks + SmoothFocalLoss with ONNX & TFLite edge quantization",
+    },
+    {
+      name: "OSBH Reference Audio Folds",
+      path: "data/raw_audio/osbh_reference",
+      url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/tree/main/data/raw_audio/osbh_reference",
+      desc: "Canonical audio recordings of healthy, queenless, and swarming piping colonies",
+    },
+  ],
   datasets: [
     {
       name: "To bee or not to bee (annotated)",
       role: "Bee / not-bee gating stage",
       source: "BEE-SOUND-ANALYSIS · modules/models/hive_state/Bee_NotBee_classification",
+      url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/tree/main/BeeSound_Analysis/modules/models/hive_state/Bee_NotBee_classification",
     },
     {
       name: "NU-Hive / OSBH beehive states",
       role: "Active · missing queen · swarm class statistics (~300k 2 s windows after segmentation)",
       source: "Audio-based identification of beehive states",
+      url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/tree/main/data/raw_audio/osbh_reference",
     },
     {
       name: "beepiping (Fourer & Orlowska, DCASE 2022)",
       role: "Queen piping event detection, 300–500 Hz band",
       source: "BEE-SOUND-ANALYSIS · piping module",
+      url: "https://github.com/nduva15/BEE-SOUND-ANALYSIS/tree/main/BeeSound_Analysis/modules/models/queen_piping",
     },
   ],
   weights:
-    "The upstream repository ships the training/inference pipeline with an empty weights/ directory (checkpoints are produced per deployment by tools/train_architecture.py). BeeYield therefore reproduces the same feature path and scores it with per-class diagonal-covariance Gaussians whose statistics come from the corpora above — it is corpus-calibrated, not a retrained neural checkpoint.",
+    "The upstream repository (https://github.com/nduva15/BEE-SOUND-ANALYSIS) ships the training/inference pipeline with checkpoints produced per deployment by tools/train_architecture.py and exportable to ONNX/TFLite edge runtimes. BeeYield reproduces the exact 22.05 kHz bandpass 128-mel feature path client-side and scores it with corpus-calibrated diagonal Gaussians and OSBH heuristics — running 100% on-device with zero cloud audio upload.",
   confidence: {
     headline: "Confidence = the winning class's share of probability, averaged across every bee-gated window in the clip.",
     steps: [

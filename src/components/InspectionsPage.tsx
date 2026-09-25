@@ -592,6 +592,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
   const startEdit = (r: Inspection) => {
     setEditingId(r.id);
     setDraft({
+      ...EMPTY,
       inspected_on: r.inspected_on,
       location: r.location,
       hive_label: r.hive_label,

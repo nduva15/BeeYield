@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   X, AudioWaveform, Mic, Square, Upload, Loader2, Sparkles, Save, Trash2,
-  Activity, ShieldAlert, Radio, Crown, FileDown, Cpu, Info,
+  Activity, ShieldAlert, Radio, Crown, FileDown, Cpu, Info, Github, ExternalLink,
+  Play, Disc3, Gauge, CheckCircle2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
-import { analyzeBlob, type AnalysisResult } from "@/lib/bee-sound";
-import { MODEL_META } from "@/lib/bee-sound-model";
+import { analyzeBlob, REFERENCE_CLIPS, type AnalysisResult, type ReferenceClip } from "@/lib/bee-sound";
+import { MODEL_META, BEE_SOUND_REPO_URL } from "@/lib/bee-sound-model";
 import { downloadReportPdf, safeName, type ReportSection } from "@/lib/report-pdf";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
@@ -54,58 +55,64 @@ function auditPdf(opts: {
   durationSec: number;
   piping: string;
   diseases: Disease[];
+  osbhRatio?: number;
+  osbhState?: string;
   notes?: string | null;
   ai?: string | null;
 }) {
   const sections: ReportSection[] = [
     {
-        type: "kv",
-        heading: "Result",
-        rows: [
-          ["Lead Farmer / Apiarist", "Timothy Nduva"],
-          ["Hive", opts.hive],
-          ["Recorded at", opts.when],
-          ["Health state", opts.state],
-          ["Confidence", `${(opts.confidence * 100).toFixed(1)}%`],
-          ["Queen piping", opts.piping],
-          ["Clip length", `${opts.durationSec.toFixed(1)} s`],
-          ["Windows scored", String(opts.segments)],
-        ],
-      },
-      ...(opts.diseases.length > 0
-        ? [{
-            type: "bars" as const,
-            heading: "Disease risk ranking",
-            rows: opts.diseases.map((d) => ({ label: `${d.name} (${d.severity})`, pct: d.score })),
-          },
-          {
-            type: "list" as const,
-            heading: "Acoustic evidence",
-            items: opts.diseases.map((d) => `${d.name}: ${d.acousticMarker} — ${d.rationale}`),
-          }]
-        : []),
-      {
-        type: "kv",
-        heading: "Model",
-        rows: [
-          ["Model", MODEL_META.name],
-          ["Version", MODEL_META.version],
-          ["Runs on", MODEL_META.runsOn],
-          ["Signal pipeline", MODEL_META.pipeline],
-          ["Classes", MODEL_META.classes.join(", ")],
-        ],
-      },
-      { type: "text", heading: "How the confidence score is computed", body: MODEL_META.confidence.headline },
-      { type: "list", heading: "Scoring steps", items: [...MODEL_META.confidence.steps] },
-      { type: "list", heading: "Reading the score", items: [...MODEL_META.confidence.reading] },
-      { type: "text", heading: "Limitations", body: `${MODEL_META.weights}\n\n${MODEL_META.confidence.caveat}` },
-      ...(opts.notes ? [{ type: "text" as const, heading: "Notes", body: opts.notes }] : []),
+      type: "kv",
+      heading: "Result & On-Device Telemetry",
+      rows: [
+        ["Lead Farmer / Apiarist", "Timothy Nduva"],
+        ["Hive", opts.hive],
+        ["Recorded at", opts.when],
+        ["Health state", opts.state],
+        ["Confidence", `${(opts.confidence * 100).toFixed(1)}%`],
+        ["Queen piping", opts.piping],
+        ["Clip length", `${opts.durationSec.toFixed(1)} s`],
+        ["Windows scored", String(opts.segments)],
+        ...(opts.osbhState ? [["OSBH Health State", opts.osbhState] as [string, string]] : []),
+        ...(opts.osbhRatio !== undefined ? [["OSBH Alert Ratio (500Hz/250Hz)", `${opts.osbhRatio.toFixed(2)} (Alert threshold ≥ 0.60)`] as [string, string]] : []),
+      ],
+    },
+    ...(opts.diseases.length > 0
+      ? [{
+          type: "bars" as const,
+          heading: "Disease risk ranking",
+          rows: opts.diseases.map((d) => ({ label: `${d.name} (${d.severity})`, pct: d.score })),
+        },
+        {
+          type: "list" as const,
+          heading: "Acoustic evidence",
+          items: opts.diseases.map((d) => `${d.name}: ${d.acousticMarker} — ${d.rationale}`),
+        }]
+      : []),
+    {
+      type: "kv",
+      heading: "Model & Pipeline Provenance",
+      rows: [
+        ["Model Engine", MODEL_META.name],
+        ["Upstream Repository", MODEL_META.repositoryUrl],
+        ["Version", MODEL_META.version],
+        ["Runs on", MODEL_META.runsOn],
+        ["Signal pipeline", MODEL_META.pipeline],
+        ["Target Classes", MODEL_META.classes.join(", ")],
+        ["OSBH Engine Rule", MODEL_META.osbhEngine.queenlessThreshold],
+      ],
+    },
+    { type: "text", heading: "How the confidence score is computed", body: MODEL_META.confidence.headline },
+    { type: "list", heading: "Scoring steps", items: [...MODEL_META.confidence.steps] },
+    { type: "list", heading: "Reading the score", items: [...MODEL_META.confidence.reading] },
+    { type: "text", heading: "Limitations & Edge Execution", body: `${MODEL_META.weights}\n\n${MODEL_META.confidence.caveat}` },
+    ...(opts.notes ? [{ type: "text" as const, heading: "Notes", body: opts.notes }] : []),
     ...(opts.ai ? [{ type: "text" as const, heading: "AI interpretation", body: opts.ai }] : []),
   ];
   downloadReportPdf({
     kind: "acoustic audit",
     title: `Acoustic audit — ${opts.hive}`,
-    subtitle: `Recorded ${opts.when} · ${opts.durationSec.toFixed(1)} s · ${opts.segments} scored window(s)`,
+    subtitle: `Recorded ${opts.when} · ${opts.durationSec.toFixed(1)} s · ${opts.segments} scored window(s) · BEE-SOUND-ANALYSIS DSP`,
     badge: `${opts.state.toUpperCase()} · ${(opts.confidence * 100).toFixed(0)}%`,
     fileName: `beeyield-acoustic-${safeName(opts.hive)}-${safeName(opts.when)}.pdf`,
     sections,
@@ -115,18 +122,46 @@ function auditPdf(opts: {
 function ModelCard() {
   return (
     <details className="rounded-xl border border-border bg-card p-4">
-      <summary className="cursor-pointer text-xs font-semibold text-honey flex items-center gap-1.5">
-        <Cpu className="w-3.5 h-3.5" /> Model card &amp; how the confidence score is computed
+      <summary className="cursor-pointer text-xs font-semibold text-honey flex items-center justify-between">
+        <span className="flex items-center gap-1.5">
+          <Cpu className="w-3.5 h-3.5" /> Model card &amp; BEE-SOUND-ANALYSIS edge architecture
+        </span>
+        <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
+          <Github className="w-3 h-3 text-honey" /> nduva15/BEE-SOUND-ANALYSIS
+        </span>
       </summary>
       <div className="mt-3 space-y-3 text-[11px] text-muted-foreground">
+        {/* Upstream Repo Card */}
+        <div className="rounded-lg border border-honey/30 bg-honey/5 p-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="space-y-0.5">
+            <p className="text-foreground font-semibold flex items-center gap-1.5 text-xs">
+              <Github className="w-3.5 h-3.5 text-honey" /> Upstream Repository: nduva15/BEE-SOUND-ANALYSIS
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              Edge-quantized bioacoustic DSP pipeline for on-device bee health &amp; disease diagnostics.
+            </p>
+          </div>
+          <a
+            href={BEE_SOUND_REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-honey text-black hover:bg-honey/90 transition-colors shadow-sm"
+          >
+            <span>View on GitHub</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-2">
           {[
             ["Model", MODEL_META.name],
             ["Version", MODEL_META.version],
+            ["Repository", MODEL_META.repositoryName],
             ["Runs on", MODEL_META.runsOn],
             ["Feature dimensions", `${MODEL_META.featureDim} MFCC + delta statistics`],
             ["States", MODEL_META.classes.join(" · ")],
             ["Noise gate", MODEL_META.gate],
+            ["OSBH Rule", MODEL_META.osbhEngine.queenlessThreshold],
           ].map(([k, v]) => (
             <div key={k} className="rounded-lg border border-border bg-background p-2">
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground/70">{k}</p>
@@ -134,15 +169,51 @@ function ModelCard() {
             </div>
           ))}
         </div>
+
+        <div>
+          <p className="text-foreground font-medium mb-1">Upstream Pipeline Modules</p>
+          <div className="grid sm:grid-cols-2 gap-1.5">
+            {MODEL_META.repoModules.map((m) => (
+              <a
+                key={m.name}
+                href={m.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg border border-border bg-background hover:border-honey/40 transition-colors block text-[11px] group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-foreground group-hover:text-honey flex items-center gap-1">
+                    {m.name} <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                  </span>
+                  <span className="text-[9px] font-mono text-muted-foreground">{m.path.split("/").pop()}</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{m.desc}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+
         <p><span className="text-foreground font-medium">Signal pipeline: </span>{MODEL_META.pipeline}</p>
+
         <div>
           <p className="text-foreground font-medium mb-1">Training corpora</p>
           <ul className="space-y-1 list-disc list-inside">
             {MODEL_META.datasets.map((d) => (
-              <li key={d.name}><span className="text-foreground">{d.name}</span> — {d.role} <span className="opacity-70">({d.source})</span></li>
+              <li key={d.name}>
+                <a
+                  href={d.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-foreground font-medium hover:text-honey underline decoration-border"
+                >
+                  {d.name}
+                </a>{" "}
+                — {d.role} <span className="opacity-70">({d.source})</span>
+              </li>
             ))}
           </ul>
         </div>
+
         <div className="rounded-lg border border-honey/25 bg-honey/5 p-3">
           <p className="text-foreground font-medium flex items-center gap-1.5 mb-1"><Info className="w-3.5 h-3.5 text-honey" /> Confidence</p>
           <p>{MODEL_META.confidence.headline}</p>
@@ -173,7 +244,7 @@ export default function SoundAnalysis({
   const { user, profile } = useAuth();
   const [hiveLabel, setHiveLabel] = useState("");
   const [userHives, setUserHives] = useState<UnifiedHive[]>([]);
-  const [syncedOnly, setSyncedOnly] = useState(true);
+  const [syncedOnly, setSyncedOnly] = useState(false);
   const [notes, setNotes] = useState("");
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -183,6 +254,8 @@ export default function SoundAnalysis({
   const [aiLoading, setAiLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [history, setHistory] = useState<SavedAnalysis[]>([]);
+  const [activeClipId, setActiveClipId] = useState<string | null>(null);
+  const [loadingClip, setLoadingClip] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -268,7 +341,7 @@ export default function SoundAnalysis({
       const resolved = resolveUserHives(user, profile, []);
       setUserHives(resolved);
       const sensorHives = resolved.filter((h) => Boolean(h.hasSensor || h.sensorSerial));
-      const targetCode = sensorHives[0]?.code || "KIB-001";
+      const targetCode = sensorHives[0]?.code || resolved[0]?.code || "KIB-001";
       setHiveLabel((prev) => (!prev || prev === "BY-H001" ? targetCode : prev));
     }
   }, [user, profile]);
@@ -353,6 +426,23 @@ export default function SoundAnalysis({
     }
   };
 
+  const loadReferenceClip = async (clip: ReferenceClip) => {
+    try {
+      setLoadingClip(clip.id);
+      setActiveClipId(clip.id);
+      toast.info(`Fetching official BEE-SOUND-ANALYSIS sample: ${clip.name}…`);
+      const resp = await fetch(clip.url);
+      if (!resp.ok) throw new Error(`Failed to load ${clip.filename}`);
+      const blob = await resp.blob();
+      await runAnalysis(blob);
+      toast.success(`Loaded dataset reference: ${clip.name}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load reference sample");
+    } finally {
+      setLoadingClip(null);
+    }
+  };
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -405,6 +495,7 @@ Duration analysed: ${result.durationSec} s across ${result.segments.length} wind
 Species match: ${result.species.name} (${(result.species.confidence * 100).toFixed(0)}%)
 Health classification: ${result.health.state} (${(result.health.confidence * 100).toFixed(0)}%) via 128-mel MFCC corpus model over ${result.health.windowsAnalyzed} bee-gated 2s windows (bee presence ${(result.health.beeConfidence * 100).toFixed(0)}%)
 Class probabilities: ${Object.entries(result.health.probabilities).map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`).join(", ")}
+OSBH AudioHealth: state ${result.osbh.state} · 500Hz/250Hz alert ratio ${result.osbh.ratio.toFixed(2)} (queenless threshold ≥ 0.60)
 Queen piping: ${result.piping.detected ? `detected in ${result.piping.events} window(s), confidence ${(result.piping.confidence * 100).toFixed(0)}%` : "not detected"}
 Spectral centroid: ${a.spectralCentroid.toFixed(0)} Hz · rolloff(85%): ${a.spectralRolloff.toFixed(0)} Hz
 Zero-crossing rate: ${a.zcr.toFixed(4)} · RMS: ${a.rms.toFixed(4)} · flatness: ${a.spectralFlatness.toFixed(3)}
@@ -446,6 +537,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
         windowsRejected: result.health.windowsRejected,
         mfcc: result.segments[0]?.mfcc ?? [],
         spectrum: result.spectrum,
+        osbh: result.osbh,
       },
       disease_predictions: result.diseases,
       ai_insights: aiText || null,
@@ -470,6 +562,8 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
         pipingDetected: result.piping.detected,
         centroidHz: Math.round(result.aggregate.spectralCentroid),
         species: result.species.name,
+        osbhState: result.osbh.state,
+        osbhRatio: result.osbh.ratio,
       },
     });
     void loadHistory();
@@ -485,19 +579,37 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
   return (
     <div className={embedded ? "w-full space-y-6" : "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll"}>
       <div className={embedded ? "w-full space-y-6" : "max-w-6xl mx-auto p-6"}>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
           <div className="flex items-center gap-3">
-            <AudioWaveform className="w-7 h-7 text-honey" />
+            <AudioWaveform className="w-7 h-7 text-honey flex-shrink-0" />
             <div>
-              <h1 className="font-display text-2xl font-bold text-honey">Acoustic Audit</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="font-display text-2xl font-bold text-honey">Acoustic Audit</h1>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                  <Cpu className="w-3 h-3" /> On-Device DSP
+                </span>
+              </div>
               <p className="text-xs text-muted-foreground">
-                Bee-sound disease detection — BEE-SOUND-ANALYSIS pipeline running on-device
+                Bee-sound disease detection — BEE-SOUND-ANALYSIS pipeline running on-device (22.05 kHz Web Audio DSP)
               </p>
             </div>
           </div>
-          <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href={BEE_SOUND_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card/80 hover:bg-card hover:border-honey/50 text-xs font-semibold text-foreground transition-all shadow-sm"
+              title="Official nduva15/BEE-SOUND-ANALYSIS repository on GitHub"
+            >
+              <Github className="w-3.5 h-3.5 text-honey" />
+              <span>nduva15/BEE-SOUND-ANALYSIS</span>
+              <ExternalLink className="w-3 h-3 text-muted-foreground ml-0.5" />
+            </a>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Scanner */}
@@ -552,29 +664,40 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                     })
                   ) : (
                     <>
-                      {syncedHives.length > 0 && (
-                        <optgroup label="⚡ Sensors Synced (Active Telemetry Gateway)">
-                          {syncedHives.map((h) => {
-                            const code = h.code || h.hive_code || h.name;
-                            return (
-                              <option key={h.id} value={code}>
-                                ⚡ {code} ({h.sensorSerial || "Sensor Synced"}) — {h.name}
-                              </option>
-                            );
-                          })}
-                        </optgroup>
-                      )}
-                      {otherHives.length > 0 && (
-                        <optgroup label="Other Apiary Hives (No Sensor)">
-                          {otherHives.map((h) => {
-                            const code = h.code || h.hive_code || h.name;
-                            return (
-                              <option key={h.id} value={code}>
-                                {code} — {h.name}
-                              </option>
-                            );
-                          })}
-                        </optgroup>
+                      {syncedHives.length === 0 ? (
+                        userHives.map((h) => {
+                          const code = h.code || h.hive_code || h.name;
+                          return (
+                            <option key={h.id} value={code}>
+                              {code} — {h.name}
+                            </option>
+                          );
+                        })
+                      ) : (
+                        <>
+                          <optgroup label="⚡ Sensors Synced (Active Telemetry Gateway)">
+                            {syncedHives.map((h) => {
+                              const code = h.code || h.hive_code || h.name;
+                              return (
+                                <option key={h.id} value={code}>
+                                  ⚡ {code} ({h.sensorSerial || "Sensor Synced"}) — {h.name}
+                                </option>
+                              );
+                            })}
+                          </optgroup>
+                          {otherHives.length > 0 && (
+                            <optgroup label="Other Apiary Hives (No Sensor)">
+                              {otherHives.map((h) => {
+                                const code = h.code || h.hive_code || h.name;
+                                return (
+                                  <option key={h.id} value={code}>
+                                    {code} — {h.name}
+                                  </option>
+                                );
+                              })}
+                            </optgroup>
+                          )}
+                        </>
                       )}
                     </>
                   )}
@@ -591,6 +714,78 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
               <span className={`px-2.5 py-1 rounded-full text-[11px] border ${recording ? "text-red-400 border-red-500/40 bg-red-500/10" : analyzing ? "text-honey border-honey/40 bg-honey/10" : "text-muted-foreground border-border"}`}>
                 {recording ? `Recording ${elapsed}s` : analyzing ? "Analysing…" : result ? "Scan complete" : "Scanner standby"}
               </span>
+            </div>
+          </div>
+
+          {/* Dataset Reference Samples */}
+          <div className="rounded-lg border border-honey/20 bg-honey/[0.04] p-3 mb-4 space-y-2">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Disc3 className="w-3.5 h-3.5 text-honey animate-spin" style={{ animationDuration: "8s" }} />
+                <span className="text-xs font-semibold text-foreground">
+                  Official BEE-SOUND-ANALYSIS Reference Audio Samples
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-honey/10 text-honey border border-honey/20 font-mono">
+                  data/raw_audio/osbh_reference
+                </span>
+              </div>
+              <a
+                href={`${BEE_SOUND_REPO_URL}/tree/main/data/raw_audio/osbh_reference`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] text-muted-foreground hover:text-honey flex items-center gap-1 transition-colors"
+                title="Browse dataset audio files in GitHub repository"
+              >
+                <span>Browse repo audio folds</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Test the on-device DSP pipeline instantly with canonical bee acoustics from the research repository:
+            </p>
+            <div className="grid sm:grid-cols-3 gap-2 pt-1">
+              {REFERENCE_CLIPS.map((clip) => {
+                const isSelected = activeClipId === clip.id;
+                const isLoading = loadingClip === clip.id;
+                return (
+                  <button
+                    key={clip.id}
+                    type="button"
+                    disabled={analyzing || recording || isLoading}
+                    onClick={() => void loadReferenceClip(clip)}
+                    className={`text-left p-2.5 rounded-lg border transition-all text-xs flex flex-col justify-between gap-1.5 ${
+                      isSelected
+                        ? "border-honey bg-honey/15 shadow-sm ring-1 ring-honey/40"
+                        : "border-border hover:border-honey/40 bg-card hover:bg-card/80"
+                    } disabled:opacity-50`}
+                  >
+                    <div className="flex items-center justify-between w-full gap-2">
+                      <span className="font-semibold text-foreground flex items-center gap-1.5 truncate">
+                        {isLoading ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-honey flex-shrink-0" />
+                        ) : (
+                          <Play className="w-3 h-3 text-honey flex-shrink-0" />
+                        )}
+                        <span className="truncate">{clip.name}</span>
+                      </span>
+                      <span
+                        className={`px-1.5 py-0.5 rounded text-[9px] uppercase font-bold border flex-shrink-0 ${
+                          clip.expectedState === "Healthy"
+                            ? "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+                            : clip.expectedState === "Swarming"
+                            ? "text-honey border-honey/30 bg-honey/10"
+                            : "text-orange-400 border-orange-500/30 bg-orange-500/10"
+                        }`}
+                      >
+                        {clip.expectedState}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground line-clamp-2">
+                      {clip.description}
+                    </p>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -618,6 +813,62 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
               onChange={(e) => { const f = e.target.files?.[0]; if (f) void runAnalysis(f); e.target.value = ""; }} />
             {analyzing && <span className="text-xs text-muted-foreground flex items-center gap-1.5"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Running DSP chain…</span>}
           </div>
+
+          {/* Reference Audio Benchmark Clips */}
+          <div className="mt-4 pt-3 border-t border-border">
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+              <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
+                <Disc3 className="w-3.5 h-3.5 text-honey animate-spin" style={{ animationDuration: "6s" }} />
+                Or test benchmark audio clips from nduva15/BEE-SOUND-ANALYSIS:
+              </span>
+              <a
+                href={`${BEE_SOUND_REPO_URL}/tree/main/data/raw_audio/osbh_reference`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] text-honey hover:underline flex items-center gap-1 font-mono"
+              >
+                <span>Browse repo audio</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-2">
+              {REFERENCE_CLIPS.map((clip) => (
+                <button
+                  key={clip.id}
+                  type="button"
+                  disabled={recording || analyzing || loadingClip !== null}
+                  onClick={() => void loadReferenceClip(clip)}
+                  className={`p-2.5 rounded-lg border text-left transition-all ${
+                    activeClipId === clip.id
+                      ? "border-honey bg-honey/15 shadow-sm ring-1 ring-honey/40"
+                      : "border-border bg-background hover:bg-card hover:border-honey/40"
+                  } disabled:opacity-50`}
+                >
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <span className="font-semibold text-xs text-foreground flex items-center gap-1.5 truncate">
+                      {loadingClip === clip.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin text-honey shrink-0" />
+                      ) : (
+                        <Play className="w-3 h-3 text-honey shrink-0" />
+                      )}
+                      <span className="truncate">{clip.name}</span>
+                    </span>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono shrink-0 ${
+                      clip.expectedState === "Healthy" ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20" :
+                      clip.expectedState === "Queenless" ? "text-orange-400 bg-orange-500/10 border border-orange-500/20" :
+                      "text-honey bg-honey/10 border border-honey/20"
+                    }`}>
+                      {clip.expectedState}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground line-clamp-2 leading-tight">
+                    {clip.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <p className="mt-3 text-[11px] text-muted-foreground">
             Record 10–30 s at the hive entrance with the phone 10 cm from the flight board. Bandpass 100 Hz–8 kHz,
             2.0 s windows with 0.5 s overlap, queen piping matched in the 300–500 Hz band.
@@ -627,7 +878,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
         {/* Results */}
         {result && (
           <div className="space-y-4 mb-6">
-            <div className="grid md:grid-cols-4 gap-3">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
               <div className={`rounded-xl border p-4 ${stateTone(result.health.state)}`}>
                 <span className="text-[11px] uppercase tracking-wide opacity-80 flex items-center gap-1"><Activity className="w-3 h-3" /> Health state</span>
                 <p className="mt-1 font-display text-2xl font-bold">{result.health.state}</p>
@@ -637,6 +888,42 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                   {result.health.windowsRejected > 0 ? `, ${result.health.windowsRejected} rejected by bee gate` : ""} · bee
                   presence {(result.health.beeConfidence * 100).toFixed(0)}%
                 </p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-4">
+                <span className="text-[11px] uppercase tracking-wide text-muted-foreground flex items-center justify-between">
+                  <span className="flex items-center gap-1">
+                    <Gauge className="w-3 h-3 text-honey" /> OSBH State
+                  </span>
+                  <a
+                    href="https://github.com/nduva15/BEE-SOUND-ANALYSIS/blob/main/BeeSound_Analysis/modules/osbh_engine.py"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[9px] font-mono text-muted-foreground hover:text-honey flex items-center gap-0.5"
+                    title="View osbh_engine.py in repository"
+                  >
+                    <span>osbh_engine</span>
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                </span>
+                <p className={`mt-1 font-display text-2xl font-bold ${
+                  result.osbh.state === "ACTIVE"
+                    ? "text-emerald-400"
+                    : result.osbh.state === "QUEEN_MISSING"
+                    ? "text-orange-400"
+                    : "text-amber-400"
+                }`}>
+                  {result.osbh.state.replace("_", " ")}
+                </p>
+                <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
+                  <span>500/250Hz: <strong className="text-foreground">{result.osbh.ratio.toFixed(2)}</strong></span>
+                  <span className="text-[10px] opacity-75">alert: ≥ 0.60</span>
+                </div>
+                <div className="mt-1.5 h-1.5 rounded-full bg-border overflow-hidden">
+                  <div
+                    className={`h-full ${result.osbh.thresholdMet ? "bg-orange-400" : "bg-emerald-400"}`}
+                    style={{ width: `${Math.min(100, Math.max(5, (result.osbh.ratio / 1.0) * 100))}%` }}
+                  />
+                </div>
               </div>
               <div className="rounded-xl border border-border bg-card p-4">
                 <span className="text-[11px] uppercase tracking-wide text-muted-foreground flex items-center gap-1"><Crown className="w-3 h-3" /> Queen piping</span>
@@ -738,6 +1025,8 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                     ? `Detected in ${result.piping.events} window(s) (${(result.piping.confidence * 100).toFixed(0)}%)`
                     : "Not detected",
                   diseases: result.diseases,
+                  osbhRatio: result.osbh?.ratio,
+                  osbhState: result.osbh?.state,
                   notes,
                   ai: aiText,
                 })}

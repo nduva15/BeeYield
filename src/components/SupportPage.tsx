@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 type Ticket = {
   id: string;
+  device_id: string;
   subject: string;
   category: string;
   priority: string;
@@ -18,7 +19,7 @@ type Ticket = {
   contact_email: string | null;
   contact_phone: string | null;
   last_contact_at: string | null;
-  resolution: string | null;
+  resolution?: string | null;
   created_at: string;
 };
 
@@ -134,6 +135,7 @@ export default function SupportPage({
       contact_email: draft.contact_email?.trim() || null,
       contact_phone: draft.contact_phone?.trim() || null,
       last_contact_at: new Date().toISOString(),
+      resolution: null,
       created_at: new Date().toISOString(),
     };
 

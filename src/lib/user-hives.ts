@@ -63,21 +63,8 @@ export function isTimothyUser(user?: UserLike | null, profile?: ProfileLike | nu
   );
 }
 
-// Known hardware sensor serials mounted on Timothy's Kibwezi hives
-const KIBWEZI_DEVICE_MAP: Record<string, { serial: string; hasSensor: boolean }> = {
-  "KIB-001": { serial: "VS-KBZ-001", hasSensor: true },
-  "KIB-002": { serial: "VS-KBZ-002", hasSensor: true },
-  "KIB-003": { serial: "SCALE-KBZ-003", hasSensor: true },
-  "KIB-004": { serial: "SCALE-KBZ-004", hasSensor: true },
-  "KIB-005": { serial: "IH-BROOD-005", hasSensor: true },
-  "KIB-006": { serial: "VS-KBZ-006", hasSensor: true },
-  "KIB-007": { serial: "IH-BROOD-007", hasSensor: true },
-  "KIB-008": { serial: "VS-KBZ-008", hasSensor: true },
-  "KIB-009": { serial: "TAG-KBZ-009", hasSensor: true },
-  "KIB-010": { serial: "TAG-KBZ-010", hasSensor: true },
-  "KIB-011": { serial: "VS-KBZ-011", hasSensor: true },
-  "KIB-012": { serial: "VS-KBZ-012", hasSensor: true },
-};
+// Timothy Nduva operates 184 managed Langstroth hives in Kibwezi with zero hardware IoT sensors connected so far
+const KIBWEZI_DEVICE_MAP: Record<string, { serial: string; hasSensor: boolean }> = {};
 
 /**
  * Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi, Makueni County
@@ -195,9 +182,8 @@ export const TIMOTHY_DEFAULT_HEALTH_RECORDS: HiveHealthRecordSeed[] = [
     varroa_count: 1,
     colony_strength: "Strong (8–10 Frames Brood & Bees)",
     colony_availability: "Dedicated Honey Production",
-    notes: "Vigorous queen laying pattern observed. 8 solid brood frames, capped honey supers optimal. Apisense VitalSensor active.",
+    notes: "Vigorous queen laying pattern observed. 8 solid brood frames, capped honey supers optimal. Physical apiary inspection verified.",
     inspector: "Timothy Nduva",
-    sensor_serial: "VS-KBZ-001",
   },
   {
     id: "rec_kib_002_01",
@@ -208,9 +194,8 @@ export const TIMOTHY_DEFAULT_HEALTH_RECORDS: HiveHealthRecordSeed[] = [
     varroa_count: 2,
     colony_strength: "Strong (8–10 Frames Brood & Bees)",
     colony_availability: "Dedicated Honey Production",
-    notes: "Solid honey storage. Calm temperament, hygienic bottom board inspected clean.",
+    notes: "Solid honey storage. Calm temperament, hygienic bottom board inspected clean. Manual physical check.",
     inspector: "Timothy Nduva",
-    sensor_serial: "VS-KBZ-002",
   },
   {
     id: "rec_kib_003_01",
@@ -221,9 +206,8 @@ export const TIMOTHY_DEFAULT_HEALTH_RECORDS: HiveHealthRecordSeed[] = [
     varroa_count: 3,
     colony_strength: "Moderate (5–7 Frames)",
     colony_availability: "Dedicated Honey Production",
-    notes: "Steady foraging observed. Telemetry load scale shows 39.5 kg stable net weight.",
+    notes: "Steady foraging observed. 10-frame physical inspection confirms healthy worker brood and comb extension.",
     inspector: "Timothy Nduva",
-    sensor_serial: "SCALE-KBZ-003",
   },
   {
     id: "rec_kib_004_01",
@@ -236,7 +220,6 @@ export const TIMOTHY_DEFAULT_HEALTH_RECORDS: HiveHealthRecordSeed[] = [
     colony_availability: "Available for Pollination Contracts",
     notes: "Prime commercial pollination condition. Drone cells controlled, swarm management completed.",
     inspector: "Timothy Nduva",
-    sensor_serial: "SCALE-KBZ-004",
   },
   {
     id: "rec_kib_005_01",
@@ -244,9 +227,8 @@ export const TIMOTHY_DEFAULT_HEALTH_RECORDS: HiveHealthRecordSeed[] = [
     record_type: "acoustic",
     recorded_at: new Date(Date.now() - 86400000 * 10).toISOString(),
     health_index: 92,
-    notes: "Acoustic frequency analysis: 245 Hz fundamental queen piping and cluster harmony. Intelligent Hives monitor optimal.",
+    notes: "Mobile audio audit: 245 Hz fundamental queen piping and cluster harmony recorded via smartphone microphone.",
     inspector: "Timothy Nduva",
-    sensor_serial: "IH-BROOD-005",
   },
 ];
 

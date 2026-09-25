@@ -126,6 +126,7 @@ export type DeviceCategory = "in_land" | "in_hive" | "disease_devices";
 
 export interface ApiaryDeviceItem {
   id: string;
+  name?: string;
   category: DeviceCategory;
   deviceType: string;
   serial: string;
@@ -133,8 +134,12 @@ export interface ApiaryDeviceItem {
   status: "active" | "online" | "optimal" | "low_battery" | "calibrating";
   lastSync?: string;
   telemetrySummary?: string;
-  model: string;
+  model?: string;
   installedAt?: string;
+  batteryPct?: number;
+  signalStrength?: string;
+  lastPing?: string;
+  firmwareVersion?: string;
 }
 
 
@@ -4764,10 +4769,19 @@ function ApiaryDetailModal({
       const raw = localStorage.getItem(getStorageKey(userKey, apiary.id, "devices"));
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          // If Timothy has no sensors connected so far, filter out the mock demo devices
+          const userOnly = parsed.filter(
+            (d: any) =>
+              !CANONICAL_KIBWEZI_DEVICES.some((cd) => cd.id === d.id || cd.serial === d.serial) &&
+              !d.serial?.includes("-KBZ-")
+          );
+          if (userOnly.length > 0) return userOnly;
+        }
       }
     } catch {}
-    return (isTimothyUser(user, profile) || !user) ? CANONICAL_KIBWEZI_DEVICES : [];
+    // Timothy operates 184 hives with 0 sensors connected so far
+    return [];
   });
 
   const saveDevicesUserScoped = (nextDevices: ApiaryDeviceItem[]) => {
@@ -4967,7 +4981,7 @@ function ApiaryDetailModal({
   const [selectedHiveForFrameSense, setSelectedHiveForFrameSense] = useState<ApiaryHiveItem | null>(null);
   const [showAddHiveModal, setShowAddHiveModal] = useState(false);
   const [isScanningOpen, setIsScanningOpen] = useState(false);
-  const [scanContext, setScanContext] = useState<"addHive" | "detailHive" | "editHive">("addHive");
+  const [scanContext, setScanContext] = useState<"addHive" | "detailHive" | "editHive" | "addDevice">("addHive");
   const [tempScannedSerial, setTempScannedSerial] = useState("");
 
   const filteredHives = useMemo(() => {
@@ -5567,21 +5581,38 @@ function ApiaryDetailModal({
                                 </span>
                               </div>
 
-                              {/* VitalSensor Line with Signal & Battery */}
-                              <div className="flex items-center justify-between text-sm pt-0.5">
-                                <span className="font-semibold text-[#2E2A25] dark:text-stone-200">
-                                  VitalSensor
-                                </span>
-                                <div className="flex items-center gap-2">
-                                  <BluetoothWaveIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                  <BatteryIndicatorIcon className="w-5 h-5 text-amber-500" />
-                                </div>
-                              </div>
-
-                              {/* Timestamp */}
-                              <p className="text-xs text-[#8E8880] -mt-1">
-                                Measurement: 2026-09-24, 19:00
-                              </p>
+                              {/* Sensor Status / Physical Inspection Mode */}
+                              {hive.sensorSerial ? (
+                                <>
+                                  <div className="flex items-center justify-between text-sm pt-0.5">
+                                    <span className="font-semibold text-[#2E2A25] dark:text-stone-200">
+                                      VitalSensor ({hive.sensorSerial})
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <BluetoothWaveIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                      <BatteryIndicatorIcon className="w-5 h-5 text-amber-500" />
+                                    </div>
+                                  </div>
+                                  <p className="text-xs text-[#8E8880] -mt-1">
+                                    Measurement: 2026-09-24, 19:00
+                                  </p>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="flex items-center justify-between text-sm pt-0.5">
+                                    <span className="text-xs font-semibold text-[#8E8880] dark:text-stone-400 flex items-center gap-1.5">
+                                      <span className="w-2 h-2 rounded-full bg-stone-300 dark:bg-stone-600" />
+                                      No sensor connected
+                                    </span>
+                                    <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300/40 px-2 py-0.5 rounded-full">
+                                      Physical Inspection
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-[#8E8880] -mt-1">
+                                    Manual Apiary Record · Unmetered
+                                  </p>
+                                </>
+                              )}
 
                               {/* 3 Standard Rows */}
                               <div className="space-y-2 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
@@ -5646,14 +5677,16 @@ function ApiaryDetailModal({
                                   )}
                                 </div>
 
-                                {/* Row 3: Temperature in hive */}
+                                {/* Row 3: Temperature */}
                                 <div className="flex items-center justify-between py-1">
                                   <div className="flex items-center gap-2.5">
                                     <Thermometer className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                                    <span className="text-sm font-medium">Temperature in hive</span>
+                                    <span className="text-sm font-medium">
+                                      {hive.sensorSerial ? "Temperature in hive" : "Ambient temperature"}
+                                    </span>
                                   </div>
                                   <div className="px-3 py-1 rounded-xl border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-bold font-mono">
-                                    {hiveTemp}
+                                    {hive.sensorSerial ? hiveTemp : "26°C (Apiary)"}
                                   </div>
                                 </div>
                               </div>
@@ -5872,7 +5905,126 @@ function ApiaryDetailModal({
             </div>
           )}
 
-          {/* TAB 2: FORAGE & FLORA ECOSYSTEM */}
+          {/* TAB 2: IOT DEVICES & TELEMETRY */}
+          {activeTab === "devices" && (
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#1C1917] border border-[#EFE8DE] dark:border-stone-800 shadow-sm">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Radio className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    <h3 className="text-base font-bold text-foreground">
+                      IoT Hardware Devices & Telemetry Gateways
+                    </h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {devicesList.length === 0
+                      ? "0 connected devices · Operating under certified physical apiary inspection"
+                      : `${devicesList.length} connected hardware nodes in ${apiary.name}`}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTempScannedDeviceCode("");
+                    setShowAddDeviceModal(true);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                >
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
+                  <span>Pair Hardware Device</span>
+                </button>
+              </div>
+
+              {devicesList.length === 0 ? (
+                <div className="p-8 rounded-3xl border border-dashed border-border bg-background/60 text-center space-y-4">
+                  <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto shadow-inner">
+                    <Radio className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1.5 max-w-md mx-auto">
+                    <h4 className="text-base font-bold text-foreground">
+                      No Sensors Connected So Far
+                    </h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Timothy operates 184 managed Langstroth hives in the Kibwezi ecosystem. All hives are currently monitored via certified hands-on physical inspections. No telemetry hardware nodes or scales have been mounted yet.
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTempScannedDeviceCode("");
+                        setShowAddDeviceModal(true);
+                      }}
+                      className="px-5 py-2.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-xs flex items-center gap-2 shadow-sm transition-all"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>+ Pair VitalSensor or Scale</span>
+                    </button>
+                  </div>
+                  <div className="pt-4 border-t border-border/50 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left max-w-2xl mx-auto">
+                    <div className="p-3 rounded-xl border border-border/60 bg-muted/20 space-y-1">
+                      <span className="text-[11px] font-bold text-foreground flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Physical Audits
+                      </span>
+                      <p className="text-[10px] text-muted-foreground">Brood frames & queen health manually verified.</p>
+                    </div>
+                    <div className="p-3 rounded-xl border border-border/60 bg-muted/20 space-y-1">
+                      <span className="text-[11px] font-bold text-foreground flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Acoustic Audits
+                      </span>
+                      <p className="text-[10px] text-muted-foreground">Smartphone mic sound analysis supported without hardware.</p>
+                    </div>
+                    <div className="p-3 rounded-xl border border-border/60 bg-muted/20 space-y-1">
+                      <span className="text-[11px] font-bold text-foreground flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Zero Ghost Data
+                      </span>
+                      <p className="text-[10px] text-muted-foreground">No simulated or false hardware telemetry displayed.</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {devicesList.map((dev) => (
+                    <div
+                      key={dev.id}
+                      className="p-4 rounded-2xl border border-border bg-background space-y-3 shadow-sm hover:shadow-md transition-all"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Radio className="w-4 h-4 text-emerald-600" />
+                          <span className="font-mono font-bold text-xs text-foreground">{dev.serial}</span>
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {dev.status}
+                        </span>
+                      </div>
+                      <div className="text-xs space-y-1">
+                        <p className="font-semibold text-foreground truncate">{dev.deviceType}</p>
+                        <p className="text-muted-foreground text-[11px]">Mounted to: {dev.hiveCode || "Unassigned"}</p>
+                        {dev.telemetrySummary && (
+                          <p className="text-amber-700 dark:text-amber-400 font-mono text-[11px] bg-amber-500/10 px-2 py-1 rounded-lg">
+                            {dev.telemetrySummary}
+                          </p>
+                        )}
+                      </div>
+                      <div className="pt-2 border-t border-border/60 flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Sync: {dev.lastSync}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteDevice(dev.id, dev.serial)}
+                          className="text-rose-600 hover:text-rose-700 font-bold"
+                        >
+                          Unpair
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: FORAGE & FLORA ECOSYSTEM */}
           {activeTab === "forage" && (
             <div className="space-y-4">
               <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-1">

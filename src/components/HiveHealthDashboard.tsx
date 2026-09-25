@@ -22,6 +22,7 @@ import {
   QrCode,
   UserCheck,
   Sparkles,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -304,11 +305,11 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         withTimeout(
           (async () => {
             if (user?.id) {
-              const { data } = await supabase
-                .from("devices" as any)
+              const { data } = await (supabase as any)
+                .from("devices")
                 .select("id, hive_id, serial, status")
                 .eq("user_id", user.id);
-              return data || [];
+              return (data as any[]) || [];
             }
             return [];
           })(),
@@ -317,8 +318,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         ),
       ]);
 
-      const rawHives = hivesResult.status === "fulfilled" ? hivesResult.value : [];
-      const pairedDevices = devicesResult.status === "fulfilled" ? devicesResult.value : [];
+      const rawHives: any[] = hivesResult.status === "fulfilled" && Array.isArray(hivesResult.value) ? (hivesResult.value as any[]) : [];
+      const pairedDevices: any[] = devicesResult.status === "fulfilled" && Array.isArray(devicesResult.value) ? (devicesResult.value as any[]) : [];
 
       const mappedRemote: any[] = (rawHives || []).map((h: any) => {
         const paired = pairedDevices.find((d: any) => d.hive_id === h.id && d.status === "active");
@@ -1291,12 +1292,24 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
             {/* Latest Acoustic Audits */}
             <div className="rounded-2xl border border-border/80 bg-white p-5 shadow-sm space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <Waves className="w-4 h-4 text-amber-500" />
                   <h3 className="font-bold text-sm text-foreground">Latest acoustic audits</h3>
                 </div>
-                <span className="text-xs text-muted-foreground">{acousticAudits.length} archived</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{acousticAudits.length} archived</span>
+                  <a
+                    href="https://github.com/nduva15/BEE-SOUND-ANALYSIS"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/25 transition-colors"
+                    title="Official BEE-SOUND-ANALYSIS pipeline repository on GitHub"
+                  >
+                    <span>BEE-SOUND-ANALYSIS</span>
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                </div>
               </div>
               {acousticAudits.length > 0 ? (
                 <div className="space-y-1.5 pt-1">

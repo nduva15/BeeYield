@@ -31,6 +31,46 @@ export const BAND_LOW = 100;
 export const BAND_HIGH = 8000;
 export const PIPING_BAND: [number, number] = [300, 500];
 
+export type ReferenceClip = {
+  id: string;
+  name: string;
+  filename: string;
+  url: string;
+  expectedState: "Healthy" | "Queenless" | "Swarming";
+  description: string;
+  source: string;
+};
+
+export const REFERENCE_CLIPS: ReferenceClip[] = [
+  {
+    id: "colony-with-queen",
+    name: "Colony With Queen (Healthy)",
+    filename: "colony_with_queen.ogg",
+    url: "/audio/reference/colony_with_queen.ogg",
+    expectedState: "Healthy",
+    description: "Stable queen flight & brood thermoregulation baseline from OSBH reference folds.",
+    source: "BEE-SOUND-ANALYSIS · data/raw_audio/osbh_reference/colony_with_queen.ogg",
+  },
+  {
+    id: "colony-queenless",
+    name: "Colony Queenless (Alert)",
+    filename: "colony_queenless.ogg",
+    url: "/audio/reference/colony_queenless.ogg",
+    expectedState: "Queenless",
+    description: "Queenless hive showing elevated 445–525 Hz alert band and characteristic mourning roar.",
+    source: "BEE-SOUND-ANALYSIS · data/raw_audio/osbh_reference/colony_queenless.ogg",
+  },
+  {
+    id: "swarm-piping",
+    name: "Virgin Queen Piping (Swarming)",
+    filename: "swarm_piping.ogg",
+    url: "/audio/reference/swarm_piping.ogg",
+    expectedState: "Swarming",
+    description: "Virgin queen piping pulses in the 300–500 Hz acoustic band prior to swarm departure.",
+    source: "BEE-SOUND-ANALYSIS · data/raw_audio/osbh_reference/swarm_piping.ogg",
+  },
+];
+
 export type SegmentFeatures = {
   index: number;
   startSec: number;
@@ -45,6 +85,8 @@ export type SegmentFeatures = {
   mfcc: number[];
   modelVector: number[];
   classification: Classification;
+  osbhActivePower: number;
+  osbhAlertPower: number;
 };
 
 export type HealthState = ModelHealthState;
@@ -55,6 +97,14 @@ export type DiseaseRisk = {
   severity: "low" | "moderate" | "high";
   rationale: string;
   acousticMarker: string;
+};
+
+export type OsbhResult = {
+  state: "ACTIVE" | "LOW_ACTIVITY" | "QUEEN_MISSING";
+  activityPower: number;
+  alertPower: number;
+  ratio: number;
+  thresholdMet: boolean;
 };
 
 export type AnalysisResult = {
@@ -84,6 +134,7 @@ export type AnalysisResult = {
   spectrum: { freq: number; magnitude: number }[];
   waveform: number[];
   inferenceMode: "corpus-gaussian-mfcc";
+  osbh: OsbhResult;
 };
 
 /* ------------------------------------------------------------------ FFT ---- */
@@ -310,6 +361,8 @@ export function extractFeatures(segment: Float32Array, sr: number, index: number
     mfcc: mfcc.map((v) => Number(v.toFixed(3))),
     modelVector: modelVector.map((v) => Number(v.toFixed(4))),
     classification: classifyFeatures(modelVector),
+    osbhActivePower: bandSum(mag, sr, size, 220, 275),
+    osbhAlertPower: bandSum(mag, sr, size, 445, 525),
   };
 }
 
@@ -379,12 +432,15 @@ export function inferDiseases(
   agg: AnalysisResult["aggregate"],
   health: { state: HealthState; confidence: number },
   piping: { detected: boolean; confidence: number },
+  osbh?: OsbhResult,
 ): DiseaseRisk[] {
   const b = agg.bandEnergy;
   const low = (b["100-200"] ?? 0) + (b["200-300"] ?? 0);
   const mid = (b["500-800"] ?? 0) + (b["800-1500"] ?? 0);
   const high = (b["1500-3000"] ?? 0) + (b["3000-8000"] ?? 0);
   const clamp = (v: number) => Math.max(0, Math.min(1, v));
+
+  const isQueenless = health.state === "Queenless" || (osbh?.thresholdMet ?? false);
 
   const raw: Omit<DiseaseRisk, "severity">[] = [
     {
@@ -395,9 +451,11 @@ export function inferDiseases(
     },
     {
       name: "Queenlessness / failing queen",
-      score: clamp((health.state === "Queenless" ? 0.8 : 0.08) + (agg.spectralCentroid < 1500 ? 0.2 : 0) - (piping.detected ? 0.25 : 0)),
-      rationale: "Loss of the queen pheromone signal drops the colony's mean frequency and produces a mournful low roar.",
-      acousticMarker: `centroid ${agg.spectralCentroid.toFixed(0)} Hz`,
+      score: clamp((isQueenless ? 0.82 : 0.08) + (agg.spectralCentroid < 1500 ? 0.18 : 0) - (piping.detected ? 0.25 : 0)),
+      rationale: osbh?.thresholdMet
+        ? `OSBH AudioHealth alert triggered: alert-to-active power ratio is ${osbh.ratio.toFixed(2)} (threshold ≥ 0.60). Queen pheromone absence confirmed.`
+        : "Loss of the queen pheromone signal drops the colony's mean frequency and produces a mournful low roar.",
+      acousticMarker: `OSBH alert ratio ${osbh ? osbh.ratio.toFixed(2) : "0.00"} (445–525Hz / 220–275Hz), centroid ${agg.spectralCentroid.toFixed(0)} Hz`,
     },
     {
       name: "Swarm preparation / queen piping",
@@ -496,7 +554,27 @@ export function analyzeAudio(rawAudio: Float32Array, rawSr: number): AnalysisRes
   const health = classifyHealth(features);
   const piping = detectPiping(features);
   const species = identifySpecies(aggregate.dominantFreq);
-  const diseases = inferDiseases(aggregate, health, piping);
+
+  // OSBH Engine: 220–275 Hz (active baseline) vs 445–525 Hz (alert band)
+  const avgActive = mean((f) => f.osbhActivePower);
+  const avgAlert = mean((f) => f.osbhAlertPower);
+  const osbhRatio = avgActive > 0 ? Number((avgAlert / avgActive).toFixed(3)) : 0;
+  const osbhThresholdMet = osbhRatio >= 0.6;
+  const osbhState: "ACTIVE" | "LOW_ACTIVITY" | "QUEEN_MISSING" = osbhThresholdMet || health.state === "Queenless"
+    ? "QUEEN_MISSING"
+    : aggregate.rms >= 0.02
+    ? "ACTIVE"
+    : "LOW_ACTIVITY";
+
+  const osbh: OsbhResult = {
+    state: osbhState,
+    activityPower: Number(avgActive.toFixed(4)),
+    alertPower: Number(avgAlert.toFixed(4)),
+    ratio: osbhRatio,
+    thresholdMet: osbhThresholdMet,
+  };
+
+  const diseases = inferDiseases(aggregate, health, piping, osbh);
 
   // Display spectrum from the loudest segment
   const loudest = features.reduce((a, f) => (f.rms > a.rms ? f : a), features[0]);
@@ -541,6 +619,7 @@ export function analyzeAudio(rawAudio: Float32Array, rawSr: number): AnalysisRes
     spectrum,
     waveform,
     inferenceMode: "corpus-gaussian-mfcc",
+    osbh,
   };
 }
 

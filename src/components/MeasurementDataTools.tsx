@@ -280,7 +280,7 @@ function AddHiveWizard({ apiaries, onDone, onCancel }: { apiaries: Apiary[]; onD
         link_type: "bluetooth",
         serial: sensorSerial.trim(),
         confirmation_code: code.trim() || null,
-        label: `${name.trim()} ${sensorKind === "scale" ? "Weight Scale" : sensorKind === "tag" ? "Tag" : sensorKind === "varroa_detector" ? "Varroa Detector" : "VitalSensor"}`,
+        label: `${name.trim()} ${sensorKind === "tag" ? "Tag" : "VitalSensor"}`,
         status: code.trim() ? "active" : "pending",
       });
       if (dErr) toast.error(`Hive saved, device failed: ${dErr.message}`);
