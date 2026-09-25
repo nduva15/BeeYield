@@ -1,126 +1,131 @@
-# BeeYield — Precision Apiculture & Honey Traceability
+# BeeYield — Precision Apiculture, Pollination & Colony Health Research
 
-[![Production Deployment](https://img.shields.io/badge/Production-Live-1B9157?style=flat&logo=vercel)](https://www.beeyield.com)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=flat&logo=typescript)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat&logo=react)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.4-646CFF?style=flat&logo=vite)](https://vitejs.dev/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![License](https://img.shields.io/badge/License-Proprietary-black.svg)](LICENSE)
-
-BeeYield is an enterprise apiculture platform designed to optimize pollination yields, monitor colony health in real time through IoT telemetry, and provide end-to-end honey traceability from hive to consumer.
+> Advanced apiculture research, IoT-guided precision pollination, proactive colony disease diagnostics, and end-to-end honey traceability for sustainable agro-ecosystems.
 
 ---
 
-## Key Platform Capabilities
+## Research Mission & Overview
 
-### 1. Real-Time Hive Monitoring & Telemetry
-* **Live Telemetry Sync**: Automatically loads real-time weight, internal brood temperature, humidity, and colony activity metrics immediately upon user sign-in.
-* **Colony Health Alerts**: Automated warning triggers for temperature variance ($\sigma^2$), sudden weight drops (swarming or starvation indicator), and moisture anomalies.
-* **Device Calibration**: Sensor binding and frequency management for field-deployed IoT hardware.
+BeeYield bridges apiculture science, agricultural pollination ecology, and precision biological telemetry. Our work focuses on resolving critical challenges in pollinator decline, agricultural yield deficits, and colony pathogen transmission across East Africa—with active field deployment anchored in the arid and semi-arid lands (ASALs) of Kibwezi, Makueni County, Kenya.
 
-### 2. Precision Pollination & Honey Yield Modeling
-* **Yield Projections**: Mathematical modeling connecting colony strength, floral bloom cycles, and weather patterns to predict honey production.
-* **Forage Zone Management**: Radius and floral resource coverage mapping for apiary placement and nutrition optimization.
-* **Colony Availability Forecasting**: Schedule hives for precision agricultural pollination contracts in Makueni, Kibwezi, and regional farms.
-
-### 3. Digital Apiary & Operations Management
-* **Comprehensive Inspection Logging**: Full record-keeping for queen status, frame counts, pest/disease presence, and corrective actions.
-* **Harvest Management**: Batch-level tracking capturing moisture percentage, floral source, harvest date, and yield weights.
-* **Task Scheduling**: Structured workflow management for super additions, seasonal treatments, feeding, and split scheduling.
-
-### 4. Traceability & E-Commerce
-* **Golden Thread Traceability**: Batch verification enabling retail consumers and commercial buyers to inspect origin apiaries, harvest dates, and laboratory test results.
-* **Single-Page Checkout**: Streamlined ordering with automated shipping calculations, discount code validation, and delivery method selection.
-* **Secure Multi-Channel Payments**: PCI-DSS compliant payment integration supporting Stripe (Cards, Apple Pay, Google Pay) and mobile money (M-Pesa).
-
-### 5. Automated Reporting & Provenance Documentation
-* **Client Audit Reports**: Client-side and server-rendered PDF exports summarizing colony health inspections, forage quality, and batch certifications.
-* **Dynamic User Data**: Personalized insights filtered exclusively to authenticated beekeeper records without mock data contamination.
+By uniting non-invasive in-hive biometrics, computer-vision comb diagnostics, acoustic sensing, and regional floral phenology, BeeYield develops empirical models that maximize crop set while preserving honeybee (*Apis mellifera scutellata*) genetic resilience and colony longevity.
 
 ---
 
-## Recent Platform Updates
+## 1. Precision Pollination Science & Agricultural Modeling
 
-* **Immediate Telemetry Loading**: Streamlined sign-in workflow so connected hive telemetry hydrates instantly without requiring manual page refreshes.
-* **User Data Isolation**: Purged legacy mock datasets across Inspections, Harvests, Tasks, and Hive Health pages; all views now bind directly to user account records.
-* **Modernized Dashboard UI/UX**: Unified all primary action buttons, dialogs, and navigation controls to a high-visibility emerald design system (`#1B9157`) with clear white typography.
-* **Card Payment Integration**: Added dedicated card addition workflow with responsive modal overlays and authenticated tokenization.
-* **Code Quality & Strict Linting**: Enforced strict ESLint standards across the entire TypeScript codebase with 0 errors and 0 warnings.
-* **Security Hardening**: Sanitized all hardcoded secrets and environment placeholders, migrating sensitive keys to secure environment variables.
-* **Streamlined Architecture**: Deprecated and purged obsolete experimental modules (Acoustic Transformer, Orchard Mapper, Billing invoices) to maintain high performance and low bundle sizes.
+Managed honeybee pollination is an essential agricultural input that directly determines fruit symmetry, seed fill, and crop quality. BeeYield models pollination efficiency by evaluating colony foraging capacity against crop-specific bloom phenology and botanical nectar secretion cycles.
 
----
+### Target Crop Pollination Profiles
 
-## Tech Stack
+| Crop | Bee Dependence | Stocking Density | Pollination & Agronomic Mechanism |
+| :--- | :--- | :--- | :--- |
+| **Sunflower** (*Helianthus annuus*) | High (65% – 100%) | 1.5 – 3 Hives / Acre | Cross-row foraging flights maximize seed set and oil concentration; reduces empty seed centers. |
+| **Avocado** (*Persea americana*) | High (80%+) | 2 – 4 Hives / Acre | Synchronizes with A- and B-type flower opening phases to achieve cross-pollination and uniform fruit set. |
+| **Watermelon** (*Citrullus lanatus*) | High (70%+) | 1.5 – 2.5 Hives / Acre | Requires 8–12 bee visits per female flower during morning hours for symmetrical fruit development. |
+| **Macadamia** (*Macadamia integrifolia*) | Moderate–High (60%+) | 2 – 3 Hives / Acre | Concentrated floral visits across racemes improve nut retention and kernel grade. |
+| **Coffee** (*Coffea arabica / canephora*) | Supplemental (25% – 40%) | 1 – 2 Hives / Acre | Insect cross-pollination increases berry weight, fruit consistency, and simultaneous ripening. |
+| **Mango** (*Mangifera indica*) | Moderate (50%+) | 1 – 2 Hives / Acre | Enhances setting of hermaphroditic flowers across panicles; reduces premature fruit drop. |
+| **Green Grams & Legumes** | Moderate (30%+) | 1 – 2 Hives / Acre | Tripping of keeled flowers increases pod set and uniform seed sizing. |
+| **Maize** (*Zea mays*) | Supplemental / Forage | 1 – 2 Hives / Acre | Intensive pollen scavenging during tasseling; supports intercropped companion vegetables under drip irrigation. |
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Radix UI Primitives |
-| **State & Data** | TanStack React Query, Context API, Supabase Client |
-| **Backend API** | Python (FastAPI), Uvicorn, Pydantic |
-| **Database & Auth** | Supabase (PostgreSQL), Row Level Security (RLS) |
-| **Payments** | Stripe Elements & API, Safaricom Daraja M-Pesa |
-| **Hosting & CI/CD** | Vercel Edge Network, GitHub Actions CI Pipeline |
+### Foraging Dynamics & Spatial Flight Modeling
 
----
-
-## Getting Started
-
-### Prerequisites
-* **Node.js**: v18.x or v20.x+
-* **pnpm**: v9.x or v10.x (or `npm` / `yarn`)
-* **Python**: 3.10+ (if running local backend services)
-
-### Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/nduva15/BeeYield.git
-   cd BeeYield
-   ```
-
-2. **Install frontend dependencies**:
-   ```bash
-   pnpm install
-   ```
-
-3. **Configure environment variables**:
-   Create a `.env` file in the root directory:
-   ```env
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-   VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-   ```
-
-4. **Start the development server**:
-   ```bash
-   pnpm run dev
-   ```
-   Open [http://localhost:5173](http://localhost:5173) in your browser.
+* **Core Forage Radius ($2.0\text{ km}$)**: The primary energetic foraging zone where net caloric intake is maximized without excessive flight expenditure.
+* **Maximum Foraging Radius ($5.0\text{ km}$)**: Extended search perimeter during dearth periods; modeled to assess risk of pesticide exposure and competition from neighboring apiaries.
+* **Flight Potential & Phenology Radar**: Real-time integration of microclimate data (ambient temperature, wind velocity, humidity, solar radiation) with bloom timing to forecast optimal field deployment windows.
 
 ---
 
-## Available Scripts
+## 2. Honeybee Pathology & Diagnostic Research
 
-| Command | Description |
-| :--- | :--- |
-| `pnpm run dev` | Starts the Vite local development server |
-| `pnpm run build` | Compiles and builds the production bundle in `dist/` |
-| `pnpm run lint` | Runs ESLint across all TypeScript and React files |
-| `pnpm run type-check` | Runs the TypeScript compiler check (`tsc --noEmit`) |
-| `pnpm run preview` | Previews the local production build |
+Colony loss is frequently driven by compounding stressors: parasitic mites, opportunistic brood pathogens, and poor nutrition. BeeYield provides structured field diagnostic protocols, telemetry monitoring, and computer-vision disease recognition.
+
+### Key Pathologies Monitored
+
+```
+                       ┌── Parasitic ────── Varroa destructor (Mites)
+                       ├── Bacterial ────── American Foulbrood (Paenibacillus larvae)
+                       │                    European Foulbrood (Melissococcus plutonius)
+   Honeybee Disease    ├── Fungal ───────── Chalkbrood (Ascosphaera apis)
+      Framework        │                    Stonebrood (Aspergillus flavus)
+                       ├── Microsporidian ─ Nosema apis & Nosema ceranae
+                       └── Viral ────────── Deformed Wing Virus (DWV)
+                                            Sacbrood Virus (SBV)
+```
+
+#### Parasitic Mites (*Varroa destructor*)
+* **Monitoring Protocols**: Standardized natural mite-fall bottom board counts and alcohol wash percentage indexing.
+* **Population Dynamics**: Mathematical modeling of Varroa exponential progression relative to drone and worker brood rearing cycles.
+* **Integrated Pest Management (IPM)**: Threshold-based non-chemical interventions (screened bottom boards, drone brood trapping, organic acid volatilization) ensuring zero chemical residue in harvested honey.
+
+#### Bacterial Brood Diseases
+* **American Foulbrood (*Paenibacillus larvae*)**: Spore-forming bacterial blight requiring immediate quarantine, sterilization, and comb disposal to prevent apiary-wide collapse.
+* **European Foulbrood (*Melissococcus plutonius*)**: Non-spore-forming pathogen occurring during early spring or rapid brood expansion; managed through nutritional feeding and re-queening with hygienic stock.
+
+#### Fungal & Microsporidian Infections
+* **Chalkbrood (*Ascosphaera apis*)**: Monitored through detection of mummified larvae at the hive entrance; linked to chilled brood, high nest moisture, and genetic vulnerability.
+* **Nosemosis (*Nosema apis* & *N. ceranae*)**: Gut microsporidian surveillance correlated with dysentery, shortened worker lifespan, and impaired honey production.
+
+### FrameSense AI — Optical Comb Diagnostics
+
+* **Multi-Angle Visual Analysis**: High-resolution image capture of brood, honey, and pollen frames.
+* **Laying Pattern Verification**: Quantitative analysis of brood pattern compactness (spotty brood vs. solid concentric rings), indicating queen reproductive vitality and pathogen absence.
+* **Symptom Segmentation**: Automated visual recognition of sunken cappings, perforated cells, larval discoloration, and dead bee telemetry.
 
 ---
 
-## Security & Reliability
+## 3. In-Hive Biometrics & Telemetry Science
 
-* **PCI-DSS Level 1**: Stripe Elements handles all card data collection directly in secure iframes; no sensitive payment data touches the application servers.
-* **Zero Hardcoded Secrets**: All API tokens, secret keys, and credentials are kept strictly in environment variables and secret stores.
-* **Strict Type Safety**: End-to-end type coverage across all models, API handlers, and UI components.
+Bee colonies function as superorganisms that tightly regulate internal environmental conditions. Deviations from standard baseline metrics serve as early indicators of stress long before visual symptoms appear.
+
+### Physiological Metrics Tracked
+
+* **Brood Nest Thermoregulation ($34.5^\circ\text{C} – 35.5^\circ\text{C}$)**:
+  Healthy colonies maintain constant core brood temperatures regardless of outside temperature swings ($15^\circ\text{C} – 40^\circ\text{C}$). Temperature depressions signify colony depopulation, chilled brood, or starvation; abnormal spikes indicate active ventilation stress or overheating.
+* **Relative Humidity Management ($55\% – 65\%$)**:
+  Crucial for egg hatching and larval development. Excess moisture triggers fungal sporulation (*Ascosphaera apis*), while extreme dryness causes desiccation of young brood.
+* **Continuous Load Cell Weight Dynamics**:
+  Sub-ounce telemetry tracking daily nectar influx, consumption rates during dearth, and sudden weight drops ($1.5 – 3.0\text{ kg}$ in $<30$ minutes) that identify swarming events or absconding.
+* **Acoustic Bio-Telemetry**:
+  Frequency spectrum monitoring across the $100\text{ Hz} – 600\text{ Hz}$ band. Specific acoustic signatures distinguish queen piping, healthy colony hum, starvation agitation, and queenless buzzing.
 
 ---
 
-## Production
+## 4. Colony Nutrition & Feeding Protocols
 
-The live production application is deployed and accessible at:
-**[https://www.beeyield.com](https://www.beeyield.com)**
+Supplementary feeding in tropical and semi-arid environments prevents colony starvation during post-harvest dearth, supports artificial swarm splits, and accelerates comb-building prior to major honey flows.
+
+### Standard Scientific Ratios
+
+* **$1:1$ Ratio (Equal Sugar & Water)**:
+  Light syrup simulating natural nectar flow. Triggers queen oviposition, stimulates wax gland secretion, and promotes comb drawing during spring buildup.
+* **$2:1$ Ratio (Dense Storage Feed)**:
+  Heavy syrup containing $67\%$ dissolved sucrose. Requires minimal energy for worker dehydration and is stored directly in honey supers for emergency or winter sustenance.
+
+### Preparation Science & Safety Guidelines
+
+1. **Precision Mass Measurement**: Sugar is measured strictly by weight rather than volume ($1\text{ liter}$ of granulated sugar weighs approximately $0.85\text{ kg}$, not $1.0\text{ kg}$).
+2. **Thermal Degradation Prevention**: Water is brought to a boil and removed from the heat source *before* adding sucrose. Prolonged boiling causes acid-catalyzed sucrose breakdown into **Hydroxymethylfurfural (HMF)**, a compound acutely toxic to honeybees.
+3. **Complete Dissolution**: Added in incremental batches until clear; prevents undissolved crystals from settling in feeders or accelerating fermentation.
+4. **Lukewarm Delivery**: Served at ambient nest temperature ($20^\circ\text{C} – 25^\circ\text{C}$) to prevent cold shock or internal hive condensation.
+5. **Flow Integrity Guarantee**: Supplementary feeding is strictly prohibited during natural honey flow periods to preserve $100\%$ raw honey purity.
+
+---
+
+## 5. Provenance, Honey Purity & Traceability
+
+BeeYield operates a rigorous provenance ledger connecting every harvested jar of honey directly to its origin apiary, hive colony, and beekeeper.
+
+* **Moisture Content Compliance**: Strict quality threshold enforced at $<18.5\%$ moisture content to guarantee against osmotic yeast fermentation.
+* **Botanical Origin & Melissopalynology**: Microscopic pollen grain analysis verifying single-origin or polyfloral wild blossom classifications (e.g., Acacia, Melia volkensii, Sunflower, Macadamia).
+* **Golden Thread Verification**: Consumer and commercial verification verifying exact harvest dates, refractometer readings, apiary GPS coordinates, and colony health certifications.
+
+---
+
+## Field Operations & Contact
+
+* **Regional Research Center**: Kibwezi Commercial Apiary, Makueni County, Kenya
+* **Focus Ecosystems**: Semi-Arid Pastoral & Agricultural Corridors (East Africa)
+* **Website**: [www.beeyield.com](https://www.beeyield.com)
+* **Inquiries**: info@beeyield.com
