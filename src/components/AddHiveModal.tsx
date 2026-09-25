@@ -294,7 +294,7 @@ export function AddHiveModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in"
+      className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in transform-gpu will-change-[opacity] select-none"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

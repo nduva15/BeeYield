@@ -45,6 +45,14 @@ const ALERTS: { key: string; label: string; help: string }[] = [
   { key: "battery_low", label: "Sensor telemetry", help: "Device battery below 15% or solar node offline." },
 ];
 
+const confirmAsync = (msg: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+    }, 25);
+  });
+};
+
 const DEFAULT_MODULES: Record<string, boolean> = {
   commercial: true,
   meteo: true,
@@ -641,7 +649,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               <button
                 type="button"
                 onClick={async () => {
-                  if (!confirm("Delete all local apiary records for this device? This cannot be undone.")) return;
+                  if (!await confirmAsync("Delete all local apiary records for this device? This cannot be undone.")) return;
                   const tables = ["inspections", "sound_analyses", "app_settings", "integration_connections", "integration_sync_logs"] as const;
                   for (const t of tables) {
                     try {

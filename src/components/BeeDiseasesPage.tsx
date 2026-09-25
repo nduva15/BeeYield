@@ -95,9 +95,17 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
     setShowForm(false); setEditing(null); load();
   };
 
+  const confirmAsync = (msg: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(typeof window !== "undefined" ? window.confirm(msg) : true);
+      }, 25);
+    });
+  };
+
   const remove = async (r: Disease) => {
     if (r.is_default && r.device_id === "global") { toast.error("Default rows can't be deleted"); return; }
-    if (!confirm(`Delete "${r.name}"?`)) return;
+    if (!await confirmAsync(`Delete "${r.name}"?`)) return;
     const { error } = await supabase.from("bee_diseases").delete().eq("id", r.id);
     if (error) return toast.error(error.message);
     toast.success("Deleted"); load();

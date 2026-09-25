@@ -230,12 +230,20 @@ export function SyrupFeedingToolPage({
       className={
         embedded
           ? "w-full max-w-4xl mx-auto space-y-6"
-          : "fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in"
+          : "fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in transform-gpu will-change-[opacity] select-none"
       }
-      onClick={!embedded ? (e) => e.target === e.currentTarget && onClose() : undefined}
+      onClick={
+        !embedded
+          ? (e) => {
+              if (e.target === e.currentTarget) {
+                onClose();
+              }
+            }
+          : undefined
+      }
     >
       <div
-        className={`w-full max-w-3xl bg-[#FAF4EE] min-h-[580px] max-h-[92vh] rounded-[28px] shadow-2xl overflow-y-auto flex flex-col p-6 sm:p-7 text-[#2E2A25] border border-stone-300/60 relative ${
+        className={`w-full max-w-3xl bg-[#FAF4EE] min-h-[580px] max-h-[92vh] rounded-[28px] shadow-2xl overflow-y-auto flex flex-col p-6 sm:p-7 text-[#2E2A25] border border-stone-300/60 relative select-text pointer-events-auto ${
           embedded ? "h-auto" : ""
         }`}
         onClick={(e) => e.stopPropagation()}

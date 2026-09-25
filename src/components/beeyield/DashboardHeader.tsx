@@ -109,8 +109,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const [isAvatarPickerOpen, setIsAvatarPickerOpen] = React.useState(false);
 
     React.useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener('scroll', handleScroll);
+        let isScrolled = false;
+        const handleScroll = () => {
+            const nextScrolled = window.scrollY > 20;
+            if (nextScrolled !== isScrolled) {
+                isScrolled = nextScrolled;
+                setScrolled(nextScrolled);
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
 
         const fetchAlerts = async () => {
             const data = await beeyieldService.getSensorAlerts(false, 5);
