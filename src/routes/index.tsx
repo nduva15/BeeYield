@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Beeyield combines BeeGPT AI guidance with harvest forecasting, hive placement mapping, varroa simulation, bloom phenology and colony alerts for modern beekeepers.",
+          "BeeYield - Your Partner in Pollination. Combining BeeGPT AI guidance with harvest forecasting, hive placement mapping, varroa simulation, bloom phenology, and precision pollination tools.",
       },
       { property: "og:title", content: "Beeyield — AI Beekeeping Assistant & Apiary Tools" },
       {

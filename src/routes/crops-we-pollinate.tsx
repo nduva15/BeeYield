@@ -4,7 +4,7 @@ import CropsWePollinate from "@/pages/CropsWePollinate";
 export const Route = createFileRoute("/crops-we-pollinate")({
   head: () => ({
     meta: [
-      { title: "Crops We Pollinate — Precision Bee Pastures & Farm Yields | BeeYield" },
+      { title: "Crops We Pollinate | BeeYield - Your Partner in Pollination" },
       {
         name: "description",
         content:

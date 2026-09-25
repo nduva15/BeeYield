@@ -4,7 +4,7 @@ import About from "@/pages/About";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "BeeYield | Precision Pollination & Honey Traceability in Makueni & Kibwezi" },
+      { title: "About Us | BeeYield - Your Partner in Pollination" },
       {
         name: "description",
         content:
