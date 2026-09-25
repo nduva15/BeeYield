@@ -47,10 +47,17 @@ export default function ToolSidebar({
           open ? "translate-x-0" : "-translate-x-full lg:hidden"
         }`}
       >
-        <div className="flex items-center gap-2 px-3 py-3 border-b border-border">
-          <img src={beeyieldLogo} alt="Beeyield" className="h-7 w-auto" />
+        <div className="flex items-center gap-2.5 px-3 py-3 border-b border-border">
+          <img
+            src="/favicon.svg"
+            alt="BeeYield Logo"
+            className="h-7 w-7 object-contain rounded-full shadow-xs shrink-0"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/favicon-192.png";
+            }}
+          />
           <div className="min-w-0">
-            <p className="font-display text-sm font-bold text-honey leading-tight">Beeyield tools</p>
+            <p className="font-display text-sm font-bold text-[#f59e0b] leading-tight">BeeYield Dashboard</p>
             <p className="text-[10px] text-muted-foreground">{total} tools</p>
           </div>
           <button
