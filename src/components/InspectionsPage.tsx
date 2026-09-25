@@ -64,7 +64,7 @@ export interface ApiaryOption {
   county: string;
 }
 
-export const CANONICAL_APIARIES: ApiaryOption[] = [
+const CANONICAL_APIARIES: ApiaryOption[] = [
   {
     id: "apiary-kibwezi",
     name: CANONICAL_APIARY_NAME,
@@ -82,7 +82,7 @@ export interface HiveOption {
   frame_count: number;
 }
 
-export function getCanonicalHives(): HiveOption[] {
+function getCanonicalHives(): HiveOption[] {
   return CANONICAL_TIMOTHY_HIVES.map((h) => ({
     id: h.id,
     hive_code: h.code || h.hive_code || "KIB-001",
@@ -93,10 +93,8 @@ export function getCanonicalHives(): HiveOption[] {
   }));
 }
 
-export const CANONICAL_HIVES: HiveOption[] = [];
-
 // Telemetry context is fetched dynamically from real sensor_readings for the specific hive
-export function getHiveTelemetry(_hiveCode: string, _apiaryName: string) {
+function getHiveTelemetry(_hiveCode: string, _apiaryName: string) {
   return {
     temperature_c: null as number | null,
     humidity_pct: null as number | null,
