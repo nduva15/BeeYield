@@ -6,13 +6,14 @@ import DashboardFooter from './DashboardFooter';
 import QuickActionModal from './QuickActionModal';
 import FirstStepsBanner from './FirstStepsBanner';
 import ToolSidebar, { type ToolGroup } from './lovable_ai/ToolSidebar';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import {
     Compass, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
     Calculator, Layers, Package, BarChart3, Target, Flower2, Sprout,
     Plane, HeartPulse, Info, Download, Plug, Cpu, LifeBuoy,
-    Settings, LogIn, Tag, FileBarChart, Navigation
+    Settings, LogIn, LogOut, Tag, FileBarChart, Navigation
 } from 'lucide-react';
 
 export type DeviceMode = 'auto' | 'phone' | 'pad' | 'laptop';
@@ -40,6 +41,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     hideSidebar = true,
     hideBanner = false
 }) => {
+    const { user, beeyieldUser } = useAuth();
+    const currentUser = user || beeyieldUser;
     const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [toolsDrawerOpen, setToolsDrawerOpen] = useState(() => {
@@ -79,11 +82,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {
             label: "Yield & pollination",
             items: [
-                { id: 'harvests-page', label: "Harvests Page", icon: Package, onClick: () => onTabChange('harvests') },
                 { id: 'harvests', label: "Harvest Logs & Verification", icon: Package, onClick: () => onTabChange('harvests') },
-                { id: 'varroa-simulator', label: "Varroa Mite Tracking", icon: Bug, onClick: () => onTabChange('varroa-simulator') },
-                { id: 'label-generator', label: "Label Generator & QR Verification", icon: Tag, onClick: () => onTabChange('label-generator') },
-                { id: 'reports-exports', label: "Reports & Exports", icon: FileBarChart, onClick: () => onTabChange('reports-exports') },
                 { id: 'harvest-calculator', label: "Harvest Calculator", icon: Calculator, onClick: () => onTabChange('harvest-calculator') },
                 { id: 'yield-projection', label: "Honey Yield Projection", icon: BarChart3, onClick: () => onTabChange('yield-projection') },
                 { id: 'precision-drilldown', label: "Precision Pollination Drilldown", icon: Target, onClick: () => onTabChange('precision-drilldown') },
@@ -127,10 +126,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 { label: "Support & Tickets", icon: LifeBuoy, onClick: () => onTabChange('support') },
                 { label: "Settings — Control Center", icon: Settings, onClick: () => onTabChange('settings') },
                 { label: "About Beeyield AI", icon: Info, onClick: () => onTabChange('about-ai') },
-                { label: "Sign in / Sign up", icon: LogIn, onClick: () => onTabChange('auth') },
+                currentUser ? {
+                    label: `Sign out (${currentUser.email || 'Logged in'})`,
+                    icon: LogOut,
+                    onClick: onLogout,
+                } : {
+                    label: "Sign in / Sign up",
+                    icon: LogIn,
+                    onClick: () => onTabChange('auth'),
+                },
             ]
         }
-    ], [onTabChange]);
+    ], [onTabChange, currentUser, onLogout]);
 
     return (
         <div className="flex h-screen w-full bg-background overflow-hidden font-sans text-foreground selection:bg-primary/30 selection:text-foreground">
