@@ -12,6 +12,8 @@ import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
+import { useAuth } from "@/hooks/use-auth";
+import { resolveUserHives, type UnifiedHive } from "@/lib/user-hives";
 
 type SavedAnalysis = {
   id: string;
@@ -168,7 +170,10 @@ export default function SoundAnalysis({
   embedded?: boolean;
 }) {
   const deviceId = useDeviceId();
-  const [hiveLabel, setHiveLabel] = useState("BY-H001");
+  const { user, profile } = useAuth();
+  const [hiveLabel, setHiveLabel] = useState("");
+  const [userHives, setUserHives] = useState<UnifiedHive[]>([]);
+  const [syncedOnly, setSyncedOnly] = useState(true);
   const [notes, setNotes] = useState("");
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -188,6 +193,18 @@ export default function SoundAnalysis({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const syncedHives = useMemo(() => {
+    return userHives.filter((h) => Boolean(h.hasSensor || h.sensorSerial));
+  }, [userHives]);
+
+  const otherHives = useMemo(() => {
+    return userHives.filter((h) => !h.hasSensor && !h.sensorSerial);
+  }, [userHives]);
+
+  const selectedHiveObj = useMemo(() => {
+    return userHives.find((h) => (h.code || h.hive_code || h.name) === hiveLabel || h.id === hiveLabel);
+  }, [userHives, hiveLabel]);
+
   const loadHistory = useCallback(async () => {
     const { data } = await supabase
       .from("sound_analyses")
@@ -198,7 +215,70 @@ export default function SoundAnalysis({
     setHistory((data as SavedAnalysis[]) ?? []);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen) void loadHistory(); }, [isOpen, loadHistory]);
+  const loadUserHives = useCallback(async () => {
+    try {
+      let remoteHives: UnifiedHive[] = [];
+      if (user?.id) {
+        const [hivesRes, devicesRes] = await Promise.all([
+          (supabase as any)
+            .from("hives")
+            .select("id, name, hive_code, apiary_id, apiaries(name)")
+            .eq("user_id", user.id)
+            .limit(200),
+          (supabase as any)
+            .from("devices")
+            .select("id, hive_id, serial, device_kind, status")
+            .eq("user_id", user.id)
+            .limit(200),
+        ]);
+
+        const devByHive = new Map<string, { serial: string; status: string }>();
+        if (Array.isArray(devicesRes.data)) {
+          devicesRes.data.forEach((d: any) => {
+            if (d.hive_id) devByHive.set(d.hive_id, { serial: d.serial, status: d.status });
+          });
+        }
+
+        if (Array.isArray(hivesRes.data) && hivesRes.data.length > 0) {
+          remoteHives = hivesRes.data.map((h: any) => {
+            const dev = devByHive.get(h.id);
+            return {
+              id: h.id,
+              name: h.name,
+              code: h.hive_code,
+              hive_code: h.hive_code,
+              apiary_id: h.apiary_id,
+              apiary_name: h.apiaries?.name,
+              hasSensor: Boolean(dev?.serial),
+              sensorSerial: dev?.serial,
+            };
+          });
+        }
+      }
+
+      const resolved = resolveUserHives(user, profile, remoteHives);
+      setUserHives(resolved);
+
+      const sensorHives = resolved.filter((h) => Boolean(h.hasSensor || h.sensorSerial));
+      const targetHive = sensorHives[0] || resolved[0];
+      const targetCode = targetHive?.code || targetHive?.hive_code || targetHive?.name || "KIB-001";
+
+      setHiveLabel((prev) => (!prev || prev === "BY-H001" ? targetCode : prev));
+    } catch {
+      const resolved = resolveUserHives(user, profile, []);
+      setUserHives(resolved);
+      const sensorHives = resolved.filter((h) => Boolean(h.hasSensor || h.sensorSerial));
+      const targetCode = sensorHives[0]?.code || "KIB-001";
+      setHiveLabel((prev) => (!prev || prev === "BY-H001" ? targetCode : prev));
+    }
+  }, [user, profile]);
+
+  useEffect(() => {
+    if (isOpen || embedded) {
+      void loadHistory();
+      void loadUserHives();
+    }
+  }, [isOpen, embedded, loadHistory, loadUserHives]);
 
   const stopEverything = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -423,11 +503,90 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
         {/* Scanner */}
         <div className="rounded-xl border border-border bg-card p-5 mb-6">
           <div className="flex flex-wrap items-end gap-3 mb-4">
-            <label className="text-xs space-y-1">
-              <span className="text-muted-foreground">Hive binding</span>
-              <input value={hiveLabel} onChange={(e) => setHiveLabel(e.target.value)}
-                className="block bg-background border border-border rounded-lg px-2 py-1.5 text-sm" />
-            </label>
+            <div className="space-y-1.5 min-w-[280px]">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                  <Radio className="w-3.5 h-3.5 text-honey animate-pulse" />
+                  Hive binding
+                </span>
+                {syncedHives.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSyncedOnly((prev) => !prev)}
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors border ${
+                      syncedOnly
+                        ? "bg-emerald-500/15 text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/25"
+                        : "bg-muted text-muted-foreground border-border hover:text-foreground"
+                    }`}
+                    title={
+                      syncedOnly
+                        ? "Filtered to sensor-synced hives. Click to show all apiary hives."
+                        : "Showing all hives. Click to filter only to sensor-synced hives."
+                    }
+                  >
+                    ⚡ {syncedOnly ? `${syncedHives.length} Sensors Synced` : "Show all hives"}
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <select
+                  value={hiveLabel}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setHiveLabel(val);
+                    const matched = userHives.find((h) => (h.code || h.hive_code || h.name) === val || h.id === val);
+                    if (matched?.sensorSerial) {
+                      toast.info(`Bound to ${val} • Hardware Node ${matched.sensorSerial} active`);
+                    }
+                  }}
+                  className="bg-background border border-border rounded-lg px-2.5 py-1.5 text-sm font-semibold text-foreground focus:ring-1 focus:ring-honey/50 focus:border-honey"
+                >
+                  {syncedOnly && syncedHives.length > 0 ? (
+                    syncedHives.map((h) => {
+                      const code = h.code || h.hive_code || h.name;
+                      return (
+                        <option key={h.id} value={code}>
+                          ⚡ {code} ({h.sensorSerial || "Sensor Synced"}) — {h.name}
+                        </option>
+                      );
+                    })
+                  ) : (
+                    <>
+                      {syncedHives.length > 0 && (
+                        <optgroup label="⚡ Sensors Synced (Active Telemetry Gateway)">
+                          {syncedHives.map((h) => {
+                            const code = h.code || h.hive_code || h.name;
+                            return (
+                              <option key={h.id} value={code}>
+                                ⚡ {code} ({h.sensorSerial || "Sensor Synced"}) — {h.name}
+                              </option>
+                            );
+                          })}
+                        </optgroup>
+                      )}
+                      {otherHives.length > 0 && (
+                        <optgroup label="Other Apiary Hives (No Sensor)">
+                          {otherHives.map((h) => {
+                            const code = h.code || h.hive_code || h.name;
+                            return (
+                              <option key={h.id} value={code}>
+                                {code} — {h.name}
+                              </option>
+                            );
+                          })}
+                        </optgroup>
+                      )}
+                    </>
+                  )}
+                </select>
+                {selectedHiveObj?.sensorSerial && (
+                  <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 whitespace-nowrap">
+                    <Cpu className="w-3 h-3" />
+                    {selectedHiveObj.sensorSerial}
+                  </span>
+                )}
+              </div>
+            </div>
             <div className="ml-auto flex items-center gap-2">
               <span className={`px-2.5 py-1 rounded-full text-[11px] border ${recording ? "text-red-400 border-red-500/40 bg-red-500/10" : analyzing ? "text-honey border-honey/40 bg-honey/10" : "text-muted-foreground border-border"}`}>
                 {recording ? `Recording ${elapsed}s` : analyzing ? "Analysing…" : result ? "Scan complete" : "Scanner standby"}
