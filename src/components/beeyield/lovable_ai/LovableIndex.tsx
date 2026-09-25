@@ -49,7 +49,8 @@ import { toast } from "sonner";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth as useLocalAuth } from "@/hooks/use-auth";
+import { useAuth as useGlobalAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
@@ -213,7 +214,18 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
   const [isLoading, setIsLoading] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const deviceId = useDeviceId();
-  const { user, profile, signOut } = useAuth();
+    const globalAuth = useGlobalAuth();
+  const localAuth = useLocalAuth();
+
+  const user = globalAuth?.user || globalAuth?.beeyieldUser || localAuth?.user || null;
+  const profile = localAuth?.profile || (user ? {
+    id: user.id,
+    email: user.email,
+    full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Beekeeper',
+    phone: user.phone || null,
+    country: null
+  } : null);
+  const signOut = globalAuth?.signOut || localAuth?.signOut || (async () => {});
   const navigate = useNavigate();
 
   // Conversation state
@@ -1000,62 +1012,74 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
         </div>
       </div>
 
-      {/* About Modal */}
-      <AboutModal open={aboutOpen} onOpenChange={setAboutOpen} />
-      <BeeDiseasesPage isOpen={diseasesOpen} onClose={() => setDiseasesOpen(false)} />
-      <PollinationCharts isOpen={pollinationOpen} onClose={() => setPollinationOpen(false)} />
-      <PollinationLookup isOpen={lookupOpen} onClose={() => setLookupOpen(false)} />
-      <HarvestCalculator
-        isOpen={calculatorOpen}
-        onClose={() => setCalculatorOpen(false)}
-        onOpenPlanning={() => setPollinationPlanningOpen(true)}
-      />
-      <PrecisionDrilldown
-        isOpen={drilldownOpen}
-        onClose={() => setDrilldownOpen(false)}
-        onOpenPlanning={() => setPollinationPlanningOpen(true)}
-      />
-      <HivePlacementMap isOpen={siteMapOpen} onClose={() => setSiteMapOpen(false)} />
-      <BeeFlightTracker isOpen={flightTrackerOpen} onClose={() => setFlightTrackerOpen(false)} />
-      <BloomPhenology isOpen={bloomPhenologyOpen} onClose={() => setBloomPhenologyOpen(false)} />
-      <MOAView isOpen={moaOpen} onClose={() => setMoaOpen(false)} />
-      <FloragePage isOpen={floragePageOpen} onClose={() => setFloragePageOpen(false)} />
-      <ActivityCounter isOpen={activityCounterOpen} onClose={() => setActivityCounterOpen(false)} />
-      <MeasurementDataTools
-        isOpen={measurementToolsOpen}
-        onClose={() => setMeasurementToolsOpen(false)}
-      />
-      <ActivityForecaster
-        isOpen={activityForecasterOpen}
-        onClose={() => setActivityForecasterOpen(false)}
-      />
-      <PollinationPlanning
-        isOpen={pollinationPlanningOpen}
-        onClose={() => setPollinationPlanningOpen(false)}
-      />
-      <PollinationCalcs
-        isOpen={pollinationCalcsOpen}
-        onClose={() => setPollinationCalcsOpen(false)}
-      />
-      <AlertsPage isOpen={alertsOpen} onClose={() => setAlertsOpen(false)} />
-      <MOACompare isOpen={moaCompareOpen} onClose={() => setMoaCompareOpen(false)} />
-      <BeeyieldCalculators isOpen={calculatorsOpen} onClose={() => setCalculatorsOpen(false)} />
-      <VarroaSimulator isOpen={varroaSimOpen} onClose={() => setVarroaSimOpen(false)} />
-      <DatasetImport isOpen={datasetImportOpen} onClose={() => setDatasetImportOpen(false)} />
-      <FeedingSchedule isOpen={feedingScheduleOpen} onClose={() => setFeedingScheduleOpen(false)} />
-      <KnowledgeSearch isOpen={knowledgeSearchOpen} onClose={() => setKnowledgeSearchOpen(false)} />
-      <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />
-      <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />
-      <InspectionsPage isOpen={inspectionsOpen} onClose={() => setInspectionsOpen(false)} />
-      <TasksPage isOpen={tasksOpen} onClose={() => setTasksOpen(false)} />
-      <ForageZonesPage isOpen={forageZonesOpen} onClose={() => setForageZonesOpen(false)} />
-      <HarvestsPage isOpen={harvestsOpen} onClose={() => setHarvestsOpen(false)} />
-      <SoundAnalysis isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />
-      <IntegrationsPage isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />
-      <SettingsPage isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      <HiveHealthDashboard isOpen={healthDashOpen} onClose={() => setHealthDashOpen(false)} />
-      <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
-      <ApiariesPage isOpen={apiariesOpen} onClose={() => setApiariesOpen(false)} />
+      {/* Modals rendered conditionally only when open to prevent crashing the main view */}
+      {aboutOpen && <AboutModal open={aboutOpen} onOpenChange={setAboutOpen} />}
+      {diseasesOpen && <BeeDiseasesPage isOpen={diseasesOpen} onClose={() => setDiseasesOpen(false)} />}
+      {pollinationOpen && <PollinationCharts isOpen={pollinationOpen} onClose={() => setPollinationOpen(false)} />}
+      {lookupOpen && <PollinationLookup isOpen={lookupOpen} onClose={() => setLookupOpen(false)} />}
+      {calculatorOpen && (
+        <HarvestCalculator
+          isOpen={calculatorOpen}
+          onClose={() => setCalculatorOpen(false)}
+          onOpenPlanning={() => setPollinationPlanningOpen(true)}
+        />
+      )}
+      {drilldownOpen && (
+        <PrecisionDrilldown
+          isOpen={drilldownOpen}
+          onClose={() => setDrilldownOpen(false)}
+          onOpenPlanning={() => setPollinationPlanningOpen(true)}
+        />
+      )}
+      {siteMapOpen && <HivePlacementMap isOpen={siteMapOpen} onClose={() => setSiteMapOpen(false)} />}
+      {flightTrackerOpen && <BeeFlightTracker isOpen={flightTrackerOpen} onClose={() => setFlightTrackerOpen(false)} />}
+      {bloomPhenologyOpen && <BloomPhenology isOpen={bloomPhenologyOpen} onClose={() => setBloomPhenologyOpen(false)} />}
+      {moaOpen && <MOAView isOpen={moaOpen} onClose={() => setMoaOpen(false)} />}
+      {floragePageOpen && <FloragePage isOpen={floragePageOpen} onClose={() => setFloragePageOpen(false)} />}
+      {activityCounterOpen && <ActivityCounter isOpen={activityCounterOpen} onClose={() => setActivityCounterOpen(false)} />}
+      {measurementToolsOpen && (
+        <MeasurementDataTools
+          isOpen={measurementToolsOpen}
+          onClose={() => setMeasurementToolsOpen(false)}
+        />
+      )}
+      {activityForecasterOpen && (
+        <ActivityForecaster
+          isOpen={activityForecasterOpen}
+          onClose={() => setActivityForecasterOpen(false)}
+        />
+      )}
+      {pollinationPlanningOpen && (
+        <PollinationPlanning
+          isOpen={pollinationPlanningOpen}
+          onClose={() => setPollinationPlanningOpen(false)}
+        />
+      )}
+      {pollinationCalcsOpen && (
+        <PollinationCalcs
+          isOpen={pollinationCalcsOpen}
+          onClose={() => setPollinationCalcsOpen(false)}
+        />
+      )}
+      {alertsOpen && <AlertsPage isOpen={alertsOpen} onClose={() => setAlertsOpen(false)} />}
+      {moaCompareOpen && <MOACompare isOpen={moaCompareOpen} onClose={() => setMoaCompareOpen(false)} />}
+      {calculatorsOpen && <BeeyieldCalculators isOpen={calculatorsOpen} onClose={() => setCalculatorsOpen(false)} />}
+      {varroaSimOpen && <VarroaSimulator isOpen={varroaSimOpen} onClose={() => setVarroaSimOpen(false)} />}
+      {datasetImportOpen && <DatasetImport isOpen={datasetImportOpen} onClose={() => setDatasetImportOpen(false)} />}
+      {feedingScheduleOpen && <FeedingSchedule isOpen={feedingScheduleOpen} onClose={() => setFeedingScheduleOpen(false)} />}
+      {knowledgeSearchOpen && <KnowledgeSearch isOpen={knowledgeSearchOpen} onClose={() => setKnowledgeSearchOpen(false)} />}
+      {apiarySizingOpen && <ApiarySizing isOpen={apiarySizingOpen} onClose={() => setApiarySizingOpen(false)} />}
+      {yieldProjectionOpen && <YieldProjection isOpen={yieldProjectionOpen} onClose={() => setYieldProjectionOpen(false)} />}
+      {inspectionsOpen && <InspectionsPage isOpen={inspectionsOpen} onClose={() => setInspectionsOpen(false)} />}
+      {tasksOpen && <TasksPage isOpen={tasksOpen} onClose={() => setTasksOpen(false)} />}
+      {forageZonesOpen && <ForageZonesPage isOpen={forageZonesOpen} onClose={() => setForageZonesOpen(false)} />}
+      {harvestsOpen && <HarvestsPage isOpen={harvestsOpen} onClose={() => setHarvestsOpen(false)} />}
+      {soundAnalysisOpen && <SoundAnalysis isOpen={soundAnalysisOpen} onClose={() => setSoundAnalysisOpen(false)} />}
+      {integrationsOpen && <IntegrationsPage isOpen={integrationsOpen} onClose={() => setIntegrationsOpen(false)} />}
+      {settingsOpen && <SettingsPage isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />}
+      {healthDashOpen && <HiveHealthDashboard isOpen={healthDashOpen} onClose={() => setHealthDashOpen(false)} />}
+      {supportOpen && <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />}
+      {apiariesOpen && <ApiariesPage isOpen={apiariesOpen} onClose={() => setApiariesOpen(false)} />}
     </div>
   );
 }
