@@ -74,6 +74,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { isTimothyUser } from "@/lib/user-hives";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { AddHiveModal as PopoutAddHiveModal } from "./AddHiveModal";
+import { FrameSenseToolPage } from "./FrameSenseToolPage";
+import { SyrupFeedingToolPage } from "./SyrupFeedingToolPage";
 
 export interface ApiarySite {
   id: string;
@@ -6334,45 +6336,19 @@ function ApiaryDetailModal({
 
         {/* Modal: FrameSense Tool Linked to Selected Hive */}
         {selectedHiveForFrameSense && (
-          <HiveDetailModal
-            hive={selectedHiveForFrameSense}
-            apiary={apiary}
-            weather={modalWeather || weather}
-            initialTab="framesense"
-            allHives={hivesList}
-            allInspections={allInspections}
-            onInspectionLogged={reloadInspections}
+          <FrameSenseToolPage
+            isOpen={!!selectedHiveForFrameSense}
+            initialHiveId={selectedHiveForFrameSense.id}
             onClose={() => setSelectedHiveForFrameSense(null)}
-            onUpdateHive={handleUpdateHive}
-            onAddHarvestToHive={handleAddHarvestToHive}
-            onOpenScanner={() => {
-              setScanContext("detailHive");
-              setIsScanningOpen(true);
-            }}
-            onEditHive={(h) => setEditingHive(h)}
-            onDeleteHive={handleDeleteHive}
           />
         )}
 
         {/* Modal: Syrup Tool Linked to Selected Hive */}
         {selectedHiveForSyrup && (
-          <HiveDetailModal
-            hive={selectedHiveForSyrup}
-            apiary={apiary}
-            weather={modalWeather || weather}
-            initialTab="syrup"
-            allHives={hivesList}
-            allInspections={allInspections}
-            onInspectionLogged={reloadInspections}
+          <SyrupFeedingToolPage
+            isOpen={!!selectedHiveForSyrup}
+            initialHiveId={selectedHiveForSyrup.id}
             onClose={() => setSelectedHiveForSyrup(null)}
-            onUpdateHive={handleUpdateHive}
-            onAddHarvestToHive={handleAddHarvestToHive}
-            onOpenScanner={() => {
-              setScanContext("detailHive");
-              setIsScanningOpen(true);
-            }}
-            onEditHive={(h) => setEditingHive(h)}
-            onDeleteHive={handleDeleteHive}
           />
         )}
 

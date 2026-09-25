@@ -88,6 +88,8 @@ import YieldProjection from "@/components/YieldProjection";
 import InspectionsPage from "@/components/InspectionsPage";
 import TasksPage from "@/components/TasksPage";
 import ForageZonesPage from "@/components/ForageZonesPage";
+import FrameSenseToolPage from "@/components/FrameSenseToolPage";
+import SyrupFeedingToolPage from "@/components/SyrupFeedingToolPage";
 import HarvestsPage from "@/components/HarvestsPage";
 import SoundAnalysis from "@/components/SoundAnalysis";
 import IntegrationsPage from "@/components/IntegrationsPage";
@@ -255,6 +257,8 @@ export default function Index() {
   const [supportOpen, setSupportOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [shopDashOpen, setShopDashOpen] = useState(false);
+  const [frameSenseOpen, setFrameSenseOpen] = useState(false);
+  const [syrupToolOpen, setSyrupToolOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -530,6 +534,16 @@ export default function Index() {
         },
         { label: "Alerts", icon: Bug, onClick: () => setAlertsOpen(true) },
         { label: "Hive Placement Map", icon: MapPin, onClick: () => setSiteMapOpen(true) },
+        {
+          label: "FrameSense — AI Comb Vision",
+          icon: Layers,
+          onClick: () => setFrameSenseOpen(true),
+        },
+        {
+          label: "Syrup & Nutrition Tool",
+          icon: Droplets,
+          onClick: () => setSyrupToolOpen(true),
+        },
         {
           label: "Feeding Schedule Timeline",
           icon: Calculator,
@@ -1061,6 +1075,8 @@ export default function Index() {
       <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
       <ApiariesPage isOpen={apiariesOpen} onClose={() => setApiariesOpen(false)} />
       <ShopDashboard isOpen={shopDashOpen} onClose={() => setShopDashOpen(false)} />
+      <FrameSenseToolPage isOpen={frameSenseOpen} onClose={() => setFrameSenseOpen(false)} />
+      <SyrupFeedingToolPage isOpen={syrupToolOpen} onClose={() => setSyrupToolOpen(false)} />
 
       {/* Onboarding Setup Wizard Modal */}
       {onboardingOpen && (
