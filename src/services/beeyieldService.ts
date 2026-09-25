@@ -1,3 +1,4 @@
+import { CANONICAL_TIMOTHY_HARVESTS, getNormalizedHarvestKey } from '@/data/canonicalHarvests';
 import { supabaseBeeYield } from '@/lib/supabase';
 import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPatch, apiPost, apiPut } from './api';
 import { dashboardPollinationCropDetails } from '@/data/beePollinationData';
@@ -1376,26 +1377,6 @@ function mapHiveRecord(record: any): Hive {
 }
 
 
-export function getNormalizedHarvestKey(h: any): string {
-    if (!h) return '';
-    const rawBatch = String(h.batch_code || h.batch || '').trim().toUpperCase();
-    if (rawBatch) {
-        const m = rawBatch.match(/BEE-(\d{8})-?[A-Z]*(\d{1,4})/);
-        if (m) {
-            const dateStr = m[1];
-            const num = parseInt(m[2], 10);
-            return `BATCH_${dateStr}_${num}`;
-        }
-        return `BATCH_${rawBatch}`;
-    }
-    const date = String(h.harvest_date || h.harvested_on || h.date || '').slice(0, 10);
-    const hive = String(h.hive_code || h.hive_label || h.hive_id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const qty = Number(h.quantity_kg ?? h.weight_kg ?? 0).toFixed(1);
-    if (date && hive) {
-        return `HARV_${date}_${hive}_${qty}`;
-    }
-    return `ID_${String(h.id || '')}`;
-}
 
 function mapHarvestRecord(record: any): Harvest {
     const normalized = { ...record };
@@ -2869,18 +2850,23 @@ export const beeyieldService = {
             return deduped;
         }
 
-        // 4. Offline mode: only return genuine user custom batches if any exist
+        // 4. Offline mode: return custom user batches if any exist
         const customLocal = _lsReadAlways<Harvest[]>('beeyield_user_custom_harvests_v1', []);
-        const seen = new Set<string>();
-        const deduped: Harvest[] = [];
-        for (const item of customLocal) {
-            const key = getNormalizedHarvestKey(item);
-            if (!seen.has(key)) {
-                seen.add(key);
-                deduped.push(item);
+        if (customLocal.length > 0) {
+            const seen = new Set<string>();
+            const deduped: Harvest[] = [];
+            for (const item of customLocal) {
+                const key = getNormalizedHarvestKey(item);
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    deduped.push(item);
+                }
             }
+            return deduped;
         }
-        return deduped;
+
+        // 5. Default fallback to canonical harvests (exact 423 batches, 843.0 kg)
+        return CANONICAL_TIMOTHY_HARVESTS;
     },
 
     async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<BatchView[]> {

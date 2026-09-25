@@ -1,3 +1,4 @@
+import { CANONICAL_TIMOTHY_HARVESTS, getNormalizedHarvestKey } from '@/data/canonicalHarvests';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, Package, Plus, Search, Trash2, Droplets, ShieldCheck, Scale,
@@ -142,7 +143,7 @@ function generateTimothyHarvestBatches(): Harvest[] {
   return batches;
 }
 
-const DEFAULT_HARVESTS: Harvest[] = generateTimothyHarvestBatches();
+const DEFAULT_HARVESTS: Harvest[] = CANONICAL_TIMOTHY_HARVESTS;
 
 const EMPTY_HARVEST = {
   harvested_on: new Date().toISOString().slice(0, 10),
@@ -273,7 +274,7 @@ export default function HarvestsPage({
       const canonicalDeduplicated: Harvest[] = [];
 
       userCustomBatches.forEach((b) => {
-        const k = b.batch || b.id;
+        const k = getNormalizedHarvestKey(b);
         if (!seenBatchKeys.has(k)) {
           seenBatchKeys.add(k);
           canonicalDeduplicated.push(b);
@@ -281,7 +282,7 @@ export default function HarvestsPage({
       });
 
       DEFAULT_HARVESTS.forEach((d) => {
-        const k = d.batch || d.id;
+        const k = getNormalizedHarvestKey(d);
         if (!seenBatchKeys.has(k)) {
           seenBatchKeys.add(k);
           canonicalDeduplicated.push(d);

@@ -1,3 +1,4 @@
+import { CANONICAL_TIMOTHY_HARVESTS, getNormalizedHarvestKey } from '@/data/canonicalHarvests';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -213,26 +214,6 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 
-const getNormalizedHarvestKey = (h: any): string => {
-    if (!h) return '';
-    const rawBatch = String(h.batch_code || h.batch || '').trim().toUpperCase();
-    if (rawBatch) {
-        const m = rawBatch.match(/BEE-(\d{8})-?[A-Z]*(\d{1,4})/);
-        if (m) {
-            const dateStr = m[1];
-            const num = parseInt(m[2], 10);
-            return `BATCH_${dateStr}_${num}`;
-        }
-        return `BATCH_${rawBatch}`;
-    }
-    const date = String(h.harvest_date || h.harvested_on || h.date || '').slice(0, 10);
-    const hive = String(h.hive_code || h.hive_label || h.hive_id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    const qty = Number(h.quantity_kg ?? h.weight_kg ?? 0).toFixed(1);
-    if (date && hive) {
-        return `HARV_${date}_${hive}_${qty}`;
-    }
-    return `ID_${String(h.id || '')}`;
-};
 
 const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) => {
     const { user } = useAuth();
@@ -313,9 +294,11 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                           (user?.email || '').toLowerCase().includes('nduva') || 
                           !user?.id;
 
+        const source = raw.length > 0 ? raw : (isTimothy ? CANONICAL_TIMOTHY_HARVESTS : []);
+
         const seen = new Set<string>();
         const deduped: Harvest[] = [];
-        for (const h of raw) {
+        for (const h of source) {
             const code = getNormalizedHarvestKey(h);
             if (code && !seen.has(code)) {
                 seen.add(code);
@@ -342,19 +325,21 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
     const userBatches = React.useMemo(() => {
         const raw = batchesQuery.data || [];
-        const seen = new Set<string>();
-        const deduped: BatchView[] = [];
-        for (const b of raw) {
-            const code = getNormalizedHarvestKey(b);
-            if (code && !seen.has(code)) {
-                seen.add(code);
-                deduped.push(b);
-            }
-        }
-
         const isTimothy = (user?.email || '').toLowerCase().includes('timothy') || 
                           (user?.email || '').toLowerCase().includes('nduva') || 
                           !user?.id;
+
+        const source = raw.length > 0 ? raw : (isTimothy ? CANONICAL_TIMOTHY_HARVESTS : []);
+
+        const seen = new Set<string>();
+        const deduped: BatchView[] = [];
+        for (const b of source) {
+            const code = getNormalizedHarvestKey(b);
+            if (code && !seen.has(code)) {
+                seen.add(code);
+                deduped.push(b as any);
+            }
+        }
 
         if (!isTimothy && user?.id) {
             const userBatchCodes = new Set(userHarvests.map(h => h.batch_code || (h as any).batch).filter(Boolean));
