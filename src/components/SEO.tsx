@@ -14,7 +14,7 @@ interface SEOProps {
 const DEFAULT_DESCRIPTION =
   "BeeYield - Your Partner in Pollination. Premium precision pollination services, sustainable beekeeping, and traceable raw honey from Kenya to the World.";
 const DEFAULT_KEYWORDS =
-  "precision pollination, honey traceability, sustainable beekeeping, Kibwezi, Makueni, Kenya honey, African agriculture, IoT bees";
+  "BeeYield, your partner in pollination, precision pollination, honey traceability, sustainable beekeeping, Kibwezi, Makueni, Kenya honey, African agriculture, IoT bees";
 
 function upsertMeta(selector: string, attributes: Record<string, string>) {
   if (typeof document === "undefined") return;
@@ -78,15 +78,15 @@ const SEO = ({
 
     upsertMeta('meta[property="og:type"]', { property: "og:type", content: type });
     upsertMeta('meta[property="og:url"]', { property: "og:url", content: fullUrl });
-    upsertMeta('meta[property="og:title"]', { property: "og:title", content: `${title} | BeeYield` });
+    upsertMeta('meta[property="og:title"]', { property: "og:title", content: `${title} | BeeYield - Your Partner in Pollination` });
     upsertMeta('meta[property="og:description"]', { property: "og:description", content: description });
     upsertMeta('meta[property="og:image"]', { property: "og:image", content: fullImage });
     upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: "en_KE" });
-    upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: "BeeYield" });
+    upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: "BeeYield - Your Partner in Pollination" });
 
     upsertMeta('meta[property="twitter:card"]', { property: "twitter:card", content: "summary_large_image" });
     upsertMeta('meta[property="twitter:url"]', { property: "twitter:url", content: fullUrl });
-    upsertMeta('meta[property="twitter:title"]', { property: "twitter:title", content: `${title} | BeeYield` });
+    upsertMeta('meta[property="twitter:title"]', { property: "twitter:title", content: `${title} | BeeYield - Your Partner in Pollination` });
     upsertMeta('meta[property="twitter:description"]', { property: "twitter:description", content: description });
     upsertMeta('meta[property="twitter:image"]', { property: "twitter:image", content: fullImage });
     upsertMeta('meta[name="twitter:label1"]', { name: "twitter:label1", content: "Region" });
