@@ -2811,7 +2811,7 @@ export const beeyieldService = {
         const seen = new Set<string>();
         const deduped: Harvest[] = [];
         for (const item of combined) {
-            const key = item.id || item.batch_code || JSON.stringify(item);
+            const key = item.batch_code || (item as any).batch || item.id;
             if (!seen.has(key)) {
                 seen.add(key);
                 deduped.push(item);

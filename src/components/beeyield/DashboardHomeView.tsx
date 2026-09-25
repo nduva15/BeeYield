@@ -271,8 +271,65 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
         return matched;
     }, [loadedHives, loadedApiaries.length, user?.email, user?.id]);
-    const harvests = React.useMemo(() => harvestsQuery.data || [], [harvestsQuery.data]);
-    const batches = React.useMemo(() => batchesQuery.data || [], [batchesQuery.data]);
+    const userHarvests = React.useMemo(() => {
+        const raw = harvestsQuery.data || [];
+        const isTimothy = (user?.email || '').toLowerCase().includes('timothy') || 
+                          (user?.email || '').toLowerCase().includes('nduva') || 
+                          !user?.id;
+
+        const seen = new Set<string>();
+        const deduped: Harvest[] = [];
+        for (const h of raw) {
+            const code = ((h.batch_code || (h as any).batch || h.id || '') as string).trim();
+            if (code && !seen.has(code)) {
+                seen.add(code);
+                deduped.push(h);
+            }
+        }
+
+        // If specific non-Timothy user is logged in, filter only to their user_id or mapped hives
+        if (!isTimothy && user?.id) {
+            const userHiveIds = new Set(loadedHives.map(hive => hive.id));
+            const userHiveCodes = new Set(loadedHives.map(hive => (hive.hive_code || '').toLowerCase()));
+            return deduped.filter(h => {
+                if (h.user_id && h.user_id === user.id) return true;
+                if ((h as any).farmer_id && (h as any).farmer_id === user.id) return true;
+                if (h.hive_id && userHiveIds.has(h.hive_id)) return true;
+                const hCode = String((h as any).hive_label || (h as any).hive_code || '').toLowerCase();
+                if (hCode && userHiveCodes.has(hCode)) return true;
+                return false;
+            });
+        }
+
+        return deduped;
+    }, [harvestsQuery.data, user?.email, user?.id, loadedHives]);
+
+    const userBatches = React.useMemo(() => {
+        const raw = batchesQuery.data || [];
+        const seen = new Set<string>();
+        const deduped: BatchView[] = [];
+        for (const b of raw) {
+            const code = ((b.batch_code || b.id || '') as string).trim();
+            if (code && !seen.has(code)) {
+                seen.add(code);
+                deduped.push(b);
+            }
+        }
+
+        const isTimothy = (user?.email || '').toLowerCase().includes('timothy') || 
+                          (user?.email || '').toLowerCase().includes('nduva') || 
+                          !user?.id;
+
+        if (!isTimothy && user?.id) {
+            const userBatchCodes = new Set(userHarvests.map(h => h.batch_code || (h as any).batch).filter(Boolean));
+            return deduped.filter(b => userBatchCodes.has(b.batch_code));
+        }
+
+        return deduped;
+    }, [batchesQuery.data, userHarvests, user?.email, user?.id]);
+
+    const harvests = userHarvests;
+    const batches = userBatches;
 
     const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(loadedApiaries[0]?.id);
     const primaryApiary = loadedApiaries.find((a) => a.id === selectedApiaryId) || loadedApiaries[0];
@@ -311,16 +368,16 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
     // Real production stats from user-logged records
     const productionSummary = React.useMemo(() => {
-        const totalHarvestedKg = harvests.reduce((sum, h) => sum + (Number(h.quantity_kg) || 0), 0);
-        const leftForBeesKg = harvests.reduce((sum, h) => sum + (Number(h.quantity_left_for_bees_kg) || 0), 0);
-        const verifiedBatches = batches.filter(b => b.verification_status === 'verified' || b.blockchain_verified).length;
+        const totalHarvestedKg = userHarvests.reduce((sum, h) => sum + (Number(h.quantity_kg) || 0), 0);
+        const leftForBeesKg = userHarvests.reduce((sum, h) => sum + (Number(h.quantity_left_for_bees_kg) || 0), 0);
+        const verifiedBatches = userBatches.filter(b => b.verification_status === 'verified' || b.blockchain_verified).length;
 
         return {
             totalHarvestedKg,
             leftForBeesKg,
             verifiedBatches,
         };
-    }, [batches, harvests]);
+    }, [userBatches, userHarvests]);
 
     const { Icon: WeatherIcon } = getWeatherMeta(weather?.weatherCode ?? 2);
     const minTemp = weather?.todayMin ?? 19;
@@ -875,8 +932,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         {[
                             { label: 'Apiaries', value: loadedApiaries.length, icon: MapPin, hint: primaryApiary?.name || 'BeeYield Apiary in Kibwezi Kenya' },
                             { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: `${loadedHives.length} Langstroth colonies` },
-                            { label: 'Certified Yield', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${harvests.length} harvest logs recorded` },
-                            { label: 'Batches', value: batches.length, icon: Binary, hint: batches.length > 0 ? `${productionSummary.verifiedBatches} verified on ledger` : 'No batches logged' },
+                            { label: 'Certified Yield', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${userHarvests.length} harvest logs recorded` },
+                            { label: 'Batches', value: userBatches.length, icon: Binary, hint: userBatches.length > 0 ? `${productionSummary.verifiedBatches} verified on ledger` : 'No batches logged' },
                         ].map((card) => (
                             <div key={card.label} className={cn(glass.section, "p-5 bg-white")}>
                                 <div className="flex items-center justify-between mb-3">
