@@ -221,8 +221,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const batchesQuery = useBatches();
     const inspectionsQuery = useInspections();
 
-    const loadedApiaries = apiariesQuery.data || [];
-    const loadedHives = hivesQuery.data || [];
+    const loadedApiaries = React.useMemo(() => apiariesQuery.data || [], [apiariesQuery.data]);
+    const loadedHives = React.useMemo(() => hivesQuery.data || [], [hivesQuery.data]);
     const harvests = React.useMemo(() => harvestsQuery.data || [], [harvestsQuery.data]);
     const batches = React.useMemo(() => batchesQuery.data || [], [batchesQuery.data]);
 

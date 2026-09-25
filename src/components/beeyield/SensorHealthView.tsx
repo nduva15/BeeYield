@@ -221,7 +221,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
         } finally {
             setIsRefreshing(false);
         }
-    }, []);
+    }, [isLogged]);
 
     useEffect(() => {
         loadData();

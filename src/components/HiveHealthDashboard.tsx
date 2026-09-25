@@ -466,7 +466,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     } finally {
       setIsRefreshing(false);
     }
-  }, [user?.id, userKey, fetchAmbientWeather, ownerDisplayName]);
+  }, [user, profile, userKey, fetchAmbientWeather, ownerDisplayName]);
 
   useEffect(() => {
     if (isOpen || embedded) {

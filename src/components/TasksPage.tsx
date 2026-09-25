@@ -135,7 +135,7 @@ export default function TasksPage({
         setUserApiaries([]);
       }
     } catch { void 0; }
-  }, [user?.id, user, profile]);
+  }, [user, profile]);
 
   const load = useCallback(async () => {
     setLoading(true);

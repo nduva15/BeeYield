@@ -530,7 +530,7 @@ export default function InspectionsPage({ isOpen = true, onClose, embedded = fal
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     if (isOpen || embedded) {
