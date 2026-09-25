@@ -19,7 +19,7 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-50 bg-slate-900/10 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-slate-900/10 backdrop-blur-sm transform-gpu will-change-[opacity] select-none data-[state=closed]:pointer-events-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className,
     )}
     {...props}
@@ -54,10 +54,21 @@ interface SheetContentProps
 import { motion } from "framer-motion";
 
 const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(
-  ({ side = "right", className, children, ...props }, ref) => (
+  ({ side = "right", className, children, onCloseAutoFocus, ...props }, ref) => (
     <SheetPortal>
       <SheetOverlay />
-      <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...props}>
+      <SheetPrimitive.Content
+        ref={ref}
+        onCloseAutoFocus={(e) => {
+          if (onCloseAutoFocus) {
+          onCloseAutoFocus(e);
+        } else {
+          e.preventDefault();
+        }
+      }}
+      className={cn(sheetVariants({ side }), className)}
+      {...props}
+    >
         <motion.div
           initial={
             side === "right" ? { x: 20, opacity: 0 } :

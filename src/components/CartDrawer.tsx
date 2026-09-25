@@ -42,7 +42,7 @@ const CartDrawer: React.FC = () => {
         <>
             {/* Backdrop */}
             <div
-                className={`fixed inset-0 bg-slate-900/10 backdrop-blur-sm z-50 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                className={`fixed inset-0 bg-slate-900/10 backdrop-blur-sm z-50 transform-gpu will-change-[opacity] select-none transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
                     }`}
                 onClick={closeCart}
             />

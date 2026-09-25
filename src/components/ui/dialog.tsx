@@ -19,7 +19,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-slate-900/10 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-slate-900/10 backdrop-blur-sm transform-gpu will-change-[opacity] select-none data-[state=closed]:pointer-events-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className,
     )}
     {...props}
@@ -32,11 +32,18 @@ import { motion } from "framer-motion";
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { hideClose?: boolean }
->(({ className, children, hideClose = false, ...props }, ref) => (
+>(({ className, children, hideClose = false, onCloseAutoFocus, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
+      onCloseAutoFocus={(e) => {
+        if (onCloseAutoFocus) {
+          onCloseAutoFocus(e);
+        } else {
+          e.preventDefault();
+        }
+      }}
       className={cn(
         "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg overflow-hidden",
         className,
