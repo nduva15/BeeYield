@@ -138,7 +138,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
                 <div className="h-24 flex items-center px-8 border-b border-border bg-card group cursor-pointer" onClick={() => onTabChange('home')}>
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl border border-border bg-white flex items-center justify-center shadow-sm group-hover:border-primary/30 transition-all overflow-hidden">
-                            <img src={beeyieldLogo} alt="BeeYield Dashboard" className="w-9 h-9 object-contain" />
+                            <img src="/favicon.svg" alt="BeeYield Dashboard" className="w-9 h-9 object-contain" onError={(e) => { (e.target as HTMLImageElement).src = "/favicon-192.png"; }} />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-2xl font-bold text-foreground tracking-tighter leading-none">BeeYield <span className="text-primary">Dashboard</span></span>

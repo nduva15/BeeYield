@@ -52,7 +52,7 @@ export default function ToolSidebar({
         )}
       >
         <div className="flex items-center gap-2.5 px-3.5 py-3 border-b border-border">
-          <img src={beeyieldLogo} alt="BeeYield" className="h-7 w-auto" />
+          <img src="/favicon.svg" alt="BeeYield Logo" className="h-7 w-7 object-contain rounded-full shadow-xs shrink-0" onError={(e) => { (e.target as HTMLImageElement).src = "/favicon-192.png"; }} />
           <div className="min-w-0">
             <p className="font-display text-sm font-bold text-[#f59e0b] leading-tight">BeeYield Dashboard</p>
           </div>
