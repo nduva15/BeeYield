@@ -53,11 +53,13 @@ import {
     Package,
     AudioLines,
     BarChart3,
-    Tag
+    Tag,
+    Camera
 } from 'lucide-react';
 import { NavItem } from './DashboardSidebar';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/use-auth';
 import { useLanguage } from '@/contexts/LanguageContext';
+import AvatarPickerDialog from './AvatarPickerDialog';
 import { useTheme } from '@/contexts/ThemeContext';
 import {
     DropdownMenu,
@@ -104,6 +106,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const [dropdownQuery, setDropdownQuery] = React.useState('');
     const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [scrolled, setScrolled] = React.useState(false);
+    const [isAvatarPickerOpen, setIsAvatarPickerOpen] = React.useState(false);
 
     React.useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -123,8 +126,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
     const userFullName = beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || '';
     const userEmail = beeyieldUser?.email || user?.email || '';
-    const userName = (userFullName || userEmail?.split('@')[0] || 'Beekeeper').split(' ')[0];
-    const avatarUrl = user?.user_metadata?.avatar_url || beeyieldUser?.user_metadata?.avatar_url;
+    const userName = (userFullName || userEmail?.split('@')[0] || 'Timothy').split(' ')[0];
+    const avatarUrl =
+        user?.user_metadata?.avatar_url ||
+        beeyieldUser?.user_metadata?.avatar_url ||
+        (typeof window !== 'undefined'
+            ? localStorage.getItem(`beeyield_user_avatar_${user?.id || 'usr_kibwezi_owner_01'}`) ||
+              localStorage.getItem('beeyield_user_avatar')
+            : null);
 
     const navCategories = React.useMemo(() => [
         {
@@ -432,8 +441,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                         {/* User Identity Header Card */}
                         <div className="p-3 mb-2 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 dark:border-amber-500/15">
                             <div className="flex items-center gap-3">
-                                <div className="relative">
-                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 p-0.5 shadow-sm">
+                                <div
+                                    onClick={() => setIsAvatarPickerOpen(true)}
+                                    className="relative group/avatar cursor-pointer"
+                                    title="Click to change avatar or upload photo"
+                                >
+                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 p-0.5 shadow-sm overflow-hidden group-hover/avatar:ring-2 group-hover/avatar:ring-amber-500 transition-all">
                                         {avatarUrl ? (
                                             <img src={avatarUrl} alt={userName} className="w-full h-full rounded-[14px] object-cover" />
                                         ) : (
@@ -441,6 +454,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                 {userName.charAt(0).toUpperCase()}
                                             </div>
                                         )}
+                                    </div>
+                                    <div className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center transition-opacity text-white">
+                                        <Camera className="w-3.5 h-3.5" />
                                     </div>
                                     <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#181512]" />
                                 </div>
@@ -462,6 +478,22 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
                         {/* Navigation Actions */}
                         <div className="space-y-1">
+                            {/* Choose / Change Avatar Button */}
+                            <DropdownMenuItem
+                                onClick={() => setIsAvatarPickerOpen(true)}
+                                className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-amber-900 dark:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 dark:bg-amber-500/15 dark:hover:bg-amber-500/25 focus:bg-amber-500/20 dark:focus:bg-amber-500/25 group font-semibold border border-amber-500/20"
+                            >
+                                <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                                    <Camera className="w-4 h-4" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-bold text-stone-900 dark:text-white text-xs flex items-center gap-1.5">
+                                        Change Avatar / Photo
+                                        <Sparkles className="w-3 h-3 text-amber-500" />
+                                    </p>
+                                    <p className="text-[10px] text-amber-700 dark:text-amber-300 truncate">Choose avatar or upload portrait</p>
+                                </div>
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => onTabChange('settings')}
                                 className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-stone-800 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white hover:bg-amber-500/10 dark:hover:bg-amber-500/15 focus:bg-amber-500/10 dark:focus:bg-amber-500/15 group"
@@ -539,6 +571,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+
+            {/* Avatar Picker / Photo Upload Dialog */}
+            <AvatarPickerDialog
+                isOpen={isAvatarPickerOpen}
+                onClose={() => setIsAvatarPickerOpen(false)}
+                currentAvatarUrl={avatarUrl}
+                userName={userFullName || userName}
+                userId={user?.id}
+            />
         </header>
     );
 };

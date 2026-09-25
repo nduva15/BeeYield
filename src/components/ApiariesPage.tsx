@@ -1873,6 +1873,7 @@ function HiveDetailModal({
   onEditBatch?: (batch: HiveHarvestBatch) => void;
 }) {
   const [activeHive, setActiveHive] = useState<ApiaryHiveItem>(initialHive);
+  const { user } = useAuth();
   const hive = activeHive;
   const [activeTab, setActiveTab] = useState<"hive_state" | "syrup" | "framesense" | "notes" | "inspections">(initialTab);
   

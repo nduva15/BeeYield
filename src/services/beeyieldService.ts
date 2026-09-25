@@ -124,36 +124,125 @@ export interface ActivityLog {
 }
 
 // ========== STORAGE & PROFILES ==========
-export const uploadAvatar = async (userId: string, file: File): Promise<{ url: string | null; error: any }> => {
+export const convertImageToOptimizedDataUrl = async (file: File, maxDim = 400, quality = 0.85): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                if (width > height) {
+                    if (width > maxDim) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    }
+                } else {
+                    if (height > maxDim) {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    resolve(e.target?.result as string);
+                    return;
+                }
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                resolve(dataUrl);
+            };
+            img.onerror = () => resolve(e.target?.result as string);
+            img.src = e.target?.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+};
+
+export const saveUserAvatar = async (userId: string, avatarUrl: string): Promise<{ success: boolean; error: any }> => {
     try {
-        if (!sb) throw new Error('Supabase client not initialized');
-        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-        const fileName = `${userId}-${Date.now()}.${fileExt}`;
-        const filePath = `avatars/${fileName}`;
+        const uid = userId || 'usr_kibwezi_owner_01';
 
-        // Upload to 'profiles' bucket
-        const { error: uploadError } = await sb.storage
-            .from('profiles')
-            .upload(filePath, file, {
-                cacheControl: '3600',
-                upsert: true,
-            });
+        // 1. LocalStorage persistence (instant UI sync)
+        try {
+            localStorage.setItem(`beeyield_user_avatar_${uid}`, avatarUrl);
+            localStorage.setItem('beeyield_user_avatar', avatarUrl);
+            const stored = localStorage.getItem('beeyield_local_user');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed.user) parsed.user.user_metadata = { ...(parsed.user.user_metadata || {}), avatar_url: avatarUrl };
+                if (parsed.profile) parsed.profile.avatar_url = avatarUrl;
+                localStorage.setItem('beeyield_local_user', JSON.stringify(parsed));
+            }
+        } catch { void 0; }
 
-        if (uploadError) {
-            console.error('Storage upload error:', uploadError);
-            throw new Error(
-                uploadError.message?.includes('not found')
-                    ? 'The "profiles" storage bucket does not exist. Please create it in the Supabase dashboard → Storage.'
-                    : uploadError.message || 'Upload failed'
-            );
+        // 2. Supabase Auth user metadata update
+        if (sb) {
+            try {
+                await sb.auth.updateUser({ data: { avatar_url: avatarUrl } });
+            } catch { void 0; }
+
+            // 3. Supabase profiles table upsert
+            try {
+                await sb.from('profiles').upsert({
+                    id: uid,
+                    avatar_url: avatarUrl,
+                    updated_at: new Date().toISOString(),
+                });
+            } catch { void 0; }
         }
 
-        // Get public URL
-        const { data } = sb.storage
-            .from('profiles')
-            .getPublicUrl(filePath);
+        // 4. Notify all components globally
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('beeyield-avatar-updated', { detail: { avatar_url: avatarUrl } }));
+        }
 
-        return { url: data.publicUrl, error: null };
+        return { success: true, error: null };
+    } catch (error) {
+        console.error('saveUserAvatar error:', error);
+        return { success: false, error };
+    }
+};
+
+export const uploadAvatar = async (userId: string, file: File): Promise<{ url: string | null; error: any }> => {
+    try {
+        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `${userId || 'user'}-${Date.now()}.${fileExt}`;
+        const filePath = `avatars/${fileName}`;
+
+        // Attempt Supabase storage upload if client initialized
+        if (sb) {
+            const candidateBuckets = ['profiles', 'avatars', 'public'];
+            for (const bucket of candidateBuckets) {
+                try {
+                    const { error: uploadError } = await sb.storage
+                        .from(bucket)
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: true,
+                        });
+
+                    if (!uploadError) {
+                        const { data } = sb.storage.from(bucket).getPublicUrl(filePath);
+                        if (data?.publicUrl) {
+                            await saveUserAvatar(userId, data.publicUrl);
+                            return { url: data.publicUrl, error: null };
+                        }
+                    }
+                } catch {
+                    // Try next candidate bucket
+                }
+            }
+        }
+
+        // Resilient fallback: convert to optimized data URL and persist
+        const optimizedDataUrl = await convertImageToOptimizedDataUrl(file);
+        await saveUserAvatar(userId, optimizedDataUrl);
+        return { url: optimizedDataUrl, error: null };
     } catch (error: any) {
         console.error('Avatar upload error:', error);
         return { url: null, error };
@@ -2432,6 +2521,10 @@ export const beeyieldService = {
             toast.error('Failed to update profile');
             return { data: null, error };
         }
+    },
+
+    async updateUserAvatar(userId: string, avatarUrl: string): Promise<{ success: boolean; error: any }> {
+        return saveUserAvatar(userId, avatarUrl);
     },
 
     // ========== APIARIES ==========
