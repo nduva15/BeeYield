@@ -52,7 +52,7 @@ const PROCESSING_OPTIONS = [
   "QuickBooks asset recognized", "Moisture certified", "Wax cappings rendered",
 ];
 
-export const YEAR_PLANS = [
+const YEAR_PLANS = [
   { year: 2026, totalKg: 60.0, start: "2026-01-03", end: "2026-01-10", honeyType: "Early Spring Acacia Blossom", nectarSource: "Acacia & Wild Blossom", colorGrade: "Extra Light Amber" },
   { year: 2025, totalKg: 300.0, start: "2025-06-15", end: "2025-12-15", honeyType: "Forest Multifloral", nectarSource: "Forest Flora", colorGrade: "Dark Amber" },
   { year: 2024, totalKg: 250.0, start: "2024-06-15", end: "2024-12-15", honeyType: "Wildflower & Acacia", nectarSource: "Acacia & Feral Bush", colorGrade: "Extra White" },
@@ -63,7 +63,7 @@ export const YEAR_PLANS = [
 ];
 
 // Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi
-export const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `BEE-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
+const TIMOTHY_HIVES = Array.from({ length: 184 }, (_, i) => `BEE-${String(i + 1).padStart(3, "0")} (Langstroth 10)`);
 
 function generateTimothyHarvestBatches(): Harvest[] {
   const batches: Harvest[] = [];
