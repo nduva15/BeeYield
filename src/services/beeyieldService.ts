@@ -1,4 +1,3 @@
-import { CANONICAL_TIMOTHY_HARVESTS, getNormalizedHarvestKey } from '@/data/canonicalHarvests';
 import { supabaseBeeYield } from '@/lib/supabase';
 import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPatch, apiPost, apiPut } from './api';
 import { dashboardPollinationCropDetails } from '@/data/beePollinationData';
@@ -125,36 +124,125 @@ export interface ActivityLog {
 }
 
 // ========== STORAGE & PROFILES ==========
-export const uploadAvatar = async (userId: string, file: File): Promise<{ url: string | null; error: any }> => {
+export const convertImageToOptimizedDataUrl = async (file: File, maxDim = 400, quality = 0.85): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                if (width > height) {
+                    if (width > maxDim) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    }
+                } else {
+                    if (height > maxDim) {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    resolve(e.target?.result as string);
+                    return;
+                }
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                resolve(dataUrl);
+            };
+            img.onerror = () => resolve(e.target?.result as string);
+            img.src = e.target?.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+};
+
+export const saveUserAvatar = async (userId: string, avatarUrl: string): Promise<{ success: boolean; error: any }> => {
     try {
-        if (!sb) throw new Error('Supabase client not initialized');
-        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-        const fileName = `${userId}-${Date.now()}.${fileExt}`;
-        const filePath = `avatars/${fileName}`;
+        const uid = userId || 'usr_kibwezi_owner_01';
 
-        // Upload to 'profiles' bucket
-        const { error: uploadError } = await sb.storage
-            .from('profiles')
-            .upload(filePath, file, {
-                cacheControl: '3600',
-                upsert: true,
-            });
+        // 1. LocalStorage persistence (instant UI sync)
+        try {
+            localStorage.setItem(`beeyield_user_avatar_${uid}`, avatarUrl);
+            localStorage.setItem('beeyield_user_avatar', avatarUrl);
+            const stored = localStorage.getItem('beeyield_local_user');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed.user) parsed.user.user_metadata = { ...(parsed.user.user_metadata || {}), avatar_url: avatarUrl };
+                if (parsed.profile) parsed.profile.avatar_url = avatarUrl;
+                localStorage.setItem('beeyield_local_user', JSON.stringify(parsed));
+            }
+        } catch { void 0; }
 
-        if (uploadError) {
-            console.error('Storage upload error:', uploadError);
-            throw new Error(
-                uploadError.message?.includes('not found')
-                    ? 'The "profiles" storage bucket does not exist. Please create it in the Supabase dashboard → Storage.'
-                    : uploadError.message || 'Upload failed'
-            );
+        // 2. Supabase Auth user metadata update
+        if (sb) {
+            try {
+                await sb.auth.updateUser({ data: { avatar_url: avatarUrl } });
+            } catch { void 0; }
+
+            // 3. Supabase profiles table upsert
+            try {
+                await sb.from('profiles').upsert({
+                    id: uid,
+                    avatar_url: avatarUrl,
+                    updated_at: new Date().toISOString(),
+                });
+            } catch { void 0; }
         }
 
-        // Get public URL
-        const { data } = sb.storage
-            .from('profiles')
-            .getPublicUrl(filePath);
+        // 4. Notify all components globally
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('beeyield-avatar-updated', { detail: { avatar_url: avatarUrl } }));
+        }
 
-        return { url: data.publicUrl, error: null };
+        return { success: true, error: null };
+    } catch (error) {
+        console.error('saveUserAvatar error:', error);
+        return { success: false, error };
+    }
+};
+
+export const uploadAvatar = async (userId: string, file: File): Promise<{ url: string | null; error: any }> => {
+    try {
+        const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `${userId || 'user'}-${Date.now()}.${fileExt}`;
+        const filePath = `avatars/${fileName}`;
+
+        // Attempt Supabase storage upload if client initialized
+        if (sb) {
+            const candidateBuckets = ['profiles', 'avatars', 'public'];
+            for (const bucket of candidateBuckets) {
+                try {
+                    const { error: uploadError } = await sb.storage
+                        .from(bucket)
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: true,
+                        });
+
+                    if (!uploadError) {
+                        const { data } = sb.storage.from(bucket).getPublicUrl(filePath);
+                        if (data?.publicUrl) {
+                            await saveUserAvatar(userId, data.publicUrl);
+                            return { url: data.publicUrl, error: null };
+                        }
+                    }
+                } catch {
+                    // Try next candidate bucket
+                }
+            }
+        }
+
+        // Resilient fallback: convert to optimized data URL and persist
+        const optimizedDataUrl = await convertImageToOptimizedDataUrl(file);
+        await saveUserAvatar(userId, optimizedDataUrl);
+        return { url: optimizedDataUrl, error: null };
     } catch (error: any) {
         console.error('Avatar upload error:', error);
         return { url: null, error };
@@ -1105,12 +1193,12 @@ const DASHBOARD_CROP_REQUIREMENTS: CropPollinationRequirement[] = dashboardPolli
     const range = crop.optimalHivesPerAcre.match(/(\d+(\.\d+)?)\s*-\s*(\d+(\.\d+)?)/);
     const recommendedHivesPerAcre = range
         ? Number(((parseFloat(range[1]) + parseFloat(range[3])) / 2).toFixed(1))
-        : Math.max(0.5, Number((crop.targetFPA / 8).toFixed(1)));
+        : Math.max(0.5, Number(((crop.targetFPA ?? 2.5) / 8).toFixed(1)));
 
     return {
         id: `dashboard-crop-${index + 1}`,
         crop_name: crop.cropName,
-        target_fpa: crop.targetFPA,
+        target_fpa: crop.targetFPA ?? 2.5,
         hives_per_acre_recommended: recommendedHivesPerAcre,
         target_frames_per_hive: 8,
         metadata: {
@@ -1377,6 +1465,26 @@ function mapHiveRecord(record: any): Hive {
 }
 
 
+export function getNormalizedHarvestKey(h: any): string {
+    if (!h) return '';
+    const rawBatch = String(h.batch_code || h.batch || '').trim().toUpperCase();
+    if (rawBatch) {
+        const m = rawBatch.match(/BEE-(\d{8})-?[A-Z]*(\d{1,4})/);
+        if (m) {
+            const dateStr = m[1];
+            const num = parseInt(m[2], 10);
+            return `BATCH_${dateStr}_${num}`;
+        }
+        return `BATCH_${rawBatch}`;
+    }
+    const date = String(h.harvest_date || h.harvested_on || h.date || '').slice(0, 10);
+    const hive = String(h.hive_code || h.hive_label || h.hive_id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const qty = Number(h.quantity_kg ?? h.weight_kg ?? 0).toFixed(1);
+    if (date && hive) {
+        return `HARV_${date}_${hive}_${qty}`;
+    }
+    return `ID_${String(h.id || '')}`;
+}
 
 function mapHarvestRecord(record: any): Harvest {
     const normalized = { ...record };
@@ -1407,17 +1515,6 @@ function mapBatchRecord(record: any): BatchView {
         blockchain_verified: Boolean(record?.blockchain_verified ?? record?.block_hash),
         verification_status: record?.verification_status || record?.status,
     };
-}
-
-async function getBeeYieldUser(): Promise<{ id?: string; email?: string } | null> {
-    if (!sb) return null;
-    try {
-        const { data } = await sb.auth.getUser();
-        if (data?.user) return { id: data.user.id, email: data.user.email };
-        const { data: sessionData } = await sb.auth.getSession();
-        if (sessionData?.session?.user) return { id: sessionData.session.user.id, email: sessionData.session.user.email };
-    } catch {}
-    return null;
 }
 
 async function getBeeYieldUserId(): Promise<string | null> {
@@ -1559,7 +1656,7 @@ async function getBatchesFromSupabase(filters?: { honey_type?: string; year?: nu
             hive: harvest?.hive || batch.hive,
             apiary: harvest?.apiary || batch.apiary,
             farmer: harvest?.farmer || batch.farmer,
-            hive_code: harvest?.hive?.hive_code || batch.hive_code,
+            hive_code: harvest?.hive?.hive_code || (batch as any).hive_code,
         };
     });
 }
@@ -2426,6 +2523,10 @@ export const beeyieldService = {
         }
     },
 
+    async updateUserAvatar(userId: string, avatarUrl: string): Promise<{ success: boolean; error: any }> {
+        return saveUserAvatar(userId, avatarUrl);
+    },
+
     // ========== APIARIES ==========
     async getApiaries(): Promise<Apiary[]> {
         try {
@@ -2827,16 +2928,6 @@ export const beeyieldService = {
                     deduped.push(item);
                 }
             }
-            // If fewer than 423 records are returned (e.g. legacy 401 batch seed), ensure canonical 423 batches (843.0 kg)
-            if (deduped.length < 423 && !filters?.hive_id) {
-                for (const item of CANONICAL_TIMOTHY_HARVESTS) {
-                    const key = getNormalizedHarvestKey(item);
-                    if (!seen.has(key)) {
-                        seen.add(key);
-                        deduped.push(item);
-                    }
-                }
-            }
             return deduped;
         }
 
@@ -2868,35 +2959,21 @@ export const beeyieldService = {
                     deduped.push(item);
                 }
             }
-            if (deduped.length < 423 && !filters?.hive_id) {
-                for (const item of CANONICAL_TIMOTHY_HARVESTS) {
-                    const key = getNormalizedHarvestKey(item);
-                    if (!seen.has(key)) {
-                        seen.add(key);
-                        deduped.push(item);
-                    }
-                }
-            }
             return deduped;
         }
 
-        // 4. Offline mode: return custom user batches if any exist
+        // 4. Offline mode: only return genuine user custom batches if any exist
         const customLocal = _lsReadAlways<Harvest[]>('beeyield_user_custom_harvests_v1', []);
-        if (customLocal.length > 0) {
-            const seen = new Set<string>();
-            const deduped: Harvest[] = [];
-            for (const item of customLocal) {
-                const key = getNormalizedHarvestKey(item);
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    deduped.push(item);
-                }
+        const seen = new Set<string>();
+        const deduped: Harvest[] = [];
+        for (const item of customLocal) {
+            const key = getNormalizedHarvestKey(item);
+            if (!seen.has(key)) {
+                seen.add(key);
+                deduped.push(item);
             }
-            return deduped;
         }
-
-        // 5. Default fallback to canonical harvests (exact 423 batches, 843.0 kg)
-        return CANONICAL_TIMOTHY_HARVESTS;
+        return deduped;
     },
 
     async getBatches(filters?: { honey_type?: string; year?: number; limit?: number }): Promise<BatchView[]> {
@@ -4196,7 +4273,7 @@ export const beeyieldService = {
             if (generated?.file_url) {
                 const a = document.createElement('a');
                 a.href = generated.file_url;
-                a.download = report.file_name || generated.file_name;
+                a.download = report.file_name || generated.file_name || "report.pdf";
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -4437,11 +4514,11 @@ export const beeyieldService = {
     
 
     async getFinancialAggregate(groupBy: 'month' | 'category' = 'month'): Promise<any[]> {
-        const txs = await this.getTransactions();
+        const txs: any[] = (this as any).getTransactions ? await (this as any).getTransactions() : [];
 
         if (groupBy === 'month') {
             const months: Record<string, any> = {};
-            txs.forEach(t => {
+            txs.forEach((t: any) => {
                 const m = new Date(t.date).toLocaleString('default', { month: 'short', year: '2-digit' });
                 if (!months[m]) months[m] = { name: m, revenue: 0, costs: 0, net: 0 };
                 if (t.transaction_type === 'income') months[m].revenue += t.amount;
