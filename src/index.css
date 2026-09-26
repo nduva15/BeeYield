@@ -1045,3 +1045,26 @@ All colors MUST be HSL.
 .beeyield-embedded-tool button:has(> svg[class*="lucide-x"]) {
   display: none !important;
 }
+
+/* ==========================================================================
+   INP (Interaction to Next Paint) Optimization: Pointer-Event Inertness
+   ==========================================================================
+   Ensure all iconographic SVGs, Lucide icons, and inner <path> elements
+   are completely inert to pointer hit-testing. This guarantees clicks/taps
+   always hit the interactive container directly and prevents any INP latency
+   attributions on SVG <path> elements.
+*/
+svg.lucide,
+svg.lucide *,
+svg[class*="lucide"],
+svg[class*="lucide"] *,
+button svg,
+button svg *,
+a svg,
+a svg *,
+[role="button"] svg,
+[role="button"] svg *,
+[data-state] svg,
+[data-state] svg * {
+  pointer-events: none !important;
+}
