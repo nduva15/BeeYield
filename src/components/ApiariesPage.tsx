@@ -73,9 +73,9 @@ import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
 import { isTimothyUser } from "@/lib/user-hives";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
-import { AddHiveModal as PopoutAddHiveModal } from "./AddHiveModal";
-import { FrameSenseToolPage } from "./FrameSenseToolPage";
-import { SyrupFeedingToolPage } from "./SyrupFeedingToolPage";
+import { AddHiveModal as PopoutAddHiveModal } from "@/components/AddHiveModal";
+import { FrameSenseToolPage } from "@/components/FrameSenseToolPage";
+import { SyrupFeedingToolPage } from "@/components/SyrupFeedingToolPage";
 import { syncApiaryForageToFlorage, syncAllApiariesToFlorage } from "@/lib/florage-sync";
 
 export interface ApiarySite {
