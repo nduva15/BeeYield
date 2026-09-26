@@ -123,6 +123,7 @@ export default function ShopDashboard({
 
   // Checkout State
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, number>>({});
   const [checkoutSubmitting, setCheckoutSubmitting] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState<{ code: string; percent: number } | null>(null);
@@ -1172,7 +1173,7 @@ export default function ShopDashboard({
           {/* Product Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredProducts.map((p) => {
-              const [selectedVarIndex, setSelectedVarIndex] = useState(0);
+              const selectedVarIndex = selectedVariants[p.id] ?? 0;
               const variant = p.variants?.[selectedVarIndex] || {
                 id: "default",
                 size: "Standard",
@@ -1219,7 +1220,7 @@ export default function ShopDashboard({
                             <button
                               key={v.id}
                               type="button"
-                              onClick={() => setSelectedVarIndex(idx)}
+                              onClick={() => setSelectedVariants((prev) => ({ ...prev, [p.id]: idx }))}
                               className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border ${
                                 selectedVarIndex === idx
                                   ? "bg-honey text-white border-honey"
