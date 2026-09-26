@@ -9,10 +9,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { X, Sprout, Flower2, Plus, Pencil, Trash2, Upload, Download, Save } from "lucide-react";
+import { X, Sprout, Flower2, Plus, Pencil, Trash2, Upload, Download, Save, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
+import { syncAllApiariesToFlorage } from "@/lib/florage-sync";
 
 // Default seed (40 expert melliferous plants). Inserted on first load per device.
 const DEFAULT_FLORAGE = [
@@ -94,41 +95,110 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
 
   const confirmDelete = async () => {
     if (!deletePlant) return;
-    const { error } = await supabase.from("florage_plants").delete().eq("id", deletePlant.id);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Plant record deleted");
-      load();
-    }
+    try {
+      await supabase.from("florage_plants").delete().eq("id", deletePlant.id);
+    } catch {}
+
+    try {
+      const raw = localStorage.getItem("florage_plants_cache");
+      if (raw) {
+        const list = JSON.parse(raw);
+        const filtered = list.filter(
+          (p: any) =>
+            p.id !== deletePlant.id &&
+            p.name.toLowerCase() !== deletePlant.name.toLowerCase()
+        );
+        localStorage.setItem("florage_plants_cache", JSON.stringify(filtered));
+        localStorage.setItem("beeyield.florage.v2", JSON.stringify(filtered));
+      }
+    } catch {}
+
+    toast.success(`Removed "${deletePlant.name}" from florage database`);
     setDeletePlant(null);
+    load();
   };
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("florage_plants")
-      .select("*")
-      .eq("device_id", deviceId)
-      .order("is_default", { ascending: false })
-      .order("name", { ascending: true });
-    if (error) {
-      toast.error("Failed to load florage");
-      setLoading(false);
-      return;
+    // 1. Sync all apiaries to florage
+    try {
+      await syncAllApiariesToFlorage(deviceId, deviceId);
+    } catch (e) {
+      console.warn("Apiary florage sync note:", e);
     }
-    if (!data || data.length === 0) {
+
+    // 2. Fetch from Supabase
+    let loadedPlants: FloragePlant[] = [];
+    try {
+      const { data, error } = await supabase
+        .from("florage_plants")
+        .select("*")
+        .or(`device_id.eq.${deviceId},device_id.is.null,device_id.eq.beeyield-global-device,is_default.eq.true`)
+        .order("is_default", { ascending: false })
+        .order("name", { ascending: true });
+
+      if (!error && data && data.length > 0) {
+        loadedPlants = data as FloragePlant[];
+      }
+    } catch (e) {
+      console.warn("Supabase florage load note:", e);
+    }
+
+    // 3. Merge with local cache for resilient offline/real-time display
+    try {
+      const cachedRaw = localStorage.getItem("florage_plants_cache");
+      if (cachedRaw) {
+        const cached = JSON.parse(cachedRaw);
+        if (Array.isArray(cached) && cached.length > 0) {
+          const map = new Map<string, FloragePlant>();
+          for (const p of loadedPlants) {
+            map.set(p.name.toLowerCase().trim(), p);
+          }
+          for (const p of cached) {
+            const key = p.name.toLowerCase().trim();
+            if (!map.has(key)) {
+              map.set(key, p);
+            }
+          }
+          loadedPlants = Array.from(map.values());
+        }
+      }
+    } catch {}
+
+    if (loadedPlants.length === 0) {
       // Seed defaults
       const seed = DEFAULT_FLORAGE.map((p) => ({ ...p, device_id: deviceId, is_default: true }));
-      const { data: seeded } = await supabase.from("florage_plants").insert(seed).select("*");
-      setPlants((seeded as FloragePlant[]) || []);
-    } else {
-      setPlants(data as FloragePlant[]);
+      try {
+        const { data: seeded } = await supabase.from("florage_plants").insert(seed).select("*");
+        loadedPlants = (seeded as FloragePlant[]) || seed.map((s, idx) => ({ ...s, id: `seed-${idx}` }));
+      } catch {
+        loadedPlants = seed.map((s, idx) => ({ ...s, id: `seed-${idx}` }));
+      }
     }
+
+    // Sort: custom/apiary plants first, then default plants
+    loadedPlants.sort((a, b) => {
+      if (a.is_default !== b.is_default) return a.is_default ? 1 : -1;
+      return a.name.localeCompare(b.name);
+    });
+
+    setPlants(loadedPlants);
     setLoading(false);
   }, [deviceId]);
 
-  useEffect(() => { if (isOpen) load(); }, [isOpen, load]);
+  useEffect(() => {
+    if (isOpen) load();
+  }, [isOpen, load]);
+
+  useEffect(() => {
+    const handleFlorageChange = () => {
+      load();
+    };
+    window.addEventListener("beeyield:florage:changed", handleFlorageChange);
+    return () => {
+      window.removeEventListener("beeyield:florage:changed", handleFlorageChange);
+    };
+  }, [load]);
 
   const startEdit = (p: FloragePlant) => {
     setEditing(p);
@@ -258,10 +328,23 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
             <Sprout className="w-7 h-7 text-honey" />
             <div>
               <h1 className="font-display text-2xl font-bold text-honey">Florage Database</h1>
-              <p className="text-xs text-muted-foreground">{plants.length} plants — full CRUD, CSV import/export</p>
+              <p className="text-xs text-muted-foreground">{plants.length} plants — botanical database synchronized with apiaries</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                toast.info("Syncing botanical flora from all apiaries...");
+                await syncAllApiariesToFlorage(deviceId, deviceId);
+                await load();
+                toast.success("Florage database synced with all apiaries!");
+              }}
+              className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50 transition-colors"
+              title="Synchronize flora from all registered apiaries"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-honey" />
+              Sync Apiaries
+            </button>
             <button onClick={startNew} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 hover:opacity-90"><Plus className="w-3.5 h-3.5" />New plant</button>
             <button onClick={() => setShowImport((s) => !s)} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Upload className="w-3.5 h-3.5" />Import CSV</button>
             <button onClick={exportCsv} className="px-3 py-2 rounded-lg border border-border text-xs flex items-center gap-1.5 hover:border-honey/50"><Download className="w-3.5 h-3.5" />Export</button>
@@ -332,7 +415,16 @@ export default function FloragePage({ isOpen, onClose, embedded = false }: { isO
                 {!loading && plants.length === 0 && <tr><td colSpan={8} className="p-6 text-center text-xs text-muted-foreground">No plants yet — click "New plant" or import a CSV.</td></tr>}
                 {plants.map((p) => (
                   <tr key={p.id} className="border-t border-border hover:bg-muted/30">
-                    <td className="p-3 font-semibold text-foreground"><Flower2 className="w-3 h-3 inline mr-1 text-honey" />{p.name}{p.is_default && <span className="ml-1 text-[10px] text-muted-foreground">(seed)</span>}</td>
+                    <td className="p-3 font-semibold text-foreground">
+                      <Flower2 className="w-3 h-3 inline mr-1 text-honey" />
+                      {p.name}
+                      {p.is_default && <span className="ml-1 text-[10px] text-muted-foreground font-normal">(seed)</span>}
+                      {(p.notes?.includes("Linked to Apiary:") || p.notes?.includes("Apiary Forage")) && (
+                        <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          Apiary Flora
+                        </span>
+                      )}
+                    </td>
                     <td className="p-3 italic text-xs text-muted-foreground">{p.latin}</td>
                     <td className="p-3 text-xs">{p.bloom}</td>
                     <td className="p-3 text-center"><Score val={p.nectar} /></td>

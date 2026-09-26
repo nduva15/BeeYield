@@ -76,6 +76,7 @@ import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { AddHiveModal as PopoutAddHiveModal } from "./AddHiveModal";
 import { FrameSenseToolPage } from "./FrameSenseToolPage";
 import { SyrupFeedingToolPage } from "./SyrupFeedingToolPage";
+import { syncApiaryForageToFlorage, syncAllApiariesToFlorage } from "@/lib/florage-sync";
 
 export interface ApiarySite {
   id: string;
@@ -6893,13 +6894,15 @@ export default function ApiariesPage({
           } catch {
             // ignore
           }
+          // Synchronize all apiary forage species to Florage Database
+          void syncAllApiariesToFlorage(userKey, deviceId);
         }
       } catch {
         // keep current state
       }
     };
     loadApiaries();
-  }, [user?.id, userKey]);
+  }, [user?.id, userKey, deviceId]);
 
   // Fetch real-time live weather for all apiary sites from Open-Meteo API
   const refreshAllWeather = useCallback(async (isManual = false) => {
@@ -7041,6 +7044,16 @@ export default function ApiariesPage({
       localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify(updatedList));
     } catch {
       // ignore
+    }
+
+    // Sync apiary forage flora to Florage Database
+    if (newSite.forage_type) {
+      void syncApiaryForageToFlorage(
+        newSite.name,
+        newSite.location_name,
+        newSite.forage_type,
+        userKey
+      );
     }
 
     setShowAddModal(false);
