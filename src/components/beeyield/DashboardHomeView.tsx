@@ -239,7 +239,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const batchesQuery = useBatches();
     const inspectionsQuery = useInspections();
 
-    const userMetadata = (user as any)?.user_metadata || {};
+    const userMetadata = React.useMemo(() => (user as any)?.user_metadata || {}, [user]);
     const fullName = userMetadata.first_name || userMetadata.full_name || (user as any)?.email?.split('@')[0] || (user ? 'Apiary Owner' : 'Timothy Nduva');
 
     const loadedApiaries = React.useMemo(() => {

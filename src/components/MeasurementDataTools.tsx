@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   X, Cpu, Usb, Bluetooth, Wifi, Plus, Trash2, ScanLine, ArrowLeft, ArrowRight, Check,
@@ -617,15 +616,15 @@ function AddDeviceWizard({
   const [saving, setSaving] = useState(false);
 
   // Update kind and serial defaults when category changes
-  const handleCategoryChange = (newCat: DeviceCategory) => {
+  const handleCategoryChange = useCallback((newCat: DeviceCategory) => {
     setCategory(newCat);
     const firstKind = DEVICE_CATEGORIES[newCat].kinds[0];
     setSelectedKindId(firstKind.id);
-    const randNum = Math.floor(100 + Math.random() * 900);
+    const randNum = 100 + ((newCat.length * 73 + firstKind.id.length * 19) % 900);
     setSerial(`${firstKind.defaultSerialPrefix}-${randNum}`);
     const targetHive = hives.find((h) => h.id === selectedHiveId);
     setLabel(`${targetHive?.name || "Hive"} ${firstKind.name}`);
-  };
+  }, [hives, selectedHiveId]);
 
   // If initialHiveId provided on mount, auto-set serial and label
   useEffect(() => {
