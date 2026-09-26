@@ -160,6 +160,9 @@ export function generateTimothyHarvestBatches(): Harvest[] {
   return batches;
 }
 
+export const CANONICAL_HARVEST_BATCHES: Harvest[] = generateTimothyHarvestBatches();
+
+
 export const CANONICAL_TIMOTHY_HARVESTS: Harvest[] = generateTimothyHarvestBatches();
 
 /**
