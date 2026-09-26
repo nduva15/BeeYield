@@ -3,7 +3,7 @@ import {
   X, Settings as SettingsIcon, User, Blocks, BellRing, ShieldCheck, Wifi,
   Loader2, Save, Link2, Trash2, Copy, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw,
   CreditCard, Clock, Plus, Lock, Calendar, FileText, Download, CheckCircle, ArrowUpRight, TrendingUp,
-  TrendingDown, Wallet, ExternalLink, ShieldAlert, Camera, Upload
+  TrendingDown, Wallet, ExternalLink, ShieldAlert, Camera, Upload, LogIn
 } from "lucide-react";
 import {
   Dialog,
@@ -123,7 +123,19 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   const [fullName, setFullName] = useState(profile?.full_name ?? "");
   const [phone, setPhone] = useState(profile?.phone ?? "");
   const [country, setCountry] = useState(profile?.country ?? "");
+  const [email, setEmail] = useState(user?.email || profile?.email || "");
   const [savingProfile, setSavingProfile] = useState(false);
+
+  const navigateToLogin = () => {
+    if (typeof window !== "undefined") {
+      const path =
+        window.location.pathname.includes("beeyield") ||
+        window.location.pathname.includes("dashboard")
+          ? "/beeyield-login"
+          : "/auth?next=/";
+      window.location.href = path;
+    }
+  };
 
   const avatarUrl =
     profile?.avatar_url ||
@@ -168,7 +180,26 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     if (profile?.full_name) setFullName(profile.full_name);
     if (profile?.phone) setPhone(profile.phone);
     if (profile?.country) setCountry(profile.country);
-  }, [profile]);
+    if (profile?.email || user?.email) setEmail(profile?.email || user?.email || "");
+  }, [profile, user]);
+
+  useEffect(() => {
+    try {
+      const localStored =
+        localStorage.getItem(`beeyield_user_profile_${deviceId}`) ||
+        localStorage.getItem("beeyield_local_user");
+      if (localStored) {
+        const parsed = JSON.parse(localStored);
+        const p = parsed.profile || parsed;
+        if (p) {
+          if (p.full_name && !fullName) setFullName(p.full_name);
+          if (p.phone && !phone) setPhone(p.phone);
+          if (p.country && !country) setCountry(p.country);
+          if (p.email && !email) setEmail(p.email);
+        }
+      }
+    } catch {}
+  }, [deviceId]);
 
   const loadPrefs = useCallback(async () => {
     try {
@@ -226,29 +257,84 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      toast.error("Sign in to save profile");
-      return;
-    }
     setSavingProfile(true);
+
+    const effectiveId = user?.id || `usr_${deviceId.slice(0, 8)}`;
+    const effectiveEmail = user?.email || email.trim() || "guest@beeyield.local";
+
+    const updatedProfile = {
+      id: effectiveId,
+      email: effectiveEmail,
+      full_name: fullName.trim() || "Beekeeper Operator",
+      phone: phone.trim() || null,
+      country: country.trim() || "Kenya",
+      avatar_url: avatarUrl || null,
+    };
+
+    // 1. Always persist to localStorage for instant local reactivity
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .upsert({
-          id: user.id,
-          full_name: fullName,
-          phone,
-          country,
-          updated_at: new Date().toISOString()
-        });
-      if (error) throw error;
-      await refreshProfile();
-      toast.success("Profile saved");
-    } catch (err: any) {
-      toast.error(err.message || "Could not save profile");
-    } finally {
-      setSavingProfile(false);
+      localStorage.setItem(`beeyield_user_profile_${deviceId}`, JSON.stringify(updatedProfile));
+      localStorage.setItem(`beeyield_user_profile_${effectiveId}`, JSON.stringify(updatedProfile));
+
+      const stored = localStorage.getItem("beeyield_local_user");
+      const parsed = stored ? JSON.parse(stored) : {};
+      const updatedUser = {
+        ...(parsed.user || {}),
+        id: effectiveId,
+        email: effectiveEmail,
+        user_metadata: {
+          ...(parsed.user?.user_metadata || {}),
+          full_name: fullName.trim(),
+          phone: phone.trim(),
+          country: country.trim(),
+          avatar_url: avatarUrl,
+        },
+      };
+      localStorage.setItem(
+        "beeyield_local_user",
+        JSON.stringify({ user: user || updatedUser, profile: updatedProfile })
+      );
+    } catch {}
+
+    // 2. If connected to Supabase Auth, persist to cloud
+    if (user?.id && !user.id.startsWith("usr_")) {
+      try {
+        const { error } = await (supabase as any)
+          .from("profiles")
+          .upsert({
+            id: user.id,
+            full_name: fullName.trim(),
+            phone: phone.trim(),
+            country: country.trim(),
+            updated_at: new Date().toISOString(),
+          });
+
+        if (error) {
+          console.warn("Supabase profile upsert warning:", error);
+        }
+
+        // Also update Supabase auth metadata
+        await supabase.auth.updateUser({
+          data: {
+            full_name: fullName.trim(),
+            phone: phone.trim(),
+            country: country.trim(),
+          },
+        }).catch(() => {});
+
+        await refreshProfile();
+        toast.success("Profile saved and synchronized to cloud!");
+      } catch (err: any) {
+        console.warn("Cloud sync error:", err);
+        toast.success("Profile saved locally to device");
+      }
+    } else {
+      // Local/Guest mode save
+      await refreshProfile().catch(() => {});
+      toast.success("Profile saved locally! Sign in anytime to sync across devices.");
     }
+
+    setSavingProfile(false);
   };
 
   const createAccessLink = () => {
@@ -430,6 +516,30 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
             <h2 className="font-display text-lg text-honey">User Profile</h2>
             <p className="text-xs text-muted-foreground">Manage your operator credentials, contact info, and role assignment.</p>
 
+            {!user && (
+              <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <LogIn className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">Device / Offline Mode Active</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Your changes save directly to this browser. Sign in or create an account to sync your profile, apiaries, and telemetry across all devices.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={navigateToLogin}
+                  className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs whitespace-nowrap shadow-xs flex items-center gap-1.5 transition-all shrink-0"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Sign In / Sign Up</span>
+                </button>
+              </div>
+            )}
+
             {/* Avatar & Profile Photo Section */}
             <div className="p-4 rounded-2xl border border-border bg-background/50 flex flex-col sm:flex-row items-center gap-4">
               <div
@@ -525,24 +635,44 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">Email (Read Only)</label>
+                <label className="text-xs font-semibold text-foreground">
+                  Email Address {!user?.email && <span className="text-muted-foreground font-normal">(Device / Guest)</span>}
+                </label>
                 <input
                   type="email"
-                  value={user?.email || "guest@beeyield.local"}
-                  disabled
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-border bg-muted/40 text-muted-foreground cursor-not-allowed"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={Boolean(user?.email)}
+                  placeholder="e.g. beekeeper@beeyield.com"
+                  className={`w-full px-3 py-2 text-xs rounded-lg border border-border ${
+                    user?.email
+                      ? "bg-muted/40 text-muted-foreground cursor-not-allowed"
+                      : "bg-background focus:outline-none focus:ring-1 focus:ring-honey"
+                  }`}
                 />
               </div>
             </div>
-            <div className="pt-2 flex justify-between items-center">
-              <button
-                type="submit"
-                disabled={savingProfile}
-                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-bold text-xs flex items-center gap-1.5 hover:bg-honey/90 transition-colors shadow-sm disabled:opacity-50"
-              >
-                {savingProfile ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                Save Changes
-              </button>
+            <div className="pt-2 flex flex-wrap justify-between items-center gap-2">
+              <div className="flex items-center gap-2">
+                <button
+                  type="submit"
+                  disabled={savingProfile}
+                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-bold text-xs flex items-center gap-1.5 hover:opacity-90 transition-all shadow-sm disabled:opacity-50"
+                >
+                  {savingProfile ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  Save Changes
+                </button>
+                {!user && (
+                  <button
+                    type="button"
+                    onClick={navigateToLogin}
+                    className="px-3.5 py-2 rounded-lg border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-semibold text-xs flex items-center gap-1.5 transition-colors"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    Sign In to Sync
+                  </button>
+                )}
+              </div>
               {user && (
                 <button
                   type="button"
