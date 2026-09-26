@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -178,6 +177,20 @@ export default function Auth() {
 
         // Case 2: Auto-confirmed / immediate session returned
         if (data?.session) {
+          try {
+            const p = {
+              id: data.session.user.id,
+              email: cleanEmail,
+              full_name: fullName.trim(),
+              phone: phone.trim(),
+              country,
+              avatar_url: null,
+            };
+            localStorage.setItem(
+              "beeyield_local_user",
+              JSON.stringify({ user: data.session.user, profile: p })
+            );
+          } catch {}
           toast.success("Welcome to BeeYield! Your account is created and active.");
           nav(next, { replace: true });
           return;
@@ -211,6 +224,20 @@ export default function Auth() {
         }
 
         if (data?.session) {
+          try {
+            const p = {
+              id: data.session.user.id,
+              email: cleanEmail,
+              full_name: data.session.user.user_metadata?.full_name || null,
+              phone: data.session.user.user_metadata?.phone || null,
+              country: data.session.user.user_metadata?.country || null,
+              avatar_url: data.session.user.user_metadata?.avatar_url || null,
+            };
+            localStorage.setItem(
+              "beeyield_local_user",
+              JSON.stringify({ user: data.session.user, profile: p })
+            );
+          } catch {}
           toast.success("Signed in successfully. Welcome back!");
           nav(next, { replace: true });
         }
@@ -250,19 +277,7 @@ export default function Auth() {
         }
       }
 
-      // Try Lovable Cloud Auth broker first if available
-      try {
-        const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: returnTo });
-        if (result && !result.error) {
-          if (result.redirected) return;
-          nav(next, { replace: true });
-          return;
-        }
-      } catch {
-        // Fall back to standard Supabase OAuth
-      }
-
-      // Standard Supabase OAuth with skipBrowserRedirect to safely validate data.url
+      // Direct BeeYield Supabase OAuth with safe redirect
       const { data, error: sbErr } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
