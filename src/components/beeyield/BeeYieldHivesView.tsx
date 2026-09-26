@@ -226,15 +226,29 @@ export default function BeeYieldHivesView({
   const [activeToolHiveId, setActiveToolHiveId] = useState<string | undefined>(undefined);
 
   const handleOpenFrameSense = (hiveId: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setActiveToolHiveId(hiveId);
-    setFrameSenseOpen(true);
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    requestAnimationFrame(() => {
+      React.startTransition(() => {
+        setActiveToolHiveId(hiveId);
+        setFrameSenseOpen(true);
+      });
+    });
   };
 
   const handleOpenSyrup = (hiveId: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setActiveToolHiveId(hiveId);
-    setSyrupToolOpen(true);
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    requestAnimationFrame(() => {
+      React.startTransition(() => {
+        setActiveToolHiveId(hiveId);
+        setSyrupToolOpen(true);
+      });
+    });
   };
 
   // Schedule Task Modal state
@@ -517,29 +531,33 @@ export default function BeeYieldHivesView({
   };
 
   const handleStartEdit = (h: Hive) => {
-    setEditingId(h.id);
-    const frameCount = h.frame_count || 10;
-    const broodFrames = h.brood_frames ?? Math.round(frameCount * 0.6);
-    const honeyFrames = Math.max(0, frameCount - broodFrames);
+    requestAnimationFrame(() => {
+      React.startTransition(() => {
+        setEditingId(h.id);
+        const frameCount = h.frame_count || 10;
+        const broodFrames = h.brood_frames ?? Math.round(frameCount * 0.6);
+        const honeyFrames = Math.max(0, frameCount - broodFrames);
 
-    setDraft({
-      hive_code: h.hive_code,
-      apiary_id: h.apiary_id || apiaries[0]?.id || "",
-      hive_type: h.hive_type || "Langstroth",
-      bee_type: h.bee_type || "African Honey Bee (Apis mellifera scutellata)",
-      frame_count: frameCount,
-      brood_frames: broodFrames,
-      honey_frames: honeyFrames,
-      material: h.material || "Seasoned Timber / Pine",
-      status: h.status || "Active",
-      installation_date: h.installation_date ? h.installation_date.slice(0, 10) : new Date().toISOString().slice(0, 10),
-      has_sensors: !!h.has_sensors,
-      notes: h.notes || "",
-      temperature_c: h.latest_temp ?? 34.8,
-      humidity_pct: h.latest_humidity ?? 58,
-      weight_kg: h.latest_weight ?? 42.5,
+        setDraft({
+          hive_code: h.hive_code,
+          apiary_id: h.apiary_id || apiaries[0]?.id || "",
+          hive_type: h.hive_type || "Langstroth",
+          bee_type: h.bee_type || "African Honey Bee (Apis mellifera scutellata)",
+          frame_count: frameCount,
+          brood_frames: broodFrames,
+          honey_frames: honeyFrames,
+          material: h.material || "Seasoned Timber / Pine",
+          status: h.status || "Active",
+          installation_date: h.installation_date ? h.installation_date.slice(0, 10) : new Date().toISOString().slice(0, 10),
+          has_sensors: !!h.has_sensors,
+          notes: h.notes || "",
+          temperature_c: h.latest_temp ?? 34.8,
+          humidity_pct: h.latest_humidity ?? 58,
+          weight_kg: h.latest_weight ?? 42.5,
+        });
+        setShowForm(true);
+      });
     });
-    setShowForm(true);
   };
 
   const handleSaveColony = async () => {
@@ -620,10 +638,17 @@ export default function BeeYieldHivesView({
   };
 
   const handleOpenNotes = (hive: Hive, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setActiveHive(hive);
-    setHiveNotes(hive.notes || "");
-    setIsNotesModalOpen(true);
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    requestAnimationFrame(() => {
+      React.startTransition(() => {
+        setActiveHive(hive);
+        setHiveNotes(hive.notes || "");
+        setIsNotesModalOpen(true);
+      });
+    });
   };
 
   const handleSaveNotes = async () => {
@@ -1413,43 +1438,47 @@ export default function BeeYieldHivesView({
                       <button
                         type="button"
                         onClick={(e) => handleOpenNotes(h, e)}
-                        className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
+                        className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-all text-xs flex items-center gap-1 active:scale-95 transform-gpu select-none"
                         title="Notes"
                       >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline text-[11px]">Notes</span>
+                        <FileText className="w-3.5 h-3.5 pointer-events-none select-none" />
+                        <span className="hidden sm:inline text-[11px] pointer-events-none select-none">Notes</span>
                       </button>
                       <button
                         type="button"
                         onClick={(e) => handleOpenFrameSense(h.id, e)}
-                        className="p-1.5 rounded-lg border border-amber-500/40 hover:bg-amber-500/10 text-amber-800 dark:text-amber-300 transition-colors text-xs flex items-center gap-1 font-semibold"
+                        className="p-1.5 rounded-lg border border-amber-500/40 hover:bg-amber-500/10 text-amber-800 dark:text-amber-300 transition-all text-xs flex items-center gap-1 font-semibold active:scale-95 transform-gpu select-none"
                         title="FrameSense AI Comb Analysis"
                       >
-                        <Layers className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                        <span className="hidden md:inline text-[11px]">FrameSense</span>
+                        <Layers className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 pointer-events-none select-none" />
+                        <span className="hidden md:inline text-[11px] pointer-events-none select-none">FrameSense</span>
                       </button>
                       <button
                         type="button"
                         onClick={(e) => handleOpenSyrup(h.id, e)}
-                        className="p-1.5 rounded-lg border border-blue-500/40 hover:bg-blue-500/10 text-blue-800 dark:text-blue-300 transition-colors text-xs flex items-center gap-1 font-semibold"
+                        className="p-1.5 rounded-lg border border-blue-500/40 hover:bg-blue-500/10 text-blue-800 dark:text-blue-300 transition-all text-xs flex items-center gap-1 font-semibold active:scale-95 transform-gpu select-none"
                         title="Syrup Nutrition Calculator"
                       >
-                        <Droplets className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                        <span className="hidden md:inline text-[11px]">Syrup</span>
+                        <Droplets className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 pointer-events-none select-none" />
+                        <span className="hidden md:inline text-[11px] pointer-events-none select-none">Syrup</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleStartEdit(h)}
-                        className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
+                        className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-all text-xs flex items-center gap-1 active:scale-95 transform-gpu select-none"
                         title="Edit Hive Colony"
                       >
-                        <Pencil className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline text-[11px]">Edit</span>
+                        <Pencil className="w-3.5 h-3.5 pointer-events-none select-none" />
+                        <span className="hidden sm:inline text-[11px] pointer-events-none select-none">Edit</span>
                       </button>
                       <button
                         type="button"
-                        onClick={() => setExpanded(expanded === h.id ? null : h.id)}
-                        className="text-[11px] text-muted-foreground hover:text-foreground px-2 py-1"
+                        onClick={() => {
+                          React.startTransition(() => {
+                            setExpanded(expanded === h.id ? null : h.id);
+                          });
+                        }}
+                        className="text-[11px] text-muted-foreground hover:text-foreground px-2 py-1 select-none active:scale-95 transition-transform"
                       >
                         {expanded === h.id ? "Hide" : "Details"}
                       </button>
@@ -1561,15 +1590,15 @@ export default function BeeYieldHivesView({
                         </button>
                         <button
                           onClick={() => handleOpenFrameSense(h.id)}
-                          className="px-3 py-1.5 rounded-lg border border-amber-500/50 bg-amber-500/10 text-amber-900 dark:text-amber-200 flex items-center gap-1.5 hover:bg-amber-500/20 transition-colors font-medium"
+                          className="px-3 py-1.5 rounded-lg border border-amber-500/50 bg-amber-500/10 text-amber-900 dark:text-amber-200 flex items-center gap-1.5 hover:bg-amber-500/20 transition-all font-medium active:scale-95 select-none"
                         >
-                          <Layers className="w-3.5 h-3.5 text-amber-600" /> FrameSense AI Scan
+                          <Layers className="w-3.5 h-3.5 text-amber-600 pointer-events-none select-none" /> <span className="pointer-events-none select-none">FrameSense AI Scan</span>
                         </button>
                         <button
                           onClick={() => handleOpenSyrup(h.id)}
-                          className="px-3 py-1.5 rounded-lg border border-blue-500/50 bg-blue-500/10 text-blue-900 dark:text-blue-200 flex items-center gap-1.5 hover:bg-blue-500/20 transition-colors font-medium"
+                          className="px-3 py-1.5 rounded-lg border border-blue-500/50 bg-blue-500/10 text-blue-900 dark:text-blue-200 flex items-center gap-1.5 hover:bg-blue-500/20 transition-all font-medium active:scale-95 select-none"
                         >
-                          <Droplets className="w-3.5 h-3.5 text-blue-600" /> Syrup Nutrition
+                          <Droplets className="w-3.5 h-3.5 text-blue-600 pointer-events-none select-none" /> <span className="pointer-events-none select-none">Syrup Nutrition</span>
                         </button>
                         <button
                           onClick={() => handleStartEdit(h)}
