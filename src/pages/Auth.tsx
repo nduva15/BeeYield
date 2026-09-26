@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -278,19 +277,7 @@ export default function Auth() {
         }
       }
 
-      // Try Lovable Cloud Auth broker first if available
-      try {
-        const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: returnTo });
-        if (result && !result.error) {
-          if (result.redirected) return;
-          nav(next, { replace: true });
-          return;
-        }
-      } catch {
-        // Fall back to standard Supabase OAuth
-      }
-
-      // Standard Supabase OAuth with skipBrowserRedirect to safely validate data.url
+      // Direct BeeYield Supabase OAuth with safe redirect
       const { data, error: sbErr } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
