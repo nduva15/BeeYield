@@ -4926,7 +4926,7 @@ function EditHarvestModal({
 // ----------------------------------------------------------------------
 // Modal/Drawer showing Hives, Forage, and Harvests for the clicked Apiary
 // ----------------------------------------------------------------------
-function ApiaryDetailModal({
+export function ApiaryDetailModal({
   apiary,
   weather,
   onClose,
