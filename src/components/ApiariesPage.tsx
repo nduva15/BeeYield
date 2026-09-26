@@ -8247,7 +8247,8 @@ export default function ApiariesPage({
                 </div>
               )}
             </div>
-          </div>
+          </div>,
+          document.body
         )}
 
         {/* Modal: Comprehensive Apiary Detail Drawer/Modal */}
