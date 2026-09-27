@@ -27,7 +27,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { syncApiaryForageToFlorage } from "@/lib/florage-sync";
 import { autoSyncRecord } from "@/lib/integration-sync";
-import type { ApiarySite } from "@/components/ApiariesPage";
+import type { ApiarySite as BaseApiarySite } from "@/components/ApiariesPage";
+
+export type ApiarySite = BaseApiarySite & {
+  add_mode?: "with_devices" | "without_devices";
+};
 
 export interface AddApiaryModalProps {
   isOpen: boolean;
