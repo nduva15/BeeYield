@@ -179,7 +179,7 @@ export function resolveBotanicalProfile(
   const lower = clean.toLowerCase();
 
   // Find known match
-  let matchedKey = Object.keys(KNOWN_BOTANICAL_PROFILES).find(
+  const matchedKey = Object.keys(KNOWN_BOTANICAL_PROFILES).find(
     (k) => lower.includes(k) || k.includes(lower)
   );
 

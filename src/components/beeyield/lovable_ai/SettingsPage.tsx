@@ -231,13 +231,14 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         const parsed = JSON.parse(localStored);
         const p = parsed.profile || parsed;
         if (p) {
-          if (p.full_name && !fullName) setFullName(p.full_name);
-          if (p.phone && !phone) setPhone(p.phone);
-          if (p.country && !country) setCountry(p.country);
-          if (p.email && !email) setEmail(p.email);
+          if (p.full_name) setFullName((prev) => prev || p.full_name);
+          if (p.phone) setPhone((prev) => prev || p.phone);
+          if (p.country) setCountry((prev) => prev || p.country);
+          if (p.email) setEmail((prev) => prev || p.email);
         }
       }
     } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId]);
 
   const loadPrefs = useCallback(async () => {
