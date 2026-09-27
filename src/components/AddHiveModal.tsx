@@ -137,7 +137,8 @@ export function AddHiveModal({
   const [isSaving, setIsSaving] = useState(false);
 
   // Available Apiaries loaded from Backend
-  const [loadedApiaries, setLoadedApiaries] = useState<Array<{ id: string; name: string }>>(apiaries);
+  const [loadedApiaries, setLoadedApiaries] =
+    useState<Array<{ id: string; name: string }>>(apiaries);
 
   // Step 1: Hive Details
   const defaultNum = suggestedCode.replace(/^KIB-|^beeyield\s*/i, "");
@@ -146,19 +147,25 @@ export function AddHiveModal({
   const [maxBroodFrames, setMaxBroodFrames] = useState<string>("10");
   const [hasHygienicBottomBoard, setHasHygienicBottomBoard] = useState(true);
   const [selectedApiaryId, setSelectedApiaryId] = useState<string>(
-    apiary?.id || apiaries[0]?.id || "apiary-kibwezi"
+    apiary?.id || apiaries[0]?.id || "apiary-kibwezi",
   );
 
   // Step 2: Queen Bee Information
   const [queenPresent, setQueenPresent] = useState<boolean>(true);
   const [queenBreedingYear, setQueenBreedingYear] = useState<number>(new Date().getFullYear());
   const [queenOrigin, setQueenOrigin] = useState<string>("Own breeding (Selected Line)");
-  const [queenInsemination, setQueenInsemination] = useState<"Natural" | "Artificial" | "Unknown">("Natural");
+  const [queenInsemination, setQueenInsemination] = useState<"Natural" | "Artificial" | "Unknown">(
+    "Natural",
+  );
   const [queenNote, setQueenNote] = useState<string>("");
 
   // Step 3: Device / Sensor Setup
-  const [pairingMode, setPairingMode] = useState<"without_device" | "with_device">("without_device");
-  const [sensorCategory, setSensorCategory] = useState<"vitalsensor" | "scale" | "acoustic_varroa">("vitalsensor");
+  const [pairingMode, setPairingMode] = useState<"without_device" | "with_device">(
+    "without_device",
+  );
+  const [sensorCategory, setSensorCategory] = useState<"vitalsensor" | "scale" | "acoustic_varroa">(
+    "vitalsensor",
+  );
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
   const [showScanner, setShowScanner] = useState(false);
   const [scannerError, setScannerError] = useState<string | null>(null);
@@ -291,7 +298,7 @@ export function AddHiveModal({
               setShowScanner(false);
             }
           },
-          () => undefined
+          () => undefined,
         );
       } catch (err: any) {
         if (isMounted) {
@@ -325,8 +332,8 @@ export function AddHiveModal({
   const formattedHiveCode = code.trim().toUpperCase().startsWith("KIB-")
     ? code.trim().toUpperCase()
     : !isNaN(Number(code.trim()))
-    ? `KIB-${code.trim().padStart(3, "0")}`
-    : `KIB-${code.trim().toUpperCase()}`;
+      ? `KIB-${code.trim().padStart(3, "0")}`
+      : `KIB-${code.trim().toUpperCase()}`;
 
   const selectedApiaryObj = loadedApiaries.find((a) => a.id === selectedApiaryId);
   const targetApiaryName = selectedApiaryObj?.name || apiary?.name || CANONICAL_APIARY_NAME;
@@ -373,16 +380,16 @@ export function AddHiveModal({
         ? sensorCategory === "scale"
           ? "HoneyScale Load Cell"
           : sensorCategory === "acoustic_varroa"
-          ? "Apisense Varroa Detector"
-          : "VitalSensor Pro"
+            ? "Apisense Varroa Detector"
+            : "VitalSensor Pro"
         : undefined,
       batches: [],
       deviceCategory: hasDevice
         ? sensorCategory === "scale"
           ? "apiary_scale"
           : sensorCategory === "acoustic_varroa"
-          ? "disease_devices"
-          : "in_hive"
+            ? "disease_devices"
+            : "in_hive"
         : undefined,
     };
 
@@ -434,15 +441,18 @@ export function AddHiveModal({
 
         // If sensor paired, save to devices table
         if (hasDevice) {
-          await (supabase as any).from("devices").insert({
-            user_id: user.id,
-            hive_id: hiveId,
-            apiary_id: selectedApiaryId,
-            device_kind: sensorCategory,
-            serial: sensorSerial.trim(),
-            label: `${newHiveItem.deviceType} (${formattedHiveCode})`,
-            status: "online",
-          }).catch(() => undefined);
+          await (supabase as any)
+            .from("devices")
+            .insert({
+              user_id: user.id,
+              hive_id: hiveId,
+              apiary_id: selectedApiaryId,
+              device_kind: sensorCategory,
+              serial: sensorSerial.trim(),
+              label: `${newHiveItem.deviceType} (${formattedHiveCode})`,
+              status: "online",
+            })
+            .catch(() => undefined);
         }
       }
     } catch (e) {
@@ -454,7 +464,10 @@ export function AddHiveModal({
       const cacheKey = `beeyield_cached_hives_${userKey}`;
       const existing = localStorage.getItem(cacheKey);
       const list = existing ? JSON.parse(existing) : [];
-      const updated = [newHiveItem, ...list.filter((h: any) => h.id !== hiveId && h.code !== formattedHiveCode)];
+      const updated = [
+        newHiveItem,
+        ...list.filter((h: any) => h.id !== hiveId && h.code !== formattedHiveCode),
+      ];
       localStorage.setItem(cacheKey, JSON.stringify(updated));
 
       const legacyKey = user?.id ? `beeyield_local_hives_v1_${user.id}` : `beeyield_local_hives_v1`;
@@ -470,7 +483,10 @@ export function AddHiveModal({
           try {
             const raw = localStorage.getItem(k);
             const cur = raw ? JSON.parse(raw) : [];
-            const up = [newHiveItem, ...cur.filter((h: any) => h.id !== hiveId && h.code !== formattedHiveCode)];
+            const up = [
+              newHiveItem,
+              ...cur.filter((h: any) => h.id !== hiveId && h.code !== formattedHiveCode),
+            ];
             localStorage.setItem(k, JSON.stringify(up));
           } catch {}
         });
@@ -484,12 +500,12 @@ export function AddHiveModal({
       window.dispatchEvent(
         new CustomEvent("beeyield_hive_created", {
           detail: { newHive: newHiveItem },
-        })
+        }),
       );
       window.dispatchEvent(
         new CustomEvent("beeyield_data_updated", {
           detail: { type: "hive", hive: newHiveItem },
-        })
+        }),
       );
     }
 
@@ -577,7 +593,9 @@ export function AddHiveModal({
                 : "text-muted-foreground hover:text-foreground hover:bg-card"
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">1</span>
+            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">
+              1
+            </span>
             <span>Architecture & Apiary</span>
           </button>
 
@@ -598,7 +616,9 @@ export function AddHiveModal({
                 : "text-muted-foreground hover:text-foreground hover:bg-card"
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">2</span>
+            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">
+              2
+            </span>
             <span>Queen Genetics</span>
           </button>
 
@@ -619,13 +639,18 @@ export function AddHiveModal({
                 : "text-muted-foreground hover:text-foreground hover:bg-card"
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">3</span>
+            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">
+              3
+            </span>
             <span>Sensor Telemetry</span>
           </button>
         </div>
 
         {/* Scrollable Form Content */}
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col flex-1 overflow-y-auto p-5 sm:p-6 space-y-5"
+        >
           {/* STEP 1: Hive Architecture & Target Apiary */}
           {step === 1 && (
             <div className="space-y-4 animate-in fade-in duration-200">
@@ -636,13 +661,17 @@ export function AddHiveModal({
                     <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Target Apiary Site
                   </span>
                   <span className="text-[11px] text-muted-foreground">
-                    Selected: <strong className="text-emerald-600 dark:text-emerald-400">{targetApiaryName}</strong>
+                    Selected:{" "}
+                    <strong className="text-emerald-600 dark:text-emerald-400">
+                      {targetApiaryName}
+                    </strong>
                   </span>
                 </div>
 
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-emerald-500" /> Apiary Deployment Station <span className="text-amber-500">*</span>
+                    <MapPin className="w-3 h-3 text-emerald-500" /> Apiary Deployment Station{" "}
+                    <span className="text-amber-500">*</span>
                   </label>
                   <select
                     value={selectedApiaryId}
@@ -672,7 +701,8 @@ export function AddHiveModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                      <Layers className="w-3 h-3 text-honey" /> Hive Stand Code / Number <span className="text-amber-500">*</span>
+                      <Layers className="w-3 h-3 text-honey" /> Hive Stand Code / Number{" "}
+                      <span className="text-amber-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -683,12 +713,15 @@ export function AddHiveModal({
                       required
                       className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                     />
-                    <p className="text-[10px] text-muted-foreground">Standardized to KIB- prefix format across audits</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Standardized to KIB- prefix format across audits
+                    </p>
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3 text-emerald-500" /> Hive Construction Standard
+                      <ShieldCheck className="w-3 h-3 text-emerald-500" /> Hive Construction
+                      Standard
                     </label>
                     <select
                       value={hiveType}
@@ -705,7 +738,8 @@ export function AddHiveModal({
 
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                      <Layers className="w-3 h-3 text-blue-500" /> Max Brood Chamber Frames <span className="text-amber-500">*</span>
+                      <Layers className="w-3 h-3 text-blue-500" /> Max Brood Chamber Frames{" "}
+                      <span className="text-amber-500">*</span>
                     </label>
                     <input
                       type="number"
@@ -728,7 +762,9 @@ export function AddHiveModal({
                   >
                     <div>
                       <p className="text-xs font-bold flex items-center gap-1.5">
-                        <ShieldCheck className={`w-3.5 h-3.5 ${hasHygienicBottomBoard ? "text-emerald-500" : "text-muted-foreground"}`} />
+                        <ShieldCheck
+                          className={`w-3.5 h-3.5 ${hasHygienicBottomBoard ? "text-emerald-500" : "text-muted-foreground"}`}
+                        />
                         Hygienic Bottom Board
                       </p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -759,9 +795,13 @@ export function AddHiveModal({
                   <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
                     <Crown className="w-3.5 h-3.5 text-amber-500" /> Queen Bee Colony Status
                   </span>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${
-                    queenPresent ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-red-500/15 text-red-500"
-                  }`}>
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${
+                      queenPresent
+                        ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                        : "bg-red-500/15 text-red-500"
+                    }`}
+                  >
                     {queenPresent ? "Queen Present" : "Queenless / Standby"}
                   </span>
                 </div>
@@ -795,7 +835,9 @@ export function AddHiveModal({
                     <Info className="w-4 h-4 text-red-500 shrink-0" />
                     <div>
                       <p className="font-bold text-xs">No Queen (Standby)</p>
-                      <p className="text-[10px] text-muted-foreground">Empty stand awaiting swarm</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Empty stand awaiting swarm
+                      </p>
                     </div>
                   </button>
                 </div>
@@ -806,11 +848,14 @@ export function AddHiveModal({
                 <div className="p-4 rounded-xl border border-border bg-background space-y-3">
                   <div className="flex items-center justify-between border-b border-border/50 pb-2">
                     <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                      <CalendarDays className="w-3.5 h-3.5 text-honey" /> International Queen Marking Year & Color
+                      <CalendarDays className="w-3.5 h-3.5 text-honey" /> International Queen
+                      Marking Year & Color
                     </span>
                     <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
                       <span className={`w-3 h-3 rounded-full ${currentYearColor.dot}`} />
-                      <span>{currentYearColor.name} ({queenBreedingYear})</span>
+                      <span>
+                        {currentYearColor.name} ({queenBreedingYear})
+                      </span>
                     </span>
                   </div>
 
@@ -837,18 +882,29 @@ export function AddHiveModal({
 
                     <div className="space-y-1">
                       <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3 text-emerald-500" /> Genetic Lineage & Origin
+                        <ShieldCheck className="w-3 h-3 text-emerald-500" /> Genetic Lineage &
+                        Origin
                       </label>
                       <select
                         value={queenOrigin}
                         onChange={(e) => setQueenOrigin(e.target.value)}
                         className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                       >
-                        <option value="Own breeding (Selected Line)">Own Breeding (Selected African Line)</option>
-                        <option value="Wild Swarm Trapping (Kibwezi Bush)">Wild Swarm Trapping (Kibwezi Bush)</option>
-                        <option value="Certified Kenyan Breeder (ICIPE Stock)">Certified Breeder (ICIPE Stock)</option>
-                        <option value="Splitting Strong Maternal Colony">Splitting Strong Maternal Colony</option>
-                        <option value="Emergency Queen Cell Rearing">Emergency Queen Cell Rearing</option>
+                        <option value="Own breeding (Selected Line)">
+                          Own Breeding (Selected African Line)
+                        </option>
+                        <option value="Wild Swarm Trapping (Kibwezi Bush)">
+                          Wild Swarm Trapping (Kibwezi Bush)
+                        </option>
+                        <option value="Certified Kenyan Breeder (ICIPE Stock)">
+                          Certified Breeder (ICIPE Stock)
+                        </option>
+                        <option value="Splitting Strong Maternal Colony">
+                          Splitting Strong Maternal Colony
+                        </option>
+                        <option value="Emergency Queen Cell Rearing">
+                          Emergency Queen Cell Rearing
+                        </option>
                       </select>
                     </div>
 
@@ -899,11 +955,16 @@ export function AddHiveModal({
               <div className="p-4 rounded-xl border border-border bg-background space-y-3">
                 <div className="flex items-center justify-between border-b border-border/50 pb-2">
                   <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                    <Radio className="w-3.5 h-3.5 text-emerald-500" /> IoT Hardware Telemetry Integration
+                    <Radio className="w-3.5 h-3.5 text-emerald-500" /> IoT Hardware Telemetry
+                    Integration
                   </span>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${
-                    pairingMode === "with_device" ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-stone-500/15 text-stone-500"
-                  }`}>
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${
+                      pairingMode === "with_device"
+                        ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                        : "bg-stone-500/15 text-stone-500"
+                    }`}
+                  >
                     {pairingMode === "with_device" ? "Live Telemetry" : "Digital Journal"}
                   </span>
                 </div>
@@ -918,7 +979,9 @@ export function AddHiveModal({
                         : "border-border bg-card text-muted-foreground hover:border-border/80"
                     }`}
                   >
-                    <div className={`p-2 rounded-xl mt-0.5 ${pairingMode === "with_device" ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}`}>
+                    <div
+                      className={`p-2 rounded-xl mt-0.5 ${pairingMode === "with_device" ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}`}
+                    >
                       <Radio className="w-4 h-4" />
                     </div>
                     <div>
@@ -941,11 +1004,15 @@ export function AddHiveModal({
                         : "border-border bg-card text-muted-foreground hover:border-border/80"
                     }`}
                   >
-                    <div className={`p-2 rounded-xl mt-0.5 ${pairingMode === "without_device" ? "bg-stone-800 text-white dark:bg-stone-200 dark:text-stone-900" : "bg-muted text-muted-foreground"}`}>
+                    <div
+                      className={`p-2 rounded-xl mt-0.5 ${pairingMode === "without_device" ? "bg-stone-800 text-white dark:bg-stone-200 dark:text-stone-900" : "bg-muted text-muted-foreground"}`}
+                    >
                       <FileText className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-xs text-foreground">Without Hardware (Ledger Mode)</p>
+                      <p className="font-bold text-xs text-foreground">
+                        Without Hardware (Ledger Mode)
+                      </p>
                       <p className="text-[11px] text-muted-foreground font-normal mt-0.5">
                         Log inspections and harvests manually without live hardware sensors.
                       </p>
@@ -959,7 +1026,8 @@ export function AddHiveModal({
                 <div className="p-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 space-y-4">
                   <div className="flex items-center justify-between border-b border-emerald-500/30 pb-2">
                     <span className="font-bold text-xs text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-                      <Cpu className="w-3.5 h-3.5 text-emerald-500" /> Sensor Category & Hardware Serial Code
+                      <Cpu className="w-3.5 h-3.5 text-emerald-500" /> Sensor Category & Hardware
+                      Serial Code
                     </span>
                     <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
                       Camera QR Scanner Ready
@@ -973,9 +1041,24 @@ export function AddHiveModal({
                       </label>
                       <div className="grid grid-cols-3 gap-2">
                         {[
-                          { id: "vitalsensor", name: "VitalSensor Pro", icon: Activity, desc: "Acoustics & Temp" },
-                          { id: "scale", name: "HoneyScale Cell", icon: Scale, desc: "Weight & Honey Flow" },
-                          { id: "acoustic_varroa", name: "Varroa Detector", icon: Radio, desc: "Pest Frequency" },
+                          {
+                            id: "vitalsensor",
+                            name: "VitalSensor Pro",
+                            icon: Activity,
+                            desc: "Acoustics & Temp",
+                          },
+                          {
+                            id: "scale",
+                            name: "HoneyScale Cell",
+                            icon: Scale,
+                            desc: "Weight & Honey Flow",
+                          },
+                          {
+                            id: "acoustic_varroa",
+                            name: "Varroa Detector",
+                            icon: Radio,
+                            desc: "Pest Frequency",
+                          },
                         ].map((dev) => (
                           <button
                             key={dev.id}
@@ -989,7 +1072,11 @@ export function AddHiveModal({
                           >
                             <dev.icon className="w-4 h-4 mx-auto mb-1" />
                             <p className="text-xs font-bold leading-tight">{dev.name}</p>
-                            <p className={`text-[9px] mt-0.5 ${sensorCategory === dev.id ? "text-emerald-100" : "text-muted-foreground"}`}>{dev.desc}</p>
+                            <p
+                              className={`text-[9px] mt-0.5 ${sensorCategory === dev.id ? "text-emerald-100" : "text-muted-foreground"}`}
+                            >
+                              {dev.desc}
+                            </p>
                           </button>
                         ))}
                       </div>
@@ -998,7 +1085,8 @@ export function AddHiveModal({
                     <div className="space-y-1">
                       <label className="text-xs text-foreground font-semibold flex items-center justify-between">
                         <span className="flex items-center gap-1">
-                          <QrCode className="w-3 h-3 text-emerald-600" /> Hardware Serial Number / Barcode <span className="text-amber-500">*</span>
+                          <QrCode className="w-3 h-3 text-emerald-600" /> Hardware Serial Number /
+                          Barcode <span className="text-amber-500">*</span>
                         </span>
                         <button
                           type="button"
@@ -1035,7 +1123,8 @@ export function AddHiveModal({
                       <div className="p-4 rounded-xl bg-card border border-emerald-500/50 shadow-inner space-y-2">
                         <div className="flex items-center justify-between text-xs">
                           <span className="font-bold flex items-center gap-1.5 text-foreground">
-                            <Camera className="w-4 h-4 text-emerald-500 animate-pulse" /> Point camera at device QR or Barcode
+                            <Camera className="w-4 h-4 text-emerald-500 animate-pulse" /> Point
+                            camera at device QR or Barcode
                           </span>
                           <button
                             type="button"
@@ -1127,7 +1216,7 @@ export function AddHiveModal({
         </form>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 

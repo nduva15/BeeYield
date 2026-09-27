@@ -79,7 +79,7 @@ export function AddApiaryModal({
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [addMode, setAddMode] = useState<"with_devices" | "without_devices">(
-    initialApiary?.add_mode === "without_devices" ? "without_devices" : initialMode
+    initialApiary?.add_mode === "without_devices" ? "without_devices" : initialMode,
   );
   const [isDetectingGps, setIsDetectingGps] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -96,8 +96,7 @@ export function AddApiaryModal({
     size_acres: initialApiary?.size_acres ?? 5.0,
     total_hives: initialApiary?.total_hives ?? 184,
     active_hives: initialApiary?.active_hives ?? 150,
-    forage_type:
-      initialApiary?.forage_type || "Acacia, Neem, Maize, Mango & Forest Multifloral",
+    forage_type: initialApiary?.forage_type || "Acacia, Neem, Maize, Mango & Forest Multifloral",
     type: initialApiary?.type || "Commercial Apiary",
     status: initialApiary?.status || "Optimal",
     notes:
@@ -119,8 +118,7 @@ export function AddApiaryModal({
         size_acres: initialApiary.size_acres ?? 5.0,
         total_hives: initialApiary.total_hives ?? 184,
         active_hives: initialApiary.active_hives ?? 150,
-        forage_type:
-          initialApiary.forage_type || "Acacia, Neem, Maize, Mango & Forest Multifloral",
+        forage_type: initialApiary.forage_type || "Acacia, Neem, Maize, Mango & Forest Multifloral",
         type: initialApiary.type || "Commercial Apiary",
         status: initialApiary.status || "Optimal",
         notes: initialApiary.notes || "",
@@ -161,7 +159,7 @@ export function AddApiaryModal({
           setIsDetectingGps(false);
           toast.error(`Geolocation error: ${err.message}. Retaining current coordinates.`);
         },
-        { timeout: 10000, enableHighAccuracy: true }
+        { timeout: 10000, enableHighAccuracy: true },
       );
     } else {
       toast.error("Geolocation is not supported by your browser");
@@ -185,7 +183,11 @@ export function AddApiaryModal({
     }
 
     setIsSaving(true);
-    const apiaryId = initialApiary?.id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `apiary-${Date.now()}`);
+    const apiaryId =
+      initialApiary?.id ||
+      (typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `apiary-${Date.now()}`);
 
     const newSite: ApiarySite = {
       id: apiaryId,
@@ -291,14 +293,17 @@ export function AddApiaryModal({
 
           if (res.error) {
             // Fallback without explicit ID if default gen_random_uuid() is mandated
-            await (supabase as any).from("apiaries").insert({
-              user_id: user.id,
-              name: newSite.name,
-              add_mode: addMode,
-              latitude: newSite.latitude,
-              longitude: newSite.longitude,
-              notes: newSite.notes,
-            }).catch(() => undefined);
+            await (supabase as any)
+              .from("apiaries")
+              .insert({
+                user_id: user.id,
+                name: newSite.name,
+                add_mode: addMode,
+                latitude: newSite.latitude,
+                longitude: newSite.longitude,
+                notes: newSite.notes,
+              })
+              .catch(() => undefined);
           }
         }
       }
@@ -364,12 +369,12 @@ export function AddApiaryModal({
       window.dispatchEvent(
         new CustomEvent("beeyield_apiary_updated", {
           detail: { newApiary: newSite },
-        })
+        }),
       );
       window.dispatchEvent(
         new CustomEvent("beeyield_data_updated", {
           detail: { type: "apiary", apiary: newSite },
-        })
+        }),
       );
     }
 
@@ -377,8 +382,8 @@ export function AddApiaryModal({
       initialApiary
         ? `Apiary "${newSite.name}" updated successfully`
         : addMode === "with_devices"
-        ? `Apiary "${newSite.name}" deployed with 24/7 IoT monitoring`
-        : `Apiary "${newSite.name}" deployed in Digital Journal mode`
+          ? `Apiary "${newSite.name}" deployed with 24/7 IoT monitoring`
+          : `Apiary "${newSite.name}" deployed in Digital Journal mode`,
     );
 
     setIsSaving(false);
@@ -386,7 +391,10 @@ export function AddApiaryModal({
     onClose();
   };
 
-  const standbyHivesCount = Math.max(0, (Number(formData.total_hives) || 0) - (Number(formData.active_hives) || 0));
+  const standbyHivesCount = Math.max(
+    0,
+    (Number(formData.total_hives) || 0) - (Number(formData.active_hives) || 0),
+  );
 
   return createPortal(
     <div
@@ -415,7 +423,9 @@ export function AddApiaryModal({
               <p className="text-[11px] text-emerald-100 flex items-center gap-1.5 mt-0.5">
                 <span>Deployment station, GPS coordinates & flora ecosystem</span>
                 {formData.name && (
-                  <span className="font-mono text-emerald-200 truncate max-w-[200px]">· {formData.name}</span>
+                  <span className="font-mono text-emerald-200 truncate max-w-[200px]">
+                    · {formData.name}
+                  </span>
                 )}
               </p>
             </div>
@@ -461,7 +471,9 @@ export function AddApiaryModal({
                 : "text-muted-foreground hover:text-foreground hover:bg-card"
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">1</span>
+            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">
+              1
+            </span>
             <span>Station & Mode</span>
           </button>
 
@@ -482,7 +494,9 @@ export function AddApiaryModal({
                 : "text-muted-foreground hover:text-foreground hover:bg-card"
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">2</span>
+            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">
+              2
+            </span>
             <span>Location & GPS</span>
           </button>
 
@@ -503,13 +517,18 @@ export function AddApiaryModal({
                 : "text-muted-foreground hover:text-foreground hover:bg-card"
             }`}
           >
-            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">3</span>
+            <span className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center text-[10px]">
+              3
+            </span>
             <span>Flora & Capacity</span>
           </button>
         </div>
 
         {/* Scrollable Form Content */}
-        <form onSubmit={handleSaveApiary} className="flex flex-col flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+        <form
+          onSubmit={handleSaveApiary}
+          className="flex flex-col flex-1 overflow-y-auto p-5 sm:p-6 space-y-5"
+        >
           {/* STEP 1: Station Identity & Operational Mode */}
           {step === 1 && (
             <div className="space-y-4 animate-in fade-in duration-200">
@@ -538,7 +557,8 @@ export function AddApiaryModal({
                     className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                   />
                   <p className="text-[10px] text-muted-foreground">
-                    The canonical name identifying this apiary across weather hubs, hive registries, and harvest manifests.
+                    The canonical name identifying this apiary across weather hubs, hive registries,
+                    and harvest manifests.
                   </p>
                 </div>
               </div>
@@ -549,11 +569,13 @@ export function AddApiaryModal({
                   <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
                     <Radio className="w-3.5 h-3.5 text-emerald-500" /> Operational Deployment Mode
                   </span>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${
-                    addMode === "with_devices"
-                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                      : "bg-stone-500/15 text-stone-500"
-                  }`}>
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${
+                      addMode === "with_devices"
+                        ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                        : "bg-stone-500/15 text-stone-500"
+                    }`}
+                  >
                     {addMode === "with_devices" ? "IoT Telemetry" : "Digital Journal"}
                   </span>
                 </div>
@@ -568,7 +590,9 @@ export function AddApiaryModal({
                         : "border-border bg-card text-muted-foreground hover:border-border/80"
                     }`}
                   >
-                    <div className={`p-2 rounded-xl mt-0.5 ${addMode === "with_devices" ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}`}>
+                    <div
+                      className={`p-2 rounded-xl mt-0.5 ${addMode === "with_devices" ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}`}
+                    >
                       <Radio className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
@@ -581,7 +605,8 @@ export function AddApiaryModal({
                         )}
                       </div>
                       <p className="text-[11px] text-muted-foreground font-normal mt-1 leading-relaxed">
-                        Continuous telemetry streaming, apiary microclimate hub, VitalSensor acoustics & scale telemetry.
+                        Continuous telemetry streaming, apiary microclimate hub, VitalSensor
+                        acoustics & scale telemetry.
                       </p>
                     </div>
                   </button>
@@ -595,7 +620,9 @@ export function AddApiaryModal({
                         : "border-border bg-card text-muted-foreground hover:border-border/80"
                     }`}
                   >
-                    <div className={`p-2 rounded-xl mt-0.5 ${addMode === "without_devices" ? "bg-stone-800 text-white dark:bg-stone-200 dark:text-stone-900" : "bg-muted text-muted-foreground"}`}>
+                    <div
+                      className={`p-2 rounded-xl mt-0.5 ${addMode === "without_devices" ? "bg-stone-800 text-white dark:bg-stone-200 dark:text-stone-900" : "bg-muted text-muted-foreground"}`}
+                    >
                       <FileText className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
@@ -608,7 +635,8 @@ export function AddApiaryModal({
                         )}
                       </div>
                       <p className="text-[11px] text-muted-foreground font-normal mt-1 leading-relaxed">
-                        Physical ledger mode for recording manual inspections, queen status, and honey harvests without hardware.
+                        Physical ledger mode for recording manual inspections, queen status, and
+                        honey harvests without hardware.
                       </p>
                     </div>
                   </button>
@@ -616,7 +644,9 @@ export function AddApiaryModal({
 
                 <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground pt-1">
                   <Info className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <span>Hardware sensors can be attached or upgraded at any time from the Devices view.</span>
+                  <span>
+                    Hardware sensors can be attached or upgraded at any time from the Devices view.
+                  </span>
                 </div>
               </div>
 
@@ -624,13 +654,16 @@ export function AddApiaryModal({
               <div className="p-4 rounded-xl border border-border bg-background space-y-3">
                 <div className="flex items-center justify-between border-b border-border/50 pb-2">
                   <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-blue-500" /> Facility Type & Health Status
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-500" /> Facility Type & Health
+                    Status
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground font-semibold">Facility Classification</label>
+                    <label className="text-xs text-muted-foreground font-semibold">
+                      Facility Classification
+                    </label>
                     <select
                       value={formData.type}
                       onChange={(e) => setFormData({ ...formData, type: e.target.value })}
@@ -645,15 +678,21 @@ export function AddApiaryModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground font-semibold">Colony Ecosystem Status</label>
+                    <label className="text-xs text-muted-foreground font-semibold">
+                      Colony Ecosystem Status
+                    </label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                       className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                     >
-                      <option value="Optimal">Optimal (Thriving Forage & High Colony Strength)</option>
+                      <option value="Optimal">
+                        Optimal (Thriving Forage & High Colony Strength)
+                      </option>
                       <option value="Watch">Watch (Seasonal Transition / Inspection Needed)</option>
-                      <option value="Threatened">Threatened (Pest Pressure or Dearth Period)</option>
+                      <option value="Threatened">
+                        Threatened (Pest Pressure or Dearth Period)
+                      </option>
                       <option value="Maintenance">Maintenance (Stand repairs / Cleaning)</option>
                     </select>
                   </div>
@@ -669,7 +708,8 @@ export function AddApiaryModal({
               <div className="p-4 rounded-xl border border-border bg-background space-y-3">
                 <div className="flex items-center justify-between border-b border-border/50 pb-2">
                   <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                    <Navigation className="w-3.5 h-3.5 text-emerald-500" /> GPS Geolocation Coordinates
+                    <Navigation className="w-3.5 h-3.5 text-emerald-500" /> GPS Geolocation
+                    Coordinates
                   </span>
                   <button
                     type="button"
@@ -677,7 +717,9 @@ export function AddApiaryModal({
                     disabled={isDetectingGps}
                     className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50"
                   >
-                    <Compass className={`w-3.5 h-3.5 ${isDetectingGps ? "animate-spin text-white" : ""}`} />
+                    <Compass
+                      className={`w-3.5 h-3.5 ${isDetectingGps ? "animate-spin text-white" : ""}`}
+                    />
                     {isDetectingGps ? "Pinning GPS..." : "Detect Live GPS"}
                   </button>
                 </div>
@@ -685,28 +727,34 @@ export function AddApiaryModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                      <Navigation className="w-3 h-3 text-amber-500" /> Latitude <span className="text-amber-500">*</span>
+                      <Navigation className="w-3 h-3 text-amber-500" /> Latitude{" "}
+                      <span className="text-amber-500">*</span>
                     </label>
                     <input
                       type="number"
                       step="any"
                       required
                       value={formData.latitude}
-                      onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })
+                      }
                       className="w-full bg-card border border-border rounded-lg px-3 py-2 font-mono text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                     />
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                      <Navigation className="w-3 h-3 text-amber-500" /> Longitude <span className="text-amber-500">*</span>
+                      <Navigation className="w-3 h-3 text-amber-500" /> Longitude{" "}
+                      <span className="text-amber-500">*</span>
                     </label>
                     <input
                       type="number"
                       step="any"
                       required
                       value={formData.longitude}
-                      onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })
+                      }
                       className="w-full bg-card border border-border rounded-lg px-3 py-2 font-mono text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                     />
                   </div>
@@ -727,7 +775,8 @@ export function AddApiaryModal({
               <div className="p-4 rounded-xl border border-border bg-background space-y-3">
                 <div className="flex items-center justify-between border-b border-border/50 pb-2">
                   <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Regional Jurisdiction & Elevation
+                    <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Regional Jurisdiction &
+                    Elevation
                   </span>
                 </div>
 
@@ -759,7 +808,9 @@ export function AddApiaryModal({
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs text-muted-foreground font-semibold">Region / Sub-County</label>
+                      <label className="text-xs text-muted-foreground font-semibold">
+                        Region / Sub-County
+                      </label>
                       <input
                         type="text"
                         value={formData.region}
@@ -776,7 +827,12 @@ export function AddApiaryModal({
                       <input
                         type="number"
                         value={formData.elevation_m}
-                        onChange={(e) => setFormData({ ...formData, elevation_m: parseInt(e.target.value, 10) || 820 })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            elevation_m: parseInt(e.target.value, 10) || 820,
+                          })
+                        }
                         placeholder="820"
                         className="w-full bg-card border border-border rounded-lg px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                       />
@@ -804,7 +860,8 @@ export function AddApiaryModal({
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                      <Layers className="w-3 h-3 text-amber-500" /> Acreage (Acres) <span className="text-amber-500">*</span>
+                      <Layers className="w-3 h-3 text-amber-500" /> Acreage (Acres){" "}
+                      <span className="text-amber-500">*</span>
                     </label>
                     <input
                       type="number"
@@ -812,21 +869,26 @@ export function AddApiaryModal({
                       min="0.1"
                       required
                       value={formData.size_acres}
-                      onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 1 })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 1 })
+                      }
                       className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                     />
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
-                      <Box className="w-3 h-3 text-honey" /> Total Hive Stands <span className="text-amber-500">*</span>
+                      <Box className="w-3 h-3 text-honey" /> Total Hive Stands{" "}
+                      <span className="text-amber-500">*</span>
                     </label>
                     <input
                       type="number"
                       min="1"
                       required
                       value={formData.total_hives}
-                      onChange={(e) => setFormData({ ...formData, total_hives: parseInt(e.target.value, 10) || 1 })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, total_hives: parseInt(e.target.value, 10) || 1 })
+                      }
                       className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                     />
                   </div>
@@ -839,7 +901,12 @@ export function AddApiaryModal({
                       type="number"
                       min="0"
                       value={formData.active_hives}
-                      onChange={(e) => setFormData({ ...formData, active_hives: parseInt(e.target.value, 10) || 0 })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          active_hives: parseInt(e.target.value, 10) || 0,
+                        })
+                      }
                       className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                     />
                   </div>
@@ -848,7 +915,8 @@ export function AddApiaryModal({
                 <div className="p-2.5 rounded-lg bg-muted/50 border border-border/80 flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Colony Deployment Breakdown:</span>
                   <span className="font-bold text-foreground">
-                    {formData.active_hives} Active Producing • {standbyHivesCount} Standby Stands (Awaiting Swarm)
+                    {formData.active_hives} Active Producing • {standbyHivesCount} Standby Stands
+                    (Awaiting Swarm)
                   </span>
                 </div>
               </div>
@@ -857,9 +925,12 @@ export function AddApiaryModal({
               <div className="p-4 rounded-xl border border-border bg-background space-y-3">
                 <div className="flex items-center justify-between border-b border-border/50 pb-2">
                   <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                    <Sprout className="w-3.5 h-3.5 text-emerald-500" /> Florage Ecosystem & Botanical Taxonomy
+                    <Sprout className="w-3.5 h-3.5 text-emerald-500" /> Florage Ecosystem &
+                    Botanical Taxonomy
                   </span>
-                  <span className="text-[11px] text-muted-foreground">Select all dominant nectar sources</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    Select all dominant nectar sources
+                  </span>
                 </div>
 
                 <div className="space-y-2">
@@ -875,7 +946,9 @@ export function AddApiaryModal({
                   {/* Suggestion Chips */}
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {FLORA_CHIPS.map((chip) => {
-                      const isIncluded = formData.forage_type.toLowerCase().includes(chip.toLowerCase());
+                      const isIncluded = formData.forage_type
+                        .toLowerCase()
+                        .includes(chip.toLowerCase());
                       return (
                         <button
                           key={chip}
@@ -886,12 +959,20 @@ export function AddApiaryModal({
                               setFormData({ ...formData, forage_type: chip });
                               return;
                             }
-                            const parts = current.split(",").map((s) => s.trim()).filter(Boolean);
+                            const parts = current
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean);
                             if (parts.some((p) => p.toLowerCase() === chip.toLowerCase())) {
-                              const nextParts = parts.filter((p) => p.toLowerCase() !== chip.toLowerCase());
+                              const nextParts = parts.filter(
+                                (p) => p.toLowerCase() !== chip.toLowerCase(),
+                              );
                               setFormData({ ...formData, forage_type: nextParts.join(", ") });
                             } else {
-                              setFormData({ ...formData, forage_type: [...parts, chip].join(", ") });
+                              setFormData({
+                                ...formData,
+                                forage_type: [...parts, chip].join(", "),
+                              });
                             }
                           }}
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all border ${
@@ -909,7 +990,9 @@ export function AddApiaryModal({
                 </div>
 
                 <div className="space-y-1 pt-2">
-                  <label className="text-xs text-muted-foreground font-semibold">Operational Site Notes</label>
+                  <label className="text-xs text-muted-foreground font-semibold">
+                    Operational Site Notes
+                  </label>
                   <textarea
                     rows={2}
                     value={formData.notes}
@@ -989,7 +1072,7 @@ export function AddApiaryModal({
         </form>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 
