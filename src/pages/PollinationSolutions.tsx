@@ -474,26 +474,32 @@ const PollinationSolutions = () => {
                 <CardContent className="p-8">
                   <div className="flex items-center gap-2 mb-4">
                     <AlertTriangle className="h-5 w-5 text-red-400" />
-                    <span className="text-sm font-bold text-red-400 uppercase tracking-wider">Global Emergency</span>
+                    <span className="text-sm font-bold text-red-400 uppercase tracking-wider">Ecological & Agricultural Emergency</span>
                   </div>
-                  <h3 className="text-3xl font-bold mb-4 text-background">The Bee Crisis</h3>
-                  <p className="text-background/80 leading-relaxed mb-6">
-                    Across Africa and the world, beekeepers are opening their hives to discover devastating losses. African bee colonies face unique challenges from climate change, habitat loss, and limited access to modern beekeeping technology.
+                  <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-background">The African Bee Decline</h3>
+                  <p className="text-background/80 leading-relaxed mb-6 text-sm sm:text-base">
+                    The decline of African bees has shifted from a quiet environmental concern into a severe ecological and agricultural emergency across the continent. Recent data indicates an average managed honey bee colony loss rate of <strong>21.3%</strong> across Sub-Saharan Africa, with some regions like Kenya and Uganda experiencing devastating seasonal losses as high as <strong>42% to 45%</strong>.
                   </p>
-                  <div className="bg-red-500/20 p-4 rounded-lg">
-                    <p className="text-4xl font-bold text-red-400">60%</p>
-                    <p className="text-sm text-background/70">Annual colony mortality rate in Africa</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-red-500/20 p-3.5 rounded-lg border border-red-500/30">
+                      <p className="text-2xl sm:text-3xl font-bold text-red-400">21.3%</p>
+                      <p className="text-xs text-background/70 leading-snug">Average Sub-Saharan managed colony loss</p>
+                    </div>
+                    <div className="bg-red-500/30 p-3.5 rounded-lg border border-red-500/40">
+                      <p className="text-2xl sm:text-3xl font-bold text-red-300">42%–45%</p>
+                      <p className="text-xs text-background/70 leading-snug">Peak seasonal loss in Kenya & Uganda</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
             <div className="order-1 lg:order-2">
-              <h2 className="text-4xl font-bold mb-6">The Pollination Crisis: <br />Food Security at Risk</h2>
-              <p className="text-background/80 leading-relaxed mb-6">
-                With 75% of food crops relying on pollinators, the decline of African bee populations threatens agricultural productivity, farmer livelihoods, and regional food security.
+              <h2 className="text-3xl sm:text-4xl font-bold mb-6">The Pollinator Crisis: <br />Continental Food Security at Risk</h2>
+              <p className="text-background/80 leading-relaxed mb-4 text-sm sm:text-base">
+                Because approximately <strong>40% of insect pollinators in Africa are currently at risk</strong>, this decline directly threatens biodiversity, ecosystem stability, and the food security of millions of people who depend on insect-pollinated crops.
               </p>
-              <p className="text-background/80 leading-relaxed mb-8">
-                This isn't just about beesΓÇöit's about ensuring sustainable agriculture and food security for millions across Africa and the world.
+              <p className="text-background/80 leading-relaxed mb-8 text-sm sm:text-base">
+                With over 75% of leading food crops relying on insect pollination, protecting African bees is not just an environmental ideal—it is the bedrock of agricultural stability, commercial yields, and rural economic survival.
               </p>
               <Button variant="secondary" className="gap-2" asChild>
                 <Link to="/ourstory">Learn More <ArrowRight className="h-4 w-4" /></Link>

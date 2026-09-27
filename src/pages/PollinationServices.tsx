@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import {
     Quote, MapPin, CheckCircle2, Sparkles,
-    Check, TrendingUp, Shield, BarChart3, ArrowRight,
+    Check, TrendingUp, TrendingDown, ShieldAlert, AlertTriangle, Shield, BarChart3, ArrowRight,
     Cpu, Eye, Zap, Target, Leaf, Award, Clock, Users,
     Activity, Database, Radio, Smartphone, ChevronRight, Globe
 } from "lucide-react";
@@ -64,9 +64,9 @@ const PollinationServices = () => {
     return (
         <BeeYieldPageShell className="bg-background">
             <SEO 
-                title="Precision Pollination Services & Bee Intelligence"
-                description="Your partner in pollination"
-                keywords="BeeYield, your partner in pollination, precision pollination Kenya, crop yield improvement, Kibwezi bees, Makueni pollination, sustainable beekeeping Africa, IoT agriculture"
+                title="BeeYield: Precision Pollination & African Bee Colony Defense"
+                description="Combatting the decline of African bees with precision IoT telemetry. Addressing 21.3% Sub-Saharan colony loss and 45% regional mortality to safeguard agricultural food security."
+                keywords="decline of African bees, African honey bee colony loss rate, Kenya Uganda bee mortality, Sub-Saharan Africa pollinator crisis, precision pollination services, honeybee food security, smart hive IoT Kenya, crop pollination Makueni"
                 url="/pollination-services"
                 image="/og-image.png"
                 schema={{
@@ -270,6 +270,126 @@ const PollinationServices = () => {
                     </div>
                 </div>
             </section>
+
+            
+            {/* ═══════════════════════════════════════════════════════════════
+                SEO PROBLEM STATEMENT: THE DECLINE OF AFRICAN BEES & FOOD SECURITY
+            ═══════════════════════════════════════════════════════════════ */}
+            <section id="african-pollinator-crisis" className="py-24 sm:py-32 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800" aria-label="African Bee Decline and Ecological Emergency Problem Statement">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/10 via-neutral-950 to-neutral-950 pointer-events-none" />
+                <div className="container mx-auto px-4 sm:px-6 relative z-10">
+                    <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-widest">
+                            <AlertTriangle className="w-3.5 h-3.5" />
+                            Continental Ecological &amp; Agricultural Emergency
+                        </div>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+                            The Decline of African Bees: <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-red-400">
+                                An Ecological &amp; Agricultural Emergency
+                            </span>
+                        </h2>
+                        <p className="text-base sm:text-lg md:text-xl text-neutral-300 font-normal leading-relaxed max-w-3xl mx-auto pt-2">
+                            The decline of African bees has shifted from a quiet environmental concern into a severe ecological and agricultural emergency across the continent. Recent data indicates an average managed honey bee colony loss rate of <strong className="text-white">21.3%</strong> across Sub-Saharan Africa, with high-risk agricultural corridors like Kenya and Uganda experiencing devastating seasonal losses as high as <strong className="text-red-400">42% to 45%</strong>. Because approximately <strong className="text-amber-400">40% of insect pollinators in Africa</strong> are currently at risk, this decline directly threatens biodiversity, ecosystem stability, and the food security of millions of people who depend on insect-pollinated crops.
+                        </p>
+                    </div>
+
+                    {/* Empirically Verified Crisis Stat Grid for SEO & Trust */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-16">
+                        <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10 hover:border-red-500/40 transition-colors">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs font-bold tracking-wider uppercase text-neutral-400">Sub-Saharan Average</span>
+                                <TrendingDown className="w-5 h-5 text-red-400" />
+                            </div>
+                            <div className="text-4xl sm:text-5xl font-black text-white mb-2 tracking-tight">21.3%</div>
+                            <h3 className="text-sm font-bold text-neutral-200 mb-1">Managed Colony Loss Rate</h3>
+                            <p className="text-xs text-neutral-400 leading-relaxed">
+                                Baseline annual mortality for managed honeybee colonies across Sub-Saharan Africa.
+                            </p>
+                        </div>
+
+                        <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-red-500/30 bg-red-950/20 hover:border-red-500/50 transition-colors">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs font-bold tracking-wider uppercase text-red-400">Regional Peak Loss</span>
+                                <AlertTriangle className="w-5 h-5 text-red-400" />
+                            </div>
+                            <div className="text-4xl sm:text-5xl font-black text-red-400 mb-2 tracking-tight">42%–45%</div>
+                            <h3 className="text-sm font-bold text-neutral-200 mb-1">Kenya &amp; Uganda Seasonal Losses</h3>
+                            <p className="text-xs text-neutral-400 leading-relaxed">
+                                Devastating seasonal die-offs in East African agricultural basins driven by forage deficits and pathogens.
+                            </p>
+                        </div>
+
+                        <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10 hover:border-amber-500/40 transition-colors">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs font-bold tracking-wider uppercase text-amber-400">Species Vulnerability</span>
+                                <ShieldAlert className="w-5 h-5 text-amber-400" />
+                            </div>
+                            <div className="text-4xl sm:text-5xl font-black text-amber-400 mb-2 tracking-tight">~40%</div>
+                            <h3 className="text-sm font-bold text-neutral-200 mb-1">Pollinators At Risk</h3>
+                            <p className="text-xs text-neutral-400 leading-relaxed">
+                                Proportion of native and managed African insect pollinator species currently facing critical population threats.
+                            </p>
+                        </div>
+
+                        <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10 hover:border-emerald-500/40 transition-colors">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs font-bold tracking-wider uppercase text-emerald-400">Food Security Nexus</span>
+                                <Leaf className="w-5 h-5 text-emerald-400" />
+                            </div>
+                            <div className="text-4xl sm:text-5xl font-black text-emerald-400 mb-2 tracking-tight">75%+</div>
+                            <h3 className="text-sm font-bold text-neutral-200 mb-1">Crops Pollinator-Dependent</h3>
+                            <p className="text-xs text-neutral-400 leading-relaxed">
+                                Commercial crops—including mangoes, avocados, sunflowers, and legumes—requiring bee visitation for fruit set.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* SEO Rich Editorial & Structural Narrative */}
+                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 sm:p-12 max-w-5xl mx-auto backdrop-blur-lg">
+                        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+                            <div className="space-y-4">
+                                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                                    Why Traditional Beekeeping Can No Longer Stop Colony Loss
+                                </h3>
+                                <p className="text-sm text-neutral-300 leading-relaxed">
+                                    For decades, pollination in Africa was treated as an unmeasured natural abundance. Today, climate volatility, prolonged droughts, pesticide runoff, and undetected hive pests like <em>Varroa destructor</em> and Foulbrood have turned unmonitored apiaries into high-risk operations. When 45% of colonies collapse in a single season, commercial yields drop precipitously, driving up food prices and threatening rural livelihood resilience.
+                                </p>
+                                <p className="text-sm text-neutral-300 leading-relaxed">
+                                    Without real-time hive telemetry and precision field density mapping, growers and beekeepers are forced to manage by assumption—often discovering colony death weeks after crop pollination windows have closed.
+                                </p>
+                            </div>
+                            <div className="bg-neutral-900/90 rounded-2xl p-6 sm:p-8 border border-neutral-800 space-y-4">
+                                <div className="flex items-center gap-3 text-beeyield-green text-sm font-bold uppercase tracking-wider">
+                                    <CheckCircle2 className="w-4 h-4 text-beeyield-green" />
+                                    The BeeYield Precision Response
+                                </div>
+                                <h4 className="text-lg font-bold text-white">From Blind Assumptions to Empirical Hive Defense</h4>
+                                <ul className="space-y-3 text-xs sm:text-sm text-neutral-300">
+                                    <li className="flex items-start gap-2.5">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-beeyield-green mt-2 shrink-0" />
+                                        <span><strong>Continuous In-Hive Telemetry:</strong> Micro-sensors track brood temperature, acoustics, and weight gains to alert keepers before colony collapse occurs.</span>
+                                    </li>
+                                    <li className="flex items-start gap-2.5">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-beeyield-green mt-2 shrink-0" />
+                                        <span><strong>Precision Density Placement:</strong> GPS-synchronized deployment guarantees optimal bee-per-flower ratios across commercial acreage.</span>
+                                    </li>
+                                    <li className="flex items-start gap-2.5">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-beeyield-green mt-2 shrink-0" />
+                                        <span><strong>Ecological Conservation:</strong> Active habitat mapping and forage conservation safeguarding over 40% of vulnerable native pollinators.</span>
+                                    </li>
+                                </ul>
+                                <div className="pt-2">
+                                    <Button asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 w-full sm:w-auto">
+                                        <Link to="/precision-pollination">Explore Precision Defense Tech <ArrowRight className="w-4 h-4 ml-1.5" /></Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
 
             {/* Pollination Stories Section - Replacing Art and Science Section */}
             <section className="py-24 bg-background relative overflow-hidden">
