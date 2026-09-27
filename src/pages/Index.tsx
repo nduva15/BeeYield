@@ -39,6 +39,7 @@ import {
   Sparkles,
   ShoppingBag,
   ArrowRight,
+  Droplets,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -53,7 +54,7 @@ import beeyieldLogo from "@/assets/beeyield-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
 import ChatHistory, { type Conversation } from "@/components/ChatHistory";

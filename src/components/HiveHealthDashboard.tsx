@@ -813,6 +813,21 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     }
   }, [isOpen, embedded, loadData]);
 
+  // Synchronize dashboard whenever hives or apiaries are created/modified in any modal
+  useEffect(() => {
+    const handleRemoteChange = () => {
+      void loadData();
+    };
+    window.addEventListener("beeyield_hive_created", handleRemoteChange);
+    window.addEventListener("beeyield_data_updated", handleRemoteChange);
+    window.addEventListener("beeyield_apiary_updated", handleRemoteChange);
+    return () => {
+      window.removeEventListener("beeyield_hive_created", handleRemoteChange);
+      window.removeEventListener("beeyield_data_updated", handleRemoteChange);
+      window.removeEventListener("beeyield_apiary_updated", handleRemoteChange);
+    };
+  }, [loadData]);
+
   useEffect(() => {
     if (selectedHive !== "all" && hivesList.length > 0 && !hivesList.some((h) => h.name === selectedHive)) {
       setSelectedHive("all");

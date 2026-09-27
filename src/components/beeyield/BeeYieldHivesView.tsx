@@ -368,6 +368,21 @@ export default function BeeYieldHivesView({
     fetchDevices();
   }, []);
 
+  // Real-time synchronization when hives or apiaries are updated anywhere across the app
+  useEffect(() => {
+    const handleRemoteHiveSync = () => {
+      refetchHives();
+    };
+    window.addEventListener("beeyield_hive_created", handleRemoteHiveSync);
+    window.addEventListener("beeyield_data_updated", handleRemoteHiveSync);
+    window.addEventListener("beeyield_apiary_updated", handleRemoteHiveSync);
+    return () => {
+      window.removeEventListener("beeyield_hive_created", handleRemoteHiveSync);
+      window.removeEventListener("beeyield_data_updated", handleRemoteHiveSync);
+      window.removeEventListener("beeyield_apiary_updated", handleRemoteHiveSync);
+    };
+  }, [refetchHives]);
+
   // Outside hive temperature (Ambient weather for the apiary)
   const { data: weatherSummary } = useApiaryWeatherSummary(
     selectedPlace === "all" ? apiaries[0]?.id : selectedPlace

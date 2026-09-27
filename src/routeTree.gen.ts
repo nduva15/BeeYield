@@ -18,6 +18,7 @@ import { Route as CareersRouteImport } from './routes/careers'
 import { Route as CropsWePollinateRouteImport } from './routes/crops-we-pollinate'
 import { Route as OurStoryRouteImport } from './routes/our-story'
 import { Route as PandaMitiRouteImport } from './routes/panda-miti'
+import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShopDashboardRouteImport } from './routes/shop-dashboard'
 import { Route as SharedRunIdRouteImport } from './routes/shared-run.$id'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -68,6 +69,11 @@ const PandaMitiRoute = PandaMitiRouteImport.update({
   path: '/panda-miti',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopDashboardRoute = ShopDashboardRouteImport.update({
   id: '/shop-dashboard',
   path: '/shop-dashboard',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
+  '/shop': typeof ShopRoute
   '/shop-dashboard': typeof ShopDashboardRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
+  '/shop': typeof ShopRoute
   '/shop-dashboard': typeof ShopDashboardRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
+  '/shop': typeof ShopRoute
   '/shop-dashboard': typeof ShopDashboardRoute
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/our-story'
     | '/panda-miti'
+    | '/shop'
     | '/shop-dashboard'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/our-story'
     | '/panda-miti'
+    | '/shop'
     | '/shop-dashboard'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/our-story'
     | '/panda-miti'
+    | '/shop'
     | '/shop-dashboard'
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   CropsWePollinateRoute: typeof CropsWePollinateRoute
   OurStoryRoute: typeof OurStoryRoute
   PandaMitiRoute: typeof PandaMitiRoute
+  ShopRoute: typeof ShopRoute
   ShopDashboardRoute: typeof ShopDashboardRoute
   SharedRunIdRoute: typeof SharedRunIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PandaMitiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop-dashboard': {
       id: '/shop-dashboard'
       path: '/shop-dashboard'
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   CropsWePollinateRoute: CropsWePollinateRoute,
   OurStoryRoute: OurStoryRoute,
   PandaMitiRoute: PandaMitiRoute,
+  ShopRoute: ShopRoute,
   ShopDashboardRoute: ShopDashboardRoute,
   SharedRunIdRoute: SharedRunIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,

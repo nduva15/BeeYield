@@ -6935,6 +6935,21 @@ export default function ApiariesPage({
     }
   }, [apiaries, refreshAllWeather]);
 
+  // Dynamically listen for apiary creations across header and modals
+  useEffect(() => {
+    const handleRemoteUpdate = () => {
+      const cached = localStorage.getItem(`beeyield_user_apiaries_${userKey}`);
+      if (cached) {
+        try {
+          const list = JSON.parse(cached);
+          if (Array.isArray(list)) setApiaries(list);
+        } catch { void 0; }
+      }
+    };
+    window.addEventListener("beeyield_apiary_updated", handleRemoteUpdate);
+    return () => window.removeEventListener("beeyield_apiary_updated", handleRemoteUpdate);
+  }, [userKey]);
+
   // Geolocation detector for new apiary
   const detectCurrentLocation = () => {
     if ("geolocation" in navigator) {
