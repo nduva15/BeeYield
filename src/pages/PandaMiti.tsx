@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import {
   Trees,
   Sprout,
@@ -36,8 +36,10 @@ export const richFloraData = [
     localName: "All-Season Bee Acacia (Mgunga)",
     role: "Deep-rooted dryland keystone providing critical drought-resilient nectar flushes and fixing natural nitrogen in soil.",
     flowerType: "Dense, fragrant golden & cream flower spikes buzzing with honeybees.",
-    beeImpact: "Saves colonies from severe mid-season famine with light amber, enzyme-dense nectar.",
-    pollinationNeed: "Flowers depend 100% on honeybee cross-pollination to fertilize seed pods and naturally regenerate.",
+    beeImpact:
+      "Saves colonies from severe mid-season famine with light amber, enzyme-dense nectar.",
+    pollinationNeed:
+      "Flowers depend 100% on honeybee cross-pollination to fertilize seed pods and naturally regenerate.",
     blooms: "Biannual peak flushes (drought-resilient)",
   },
   {
@@ -45,8 +47,10 @@ export const richFloraData = [
     localName: "Mukau (Dryland Mahogany)",
     role: "Fast-growing indigenous canopy providing cooling shade over hives and essential windbreaks for bee flight corridors.",
     flowerType: "Delicate star-shaped lilac-white flowers with intense sweet scent.",
-    beeImpact: "High-protein pollen burst that stimulates rapid queen laying and brood rearing before honey flows.",
-    pollinationNeed: "Requires active bee visitation for successful pollination and propagation of high-value timber seed.",
+    beeImpact:
+      "High-protein pollen burst that stimulates rapid queen laying and brood rearing before honey flows.",
+    pollinationNeed:
+      "Requires active bee visitation for successful pollination and propagation of high-value timber seed.",
     blooms: "Early-season abundant floral nectar",
   },
   {
@@ -54,17 +58,22 @@ export const richFloraData = [
     localName: "Miracle Pollen Tree (Mlonge)",
     role: "Perennial blossom champion that thrives in semi-arid zones, sustaining both wild bees and community nutrition.",
     flowerType: "Clusters of cream-white nectar-rich blossoms flowering 10 to 12 months a year.",
-    beeImpact: "Continuous crude protein (24%+) pollen, boosting worker bee longevity and immune defense against pests.",
-    pollinationNeed: "Every blossom requires bee pollination to set the long drumstick pods and nutrient-packed seeds.",
+    beeImpact:
+      "Continuous crude protein (24%+) pollen, boosting worker bee longevity and immune defense against pests.",
+    pollinationNeed:
+      "Every blossom requires bee pollination to set the long drumstick pods and nutrient-packed seeds.",
     blooms: "Continuous year-round flowering",
   },
   {
     name: "Adansonia digitata",
     localName: "African Baobab (Mbuyu)",
     role: "Ancient water-storing monolith that anchors microclimates, shelters wild pollinator swarms, and halts soil erosion.",
-    flowerType: "Magnificent nocturnal pendulous white blossoms with thousands of pollen-laden stamens.",
-    beeImpact: "Abundant twilight and dawn nectar reservoir, providing water and sugars during extreme heatwaves.",
-    pollinationNeed: "Flowers rely on twilight bee and bat pollination to produce vitamin C-rich baobab superfruit.",
+    flowerType:
+      "Magnificent nocturnal pendulous white blossoms with thousands of pollen-laden stamens.",
+    beeImpact:
+      "Abundant twilight and dawn nectar reservoir, providing water and sugars during extreme heatwaves.",
+    pollinationNeed:
+      "Flowers rely on twilight bee and bat pollination to produce vitamin C-rich baobab superfruit.",
     blooms: "Nocturnal white blooms during rain onset",
   },
   {
@@ -72,17 +81,22 @@ export const richFloraData = [
     localName: "Tamarind (Mkwaju)",
     role: "Dense evergreen shade tree that protects hives from scorching 38°C dryland heatwaves while reviving degraded soils.",
     flowerType: "Yellow-and-red orchid-like blossoms producing aromatic high-sugar nectar.",
-    beeImpact: "Supplies bees with thick, antioxidant-rich honey stores that prevent colony starvation in dry spells.",
-    pollinationNeed: "Must have honeybees to transfer pollen across flowers to set fruit pods and produce viable seeds.",
+    beeImpact:
+      "Supplies bees with thick, antioxidant-rich honey stores that prevent colony starvation in dry spells.",
+    pollinationNeed:
+      "Must have honeybees to transfer pollen across flowers to set fruit pods and produce viable seeds.",
     blooms: "Late dry-season bridging blossoms",
   },
   {
     name: "Balanites aegyptiaca",
     localName: "Desert Date (Mnyara)",
     role: "Spiny, ultra-drought-hardy native tree that thrives where other plants perish, anchoring shifting soils.",
-    flowerType: "Greenish-yellow fragrant blossoms blooming right when surrounding grasses dry out.",
-    beeImpact: "Essential emergency forage buffer when other flora is dormant, keeping colonies alive and strong.",
-    pollinationNeed: "Critically dependent on honeybee visits for cross-pollination to yield oil-rich desert dates.",
+    flowerType:
+      "Greenish-yellow fragrant blossoms blooming right when surrounding grasses dry out.",
+    beeImpact:
+      "Essential emergency forage buffer when other flora is dormant, keeping colonies alive and strong.",
+    pollinationNeed:
+      "Critically dependent on honeybee visits for cross-pollination to yield oil-rich desert dates.",
     blooms: "Mid-drought emergency blossom flush",
   },
 ];
@@ -110,7 +124,7 @@ export default function PandaMitiPage() {
     }
     setPledgeSubmitted(true);
     toast.success(
-      `Thank you ${donorName}! Your pledge to nurture ${pledgeTrees} trees around Kibwezi has been logged. You are helping save ${(pledgeTrees * beesSavedPerTree).toLocaleString()} bees!`
+      `Thank you ${donorName}! Your pledge to nurture ${pledgeTrees} trees around Kibwezi has been logged. You are helping save ${(pledgeTrees * beesSavedPerTree).toLocaleString()} bees!`,
     );
   };
 
@@ -130,11 +144,20 @@ export default function PandaMitiPage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-foreground leading-[1.1] mb-6">
-            Reforesting Kibwezi to <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 bg-clip-text text-transparent">Save Bees</span> &amp; Restore Flowering Canopies
+            Reforesting Kibwezi to{" "}
+            <span className="bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 bg-clip-text text-transparent">
+              Save Bees
+            </span>{" "}
+            &amp; Restore Flowering Canopies
           </h1>
 
           <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Panda Miti (<em>"Plant Trees"</em> in Swahili) is BeeYield’s signature ecological restoration initiative. We are planting <strong className="text-foreground font-semibold">45,000 indigenous trees</strong> across semi-arid Kibwezi to restore depleted aquifers, save honeybee colonies from seasonal famine, and cultivate endless canopies of pollinating flowers that depend on bees for life.
+            Panda Miti (<em>"Plant Trees"</em> in Swahili) is BeeYield’s signature ecological
+            restoration initiative. We are planting{" "}
+            <strong className="text-foreground font-semibold">45,000 indigenous trees</strong>{" "}
+            across semi-arid Kibwezi to restore depleted aquifers, save honeybee colonies from
+            seasonal famine, and cultivate endless canopies of pollinating flowers that depend on
+            bees for life.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm text-muted-foreground max-w-4xl mx-auto">
@@ -169,10 +192,12 @@ export default function PandaMitiPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <Sprout className="w-4 h-4 text-emerald-500" /> Live Kibwezi Reforestation Telemetry
+                  <Sprout className="w-4 h-4 text-emerald-500" /> Live Kibwezi Reforestation
+                  Telemetry
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-black text-foreground mt-1">
-                  Planting Progress: {planted.toLocaleString()} of {target.toLocaleString()} Indigenous Trees
+                  Planting Progress: {planted.toLocaleString()} of {target.toLocaleString()}{" "}
+                  Indigenous Trees
                 </h2>
               </div>
               <Badge
@@ -202,21 +227,25 @@ export default function PandaMitiPage() {
             {/* Stat Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-4 border-t border-border/50">
               <div className="p-3.5 rounded-2xl bg-background/80 border border-border/50 text-center">
-                <p className="text-[11px] font-semibold text-muted-foreground">Planted &amp; GPS-Tagged</p>
+                <p className="text-[11px] font-semibold text-muted-foreground">
+                  Planted &amp; GPS-Tagged
+                </p>
                 <p className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
                   {planted.toLocaleString()}
                 </p>
                 <span className="text-[10px] text-muted-foreground">Native acacia &amp; mukau</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-background/80 border border-border/50 text-center">
-                <p className="text-[11px] font-semibold text-muted-foreground">Bees Saved from Famine</p>
-                <p className="text-xl sm:text-2xl font-black text-amber-500 mt-0.5">
-                  11.2M+
+                <p className="text-[11px] font-semibold text-muted-foreground">
+                  Bees Saved from Famine
                 </p>
+                <p className="text-xl sm:text-2xl font-black text-amber-500 mt-0.5">11.2M+</p>
                 <span className="text-[10px] text-muted-foreground">Across 184+ colonies</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-background/80 border border-border/50 text-center">
-                <p className="text-[11px] font-semibold text-muted-foreground">Pollinating Flowers Fed</p>
+                <p className="text-[11px] font-semibold text-muted-foreground">
+                  Pollinating Flowers Fed
+                </p>
                 <p className="text-xl sm:text-2xl font-black text-teal-600 dark:text-teal-400 mt-0.5">
                   50M+
                 </p>
@@ -224,9 +253,7 @@ export default function PandaMitiPage() {
               </div>
               <div className="p-3.5 rounded-2xl bg-background/80 border border-border/50 text-center">
                 <p className="text-[11px] font-semibold text-muted-foreground">Forage Corridors</p>
-                <p className="text-xl sm:text-2xl font-black text-foreground mt-0.5">
-                  8 Zones
-                </p>
+                <p className="text-xl sm:text-2xl font-black text-foreground mt-0.5">8 Zones</p>
                 <span className="text-[10px] text-muted-foreground">105+ acres revitalized</span>
               </div>
             </div>
@@ -242,7 +269,8 @@ export default function PandaMitiPage() {
               The Symbiosis: Trees, Bees &amp; Pollinating Flowers
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-              When dryland forests disappear, bees starve, flowering plants fail to produce seed, and agricultural yields plummet. Panda Miti restores this unbroken biological cycle.
+              When dryland forests disappear, bees starve, flowering plants fail to produce seed,
+              and agricultural yields plummet. Panda Miti restores this unbroken biological cycle.
             </p>
           </div>
 
@@ -252,9 +280,14 @@ export default function PandaMitiPage() {
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
                   <Trees className="w-6 h-6" />
                 </div>
-                <h3 className="font-bold text-foreground text-lg mb-2">1. Tree Restoration &amp; Aquifers</h3>
+                <h3 className="font-bold text-foreground text-lg mb-2">
+                  1. Tree Restoration &amp; Aquifers
+                </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  Indigenous dryland trees sink taproots 15+ meters deep. They break sun-baked hardpans, draw deep water to the surface, cool microclimates by up to 3.5°C, and create shaded canopies that prevent blooming flowers from drying out under the intense equatorial sun.
+                  Indigenous dryland trees sink taproots 15+ meters deep. They break sun-baked
+                  hardpans, draw deep water to the surface, cool microclimates by up to 3.5°C, and
+                  create shaded canopies that prevent blooming flowers from drying out under the
+                  intense equatorial sun.
                 </p>
               </div>
               <div className="pt-3 border-t border-border/40 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
@@ -267,9 +300,14 @@ export default function PandaMitiPage() {
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
                   <Heart className="w-6 h-6" />
                 </div>
-                <h3 className="font-bold text-foreground text-lg mb-2">2. Saving Bees from Famine</h3>
+                <h3 className="font-bold text-foreground text-lg mb-2">
+                  2. Saving Bees from Famine
+                </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  Prolonged dry seasons in semi-arid Kenya trigger lethal pollen deficits. Staggered plantings of Acacia, Mukau, and Moringa ensure continuous, uninterrupted nectar flows throughout the dry months, completely preventing seasonal colony starvation and absconding.
+                  Prolonged dry seasons in semi-arid Kenya trigger lethal pollen deficits. Staggered
+                  plantings of Acacia, Mukau, and Moringa ensure continuous, uninterrupted nectar
+                  flows throughout the dry months, completely preventing seasonal colony starvation
+                  and absconding.
                 </p>
               </div>
               <div className="pt-3 border-t border-border/40 text-xs font-semibold text-amber-500">
@@ -284,7 +322,10 @@ export default function PandaMitiPage() {
                 </div>
                 <h3 className="font-bold text-foreground text-lg mb-2">3. Flowers Needing Bees</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  Over 85% of dryland trees, flowering shrubs, and surrounding smallholder crops (mango, avocado, citrus, pigeon peas) cannot reproduce or set fruit without insect pollination. Honeybees deliver the vital pollen transfer that turns flowers into bountiful seeds and harvests.
+                  Over 85% of dryland trees, flowering shrubs, and surrounding smallholder crops
+                  (mango, avocado, citrus, pigeon peas) cannot reproduce or set fruit without insect
+                  pollination. Honeybees deliver the vital pollen transfer that turns flowers into
+                  bountiful seeds and harvests.
                 </p>
               </div>
               <div className="pt-3 border-t border-border/40 text-xs font-semibold text-teal-600 dark:text-teal-400">
@@ -301,7 +342,8 @@ export default function PandaMitiPage() {
                   Flowering Trees Restored &amp; Their Bee Pollination Needs
                 </h3>
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  Every species is selected for its mutual biological contract: nourishing bees with nectar while relying on bees for cross-pollination.
+                  Every species is selected for its mutual biological contract: nourishing bees with
+                  nectar while relying on bees for cross-pollination.
                 </p>
               </div>
               <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
@@ -311,7 +353,10 @@ export default function PandaMitiPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {richFloraData.map((species, i) => (
-                <div key={i} className="p-5 rounded-2xl bg-muted/30 border border-border/50 flex flex-col justify-between space-y-4 hover:border-emerald-500/40 transition-colors">
+                <div
+                  key={i}
+                  className="p-5 rounded-2xl bg-muted/30 border border-border/50 flex flex-col justify-between space-y-4 hover:border-emerald-500/40 transition-colors"
+                >
                   <div>
                     <div className="font-bold text-foreground text-sm flex items-center gap-1.5 mb-0.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -327,18 +372,30 @@ export default function PandaMitiPage() {
 
                     <div className="space-y-2 text-xs">
                       <div className="p-2.5 rounded-xl bg-background/60 border border-border/40">
-                        <span className="font-bold text-foreground block text-[11px] mb-0.5">🌸 Flower Profile:</span>
-                        <span className="text-muted-foreground text-[11px] leading-relaxed block">{species.flowerType}</span>
+                        <span className="font-bold text-foreground block text-[11px] mb-0.5">
+                          🌸 Flower Profile:
+                        </span>
+                        <span className="text-muted-foreground text-[11px] leading-relaxed block">
+                          {species.flowerType}
+                        </span>
                       </div>
 
                       <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                        <span className="font-bold text-amber-600 dark:text-amber-400 block text-[11px] mb-0.5">🐝 How It Saves Bees:</span>
-                        <span className="text-muted-foreground text-[11px] leading-relaxed block">{species.beeImpact}</span>
+                        <span className="font-bold text-amber-600 dark:text-amber-400 block text-[11px] mb-0.5">
+                          🐝 How It Saves Bees:
+                        </span>
+                        <span className="text-muted-foreground text-[11px] leading-relaxed block">
+                          {species.beeImpact}
+                        </span>
                       </div>
 
                       <div className="p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/20">
-                        <span className="font-bold text-teal-600 dark:text-teal-400 block text-[11px] mb-0.5">🌱 Why Flowers Need Bees:</span>
-                        <span className="text-muted-foreground text-[11px] leading-relaxed block">{species.pollinationNeed}</span>
+                        <span className="font-bold text-teal-600 dark:text-teal-400 block text-[11px] mb-0.5">
+                          🌱 Why Flowers Need Bees:
+                        </span>
+                        <span className="text-muted-foreground text-[11px] leading-relaxed block">
+                          {species.pollinationNeed}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -364,7 +421,8 @@ export default function PandaMitiPage() {
                 </div>
                 <h5 className="font-bold text-foreground text-xs mb-1">Tree Reforestation</h5>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  Youth beekeepers plant deep-root native trees that restore aquifers and halt erosion.
+                  Youth beekeepers plant deep-root native trees that restore aquifers and halt
+                  erosion.
                 </p>
               </div>
 
@@ -401,7 +459,10 @@ export default function PandaMitiPage() {
           </div>
 
           {/* Interactive Seedling Pledge Section */}
-          <div id="support" className="rounded-3xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/30 via-card to-amber-950/20 p-6 sm:p-12 shadow-2xl relative overflow-hidden">
+          <div
+            id="support"
+            className="rounded-3xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/30 via-card to-amber-950/20 p-6 sm:p-12 shadow-2xl relative overflow-hidden"
+          >
             <div className="max-w-2xl mx-auto text-center space-y-4 mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
                 <Leaf className="w-7 h-7" />
@@ -410,7 +471,8 @@ export default function PandaMitiPage() {
                 Pledge or Sponsor Seedlings in Kibwezi
               </h3>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry to guarantee survival and perennial blossom.
+                Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry
+                to guarantee survival and perennial blossom.
               </p>
               <div className="inline-flex flex-wrap justify-center gap-2 pt-1 text-xs">
                 <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full font-bold border border-emerald-500/20">
@@ -427,7 +489,8 @@ export default function PandaMitiPage() {
                 <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
                 <h4 className="font-bold text-foreground text-lg">Pledge Registered!</h4>
                 <p className="text-xs text-muted-foreground">
-                  Our Kibwezi field coordinator will email you with your seedling GPS certificate, planting corridor location, and bee impact report.
+                  Our Kibwezi field coordinator will email you with your seedling GPS certificate,
+                  planting corridor location, and bee impact report.
                 </p>
                 <Button
                   variant="outline"
@@ -443,7 +506,8 @@ export default function PandaMitiPage() {
                 {/* Seedling quantity selector */}
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground block mb-2 text-center">
-                    Select Seedlings to Plant: <span className="text-foreground text-sm font-black">{pledgeTrees} Trees</span>
+                    Select Seedlings to Plant:{" "}
+                    <span className="text-foreground text-sm font-black">{pledgeTrees} Trees</span>
                   </label>
                   <div className="grid grid-cols-4 gap-2 mb-3">
                     {[5, 10, 25, 50].map((count) => (
@@ -466,15 +530,23 @@ export default function PandaMitiPage() {
                   <div className="p-3 rounded-2xl bg-background/80 border border-border/60 mb-3 grid grid-cols-3 gap-2 text-center text-xs">
                     <div>
                       <span className="text-muted-foreground text-[10px] block">Field Cost</span>
-                      <span className="font-bold text-foreground">KES {(pledgeTrees * costPerTree).toLocaleString()}</span>
+                      <span className="font-bold text-foreground">
+                        KES {(pledgeTrees * costPerTree).toLocaleString()}
+                      </span>
                     </div>
                     <div>
                       <span className="text-muted-foreground text-[10px] block">Bees Saved</span>
-                      <span className="font-bold text-amber-500">~{(pledgeTrees * beesSavedPerTree).toLocaleString()}</span>
+                      <span className="font-bold text-amber-500">
+                        ~{(pledgeTrees * beesSavedPerTree).toLocaleString()}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground text-[10px] block">Flowers Pollinated</span>
-                      <span className="font-bold text-teal-500">~{(pledgeTrees * flowersPollinatedPerTree).toLocaleString()}</span>
+                      <span className="text-muted-foreground text-[10px] block">
+                        Flowers Pollinated
+                      </span>
+                      <span className="font-bold text-teal-500">
+                        ~{(pledgeTrees * flowersPollinatedPerTree).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -518,10 +590,18 @@ export default function PandaMitiPage() {
             <span>Panda Miti Initiative • Tree Restoration &amp; Bee Pollination Corridors</span>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
-            <Link to="/about" className="hover:text-foreground transition-colors">About &amp; Story</Link>
-            <Link to="/blogs" className="hover:text-foreground transition-colors">Blogs</Link>
-            <Link to="/careers" className="hover:text-foreground transition-colors">Careers</Link>
+            <Link to="/" className="hover:text-foreground transition-colors">
+              Home
+            </Link>
+            <Link to="/about" className="hover:text-foreground transition-colors">
+              About &amp; Story
+            </Link>
+            <Link to="/blogs" className="hover:text-foreground transition-colors">
+              Blogs
+            </Link>
+            <Link to="/careers" className="hover:text-foreground transition-colors">
+              Careers
+            </Link>
           </div>
         </div>
         <p className="text-xs text-muted-foreground">
