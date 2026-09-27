@@ -101,6 +101,11 @@ import HiveHealthDashboard from "@/components/HiveHealthDashboard";
 import SupportPage from "@/components/SupportPage";
 import BeeYieldOnboardingWizard from "@/components/BeeYieldOnboardingWizard";
 import ShopDashboard from "@/components/ShopDashboard";
+import {
+  getLatestAiScans,
+  buildAiScanAssistantMessage,
+  type AiScanAnalysisResult,
+} from "@/lib/beeyield-ai-scan-sync";
 
 type Message = {
   id: string;
@@ -351,6 +356,40 @@ export default function Index() {
     if (audioInputRef.current) audioInputRef.current.value = "";
   }, []);
 
+  // Real-time synchronization of BeeYield AI with every field scan (FrameSense, Sound, Notes, QR)
+  useEffect(() => {
+    const handleScanAiSync = (e: Event) => {
+      const customEvent = e as CustomEvent<AiScanAnalysisResult>;
+      const scanResult = customEvent.detail;
+      if (!scanResult) return;
+
+      const aiMsgContent = buildAiScanAssistantMessage(scanResult);
+      const scanMsg: Message = {
+        id: `scan_ai_${Date.now()}`,
+        role: "assistant",
+        content: aiMsgContent,
+      };
+
+      setMessages((prev) => {
+        if (prev.some((m) => m.content === aiMsgContent)) return prev;
+        return [...prev, scanMsg];
+      });
+
+      if (conversationId) {
+        saveMessage(conversationId, "assistant", aiMsgContent);
+      }
+
+      toast.success(`BeeYield AI synchronized scan intelligence from ${scanResult.scanData.hiveCode}!`, {
+        description: `${scanResult.scanData.scanTitle} · Risk: ${scanResult.riskLevel.toUpperCase()}`,
+      });
+    };
+
+    window.addEventListener("beeyield:scan-ai-sync", handleScanAiSync);
+    return () => {
+      window.removeEventListener("beeyield:scan-ai-sync", handleScanAiSync);
+    };
+  }, [conversationId]);
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -421,7 +460,18 @@ export default function Index() {
     // Save user message
     if (convId) saveMessage(convId, "user", text);
 
-    const history = newMessages.map((m) => ({ role: m.role, content: m.content }));
+    const recentScans = getLatestAiScans().slice(0, 3);
+    const scanContextPrompt = recentScans.length > 0
+      ? `\n\n[RECENT FIELD SCAN INTELLIGENCE]:\n` +
+        recentScans.map(s => `• ${s.scanData.scanTitle} on Hive ${s.scanData.hiveCode} (${s.scanData.timestamp}): ${s.aiDiagnosis.slice(0, 180)}...`).join("\n")
+      : "";
+
+    const history = newMessages.map((m, idx) => {
+      if (idx === newMessages.length - 1 && scanContextPrompt) {
+        return { role: m.role, content: `${m.content}${scanContextPrompt}` };
+      }
+      return { role: m.role, content: m.content };
+    });
     let assistantContent = "";
 
     try {
@@ -781,6 +831,14 @@ export default function Index() {
                 <Download className="w-4 h-4" />
               </button>
             )}
+            <div
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] font-semibold text-amber-800 dark:text-amber-300 select-none cursor-help"
+              title="BeeYield AI is synchronized with every field scan across FrameSense, acoustic analysis, notes, and sensors"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>AI Scan Sync: Active</span>
+            </div>
+
             <select
               value={promptVariant}
               onChange={(e) => setPromptVariant(e.target.value as typeof promptVariant)}

@@ -54,6 +54,7 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { autoSyncRecord } from "@/lib/integration-sync";
+import { syncScanWithBeeYieldAi } from "@/lib/beeyield-ai-scan-sync";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 import {
   isTimothyUser,
@@ -768,7 +769,25 @@ Provide a concise 3-bullet evaluation:
         },
       });
 
-      // 6. LOCAL STORAGE BACKUP
+      // 6. SYNC TO BEEYIELD AI SCAN INTELLIGENCE
+      void syncScanWithBeeYieldAi({
+        scanType: "hive_note",
+        scanTitle: `Hive Field Note (${newRecord.category})`,
+        hiveId: targetHiveObj.id,
+        hiveCode: newRecord.hive_code,
+        apiaryName: newRecord.apiary_name,
+        timestamp: newRecord.date,
+        metrics: {
+          Category: newRecord.category,
+          Tags: newRecord.tags.join(", ") || "None",
+          Weather: newRecord.weather || "Standard",
+          Temperature: newRecord.temperature_c ? `${newRecord.temperature_c}°C` : "Ambient",
+        },
+        summary: newRecord.title,
+        rawFindings: newRecord.content,
+      });
+
+      // 7. LOCAL STORAGE BACKUP
       const nextNotes = editingId
         ? notes.map((n) => (n.id === editingId ? newRecord : n))
         : [newRecord, ...notes];
