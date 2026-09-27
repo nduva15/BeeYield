@@ -74,6 +74,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { glass } from "./GlassTheme";
 import AddApiaryModal from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
+import NewRecordModal from "./NewRecordModal";
 
 interface DashboardHeaderProps {
   onTabChange: (tab: string) => void;
@@ -110,7 +111,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = React.useState(false);
   const [isAddApiaryOpen, setIsAddApiaryOpen] = React.useState(false);
   const [isAddHiveOpen, setIsAddHiveOpen] = React.useState(false);
-  const [isNewRecordOpen, setIsNewRecordOpen] = React.useState(false);
+  const [isNewRecordModalOpen, setIsNewRecordModalOpen] = React.useState(false);
+  const [newRecordInitialTab, setNewRecordInitialTab] = React.useState<"apiary" | "hive">("apiary");
 
   React.useEffect(() => {
     let isScrolled = false;
@@ -387,91 +389,23 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </kbd>
         </div>
 
-        {/* Quick Action: New Record Dropdown */}
-        <DropdownMenu
-          open={isNewRecordOpen}
-          onOpenChange={(open) => {
+        {/* Quick Action: New Record Button (Pops out Apiary & Hive forms matching Inspections UI/UX) */}
+        <button
+          type="button"
+          onClick={() => {
+            onQuickAction?.();
             React.startTransition(() => {
-              setIsNewRecordOpen(open);
+              setNewRecordInitialTab("apiary");
+              setIsNewRecordModalOpen(true);
             });
           }}
+          className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-xs hover:shadow-md transition-transform duration-150 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/30 touch-manipulation transform-gpu will-change-transform shrink-0"
+          aria-label="Create new record (Add Apiary or Add Hive)"
+          title="Create new record (Add Apiary or Add Hive)"
         >
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="hidden sm:inline-flex items-center gap-1.5 h-10 px-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs hover:shadow-md transition-transform duration-150 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/30 touch-manipulation transform-gpu will-change-transform"
-              aria-label="Create new record (Add Apiary or Add Hive)"
-            >
-              <Plus className="w-4 h-4 pointer-events-none" />
-              <span className="pointer-events-none select-none">New Record</span>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            sideOffset={8}
-            className="w-72 sm:w-80 rounded-3xl border border-stone-200/90 dark:border-stone-800 p-2 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-2xl text-stone-900 dark:text-stone-100 z-50 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 ring-1 ring-black/5 dark:ring-white/5 touch-pan-y"
-          >
-            <div className="px-3.5 py-2.5 border-b border-stone-200/60 dark:border-stone-800/80 mb-1.5">
-              <p className="text-xs font-bold text-stone-900 dark:text-white">Create New Record</p>
-              <p className="text-[10px] text-stone-500 dark:text-stone-400">
-                Register new assets with updated workflows
-              </p>
-            </div>
-
-            <DropdownMenuItem
-              onSelect={() => {
-                setIsNewRecordOpen(false);
-                onQuickAction?.();
-                React.startTransition(() => {
-                  setIsAddApiaryOpen(true);
-                });
-              }}
-              className="flex items-start gap-3 p-3 rounded-2xl hover:bg-amber-500/10 dark:hover:bg-amber-500/15 cursor-pointer transition-colors group border border-transparent hover:border-amber-500/20 touch-manipulation"
-            >
-              <div className="w-9 h-9 rounded-xl bg-amber-500/15 dark:bg-amber-500/25 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs pointer-events-none">
-                <Compass className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0 pointer-events-none">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-xs font-bold text-stone-900 dark:text-white">Add Apiary</p>
-                  <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[9px] font-black uppercase">
-                    Site
-                  </span>
-                </div>
-                <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-tight mt-0.5">
-                  Step 1-2 site setup with IoT devices or digital journal, GPS auto-detect & flora
-                  tags
-                </p>
-              </div>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onSelect={() => {
-                setIsNewRecordOpen(false);
-                onQuickAction?.();
-                React.startTransition(() => {
-                  setIsAddHiveOpen(true);
-                });
-              }}
-              className="flex items-start gap-3 p-3 rounded-2xl hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15 cursor-pointer transition-colors group border border-transparent hover:border-emerald-500/20 mt-1 touch-manipulation"
-            >
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs pointer-events-none">
-                <Layers className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0 pointer-events-none">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-xs font-bold text-stone-900 dark:text-white">Add Hive</p>
-                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[9px] font-black uppercase">
-                    Colony
-                  </span>
-                </div>
-                <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-tight mt-0.5">
-                  Step 1-3 colony registration, queen year color codes & VitalSensor camera scanner
-                </p>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <Plus className="w-4 h-4 pointer-events-none stroke-[2.5]" />
+          <span className="pointer-events-none select-none">New Record</span>
+        </button>
 
         {/* Notifications Dropdown */}
         <DropdownMenu modal={false}>
@@ -748,6 +682,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         currentAvatarUrl={avatarUrl}
         userName={userFullName || userName}
         userId={user?.id}
+      />
+
+      {/* Pop-out New Record Modal (Apiaries and Hives matching Inspections UI/UX) */}
+      <NewRecordModal
+        isOpen={isNewRecordModalOpen}
+        initialTab={newRecordInitialTab}
+        onClose={() => setIsNewRecordModalOpen(false)}
       />
 
       {/* Pop-out Add Apiary Modal */}
