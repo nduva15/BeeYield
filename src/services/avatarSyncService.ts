@@ -23,7 +23,7 @@ export const getCachedAvatar = (userId?: string | null): string | null => {
  */
 export const broadcastAvatarUpdate = async (
   userId: string,
-  avatarUrl: string
+  avatarUrl: string,
 ): Promise<void> => {
   const uid = userId || "usr_kibwezi_owner_01";
   const now = Date.now();
@@ -59,7 +59,7 @@ export const broadcastAvatarUpdate = async (
     // 2. Dispatch local CustomEvent within the current window
     try {
       window.dispatchEvent(
-        new CustomEvent("beeyield-avatar-updated", { detail: { avatar_url: avatarUrl } })
+        new CustomEvent("beeyield-avatar-updated", { detail: { avatar_url: avatarUrl } }),
       );
     } catch {
       // Non-blocking
@@ -87,7 +87,7 @@ export const broadcastAvatarUpdate = async (
 
     // 5. Persist to Supabase profiles table
     try {
-      await (supabase as any).from("profiles").upsert({
+      await supabase.from("profiles").upsert({
         id: uid,
         avatar_url: avatarUrl,
         updated_at: new Date().toISOString(),
@@ -116,7 +116,7 @@ export const broadcastAvatarUpdate = async (
  */
 export const subscribeToAvatarSync = (
   userId: string | undefined | null,
-  onUpdate: (avatarUrl: string) => void
+  onUpdate: (avatarUrl: string) => void,
 ): (() => void) => {
   const uid = userId || "usr_kibwezi_owner_01";
   let isSubscribed = true;
@@ -167,17 +167,21 @@ export const subscribeToAvatarSync = (
   }
 
   // 4. Supabase Realtime subscription for cross-device sync (laptop <-> phone <-> tablet)
-  let realtimeChannel: any = null;
+  let realtimeChannel: ReturnType<typeof supabase.channel> | null = null;
   if (supabase && uid) {
     try {
       realtimeChannel = supabase
         .channel(`realtime:avatar-sync-${uid}`)
-        .on("broadcast", { event: "avatar_updated" }, (payload: any) => {
-          const newUrl = payload?.payload?.avatar_url;
-          if (typeof newUrl === "string") {
-            handleUpdate(newUrl);
-          }
-        })
+        .on(
+          "broadcast",
+          { event: "avatar_updated" },
+          (payload: { payload?: { avatar_url?: string } }) => {
+            const newUrl = payload?.payload?.avatar_url;
+            if (typeof newUrl === "string") {
+              handleUpdate(newUrl);
+            }
+          },
+        )
         .on(
           "postgres_changes",
           {
@@ -186,12 +190,12 @@ export const subscribeToAvatarSync = (
             table: "profiles",
             filter: `id=eq.${uid}`,
           },
-          (payload: any) => {
+          (payload: { new?: { avatar_url?: string } }) => {
             const newUrl = payload?.new?.avatar_url;
             if (typeof newUrl === "string") {
               handleUpdate(newUrl);
             }
-          }
+          },
         )
         .subscribe();
     } catch (e) {
@@ -203,7 +207,7 @@ export const subscribeToAvatarSync = (
   const checkRemoteAvatar = async () => {
     if (!supabase || !uid || !isSubscribed) return;
     try {
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from("profiles")
         .select("avatar_url")
         .eq("id", uid)

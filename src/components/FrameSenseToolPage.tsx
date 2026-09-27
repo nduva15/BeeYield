@@ -24,6 +24,11 @@ import {
   Hexagon,
   RefreshCw,
   Check,
+  Activity,
+  Droplets,
+  FileText,
+  ClipboardList,
+  MoreVertical,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -33,6 +38,7 @@ import {
   CANONICAL_TIMOTHY_HIVES,
 } from "@/lib/user-hives";
 import { CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
+import SyrupFeedingToolPage from "./SyrupFeedingToolPage";
 
 export interface FrameSenseAnalysis {
   id: string;
@@ -64,6 +70,8 @@ export interface FrameSenseToolPageProps {
   onClose: () => void;
   initialHiveId?: string;
   embedded?: boolean;
+  onOpenSyrup?: (hiveId: string) => void;
+  onOpenInspections?: (hiveId: string) => void;
 }
 
 export function FrameSenseToolPage({
@@ -71,6 +79,8 @@ export function FrameSenseToolPage({
   onClose,
   initialHiveId,
   embedded = false,
+  onOpenSyrup,
+  onOpenInspections,
 }: FrameSenseToolPageProps) {
   const { user, profile } = useAuth();
 
@@ -106,6 +116,9 @@ export function FrameSenseToolPage({
   // Sub-screens: "add_photos" (default as per design mockup), "view_report", "list"
   const [currentView, setCurrentView] = useState<"add_photos" | "view_report" | "list">("add_photos");
   const [selectedReport, setSelectedReport] = useState<FrameSenseAnalysis | null>(null);
+
+  // Switch to Syrup intact
+  const [isSyrupOpen, setIsSyrupOpen] = useState(false);
 
   // Photos for new analysis
   const [middlePhoto, setMiddlePhoto] = useState<string | null>(null);
@@ -291,28 +304,19 @@ export function FrameSenseToolPage({
   if (!isOpen) return null;
   if (typeof document === "undefined") return null;
 
+  // Intact page view: NOT a popup card, but an intact full-height view that fills the viewport edge-to-edge
   const content = (
     <div
       className={
         embedded
-          ? "w-full max-w-2xl mx-auto"
-          : "fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto animate-in fade-in duration-200 select-none"
-      }
-      onClick={
-        !embedded
-          ? (e) => {
-              if (e.target === e.currentTarget) {
-                onClose();
-              }
-            }
-          : undefined
+          ? "w-full max-w-2xl mx-auto py-2"
+          : "fixed inset-0 z-[100] bg-[#FAF5EF] dark:bg-stone-950 overflow-y-auto flex flex-col animate-in fade-in duration-150 select-text"
       }
     >
       <div
-        className={`w-full max-w-xl bg-[#FAF5EF] dark:bg-stone-950 min-h-[540px] max-h-[92vh] rounded-[28px] sm:rounded-[32px] shadow-2xl overflow-y-auto flex flex-col p-4 sm:p-6 text-[#2E2A25] dark:text-stone-100 border border-stone-300/70 dark:border-stone-800 relative select-text pointer-events-auto ${
-          embedded ? "h-auto" : ""
+        className={`w-full max-w-xl mx-auto flex-1 flex flex-col p-4 sm:p-6 text-[#2E2A25] dark:text-stone-100 min-h-screen ${
+          embedded ? "h-auto min-h-0" : ""
         }`}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* TOP APP BAR: Matching Screen Design */}
         <div className="flex items-center justify-between pb-3.5 border-b border-stone-200/80 dark:border-stone-800 shrink-0">
@@ -356,57 +360,106 @@ export function FrameSenseToolPage({
                 {analyses.length}
               </span>
             </button>
-
-            {!embedded && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-1.5 rounded-full text-stone-500 hover:text-stone-900 dark:hover:text-white hover:bg-stone-200/60 dark:hover:bg-stone-800 transition-colors"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
           </div>
         </div>
 
-        {/* HIVE SELECTOR BANNER: [Hive Icon] beeyield 001 */}
-        <div className="mt-3.5 mb-3 p-3 sm:p-3.5 bg-[#F4EDE2] dark:bg-stone-900/90 rounded-2xl border border-[#E7DDCD] dark:border-stone-800/80 flex items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-700 dark:text-amber-400 shrink-0">
-              <Layers className="w-4 h-4" />
-            </div>
-            <div className="min-w-0">
-              <span className="font-black text-sm text-stone-900 dark:text-stone-100 truncate block">
-                {hiveDisplayName}
-              </span>
-              <span className="text-[11px] text-stone-500 dark:text-stone-400 truncate block">
-                {CANONICAL_APIARY_NAME} • {selectedHive.frame_count || 10} Frames Langstroth
-              </span>
-            </div>
+        {/* HIVE TITLE & SUB-NAV BAR: Unified Hive Experience */}
+        <div className="flex items-center justify-between pt-3 pb-2 shrink-0">
+          <div className="relative group">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-white flex items-center gap-2">
+              {hiveDisplayName}
+              <select
+                value={selectedHive.id}
+                onChange={(e) => setSelectedHiveId(e.target.value)}
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                title="Switch Hive"
+              >
+                {allHives.map((h) => {
+                  const num = h.code?.replace(/\D+/g, "") || "";
+                  const label = num ? `beeyield ${num.padStart(3, "0")}` : h.name;
+                  return (
+                    <option key={h.id} value={h.id}>
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+              <ChevronDown className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors pointer-events-none" />
+            </h1>
           </div>
+        </div>
 
-          {/* Quick hive switcher dropdown */}
-          <div className="relative shrink-0">
-            <select
-              value={selectedHive.id}
-              onChange={(e) => {
-                setSelectedHiveId(e.target.value);
-              }}
-              className="appearance-none bg-white dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 text-stone-800 dark:text-stone-200 text-xs font-bold py-1.5 pl-3 pr-7 rounded-xl shadow-xs cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
-            >
-              {allHives.map((h) => {
-                const num = h.code?.replace(/\D+/g, "") || "";
-                const label = num ? `beeyield ${num.padStart(3, "0")}` : h.name;
-                return (
-                  <option key={h.id} value={h.id}>
-                    {label}
-                  </option>
-                );
-              })}
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-          </div>
+        {/* SUB-NAV TOOL BAR: Hive state | Syrup | FrameSense | Notes | Inspection */}
+        <div className="flex items-center justify-between border-b border-stone-200/90 dark:border-stone-800 pb-2 mb-4 shrink-0 overflow-x-auto no-scrollbar gap-2 text-center">
+          {/* 1. Hive state */}
+          <button
+            type="button"
+            onClick={() => {
+              toast.info(`${hiveDisplayName} Colony: Active & Healthy (${selectedHive.frame_count || 10} Frames)`);
+            }}
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
+          >
+            <Activity className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
+            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Hive state</span>
+          </button>
+
+          {/* 2. Syrup */}
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenSyrup) {
+                onOpenSyrup(selectedHive.id);
+              } else {
+                setIsSyrupOpen(true);
+              }
+            }}
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer group"
+          >
+            <Droplets className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform text-blue-600 dark:text-blue-400" />
+            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Syrup</span>
+          </button>
+
+          {/* 3. FrameSense (Active) */}
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentView("add_photos");
+            }}
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-amber-700 dark:text-amber-400 relative cursor-pointer group font-bold"
+          >
+            <Layers className="w-5 h-5 mb-1 text-amber-600 dark:text-amber-400 group-hover:scale-105 transition-transform" />
+            <span className="text-[11px] leading-none whitespace-nowrap">FrameSense</span>
+            {/* Active Amber Underline */}
+            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-amber-600 dark:bg-amber-400" />
+          </button>
+
+          {/* 4. Notes */}
+          <button
+            type="button"
+            onClick={() => {
+              toast.info(`Notes for ${hiveDisplayName}: Regular comb inspections recorded.`);
+            }}
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer group"
+          >
+            <FileText className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
+            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Notes</span>
+          </button>
+
+          {/* 5. Inspection */}
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenInspections) {
+                onOpenInspections(selectedHive.id);
+              } else {
+                toast.info(`Opening Inspections for ${hiveDisplayName}...`);
+              }
+            }}
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer group"
+          >
+            <ClipboardList className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
+            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Inspection</span>
+          </button>
         </div>
 
         {/* ========================================================================= */}
@@ -542,7 +595,7 @@ export function FrameSenseToolPage({
                         );
                         toast.success("Loaded verified Kibwezi Langstroth brood frame photo");
                       }}
-                      className="font-bold text-amber-700 dark:text-amber-400 hover:underline"
+                      className="font-bold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer"
                     >
                       Load Demo Comb Photo
                     </button>
@@ -598,7 +651,7 @@ export function FrameSenseToolPage({
                           e.stopPropagation();
                           setFirstPhoto(null);
                         }}
-                        className="p-1 rounded-full hover:bg-white/20 text-white"
+                        className="p-1 rounded-full hover:bg-white/20 text-white cursor-pointer"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -756,7 +809,7 @@ export function FrameSenseToolPage({
                   toast.success("FrameSense inspection report saved to colony records");
                   onClose();
                 }}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-stone-950 font-bold text-xs shadow-xs"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-stone-950 font-bold text-xs shadow-xs cursor-pointer"
               >
                 Save & Close
               </button>
@@ -800,7 +853,7 @@ export function FrameSenseToolPage({
                 <button
                   type="button"
                   onClick={() => setCurrentView("add_photos")}
-                  className="mt-2 px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs"
+                  className="mt-2 px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs cursor-pointer"
                 >
                   Start First Comb Scan
                 </button>
@@ -824,7 +877,7 @@ export function FrameSenseToolPage({
                         <button
                           type="button"
                           onClick={() => handleDeleteAnalysis(item.id)}
-                          className="p-1 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                          className="p-1 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
                           title="Delete record"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -857,7 +910,7 @@ export function FrameSenseToolPage({
                           setSelectedReport(item);
                           setCurrentView("view_report");
                         }}
-                        className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline flex items-center gap-1"
+                        className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         <span>View Report</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -870,6 +923,16 @@ export function FrameSenseToolPage({
           </div>
         )}
       </div>
+
+      {/* Intact Syrup Tool Navigation */}
+      {isSyrupOpen && (
+        <SyrupFeedingToolPage
+          isOpen={isSyrupOpen}
+          onClose={() => setIsSyrupOpen(false)}
+          initialHiveId={selectedHive.id}
+          onOpenFrameSense={() => setIsSyrupOpen(false)}
+        />
+      )}
     </div>
   );
 

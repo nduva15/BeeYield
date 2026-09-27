@@ -698,12 +698,19 @@ export default function Index() {
         <header className="flex-shrink-0 border-b border-border bg-sidebar px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setHistoryOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted"
+              type="button"
+              onClick={() => {
+                requestAnimationFrame(() => {
+                  React.startTransition(() => {
+                    setHistoryOpen(true);
+                  });
+                });
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted active:scale-95 touch-manipulation cursor-pointer"
               title="Chat history"
             >
-              <History className="w-4 h-4" />
-              <span className="text-xs font-medium">History</span>
+              <History className="w-4 h-4 pointer-events-none" />
+              <span className="text-xs font-medium pointer-events-none select-none">History</span>
             </button>
             <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto" />
             <div className="hidden sm:block">
@@ -717,20 +724,34 @@ export default function Index() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => navigate("/panda-miti")}
-              className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-500/30 hover:border-emerald-500/60 transition-all text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 bg-emerald-500/10"
+              type="button"
+              onClick={() => {
+                requestAnimationFrame(() => {
+                  React.startTransition(() => {
+                    navigate("/panda-miti");
+                  });
+                });
+              }}
+              className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-500/30 hover:border-emerald-500/60 transition-all text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 bg-emerald-500/10 active:scale-95 touch-manipulation cursor-pointer"
               title="Project Panda Miti (45,000 Trees)"
             >
-              <Trees className="w-4 h-4 text-emerald-500" />
-              <span className="text-xs font-medium">Panda Miti</span>
+              <Trees className="w-4 h-4 text-emerald-500 pointer-events-none" />
+              <span className="text-xs font-medium pointer-events-none select-none">Panda Miti</span>
             </button>
             <button
-              onClick={() => setToolsOpen((v) => !v)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted"
+              type="button"
+              onClick={() => {
+                requestAnimationFrame(() => {
+                  React.startTransition(() => {
+                    setToolsOpen((v) => !v);
+                  });
+                });
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted active:scale-95 touch-manipulation cursor-pointer"
               title={toolsOpen ? "Hide tools" : "Show tools"}
             >
-              <Menu className="w-4 h-4" />
-              <span className="text-xs font-medium hidden sm:inline">Tools</span>
+              <Menu className="w-4 h-4 pointer-events-none" />
+              <span className="text-xs font-medium hidden sm:inline pointer-events-none select-none">Tools</span>
             </button>
             {messages.length > 0 && (
               <button
@@ -795,12 +816,19 @@ export default function Index() {
               </p>
 
               <button
-                onClick={() => navigate("/panda-miti")}
-                className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500/20 transition-all shadow-sm"
+                type="button"
+                onClick={() => {
+                  requestAnimationFrame(() => {
+                    React.startTransition(() => {
+                      navigate("/panda-miti");
+                    });
+                  });
+                }}
+                className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500/20 transition-all shadow-sm active:scale-95 touch-manipulation cursor-pointer"
               >
-                <Trees className="w-4 h-4 text-emerald-500" />
-                <span>Explore Project Panda Miti (45,000 Trees)</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                <Trees className="w-4 h-4 text-emerald-500 pointer-events-none" />
+                <span className="pointer-events-none select-none">Explore Project Panda Miti (45,000 Trees)</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1 pointer-events-none" />
               </button>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-2xl">

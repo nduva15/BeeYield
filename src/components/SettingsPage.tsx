@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import AvatarPickerDialog from "@/components/beeyield/AvatarPickerDialog";
 import { PRESET_AVATARS } from "@/lib/preset-avatars";
+import { subscribeToAvatarSync, getCachedAvatar } from "@/services/avatarSyncService";
 
 type Tab = "profile" | "modules" | "alerting" | "security" | "billing";
 
@@ -176,13 +177,30 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   const [email, setEmail] = useState(effectiveEmail);
   const [savingProfile, setSavingProfile] = useState(false);
 
-  const avatarUrl =
-    profile?.avatar_url ||
-    user?.user_metadata?.avatar_url ||
-    (typeof window !== "undefined"
-      ? localStorage.getItem(`beeyield_user_avatar_${user?.id || profile?.id || "usr_kibwezi_owner_01"}`) ||
-        localStorage.getItem("beeyield_user_avatar")
-      : null);
+  const effectiveUserId = user?.id || profile?.id || "usr_kibwezi_owner_01";
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {
+    return (
+      profile?.avatar_url ||
+      user?.user_metadata?.avatar_url ||
+      getCachedAvatar(effectiveUserId)
+    );
+  });
+
+  useEffect(() => {
+    const unsubscribe = subscribeToAvatarSync(effectiveUserId, (newUrl) => {
+      setAvatarUrl(newUrl);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [effectiveUserId]);
+
+  useEffect(() => {
+    const direct = profile?.avatar_url || user?.user_metadata?.avatar_url || getCachedAvatar(effectiveUserId);
+    if (direct && direct !== avatarUrl) {
+      setAvatarUrl(direct);
+    }
+  }, [profile?.avatar_url, user?.user_metadata?.avatar_url, effectiveUserId]);
 
   const [modules, setModules] = useState<Record<string, boolean>>(DEFAULT_MODULES);
   const [alerts, setAlerts] = useState<Record<string, boolean>>(DEFAULT_ALERTS);
