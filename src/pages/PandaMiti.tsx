@@ -611,3 +611,5 @@ export default function PandaMitiPage() {
     </div>
   );
 }
+
+export { PandaMitiPage, PandaMitiPage as PandaMiti };
