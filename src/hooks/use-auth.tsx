@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback, type React
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { TIMOTHY_DEFAULT_AVATAR } from "@/lib/preset-avatars";
+import { broadcastAvatarUpdate, subscribeToAvatarSync } from "@/services/avatarSyncService";
 
 export type Profile = {
   id: string;
@@ -82,29 +83,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [loading, setLoading] = useState(true);
 
-  // Synchronize avatar updates across components
+  // Synchronize avatar updates across laptop, phone, and tablet automatedly
   useEffect(() => {
-    const handleAvatarUpdate = (e: Event) => {
-      const customEvent = e as CustomEvent<{ avatar_url: string }>;
-      const newUrl = customEvent?.detail?.avatar_url;
-      if (newUrl) {
-        setUser((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            user_metadata: {
-              ...(prev.user_metadata || {}),
-              avatar_url: newUrl,
-            },
-          } as User;
-        });
-        setProfile((prev) => (prev ? { ...prev, avatar_url: newUrl } : prev));
-      }
-    };
+    const uid = user?.id || profile?.id || "usr_kibwezi_owner_01";
+    const unsubscribe = subscribeToAvatarSync(uid, (newUrl) => {
+      setUser((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          user_metadata: {
+            ...(prev.user_metadata || {}),
+            avatar_url: newUrl,
+          },
+        } as User;
+      });
+      setProfile((prev) => (prev ? { ...prev, avatar_url: newUrl } : prev));
+    });
 
-    window.addEventListener("beeyield-avatar-updated", handleAvatarUpdate);
-    return () => window.removeEventListener("beeyield-avatar-updated", handleAvatarUpdate);
-  }, []);
+    return () => {
+      unsubscribe();
+    };
+  }, [user?.id, profile?.id]);
 
   const loadProfile = useCallback(async (uid: string) => {
     try {
@@ -234,46 +233,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setProfile((prev) => (prev ? { ...prev, avatar_url: url } : prev));
 
-      // 2. Persist in localStorage
-      try {
-        localStorage.setItem(`beeyield_user_avatar_${uid}`, url);
-        localStorage.setItem("beeyield_user_avatar", url);
-
-        const stored = localStorage.getItem("beeyield_local_user");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed.user) {
-            parsed.user.user_metadata = { ...(parsed.user.user_metadata || {}), avatar_url: url };
-          }
-          if (parsed.profile) {
-            parsed.profile.avatar_url = url;
-          }
-          localStorage.setItem("beeyield_local_user", JSON.stringify(parsed));
-        }
-      } catch {}
-
-      // 3. Persist to Supabase Auth metadata
-      if (session?.user) {
-        await supabase.auth.updateUser({ data: { avatar_url: url } }).catch(() => {});
-      }
-
-      // 4. Persist to Supabase profiles database table
-      if (uid) {
-        try {
-          await (supabase as any).from("profiles").upsert({
-            id: uid,
-            avatar_url: url,
-            updated_at: new Date().toISOString(),
-          });
-        } catch {}
-      }
-
-      // 5. Broadcast custom event
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("beeyield-avatar-updated", { detail: { avatar_url: url } })
-        );
-      }
+      // 2. Broadcast and persist across laptop, phone, and tablet automatedly
+      await broadcastAvatarUpdate(uid, url);
 
       return true;
     } catch (err) {
