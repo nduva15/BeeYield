@@ -3,13 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  ArrowRight, Check,
+  Quote, CheckCircle2, ArrowRight, Check,
   Globe, Flower2, MapPin, Mail,
   Camera
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/data/beePollinationData";
+import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import PandaMitiSection from "@/components/PandaMitiSection";
 
@@ -69,6 +70,23 @@ const CropsWePollinate = () => {
               <p className="max-w-xl text-lg text-neutral-600 font-medium leading-relaxed">
                 Our end-to-end precision pollination solution gives farmers unprecedented control and visibility into floral anthesis, optimizing fruit set and maximizing harvest yields.
               </p>
+                            {/* Timothy Nduva Executive Crop Quote */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white/95 border border-[#1B9157]/30 shadow-lg backdrop-blur-sm max-w-xl">
+                <div className="flex items-start gap-3">
+                  <Quote className="w-5 h-5 text-[#1B9157] shrink-0 mt-0.5 fill-[#1B9157]/20" />
+                  <div>
+                    <p className="text-base sm:text-lg font-bold text-neutral-900 italic tracking-tight leading-snug">
+                      “Many plants are dependent on pollination from a pollinator.”
+                    </p>
+                    <div className="flex items-center gap-2 mt-2.5 pt-2 border-t border-neutral-100">
+                      <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="w-7 h-7 rounded-full object-cover border border-[#1B9157]/50 shadow-xs" />
+                      <span className="text-xs font-bold text-neutral-900">Timothy Nduva</span>
+                      <span className="text-[11px] text-neutral-500 font-medium">• Founder & CEO, BeeYield</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" className="rounded-full bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-bold h-14 px-8 shadow-xl shadow-green-900/10" asChild>
                   <Link to="/contact">Get a Free Consultation</Link>
@@ -246,6 +264,42 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
+
+
+      
+      {/* ───────────────────────────────────────────────────────────────
+          EXECUTIVE VISION • TIMOTHY NDUVA STATEMENT ON CROP POLLINATION
+      ─────────────────────────────────────────────────────────────── */}
+      <section className="py-20 lg:py-24 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1B9157]/20 via-transparent to-transparent pointer-events-none" />
+          <div className="container mx-auto px-4 max-w-4xl relative z-10 text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1B9157]/15 border border-[#1B9157]/30 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-8">
+                  <Quote className="w-3.5 h-3.5 fill-[#1B9157]/20" />
+                  Founder's Philosophy on Crop Pollination
+              </div>
+              <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight text-white mb-10 max-w-3xl mx-auto italic">
+                  “Many plants are dependent on pollination from a pollinator.”
+              </blockquote>
+              <div className="flex items-center justify-center gap-4">
+                  <img
+                      src={TIMOTHY_PHOTO}
+                      alt="Timothy Nduva"
+                      className="w-14 h-14 rounded-full object-cover border-2 border-[#1B9157] shadow-xl"
+                  />
+                  <div className="text-left">
+                      <div className="font-bold text-white text-base sm:text-lg flex items-center gap-2">
+                          Timothy Nduva
+                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Founder & CEO
+                          </span>
+                      </div>
+                      <div className="text-xs sm:text-sm text-neutral-400 font-medium">
+                          BeeYield • Commercial Crop Pollination & Floral Anthesis
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
 
 
       {/* Crops Grid */}
