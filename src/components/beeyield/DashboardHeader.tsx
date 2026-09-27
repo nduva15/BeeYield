@@ -230,6 +230,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const CurrentIcon = (currentItem as any)?.icon || (activeTab === 'home' ? Home : (activeTab === 'beeyield' || activeTab === 'hives' ? Hexagon : Sparkles));
     const currentLabel = (currentItem as any)?.label || (activeTab === 'home' ? 'Dashboard Home' : (activeTab === 'beeyield' || activeTab === 'hives' ? 'Hives & Colonies' : activeTab.replace(/-/g, ' ')));
 
+    const handleTabSelect = (tabId: string) => {
+        onTabChange(tabId);
+        setDropdownOpen(false);
+    };
+
     return (
         <header className={cn(
             "h-16 sticky top-0 z-40 flex items-center justify-between px-3 sm:px-4 md:px-6 transition-all duration-300",
@@ -250,11 +255,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 )}
 
                 {/* Directory Views Dropdown - Perfectly matching pill trigger */}
-                <DropdownMenu modal={false} open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                     <DropdownMenuTrigger asChild>
                         <button
-                            className="flex items-center gap-2 sm:gap-2.5 h-10 px-3 sm:px-3.5 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl transition-all group outline-none shrink-0 shadow-xs text-stone-900 dark:text-white active:scale-95"
+                            type="button"
+                            className="flex items-center gap-2 sm:gap-2.5 h-10 px-3 sm:px-3.5 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl transition-all group outline-none shrink-0 shadow-xs text-stone-900 dark:text-white active:scale-95 touch-manipulation cursor-pointer"
                             title="BeeYield AI Tools & Views Directory"
+                            aria-label="BeeYield AI Tools & Views Directory"
                         >
                             <div className="w-6 h-6 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
                                 <CurrentIcon className="w-3.5 h-3.5" />
@@ -268,7 +275,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <DropdownMenuContent
                         align="start"
                         sideOffset={8}
-                        className="w-76 sm:w-84 max-h-[80vh] overflow-y-auto rounded-3xl border border-stone-200/90 dark:border-stone-800 p-3 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-2xl text-stone-900 dark:text-stone-100 z-50 custom-scrollbar ring-1 ring-black/5 dark:ring-white/5 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2"
+                        className="w-[min(calc(100vw-24px),340px)] sm:w-84 max-h-[75vh] overflow-y-auto rounded-3xl border border-stone-200/90 dark:border-stone-800 p-3 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-2xl text-stone-900 dark:text-stone-100 z-50 custom-scrollbar ring-1 ring-black/5 dark:ring-white/5 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 touch-pan-y"
                     >
                         {/* Search tools input */}
                         <div className="p-1 mb-2.5 border-b border-stone-100 dark:border-stone-800/80">
@@ -306,16 +313,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                                 return (
                                                     <DropdownMenuItem
                                                         key={item.id}
+                                                        onSelect={() => handleTabSelect(item.id)}
                                                         onClick={() => handleTabSelect(item.id)}
                                                         className={cn(
-                                                            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs cursor-pointer transition-all",
+                                                            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs cursor-pointer transition-all touch-manipulation",
                                                             isActive
                                                                 ? "bg-amber-500/15 dark:bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold border border-amber-500/30 shadow-xs"
-                                                                : "text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800/70 hover:text-stone-950 dark:hover:text-white"
+                                                                : "text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800/70 hover:text-stone-950 dark:hover:text-white active:bg-amber-500/10"
                                                         )}
                                                     >
                                                         <ItemIcon className="w-4 h-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
-                                                        <span className="truncate flex-1 font-medium pointer-events-none select-none">{item.label}</span>
+                                                        <span className="truncate flex-1 font-medium select-none">{item.label}</span>
                                                         {isActive && (
                                                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                                                         )}
