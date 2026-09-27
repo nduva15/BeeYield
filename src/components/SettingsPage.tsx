@@ -204,9 +204,15 @@ export default function SettingsPage({
   embedded?: boolean;
 }) {
   const deviceId = useDeviceId();
-  const auth = useAuth() as any;
-  const { profile, refreshProfile, signOut, updateAvatar } = auth;
-  const user = auth?.beeyieldUser || auth?.user || auth?.shopUser || auth?.cebaUser;
+  const {
+    profile,
+    refreshProfile,
+    signOut,
+    updateAvatar,
+    beeyieldUser,
+    user: authUser,
+  } = useAuth();
+  const user = beeyieldUser || authUser;
 
   const currentUser = useMemo(() => {
     if (user) return user;
@@ -286,7 +292,7 @@ export default function SettingsPage({
     if (direct && direct !== avatarUrl) {
       setAvatarUrl(direct);
     }
-  }, [profile?.avatar_url, user?.user_metadata?.avatar_url, effectiveUserId]);
+  }, [profile?.avatar_url, user?.user_metadata?.avatar_url, effectiveUserId, avatarUrl]);
 
   const [modules, setModules] = useState<Record<string, boolean>>(DEFAULT_MODULES);
   const [alerts, setAlerts] = useState<Record<string, boolean>>(DEFAULT_ALERTS);
@@ -337,10 +343,10 @@ export default function SettingsPage({
         const parsed = JSON.parse(localStored);
         const p = parsed.profile || parsed;
         if (p) {
-          if (p.full_name) setFullName((prev) => prev || p.full_name);
-          if (p.phone) setPhone((prev) => prev || p.phone);
-          if (p.country) setCountry((prev) => prev || p.country);
-          if (p.email) setEmail((prev) => prev || p.email);
+          if (p.full_name) setFullName((prev: string) => prev || p.full_name);
+          if (p.phone) setPhone((prev: string) => prev || p.phone);
+          if (p.country) setCountry((prev: string) => prev || p.country);
+          if (p.email) setEmail((prev: string) => prev || p.email);
         }
       }
     } catch {}
@@ -367,7 +373,10 @@ export default function SettingsPage({
         .eq("device_id", deviceId)
         .maybeSingle();
       if (!error && data) {
-        const d = data as any;
+        const d = data as unknown as {
+          modules?: Record<string, boolean>;
+          alert_prefs?: Record<string, boolean>;
+        };
         if (d.modules && typeof d.modules === "object")
           setModules((prev) => ({ ...DEFAULT_MODULES, ...prev, ...d.modules }));
         if (d.alert_prefs && typeof d.alert_prefs === "object")
@@ -397,13 +406,20 @@ export default function SettingsPage({
         }),
       );
 
-      await supabase.from("app_settings").upsert(
+      await (
+        supabase.from("app_settings") as unknown as {
+          upsert: (
+            values: Record<string, unknown>,
+            opts?: { onConflict?: string },
+          ) => Promise<unknown>;
+        }
+      ).upsert(
         {
           device_id: deviceId,
           modules: nextMods,
           alert_prefs: nextAlerts,
           updated_at: new Date().toISOString(),
-        } as any,
+        },
         { onConflict: "device_id" },
       );
 
@@ -466,7 +482,14 @@ export default function SettingsPage({
 
     // 2. Persist to Supabase Database (profiles table)
     try {
-      await (supabase as any).from("profiles").upsert(
+      await (
+        supabase.from("profiles") as unknown as {
+          upsert: (
+            values: Record<string, unknown>,
+            opts?: { onConflict?: string },
+          ) => Promise<unknown>;
+        }
+      ).upsert(
         {
           id: effectiveId,
           email: resolvedEmail,
