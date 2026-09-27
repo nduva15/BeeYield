@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { X, Search, AlertTriangle, Plus, Pencil, Trash2, Save, Upload, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { X, Quote, Search, AlertTriangle, Plus, Pencil, Trash2, Save, Upload, Download, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
@@ -173,6 +173,17 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
             <button onClick={onClose} className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors"><X className="w-4 h-4" /></button>
           )}
         </div>
+      </div>
+
+              {/* Executive Quote • Timothy Nduva */}
+      <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-transparent border border-amber-500/20 flex items-start sm:items-center gap-3">
+        <Quote className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 shrink-0 mt-0.5 sm:mt-0" />
+        <p className="text-xs sm:text-sm font-medium text-foreground italic">
+          “Bees are guardians of biodiversity, invisible partners in agriculture, and lifelines for human survival.”
+          <span className="ml-2 font-bold text-emerald-600 dark:text-emerald-400 not-italic text-[11px] sm:text-xs tracking-wide">
+            — Timothy Nduva, Founder & CEO
+          </span>
+        </p>
       </div>
 
         <div className="space-y-2 mb-4">
