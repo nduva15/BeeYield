@@ -57,50 +57,55 @@ import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "@tanstack/react-router";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
-import ChatHistory, { type Conversation } from "@/components/beeyield/lovable_ai/ChatHistory";
-import AboutModal from "@/components/beeyield/lovable_ai/AboutModal";
-import MessageActions from "@/components/beeyield/lovable_ai/MessageActions";
-import MarkdownRenderer from "@/components/beeyield/lovable_ai/MarkdownRenderer";
-import BeeDiseasesPage from "@/components/beeyield/lovable_ai/BeeDiseasesPage";
-import PollinationCharts from "@/components/beeyield/lovable_ai/PollinationCharts";
-import PollinationLookup from "@/components/beeyield/lovable_ai/PollinationLookup";
-import HarvestCalculator from "@/components/beeyield/lovable_ai/HarvestCalculator";
-import PrecisionDrilldown from "@/components/beeyield/lovable_ai/PrecisionDrilldown";
-import { HivePlacementMap } from "@/components/beeyield/lovable_ai/LazyMaps";
-import BeeFlightTracker from "@/components/beeyield/lovable_ai/BeeFlightTracker";
-import BloomPhenology from "@/components/beeyield/lovable_ai/BloomPhenology";
-import { MOAView } from "@/components/beeyield/lovable_ai/LazyMaps";
-import MeasurementDataTools from "@/components/beeyield/lovable_ai/MeasurementDataTools";
-import ToolSidebar, { type ToolGroup } from "@/components/beeyield/lovable_ai/ToolSidebar";
-import FloragePage from "@/components/beeyield/lovable_ai/FloragePage";
-import ActivityCounter from "@/components/beeyield/lovable_ai/ActivityCounter";
-import ActivityForecaster from "@/components/beeyield/lovable_ai/ActivityForecaster";
-import PollinationPlanning from "@/components/beeyield/lovable_ai/PollinationPlanning";
-import PollinationCalcs from "@/components/beeyield/lovable_ai/PollinationCalcs";
-import AlertsPage from "@/components/beeyield/lovable_ai/AlertsPage";
-import MOACompare from "@/components/beeyield/lovable_ai/MOACompare";
-import BeeyieldCalculators from "@/components/beeyield/lovable_ai/BeeyieldCalculators";
-import VarroaSimulator from "@/components/beeyield/lovable_ai/VarroaSimulator";
-import DatasetImport from "@/components/beeyield/lovable_ai/DatasetImport";
-import FeedingSchedule from "@/components/beeyield/lovable_ai/FeedingSchedule";
-import KnowledgeSearch from "@/components/beeyield/lovable_ai/KnowledgeSearch";
-import ApiarySizing from "@/components/beeyield/lovable_ai/ApiarySizing";
-import ApiariesPage from "@/components/beeyield/lovable_ai/ApiariesPage";
-import YieldProjection from "@/components/beeyield/lovable_ai/YieldProjection";
-import InspectionsPage from "@/components/beeyield/lovable_ai/InspectionsPage";
-import TasksPage from "@/components/beeyield/lovable_ai/TasksPage";
-import ForageZonesPage from "@/components/beeyield/lovable_ai/ForageZonesPage";
+import ChatHistory, { type Conversation } from "@/components/ChatHistory";
+import AboutModal from "@/components/AboutModal";
+import MessageActions from "@/components/MessageActions";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
+import BeeDiseasesPage from "@/components/BeeDiseasesPage";
+import PollinationCharts from "@/components/PollinationCharts";
+import PollinationLookup from "@/components/PollinationLookup";
+import HarvestCalculator from "@/components/HarvestCalculator";
+import PrecisionDrilldown from "@/components/PrecisionDrilldown";
+import { HivePlacementMap } from "@/components/LazyMaps";
+import BeeFlightTracker from "@/components/BeeFlightTracker";
+import BloomPhenology from "@/components/BloomPhenology";
+import { MOAView } from "@/components/LazyMaps";
+import MeasurementDataTools from "@/components/MeasurementDataTools";
+import ToolSidebar, { type ToolGroup } from "@/components/ToolSidebar";
+import FloragePage from "@/components/FloragePage";
+import ActivityCounter from "@/components/ActivityCounter";
+import ActivityForecaster from "@/components/ActivityForecaster";
+import PollinationPlanning from "@/components/PollinationPlanning";
+import PollinationCalcs from "@/components/PollinationCalcs";
+import AlertsPage from "@/components/AlertsPage";
+import MOACompare from "@/components/MOACompare";
+import BeeyieldCalculators from "@/components/BeeyieldCalculators";
+import VarroaSimulator from "@/components/VarroaSimulator";
+import DatasetImport from "@/components/DatasetImport";
+import FeedingSchedule from "@/components/FeedingSchedule";
+import KnowledgeSearch from "@/components/KnowledgeSearch";
+import ApiarySizing from "@/components/ApiarySizing";
+import ApiariesPage from "@/components/ApiariesPage";
+import YieldProjection from "@/components/YieldProjection";
+import InspectionsPage from "@/components/InspectionsPage";
+import TasksPage from "@/components/TasksPage";
+import ForageZonesPage from "@/components/ForageZonesPage";
 import FrameSenseToolPage from "@/components/FrameSenseToolPage";
 import SyrupFeedingToolPage from "@/components/SyrupFeedingToolPage";
 import NotesPage from "@/components/NotesPage";
-import HarvestsPage from "@/components/beeyield/lovable_ai/HarvestsPage";
-import SoundAnalysis from "@/components/beeyield/lovable_ai/SoundAnalysis";
-import IntegrationsPage from "@/components/beeyield/lovable_ai/IntegrationsPage";
-import SettingsPage from "@/components/beeyield/lovable_ai/SettingsPage";
-import HiveHealthDashboard from "@/components/beeyield/lovable_ai/HiveHealthDashboard";
-import SupportPage from "@/components/beeyield/lovable_ai/SupportPage";
-import BeeYieldOnboardingWizard from "@/components/beeyield/BeeYieldOnboardingWizard";
+import HarvestsPage from "@/components/HarvestsPage";
+import SoundAnalysis from "@/components/SoundAnalysis";
+import IntegrationsPage from "@/components/IntegrationsPage";
+import SettingsPage from "@/components/SettingsPage";
+import HiveHealthDashboard from "@/components/HiveHealthDashboard";
+import SupportPage from "@/components/SupportPage";
+import BeeYieldOnboardingWizard from "@/components/BeeYieldOnboardingWizard";
 import ShopDashboard from "@/components/ShopDashboard";
+import {
+  getLatestAiScans,
+  buildAiScanAssistantMessage,
+  type AiScanAnalysisResult,
+} from "@/lib/beeyield-ai-scan-sync";
 
 type Message = {
   id: string;
@@ -351,6 +356,40 @@ export default function Index() {
     if (audioInputRef.current) audioInputRef.current.value = "";
   }, []);
 
+  // Real-time synchronization of BeeYield AI with every field scan (FrameSense, Sound, Notes, QR)
+  useEffect(() => {
+    const handleScanAiSync = (e: Event) => {
+      const customEvent = e as CustomEvent<AiScanAnalysisResult>;
+      const scanResult = customEvent.detail;
+      if (!scanResult) return;
+
+      const aiMsgContent = buildAiScanAssistantMessage(scanResult);
+      const scanMsg: Message = {
+        id: `scan_ai_${Date.now()}`,
+        role: "assistant",
+        content: aiMsgContent,
+      };
+
+      setMessages((prev) => {
+        if (prev.some((m) => m.content === aiMsgContent)) return prev;
+        return [...prev, scanMsg];
+      });
+
+      if (conversationId) {
+        saveMessage(conversationId, "assistant", aiMsgContent);
+      }
+
+      toast.success(`BeeYield AI synchronized scan intelligence from ${scanResult.scanData.hiveCode}!`, {
+        description: `${scanResult.scanData.scanTitle} · Risk: ${scanResult.riskLevel.toUpperCase()}`,
+      });
+    };
+
+    window.addEventListener("beeyield:scan-ai-sync", handleScanAiSync);
+    return () => {
+      window.removeEventListener("beeyield:scan-ai-sync", handleScanAiSync);
+    };
+  }, [conversationId]);
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -421,7 +460,18 @@ export default function Index() {
     // Save user message
     if (convId) saveMessage(convId, "user", text);
 
-    const history = newMessages.map((m) => ({ role: m.role, content: m.content }));
+    const recentScans = getLatestAiScans().slice(0, 3);
+    const scanContextPrompt = recentScans.length > 0
+      ? `\n\n[RECENT FIELD SCAN INTELLIGENCE]:\n` +
+        recentScans.map(s => `• ${s.scanData.scanTitle} on Hive ${s.scanData.hiveCode} (${s.scanData.timestamp}): ${s.aiDiagnosis.slice(0, 180)}...`).join("\n")
+      : "";
+
+    const history = newMessages.map((m, idx) => {
+      if (idx === newMessages.length - 1 && scanContextPrompt) {
+        return { role: m.role, content: `${m.content}${scanContextPrompt}` };
+      }
+      return { role: m.role, content: m.content };
+    });
     let assistantContent = "";
 
     try {
@@ -781,6 +831,14 @@ export default function Index() {
                 <Download className="w-4 h-4" />
               </button>
             )}
+            <div
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] font-semibold text-amber-800 dark:text-amber-300 select-none cursor-help"
+              title="BeeYield AI is synchronized with every field scan across FrameSense, acoustic analysis, notes, and sensors"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>AI Scan Sync: Active</span>
+            </div>
+
             <select
               value={promptVariant}
               onChange={(e) => setPromptVariant(e.target.value as typeof promptVariant)}
