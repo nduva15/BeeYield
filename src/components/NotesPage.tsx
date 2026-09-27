@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowLeft,
@@ -31,6 +31,10 @@ import {
   PlusCircle,
   Check,
   Thermometer,
+  Mic,
+  MicOff,
+  Paperclip,
+  Image as ImageIcon,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -80,6 +84,7 @@ export interface HiveNote {
   hive_id: string;
   hive_code: string;
   tags: string[];
+  attachments?: string[];
   weather?: string | null;
   temperature_c?: number | null;
   humidity_pct?: number | null;
@@ -154,16 +159,20 @@ export function NotesPage({
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
-  // Form State
+  // Form State (Screenshot 2 Match)
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formApiaryId, setFormApiaryId] = useState("");
   const [formHiveId, setFormHiveId] = useState("");
   const [formTitle, setFormTitle] = useState("");
   const [formCategory, setFormCategory] = useState<NoteCategory>("General Observation");
-  const [formDate, setFormDate] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [formDate, setFormDate] = useState<string>(() => {
+    const now = new Date();
+    return `${String(now.getDate()).padStart(2, "0")}.${String(now.getMonth() + 1).padStart(2, "0")}.${now.getFullYear()}`;
+  });
   const [formContent, setFormContent] = useState("");
   const [formTags, setFormTags] = useState<string[]>([]);
+  const [formAttachments, setFormAttachments] = useState<string[]>([]);
   const [formWeather, setFormWeather] = useState("");
   const [formTemp, setFormTemp] = useState<number | null>(null);
   const [formHumidity, setFormHumidity] = useState<number | null>(null);
@@ -173,6 +182,10 @@ export function NotesPage({
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [expandedAiNoteId, setExpandedAiNoteId] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const speechRecognitionRef = useRef<any>(null);
 
   // Load user hives and apiaries
   const loadApiariesAndHives = useCallback(async () => {
@@ -255,7 +268,6 @@ export function NotesPage({
       const localData = localStorage.getItem(storageKey);
       let localNotes: HiveNote[] = localData ? JSON.parse(localData) : [];
 
-      // Try fetching from remote Supabase table if available
       try {
         const { data: remoteData, error } = await (supabase as any)
           .from("hive_notes")
@@ -274,6 +286,7 @@ export function NotesPage({
             hive_id: r.hive_id || "",
             hive_code: r.hive_code || "beeyield 001",
             tags: Array.isArray(r.tags) ? r.tags : [],
+            attachments: Array.isArray(r.attachments) ? r.attachments : [],
             weather: r.weather,
             temperature_c: r.temperature_c,
             humidity_pct: r.humidity_pct,
@@ -331,9 +344,11 @@ export function NotesPage({
     setFormHiveId(selectedHive.id);
     setFormTitle("");
     setFormCategory("General Observation");
-    setFormDate(new Date().toISOString().slice(0, 10));
+    const now = new Date();
+    setFormDate(`${String(now.getDate()).padStart(2, "0")}.${String(now.getMonth() + 1).padStart(2, "0")}.${now.getFullYear()}`);
     setFormContent("");
     setFormTags([]);
+    setFormAttachments([]);
     setFormWeather("Clear, sunny");
     setAiText("");
     fetchHiveTelemetry(selectedHive.id);
@@ -349,6 +364,7 @@ export function NotesPage({
     setFormDate(note.date);
     setFormContent(note.content);
     setFormTags(note.tags || []);
+    setFormAttachments(note.attachments || []);
     setFormWeather(note.weather || "");
     setFormTemp(note.temperature_c ?? null);
     setFormHumidity(note.humidity_pct ?? null);
@@ -360,6 +376,83 @@ export function NotesPage({
     setFormTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
+  };
+
+  // Voice Note Dictation via Web Speech API
+  const toggleVoiceRecording = () => {
+    if (isRecordingVoice) {
+      if (speechRecognitionRef.current) {
+        speechRecognitionRef.current.stop();
+      }
+      setIsRecordingVoice(false);
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      toast.info("Voice recognition not supported in this browser. You can type observations directly.");
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        setIsRecordingVoice(true);
+        toast.success("Voice recording active — Speak observation now");
+      };
+
+      recognition.onresult = (event: any) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        setFormContent((prev) => (prev ? `${prev} ${transcript}` : transcript));
+      };
+
+      recognition.onerror = (e: any) => {
+        console.warn("Speech recognition error:", e);
+        setIsRecordingVoice(false);
+      };
+
+      recognition.onend = () => {
+        setIsRecordingVoice(false);
+      };
+
+      speechRecognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.warn("Failed to initialize speech recognition:", err);
+      toast.error("Could not access microphone.");
+    }
+  };
+
+  // Add Photo Attachment Handler
+  const handleAttachmentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        const result = uploadEvent.target?.result as string;
+        if (result) {
+          setFormAttachments((prev) => [...prev, result]);
+          toast.success(`Attached photo: ${file.name}`);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setFormAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const runAiInsights = async () => {
@@ -397,9 +490,9 @@ Provide a concise 3-bullet evaluation:
     }
   };
 
-  const handleSaveNote = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formContent.trim()) {
+  const handleSaveNote = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!formContent.trim() && !formTitle.trim()) {
       toast.error("Observation note content cannot be empty");
       return;
     }
@@ -413,7 +506,7 @@ Provide a concise 3-bullet evaluation:
       const newRecord: HiveNote = {
         id: noteId,
         title: formTitle.trim() || `${formCategory} — ${targetHiveObj.hive_code || targetHiveObj.name}`,
-        content: formContent.trim(),
+        content: formContent.trim() || formTitle.trim(),
         date: formDate,
         category: formCategory,
         apiary_id: targetApiaryObj?.id || targetHiveObj.apiary_id || "apiary-kibwezi",
@@ -421,6 +514,7 @@ Provide a concise 3-bullet evaluation:
         hive_id: targetHiveObj.id,
         hive_code: targetHiveObj.hive_code || targetHiveObj.name || "beeyield 001",
         tags: formTags,
+        attachments: formAttachments,
         weather: formWeather || null,
         temperature_c: formTemp,
         humidity_pct: formHumidity,
@@ -549,6 +643,301 @@ Provide a concise 3-bullet evaluation:
 
   const hasNotes = currentHiveNotes.length > 0;
 
+  // =========================================================================
+  // VIEW 1: DEDICATED ADD/EDIT NOTE SCREEN (MATCHING EXACT SCREENSHOT 2)
+  // =========================================================================
+  if (showForm) {
+    const activeFormHive = userHives.find((h) => h.id === formHiveId) || selectedHive;
+
+    return (
+      <div className="fixed inset-0 z-50 bg-[#FDFBF7] dark:bg-stone-950 text-stone-900 dark:text-stone-100 flex flex-col font-sans overflow-hidden">
+        {/* Hidden File Input for Attachments */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleAttachmentUpload}
+          multiple
+          accept="image/*"
+          className="hidden"
+        />
+
+        {/* Top Header Bar */}
+        <div className="bg-[#FDFBF7] dark:bg-stone-950 px-4 pt-3 pb-3 flex items-center justify-between border-b border-stone-200/60 dark:border-stone-800 shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowForm(false)}
+            className="p-1.5 -ml-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors cursor-pointer"
+            title="Back to Notes"
+          >
+            <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+          </button>
+
+          <div className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-stone-800 dark:text-stone-200" />
+            <h1 className="text-lg sm:text-xl font-bold text-stone-900 dark:text-white">
+              {editingId ? "Edit note" : "Add note"}
+            </h1>
+          </div>
+
+          <div className="w-8" />
+        </div>
+
+        {/* Highlighted Hive Context Banner (Exact Match: Soft Beige Bar) */}
+        <div className="bg-[#F5EDE3] dark:bg-amber-950/25 px-4 py-2.5 flex items-center justify-between border-b border-[#E8DEC9] dark:border-amber-900/30 shrink-0">
+          <div className="flex items-center gap-2.5">
+            {/* Langstroth Hive Box Icon (Exact SVG Line Art) */}
+            <svg
+              className="w-5 h-5 text-stone-800 dark:text-stone-200 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="4" y="3" width="16" height="4" rx="1" />
+              <rect x="3" y="9" width="18" height="4" rx="1" />
+              <rect x="3" y="15" width="18" height="4" rx="1" />
+              <line x1="9" y1="21" x2="15" y2="21" />
+              <line x1="10" y1="11" x2="14" y2="11" />
+              <line x1="10" y1="17" x2="14" y2="17" />
+            </svg>
+
+            <span className="font-bold text-sm sm:text-base text-stone-900 dark:text-white tracking-tight">
+              {activeFormHive.hive_code || activeFormHive.name || "beeyield 001"}
+            </span>
+          </div>
+
+          {/* Quick Hive Switcher Dropdown */}
+          <select
+            value={formHiveId}
+            onChange={(e) => {
+              setFormHiveId(e.target.value);
+              fetchHiveTelemetry(e.target.value);
+            }}
+            className="text-xs bg-white/70 dark:bg-stone-900/70 border border-stone-300 dark:border-stone-700 rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 focus:outline-none cursor-pointer"
+          >
+            {userHives.map((h) => (
+              <option key={h.id} value={h.id} className="text-stone-900 bg-white dark:bg-stone-900">
+                {h.hive_code || h.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Scrollable Form Content */}
+        <div className="flex-1 overflow-y-auto px-4 py-5 max-w-lg mx-auto w-full space-y-6 custom-scroll">
+          {/* Field 1: Date */}
+          <div className="space-y-1">
+            <label className="text-xs text-stone-600 dark:text-stone-400 font-medium block">
+              Date
+            </label>
+            <div className="flex items-center justify-between border-b border-stone-400 dark:border-stone-600 pb-1.5 focus-within:border-amber-600">
+              <input
+                type="text"
+                value={formDate}
+                onChange={(e) => setFormDate(e.target.value)}
+                placeholder="27.09.2026"
+                className="bg-transparent text-sm sm:text-base font-normal text-stone-900 dark:text-white focus:outline-none w-full"
+              />
+              <Calendar className="w-5 h-5 text-stone-700 dark:text-stone-300 shrink-0 ml-2" />
+            </div>
+          </div>
+
+          {/* Field 2: Title (optional) */}
+          <div className="space-y-1">
+            <label className="text-xs text-stone-600 dark:text-stone-400 font-medium block">
+              Title (optional)
+            </label>
+            <div className="border-b border-stone-400 dark:border-stone-600 pb-1.5 focus-within:border-amber-600">
+              <input
+                type="text"
+                value={formTitle}
+                onChange={(e) => setFormTitle(e.target.value)}
+                placeholder="Title (optional)"
+                className="bg-transparent text-sm sm:text-base font-normal text-stone-900 dark:text-white placeholder:text-stone-500 focus:outline-none w-full"
+              />
+            </div>
+          </div>
+
+          {/* Field 3: Note with Voice Dictation */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-stone-600 dark:text-stone-400 font-medium block">
+                Note
+              </label>
+            </div>
+
+            <div className="relative border-b border-stone-400 dark:border-stone-600 pb-2 focus-within:border-amber-600">
+              <textarea
+                rows={4}
+                value={formContent}
+                onChange={(e) => setFormContent(e.target.value)}
+                placeholder={`don't know what to write?\ne.g. added two frames with foundation, introduced an unmated queen, fed bees with sugar paste, opened ceiling ventilation, collecting bee pollen...`}
+                className="w-full bg-transparent text-xs sm:text-[13px] text-stone-800 dark:text-stone-200 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none pr-9 leading-relaxed"
+              />
+
+              {/* Microphone Voice Note Button */}
+              <button
+                type="button"
+                onClick={toggleVoiceRecording}
+                className={`absolute right-1 top-2 p-1.5 rounded-full transition-colors cursor-pointer ${
+                  isRecordingVoice
+                    ? "bg-rose-500 text-white animate-pulse"
+                    : "text-stone-800 dark:text-stone-200 hover:bg-stone-200/50"
+                }`}
+                title={isRecordingVoice ? "Stop voice recording" : "Click to add a voice note"}
+              >
+                {isRecordingVoice ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </button>
+            </div>
+
+            <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1">
+              {isRecordingVoice
+                ? "🎙️ Listening... Speak your observation clearly."
+                : "Click the icon to add a voice note."}
+            </p>
+          </div>
+
+          {/* Field 4: Add Attachment Button */}
+          <div>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="px-5 py-2.5 rounded-full border border-stone-800 dark:border-stone-400 text-stone-900 dark:text-stone-100 font-medium text-xs flex items-center gap-1.5 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <span>Add attachment</span>
+            </button>
+
+            {/* Attachment Thumbnails */}
+            {formAttachments.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {formAttachments.map((imgUrl, idx) => (
+                  <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-stone-300 dark:border-stone-700">
+                    <img src={imgUrl} alt={`Attachment ${idx + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeAttachment(idx)}
+                      className="absolute top-1 right-1 p-0.5 bg-black/60 rounded-full text-white hover:bg-rose-600"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ========================================================================= */}
+          {/* APICULTURAL DIAGNOSTICS & TELEMETRY (SAME UI/UX AS INSPECTIONS)          */}
+          {/* ========================================================================= */}
+          <div className="pt-2 space-y-3 border-t border-stone-200 dark:border-stone-800">
+            {/* Category Selector */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block">
+                Colony Observation Category:
+              </label>
+              <select
+                value={formCategory}
+                onChange={(e) => setFormCategory(e.target.value as NoteCategory)}
+                className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:border-amber-600"
+              >
+                {NOTE_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Quick Badges / Chips */}
+            <div>
+              <span className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1.5">
+                Apicultural Tags & Findings:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {SUGGESTED_TAGS.map((tag) => {
+                  const isSelected = formTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
+                        isSelected
+                          ? "bg-amber-600 text-white font-bold shadow-xs"
+                          : "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
+                      }`}
+                    >
+                      {isSelected ? `✓ ${tag}` : `+ ${tag}`}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* BeeGPT AI Diagnostic Engine */}
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  BeeGPT Clinical Analysis
+                </span>
+                <button
+                  type="button"
+                  onClick={runAiInsights}
+                  disabled={aiLoading}
+                  className="px-3 py-1 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                >
+                  {aiLoading ? (
+                    <>
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      <span>Analyzing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3 h-3" />
+                      <span>Analyze Note</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {aiText && (
+                <div className="p-3 rounded-xl bg-white/80 dark:bg-stone-900/80 border border-amber-200 dark:border-amber-900/40 text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
+                  <MarkdownRenderer content={aiText} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Floating / Docked Bottom Actions (Exact Match: Cancel & Save) */}
+        <div className="bg-[#FDFBF7] dark:bg-stone-950 px-6 py-4 border-t border-stone-200/80 dark:border-stone-800 flex items-center justify-end gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowForm(false)}
+            className="px-6 py-2.5 rounded-full border border-stone-800 dark:border-stone-400 text-stone-900 dark:text-stone-100 font-medium text-xs hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSaveNote()}
+            disabled={saving}
+            className="px-7 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-400 active:bg-amber-500 text-stone-950 font-bold text-xs shadow-xs transition-all cursor-pointer disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // VIEW 2: NOTES OVERVIEW / EMPTY STATE SCREEN (SCREENSHOT 1 MATCH)
+  // =========================================================================
   const content = (
     <div className="fixed inset-0 z-50 bg-[#FDFBF7] dark:bg-stone-950 text-stone-900 dark:text-stone-100 flex flex-col overflow-y-auto no-scrollbar font-sans">
       {/* Top Header Bar */}
@@ -556,7 +945,7 @@ Provide a concise 3-bullet evaluation:
         <button
           type="button"
           onClick={() => (onClose ? onClose() : window.history.back())}
-          className="p-1.5 -ml-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors"
+          className="p-1.5 -ml-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors cursor-pointer"
           title="Back"
         >
           <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
@@ -583,7 +972,7 @@ Provide a concise 3-bullet evaluation:
           <button
             type="button"
             onClick={() => setShowMenu(!showMenu)}
-            className="p-1.5 -mr-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors"
+            className="p-1.5 -mr-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors cursor-pointer"
             title="Options"
           >
             <MoreVertical className="w-5 h-5" />
@@ -597,7 +986,7 @@ Provide a concise 3-bullet evaluation:
                   setShowMenu(false);
                   handleOpenAddForm();
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-stone-100 dark:hover:bg-stone-800 flex items-center gap-2"
+                className="w-full text-left px-4 py-2 hover:bg-stone-100 dark:hover:bg-stone-800 flex items-center gap-2 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 text-amber-600" />
                 <span>Add New Note</span>
@@ -609,7 +998,7 @@ Provide a concise 3-bullet evaluation:
                   loadNotes();
                   toast.success("Notes refreshed from cloud");
                 }}
-                className="w-full text-left px-4 py-2 hover:bg-stone-100 dark:hover:bg-stone-800 flex items-center gap-2"
+                className="w-full text-left px-4 py-2 hover:bg-stone-100 dark:hover:bg-stone-800 flex items-center gap-2 cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5 text-stone-500" />
                 <span>Sync / Refresh</span>
@@ -701,7 +1090,7 @@ Provide a concise 3-bullet evaluation:
 
       {/* Main Body */}
       <div className="flex-1 flex flex-col px-4 py-6 max-w-lg mx-auto w-full">
-        {!hasNotes && !showForm && (
+        {!hasNotes && (
           /* SCREENSHOT MATCH: EMPTY STATE (PHONE WITH BEE & TAPPING HAND) */
           <div className="flex-1 flex flex-col items-center justify-center my-auto py-8 text-center">
             <h2 className="text-xl sm:text-2xl font-normal text-stone-900 dark:text-white mb-8">
@@ -819,8 +1208,8 @@ Provide a concise 3-bullet evaluation:
           </div>
         )}
 
-        {/* NOTES LEDGER LIST */}
-        {hasNotes && !showForm && (
+        {/* NOTES LEDGER LIST (WHEN NOTES EXIST) */}
+        {hasNotes && (
           <div className="flex-1 flex flex-col space-y-4">
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
@@ -911,7 +1300,7 @@ Provide a concise 3-bullet evaluation:
                       <button
                         type="button"
                         onClick={() => exportNotePdf(note)}
-                        className="p-1.5 text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800"
+                        className="p-1.5 text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
                         title="Export PDF Certificate"
                       >
                         <FileDown className="w-4 h-4" />
@@ -919,7 +1308,7 @@ Provide a concise 3-bullet evaluation:
                       <button
                         type="button"
                         onClick={() => handleEditNote(note)}
-                        className="p-1.5 text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800"
+                        className="p-1.5 text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
                         title="Edit Note"
                       >
                         <Pencil className="w-4 h-4" />
@@ -927,7 +1316,7 @@ Provide a concise 3-bullet evaluation:
                       <button
                         type="button"
                         onClick={() => setDeleteConfirmId(note.id)}
-                        className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                        className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer"
                         title="Delete Note"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -938,6 +1327,14 @@ Provide a concise 3-bullet evaluation:
                   <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-normal whitespace-pre-line">
                     {note.content}
                   </p>
+
+                  {note.attachments && note.attachments.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {note.attachments.map((img, i) => (
+                        <img key={i} src={img} alt="Attachment" className="w-14 h-14 object-cover rounded-lg border border-stone-200 dark:border-stone-800" />
+                      ))}
+                    </div>
+                  )}
 
                   {note.tags && note.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 pt-1">
@@ -982,218 +1379,6 @@ Provide a concise 3-bullet evaluation:
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* ADD / EDIT NOTE FORM */}
-        {showForm && (
-          <div className="flex-1 flex flex-col space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-3">
-              <div>
-                <h2 className="text-lg font-bold text-stone-900 dark:text-white">
-                  {editingId ? "Edit Hive Note" : "Record Hive Observation"}
-                </h2>
-                <p className="text-xs text-stone-500">
-                  Linked directly to apiaries, hives, and apicultural telemetry.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="p-1 rounded-lg text-stone-500 hover:text-stone-900"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveNote} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
-                    Apiary Location:
-                  </label>
-                  <select
-                    value={formApiaryId}
-                    onChange={(e) => {
-                      setFormApiaryId(e.target.value);
-                      const matchingHive = userHives.find((h) => h.apiary_id === e.target.value);
-                      if (matchingHive) setFormHiveId(matchingHive.id);
-                    }}
-                    className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:border-amber-600"
-                  >
-                    {userApiaries.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
-                    Specific Hive:
-                  </label>
-                  <select
-                    value={formHiveId}
-                    onChange={(e) => {
-                      setFormHiveId(e.target.value);
-                      fetchHiveTelemetry(e.target.value);
-                    }}
-                    className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:border-amber-600 font-medium"
-                  >
-                    {userHives
-                      .filter((h) => !formApiaryId || h.apiary_id === formApiaryId || !h.apiary_id)
-                      .map((h) => (
-                        <option key={h.id} value={h.id}>
-                          {h.hive_code || h.name}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
-                    Observation Date:
-                  </label>
-                  <input
-                    type="date"
-                    value={formDate}
-                    onChange={(e) => setFormDate(e.target.value)}
-                    className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:border-amber-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
-                    Category:
-                  </label>
-                  <select
-                    value={formCategory}
-                    onChange={(e) => setFormCategory(e.target.value as NoteCategory)}
-                    className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:border-amber-600"
-                  >
-                    {NOTE_CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
-                  Note Title (Optional):
-                </label>
-                <input
-                  type="text"
-                  value={formTitle}
-                  onChange={(e) => setFormTitle(e.target.value)}
-                  placeholder={`e.g. ${formCategory} check on ${selectedHive.hive_code || selectedHive.name}`}
-                  className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:border-amber-600"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
-                  Observation Content & Field Notes:
-                </label>
-                <textarea
-                  rows={4}
-                  value={formContent}
-                  onChange={(e) => setFormContent(e.target.value)}
-                  placeholder="Record colony temperament, brood pattern, supers added, queen behavior, syrup uptake, or foraging vigor..."
-                  className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl p-3 text-xs text-stone-900 dark:text-white focus:outline-none focus:border-amber-600 leading-relaxed"
-                />
-              </div>
-
-              <div>
-                <span className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1.5">
-                  Quick Observation Badges:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {SUGGESTED_TAGS.map((tag) => {
-                    const isSelected = formTags.includes(tag);
-                    return (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => toggleTag(tag)}
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
-                          isSelected
-                            ? "bg-amber-600 text-white font-bold shadow-xs"
-                            : "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
-                        }`}
-                      >
-                        {isSelected ? `✓ ${tag}` : `+ ${tag}`}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-amber-600" />
-                    BeeGPT Clinical Analysis
-                  </span>
-                  <button
-                    type="button"
-                    onClick={runAiInsights}
-                    disabled={aiLoading}
-                    className="px-3 py-1 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50"
-                  >
-                    {aiLoading ? (
-                      <>
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                        <span>Analyzing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-3 h-3" />
-                        <span>Analyze Note</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {aiText && (
-                  <div className="p-3 rounded-xl bg-white/80 dark:bg-stone-900/80 border border-amber-200 dark:border-amber-900/40 text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
-                    <MarkdownRenderer content={aiText} />
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="px-4 py-2.5 rounded-full border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 font-medium text-xs hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-6 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
-                >
-                  {saving ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Save to Hive</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
           </div>
         )}
       </div>
