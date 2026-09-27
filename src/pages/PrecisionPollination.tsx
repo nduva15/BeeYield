@@ -341,7 +341,15 @@ const PrecisionPollination = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
-                      className="text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto"
+                      className="text-xl md:text-2xl font-medium text-neutral-800 leading-relaxed mb-4 max-w-3xl mx-auto italic"
+                  >
+                      “Precision pollination: where technology meets nature to ensure every flower blooms with potential.”
+                  </motion.p>
+                  <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 }}
+                      className="text-base text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto"
                   >
                       Accountability. Actionable data. And a commitment to the strongest bees available for your orchards.
                   </motion.p>

@@ -125,7 +125,7 @@ export default function PrecisionDrilldown({ isOpen, onClose, embedded = false, 
             <Target className="w-7 h-7 text-honey" />
             <div>
               <h1 className="font-display text-2xl font-bold text-honey">Precision Pollination Drilldown</h1>
-              <p className="text-xs text-muted-foreground">Drop spacing • orientation • overlap • wind compass • slope modifiers</p>
+              <p className="text-xs text-muted-foreground italic">“Precision pollination: where technology meets nature to ensure every flower blooms with potential.”</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

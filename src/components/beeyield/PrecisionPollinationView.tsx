@@ -1,6 +1,8 @@
 import React from 'react';
 import {
-    Map as MapIcon,
+    Sparkles,
+  Quote,
+  Map as MapIcon,
     Layers,
     Search,
     Info,
@@ -881,7 +883,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                 icon={Target}
                 label="BeeYield AI Field Ops"
                 title={<>Precision <span className="text-[#1B9157]">Pollination</span> Engine</>}
-                subtitle="Strategic spatial optimization and hive placement logistics."
+                subtitle="Precision pollination: where technology meets nature to ensure every flower blooms with potential."
                 actions={
                     !activeSubPageOverride && (
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -1034,6 +1036,24 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                         exit={{ opacity: 0, scale: 0.98 }}
                         className="space-y-6"
                     >
+                        {/* Precision Pollination Vision Statement */}
+                        <div className="relative overflow-hidden rounded-2xl border border-[#1B9157]/20 bg-gradient-to-r from-[#1B9157]/10 via-[#F4D03F]/5 to-transparent p-4 sm:p-5 shadow-sm">
+                            <div className="flex items-center gap-3.5">
+                                <div className="w-10 h-10 rounded-xl bg-[#1B9157]/15 border border-[#1B9157]/25 flex items-center justify-center shrink-0 shadow-sm">
+                                    <Sparkles className="w-5 h-5 text-[#1B9157]" />
+                                </div>
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[9px] font-black uppercase tracking-wider text-[#1B9157]">Precision Mission</span>
+                                        <span className="text-[10px] text-muted-foreground">•</span>
+                                        <span className="text-[9px] font-bold text-muted-foreground">BeeYield AI Field Ops</span>
+                                    </div>
+                                    <p className="text-sm sm:text-base font-bold text-foreground tracking-tight leading-snug italic">
+                                        “Precision pollination: where technology meets nature to ensure every flower blooms with potential.”
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                             <div className={cn(glass.card, "lg:col-span-2 p-6 flex flex-col justify-between relative overflow-hidden border-border/ shadow-sm")}>
                                 <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#1B9157]/5 blur-[120px] rounded-full pointer-events-none" />
