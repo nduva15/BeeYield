@@ -87,6 +87,7 @@ export interface AddHiveModalProps {
   onSuccess?: (newHive: AddHiveSubmitData) => void;
   onOpenScanner?: () => void;
   scannedSerial?: string;
+  onSwitchToApiary?: () => void;
 }
 
 export function AddHiveModal({
@@ -99,6 +100,7 @@ export function AddHiveModal({
   onSuccess,
   onOpenScanner,
   scannedSerial,
+  onSwitchToApiary,
 }: AddHiveModalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
@@ -303,6 +305,30 @@ export function AddHiveModal({
         className="w-full max-w-[430px] bg-[#FAF4EE] min-h-[540px] max-h-[92vh] rounded-[28px] shadow-2xl overflow-y-auto flex flex-col p-6 sm:p-7 text-stone-900 border border-stone-300/40 relative select-none animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Switcher Tab Header if onSwitchToApiary provided */}
+        {onSwitchToApiary && (
+          <div className="bg-stone-200/60 -mx-6 -mt-6 sm:-mx-7 sm:-mt-7 mb-4 px-6 pt-3 pb-2 border-b border-stone-300/80 flex items-center justify-between gap-2">
+            <span className="text-[10px] font-black uppercase tracking-wider text-stone-500">
+              New Record Asset
+            </span>
+            <div className="flex items-center gap-1 bg-white/80 p-0.5 rounded-xl border border-stone-300 shadow-2xs">
+              <button
+                type="button"
+                onClick={onSwitchToApiary}
+                className="px-3 py-1 rounded-lg text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors"
+              >
+                📍 Add Apiary
+              </button>
+              <button
+                type="button"
+                className="px-3 py-1 rounded-lg text-xs font-bold bg-[#FFB800] text-stone-950 shadow-xs"
+              >
+                🐝 Add Hive
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Top Header matching mobile reference */}
         <div className="relative flex items-center justify-between pb-6 pt-1">
           <button
