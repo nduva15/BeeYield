@@ -35,6 +35,7 @@ import {
 } from "@/lib/user-hives";
 import { CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 import FrameSenseToolPage from "./FrameSenseToolPage";
+import NotesPage from "./NotesPage";
 
 export interface SyrupFeedLog {
   id: string;
@@ -54,6 +55,7 @@ export interface SyrupFeedingToolPageProps {
   embedded?: boolean;
   onOpenFrameSense?: (hiveId: string) => void;
   onOpenInspections?: (hiveId: string) => void;
+  onOpenNotes?: (hiveId: string) => void;
 }
 
 export function SyrupFeedingToolPage({
@@ -63,6 +65,7 @@ export function SyrupFeedingToolPage({
   embedded = false,
   onOpenFrameSense,
   onOpenInspections,
+  onOpenNotes,
 }: SyrupFeedingToolPageProps) {
   const { user, profile } = useAuth();
 
@@ -97,8 +100,9 @@ export function SyrupFeedingToolPage({
   // Sub-nav tab: "syrup" (active), "hive_state", "framesense", "notes", "inspection"
   const [activeSubTab, setActiveSubTab] = useState<"syrup" | "hive_state" | "framesense" | "notes" | "inspection">("syrup");
 
-  // Local FrameSense intact navigation
+  // Local FrameSense and Notes intact navigation
   const [isFrameSenseOpen, setIsFrameSenseOpen] = useState(false);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
 
   // View mode inside Syrup: "calculator" vs "feeding_history"
   const [viewMode, setViewMode] = useState<"calculator" | "feeding_history">("calculator");
@@ -386,7 +390,11 @@ export function SyrupFeedingToolPage({
           <button
             type="button"
             onClick={() => {
-              toast.info(`Notes for ${hiveDisplayName}: Regular syrup feeding and comb drawing noted.`);
+              if (onOpenNotes) {
+                onOpenNotes(selectedHive.id);
+              } else {
+                setIsNotesOpen(true);
+              }
             }}
             className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer group"
           >
@@ -838,6 +846,20 @@ export function SyrupFeedingToolPage({
           onClose={() => setIsFrameSenseOpen(false)}
           initialHiveId={selectedHive.id}
           onOpenSyrup={() => setIsFrameSenseOpen(false)}
+        />
+      )}
+
+      {/* Notes Nested Intact Navigation */}
+      {isNotesOpen && (
+        <NotesPage
+          isOpen={isNotesOpen}
+          onClose={() => setIsNotesOpen(false)}
+          initialHiveId={selectedHive.id}
+          onOpenSyrup={() => setIsNotesOpen(false)}
+          onOpenFrameSense={() => {
+            setIsNotesOpen(false);
+            setIsFrameSenseOpen(true);
+          }}
         />
       )}
     </div>

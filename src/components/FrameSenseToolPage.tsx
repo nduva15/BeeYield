@@ -39,6 +39,7 @@ import {
 } from "@/lib/user-hives";
 import { CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 import SyrupFeedingToolPage from "./SyrupFeedingToolPage";
+import NotesPage from "./NotesPage";
 
 export interface FrameSenseAnalysis {
   id: string;
@@ -72,6 +73,7 @@ export interface FrameSenseToolPageProps {
   embedded?: boolean;
   onOpenSyrup?: (hiveId: string) => void;
   onOpenInspections?: (hiveId: string) => void;
+  onOpenNotes?: (hiveId: string) => void;
 }
 
 export function FrameSenseToolPage({
@@ -81,6 +83,7 @@ export function FrameSenseToolPage({
   embedded = false,
   onOpenSyrup,
   onOpenInspections,
+  onOpenNotes,
 }: FrameSenseToolPageProps) {
   const { user, profile } = useAuth();
 
@@ -117,8 +120,9 @@ export function FrameSenseToolPage({
   const [currentView, setCurrentView] = useState<"add_photos" | "view_report" | "list">("add_photos");
   const [selectedReport, setSelectedReport] = useState<FrameSenseAnalysis | null>(null);
 
-  // Switch to Syrup intact
+  // Switch to Syrup or Notes intact
   const [isSyrupOpen, setIsSyrupOpen] = useState(false);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
 
   // Photos for new analysis
   const [middlePhoto, setMiddlePhoto] = useState<string | null>(null);
@@ -437,7 +441,11 @@ export function FrameSenseToolPage({
           <button
             type="button"
             onClick={() => {
-              toast.info(`Notes for ${hiveDisplayName}: Regular comb inspections recorded.`);
+              if (onOpenNotes) {
+                onOpenNotes(selectedHive.id);
+              } else {
+                setIsNotesOpen(true);
+              }
             }}
             className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer group"
           >
@@ -931,6 +939,20 @@ export function FrameSenseToolPage({
           onClose={() => setIsSyrupOpen(false)}
           initialHiveId={selectedHive.id}
           onOpenFrameSense={() => setIsSyrupOpen(false)}
+        />
+      )}
+
+      {/* Intact Notes Tool Navigation */}
+      {isNotesOpen && (
+        <NotesPage
+          isOpen={isNotesOpen}
+          onClose={() => setIsNotesOpen(false)}
+          initialHiveId={selectedHive.id}
+          onOpenFrameSense={() => setIsNotesOpen(false)}
+          onOpenSyrup={() => {
+            setIsNotesOpen(false);
+            setIsSyrupOpen(true);
+          }}
         />
       )}
     </div>
