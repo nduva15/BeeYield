@@ -84,7 +84,7 @@ export const broadcastAvatarUpdate = async (userId: string, avatarUrl: string): 
 
     // 5. Persist to Supabase profiles table
     try {
-      await supabase.from("profiles").upsert({
+      await (supabase.from("profiles") as any).upsert({
         id: uid,
         avatar_url: avatarUrl,
         updated_at: new Date().toISOString(),
@@ -204,8 +204,7 @@ export const subscribeToAvatarSync = (
   const checkRemoteAvatar = async () => {
     if (!supabase || !uid || !isSubscribed) return;
     try {
-      const { data } = await supabase
-        .from("profiles")
+      const { data } = await (supabase.from("profiles") as any)
         .select("avatar_url")
         .eq("id", uid)
         .maybeSingle();

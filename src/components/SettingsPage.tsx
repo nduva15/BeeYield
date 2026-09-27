@@ -337,10 +337,10 @@ export default function SettingsPage({
         const parsed = JSON.parse(localStored);
         const p = parsed.profile || parsed;
         if (p) {
-          if (p.full_name) setFullName((prev) => prev || p.full_name);
-          if (p.phone) setPhone((prev) => prev || p.phone);
-          if (p.country) setCountry((prev) => prev || p.country);
-          if (p.email) setEmail((prev) => prev || p.email);
+          if (p.full_name) setFullName((prev: string) => prev || p.full_name);
+          if (p.phone) setPhone((prev: string) => prev || p.phone);
+          if (p.country) setCountry((prev: string) => prev || p.country);
+          if (p.email) setEmail((prev: string) => prev || p.email);
         }
       }
     } catch {}

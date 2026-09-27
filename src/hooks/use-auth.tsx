@@ -107,8 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadProfile = useCallback(async (uid: string) => {
     try {
-      const { data } = await supabase
-        .from("profiles")
+      const { data } = await (supabase.from("profiles") as any)
         .select("id,email,full_name,phone,country,avatar_url")
         .eq("id", uid)
         .maybeSingle();
@@ -118,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.getItem("beeyield_user_avatar");
 
       if (data) {
-        const p = data as Profile;
+        const p = data as unknown as Profile;
         if (!p.avatar_url && cachedAvatar) {
           p.avatar_url = cachedAvatar;
         }
