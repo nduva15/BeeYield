@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Search, X, PanelLeftClose } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import beeyieldLogo from "@/assets/beeyield-logo.png";
 
 export type ToolItem = { label: string; icon: LucideIcon; onClick: () => void };
 export type ToolGroup = { label: string; items: ToolItem[] };
@@ -56,17 +55,22 @@ export default function ToolSidebar({
               (e.target as HTMLImageElement).src = "/favicon-192.png";
             }}
           />
-          <div className="min-w-0">
-            <p className="font-display text-sm font-bold text-[#f59e0b] leading-tight">BeeYield Dashboard</p>
-            <p className="text-[10px] text-muted-foreground">{total} tools</p>
+          <div className="flex items-center min-w-0 flex-1">
+            <span className="font-display text-sm font-bold text-[#f59e0b] leading-none truncate">
+              BeeYield Dashboard
+            </span>
           </div>
           <button
             onClick={onClose}
             aria-label="Hide tools"
-            className="ml-auto p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground"
+            className="ml-auto p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground shrink-0 transition-colors"
           >
-            <span className="lg:hidden"><X className="w-4 h-4" /></span>
-            <span className="hidden lg:inline"><PanelLeftClose className="w-4 h-4" /></span>
+            <span className="lg:hidden">
+              <X className="w-4 h-4" />
+            </span>
+            <span className="hidden lg:inline">
+              <PanelLeftClose className="w-4 h-4" />
+            </span>
           </button>
         </div>
 
@@ -76,7 +80,7 @@ export default function ToolSidebar({
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search tools"
+              placeholder={`Search ${total} tools...`}
               aria-label="Search tools"
               className="w-full bg-background border border-border rounded-lg pl-8 pr-2 py-1.5 text-xs outline-none focus:border-primary/50"
             />
@@ -89,7 +93,9 @@ export default function ToolSidebar({
           )}
           {filtered.map((g) => (
             <div key={g.label}>
-              <p className="px-2 mb-1 text-[10px] uppercase tracking-wide text-honey/80">{g.label}</p>
+              <p className="px-2 mb-1 text-[10px] uppercase tracking-wide text-honey/80">
+                {g.label}
+              </p>
               <div className="space-y-0.5">
                 {g.items.map((item) => (
                   <button
@@ -97,15 +103,15 @@ export default function ToolSidebar({
                     onClick={() => {
                       onClose();
                       if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
-                          window.requestAnimationFrame(() => {
-                              React.startTransition(() => {
-                                  item.onClick();
-                              });
-                          });
-                      } else {
+                        window.requestAnimationFrame(() => {
                           React.startTransition(() => {
-                              item.onClick();
+                            item.onClick();
                           });
+                        });
+                      } else {
+                        React.startTransition(() => {
+                          item.onClick();
+                        });
                       }
                     }}
                     className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
