@@ -290,18 +290,24 @@ const InLandPollination = () => {
                               style={{ transitionDuration: '2000ms' }}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
-                          <div className="absolute bottom-12 left-12 right-12 p-10 bg-white/5 backdrop-blur-2xl rounded-[2rem] border border-white/10 shadow-2xl">
-                              <div className="flex items-center gap-4 mb-6">
-                                  <div className="h-0.5 w-12 bg-beeyield-green" />
-                                  <span className="text-[10px] font-bold text-beeyield-green">CEO, BeeYield</span>
+                          <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-10 p-6 sm:p-8 bg-neutral-950/80 backdrop-blur-2xl rounded-[2rem] border border-white/15 shadow-2xl">
+                              <div className="flex items-center gap-3 mb-4">
+                                  <Quote className="w-5 h-5 text-beeyield-green shrink-0 fill-beeyield-green/20" />
+                                  <div className="h-0.5 w-10 bg-beeyield-green" />
+                                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-beeyield-green">Timothy Nduva • Founder & CEO</span>
                               </div>
-                              <p className="text-white text-xl md:text-2xl font-bold leading-tight tracking-tight">
-                                  "PLIP lets us see the actual number of bees that visit the flowers. Now growers can check the amount of pollination in their lands 24/7."
+                              <p className="text-white text-base sm:text-lg md:text-xl font-bold leading-relaxed tracking-tight italic">
+                                  “Pollination is mission-critical to fruit production, but it is still too often managed through assumption. Our goal is to make precision pollination scalable across crops and useful as a day-to-day production tool.”
                               </p>
-                              <div className="mt-4 flex items-center gap-4">
-                                <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="w-8 h-8 rounded-full object-cover border-2 border-beeyield-green/30" />
-                                <span className="font-bold text-white text-sm">Timothy Nduva</span>
-                                <span className="text-xs text-white/50 border-l border-white/20 pl-4">CEO, BeeYield</span>
+                              <div className="mt-4 flex items-center gap-3 pt-3 border-t border-white/10">
+                                <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="w-9 h-9 rounded-full object-cover border-2 border-beeyield-green/40 shadow-sm" />
+                                <div>
+                                  <div className="font-bold text-white text-sm flex items-center gap-2">
+                                    Timothy Nduva
+                                    <span className="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">Founder & CEO</span>
+                                  </div>
+                                  <div className="text-xs text-white/60">BeeYield Precision Pollination</div>
+                                </div>
                               </div>
                           </div>
                       </div>
@@ -352,7 +358,48 @@ const InLandPollination = () => {
           </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
+            {/* ───────────────────────────────────────────────────────────────
+          EXECUTIVE VISION • TIMOTHY NDUVA STATEMENT
+      ─────────────────────────────────────────────────────────────── */}
+      <section className="py-20 lg:py-28 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800/80">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-beeyield-green/15 via-transparent to-transparent pointer-events-none" />
+          <div className="container mx-auto px-4 max-w-4xl relative z-10 text-center">
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+              >
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-beeyield-green/10 border border-beeyield-green/20 text-beeyield-green text-[11px] font-bold uppercase tracking-widest mb-8">
+                      <Quote className="w-3.5 h-3.5 fill-beeyield-green/20" />
+                      Founder's Perspective
+                  </div>
+                  <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight text-white mb-10 max-w-3xl mx-auto">
+                      “Pollination is mission-critical to fruit production, but it is still too often managed through assumption. Our goal is to make precision pollination scalable across crops and useful as a day-to-day production tool.”
+                  </blockquote>
+                  <div className="flex items-center justify-center gap-4">
+                      <img
+                          src={TIMOTHY_PHOTO}
+                          alt="Timothy Nduva"
+                          className="w-14 h-14 rounded-full object-cover border-2 border-beeyield-green shadow-xl"
+                      />
+                      <div className="text-left">
+                          <div className="font-bold text-white text-base sm:text-lg flex items-center gap-2">
+                              Timothy Nduva
+                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Founder & CEO
+                              </span>
+                          </div>
+                          <div className="text-xs sm:text-sm text-neutral-400 font-medium">
+                              BeeYield • Precision Apiculture & Agricultural Intelligence
+                          </div>
+                      </div>
+                  </div>
+              </motion.div>
+          </div>
+      </section>
+
+{/* ═══════════════════════════════════════════════════════════════
           HOW IT WORKS GRID + PRODUCT SHOWCASE
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-32 bg-neutral-50/50 border-y border-neutral-100 relative">
