@@ -535,39 +535,58 @@ export function SyrupFeedingToolPage({
               </button>
 
               {showHowToPrepare && (
-                <div className="space-y-2.5 text-xs sm:text-[12.5px] text-stone-700 dark:text-stone-300 leading-relaxed font-normal pt-1">
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-stone-900 dark:text-white shrink-0">1.</span>
+                <div className="space-y-3 text-xs sm:text-[12.5px] text-stone-700 dark:text-stone-300 leading-relaxed font-normal pt-1">
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      1
+                    </span>
                     <p>
-                      <strong>Use white sugar, pure sucrose.</strong> Not brown, not cane, not unrefined. Dark sugars carry residues bees cannot digest — in winter feed that is a straight road to dysentery in the colony.
+                      <strong className="text-stone-900 dark:text-white">Stick strictly to pure white granulated sugar (food-grade sucrose).</strong> Avoid raw, brown, organic cane, or unrefined sugar varieties. Dark syrups contain complex carbohydrates and mineral ash that honeybees cannot break down, which quickly causes fatal bowel infections and dysentery.
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-stone-900 dark:text-white shrink-0">2.</span>
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      2
+                    </span>
                     <p>
-                      <strong>Weigh the sugar on a scale, do not measure it by volume.</strong> 1 kg of sugar ≠ 1 litre of sugar! Always measure sugar by weight (kg) and water by volume (litres).
+                      <strong className="text-stone-900 dark:text-white">Weigh sugar precisely on a digital scale rather than using a measuring jug.</strong> One liter of granular sugar weighs only about 0.85 kg, not 1 full kilogram. Measuring with volumetric cups dilutes the mixture, creating a weaker syrup than intended.
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-stone-900 dark:text-white shrink-0">3.</span>
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      3
+                    </span>
                     <p>
-                      <strong>Heat the water, then remove from heat or turn down low before stirring in sugar.</strong> Never boil the sugar solution as caramelization creates HMF (Hydroxymethylfurfural), which is toxic to bees.
+                      <strong className="text-stone-900 dark:text-white">Bring water to a boil, take it off the burner, and only then stir in the sugar.</strong> Syrup must never be boiled directly over a flame: high thermal exposure turns sucrose into Hydroxymethylfurfural (HMF), a compound poisonous to bees. The residual hot water is entirely sufficient to dissolve all grains.
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-stone-900 dark:text-white shrink-0">4.</span>
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      4
+                    </span>
                     <p>
-                      <strong>Let cool to lukewarm (~20–25°C)</strong> before pouring into hive feeders to avoid scalding bees or warping feeder plastic.
+                      <strong className="text-stone-900 dark:text-white">Pour sugar in gradual portions and stir until the solution turns clear.</strong> Granules left at the bottom of the feeder will be ignored by bees and accelerate crystallization throughout the feeder. Thick 2:1 winter feed sits right at maximum physical solubility, requiring very hot water and steady stirring.
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-2">
-                    <span className="font-bold text-stone-900 dark:text-white shrink-0">5.</span>
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      5
+                    </span>
                     <p>
-                      <strong>Feed at dusk or late afternoon</strong> to prevent scout bees from other apiaries initiating robbing attacks.
+                      <strong className="text-stone-900 dark:text-white">Administer feed lukewarm (~20–25°C), never hot.</strong> Pouring warm syrup into the feeder spikes core hive temperatures and condensation levels, stressing the brood nest and nurse bees.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      6
+                    </span>
+                    <p>
+                      <strong className="text-stone-900 dark:text-white">Mix only the volume your colony will finish within 48 to 72 hours.</strong> Syrup sitting stagnant inside the hive or bucket rapidly attracts wild yeasts and ferments. Feeding fermented syrup ruins gut health and causes severe winter dysentery.
                     </p>
                   </div>
                 </div>
