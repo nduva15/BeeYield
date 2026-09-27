@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import {
   Trees,
   Sprout,
@@ -611,3 +611,5 @@ export default function PandaMitiPage() {
     </div>
   );
 }
+
+export { PandaMitiPage, PandaMitiPage as PandaMiti };

@@ -9,12 +9,14 @@ if (typeof window !== 'undefined') {
     initPrefetch();
 
     window.addEventListener('vite:preloadError', (event) => {
+        event.preventDefault();
         const lastReload = Number(sessionStorage.getItem('vite_preload_reload_time') || '0');
         const now = Date.now();
-        if (now - lastReload > 10000) {
+        if (now - lastReload > 8000) {
             sessionStorage.setItem('vite_preload_reload_time', String(now));
-            console.warn('Vite preload dynamic import error detected (likely new deployment). Reloading page...', event);
-            window.location.reload();
+            console.warn('Vite preload dynamic import error detected (likely new deployment). Reloading with cache bust...', event);
+            const sep = window.location.href.includes('?') ? '&' : '?';
+            window.location.href = window.location.href.replace(/([?&])_v=[^&]*/, '') + sep + '_v=' + now;
         } else {
             console.error('Vite preload dynamic import error persisted after reload:', event);
         }
@@ -101,7 +103,7 @@ const Impact = lazy(() => retryLazyImport(() => import('@/pages/Impact')))
 const ESG = lazy(() => retryLazyImport(() => import('@/pages/ESG')))
 const Commitment = lazy(() => retryLazyImport(() => import('@/pages/Commitment')))
 const OurStory = lazy(() => retryLazyImport(() => import('@/pages/OurStory')))
-const PandaMiti = lazy(() => retryLazyImport(() => import('@/pages/PandaMiti')))
+const PandaMiti = lazy(() => retryLazyImport(() => import('@/pages/PandaMiti').then((m: any) => ({ default: m.default || m.PandaMitiPage || m.PandaMiti }))))
 
 const PrecisionPollination = lazy(() => retryLazyImport(() => import('@/pages/PrecisionPollination')))
 const PollinationSolutions = lazy(() => retryLazyImport(() => import('@/pages/PollinationSolutions')))
