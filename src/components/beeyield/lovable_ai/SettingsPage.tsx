@@ -238,7 +238,6 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         }
       }
     } catch {}
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId]);
 
   const loadPrefs = useCallback(async () => {
