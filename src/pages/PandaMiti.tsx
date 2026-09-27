@@ -16,7 +16,6 @@ import {
   Award,
   BookOpen,
   ArrowLeft,
-  Share2,
   Droplets,
   Heart,
   Globe2,
@@ -26,8 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import beeyieldLogo from "@/assets/beeyield-logo.png";
-import { treeSpeciesData } from "@/components/PandaMitiSection";
+import { treeSpeciesData } from "@/components/beeyield/PandaMitiSection";
 
 export default function PandaMitiPage() {
   const [pledgeTrees, setPledgeTrees] = useState<number>(10);
@@ -54,70 +52,8 @@ export default function PandaMitiPage() {
     );
   };
 
-  const copyShareLink = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Initiative link copied to clipboard!");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-300">
-      {/* Top Header Navigation */}
-      <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/90 backdrop-blur-md">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2 group">
-              <img src={beeyieldLogo} alt="BeeYield" className="h-8 w-auto transition-transform group-hover:scale-105" />
-              <span className="font-display font-bold text-base sm:text-lg text-foreground tracking-tight">
-                BeeYield
-              </span>
-            </Link>
-            <span className="text-muted-foreground/40">/</span>
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              <Trees className="w-3.5 h-3.5" />
-              <span>Panda Miti</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link
-              to="/about"
-              className="text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden md:inline-flex"
-            >
-              Our Story
-            </Link>
-            <Link
-              to="/blogs"
-              className="text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden md:inline-flex"
-            >
-              Field Blogs
-            </Link>
-            <Link
-              to="/careers"
-              className="text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-flex"
-            >
-              Careers
-            </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={copyShareLink}
-              className="h-8 px-2.5 text-xs rounded-xl border-border"
-            >
-              <Share2 className="w-3.5 h-3.5 sm:mr-1.5" />
-              <span className="hidden sm:inline">Share</span>
-            </Button>
-            <Button
-              asChild
-              size="sm"
-              className="h-8 px-3 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-            >
-              <a href="#support">Plant a Tree</a>
-            </Button>
-          </div>
-        </div>
-      </header>
 
       {/* Hero Banner */}
       <section className="relative py-16 sm:py-24 overflow-hidden border-b border-border/40">
