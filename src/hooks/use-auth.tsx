@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback, type React
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { TIMOTHY_DEFAULT_AVATAR } from "@/lib/preset-avatars";
+import { broadcastAvatarUpdate, subscribeToAvatarSync } from "@/services/avatarSyncService";
 
 export type Profile = {
   id: string;
@@ -82,33 +83,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [loading, setLoading] = useState(true);
 
-  // Synchronize avatar updates across components
+  // Synchronize avatar updates across laptop, phone, and tablet automatedly
   useEffect(() => {
-    const handleAvatarUpdate = (e: Event) => {
-      const customEvent = e as CustomEvent<{ avatar_url: string }>;
-      const newUrl = customEvent?.detail?.avatar_url;
-      if (newUrl) {
-        setUser((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            user_metadata: {
-              ...(prev.user_metadata || {}),
-              avatar_url: newUrl,
-            },
-          } as User;
-        });
-        setProfile((prev) => (prev ? { ...prev, avatar_url: newUrl } : prev));
-      }
-    };
+    const uid = user?.id || profile?.id || "usr_kibwezi_owner_01";
+    const unsubscribe = subscribeToAvatarSync(uid, (newUrl) => {
+      setUser((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          user_metadata: {
+            ...(prev.user_metadata || {}),
+            avatar_url: newUrl,
+          },
+        } as User;
+      });
+      setProfile((prev) => (prev ? { ...prev, avatar_url: newUrl } : prev));
+    });
 
-    window.addEventListener("beeyield-avatar-updated", handleAvatarUpdate);
-    return () => window.removeEventListener("beeyield-avatar-updated", handleAvatarUpdate);
-  }, []);
+    return () => {
+      unsubscribe();
+    };
+  }, [user?.id, profile?.id]);
 
   const loadProfile = useCallback(async (uid: string) => {
     try {
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from("profiles")
         .select("id,email,full_name,phone,country,avatar_url")
         .eq("id", uid)
@@ -124,6 +123,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           p.avatar_url = cachedAvatar;
         }
         setProfile(p);
+        try {
+          const stored = localStorage.getItem("beeyield_local_user");
+          const parsed = stored ? JSON.parse(stored) : {};
+          localStorage.setItem("beeyield_local_user", JSON.stringify({ ...parsed, profile: p }));
+        } catch {}
       } else if (cachedAvatar) {
         setProfile((prev) => (prev ? { ...prev, avatar_url: cachedAvatar } : prev));
       }
@@ -143,6 +147,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           s.user.user_metadata = { ...(s.user.user_metadata || {}), avatar_url: cachedAvatar };
         }
         setUser(s.user);
+        try {
+          const rawName =
+            s.user.user_metadata?.full_name ||
+            s.user.user_metadata?.name ||
+            (s.user.email ? s.user.email.split("@")[0] : null);
+          const initialProfile: Profile = {
+            id: s.user.id,
+            email: s.user.email || null,
+            full_name: rawName,
+            phone: s.user.user_metadata?.phone || null,
+            country: s.user.user_metadata?.country || null,
+            avatar_url: cachedAvatar || null,
+          };
+          localStorage.setItem(
+            "beeyield_local_user",
+            JSON.stringify({ user: s.user, profile: initialProfile }),
+          );
+        } catch {}
         void loadProfile(s.user.id);
       } else {
         // If logged out from supabase, check if local user exists
@@ -173,6 +195,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
         }
         setUser(data.session.user);
+        try {
+          const rawName =
+            data.session.user.user_metadata?.full_name ||
+            data.session.user.user_metadata?.name ||
+            (data.session.user.email ? data.session.user.email.split("@")[0] : null);
+          const initialProfile: Profile = {
+            id: data.session.user.id,
+            email: data.session.user.email || null,
+            full_name: rawName,
+            phone: data.session.user.user_metadata?.phone || null,
+            country: data.session.user.user_metadata?.country || null,
+            avatar_url: cachedAvatar || null,
+          };
+          localStorage.setItem(
+            "beeyield_local_user",
+            JSON.stringify({ user: data.session.user, profile: initialProfile }),
+          );
+        } catch {}
         void loadProfile(data.session.user.id);
       }
       setLoading(false);
@@ -199,46 +239,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setProfile((prev) => (prev ? { ...prev, avatar_url: url } : prev));
 
-      // 2. Persist in localStorage
-      try {
-        localStorage.setItem(`beeyield_user_avatar_${uid}`, url);
-        localStorage.setItem("beeyield_user_avatar", url);
-
-        const stored = localStorage.getItem("beeyield_local_user");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed.user) {
-            parsed.user.user_metadata = { ...(parsed.user.user_metadata || {}), avatar_url: url };
-          }
-          if (parsed.profile) {
-            parsed.profile.avatar_url = url;
-          }
-          localStorage.setItem("beeyield_local_user", JSON.stringify(parsed));
-        }
-      } catch {}
-
-      // 3. Persist to Supabase Auth metadata
-      if (session?.user) {
-        await supabase.auth.updateUser({ data: { avatar_url: url } }).catch(() => {});
-      }
-
-      // 4. Persist to Supabase profiles database table
-      if (uid) {
-        try {
-          await (supabase as any).from("profiles").upsert({
-            id: uid,
-            avatar_url: url,
-            updated_at: new Date().toISOString(),
-          });
-        } catch {}
-      }
-
-      // 5. Broadcast custom event
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("beeyield-avatar-updated", { detail: { avatar_url: url } })
-        );
-      }
+      // 2. Broadcast and persist across laptop, phone, and tablet automatedly
+      await broadcastAvatarUpdate(uid, url);
 
       return true;
     } catch (err) {
@@ -280,7 +282,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(
         "beeyield_local_user",
-        JSON.stringify({ user: demoUser, profile: demoProfile })
+        JSON.stringify({ user: demoUser, profile: demoProfile }),
       );
     } catch {}
 

@@ -59,6 +59,7 @@ import { NavItem } from "./DashboardSidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import AvatarPickerDialog from "./AvatarPickerDialog";
+import { subscribeToAvatarSync, getCachedAvatar } from "@/services/avatarSyncService";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
   DropdownMenu,
@@ -141,13 +142,40 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     beeyieldUser?.user_metadata?.full_name || user?.user_metadata?.full_name || "";
   const userEmail = beeyieldUser?.email || user?.email || "";
   const userName = (userFullName || userEmail?.split("@")[0] || "Timothy").split(" ")[0];
-  const avatarUrl =
-    user?.user_metadata?.avatar_url ||
-    beeyieldUser?.user_metadata?.avatar_url ||
-    (typeof window !== "undefined"
-      ? localStorage.getItem(`beeyield_user_avatar_${user?.id || "usr_kibwezi_owner_01"}`) ||
-        localStorage.getItem("beeyield_user_avatar")
-      : null);
+  const effectiveUserId = user?.id || beeyieldUser?.id || "usr_kibwezi_owner_01";
+
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(() => {
+    return (
+      user?.user_metadata?.avatar_url ||
+      beeyieldUser?.user_metadata?.avatar_url ||
+      getCachedAvatar(effectiveUserId)
+    );
+  });
+
+  // Automated cross-device and cross-tab avatar sync (laptop, phone, tablet)
+  React.useEffect(() => {
+    const unsubscribe = subscribeToAvatarSync(effectiveUserId, (newUrl) => {
+      setAvatarUrl(newUrl);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [effectiveUserId]);
+
+  React.useEffect(() => {
+    const directUrl =
+      user?.user_metadata?.avatar_url ||
+      beeyieldUser?.user_metadata?.avatar_url ||
+      getCachedAvatar(effectiveUserId);
+    if (directUrl && directUrl !== avatarUrl) {
+      setAvatarUrl(directUrl);
+    }
+  }, [
+    user?.user_metadata?.avatar_url,
+    beeyieldUser?.user_metadata?.avatar_url,
+    effectiveUserId,
+    avatarUrl,
+  ]);
 
   const navCategories = React.useMemo(
     () => [
@@ -257,14 +285,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         ? "Hives & Colonies"
         : activeTab.replace(/-/g, " "));
 
-  const handleTabSelect = React.useCallback((tabId: string) => {
-    setDropdownOpen(false);
-    requestAnimationFrame(() => {
-      React.startTransition(() => {
-        onTabChange(tabId);
+  const handleTabSelect = React.useCallback(
+    (tabId: string) => {
+      setDropdownOpen(false);
+      requestAnimationFrame(() => {
+        React.startTransition(() => {
+          onTabChange(tabId);
+        });
       });
-    });
-  }, [onTabChange]);
+    },
+    [onTabChange],
+  );
 
   return (
     <header
@@ -524,7 +555,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <div className="p-3 mb-2 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 dark:border-amber-500/15">
               <div className="flex items-center gap-3">
                 <div
-                  onSelect={() => { requestAnimationFrame(() => { React.startTransition(() => { setIsAvatarPickerOpen(true); }); }); }}
+                  onSelect={() => {
+                    requestAnimationFrame(() => {
+                      React.startTransition(() => {
+                        setIsAvatarPickerOpen(true);
+                      });
+                    });
+                  }}
                   className="relative group/avatar cursor-pointer"
                   title="Click to change avatar or upload photo"
                 >
@@ -566,7 +603,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <div className="space-y-1">
               {/* Choose / Change Avatar Button */}
               <DropdownMenuItem
-                onSelect={() => { requestAnimationFrame(() => { React.startTransition(() => { setIsAvatarPickerOpen(true); }); }); }}
+                onSelect={() => {
+                  requestAnimationFrame(() => {
+                    React.startTransition(() => {
+                      setIsAvatarPickerOpen(true);
+                    });
+                  });
+                }}
                 className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-amber-900 dark:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 dark:bg-amber-500/15 dark:hover:bg-amber-500/25 focus:bg-amber-500/20 dark:focus:bg-amber-500/25 group font-semibold border border-amber-500/20"
               >
                 <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
