@@ -52,6 +52,7 @@ import { CANONICAL_TIMOTHY_HIVES, isTimothyUser } from "@/lib/user-hives";
 import { AddHiveModal, AddHiveSubmitData } from "../AddHiveModal";
 import FrameSenseToolPage from "../FrameSenseToolPage";
 import SyrupFeedingToolPage from "../SyrupFeedingToolPage";
+import NotesPage from "../NotesPage";
 import HiveDetailView from "./HiveDetailView";
 
 export interface BeeYieldHivesViewProps {
@@ -220,9 +221,10 @@ export default function BeeYieldHivesView({
   const [hiveNotes, setHiveNotes] = useState("");
   const [isSavingNotes, setIsSavingNotes] = useState(false);
 
-  // FrameSense and Syrup Tools state (Synced to hive)
+  // FrameSense, Syrup, and Notes Tools state (Synced to hive)
   const [frameSenseOpen, setFrameSenseOpen] = useState(false);
   const [syrupToolOpen, setSyrupToolOpen] = useState(false);
+  const [notesPageOpen, setNotesPageOpen] = useState(false);
   const [activeToolHiveId, setActiveToolHiveId] = useState<string | undefined>(undefined);
 
   const handleOpenFrameSense = (hiveId: string, e?: React.MouseEvent) => {
@@ -677,8 +679,8 @@ export default function BeeYieldHivesView({
     requestAnimationFrame(() => {
       React.startTransition(() => {
         setActiveHive(hive);
-        setHiveNotes(hive.notes || "");
-        setIsNotesModalOpen(true);
+        setActiveToolHiveId(hive.id);
+        setNotesPageOpen(true);
       });
     });
   };
@@ -1925,6 +1927,16 @@ export default function BeeYieldHivesView({
           isOpen={frameSenseOpen}
           onClose={() => setFrameSenseOpen(false)}
           initialHiveId={activeToolHiveId}
+          onOpenNotes={(hiveId) => {
+            setFrameSenseOpen(false);
+            setActiveToolHiveId(hiveId);
+            setNotesPageOpen(true);
+          }}
+          onOpenSyrup={(hiveId) => {
+            setFrameSenseOpen(false);
+            setActiveToolHiveId(hiveId);
+            setSyrupToolOpen(true);
+          }}
         />
       )}
 
@@ -1934,6 +1946,35 @@ export default function BeeYieldHivesView({
           isOpen={syrupToolOpen}
           onClose={() => setSyrupToolOpen(false)}
           initialHiveId={activeToolHiveId}
+          onOpenNotes={(hiveId) => {
+            setSyrupToolOpen(false);
+            setActiveToolHiveId(hiveId);
+            setNotesPageOpen(true);
+          }}
+          onOpenFrameSense={(hiveId) => {
+            setSyrupToolOpen(false);
+            setActiveToolHiveId(hiveId);
+            setFrameSenseOpen(true);
+          }}
+        />
+      )}
+
+      {/* Notes Tool Modal (Synced to hive) */}
+      {notesPageOpen && (
+        <NotesPage
+          isOpen={notesPageOpen}
+          onClose={() => setNotesPageOpen(false)}
+          initialHiveId={activeToolHiveId}
+          onOpenSyrup={(hiveId) => {
+            setNotesPageOpen(false);
+            setActiveToolHiveId(hiveId);
+            setSyrupToolOpen(true);
+          }}
+          onOpenFrameSense={(hiveId) => {
+            setNotesPageOpen(false);
+            setActiveToolHiveId(hiveId);
+            setFrameSenseOpen(true);
+          }}
         />
       )}
     </div>

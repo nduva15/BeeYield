@@ -92,6 +92,7 @@ import TasksPage from "@/components/TasksPage";
 import ForageZonesPage from "@/components/ForageZonesPage";
 import FrameSenseToolPage from "@/components/FrameSenseToolPage";
 import SyrupFeedingToolPage from "@/components/SyrupFeedingToolPage";
+import NotesPage from "@/components/NotesPage";
 import HarvestsPage from "@/components/HarvestsPage";
 import SoundAnalysis from "@/components/SoundAnalysis";
 import IntegrationsPage from "@/components/IntegrationsPage";
@@ -261,6 +262,7 @@ export default function Index() {
   const [shopDashOpen, setShopDashOpen] = useState(false);
   const [frameSenseOpen, setFrameSenseOpen] = useState(false);
   const [syrupToolOpen, setSyrupToolOpen] = useState(false);
+  const [notesPageOpen, setNotesPageOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -545,6 +547,11 @@ export default function Index() {
           label: "Syrup & Nutrition Tool",
           icon: Droplets,
           onClick: () => setSyrupToolOpen(true),
+        },
+        {
+          label: "Hive Notes & Observations",
+          icon: FileText,
+          onClick: () => setNotesPageOpen(true),
         },
         {
           label: "Feeding Schedule Timeline",
@@ -1125,6 +1132,7 @@ export default function Index() {
       <ShopDashboard isOpen={shopDashOpen} onClose={() => setShopDashOpen(false)} />
       <FrameSenseToolPage isOpen={frameSenseOpen} onClose={() => setFrameSenseOpen(false)} />
       <SyrupFeedingToolPage isOpen={syrupToolOpen} onClose={() => setSyrupToolOpen(false)} />
+      <NotesPage isOpen={notesPageOpen} onClose={() => setNotesPageOpen(false)} />
 
       {/* Onboarding Setup Wizard Modal */}
       {onboardingOpen && (
