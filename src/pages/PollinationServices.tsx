@@ -853,6 +853,33 @@ const PollinationServices = () => {
 
             {/* Final CTA Section */}
 
+            
+            {/* ───────────────────────────────────────────────────────────────
+                PROJECT PANDA MITI HOME CALLOUT
+            ─────────────────────────────────────────────────────────────── */}
+            <section className="py-16 bg-neutral-950 text-white border-y border-neutral-800">
+                <div className="container mx-auto px-4 max-w-5xl">
+                    <div className="p-8 sm:p-12 rounded-[2.5rem] bg-gradient-to-r from-emerald-950/80 via-neutral-900 to-emerald-950/80 border border-emerald-500/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div className="space-y-3 text-center md:text-left">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
+                                <Leaf className="w-3.5 h-3.5 text-emerald-400" />
+                                Floral Reforestation Initiative
+                            </div>
+                            <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                                Project Panda Miti: 45,000 Trees for Kibwezi
+                            </h3>
+                            <p className="text-sm sm:text-base text-neutral-300 max-w-xl leading-relaxed">
+                                Join our mission restoring 45,000 indigenous trees across Kenya. 2,500+ trees planted to date, creating vital nectar sanctuaries for African honeybees.
+                            </p>
+                        </div>
+                        <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shrink-0 shadow-lg">
+                            <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                        </Button>
+                    </div>
+                </div>
+            </section>
+
+
             <section className="py-32 relative overflow-hidden bg-[#F0F7F0] text-neutral-900 rounded-[5rem] mx-4 mb-8 border border-green-100">
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-200 rounded-full blur-[120px] -mr-32 -mt-32" />

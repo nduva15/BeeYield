@@ -4,7 +4,6 @@ import Header from "./Header";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
 import { PartnersMarquee } from "./PartnersMarquee";
-import { PandaMitiSection } from "./beeyield/PandaMitiSection";
 
 interface LayoutProps {
   children: ReactNode;
@@ -56,51 +55,6 @@ const Layout = ({ children }: LayoutProps) => {
     );
   }
 
-  // Frontend pages that should NOT have Panda Miti per user specification:
-  // "not shop, contact, team, media, in land in hive diseases verify pages"
-  const excludedPandaMitiPaths = [
-    '/shop',
-    '/products',
-    '/product',
-    '/cart',
-    '/checkout',
-    '/contact',
-    '/team',
-    '/media',
-    '/in-land-pollination',
-    '/in-land-pollination-platform',
-    '/land',
-    '/landing',
-    '/hive',
-    '/hives',
-    '/in-hive',
-    '/in-hive-pollination',
-    '/inhive',
-    '/precision-pollination',
-    '/pollination-solutions',
-    '/pollination-request',
-    '/global-hive-network',
-    '/diseases',
-    '/bee-diseases',
-    '/verify',
-    '/traceability',
-    '/panda-miti', // already the dedicated Panda Miti page
-  ];
-
-  const normalizedPath = (pathname || "").toLowerCase().replace(/\/+$/, "");
-
-  const shouldRenderPandaMiti =
-    !isStandalone &&
-    !excludedPandaMitiPaths.some((excluded) => {
-      const normExcluded = excluded.toLowerCase().replace(/\/+$/, "");
-      return (
-        normalizedPath === normExcluded ||
-        normalizedPath.startsWith(`${normExcluded}/`)
-      );
-    }) &&
-    !normalizedPath.includes("in-hive") &&
-    !normalizedPath.includes("inhive") &&
-    !normalizedPath.includes("precision-pollination");
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -111,11 +65,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
 
-      {shouldRenderPandaMiti && (
-        <section id="panda-miti" className="border-t border-border/40">
-          <PandaMitiSection />
-        </section>
-      )}
+
 
       <PartnersMarquee />
       <Footer />

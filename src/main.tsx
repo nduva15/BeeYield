@@ -184,6 +184,8 @@ root.render(
                                                         <Route path="/team" element={<Team />} />
                                                         <Route path="/careers" element={<Careers />} />
                                                         <Route path="/impact" element={<Impact />} />
+                                                        <Route path="/panda-miti" element={<PandaMiti />} />
+                                                        <Route path="/pandamiti" element={<PandaMiti />} />
                                                         <Route path="/esg" element={<ESG />} />
                                                         <Route path="/commitment" element={<Commitment />} />
                                                         <Route path="/sdg" element={<Commitment />} />

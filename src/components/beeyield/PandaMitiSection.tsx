@@ -1,3 +1,30 @@
+export const treeSpeciesData = [
+  {
+    name: "Acacia senegal & tortilis",
+    localName: "All-Season Bee Acacia",
+    role: "Key nectar source for premium pure acacia honey & natural soil nitrogen fixing",
+    blooms: "Biannual flush (dry season resilient)",
+  },
+  {
+    name: "Melia volkensii",
+    localName: "Mukau (Dryland Mahogany)",
+    role: "Fast-growing indigenous canopy providing crucial hive shade and windbreak",
+    blooms: "Abundant sweet floral nectar",
+  },
+  {
+    name: "Moringa oleifera",
+    localName: "Ben Oil Tree",
+    role: "Continuous high-protein pollen forage for brood rearing and community nutrition",
+    blooms: "Year-round flowering",
+  },
+  {
+    name: "African Baobab (Adansonia)",
+    localName: "Mbuyu / Keystone Oasis",
+    role: "Retains deep groundwater, cools microclimates, and shelters wild pollinator swarms",
+    blooms: "Nocturnal white blooms",
+  },
+];
+
 import React from "react";
 import { Trees, Sprout, MapPin, ArrowRight, ShieldCheck, HeartHandshake, Sparkles, Sun, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

@@ -164,6 +164,27 @@ const CommitmentPage = () => {
         </div>
       </section>
 
+      
+      {/* ───────────────────────────────────────────────────────────────
+          SDG 15 & PROJECT PANDA MITI
+      ─────────────────────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-20 bg-emerald-950 text-white border-y border-emerald-800/80">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 px-4 py-1.5 font-bold text-xs uppercase tracking-widest mb-4">
+            SDG 15: Life on Land • Floral Sanctum
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-4">
+            Project Panda Miti: 45,000 Trees for Kibwezi
+          </h2>
+          <p className="text-emerald-100/90 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-8">
+            Our flagship reforestation initiative propagating drought-resilient indigenous forage trees—including Acacia, Mukau, and Moringa—to revitalize microclimates and ensure zero pollen famine for African honeybees.
+          </p>
+          <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shadow-xl">
+            <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
+          </Button>
+        </div>
+      </section>
+
       {/* ───────────────────────────────────────────────────────────────
           EINSTEIN QUOTE & DEVOTION TO SAVE BEES BANNER
       ─────────────────────────────────────────────────────────────── */}

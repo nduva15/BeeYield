@@ -657,6 +657,32 @@ const Impact = () => {
         </div>
       </section>
 
+      
+      {/* ───────────────────────────────────────────────────────────────
+          DEDICATED REFORESTATION LINK: PROJECT PANDA MITI
+      ─────────────────────────────────────────────────────────────── */}
+      <section className="py-16 bg-neutral-950 text-white border-y border-neutral-800">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="p-8 sm:p-10 rounded-[2.5rem] bg-gradient-to-r from-emerald-950 via-neutral-900 to-emerald-950 border border-emerald-500/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="space-y-3 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
+                <TreePine className="w-3.5 h-3.5 text-emerald-400" />
+                Featured Ecological Initiative
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                Project Panda Miti: 45,000 Trees for Kibwezi
+              </h3>
+              <p className="text-sm sm:text-base text-neutral-300 max-w-xl leading-relaxed">
+                2,500+ indigenous trees already planted to revive microclimates, recharge groundwater, and provide continuous nectar and pollen sanctuaries for bees.
+              </p>
+            </div>
+            <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shrink-0 shadow-lg">
+              <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════════════════════════════════════════════════════════
           5. 2030 BIOSPHERE ROADMAP
       ═══════════════════════════════════════════════════════════════ */}
