@@ -97,7 +97,7 @@ export function SyrupFeedingToolPage({
   // Sub-nav tab: "syrup" (active), "hive_state", "framesense", "notes", "inspection"
   const [activeSubTab, setActiveSubTab] = useState<"syrup" | "hive_state" | "framesense" | "notes" | "inspection">("syrup");
 
-  // Local FrameSense Modal state if user clicks FrameSense in top nav
+  // Local FrameSense intact navigation
   const [isFrameSenseOpen, setIsFrameSenseOpen] = useState(false);
 
   // View mode inside Syrup: "calculator" vs "feeding_history"
@@ -255,28 +255,19 @@ export function SyrupFeedingToolPage({
 
   const totalFedLiters = feedingLogs.reduce((acc, curr) => acc + curr.amountLiters, 0);
 
+  // Intact page view: NOT a popup card, but an intact full-height view that fills the viewport edge-to-edge
   const content = (
     <div
       className={
         embedded
-          ? "w-full max-w-xl mx-auto"
-          : "fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto animate-in fade-in duration-200 select-none"
-      }
-      onClick={
-        !embedded
-          ? (e) => {
-              if (e.target === e.currentTarget) {
-                onClose();
-              }
-            }
-          : undefined
+          ? "w-full max-w-xl mx-auto py-2"
+          : "fixed inset-0 z-[100] bg-[#FAF5EE] dark:bg-stone-950 overflow-y-auto flex flex-col animate-in fade-in duration-150 select-text"
       }
     >
       <div
-        className={`w-full max-w-lg bg-[#FAF5EE] dark:bg-stone-950 min-h-[560px] max-h-[92vh] rounded-[28px] sm:rounded-[32px] shadow-2xl overflow-y-auto flex flex-col p-4 sm:p-6 text-[#2E2A25] dark:text-stone-100 border border-stone-300/70 dark:border-stone-800 relative select-text pointer-events-auto ${
-          embedded ? "h-auto" : ""
+        className={`w-full max-w-lg mx-auto flex-1 flex flex-col p-4 sm:p-6 text-[#2E2A25] dark:text-stone-100 min-h-screen ${
+          embedded ? "h-auto min-h-0" : ""
         }`}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* TOP BAR: Back Arrow and Menu */}
         <div className="flex items-center justify-between pb-2 shrink-0">
@@ -300,17 +291,6 @@ export function SyrupFeedingToolPage({
             >
               <MoreVertical className="w-5 h-5" />
             </button>
-
-            {!embedded && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-1.5 rounded-full text-stone-500 hover:text-stone-900 dark:hover:text-white hover:bg-stone-200/60 dark:hover:bg-stone-800 transition-colors"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
           </div>
         </div>
 
@@ -508,7 +488,7 @@ export function SyrupFeedingToolPage({
                   <button
                     type="button"
                     onClick={() => setTargetVolumeStr("")}
-                    className="text-[11px] text-stone-400 hover:text-stone-600 ml-auto"
+                    className="text-[11px] text-stone-400 hover:text-stone-600 ml-auto cursor-pointer"
                   >
                     Clear
                   </button>
@@ -807,12 +787,13 @@ export function SyrupFeedingToolPage({
         )}
       </div>
 
-      {/* FrameSense Nested Modal Support */}
+      {/* FrameSense Nested Intact Navigation */}
       {isFrameSenseOpen && (
         <FrameSenseToolPage
           isOpen={isFrameSenseOpen}
           onClose={() => setIsFrameSenseOpen(false)}
           initialHiveId={selectedHive.id}
+          onOpenSyrup={() => setIsFrameSenseOpen(false)}
         />
       )}
     </div>

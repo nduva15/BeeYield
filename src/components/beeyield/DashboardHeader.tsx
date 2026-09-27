@@ -257,10 +257,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         ? "Hives & Colonies"
         : activeTab.replace(/-/g, " "));
 
-  const handleTabSelect = (tabId: string) => {
-    onTabChange(tabId);
+  const handleTabSelect = React.useCallback((tabId: string) => {
     setDropdownOpen(false);
-  };
+    requestAnimationFrame(() => {
+      React.startTransition(() => {
+        onTabChange(tabId);
+      });
+    });
+  }, [onTabChange]);
 
   return (
     <header
@@ -347,7 +351,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                           <DropdownMenuItem
                             key={item.id}
                             onSelect={() => handleTabSelect(item.id)}
-                            onClick={() => handleTabSelect(item.id)}
                             className={cn(
                               "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs cursor-pointer transition-all touch-manipulation",
                               isActive
@@ -355,12 +358,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                 : "text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800/70 hover:text-stone-950 dark:hover:text-white active:bg-amber-500/10",
                             )}
                           >
-                            <ItemIcon className="w-4 h-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
-                            <span className="truncate flex-1 font-medium select-none">
+                            <ItemIcon className="w-4 h-4 flex-shrink-0 text-amber-600 dark:text-amber-400 pointer-events-none" />
+                            <span className="truncate flex-1 font-medium select-none pointer-events-none">
                               {item.label}
                             </span>
                             {isActive && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 pointer-events-none" />
                             )}
                           </DropdownMenuItem>
                         );
@@ -521,7 +524,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <div className="p-3 mb-2 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 dark:border-amber-500/15">
               <div className="flex items-center gap-3">
                 <div
-                  onClick={() => setIsAvatarPickerOpen(true)}
+                  onSelect={() => { requestAnimationFrame(() => { React.startTransition(() => { setIsAvatarPickerOpen(true); }); }); }}
                   className="relative group/avatar cursor-pointer"
                   title="Click to change avatar or upload photo"
                 >
@@ -563,7 +566,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <div className="space-y-1">
               {/* Choose / Change Avatar Button */}
               <DropdownMenuItem
-                onClick={() => setIsAvatarPickerOpen(true)}
+                onSelect={() => { requestAnimationFrame(() => { React.startTransition(() => { setIsAvatarPickerOpen(true); }); }); }}
                 className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-amber-900 dark:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 dark:bg-amber-500/15 dark:hover:bg-amber-500/25 focus:bg-amber-500/20 dark:focus:bg-amber-500/25 group font-semibold border border-amber-500/20"
               >
                 <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
