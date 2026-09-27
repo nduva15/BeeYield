@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState, startTransition } from "react";
 import {
   X, Cpu, Usb, Bluetooth, Wifi, Plus, Trash2, ScanLine, ArrowLeft, ArrowRight, Check,
   Loader2, Thermometer, Droplets, Scale, BatteryCharging, MapPin, Boxes, Terminal,
@@ -13,6 +13,8 @@ import { isTimothyUser, CANONICAL_TIMOTHY_HIVES, CANONICAL_TIMOTHY_APIARY } from
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AddApiaryModal } from "@/components/AddApiaryModal";
+import { AddHiveModal } from "@/components/AddHiveModal";
 
 type Apiary = { id: string; name: string; add_mode: string; latitude: number | null; longitude: number | null };
 type Hive = {
@@ -1157,6 +1159,8 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [wizard, setWizard] = useState<null | "apiary" | "hive" | "device">(null);
   const [targetHiveForDevice, setTargetHiveForDevice] = useState<string | null>(null);
+  const [addApiaryModalOpen, setAddApiaryModalOpen] = useState(false);
+  const [addHiveModalOpen, setAddHiveModalOpen] = useState(false);
 
   const [selApiary, setSelApiary] = useState<string>("all");
   const [selHive, setSelHive] = useState<string>("");
@@ -1164,7 +1168,7 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
 
   // Hive filtering & search states
   const [hiveSearch, setHiveSearch] = useState<string>("");
-  const [hiveFilterMode, setHiveFilterMode] = useState<"all" | "with_devices" | "standby" | "in_hive" | "in_land" | "diseases">("all");
+  const [hiveFilterMode, setHiveFilterMode] = useState<"all" | "with_devices" | "in_hive" | "in_land" | "diseases">("all");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -1418,26 +1422,46 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   const inLandDevices = visibleDevices.filter((d) => getDeviceCategory(d.device_kind) === "in_land");
   const diseaseDevices = visibleDevices.filter((d) => getDeviceCategory(d.device_kind) === "diseases");
 
-  // Filter hives
-  const hivesInSelectedApiary = hives.filter((h) => selApiary === "all" || h.apiary_id === selApiary);
-  const hivesWithDevices = hivesInSelectedApiary.filter((h) => devices.some((d) => d.hive_id === h.id));
-  const hivesStandby = hivesInSelectedApiary.filter((h) => !devices.some((d) => d.hive_id === h.id));
+  // Robust matcher for device assigned to a hive
+  const isDeviceForHive = (d: Device, h: Hive) => {
+    if (!d.hive_id) return false;
+    const dh = d.hive_id.trim().toLowerCase();
+    const hid = (h.id || "").trim().toLowerCase();
+    const hname = (h.name || "").trim().toLowerCase();
+    if (dh === hid || dh === hname) return true;
+    const hcodeMatch = h.name.match(/KIB-\d+/i) || h.id.match(/KIB-\d+/i);
+    if (hcodeMatch && dh === hcodeMatch[0].toLowerCase()) return true;
+    const dcodeMatch = d.hive_id.match(/KIB-\d+/i);
+    if (dcodeMatch && (hid.includes(dcodeMatch[0].toLowerCase()) || hname.includes(dcodeMatch[0].toLowerCase()))) return true;
+    return false;
+  };
 
-  const filteredHives = hivesInSelectedApiary.filter((h) => {
+  const getPairedDevices = (hive: Hive) => devices.filter((d) => isDeviceForHive(d, hive));
+
+  // Filter hives: STRICT REQUIREMENT: Only hives with an active synced device connected appear in Hive Monitoring
+  const hivesInSelectedApiary = hives.filter((h) => selApiary === "all" || h.apiary_id === selApiary);
+  const hivesWithDevices = hivesInSelectedApiary.filter((h) => getPairedDevices(h).length > 0);
+
+  const filteredHives = hivesWithDevices.filter((h) => {
+    const paired = getPairedDevices(h);
+
     // Search query match
     if (hiveSearch.trim()) {
       const q = hiveSearch.toLowerCase();
       const matchName = h.name.toLowerCase().includes(q);
-      const matchDevice = devices.some((d) => d.hive_id === h.id && (d.serial.toLowerCase().includes(q) || (d.label || "").toLowerCase().includes(q)));
+      const matchDevice = paired.some(
+        (d) =>
+          d.serial.toLowerCase().includes(q) ||
+          (d.label || "").toLowerCase().includes(q) ||
+          d.device_kind.toLowerCase().includes(q)
+      );
       if (!matchName && !matchDevice) return false;
     }
 
-    if (hiveFilterMode === "all") return true;
-    if (hiveFilterMode === "with_devices") return devices.some((d) => d.hive_id === h.id);
-    if (hiveFilterMode === "standby") return !devices.some((d) => d.hive_id === h.id);
-    if (hiveFilterMode === "in_hive") return devices.some((d) => d.hive_id === h.id && getDeviceCategory(d.device_kind) === "in_hive");
-    if (hiveFilterMode === "in_land") return devices.some((d) => d.hive_id === h.id && getDeviceCategory(d.device_kind) === "in_land");
-    if (hiveFilterMode === "diseases") return devices.some((d) => d.hive_id === h.id && getDeviceCategory(d.device_kind) === "diseases");
+    if (hiveFilterMode === "all" || hiveFilterMode === "with_devices") return true;
+    if (hiveFilterMode === "in_hive") return paired.some((d) => getDeviceCategory(d.device_kind) === "in_hive");
+    if (hiveFilterMode === "in_land") return paired.some((d) => getDeviceCategory(d.device_kind) === "in_land");
+    if (hiveFilterMode === "diseases") return paired.some((d) => getDeviceCategory(d.device_kind) === "diseases");
     return true;
   });
 
@@ -1495,23 +1519,22 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
 
         <div className="flex-1 min-w-[20px]" />
 
-        {/* ACTION BUTTONS WITH ADD DEVICE HIGHLIGHTED */}
+        {/* ACTION BUTTONS WITH ADD APIARY AND ADD HIVE MATCHING USER UX */}
         <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant="outline"
-            onClick={() => setWizard("apiary")}
-            className="gap-1.5 text-xs h-9 border-border hover:bg-muted"
+            onClick={() => setAddApiaryModalOpen(true)}
+            className="gap-1.5 text-xs h-9 border-emerald-600/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 font-bold"
           >
-            <Plus className="w-3.5 h-3.5" /> Add apiary
+            <Plus className="w-3.5 h-3.5" /> + ADD APIARY
           </Button>
 
           <Button
-            variant="outline"
-            onClick={() => setWizard("hive")}
+            onClick={() => setAddHiveModalOpen(true)}
             disabled={!apiaries.length}
-            className="gap-1.5 text-xs h-9 border-border hover:bg-muted"
+            className="gap-1.5 text-xs h-9 bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm"
           >
-            <Plus className="w-3.5 h-3.5" /> Add hive
+            <Plus className="w-3.5 h-3.5" /> + ADD HIVE
           </Button>
 
           <Button
@@ -1544,9 +1567,14 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
             className="w-full h-10 mt-1 rounded-xl border border-input bg-background px-3 text-sm font-medium"
           >
             <option value="">Deselect / View all</option>
-            {hives.filter((h) => selApiary === "all" || h.apiary_id === selApiary).map((h) => (
-              <option key={h.id} value={h.id}>{h.name}</option>
-            ))}
+            {hivesWithDevices.map((h) => {
+              const paired = getPairedDevices(h);
+              return (
+                <option key={h.id} value={h.id}>
+                  {h.name} ({paired.length} synced device{paired.length > 1 ? "s" : ""})
+                </option>
+              );
+            })}
           </select>
         </div>
       </div>
@@ -1731,39 +1759,37 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
               </div>
 
               {/* REGISTERED HIVES WITH DEVICES SYNCHRONIZATION */}
-              {hives.length > 0 && (
-                <div className="rounded-2xl border border-border p-5 bg-card/60 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between flex-wrap gap-3">
-                    <div>
-                      <p className="font-bold text-base flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-honey" /> Registered Hives & Connected Devices
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {hivesInSelectedApiary.length} total hives ({hivesWithDevices.length} with active telemetry, {hivesStandby.length} on standby)
-                      </p>
-                    </div>
-
-                    <div className="relative w-full sm:w-64">
-                      <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                      <input
-                        type="text"
-                        value={hiveSearch}
-                        onChange={(e) => setHiveSearch(e.target.value)}
-                        placeholder="Filter hives by code..."
-                        className="w-full h-8 pl-8 pr-3 rounded-lg border border-border bg-background text-xs outline-none focus:border-honey"
-                      />
-                    </div>
+              <div className="rounded-2xl border border-border p-5 bg-card/60 shadow-xs space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div>
+                    <p className="font-bold text-base flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-honey" /> Monitored Hives with Synced Telemetry
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {hivesWithDevices.length} monitored {hivesWithDevices.length === 1 ? "colony" : "colonies"} streaming active telemetry
+                    </p>
                   </div>
 
-                  {/* FILTER TABS */}
+                  <div className="relative w-full sm:w-64">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="text"
+                      value={hiveSearch}
+                      onChange={(e) => setHiveSearch(e.target.value)}
+                      placeholder="Filter monitored hives..."
+                      className="w-full h-8 pl-8 pr-3 rounded-lg border border-border bg-background text-xs outline-none focus:border-honey"
+                    />
+                  </div>
+                </div>
+
+                {/* FILTER TABS (ONLY MONITORED HIVES) */}
+                {hivesWithDevices.length > 0 && (
                   <div className="flex items-center gap-1.5 flex-wrap text-xs">
                     {[
-                      { id: "all", label: `All Hives (${hivesInSelectedApiary.length})` },
-                      { id: "with_devices", label: `With Connected Devices (${hivesWithDevices.length})` },
-                      { id: "standby", label: `Standby - No Devices (${hivesStandby.length})` },
-                      { id: "in_hive", label: `In-Hive IoT` },
-                      { id: "in_land", label: `In-Land Nodes` },
-                      { id: "diseases", label: `Disease Diagnostic IoT` },
+                      { id: "all", label: `All Monitored (${hivesWithDevices.length})` },
+                      { id: "in_hive", label: `In-Hive Sensors` },
+                      { id: "in_land", label: `Apiary Nodes` },
+                      { id: "diseases", label: `Diagnostic IoT` },
                     ].map((f) => (
                       <button
                         key={f.id}
@@ -1778,21 +1804,54 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
                       </button>
                     ))}
                   </div>
+                )}
 
-                  {/* HIVES GRID */}
+                {/* HIVES GRID OR EMPTY STATE */}
+                {filteredHives.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-border/80 p-8 text-center bg-muted/10 space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-honey/15 border border-honey/30 flex items-center justify-center mx-auto text-honey">
+                      <Cpu className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="font-semibold text-sm">
+                        {hivesWithDevices.length === 0
+                          ? "No Hives with Synced Devices"
+                          : `No monitored hives match "${hiveSearch}"`}
+                      </p>
+                      <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                        {hivesWithDevices.length === 0
+                          ? "Only hives connected to active telemetry hardware (VitalSensor, HoneyScale, or Bio-Acoustic mic) appear in Hive Monitoring. Pair an IoT device to begin live streaming."
+                          : "Try clearing your search or switching device category filters to view other monitored hives."}
+                      </p>
+                    </div>
+                    {hivesWithDevices.length === 0 ? (
+                      <Button
+                        size="sm"
+                        onClick={() => openAddDeviceForHive(null)}
+                        className="bg-honey hover:bg-honey/90 text-primary-foreground font-semibold text-xs h-8 px-4"
+                      >
+                        <Plus className="w-3.5 h-3.5 mr-1.5" /> Connect First IoT Device
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => { setHiveSearch(""); setHiveFilterMode("all"); }}
+                        className="text-xs h-8"
+                      >
+                        Clear search filter
+                      </Button>
+                    )}
+                  </div>
+                ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {filteredHives.slice(0, 60).map((h) => {
-                      const pairedDevices = devices.filter((d) => d.hive_id === h.id);
-                      const hasDevice = pairedDevices.length > 0;
+                      const pairedDevices = getPairedDevices(h);
 
                       return (
                         <div
                           key={h.id}
-                          className={`rounded-xl border p-3.5 flex flex-col justify-between gap-3 transition-all ${
-                            hasDevice
-                              ? "border-honey/40 bg-honey/5 hover:border-honey/70"
-                              : "border-border bg-background hover:border-muted-foreground/30"
-                          }`}
+                          className="rounded-xl border border-honey/40 bg-honey/5 hover:border-honey/70 p-3.5 flex flex-col justify-between gap-3 transition-all"
                         >
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
@@ -1807,14 +1866,8 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
                                 <p className="font-bold text-sm text-foreground">{h.name}</p>
                               </div>
 
-                              <span
-                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                                  hasDevice
-                                    ? "bg-emerald-500/15 text-emerald-600 border border-emerald-500/30"
-                                    : "bg-stone-500/10 text-stone-600 dark:text-stone-400"
-                                }`}
-                              >
-                                {hasDevice ? "● Synced" : "Standby"}
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">
+                                ● Synced ({pairedDevices.length})
                               </span>
                             </div>
 
@@ -1823,62 +1876,53 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
                               {h.queen_breeding_year ? ` · queen ${h.queen_breeding_year}` : ""}
                             </p>
 
-                            {/* PAIRED DEVICES DISPLAY WITH DIFFERENTIATION */}
-                            {hasDevice ? (
-                              <div className="space-y-1.5 pt-1">
-                                {pairedDevices.map((pd) => {
-                                  const cat = getDeviceCategory(pd.device_kind);
-                                  const catConfig = DEVICE_CATEGORIES[cat];
-                                  const IconComp = catConfig.icon;
-                                  return (
-                                    <div
-                                      key={pd.id}
-                                      className={`px-2 py-1.5 rounded-lg border ${catConfig.badgeBg} ${catConfig.badgeBorder} flex items-center justify-between text-xs`}
-                                    >
-                                      <div className="flex items-center gap-1.5 truncate">
-                                        <IconComp className={`w-3.5 h-3.5 ${catConfig.colorClass} shrink-0`} />
-                                        <span className={`text-[10px] font-bold ${catConfig.badgeText} truncate pointer-events-none select-none`}>
-                                          {catConfig.name}:
-                                        </span>
-                                        <span className="font-mono text-[10px] font-bold truncate pointer-events-none select-none">
-                                          {pd.serial}
-                                        </span>
-                                      </div>
-                                      <button
-                                        onClick={(e) => { e.stopPropagation(); removeDevice(pd.id, pd.serial); }}
-                                        className="text-muted-foreground hover:text-destructive p-0.5"
-                                        title="Unpair device"
-                                      >
-                                        <Unlink className="w-3 h-3" />
-                                      </button>
+                            {/* PAIRED DEVICES DISPLAY */}
+                            <div className="space-y-1.5 pt-1">
+                              {pairedDevices.map((pd) => {
+                                const cat = getDeviceCategory(pd.device_kind);
+                                const catConfig = DEVICE_CATEGORIES[cat];
+                                const IconComp = catConfig.icon;
+                                return (
+                                  <div
+                                    key={pd.id}
+                                    className={`px-2 py-1.5 rounded-lg border ${catConfig.badgeBg} ${catConfig.badgeBorder} flex items-center justify-between text-xs`}
+                                  >
+                                    <div className="flex items-center gap-1.5 truncate">
+                                      <IconComp className={`w-3.5 h-3.5 ${catConfig.colorClass} shrink-0`} />
+                                      <span className={`text-[10px] font-bold ${catConfig.badgeText} truncate pointer-events-none select-none`}>
+                                        {catConfig.name}:
+                                      </span>
+                                      <span className="font-mono text-[10px] font-bold truncate pointer-events-none select-none">
+                                        {pd.serial}
+                                      </span>
                                     </div>
-                                  );
-                                })}
-
-                                {/* Live Telemetry Pill if available */}
-                                {pairedDevices[0]?.temperature_c != null && (
-                                  <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground bg-background/80 p-1.5 rounded border border-border/60">
-                                    <span className="text-amber-600 font-bold">🌡️ {pairedDevices[0].temperature_c}°C</span>
-                                    {pairedDevices[0].humidity_pct != null && <span>💧 {pairedDevices[0].humidity_pct}%</span>}
-                                    {pairedDevices[0].weight_kg != null && <span>⚖️ {pairedDevices[0].weight_kg}kg</span>}
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); removeDevice(pd.id, pd.serial); }}
+                                      className="text-muted-foreground hover:text-destructive p-0.5"
+                                      title="Unpair device"
+                                    >
+                                      <Unlink className="w-3 h-3" />
+                                    </button>
                                   </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="pt-1">
-                                <p className="text-[11px] text-muted-foreground italic flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-stone-300 dark:bg-stone-700" />
-                                  No telemetry device connected
-                                </p>
-                              </div>
-                            )}
+                                );
+                              })}
+
+                              {/* Live Telemetry Pill if available */}
+                              {pairedDevices[0]?.temperature_c != null && (
+                                <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground bg-background/80 p-1.5 rounded border border-border/60">
+                                  <span className="text-amber-600 font-bold">🌡️ {pairedDevices[0].temperature_c}°C</span>
+                                  {pairedDevices[0].humidity_pct != null && <span>💧 {pairedDevices[0].humidity_pct}%</span>}
+                                  {pairedDevices[0].weight_kg != null && <span>⚖️ {pairedDevices[0].weight_kg}kg</span>}
+                                </div>
+                              )}
+                            </div>
                           </div>
 
                           <div className="pt-2 border-t border-border/40 flex items-center justify-between">
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => { setSelHive(h.id); React.startTransition(() => setTab("online")); }}
+                              onClick={() => { setSelHive(h.id); startTransition(() => setTab("online")); }}
                               className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
                             >
                               Live Telemetry →
@@ -1886,29 +1930,25 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
 
                             <Button
                               size="sm"
-                              variant={hasDevice ? "outline" : "default"}
+                              variant="outline"
                               onClick={() => openAddDeviceForHive(h.id)}
-                              className={`h-7 text-xs px-2.5 gap-1 ${
-                                hasDevice
-                                  ? "border-border text-foreground hover:bg-muted"
-                                  : "bg-honey hover:bg-honey/90 text-primary-foreground font-semibold"
-                              }`}
+                              className="h-7 text-xs px-2.5 gap-1 border-border text-foreground hover:bg-muted"
                             >
-                              <Plus className="w-3 h-3" /> {hasDevice ? "Add 2nd Sensor" : "Connect Device"}
+                              <Plus className="w-3 h-3" /> Add Sensor
                             </Button>
                           </div>
                         </div>
                       );
                     })}
                   </div>
+                )}
 
-                  {filteredHives.length > 60 && (
-                    <p className="text-xs text-center text-muted-foreground pt-2">
-                      Showing 60 of {filteredHives.length} hives. Use search to narrow down by hive code.
-                    </p>
-                  )}
-                </div>
-              )}
+                {filteredHives.length > 60 && (
+                  <p className="text-xs text-center text-muted-foreground pt-2">
+                    Showing 60 of {filteredHives.length} monitored hives. Use search to narrow down by hive code.
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -1991,6 +2031,26 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
           )}
         </>
       )}
+
+      {/* Pop-out Inspection-style Add Apiary & Add Hive Modals */}
+      <AddApiaryModal
+        isOpen={addApiaryModalOpen}
+        onClose={() => setAddApiaryModalOpen(false)}
+        onSuccess={() => {
+          setAddApiaryModalOpen(false);
+          void load();
+        }}
+      />
+
+      <AddHiveModal
+        isOpen={addHiveModalOpen}
+        onClose={() => setAddHiveModalOpen(false)}
+        apiaries={apiaries.map((a) => ({ id: a.id, name: a.name }))}
+        onSuccess={() => {
+          setAddHiveModalOpen(false);
+          void load();
+        }}
+      />
     </div>
   );
 

@@ -6558,34 +6558,34 @@ export function ApisenseWeatherCard({
       </div>
 
       {/* Live Current Weather Hero Card */}
-      <div className="rounded-2xl border border-stone-200/90 dark:border-stone-800 bg-white/90 dark:bg-stone-900/80 p-4 shadow-sm space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/50 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
-              <WeatherIcon className="w-7 h-7" />
+      <div className="rounded-2xl border border-stone-200/90 dark:border-stone-800 bg-white/90 dark:bg-stone-900/80 p-3.5 sm:p-4 shadow-sm space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/50 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+              <WeatherIcon className="w-6 h-6 sm:w-7 sm:h-7 pointer-events-none select-none" />
             </div>
-            <div>
-              <div className="flex items-baseline gap-1.5">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-baseline gap-1.5">
                 <span className="text-3xl sm:text-4xl font-black tracking-tight text-stone-900 dark:text-stone-100">
                   {weather?.currentTemp !== undefined ? `${weather.currentTemp}°C` : "—"}
                 </span>
-                <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
+                <span className="text-xs text-stone-500 dark:text-stone-400 font-medium whitespace-nowrap">
                   ({apiary.size_acres} Acres)
                 </span>
               </div>
-              <p className="text-xs font-bold text-stone-700 dark:text-stone-300">
+              <p className="text-xs font-bold text-stone-700 dark:text-stone-300 truncate">
                 {currentCondition} • High: {maxTemp}° / Low: {minTemp}°
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-1.5 text-xs">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50 font-semibold text-[11px]">
-              <Droplets className="w-3.5 h-3.5 text-blue-500" />
+          <div className="flex flex-row sm:flex-col items-center sm:items-end gap-1.5 text-xs shrink-0 flex-wrap">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50 font-semibold text-[11px] whitespace-nowrap shrink-0">
+              <Droplets className="w-3.5 h-3.5 text-blue-500 pointer-events-none select-none shrink-0" />
               {weather?.currentHumidity !== undefined ? `${weather.currentHumidity}% Humidity` : "—"}
             </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 font-semibold text-[11px]">
-              <Wind className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 font-semibold text-[11px] whitespace-nowrap shrink-0">
+              <Wind className="w-3.5 h-3.5 text-emerald-500 pointer-events-none select-none shrink-0" />
               {weather?.currentWind !== undefined ? `${weather.currentWind} km/h Wind` : "—"}
             </span>
           </div>
@@ -6605,18 +6605,18 @@ export function ApisenseWeatherCard({
         <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
           Hourly Microclimate Forecast
         </p>
-        <div className="overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
-          <div className="flex items-center justify-between gap-2 min-w-[280px]">
+        <div className="overflow-x-auto pb-1.5 -mx-1 px-1 no-scrollbar touch-pan-x">
+          <div className="flex items-center gap-2 min-w-full">
             {(weather?.hourly || []).map((slot, idx) => {
               const { Icon } = getWeatherMeta(slot.code);
               return (
                 <div
                   key={idx}
-                  className="flex flex-col items-center gap-1 text-center flex-1 py-1.5 px-1 rounded-xl bg-white/60 dark:bg-stone-900/40 border border-stone-200/60 dark:border-stone-800/60"
+                  className="flex flex-col items-center gap-1 text-center flex-1 min-w-[56px] py-1.5 px-1 rounded-xl bg-white/60 dark:bg-stone-900/40 border border-stone-200/60 dark:border-stone-800/60 shrink-0"
                 >
-                  <span className="text-[10px] font-medium text-stone-500 dark:text-stone-400">{slot.time}</span>
-                  <Icon className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                  <span className="text-xs font-black text-stone-800 dark:text-stone-200">{slot.temp}°</span>
+                  <span className="text-[10px] font-medium text-stone-500 dark:text-stone-400 whitespace-nowrap">{slot.time}</span>
+                  <Icon className="w-4 h-4 text-amber-500 dark:text-amber-400 pointer-events-none select-none shrink-0" />
+                  <span className="text-xs font-black text-stone-800 dark:text-stone-200 whitespace-nowrap">{slot.temp}°</span>
                 </div>
               );
             })}
