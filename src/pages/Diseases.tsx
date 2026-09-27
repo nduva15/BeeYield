@@ -148,6 +148,14 @@ const FIELD_INSPECTION_PHOTOS = [
 // Real Mobile App Telemetry Screens
 const REAL_APP_SCREENS = [
     {
+        src: "/images/diseases/hive-health-colony-monitoring.png",
+        tabLabel: "Love & Care",
+        title: "Hive Health & Colony Monitoring",
+        subtitle: "How Much You Should Love Bees • Full-Spectrum Sensor Telemetry",
+        badge: "Colony Protection",
+        detail: "Demonstrating how much you should love bees: 24/7 acoustic audits, brood chamber microclimate, colony scales, and Asian hornet guard."
+    },
+    {
         src: "/images/app-screenshots/hive-list-varroa.png",
         tabLabel: "Live Hive List",
         title: "VitalSensor Apiary Telemetry",
@@ -799,6 +807,86 @@ const Diseases = () => {
                             </div>
                         </div>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* ─────────────────────────────────────────────────────────────
+                HOW MUCH YOU SHOULD LOVE BEES • HIVE HEALTH & MONITORING SHOWCASE
+            ───────────────────────────────────────────────────────────── */}
+            <section className="py-24 bg-white border-b border-neutral-100">
+                <div className="container mx-auto px-4 max-w-6xl">
+                    <div className="text-center max-w-3xl mx-auto mb-14">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-300 text-amber-700 text-xs font-bold uppercase tracking-wider mb-4">
+                            <HeartPulse className="w-3.5 h-3.5 text-amber-600" />
+                            Colony Devotion & Care
+                        </div>
+                        <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+                            How Much You Should <span className="text-beeyield-green">Love Bees</span>
+                        </h2>
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                            True devotion to honeybee survival means round-the-clock stewardship. Our Hive Health & Colony Monitoring system provides full-spectrum diagnostic visibility &mdash; tracking brood temperatures, internal humidity, colony weight, acoustic disease markers, and Asian hornet threats in real time.
+                        </p>
+                    </div>
+
+                    {/* Screenshot Container */}
+                    <div className="relative mx-auto max-w-5xl mb-14">
+                        <div className="rounded-[2.5rem] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.12)] border border-neutral-200/90 bg-white p-2 sm:p-4">
+                            <div className="rounded-[2rem] overflow-hidden border border-neutral-100 bg-[#FAF9F5]">
+                                <img
+                                    src="/images/diseases/hive-health-colony-monitoring.png"
+                                    alt="Hive Health and Colony Monitoring dashboard showing how much you should love and safeguard bees"
+                                    className="w-full h-auto object-contain"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Floating badges */}
+                        <div className="hidden sm:flex absolute -top-3 -right-3 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-2.5 items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-beeyield-green" />
+                            <span className="text-xs font-bold text-neutral-900">Verified Apiary • Kibwezi</span>
+                        </div>
+                        <div className="hidden sm:flex absolute -bottom-3 -left-3 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-2.5 items-center gap-2">
+                            <Activity className="h-4 w-4 text-beeyield-green" />
+                            <span className="text-xs font-bold text-neutral-900">Acoustic Audits & Varroa Guard</span>
+                        </div>
+                    </div>
+
+                    {/* 4 Pillars of Colony Care */}
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+                        {[
+                          {
+                            title: "Physical IoT Telemetry",
+                            desc: "Brood chamber thermal stability, in-hive humidity, and sub-gram colony weight scale tracking.",
+                            icon: Thermometer,
+                          },
+                          {
+                            title: "Acoustic Pathogen Audits",
+                            desc: "Continuous acoustic frequency inspection detecting Varroa stress harmonics before colony collapse.",
+                            icon: Activity,
+                          },
+                          {
+                            title: "Asian Hornet Defense",
+                            desc: "Real-time invasive hornet (Vespa velutina) sensor monitoring to shield entrance gates.",
+                            icon: Shield,
+                          },
+                          {
+                            title: "VitalSensor Wireless Link",
+                            desc: "Zero-disturbance Bluetooth telemetry keeping beekeepers informed without unsealing the brood box.",
+                            icon: CheckCircle2,
+                          },
+                        ].map((pillar, idx) => (
+                            <div
+                                key={idx}
+                                className="p-6 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2.5 hover:border-beeyield-green/30 transition-all"
+                            >
+                                <div className="w-9 h-9 rounded-xl bg-beeyield-green/10 flex items-center justify-center text-beeyield-green mb-3">
+                                    <pillar.icon className="w-5 h-5" />
+                                </div>
+                                <h4 className="font-bold text-neutral-900 text-sm">{pillar.title}</h4>
+                                <p className="text-xs text-muted-foreground leading-relaxed">{pillar.desc}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
