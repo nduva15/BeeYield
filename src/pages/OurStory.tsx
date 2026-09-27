@@ -358,6 +358,54 @@ const OurStory = () => {
         </div>
       </section>
 
+      {/* ───────────────────────────────────────────────────────────────
+          ECOLOGICAL DEVOTION • DEVOTED TO SAVING BEES
+      ─────────────────────────────────────────────────────────────── */}
+      <section className="py-20 sm:py-24 lg:py-28 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500/15 via-transparent to-transparent pointer-events-none" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl relative z-10 text-center">
+          <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 px-5 py-2 font-bold text-[11px] rounded-full uppercase tracking-widest mb-8">
+            Why We Are Devoted to Saving Bees
+          </Badge>
+          <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight text-white mb-6 italic max-w-4xl mx-auto">
+            “If the bee disappeared off the surface of the globe, then man would have only four years of life left. No more bees, no more pollination, no more plants, no more animals, no more man.”
+          </blockquote>
+          <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-12">
+            — Albert Einstein <span className="text-neutral-400 font-normal lowercase">(attributed)</span>
+          </p>
+
+          <div className="rounded-[2.5rem] p-8 sm:p-12 bg-white/5 border border-white/10 backdrop-blur-xl text-left space-y-6 shadow-2xl">
+            <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+              <span className="w-3.5 h-3.5 rounded-full bg-beeyield-green animate-pulse" />
+              Our Sacred Commitment to Apiculture &amp; Planetary Life
+            </h3>
+            <p className="text-neutral-300 text-base sm:text-lg leading-relaxed">
+              At BeeYield, our technology exists for a profound purpose: to protect, sustain, and regenerate honeybees. Honeybees pollinate one out of every three bites of food we eat and 80% of flowering plants on Earth. Yet habitat destruction, climate extremes, and aggressive synthetic pesticides have decimated colonies globally.
+            </p>
+            <p className="text-neutral-300 text-base sm:text-lg leading-relaxed">
+              We stand as fierce guardians of the hive. By pairing non-invasive acoustic telemetry and continuous scale sensors with organic, zero-chemical management and planting thousands of indigenous forage trees, we maintain a colony loss rate under 15%—proving that mankind can thrive alongside healthy, protected bees.
+            </p>
+            <div className="grid sm:grid-cols-3 gap-6 pt-6 border-t border-white/10">
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className="text-2xl sm:text-3xl font-black text-beeyield-green">&lt; 15%</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-300 mt-1">Colony Loss Rate</div>
+                <div className="text-xs text-neutral-400 mt-1">Safeguarding against the 60%+ global mortality crisis</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className="text-2xl sm:text-3xl font-black text-amber-400">2,500+</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-300 mt-1">Indigenous Trees Planted</div>
+                <div className="text-xs text-neutral-400 mt-1">Restoring nectar and pollen sanctuaries</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className="text-2xl sm:text-3xl font-black text-emerald-400">100%</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-neutral-300 mt-1">Non-Invasive AI Telemetry</div>
+                <div className="text-xs text-neutral-400 mt-1">Zero-stress bio-acoustic monitoring</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════════════════════════════════════════════════════════
           3. GROWTH JOURNEY — 4 Verified Metrics + 4 Visual Photos
       ═══════════════════════════════════════════════════════════════ */}

@@ -164,6 +164,35 @@ const CommitmentPage = () => {
         </div>
       </section>
 
+      {/* ───────────────────────────────────────────────────────────────
+          EINSTEIN QUOTE & DEVOTION TO SAVE BEES BANNER
+      ─────────────────────────────────────────────────────────────── */}
+      <section className="py-20 lg:py-28 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-500/15 via-transparent to-transparent pointer-events-none" />
+        <div className="container mx-auto px-4 max-w-4xl relative z-10 text-center">
+          <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 px-5 py-2 font-bold text-xs rounded-full uppercase tracking-widest mb-8">
+            Why We Are Devoted to Saving Bees
+          </Badge>
+
+          <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-snug sm:leading-tight text-white mb-6 italic max-w-3xl mx-auto">
+            “If the bee disappeared off the surface of the globe, then man would have only four years of life left. No more bees, no more pollination, no more plants, no more animals, no more man.”
+          </blockquote>
+          <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-10">
+            — Albert Einstein <span className="text-neutral-400 font-normal lowercase">(attributed)</span>
+          </p>
+
+          <div className="rounded-3xl p-8 sm:p-10 bg-white/5 border border-white/10 backdrop-blur-md text-left space-y-4 shadow-xl">
+            <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+              <span className="w-3 h-3 rounded-full bg-primary" />
+              Devoted to Saving the Bees That Sustain Human Life
+            </h3>
+            <p className="text-neutral-300 text-base sm:text-lg leading-relaxed">
+              Our commitment goes far deeper than corporate responsibility—it is an existential devotion. Without bees, the global agricultural supply chain unravels in a matter of seasons. BeeYield combines non-invasive acoustic intelligence, chemical-free hive keeping, and active ecosystem reforestation to ensure colonies survive, flourish, and pollinate the future of Africa and the world.
+            </p>
+          </div>
+        </div>
+      </section>
+
             
       {/* CTA Section */}
       <section className="py-32 relative overflow-hidden z-10">
