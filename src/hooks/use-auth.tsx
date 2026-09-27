@@ -107,7 +107,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadProfile = useCallback(async (uid: string) => {
     try {
-      const { data } = await (supabase.from("profiles") as any)
+      const { data } = await (
+        supabase.from("profiles") as unknown as {
+          select: (cols: string) => {
+            eq: (
+              col: string,
+              val: string,
+            ) => {
+              maybeSingle: () => Promise<{ data: Profile | null }>;
+            };
+          };
+        }
+      )
         .select("id,email,full_name,phone,country,avatar_url")
         .eq("id", uid)
         .maybeSingle();

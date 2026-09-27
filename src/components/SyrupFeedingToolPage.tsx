@@ -589,6 +589,31 @@ export function SyrupFeedingToolPage({
                       <strong className="text-stone-900 dark:text-white">Mix only the volume your colony will finish within 48 to 72 hours.</strong> Syrup sitting stagnant inside the hive or bucket rapidly attracts wild yeasts and ferments. Feeding fermented syrup ruins gut health and causes severe winter dysentery.
                     </p>
                   </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      7
+                    </span>
+                    <p>
+                      <strong className="text-stone-900 dark:text-white">Prevent spills around the hive stand and keep all feeding vessels sealed.</strong> The exposed scent of sugar syrup during a nectar dearth incites frantic robbing frenzies, causing neighboring foragers and wasps to invade and destroy weaker colonies. Rinse accidental drops immediately with water.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      8
+                    </span>
+                    <p>
+                      <strong className="text-stone-900 dark:text-white">Inspect feeder uptake within 2 to 4 days of application.</strong> Verify that the colony is actively consuming the feed. If syrup sits untouched, inspect immediately for queenlessness, disease, feeder obstruction, or an early natural honey flow.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 sm:p-4 rounded-xl bg-[#F5EDE3] dark:bg-amber-950/20 border border-[#E8DEC9] dark:border-amber-900/30 text-xs sm:text-[12.5px] text-stone-800 dark:text-amber-200/90 leading-relaxed font-medium mt-3 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <p>
+                      <strong className="text-stone-900 dark:text-white">Do not feed syrup during an active nectar flow intended for harvesting</strong> — the bees will store sucrose in the supers, adulterating the pure honey harvest.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
