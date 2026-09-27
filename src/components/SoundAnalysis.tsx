@@ -13,6 +13,7 @@ import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { toast } from "sonner";
 import { autoSyncRecord } from "@/lib/integration-sync";
+import { syncScanWithBeeYieldAi } from "@/lib/beeyield-ai-scan-sync";
 import { useAuth } from "@/hooks/use-auth";
 import { resolveUserHives, type UnifiedHive } from "@/lib/user-hives";
 
@@ -608,6 +609,23 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
         osbhRatio: result.osbh.ratio,
       },
     });
+
+    void syncScanWithBeeYieldAi({
+      scanType: "acoustic_audio",
+      scanTitle: `Acoustic Audio Scan (${result.health.state})`,
+      hiveId: "",
+      hiveCode: hiveLabel,
+      timestamp: new Date().toLocaleDateString(),
+      metrics: {
+        "Health State": result.health.state,
+        "Health Confidence": `${(result.health.confidence * 100).toFixed(0)}%`,
+        "Bee Presence": `${(result.health.beeConfidence * 100).toFixed(0)}%`,
+        "Queen Piping": result.piping.detected ? "Detected" : "Not Detected",
+        "Spectral Centroid": `${Math.round(result.aggregate.spectralCentroid)} Hz`,
+      },
+      rawFindings: notes || result.diseases.slice(0, 3).map((d) => `${d.name} ${(d.score * 100).toFixed(0)}%`).join("; "),
+    });
+
     void loadHistory();
   };
 
