@@ -612,10 +612,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 }
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-6 mt-3.5 sm:mt-6">
                 {/* Farmer Profile Card */}
                 <div className="lg:col-span-4">
-                    <div className={cn(glass.section, "p-5 bg-white")}>
+                    <div className={cn(glass.section, "p-3.5 sm:p-5 bg-white")}>
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 font-black shadow-sm">
                                 <Hexagon className="w-6 h-6 text-amber-600" />
@@ -647,7 +647,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                 {/* Operational Workflows */}
                 <div className="lg:col-span-8">
-                    <div className={cn(glass.section, "p-5 bg-white")}>
+                    <div className={cn(glass.section, "p-3.5 sm:p-5 bg-white")}>
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h3 className="text-sm font-semibold text-foreground">Operational Workflows</h3>
@@ -689,32 +689,34 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 <div className="lg:col-span-12">
                     <div className={cn(glass.section, "bg-white overflow-hidden")}>
                         {/* Section Header */}
-                        <div className="px-3.5 sm:px-6 py-3.5 sm:py-5 border-b border-neutral-200/90 bg-neutral-50/70 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 shadow-sm">
-                                    <ClipboardList className="w-5 h-5" />
+                        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-neutral-200/90 bg-neutral-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+                            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 shadow-sm shrink-0">
+                                    <ClipboardList className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </div>
-                                <div>
-                                    <h3 className="text-base font-black text-foreground flex items-center gap-2">
+                                <div className="min-w-0">
+                                    <h3 className="text-sm sm:text-base font-black text-foreground flex items-center gap-1.5 sm:gap-2 truncate">
                                         Hive Inspections & Colony Diagnostics
-                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">{loadedHives.length} Verified Colonies</span>
+                                        <span className="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 shrink-0">
+                                            {loadedHives.length} Verified Colonies
+                                        </span>
                                     </h3>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-[11px] sm:text-xs text-muted-foreground truncate">
                                         Diagnostic inspection ledger for {fullName}{primaryApiary ? ` • ${primaryApiary.name}` : ''}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 w-full sm:w-auto">
                                 <button
                                     onClick={() => onTabChange('inspections')}
-                                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                                    className="flex-1 sm:flex-initial h-8 sm:h-9 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all whitespace-nowrap active:scale-95"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Diagnostic
                                 </button>
                                 <button
                                     onClick={() => onTabChange('inspections')}
-                                    className="px-3.5 py-2 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-800 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
+                                    className="flex-1 sm:flex-initial h-8 sm:h-9 px-3 py-1.5 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs whitespace-nowrap active:scale-95"
                                 >
                                     View Full Ledger
                                     <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
@@ -723,15 +725,15 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
 
                         {/* Inspection Metrics Row (Live Telemetry from Real Audits) */}
-                        <div className="p-3.5 sm:p-5 md:p-6 border-b border-neutral-200/90 bg-white">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="p-3 sm:p-4 md:p-6 border-b border-neutral-200/90 bg-white">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
                                 {inspectionMetrics.map((s) => (
                                     <div key={s.label} className="rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-4 space-y-1">
                                         <div className="flex items-center justify-between">
                                             <span className="text-[10px] uppercase tracking-wide font-bold text-neutral-500">{s.label}</span>
                                             <s.icon className={cn("w-4 h-4", s.tone)} />
                                         </div>
-                                        <p className={cn("text-2xl font-black", s.tone)}>{s.value}</p>
+                                        <p className={cn("text-lg sm:text-2xl font-black tracking-tight", s.tone)}>{s.value}</p>
                                         <p className="text-[10px] text-neutral-500 font-medium">{s.desc}</p>
                                     </div>
                                 ))}
@@ -814,19 +816,19 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         })}
                                     </div>
                                 ) : (
-                                    <div className="p-8 text-center bg-neutral-50/60 rounded-2xl border border-dashed border-neutral-200/90 my-2 space-y-3">
-                                        <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-700 shadow-xs">
-                                            <ClipboardList className="w-5 h-5" />
+                                    <div className="p-4 sm:p-6 md:p-8 text-center bg-neutral-50/60 rounded-xl sm:rounded-2xl border border-dashed border-neutral-200/90 my-1 sm:my-2 space-y-2 sm:space-y-3">
+                                        <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-700 shadow-xs">
+                                            <ClipboardList className="w-4 h-4 sm:w-5 sm:h-5" />
                                         </div>
-                                        <div className="space-y-1 max-w-sm mx-auto">
-                                            <h4 className="text-xs font-bold text-neutral-800">No Colony Health Diagnostics Logged Yet</h4>
-                                            <p className="text-[11px] text-neutral-500">
+                                        <div className="space-y-1 max-w-xs sm:max-w-sm mx-auto">
+                                            <h4 className="text-xs sm:text-sm font-bold text-neutral-800">No Colony Health Diagnostics Logged Yet</h4>
+                                            <p className="text-[11px] sm:text-xs text-neutral-500 leading-relaxed">
                                                 Physical hive inspections recorded by the apiary owner will automatically appear here with real health vitals, queen sightings, and pest counts.
                                             </p>
                                         </div>
                                         <button
                                             onClick={() => onTabChange('inspections')}
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs transition-all"
+                                            className="inline-flex items-center justify-center gap-1.5 h-8 sm:h-9 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all active:scale-95"
                                         >
                                             <Plus className="w-3.5 h-3.5" />
                                             Log First Hive Inspection
@@ -842,28 +844,27 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 <div className="lg:col-span-12">
                     <div className={cn(glass.section, "bg-white overflow-hidden")}>
                         {/* Weather Header Bar */}
-                        <div className="border-b border-neutral-200/90 bg-neutral-50/70 px-3.5 sm:px-6 py-3.5 sm:py-5">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
-                                <div className="space-y-1">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800">
-                                        <Sun className="h-3.5 w-3.5 text-amber-500" />
+                        <div className="border-b border-neutral-200/90 bg-neutral-50/70 px-3 sm:px-6 py-3 sm:py-4">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-6">
+                                <div className="space-y-1 min-w-0">
+                                    <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-amber-300 bg-amber-50 px-2 sm:px-3 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.16em] text-amber-800">
+                                        <Sun className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-500 shrink-0" />
                                         Open-Meteo Live API Weather
                                     </div>
-                                    <h3 className="text-xl sm:text-2xl font-black tracking-tight text-neutral-900 flex items-center gap-2">
+                                    <h3 className="text-base sm:text-xl md:text-2xl font-black tracking-tight text-neutral-900 flex items-center gap-2 truncate">
                                         {primaryApiary?.name || (user ? 'Local Apiary' : 'BeeYield Apiary in Kibwezi Kenya')} Microclimate
                                     </h3>
                                     <p className="text-xs text-neutral-500 font-medium flex items-center gap-1">
-                                        <MapPin className="w-3.5 h-3.5 text-amber-600" />
-                                        Kibwezi, Makueni County (-2.409°S, 37.967°E)
+                                        <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                        <span className="truncate">Kibwezi, Makueni County (-2.409°S, 37.967°E)</span>
                                     </p>
                                 </div>
 
-                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                                <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap pt-1 sm:pt-0">
                                     {/* Station Selector Dropdown */}
-                                    <div className="flex flex-col gap-1 flex-1 sm:flex-initial min-w-[130px]">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">Apiary Station</Label>
+                                    <div className="flex-1 sm:flex-initial min-w-[130px]">
                                         <Select value={selectedApiaryId} onValueChange={(val) => setSelectedApiaryId(val)}>
-                                            <SelectTrigger className={glass.select}>
+                                            <SelectTrigger className="h-9 rounded-xl border border-neutral-200 bg-white text-xs font-semibold text-neutral-800 shadow-xs px-2.5">
                                                 <SelectValue placeholder="Select apiary" />
                                             </SelectTrigger>
                                             <SelectContent className={glass.selectContent}>
@@ -877,27 +878,21 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     </div>
 
                                     {/* Inspection Window Readiness */}
-                                    <div className="flex flex-col gap-1 shrink-0">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">Flight Window</Label>
-                                        <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 sm:px-3.5 h-10 text-[10px] sm:text-[11px] font-bold text-emerald-700 shadow-xs whitespace-nowrap">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                                            Optimal For Inspections
-                                        </div>
+                                    <div className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 h-9 text-[10px] sm:text-[11px] font-bold text-emerald-700 shadow-xs whitespace-nowrap shrink-0">
+                                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                                        Optimal For Inspections
                                     </div>
 
                                     {/* Manual Refresh Button */}
-                                    <div className="flex flex-col gap-1 shrink-0">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">&nbsp;</Label>
-                                        <button
-                                            onClick={() => loadWeather(true)}
-                                            disabled={isWeatherLoading}
-                                            className="h-10 px-3 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs whitespace-nowrap shrink-0"
-                                            title="Sync Live Weather"
-                                        >
-                                            <RefreshCw className={cn("w-3.5 h-3.5 text-amber-600", isWeatherLoading && "animate-spin")} />
-                                            Sync
-                                        </button>
-                                    </div>
+                                    <button
+                                        onClick={() => loadWeather(true)}
+                                        disabled={isWeatherLoading}
+                                        className="h-9 px-2.5 sm:px-3 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs whitespace-nowrap shrink-0"
+                                        title="Sync Live Weather"
+                                    >
+                                        <RefreshCw className={cn("w-3.5 h-3.5 text-amber-600", isWeatherLoading && "animate-spin")} />
+                                        Sync
+                                    </button>
                                 </div>
                             </div>
                         </div>
