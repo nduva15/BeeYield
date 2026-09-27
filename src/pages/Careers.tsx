@@ -22,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
-import { PandaMitiSmallContainer } from "@/components/PandaMitiSection";
 
 interface JobOpening {
   id: string;
@@ -186,7 +185,7 @@ export default function CareersPage() {
           <div className="mb-2 text-xs uppercase tracking-wider font-bold text-muted-foreground">
             Our Ecological Commitment
           </div>
-          <PandaMitiSmallContainer />
+          <div className="my-6 text-center"><Button variant="outline" asChild className="rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-300"><Link to="/panda-miti">Explore Project Panda Miti (45,000 Trees) <ArrowRight className="w-4 h-4 ml-2" /></Link></Button></div>
         </section>
 
         {/* Company Values */}

@@ -27,7 +27,6 @@ import { toast } from "sonner";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { BLOG_POSTS, type BlogPost } from "@/data/blogPosts";
-import { PandaMitiSmallContainer } from "@/components/PandaMitiSection";
 
 export default function BlogsPage() {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
@@ -344,7 +343,7 @@ export default function BlogsPage() {
           </footer>
 
           {/* Panda Miti Ecological Initiative Banner */}
-          <PandaMitiSmallContainer variant="banner" className="my-8" />
+          <div className="my-6 text-center"><Button variant="outline" asChild className="rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-300"><Link to="/panda-miti">Explore Project Panda Miti (45,000 Trees) <ArrowRight className="w-4 h-4 ml-2" /></Link></Button></div>
 
           {/* Related Articles */}
           <section className="my-12 pt-8 border-t border-border/40">
@@ -567,7 +566,7 @@ export default function BlogsPage() {
           </div>
 
           {/* Panda Miti Ecological Initiative Banner */}
-          <PandaMitiSmallContainer variant="banner" className="my-8" />
+          <div className="my-6 text-center"><Button variant="outline" asChild className="rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-300"><Link to="/panda-miti">Explore Project Panda Miti (45,000 Trees) <ArrowRight className="w-4 h-4 ml-2" /></Link></Button></div>
 
           {/* Farmer Consultation CTA Section */}
           <section className="rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-emerald-950/40 via-emerald-900/20 to-amber-950/30 border border-emerald-500/30 shadow-2xl relative overflow-hidden text-center space-y-6">

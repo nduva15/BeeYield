@@ -12,7 +12,6 @@ import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps
 import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/data/beePollinationData";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
-import PandaMitiSection from "@/components/PandaMitiSection";
 
 
 const CropsWePollinate = () => {
@@ -394,8 +393,6 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
-      {/* Panda Miti Initiative Section */}
-      <PandaMitiSection className="py-12 bg-white" />
 
       {/* Missing Crop CTA */}
       <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">

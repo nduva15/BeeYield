@@ -23,7 +23,6 @@ import {
   BookOpen,
 } from "lucide-react";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
-import { PandaMitiSection } from "@/components/PandaMitiSection";
 
 /* ------------------------------------------------------------------ */
 /*  Animated counter hook                                              */
@@ -1075,11 +1074,6 @@ export default function About() {
           </div>
         </div>
       </section>
-
-      {/* ============================================================ */}
-      {/*  PANDA MITI INITIATIVE (45,000 TREES AROUND KIBWEZI)           */}
-      {/* ============================================================ */}
-      <PandaMitiSection />
 
       {/* ============================================================ */}
       {/*  CLOSING / CTA                                                */}

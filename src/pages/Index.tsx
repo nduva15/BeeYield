@@ -38,6 +38,7 @@ import {
   Compass,
   Sparkles,
   ShoppingBag,
+  ArrowRight,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -612,6 +613,7 @@ export default function Index() {
         },
         { label: "Florage Database", icon: Sprout, onClick: () => setFloragePageOpen(true) },
         { label: "Forage Zones & Floral Resources", icon: Flower2, onClick: () => setForageZonesOpen(true) },
+          { label: "Project Panda Miti (45,000 Trees)", icon: Trees, onClick: () => navigate("/panda-miti") },
       ],
     },
     {
@@ -714,6 +716,14 @@ export default function Index() {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => navigate("/panda-miti")}
+              className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-500/30 hover:border-emerald-500/60 transition-all text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 bg-emerald-500/10"
+              title="Project Panda Miti (45,000 Trees)"
+            >
+              <Trees className="w-4 h-4 text-emerald-500" />
+              <span className="text-xs font-medium">Panda Miti</span>
+            </button>
+            <button
               onClick={() => setToolsOpen((v) => !v)}
               className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:border-primary/50 transition-all text-muted-foreground hover:text-foreground bg-muted"
               title={toolsOpen ? "Hide tools" : "Show tools"}
@@ -777,11 +787,20 @@ export default function Index() {
               <h1 className="font-display text-3xl font-bold text-honey mb-2">
                 Welcome to Beeyield AI
               </h1>
-              <p className="text-muted-foreground max-w-xl mb-6 text-sm leading-relaxed">
+              <p className="text-muted-foreground max-w-xl mb-4 text-sm leading-relaxed">
                 The world's most comprehensive bee knowledge system. Powered by an extensive dataset
                 covering every bee species, honey variety, disease, treatment, pollination science,
                 and global industry research. Ask anything.
               </p>
+
+              <button
+                onClick={() => navigate("/panda-miti")}
+                className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500/20 transition-all shadow-sm"
+              >
+                <Trees className="w-4 h-4 text-emerald-500" />
+                <span>Explore Project Panda Miti (45,000 Trees)</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1" />
+              </button>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-2xl">
                 {SUGGESTIONS.map((s) => (
