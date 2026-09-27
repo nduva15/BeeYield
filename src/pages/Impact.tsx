@@ -345,343 +345,81 @@ const Impact = () => {
   return (
     <BeeYieldPageShell className="min-h-screen bg-[#fdfbf6] p-0">
       
-      {/* ═══════════════════════════════════════════════════════════════
-          1. HERO SECTION — Real Honeybee Colony on Sensor Background
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src={IMPACT_IMAGES.apisenseCluster1}
-            alt="Active bee colony clustered on ApiSense in-hive sensor"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6]/94 via-[#fdfbf6]/90 to-[#fdfbf6]" />
-        </div>
+              {/* ─────────────────────────────────────────────────────────────
+            DEDICATED REFORESTATION LINK: PROJECT PANDA MITI
+        ───────────────────────────────────────────────────────────── */}
+        <section className="py-20 bg-neutral-950 text-white border-y border-neutral-800 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
+          <div className="container mx-auto px-4 max-w-5xl relative z-10">
+            <div className="p-8 sm:p-12 rounded-[2.5rem] bg-gradient-to-r from-emerald-950 via-neutral-900 to-emerald-950 border border-emerald-500/30 shadow-2xl">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
+                  <Trees className="w-4 h-4 text-emerald-400" />
+                  <span>Featured Ecological Initiative • Panda Miti Corridors</span>
+                </div>
+                <Badge variant="outline" className="border-emerald-500/40 text-emerald-300 bg-emerald-500/10 font-bold text-xs px-3 py-1">
+                  2,500 / 45,000 Trees (5.6%)
+                </Badge>
+              </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-semibold text-sm">
-              <Globe className="w-3 h-3 mr-2" />
-              Verified Impact Data
-            </Badge>
-            <h1 className="text-5xl md:text-7xl font-black text-[#1A1A1A] mb-8 tracking-tighter leading-[0.95]">
-              Ecological <span className="text-beeyield-green">Impact.</span> <br />
-              <span className="text-beeyield-gold italic">Quantified.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
-              22 IoT devices deployed. 105 and counting acres precision-pollinated. 3 tons of carbon offset. Every metric is backed by authentic sensor data from our Kenyan apiaries — zero AI imagery.
-            </p>
+              <div className="grid lg:grid-cols-12 gap-8 items-center mb-8">
+                <div className="lg:col-span-7 space-y-4">
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                    Project Panda Miti: <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">45,000 Trees</span> for Kibwezi
+                  </h3>
+                  <p className="text-sm sm:text-base text-neutral-300 leading-relaxed">
+                    2,500+ indigenous trees already planted to restore groundwater aquifers, cool microclimates, and secure continuous nectar and pollen sanctuaries for bees. By planting native Acacia, Mukau, and Moringa, Panda Miti ends dry-season famine for over 184+ colonies and millions of wild pollinators.
+                  </p>
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-emerald-200 text-xs sm:text-sm italic">
+                    “Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry to guarantee survival and perennial blossom.”
+                  </div>
+                </div>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <button
-                onClick={handleDownloadImpactReport}
-                disabled={downloading}
-                className="group relative inline-flex items-center gap-3 bg-[#FFF9F0] text-[#1A1A1A] px-8 py-4 rounded-2xl font-black shadow-2xl hover:bg-slate-800 transition-all disabled:opacity-50 h-16"
-              >
-                <div className="absolute -inset-1 bg-gradient-to-r from-beeyield-gold to-beeyield-green rounded-2xl blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
-                {downloading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Verifying Data...
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-5 w-5" />
-                    Download Official Record
-                  </>
-                )}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+                <div className="lg:col-span-5 bg-black/40 p-6 rounded-2xl border border-emerald-500/20 space-y-4">
+                  <div className="flex justify-between text-xs font-semibold text-emerald-200">
+                    <span>Field Planting Progress</span>
+                    <span className="text-emerald-400 font-bold">2,500 / 45,000 Goal</span>
+                  </div>
+                  <div className="h-3 w-full bg-neutral-800 rounded-full overflow-hidden p-0.5 border border-emerald-500/20">
+                    <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full w-[5.6%]" />
+                  </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          2. LIVE METRICS GRID (6 Verified Metrics)
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="pb-24">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="border-none shadow-soft rounded-[2.5rem] bg-[#FFF9F0] overflow-hidden group hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
-                  <CardContent className="p-8">
-                    <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
-                      <stat.icon className="h-7 w-7" />
+                  <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:text-[11px] pt-2 border-t border-white/10">
+                    <div className="p-2 rounded-xl bg-white/5">
+                      <TreePine className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
+                      <span className="font-bold text-white block">Tree Restoration</span>
+                      <span className="text-emerald-200/70 text-[9px]">Aquifer recovery</span>
                     </div>
-                    <h3 className="text-4xl font-black text-[#1A1A1A] mb-2 tracking-tighter">{stat.value}</h3>
-                    <p className="text-sm font-semibold text-slate-500">{stat.label}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          3. REAL FIELD EVIDENCE — Multiple 3-Photo Slideshows
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-neutral-950 text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
-              100% Authentic Photography
-            </Badge>
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">
-              Real Field <span className="text-beeyield-green">Evidence.</span>
-            </h2>
-            <p className="text-neutral-400 text-lg font-medium">
-              4 curated 3-photo slideshows documenting 22 deployed IoT hardware stations, live colony populations, in-hive bio-sensors, and precision continuous scales across Kenya.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            
-            {/* Slideshow 1: 22 IoT Hardware Deployments */}
-            <ThreePhotoSlideshow
-              slides={[
-                {
-                  image: IMPACT_IMAGES.deployedHive1,
-                  title: "Nighttime Apiary Field Telemetry",
-                  subtitle: "Solar antenna module on galvanized tin roof",
-                  badge: "22 Deployed Hives",
-                  description: "Autonomous transmission node standing on metal pole in Kenyan apiary during nighttime field check."
-                },
-                {
-                  image: IMPACT_IMAGES.deployedHive2,
-                  title: "Kenyan Top-Bar Hive Stand",
-                  subtitle: "Weatherproof antenna unit mounted on lid",
-                  badge: "105+ Acres Served (and counting)",
-                  description: "Robust solar-powered node operating at commercial orchard boundaries to monitor pollinator foraging density."
-                },
-                {
-                  image: IMPACT_IMAGES.solarGateway,
-                  title: "Solar LTE Field Gateway",
-                  subtitle: "High-gain dual antenna LTE gateway",
-                  badge: "Zero-Watt Grid",
-                  description: "Self-powered gateway aggregating data from all local hive sensors and relaying to cloud dashboards in real time."
-                }
-              ]}
-              badge="Hardware Grid"
-              title="22 IoT Deployed Stations"
-              subtitle="Solar antennas & hive stands"
-              dark={true}
-            />
-
-            {/* Slideshow 2: Colony Health & Biocompatibility */}
-            <ThreePhotoSlideshow
-              slides={[
-                {
-                  image: IMPACT_IMAGES.apisenseCloseup2,
-                  title: "In-Hive Hardware Acceptance",
-                  subtitle: "Live forager on non-toxic sensor board",
-                  badge: "Zero Rejection",
-                  description: "Worker bees accept the electronic hardware immediately, navigating the sensor board without alarm responses."
-                },
-                {
-                  image: IMPACT_IMAGES.apisenseCluster1,
-                  title: "Active Colony Surrounding Probe",
-                  subtitle: "Hundreds of bees clustered on sensor",
-                  badge: "Colony Vitality",
-                  description: "Dense bee cluster surrounding the in-hive ApiSense probe, showing zero repellent behavior."
-                },
-                {
-                  image: IMPACT_IMAGES.beeColonyWide,
-                  title: "Thriving African Bee Colony",
-                  subtitle: "Full-depth cluster density",
-                  badge: "2.4M+ Bees Protected",
-                  description: "Demonstrates vigorous colony health, high worker population density, and healthy brood rearing."
-                }
-              ]}
-              badge="Colony Health"
-              title="Bio-Sensors & Bees"
-              subtitle="Colony vitality & zero rejection"
-              dark={true}
-            />
-
-            {/* Slideshow 3: Bio-Telemetry Diagnostics */}
-            <ThreePhotoSlideshow
-              slides={[
-                {
-                  image: IMPACT_IMAGES.apisenseCloseup1,
-                  title: "ApiSense Bio-Sensor Probe",
-                  subtitle: "In-hive probe installed inside log cavity",
-                  badge: "Log Hive Validated",
-                  description: "Real-time acoustic and temperature tracking inside occupied traditional log hives with full biocompatibility."
-                },
-                {
-                  image: IMPACT_IMAGES.apisenseCluster2,
-                  title: "Dense Bee Cluster Telemetry",
-                  subtitle: "Worker bees covering vertical sensor node",
-                  badge: "Bee Behavior",
-                  description: "Proves complete biological acceptance with bees moving freely across probe surface."
-                },
-                {
-                  image: IMPACT_IMAGES.combProbe1,
-                  title: "In-Hive Acoustic Sampling",
-                  subtitle: "Acoustic diagnostic sampling frame",
-                  badge: "Acoustic AI",
-                  description: "High-fidelity bio-acoustic spectrum tracking for swarm prediction and colony stress monitoring."
-                }
-              ]}
-              badge="Bio-Telemetry"
-              title="In-Hive Bio-Sensors"
-              subtitle="Acoustic & thermal sampling"
-              dark={true}
-            />
-
-            {/* Slideshow 4: Scales, Comb & Disease Detection */}
-            <ThreePhotoSlideshow
-              slides={[
-                {
-                  image: IMPACT_IMAGES.hiveScale,
-                  title: "Continuous Scale Telemetry",
-                  subtitle: "Sub-milligram load cell telemetry",
-                  badge: "Weight Delta",
-                  description: "Industrial load cell bar mounted under hive base tracking diurnal weight changes down to sub-grams."
-                },
-                {
-                  image: IMPACT_IMAGES.combProbe2,
-                  title: "Detect Bee Diseases & Brood Health",
-                  subtitle: "Early pathogen screening on drawn brood comb",
-                  badge: "Disease Detection",
-                  description: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."
-                },
-                {
-                  image: IMPACT_IMAGES.combProbe3,
-                  title: "Multi-Frame Brood Coverage",
-                  subtitle: "Top-down commercial hive inspection",
-                  badge: "3t Carbon Offset",
-                  description: "Parallel active frames showing full brood vitality and verified strength across precision-pollinated client orchards."
-                }
-              ]}
-              badge="Disease Defense"
-              title="Scales & Disease Detection"
-              subtitle="Continuous weighing & pathogen defense"
-              dark={true}
-            />
-
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          4. NARRATIVE SECTION (Radical Ecological Transparency)
-      ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-[#FFF9F0]">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group aspect-[4/5] bg-neutral-900">
-                <img
-                  src={IMPACT_IMAGES.deployedHive2}
-                  alt="BeeYield IoT hive with antenna device deployed on traditional Kenyan beehive"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 to-transparent"></div>
-                <div className="absolute bottom-10 left-10 text-white">
-                  <p className="text-sm font-semibold mb-2">Location: Makueni, Kenya</p>
-                  <h4 className="text-2xl font-bold">22 Devices. 105+ Acres. Real Impact.</h4>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="space-y-10"
-            >
-              <div>
-                <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] mb-6 tracking-tighter">
-                  Radical Ecological <br />Transparency.
-                </h2>
-                <p className="text-lg text-slate-600 leading-relaxed font-medium">
-                  We don't just harvest honey; we steward a biome. With 22 IoT devices deployed across 105 and counting acres of precision-pollinated farmland and 3 tons of carbon offset through 2,500+ native trees, our impact is verifiable from satellite to in-hive sensor.
-                </p>
-              </div>
-
-              <div className="space-y-8">
-                <div className="p-6 rounded-[2.5rem] bg-emerald-50 border border-[#1B9157]">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-semibold text-[#1B9157] text-sm">Habitat health</span>
-                    <span className="font-black text-[#1B9157]">95%</span>
+                    <div className="p-2 rounded-xl bg-white/5">
+                      <Heart className="w-4 h-4 text-amber-400 mx-auto mb-1" />
+                      <span className="font-bold text-white block">Bees Saved</span>
+                      <span className="text-amber-200/70 text-[9px]">Colony survival</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-white/5">
+                      <Flower2 className="w-4 h-4 text-teal-400 mx-auto mb-1" />
+                      <span className="font-bold text-white block">Flowers Needing Bees</span>
+                      <span className="text-teal-200/70 text-[9px]">85%+ dependent</span>
+                    </div>
                   </div>
-                  <Progress value={95} className="h-3 bg-emerald-100" />
-                </div>
-
-                <div className="p-6 rounded-[2.5rem] bg-beeyield-gold/5 border border-beeyield-gold/10">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-semibold text-[#D4AC0D] text-sm">Chemical-free index</span>
-                    <span className="font-black text-beeyield-gold">100%</span>
-                  </div>
-                  <Progress value={100} className="h-3 bg-amber-100" />
-                </div>
-
-                <div className="p-6 rounded-[2.5rem] bg-blue-50 border border-blue-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-semibold text-blue-800 text-sm">Acoustic health baseline</span>
-                    <span className="font-black text-blue-700">88%</span>
-                  </div>
-                  <Progress value={88} className="h-3 bg-blue-100" />
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 pt-6">
-                <div className="h-14 w-14 rounded-2xl bg-[#FFF9F0] flex items-center justify-center text-[#1A1A1A] shadow-xl">
-                  <Zap className="w-6 h-6" />
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-emerald-500/20">
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 font-semibold border border-emerald-500/20">
+                    🌱 1 Tree = ~250 Bees Nourished
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-teal-500/10 text-teal-300 font-semibold border border-teal-500/20">
+                    🌸 1 Tree = ~5,000 Blossoms Pollinated
+                  </span>
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#1A1A1A]">Live data sync</p>
-                  <p className="text-xs text-slate-400 font-medium">Data synced from 22 IoT sensor nodes</p>
-                </div>
+                <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shrink-0 shadow-lg">
+                  <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                </Button>
               </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      
-      {/* ───────────────────────────────────────────────────────────────
-          DEDICATED REFORESTATION LINK: PROJECT PANDA MITI
-      ─────────────────────────────────────────────────────────────── */}
-      <section className="py-16 bg-neutral-950 text-white border-y border-neutral-800">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="p-8 sm:p-10 rounded-[2.5rem] bg-gradient-to-r from-emerald-950 via-neutral-900 to-emerald-950 border border-emerald-500/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="space-y-3 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
-                <TreePine className="w-3.5 h-3.5 text-emerald-400" />
-                Featured Ecological Initiative
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Project Panda Miti: 45,000 Trees for Kibwezi
-              </h3>
-              <p className="text-sm sm:text-base text-neutral-300 max-w-xl leading-relaxed">
-                2,500+ indigenous trees already planted to revive microclimates, recharge groundwater, and provide continuous nectar and pollen sanctuaries for bees.
-              </p>
             </div>
-            <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shrink-0 shadow-lg">
-              <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
-            </Button>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* ═══════════════════════════════════════════════════════════════
           5. 2030 BIOSPHERE ROADMAP

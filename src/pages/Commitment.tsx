@@ -76,112 +76,84 @@ const CommitmentPage = () => {
   return (
     <BeeYieldPageShell className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20 p-0">
 
-      {/* Decorative Background Elements */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
-      </div>
+            {/* ─────────────────────────────────────────────────────────────
+          SDG 15 & PROJECT PANDA MITI: REFORESTATION & BEE POLLINATION
+      ───────────────────────────────────────────────────────────── */}
+      <section className="py-20 bg-emerald-950 text-white relative overflow-hidden border-y border-emerald-800/80">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
+        <div className="container mx-auto px-4 max-w-5xl relative z-10">
+          <div className="rounded-3xl p-8 sm:p-12 bg-white/5 border border-emerald-500/30 backdrop-blur-md shadow-2xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 px-4 py-1.5 font-bold text-xs uppercase tracking-widest">
+                SDG 15: Life on Land • Floral Sanctum & Aquifer Recovery
+              </Badge>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
+                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Kibwezi Basin, Makueni County</span>
+              </div>
+            </div>
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden z-10">
-        <div className="container mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-8 px-4 py-2 border-primary/20 bg-primary/5 text-primary font-semibold text-xs rounded-full">
-            Sustainable Development Goals
-          </Badge>
+            <div className="grid lg:grid-cols-12 gap-8 items-center mb-8">
+              <div className="lg:col-span-7 space-y-4">
+                <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+                  Project Panda Miti: <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300">45,000 Trees</span> for Kibwezi
+                </h2>
+                <p className="text-emerald-100/90 text-sm sm:text-base leading-relaxed">
+                  Our flagship ecological restoration initiative restores degraded semi-arid landscapes by propagating 45,000 drought-resilient indigenous trees—including Acacia, Mukau, Moringa, and Baobab. This active reforestation recharges groundwater aquifers, cools microclimates over hives, and eliminates seasonal forage famine for African honeybees.
+                </p>
+                <div className="p-4 rounded-2xl bg-black/30 border border-emerald-500/20 text-emerald-200 text-xs sm:text-sm italic">
+                  “Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry to guarantee survival and perennial blossom.”
+                </div>
+              </div>
 
-          <h1 className="mb-8 text-4xl md:text-6xl font-black tracking-tight leading-[1.1]">
-            Our Commitment <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-600">
-              To The Future
-            </span>
-          </h1>
+              <div className="lg:col-span-5 bg-neutral-950/80 p-6 rounded-2xl border border-emerald-500/30 space-y-4 shadow-inner">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sprout className="w-4 h-4 text-emerald-400" /> Planting Telemetry
+                  </span>
+                  <Badge variant="outline" className="border-emerald-500/40 text-emerald-300 bg-emerald-500/10 font-bold text-[11px]">
+                    2,500 / 45,000 (5.6%)
+                  </Badge>
+                </div>
 
-          <p className="mb-12 text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium">
-            BeeYield's mission extends beyond the hive. We are actively contributing to
-            <span className="text-foreground font-bold"> 8 UN Sustainable Development Goals</span>,
-            creating measurable impact for communities, ecosystems, and global food security.
-          </p>
+                <div className="h-3 w-full bg-neutral-800 rounded-full overflow-hidden p-0.5 border border-emerald-500/20">
+                  <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full w-[5.6%]" />
+                </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/esg">
-              <Button size="lg" className="h-14 px-8 rounded-full text-base font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
-                View ESG Impact <ArrowRight className="ml-2 h-4 w-4" />
+                <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:text-[11px] pt-2 border-t border-white/10">
+                  <div className="p-2 rounded-xl bg-white/5">
+                    <Trees className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
+                    <span className="font-bold text-white block">Tree Restoration</span>
+                    <span className="text-emerald-200/70 text-[9px]">Aquifer recharge</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white/5">
+                    <Heart className="w-4 h-4 text-amber-400 mx-auto mb-1" />
+                    <span className="font-bold text-white block">Bees Saved</span>
+                    <span className="text-amber-200/70 text-[9px]">Zero dry famine</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white/5">
+                    <Flower2 className="w-4 h-4 text-teal-400 mx-auto mb-1" />
+                    <span className="font-bold text-white block">Flowers Needing Bees</span>
+                    <span className="text-teal-200/70 text-[9px]">Cross-pollination</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-emerald-500/20">
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-500/25">
+                  🌱 1 Tree = ~250 Bees Nourished
+                </span>
+                <span className="px-3 py-1 rounded-full bg-teal-500/15 text-teal-300 font-semibold border border-teal-500/25">
+                  🌸 1 Tree = ~5,000 Blossoms Pollinated
+                </span>
+              </div>
+              <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shadow-xl">
+                <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
               </Button>
-            </Link>
-            <Button variant="ghost" size="lg" className="h-14 px-8 rounded-full text-base font-bold text-muted-foreground hover:text-foreground">
-              Scroll to Explore
-            </Button>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Main Grid Section */}
-      <section className="py-20 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {sdgs.map((sdg) => (
-              <Card
-                key={sdg.number}
-                className="group relative border-none bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-500 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 ring-1 ring-border/50 hover:ring-primary/20"
-              >
-                {/* Gradient Header */}
-                <div className={`h-2 w-full bg-gradient-to-r ${sdg.color}`} />
-
-                <CardContent className="p-8">
-                  {/* Icon & Number Header */}
-                  <div className="flex justify-between items-start mb-6">
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${sdg.color} flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-500`}>
-                      <span className="text-[#1A1A1A] font-black text-2xl">{sdg.number}</span>
-                    </div>
-                    <div className={`p-3 rounded-xl bg-gradient-to-br ${sdg.color} bg-opacity-10 text-transparent bg-clip-text`}>
-                      <sdg.icon className={`h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors`} />
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <h3 className="text-xl font-bold mb-4 text-foreground group-hover:text-primary transition-colors duration-300">
-                    {sdg.title}
-                  </h3>
-
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 min-h-[80px]">
-                    {sdg.description}
-                  </p>
-
-                  {/* Impact Footer */}
-                  <div className="pt-6 border-t border-border/50">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      <p className="text-xs font-bold uppercase tracking-wider text-primary">Impact Delivered</p>
-                    </div>
-                    <p className="text-sm font-semibold text-foreground leading-snug">
-                      {sdg.impact}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      
-      {/* ───────────────────────────────────────────────────────────────
-          SDG 15 & PROJECT PANDA MITI
-      ─────────────────────────────────────────────────────────────── */}
-      <section className="py-16 sm:py-20 bg-emerald-950 text-white border-y border-emerald-800/80">
-        <div className="container mx-auto px-4 max-w-4xl text-center">
-          <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 px-4 py-1.5 font-bold text-xs uppercase tracking-widest mb-4">
-            SDG 15: Life on Land • Floral Sanctum
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-4">
-            Project Panda Miti: 45,000 Trees for Kibwezi
-          </h2>
-          <p className="text-emerald-100/90 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-8">
-            Our flagship reforestation initiative propagating drought-resilient indigenous forage trees—including Acacia, Mukau, and Moringa—to revitalize microclimates and ensure zero pollen famine for African honeybees.
-          </p>
-          <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shadow-xl">
-            <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
-          </Button>
         </div>
       </section>
 
