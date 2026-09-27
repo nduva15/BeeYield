@@ -2,6 +2,7 @@ import { supabaseBeeYield } from '@/lib/supabase';
 import { getAuthHeaders, getBaseUrl, apiDelete, apiGet, apiPatch, apiPost, apiPut } from './api';
 import { dashboardPollinationCropDetails } from '@/data/beePollinationData';
 import { toast } from 'sonner';
+import { broadcastAvatarUpdate } from './avatarSyncService';
 
 // Shorthand for the Supabase client used throughout this service
 const sb = supabaseBeeYield;
@@ -166,41 +167,7 @@ export const convertImageToOptimizedDataUrl = async (file: File, maxDim = 400, q
 export const saveUserAvatar = async (userId: string, avatarUrl: string): Promise<{ success: boolean; error: any }> => {
     try {
         const uid = userId || 'usr_kibwezi_owner_01';
-
-        // 1. LocalStorage persistence (instant UI sync)
-        try {
-            localStorage.setItem(`beeyield_user_avatar_${uid}`, avatarUrl);
-            localStorage.setItem('beeyield_user_avatar', avatarUrl);
-            const stored = localStorage.getItem('beeyield_local_user');
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                if (parsed.user) parsed.user.user_metadata = { ...(parsed.user.user_metadata || {}), avatar_url: avatarUrl };
-                if (parsed.profile) parsed.profile.avatar_url = avatarUrl;
-                localStorage.setItem('beeyield_local_user', JSON.stringify(parsed));
-            }
-        } catch { void 0; }
-
-        // 2. Supabase Auth user metadata update
-        if (sb) {
-            try {
-                await sb.auth.updateUser({ data: { avatar_url: avatarUrl } });
-            } catch { void 0; }
-
-            // 3. Supabase profiles table upsert
-            try {
-                await sb.from('profiles').upsert({
-                    id: uid,
-                    avatar_url: avatarUrl,
-                    updated_at: new Date().toISOString(),
-                });
-            } catch { void 0; }
-        }
-
-        // 4. Notify all components globally
-        if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('beeyield-avatar-updated', { detail: { avatar_url: avatarUrl } }));
-        }
-
+        await broadcastAvatarUpdate(uid, avatarUrl);
         return { success: true, error: null };
     } catch (error) {
         console.error('saveUserAvatar error:', error);
