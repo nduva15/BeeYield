@@ -143,7 +143,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     ], [onTabChange, currentUser, onLogout]);
 
     return (
-        <div className="flex h-screen w-full bg-background overflow-hidden font-sans text-foreground selection:bg-primary/30 selection:text-foreground">
+        <div className="flex h-[100dvh] min-h-[100dvh] w-full bg-background overflow-hidden font-sans text-foreground selection:bg-primary/30 selection:text-foreground">
             {/* Sidebar */}
             {!hideSidebar && (
                 <GlassSidebar
@@ -188,8 +188,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 />
 
                 {/* Content Area - Naturally Responsive Fluid Viewport */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar relative bg-muted/10">
-                    <div className="w-full max-w-[1400px] mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 relative z-10 overflow-x-hidden">
+                <div className="flex-1 overflow-y-auto overscroll-y-contain custom-scrollbar relative bg-muted/10 touch-pan-y">
+                    <div className="w-full max-w-[1400px] mx-auto px-2.5 sm:px-4 md:px-6 py-2.5 sm:py-4 md:py-6 relative z-10 overflow-x-hidden">
                         {!isAdmin && !hideBanner && <FirstStepsBanner onTabChange={onTabChange} />}
                         <motion.div
                             key={activeTab}
@@ -207,6 +207,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </main>
 
             <style>{`
+                .custom-scrollbar { -webkit-overflow-scrolling: touch; }
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }

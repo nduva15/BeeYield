@@ -689,7 +689,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 <div className="lg:col-span-12">
                     <div className={cn(glass.section, "bg-white overflow-hidden")}>
                         {/* Section Header */}
-                        <div className="px-6 py-5 border-b border-neutral-200/90 bg-neutral-50/70 flex flex-wrap items-center justify-between gap-4">
+                        <div className="px-3.5 sm:px-6 py-3.5 sm:py-5 border-b border-neutral-200/90 bg-neutral-50/70 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 shadow-sm">
                                     <ClipboardList className="w-5 h-5" />
@@ -723,7 +723,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
 
                         {/* Inspection Metrics Row (Live Telemetry from Real Audits) */}
-                        <div className="p-6 border-b border-neutral-200/90 bg-white">
+                        <div className="p-3.5 sm:p-5 md:p-6 border-b border-neutral-200/90 bg-white">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 {inspectionMetrics.map((s) => (
                                     <div key={s.label} className="rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-4 space-y-1">
@@ -842,8 +842,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 <div className="lg:col-span-12">
                     <div className={cn(glass.section, "bg-white overflow-hidden")}>
                         {/* Weather Header Bar */}
-                        <div className="border-b border-neutral-200/90 bg-neutral-50/70 px-6 py-5">
-                            <div className="flex flex-wrap items-center justify-between gap-6">
+                        <div className="border-b border-neutral-200/90 bg-neutral-50/70 px-3.5 sm:px-6 py-3.5 sm:py-5">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
                                 <div className="space-y-1">
                                     <div className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800">
                                         <Sun className="h-3.5 w-3.5 text-amber-500" />
@@ -858,9 +858,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     </p>
                                 </div>
 
-                                <div className="flex flex-wrap items-center gap-3">
+                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
                                     {/* Station Selector Dropdown */}
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 flex-1 sm:flex-initial min-w-[130px]">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">Apiary Station</Label>
                                         <Select value={selectedApiaryId} onValueChange={(val) => setSelectedApiaryId(val)}>
                                             <SelectTrigger className={glass.select}>
@@ -877,21 +877,21 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     </div>
 
                                     {/* Inspection Window Readiness */}
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 shrink-0">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">Flight Window</Label>
-                                        <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 h-10 text-[11px] font-bold text-emerald-700 shadow-xs">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                        <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 sm:px-3.5 h-10 text-[10px] sm:text-[11px] font-bold text-emerald-700 shadow-xs whitespace-nowrap">
+                                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                                             Optimal For Inspections
                                         </div>
                                     </div>
 
                                     {/* Manual Refresh Button */}
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 shrink-0">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">&nbsp;</Label>
                                         <button
                                             onClick={() => loadWeather(true)}
                                             disabled={isWeatherLoading}
-                                            className="h-10 px-3 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs"
+                                            className="h-10 px-3 rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 hover:text-neutral-900 transition-colors flex items-center gap-1.5 text-xs font-bold shadow-xs whitespace-nowrap shrink-0"
                                             title="Sync Live Weather"
                                         >
                                             <RefreshCw className={cn("w-3.5 h-3.5 text-amber-600", isWeatherLoading && "animate-spin")} />
@@ -903,37 +903,37 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         </div>
 
                         {/* Weather Details Grid */}
-                        <div className="p-6 space-y-6 bg-white">
+                        <div className="p-3.5 sm:p-5 md:p-6 space-y-4 sm:space-y-6 bg-white">
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
                                 {/* Current Hero Stats */}
-                                <div className="md:col-span-7 rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs flex flex-col justify-between space-y-4">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-600 shadow-inner">
-                                                <WeatherIcon className="w-8 h-8" />
+                                <div className="md:col-span-7 rounded-2xl border border-neutral-200/90 bg-white p-3.5 sm:p-5 shadow-xs flex flex-col justify-between space-y-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-600 shadow-inner shrink-0">
+                                                <WeatherIcon className="w-7 h-7 sm:w-8 sm:h-8" />
                                             </div>
-                                            <div>
-                                                <div className="flex items-baseline gap-2">
-                                                    <span className="text-4xl sm:text-5xl font-black tracking-tight text-neutral-900">
+                                            <div className="min-w-0">
+                                                <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
+                                                    <span className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-neutral-900">
                                                         {weather?.currentTemp !== undefined ? `${weather.currentTemp}°C` : '28°C'}
                                                     </span>
-                                                    <span className="text-xs font-bold text-neutral-500">
+                                                    <span className="text-[11px] sm:text-xs font-bold text-neutral-500 whitespace-nowrap">
                                                         Range: {minTemp}° – {maxTemp}°
                                                     </span>
                                                 </div>
-                                                <p className="text-sm font-bold text-neutral-800 flex items-center gap-1.5 mt-0.5">
+                                                <p className="text-xs sm:text-sm font-bold text-neutral-800 flex items-center gap-1.5 mt-0.5 truncate">
                                                     {weather?.conditionText || 'Clear sky'}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col items-end gap-1.5">
-                                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs shadow-xs">
-                                                <Droplets className="w-3.5 h-3.5 text-blue-500" />
+                                        <div className="flex flex-row sm:flex-col items-center sm:items-end gap-1.5 shrink-0 flex-wrap">
+                                            <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs shadow-xs whitespace-nowrap shrink-0">
+                                                <Droplets className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                                                 {weather?.currentHumidity !== undefined ? `${weather.currentHumidity}% Humidity` : '52% Humidity'}
                                             </span>
-                                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-teal-50 text-teal-700 border border-teal-200 font-semibold text-xs shadow-xs">
-                                                <Wind className="w-3.5 h-3.5 text-teal-600" />
+                                            <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-lg bg-teal-50 text-teal-700 border border-teal-200 font-semibold text-xs shadow-xs whitespace-nowrap shrink-0">
+                                                <Wind className="w-3.5 h-3.5 text-teal-600 shrink-0" />
                                                 {weather?.currentWind !== undefined ? `${weather.currentWind} km/h Wind` : '10 km/h Wind'}
                                             </span>
                                         </div>
@@ -944,16 +944,16 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                         <p className="text-[10px] font-black uppercase tracking-wider text-neutral-500">
                                             Hourly Microclimate Forecast
                                         </p>
-                                        <div className="grid grid-cols-6 gap-2">
+                                        <div className="flex sm:grid sm:grid-cols-6 gap-2 overflow-x-auto pb-1.5 -mx-1 px-1 no-scrollbar touch-pan-x">
                                             {(weather?.hourly || []).map((slot, idx) => {
                                                 const { Icon } = getWeatherMeta(slot.code);
                                                 return (
-                                                    <div key={idx} className="flex flex-col items-center gap-1 text-center py-2 px-1 rounded-xl bg-neutral-50 border border-neutral-200/80 shadow-xs">
-                                                        <span className="text-[10px] font-semibold text-neutral-500">
+                                                    <div key={idx} className="flex flex-col items-center gap-1 text-center py-2 px-2.5 sm:px-1 rounded-xl bg-neutral-50 border border-neutral-200/80 shadow-xs min-w-[58px] sm:min-w-0 shrink-0 sm:shrink">
+                                                        <span className="text-[10px] font-semibold text-neutral-500 whitespace-nowrap">
                                                             {slot.time}
                                                         </span>
-                                                        <Icon className="w-4 h-4 text-amber-500" />
-                                                        <span className="text-xs font-black text-neutral-900">
+                                                        <Icon className="w-4 h-4 text-amber-500 shrink-0" />
+                                                        <span className="text-xs font-black text-neutral-900 whitespace-nowrap">
                                                             {slot.temp}°
                                                         </span>
                                                     </div>
@@ -964,7 +964,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                 </div>
 
                                 {/* 5-Day Forecast Gradient */}
-                                <div className="md:col-span-5 rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs flex flex-col justify-between space-y-3">
+                                <div className="md:col-span-5 rounded-2xl border border-neutral-200/90 bg-white p-3.5 sm:p-5 shadow-xs flex flex-col justify-between space-y-3">
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
                                             <h4 className="text-xs font-black uppercase tracking-wider text-neutral-500">
@@ -982,7 +982,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
                                                 return (
                                                     <div key={dIdx} className="grid grid-cols-12 items-center gap-2 text-xs">
-                                                        <span className="col-span-3 font-bold text-neutral-900 text-[11px]">
+                                                        <span className="col-span-3 font-bold text-neutral-900 text-[11px] truncate">
                                                             {dayItem.day}
                                                         </span>
                                                         <div className="col-span-1 flex justify-center">
@@ -1037,7 +1037,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                             { label: 'Certified Yield', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${userHarvests.length} harvest logs recorded` },
                             { label: 'Batches', value: userBatches.length, icon: Binary, hint: userBatches.length > 0 ? `${productionSummary.verifiedBatches} verified on ledger` : 'No batches logged' },
                         ].map((card) => (
-                            <div key={card.label} className={cn(glass.section, "p-5 bg-white")}>
+                            <div key={card.label} className={cn(glass.section, "p-3.5 sm:p-5 bg-white")}>
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                                         <card.icon className="w-5 h-5 text-amber-600" />

@@ -97,6 +97,34 @@ const Header = () => {
             Beekeeping Network
           </Link>
 
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 text-beeyield-green/80 hover:text-beeyield-green">
+              Pages
+              <ChevronDown className="h-3.5 w-3.5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="w-56 p-2 bg-white border border-neutral-200 rounded-2xl shadow-2xl z-[100] grid grid-cols-1 gap-1 max-h-[80vh] overflow-y-auto">
+              {[
+                { label: 'Our Story', to: '/about' },
+                { label: 'Bee Learn', to: '/learn' },
+                { label: 'Impact', to: '/impact' },
+                { label: 'ESG', to: '/esg' },
+                { label: 'Commitment', to: '/commitment' },
+                { label: 'Team', to: '/team' },
+                { label: 'Panda Miti', to: '/panda-miti' },
+                { label: 'Careers', to: '/careers' },
+                { label: 'Media', to: '/media' },
+                { label: 'Blogs', to: '/blogs' },
+                { label: 'Contact', to: '/contact' },
+              ].map((item) => (
+                <DropdownMenuItem key={item.to} asChild className="focus:bg-neutral-100 focus:text-neutral-900 rounded-xl transition-all">
+                  <Link to={item.to} className="w-full cursor-pointer px-3 py-2 text-[13px] font-bold text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100 rounded-xl transition-all">
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Link
             to="/shop"
             onPrefetch={prefetchShop}
@@ -192,6 +220,7 @@ const Header = () => {
                     { label: 'Impact', to: '/impact' },
                     { label: 'Media', to: '/media' },
                     { label: 'Team', to: '/team' },
+                    { label: 'Panda Miti', to: '/panda-miti' },
                   ].map((item) => (
                     <DropdownMenuItem key={item.to} asChild className="focus:bg-neutral-100 focus:text-neutral-900 rounded-xl transition-all">
                       <Link to={item.to} className="w-full cursor-pointer px-3 py-2 text-[12px] font-bold text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition-all">
@@ -305,6 +334,7 @@ const Header = () => {
                 { label: 'Commitment', to: '/commitment' },
 
                 { label: 'Team', to: '/team' },
+                { label: 'Panda Miti', to: '/panda-miti' },
                 { label: 'Careers', to: '/careers' },
                 { label: 'Media', to: '/media' },
                 { label: 'Blogs', to: '/blogs' },
