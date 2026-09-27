@@ -15,7 +15,10 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BeeyieldDashboardRouteImport } from './routes/beeyield-dashboard'
 import { Route as BlogsRouteImport } from './routes/blogs'
 import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CommitmentRouteImport } from './routes/commitment'
 import { Route as CropsWePollinateRouteImport } from './routes/crops-we-pollinate'
+import { Route as EsgRouteImport } from './routes/esg'
+import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as OurStoryRouteImport } from './routes/our-story'
 import { Route as PandaMitiRouteImport } from './routes/panda-miti'
 import { Route as ShopRouteImport } from './routes/shop'
@@ -54,9 +57,24 @@ const CareersRoute = CareersRouteImport.update({
   path: '/careers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommitmentRoute = CommitmentRouteImport.update({
+  id: '/commitment',
+  path: '/commitment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CropsWePollinateRoute = CropsWePollinateRouteImport.update({
   id: '/crops-we-pollinate',
   path: '/crops-we-pollinate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsgRoute = EsgRouteImport.update({
+  id: '/esg',
+  path: '/esg',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OurStoryRoute = OurStoryRouteImport.update({
@@ -102,7 +120,10 @@ export interface FileRoutesByFullPath {
   '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
   '/careers': typeof CareersRoute
+  '/commitment': typeof CommitmentRoute
   '/crops-we-pollinate': typeof CropsWePollinateRoute
+  '/esg': typeof EsgRoute
+  '/impact': typeof ImpactRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
   '/shop': typeof ShopRoute
@@ -118,7 +139,10 @@ export interface FileRoutesByTo {
   '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
   '/careers': typeof CareersRoute
+  '/commitment': typeof CommitmentRoute
   '/crops-we-pollinate': typeof CropsWePollinateRoute
+  '/esg': typeof EsgRoute
+  '/impact': typeof ImpactRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
   '/shop': typeof ShopRoute
@@ -135,7 +159,10 @@ export interface FileRoutesById {
   '/beeyield-dashboard': typeof BeeyieldDashboardRoute
   '/blogs': typeof BlogsRoute
   '/careers': typeof CareersRoute
+  '/commitment': typeof CommitmentRoute
   '/crops-we-pollinate': typeof CropsWePollinateRoute
+  '/esg': typeof EsgRoute
+  '/impact': typeof ImpactRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
   '/shop': typeof ShopRoute
@@ -153,7 +180,10 @@ export interface FileRouteTypes {
     | '/beeyield-dashboard'
     | '/blogs'
     | '/careers'
+    | '/commitment'
     | '/crops-we-pollinate'
+    | '/esg'
+    | '/impact'
     | '/our-story'
     | '/panda-miti'
     | '/shop'
@@ -169,7 +199,10 @@ export interface FileRouteTypes {
     | '/beeyield-dashboard'
     | '/blogs'
     | '/careers'
+    | '/commitment'
     | '/crops-we-pollinate'
+    | '/esg'
+    | '/impact'
     | '/our-story'
     | '/panda-miti'
     | '/shop'
@@ -185,7 +218,10 @@ export interface FileRouteTypes {
     | '/beeyield-dashboard'
     | '/blogs'
     | '/careers'
+    | '/commitment'
     | '/crops-we-pollinate'
+    | '/esg'
+    | '/impact'
     | '/our-story'
     | '/panda-miti'
     | '/shop'
@@ -202,7 +238,10 @@ export interface RootRouteChildren {
   BeeyieldDashboardRoute: typeof BeeyieldDashboardRoute
   BlogsRoute: typeof BlogsRoute
   CareersRoute: typeof CareersRoute
+  CommitmentRoute: typeof CommitmentRoute
   CropsWePollinateRoute: typeof CropsWePollinateRoute
+  EsgRoute: typeof EsgRoute
+  ImpactRoute: typeof ImpactRoute
   OurStoryRoute: typeof OurStoryRoute
   PandaMitiRoute: typeof PandaMitiRoute
   ShopRoute: typeof ShopRoute
@@ -256,11 +295,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CareersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/commitment': {
+      id: '/commitment'
+      path: '/commitment'
+      fullPath: '/commitment'
+      preLoaderRoute: typeof CommitmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/crops-we-pollinate': {
       id: '/crops-we-pollinate'
       path: '/crops-we-pollinate'
       fullPath: '/crops-we-pollinate'
       preLoaderRoute: typeof CropsWePollinateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/esg': {
+      id: '/esg'
+      path: '/esg'
+      fullPath: '/esg'
+      preLoaderRoute: typeof EsgRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impact': {
+      id: '/impact'
+      path: '/impact'
+      fullPath: '/impact'
+      preLoaderRoute: typeof ImpactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/our-story': {
@@ -322,7 +382,10 @@ const rootRouteChildren: RootRouteChildren = {
   BeeyieldDashboardRoute: BeeyieldDashboardRoute,
   BlogsRoute: BlogsRoute,
   CareersRoute: CareersRoute,
+  CommitmentRoute: CommitmentRoute,
   CropsWePollinateRoute: CropsWePollinateRoute,
+  EsgRoute: EsgRoute,
+  ImpactRoute: ImpactRoute,
   OurStoryRoute: OurStoryRoute,
   PandaMitiRoute: PandaMitiRoute,
   ShopRoute: ShopRoute,

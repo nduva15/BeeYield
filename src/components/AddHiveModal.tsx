@@ -540,17 +540,17 @@ export function AddHiveModal({
           <div className="flex items-center gap-2">
             {/* Switcher Tab Header if onSwitchToApiary provided */}
             {onSwitchToApiary && (
-              <div className="hidden sm:flex items-center gap-1 bg-emerald-700/60 p-1 rounded-xl border border-emerald-400/40 text-xs">
+              <div className="flex items-center gap-1 bg-emerald-700/70 p-1 rounded-xl border border-emerald-400/40 text-xs shadow-inner shrink-0">
                 <button
                   type="button"
                   onClick={onSwitchToApiary}
-                  className="px-2.5 py-1 rounded-lg text-emerald-100 hover:text-white hover:bg-emerald-600 transition-colors font-medium text-[11px]"
+                  className="px-2 sm:px-2.5 py-1 rounded-lg text-emerald-100 hover:text-white hover:bg-emerald-600/70 transition-colors font-semibold text-[10px] sm:text-[11px] cursor-pointer select-none touch-manipulation"
                 >
                   📍 Add Apiary
                 </button>
                 <button
                   type="button"
-                  className="px-2.5 py-1 rounded-lg bg-white text-emerald-950 font-bold text-[11px] shadow-xs"
+                  className="px-2 sm:px-2.5 py-1 rounded-lg bg-white text-emerald-950 font-bold text-[10px] sm:text-[11px] shadow-xs cursor-default select-none touch-manipulation"
                 >
                   🐝 Add Hive
                 </button>
