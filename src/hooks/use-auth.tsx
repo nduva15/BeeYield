@@ -148,7 +148,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         setUser(s.user);
         try {
-          const rawName = s.user.user_metadata?.full_name || s.user.user_metadata?.name || (s.user.email ? s.user.email.split("@")[0] : null);
+          const rawName =
+            s.user.user_metadata?.full_name ||
+            s.user.user_metadata?.name ||
+            (s.user.email ? s.user.email.split("@")[0] : null);
           const initialProfile: Profile = {
             id: s.user.id,
             email: s.user.email || null,
@@ -159,7 +162,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
           localStorage.setItem(
             "beeyield_local_user",
-            JSON.stringify({ user: s.user, profile: initialProfile })
+            JSON.stringify({ user: s.user, profile: initialProfile }),
           );
         } catch {}
         void loadProfile(s.user.id);
@@ -193,7 +196,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         setUser(data.session.user);
         try {
-          const rawName = data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name || (data.session.user.email ? data.session.user.email.split("@")[0] : null);
+          const rawName =
+            data.session.user.user_metadata?.full_name ||
+            data.session.user.user_metadata?.name ||
+            (data.session.user.email ? data.session.user.email.split("@")[0] : null);
           const initialProfile: Profile = {
             id: data.session.user.id,
             email: data.session.user.email || null,
@@ -204,7 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
           localStorage.setItem(
             "beeyield_local_user",
-            JSON.stringify({ user: data.session.user, profile: initialProfile })
+            JSON.stringify({ user: data.session.user, profile: initialProfile }),
           );
         } catch {}
         void loadProfile(data.session.user.id);
@@ -276,7 +282,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(
         "beeyield_local_user",
-        JSON.stringify({ user: demoUser, profile: demoProfile })
+        JSON.stringify({ user: demoUser, profile: demoProfile }),
       );
     } catch {}
 

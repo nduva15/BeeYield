@@ -21,10 +21,7 @@ export const getCachedAvatar = (userId?: string | null): string | null => {
 /**
  * Broadcast an avatar update to all open tabs, windows, and cross-devices (laptop, phone, tablet)
  */
-export const broadcastAvatarUpdate = async (
-  userId: string,
-  avatarUrl: string,
-): Promise<void> => {
+export const broadcastAvatarUpdate = async (userId: string, avatarUrl: string): Promise<void> => {
   const uid = userId || "usr_kibwezi_owner_01";
   const now = Date.now();
   const payload: AvatarSyncPayload = {

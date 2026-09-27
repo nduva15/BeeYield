@@ -1,9 +1,40 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  X, Settings as SettingsIcon, User, Blocks, BellRing, ShieldCheck, Wifi,
-  Loader2, Save, Link2, Trash2, Copy, CheckCircle2, Shield, AlertCircle, Sparkles, Check, RefreshCw,
-  CreditCard, Clock, Plus, Lock, Calendar, FileText, Download, CheckCircle, ArrowUpRight, TrendingUp,
-  TrendingDown, Wallet, ExternalLink, ShieldAlert, Camera, Upload, LogIn
+  X,
+  Settings as SettingsIcon,
+  User,
+  Blocks,
+  BellRing,
+  ShieldCheck,
+  Wifi,
+  Loader2,
+  Save,
+  Link2,
+  Trash2,
+  Copy,
+  CheckCircle2,
+  Shield,
+  AlertCircle,
+  Sparkles,
+  Check,
+  RefreshCw,
+  CreditCard,
+  Clock,
+  Plus,
+  Lock,
+  Calendar,
+  FileText,
+  Download,
+  CheckCircle,
+  ArrowUpRight,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  ExternalLink,
+  ShieldAlert,
+  Camera,
+  Upload,
+  LogIn,
 } from "lucide-react";
 import {
   Dialog,
@@ -31,19 +62,59 @@ const TABS: { id: Tab; label: string; icon: typeof User }[] = [
 ];
 
 const MODULES: { key: string; label: string; help: string }[] = [
-  { key: "commercial", label: "Commercial apiaries", help: "Multi-site apiary management, batches and yield ledgers." },
-  { key: "meteo", label: "Meteo & Bloom", help: "Weather feeds, bloom phenology and forecast snapshots." },
-  { key: "hardware", label: "Hardware add-ons", help: "USB, Bluetooth and online scale / sensor probes." },
-  { key: "accounting", label: "Accounting & ledger", help: "Reconcile honey sales against QuickBooks or Xero." },
-  { key: "forage", label: "Forage mapping", help: "Radial forage buffers and satellite vegetative indices." },
-  { key: "reports", label: "Executive reports", help: "Automated PDF summary reports with cryptographically signed proof." },
+  {
+    key: "commercial",
+    label: "Commercial apiaries",
+    help: "Multi-site apiary management, batches and yield ledgers.",
+  },
+  {
+    key: "meteo",
+    label: "Meteo & Bloom",
+    help: "Weather feeds, bloom phenology and forecast snapshots.",
+  },
+  {
+    key: "hardware",
+    label: "Hardware add-ons",
+    help: "USB, Bluetooth and online scale / sensor probes.",
+  },
+  {
+    key: "accounting",
+    label: "Accounting & ledger",
+    help: "Reconcile honey sales against QuickBooks or Xero.",
+  },
+  {
+    key: "forage",
+    label: "Forage mapping",
+    help: "Radial forage buffers and satellite vegetative indices.",
+  },
+  {
+    key: "reports",
+    label: "Executive reports",
+    help: "Automated PDF summary reports with cryptographically signed proof.",
+  },
 ];
 
 const ALERTS: { key: string; label: string; help: string }[] = [
-  { key: "anomalies", label: "Acoustic anomalies", help: "Early warning when sound analysis flags Queen loss or swarming." },
-  { key: "temp_humidity", label: "Brood nest threshold", help: "Temp or relative humidity out-of-band for > 3 consecutive hours." },
-  { key: "inspection_due", label: "Inspection reminders", help: "Colonies uninspected past their recommended interval." },
-  { key: "battery_low", label: "Sensor telemetry", help: "Device battery below 15% or solar node offline." },
+  {
+    key: "anomalies",
+    label: "Acoustic anomalies",
+    help: "Early warning when sound analysis flags Queen loss or swarming.",
+  },
+  {
+    key: "temp_humidity",
+    label: "Brood nest threshold",
+    help: "Temp or relative humidity out-of-band for > 3 consecutive hours.",
+  },
+  {
+    key: "inspection_due",
+    label: "Inspection reminders",
+    help: "Colonies uninspected past their recommended interval.",
+  },
+  {
+    key: "battery_low",
+    label: "Sensor telemetry",
+    help: "Device battery below 15% or solar node offline.",
+  },
 ];
 
 const confirmAsync = (msg: string): Promise<boolean> => {
@@ -94,7 +165,15 @@ type Invoice = {
 
 const INVOICES: Invoice[] = [];
 
-function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange: (v: boolean) => void }) {
+function Toggle({
+  label,
+  on,
+  onChange,
+}: {
+  label: string;
+  on: boolean;
+  onChange: (v: boolean) => void;
+}) {
   return (
     <button
       type="button"
@@ -115,7 +194,15 @@ function Toggle({ label, on, onChange }: { label: string; on: boolean; onChange:
   );
 }
 
-export default function SettingsPage({ isOpen = true, onClose, embedded = false }: { isOpen?: boolean; onClose?: () => void; embedded?: boolean }) {
+export default function SettingsPage({
+  isOpen = true,
+  onClose,
+  embedded = false,
+}: {
+  isOpen?: boolean;
+  onClose?: () => void;
+  embedded?: boolean;
+}) {
   const deviceId = useDeviceId();
   const auth = useAuth() as any;
   const { profile, refreshProfile, signOut, updateAvatar } = auth;
@@ -166,13 +253,13 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
 
   const [fullName, setFullName] = useState(
-    profile?.full_name || currentUser?.user_metadata?.full_name || "Timothy Nduva"
+    profile?.full_name || currentUser?.user_metadata?.full_name || "Timothy Nduva",
   );
   const [phone, setPhone] = useState(
-    profile?.phone || currentUser?.user_metadata?.phone || "+254 742 004 187"
+    profile?.phone || currentUser?.user_metadata?.phone || "+254 742 004 187",
   );
   const [country, setCountry] = useState(
-    profile?.country || currentUser?.user_metadata?.country || "Kenya"
+    profile?.country || currentUser?.user_metadata?.country || "Kenya",
   );
   const [email, setEmail] = useState(effectiveEmail);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -180,9 +267,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   const effectiveUserId = user?.id || profile?.id || "usr_kibwezi_owner_01";
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => {
     return (
-      profile?.avatar_url ||
-      user?.user_metadata?.avatar_url ||
-      getCachedAvatar(effectiveUserId)
+      profile?.avatar_url || user?.user_metadata?.avatar_url || getCachedAvatar(effectiveUserId)
     );
   });
 
@@ -196,7 +281,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   }, [effectiveUserId]);
 
   useEffect(() => {
-    const direct = profile?.avatar_url || user?.user_metadata?.avatar_url || getCachedAvatar(effectiveUserId);
+    const direct =
+      profile?.avatar_url || user?.user_metadata?.avatar_url || getCachedAvatar(effectiveUserId);
     if (direct && direct !== avatarUrl) {
       setAvatarUrl(direct);
     }
@@ -208,7 +294,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
   const [accessLink, setAccessLink] = useState<string | null>(null);
 
-    // Billing Cards State (Clean Real Storage - No Mock Data)
+  // Billing Cards State (Clean Real Storage - No Mock Data)
   const [cards, setCards] = useState<PaymentCard[]>(() => {
     try {
       const saved = localStorage.getItem(`beeyield_billing_cards_${deviceId}`);
@@ -219,7 +305,9 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
           return parsed.filter((c: PaymentCard) => c.last4 !== "4242" && c.id !== "card_default_1");
         }
       }
-    } catch { void 0; }
+    } catch {
+      void 0;
+    }
     return [];
   });
 
@@ -263,10 +351,14 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       const raw = localStorage.getItem(`beeyield_app_settings_${deviceId}`);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed.modules) setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...parsed.modules }));
-        if (parsed.alert_prefs) setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...parsed.alert_prefs }));
+        if (parsed.modules)
+          setModules((prev) => ({ ...DEFAULT_MODULES, ...prev, ...parsed.modules }));
+        if (parsed.alert_prefs)
+          setAlerts((prev) => ({ ...DEFAULT_ALERTS, ...prev, ...parsed.alert_prefs }));
       }
-    } catch { void 0; }
+    } catch {
+      void 0;
+    }
 
     try {
       const { data, error } = await supabase
@@ -276,33 +368,44 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         .maybeSingle();
       if (!error && data) {
         const d = data as any;
-        if (d.modules && typeof d.modules === "object") setModules(prev => ({ ...DEFAULT_MODULES, ...prev, ...d.modules }));
-        if (d.alert_prefs && typeof d.alert_prefs === "object") setAlerts(prev => ({ ...DEFAULT_ALERTS, ...prev, ...d.alert_prefs }));
+        if (d.modules && typeof d.modules === "object")
+          setModules((prev) => ({ ...DEFAULT_MODULES, ...prev, ...d.modules }));
+        if (d.alert_prefs && typeof d.alert_prefs === "object")
+          setAlerts((prev) => ({ ...DEFAULT_ALERTS, ...prev, ...d.alert_prefs }));
       }
-    } catch { void 0; }
+    } catch {
+      void 0;
+    }
   }, [deviceId]);
 
   useEffect(() => {
     void loadPrefs();
   }, [loadPrefs]);
 
-  const savePrefs = async (nextMods: Record<string, boolean>, nextAlerts: Record<string, boolean>) => {
+  const savePrefs = async (
+    nextMods: Record<string, boolean>,
+    nextAlerts: Record<string, boolean>,
+  ) => {
     setSavingPrefs(true);
     try {
-      localStorage.setItem(`beeyield_app_settings_${deviceId}`, JSON.stringify({
-        modules: nextMods,
-        alert_prefs: nextAlerts,
-        updated_at: new Date().toISOString()
-      }));
+      localStorage.setItem(
+        `beeyield_app_settings_${deviceId}`,
+        JSON.stringify({
+          modules: nextMods,
+          alert_prefs: nextAlerts,
+          updated_at: new Date().toISOString(),
+        }),
+      );
 
-      await supabase
-        .from("app_settings")
-        .upsert({
+      await supabase.from("app_settings").upsert(
+        {
           device_id: deviceId,
           modules: nextMods,
           alert_prefs: nextAlerts,
           updated_at: new Date().toISOString(),
-        } as any, { onConflict: "device_id" });
+        } as any,
+        { onConflict: "device_id" },
+      );
 
       toast.success("Preferences updated");
     } catch {
@@ -355,7 +458,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
       localStorage.setItem(
         "beeyield_local_user",
-        JSON.stringify({ user: updatedUser, profile: updatedProfile })
+        JSON.stringify({ user: updatedUser, profile: updatedProfile }),
       );
     } catch (err) {
       console.warn("Local storage save note:", err);
@@ -363,20 +466,18 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
     // 2. Persist to Supabase Database (profiles table)
     try {
-      await (supabase as any)
-        .from("profiles")
-        .upsert(
-          {
-            id: effectiveId,
-            email: resolvedEmail,
-            full_name: updatedProfile.full_name,
-            phone: updatedProfile.phone,
-            country: updatedProfile.country,
-            avatar_url: avatarUrl,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "id" }
-        );
+      await (supabase as any).from("profiles").upsert(
+        {
+          id: effectiveId,
+          email: resolvedEmail,
+          full_name: updatedProfile.full_name,
+          phone: updatedProfile.phone,
+          country: updatedProfile.country,
+          avatar_url: avatarUrl,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "id" },
+      );
     } catch (err) {
       console.warn("Supabase profiles upsert note:", err);
     }
@@ -385,14 +486,16 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     try {
       const { data: s } = await supabase.auth.getSession();
       if (s?.session?.user) {
-        await supabase.auth.updateUser({
-          data: {
-            full_name: updatedProfile.full_name,
-            phone: updatedProfile.phone,
-            country: updatedProfile.country,
-            avatar_url: avatarUrl,
-          },
-        }).catch(() => {});
+        await supabase.auth
+          .updateUser({
+            data: {
+              full_name: updatedProfile.full_name,
+              phone: updatedProfile.phone,
+              country: updatedProfile.country,
+              avatar_url: avatarUrl,
+            },
+          })
+          .catch(() => {});
       }
     } catch {}
 
@@ -405,11 +508,9 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(
-        new CustomEvent("beeyield-avatar-updated", { detail: { avatar_url: avatarUrl } })
+        new CustomEvent("beeyield-avatar-updated", { detail: { avatar_url: avatarUrl } }),
       );
-      window.dispatchEvent(
-        new CustomEvent("beeyield-profile-updated", { detail: updatedProfile })
-      );
+      window.dispatchEvent(new CustomEvent("beeyield-profile-updated", { detail: updatedProfile }));
     }
 
     toast.success("Profile saved and synchronized successfully!");
@@ -443,7 +544,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
     const raw = val.replace(/\D/g, "").slice(0, 4);
     if (raw.length >= 2) {
       const mm = parseInt(raw.slice(0, 2), 10);
-      const safeMM = mm > 12 ? "12" : (mm === 0 ? "01" : raw.slice(0, 2));
+      const safeMM = mm > 12 ? "12" : mm === 0 ? "01" : raw.slice(0, 2);
       return `${safeMM}/${raw.slice(2)}`;
     }
     return raw;
@@ -496,14 +597,16 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
 
       let updated = [...cards];
       if (newCard.isDefault) {
-        updated = updated.map(c => ({ ...c, isDefault: false }));
+        updated = updated.map((c) => ({ ...c, isDefault: false }));
       }
       updated.unshift(newCard);
 
       setCards(updated);
       try {
         localStorage.setItem(`beeyield_billing_cards_${deviceId}`, JSON.stringify(updated));
-      } catch { void 0; }
+      } catch {
+        void 0;
+      }
 
       setSavingCard(false);
       setIsCardModalOpen(false);
@@ -512,23 +615,27 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   };
 
   const handleSetDefaultCard = (id: string) => {
-    const updated = cards.map(c => ({ ...c, isDefault: c.id === id }));
+    const updated = cards.map((c) => ({ ...c, isDefault: c.id === id }));
     setCards(updated);
     try {
       localStorage.setItem(`beeyield_billing_cards_${deviceId}`, JSON.stringify(updated));
-    } catch { void 0; }
+    } catch {
+      void 0;
+    }
     toast.success("Default payment method updated");
   };
 
-    const handleDeleteCard = (id: string) => {
-    const updated = cards.filter(c => c.id !== id);
-    if (!updated.some(c => c.isDefault) && updated.length > 0) {
+  const handleDeleteCard = (id: string) => {
+    const updated = cards.filter((c) => c.id !== id);
+    if (!updated.some((c) => c.isDefault) && updated.length > 0) {
       updated[0].isDefault = true;
     }
     setCards(updated);
     try {
       localStorage.setItem(`beeyield_billing_cards_${deviceId}`, JSON.stringify(updated));
-    } catch { void 0; }
+    } catch {
+      void 0;
+    }
     toast.success("Card removed");
   };
 
@@ -550,7 +657,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               </span>
             </h1>
             <p className="text-xs text-muted-foreground">
-              Configure telemetry parameters, active modules, alerting thresholds, and subscription billing.
+              Configure telemetry parameters, active modules, alerting thresholds, and subscription
+              billing.
             </p>
           </div>
         </div>
@@ -591,9 +699,14 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
       {/* Tab Panels */}
       <div className="space-y-6">
         {tab === "profile" && (
-          <form onSubmit={saveProfile} className="rounded-xl border border-border bg-card p-5 space-y-4">
+          <form
+            onSubmit={saveProfile}
+            className="rounded-xl border border-border bg-card p-5 space-y-4"
+          >
             <h2 className="font-display text-lg text-honey">User Profile</h2>
-            <p className="text-xs text-muted-foreground">Manage your operator credentials, contact info, and role assignment.</p>
+            <p className="text-xs text-muted-foreground">
+              Manage your operator credentials, contact info, and role assignment.
+            </p>
 
             {/* Account Status Card */}
             <div className="p-3.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -609,7 +722,9 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                     </span>
                   </div>
                   <p className="text-[11px] text-muted-foreground">
-                    Connected as <strong className="font-semibold text-foreground">{effectiveEmail}</strong>. Profile changes synchronize with database.
+                    Connected as{" "}
+                    <strong className="font-semibold text-foreground">{effectiveEmail}</strong>.
+                    Profile changes synchronize with database.
                   </p>
                 </div>
               </div>
@@ -638,7 +753,11 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               >
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-400 p-0.5 shadow-md overflow-hidden group-hover:ring-4 group-hover:ring-amber-500/30 transition-all">
                   {avatarUrl ? (
-                    <img src={avatarUrl} alt={fullName || "User"} className="w-full h-full object-cover rounded-[14px]" />
+                    <img
+                      src={avatarUrl}
+                      alt={fullName || "User"}
+                      className="w-full h-full object-cover rounded-[14px]"
+                    />
                   ) : (
                     <div className="w-full h-full rounded-[14px] bg-amber-500 flex items-center justify-center text-white font-black text-2xl">
                       {(fullName || "T").charAt(0).toUpperCase()}
@@ -725,7 +844,10 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground">
-                  Email Address <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">● Cloud Verified</span>
+                  Email Address{" "}
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">
+                    ● Cloud Verified
+                  </span>
                 </label>
                 <input
                   type="email"
@@ -742,7 +864,11 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 disabled={savingProfile}
                 className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 font-bold text-xs flex items-center gap-1.5 hover:opacity-90 transition-all shadow-sm disabled:opacity-50"
               >
-                {savingProfile ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                {savingProfile ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Save className="w-3.5 h-3.5" />
+                )}
                 Save Changes
               </button>
               <button
@@ -759,10 +885,15 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         {tab === "modules" && (
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
             <h2 className="font-display text-lg text-honey">Active System Modules</h2>
-            <p className="text-xs text-muted-foreground">Select capability groups active for your telemetry nodes and reporting suite.</p>
+            <p className="text-xs text-muted-foreground">
+              Select capability groups active for your telemetry nodes and reporting suite.
+            </p>
             <div className="space-y-3">
               {MODULES.map((m) => (
-                <div key={m.key} className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-background/50 hover:bg-background transition-colors">
+                <div
+                  key={m.key}
+                  className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-background/50 hover:bg-background transition-colors"
+                >
                   <div className="space-y-0.5">
                     <p className="text-sm font-medium text-foreground">{m.label}</p>
                     <p className="text-xs text-muted-foreground">{m.help}</p>
@@ -785,10 +916,16 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
         {tab === "alerting" && (
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
             <h2 className="font-display text-lg text-honey">Alert Triggers & Push Delivery</h2>
-            <p className="text-xs text-muted-foreground">Configure acoustic anomalies, sensor threshold excursions, and queen failure notifications.</p>
+            <p className="text-xs text-muted-foreground">
+              Configure acoustic anomalies, sensor threshold excursions, and queen failure
+              notifications.
+            </p>
             <div className="space-y-3">
               {ALERTS.map((a) => (
-                <div key={a.key} className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-background/50 hover:bg-background transition-colors">
+                <div
+                  key={a.key}
+                  className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-background/50 hover:bg-background transition-colors"
+                >
                   <div className="space-y-0.5">
                     <p className="text-sm font-medium text-foreground">{a.label}</p>
                     <p className="text-xs text-muted-foreground">{a.help}</p>
@@ -813,7 +950,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
             <div className="rounded-xl border border-border bg-card p-5 space-y-3">
               <h2 className="font-display text-lg text-honey">Collaborative Access Links</h2>
               <p className="text-xs text-muted-foreground">
-                Generate signed, read-only dashboard links to share yield telemetry with agronomists or farm managers.
+                Generate signed, read-only dashboard links to share yield telemetry with agronomists
+                or farm managers.
               </p>
               <div className="pt-2 flex flex-col sm:flex-row gap-2">
                 <button
@@ -844,13 +982,25 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
             <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-5 space-y-3">
               <h2 className="font-display text-lg text-red-400">Data Erasure & Reset</h2>
               <p className="text-xs text-muted-foreground">
-                Permanently remove your BeeYield profile and all device-scoped records on this device. This cannot be undone.
+                Permanently remove your BeeYield profile and all device-scoped records on this
+                device. This cannot be undone.
               </p>
               <button
                 type="button"
                 onClick={async () => {
-                  if (!await confirmAsync("Delete all local apiary records for this device? This cannot be undone.")) return;
-                  const tables = ["inspections", "sound_analyses", "app_settings", "integration_connections", "integration_sync_logs"] as const;
+                  if (
+                    !(await confirmAsync(
+                      "Delete all local apiary records for this device? This cannot be undone.",
+                    ))
+                  )
+                    return;
+                  const tables = [
+                    "inspections",
+                    "sound_analyses",
+                    "app_settings",
+                    "integration_connections",
+                    "integration_sync_logs",
+                  ] as const;
                   for (const t of tables) {
                     try {
                       await supabase.from(t).delete().eq("device_id", deviceId);
@@ -860,8 +1010,12 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                   }
                   try {
                     localStorage.removeItem(`beeyield_app_settings_${deviceId}`);
-                  } catch { void 0; }
-                  toast.success("Device records deleted. Contact support to erase the auth account.");
+                  } catch {
+                    void 0;
+                  }
+                  toast.success(
+                    "Device records deleted. Contact support to erase the auth account.",
+                  );
                 }}
                 className="px-3 py-2 rounded-lg border border-red-500/40 text-red-400 text-xs flex items-center gap-1.5"
               >
@@ -871,7 +1025,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
           </div>
         )}
 
-                {tab === "billing" && (
+        {tab === "billing" && (
           <div className="space-y-6">
             {/* Subscriptions Management Section */}
             <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-sm">
@@ -885,9 +1039,13 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                       Standard Access
                     </span>
                   </div>
-                  <h2 className="text-xl font-bold font-display text-foreground">Subscriptions & Commercial Billing</h2>
+                  <h2 className="text-xl font-bold font-display text-foreground">
+                    Subscriptions & Commercial Billing
+                  </h2>
                   <p className="text-xs text-muted-foreground max-w-xl">
-                    Recurring subscription plans and commercial telemetry tiers will be configured here. All core apicultural tools, inspections, and harvest tracking modules are currently unlocked.
+                    Recurring subscription plans and commercial telemetry tiers will be configured
+                    here. All core apicultural tools, inspections, and harvest tracking modules are
+                    currently unlocked.
                   </p>
                 </div>
                 <div className="sm:text-right shrink-0">
@@ -906,7 +1064,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                     <CreditCard className="w-4 h-4 text-honey" /> Payment Cards
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    Manage credit and debit cards on file for future billing and commercial purchases.
+                    Manage credit and debit cards on file for future billing and commercial
+                    purchases.
                   </p>
                 </div>
                 <button
@@ -924,7 +1083,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                   <CreditCard className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-xs font-medium text-foreground">No payment cards on file</p>
                   <p className="text-[11px] text-muted-foreground mt-0.5 max-w-sm mx-auto">
-                    You can add a payment card whenever you wish to purchase supplies or activate advanced services.
+                    You can add a payment card whenever you wish to purchase supplies or activate
+                    advanced services.
                   </p>
                 </div>
               ) : (
@@ -997,7 +1157,9 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                   <h3 className="text-base font-bold font-display text-foreground flex items-center gap-2">
                     <FileText className="w-4 h-4 text-honey" /> Invoices & Receipts
                   </h3>
-                  <p className="text-xs text-muted-foreground">Download past billing statements and official tax invoices.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Download past billing statements and official tax invoices.
+                  </p>
                 </div>
               </div>
 
@@ -1006,7 +1168,8 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                   <FileText className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-xs font-medium text-foreground">No invoices or receipts yet</p>
                   <p className="text-[11px] text-muted-foreground mt-0.5 max-w-sm mx-auto">
-                    Statements, tax invoices, and payment receipts will be generated and archived here after commercial transactions.
+                    Statements, tax invoices, and payment receipts will be generated and archived
+                    here after commercial transactions.
                   </p>
                 </div>
               ) : (
@@ -1026,7 +1189,9 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                       {INVOICES.map((inv) => (
                         <tr key={inv.id} className="hover:bg-muted/30 transition-colors">
                           <td className="py-3 px-3 text-muted-foreground">{inv.date}</td>
-                          <td className="py-3 px-3 font-mono font-bold text-foreground">{inv.id}</td>
+                          <td className="py-3 px-3 font-mono font-bold text-foreground">
+                            {inv.id}
+                          </td>
                           <td className="py-3 px-3 text-foreground">{inv.description}</td>
                           <td className="py-3 px-3 font-bold text-foreground">{inv.amount}</td>
                           <td className="py-3 px-3">
@@ -1052,7 +1217,6 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
             </div>
           </div>
         )}
-
       </div>
 
       {/* Card Popup Modal */}
@@ -1070,7 +1234,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
           {/* Interactive Credit Card Preview */}
           <div className="my-3 rounded-2xl bg-gradient-to-br from-neutral-900 via-stone-900 to-amber-950 p-5 text-white shadow-xl border border-white/10 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-honey/10 rounded-full blur-2xl pointer-events-none" />
-            
+
             <div className="flex items-center justify-between mb-4">
               {/* EMV Chip */}
               <div className="w-10 h-7 rounded-md bg-gradient-to-br from-amber-200 to-amber-400 border border-amber-300 shadow-inner flex items-center justify-center">
@@ -1094,9 +1258,7 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                 </div>
                 <div className="text-right">
                   <p className="text-[9px] uppercase tracking-wider text-neutral-400">Expires</p>
-                  <p className="font-mono font-semibold text-neutral-200">
-                    {cardExp || "MM/YY"}
-                  </p>
+                  <p className="font-mono font-semibold text-neutral-200">{cardExp || "MM/YY"}</p>
                 </div>
               </div>
             </div>
@@ -1206,7 +1368,11 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
                   disabled={savingCard}
                   className="px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 hover:bg-honey/90 transition-all shadow-md shadow-honey/15 flex items-center gap-1.5 disabled:opacity-50"
                 >
-                  {savingCard ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                  {savingCard ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  )}
                   Save Card
                 </button>
               </div>
@@ -1218,18 +1384,12 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false 
   );
 
   if (embedded) {
-    return (
-      <div className="w-full space-y-6">
-        {mainContent}
-      </div>
-    );
+    return <div className="w-full space-y-6">{mainContent}</div>;
   }
 
   return (
     <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto custom-scroll p-4 sm:p-6">
-      <div className="max-w-5xl mx-auto">
-        {mainContent}
-      </div>
+      <div className="max-w-5xl mx-auto">{mainContent}</div>
       <AvatarPickerDialog
         isOpen={isAvatarPickerOpen}
         onClose={() => setIsAvatarPickerOpen(false)}
