@@ -28,7 +28,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
-import { treeSpeciesData } from "@/components/PandaMitiSection";
+import { treeSpeciesData } from "@/components/beeyield/PandaMitiSection";
 
 export default function PandaMitiPage() {
   const [pledgeTrees, setPledgeTrees] = useState<number>(10);
