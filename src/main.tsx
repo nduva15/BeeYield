@@ -101,6 +101,7 @@ const Impact = lazy(() => retryLazyImport(() => import('@/pages/Impact')))
 const ESG = lazy(() => retryLazyImport(() => import('@/pages/ESG')))
 const Commitment = lazy(() => retryLazyImport(() => import('@/pages/Commitment')))
 const OurStory = lazy(() => retryLazyImport(() => import('@/pages/OurStory')))
+const PandaMiti = lazy(() => retryLazyImport(() => import('@/pages/PandaMiti')))
 
 const PrecisionPollination = lazy(() => retryLazyImport(() => import('@/pages/PrecisionPollination')))
 const PollinationSolutions = lazy(() => retryLazyImport(() => import('@/pages/PollinationSolutions')))
